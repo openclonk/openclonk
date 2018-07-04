@@ -267,16 +267,13 @@ func InitializeObjects()
 	SpinWheel010->SetMeshMaterial("SpinWheelBaseAlt", 1);
 	SpinWheel010->SetSwitchTarget(StoneDoor010);
 
-	var Column002 = CreateObject(Column, 779, 488);
+	var Column002 = CreateObjectAbove(Column, 779, 535);
 	Column002->SetR(180);
 	Column002->SetClrModulation(0xffffd0d0);
 	Column002->SetMeshMaterial("AncientColumn", 0);
-	Column002->SetPosition(779, 488);
-	var Column003 = CreateObject(Column, 1419, 217);
+	var Column003 = CreateObjectAbove(Column, 1419, 217);
 	Column003->SetMeshMaterial("AncientColumn", 0);
-	Column003->SetPosition(1419, 217);
-	var Column004 = CreateObject(Column, 1386, 616);
-	Column004->SetPosition(1386, 616);
+	var Column004 = CreateObjectAbove(Column, 1386, 616);
 
 	g_flagpole = CreateObject(Flagpole, 210, 1151);
 	g_flagpole->SetPosition(210, 1151);

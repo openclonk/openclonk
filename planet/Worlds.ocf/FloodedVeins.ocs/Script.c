@@ -175,10 +175,10 @@ private func InitVegetation(int map_size)
 	PlaceGrass(100);
 	
 	// Entrance also location for a small cemetary.
-	CreateObjectAbove(Column, 64, 160)->SetObjDrawTransform(400, 0, 0, 0, 400, 0);
+	CreateObjectAbove(Column, 58, 160)->SetCon(40);
 	for (var x = 72; x < 104; x += RandomX(6, 14))
 		CreateObjectAbove(Clonk_Grave, x, 160)->SetInscriptionMessage("R.I.P.");
-	CreateObjectAbove(Column, 112, 160)->SetObjDrawTransform(400, 0, 0, 0, 400, 0);
+	CreateObjectAbove(Column, 112, 160)->SetCon(40);
 	
 	// Some ferns and mushrooms scattered around the top and middle sections.
 	Fern->Place(12, Shape->Rectangle(0, 0, wdt, 3 * hgt / 8));

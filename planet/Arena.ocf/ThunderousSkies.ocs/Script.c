@@ -27,11 +27,11 @@ protected func Initialize()
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	Sound("Environment::BirdsLoop",true,100,nil,+1);
 		
-	CreateObjectAbove(Column,650,379);
-	CreateObjectAbove(Column,350,409);
-	CreateObjectAbove(Column,160,229);
-	CreateObjectAbove(Column,448,269);
-	CreateObjectAbove(Column,810,179);
+	CreateObjectAbove(Column,650,375);
+	CreateObjectAbove(Column,350,407);
+	CreateObjectAbove(Column,162,231);
+	CreateObjectAbove(Column,448,271);
+	CreateObjectAbove(Column,810,175);
 
 	// Chests with weapons.
 	CreateObjectAbove(Chest, 175, 200, NO_OWNER)->MakeInvincible();
