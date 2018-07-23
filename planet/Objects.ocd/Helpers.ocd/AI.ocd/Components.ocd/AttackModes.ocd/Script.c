@@ -218,7 +218,8 @@ func Departure_WeaponRespawn(object container, ...)
 	// (This function should be save to be called in foreign context)
 	ScheduleCall(this, Rule_ObjectFade.FadeOutObject, 120, 1, this);
 	// Revert to previous departure call. No double-respawn in case it gets collected
-	if ((this.Departure = this.WeaponRespawn_Departure))
+	this.Departure = this.WeaponRespawn_Departure;
+	if (this.Departure)
 	{
 		return Call(this.Departure, container, ...);
 	}
@@ -252,24 +253,24 @@ public func FindInventoryWeapon(effect fx)
 	if (FindInventoryWeaponBow(fx)) return true;
 	if (FindInventoryWeaponJavelin(fx)) return true;
 	// Throwing weapons.
-	if ((fx.weapon = fx.Target->FindContents(Firestone)) || (fx.weapon = fx.Target->FindContents(Rock)) || (fx.weapon = fx.Target->FindContents(Lantern))) 
+	if (FindInventoryWeaponBase(fx, Firestone) || FindInventoryWeaponBase(fx, Rock) || FindInventoryWeaponBase(fx, Lantern))
 	{
 		fx.can_attack_structures = fx.weapon->~HasExplosionOnImpact();
 		fx.strategy = this.ExecuteThrow;
 		return true;
 	}
 	// Melee weapons.
-	if ((fx.weapon = fx.Target->FindContents(Sword)) || (fx.weapon = fx.Target->FindContents(Axe))) // Sword attacks aren't 100% correct for Axe, but work well enough
+	if (FindInventoryWeaponBase(fx, Sword) || FindInventoryWeaponBase(fx, Axe)) // Sword attacks aren't 100% correct for Axe, but work well enough
 	{
 		fx.strategy = this.ExecuteMelee;
 		return true;
 	}
-	if ((fx.weapon = fx.Target->FindContents(PowderKeg)))
+	if (FindInventoryWeaponBase(fx, PowderKeg))
 	{
 		fx.strategy = this.ExecuteBomber;
 		return true;
 	}
-	if ((fx.weapon = fx.Target->FindContents(Club)))
+	if (FindInventoryWeaponBase(fx, Club))
 	{
 		fx.strategy = this.ExecuteClub;
 		return true;
@@ -278,73 +279,80 @@ public func FindInventoryWeapon(effect fx)
 	return false;
 }
 
+private func FindInventoryWeaponBase(effect fx, id type)
+{
+	var weapon = fx.Target->FindContents(type);
+	if (weapon)
+	{
+		fx.weapon = weapon;
+		return true;
+	}
+	return false;
+}
 
 private func FindInventoryWeaponGrenadeLauncher(effect fx)
 {
-	if (fx.weapon = fx.Target->FindContents(GrenadeLauncher))
+	var weapon = fx.Target->FindContents(GrenadeLauncher);
+	if (weapon && this->HasBombs(fx, weapon))
 	{
-		if (this->HasBombs(fx, fx.weapon))
-		{
-			fx.strategy = this.ExecuteRanged;
-			fx.projectile_speed = 75;
-			fx.ammo_check = this.HasBombs;
-			fx.ranged = true;
-			fx.can_attack_structures = true;
-			return true;
-		}
-		else
-			fx.weapon = nil;
+		fx.weapon = weapon;
+		fx.strategy = this.ExecuteRanged;
+		fx.projectile_speed = 75;
+		fx.ammo_check = this.HasBombs;
+		fx.ranged = true;
+		fx.can_attack_structures = true;
+		return true;
 	}
+	return false;
 }
 
 
 private func FindInventoryWeaponBlunderbuss(effect fx)
 {
-	if (fx.weapon = fx.Target->FindContents(Blunderbuss))
+	var weapon = fx.Target->FindContents(Blunderbuss);
+	if (weapon && this->HasAmmo(fx, weapon))
 	{
-		if (this->HasAmmo(fx, fx.weapon))
-		{
-			fx.strategy = this.ExecuteRanged;
-			fx.projectile_speed = 200;
-			fx.ammo_check = this.HasAmmo;
-			fx.ranged = true;
-			fx.ranged_direct = true;
-			return true;
-		}
-		else
-			fx.weapon = nil;
+		fx.weapon = weapon;
+		fx.strategy = this.ExecuteRanged;
+		fx.projectile_speed = 200;
+		fx.ammo_check = this.HasAmmo;
+		fx.ranged = true;
+		fx.ranged_direct = true;
+		return true;
 	}
+	return false;
 }
 
 
 private func FindInventoryWeaponBow(effect fx)
 {
-	if (fx.weapon = fx.Target->FindContents(Bow))
+	var weapon = fx.Target->FindContents(Bow);
+	if (weapon && this->HasArrows(fx, weapon))
 	{
-		if (this->HasArrows(fx, fx.weapon))
-		{
-			fx.strategy = this.ExecuteRanged;
-			fx.projectile_speed = 100;
-			fx.ammo_check = this.HasArrows;
-			fx.ranged = true;
-			var arrow = fx.weapon->Contents(0) ?? FindObject(Find_Container(fx.Target), Find_Func("IsArrow"));
-			fx.can_attack_structures = arrow && arrow->~IsExplosive();
-			return true;
-		}
-		else
-			fx.weapon = nil;
+		fx.weapon = weapon;
+		fx.strategy = this.ExecuteRanged;
+		fx.projectile_speed = 100;
+		fx.ammo_check = this.HasArrows;
+		fx.ranged = true;
+		var arrow = weapon->Contents(0) ?? FindObject(Find_Container(fx.Target), Find_Func("IsArrow"));
+		fx.can_attack_structures = arrow && arrow->~IsExplosive();
+		return true;
 	}
+	return false;
 }
 
 
 private func FindInventoryWeaponJavelin(effect fx)
 {
-	if (fx.weapon = fx.Target->FindContents(Javelin)) 
+	var weapon = fx.Target->FindContents(Javelin);
+	if (weapon)
 	{
+		fx.weapon = weapon;
 		fx.strategy = this.ExecuteRanged;
-		fx.projectile_speed = fx.Target.ThrowSpeed * fx.weapon.shooting_strength / 100;
-		fx.ranged=true;
+		fx.projectile_speed = fx.Target.ThrowSpeed * weapon.shooting_strength / 100;
+		fx.ranged = true;
 		return true;
 	}
+	return false;
 }
 

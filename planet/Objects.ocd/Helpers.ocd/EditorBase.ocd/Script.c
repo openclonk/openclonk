@@ -48,7 +48,7 @@ func Definition(def)
 	// Item plus extra stuff (contents, stack, etc.)
 	ItemPlusParameterOptionMap = {};
 	ItemPlusParameter = { Name="$Item", Type="enum", Sorted=true, Options = [ { Name="$Nothing$", Priority=50 } ] };
-	var itemdef, i = 0, n = 0, option, contents_def, j, n2, contents_defs, mat;
+	var itemdef, i = 0, n = 0, option, contents_def, j, n2, contents_defs;
 	while ((itemdef = GetDefinition(i++)))
 		if (itemdef.Collectible || itemdef->~GetLiquidType())
 		{
@@ -67,9 +67,12 @@ func Definition(def)
 				j = 0; n2 = 0;
 				contents_defs = [{Name="$Nothing$"}];
 				while ((contents_def = GetDefinition(j++)))
-					if ((mat = contents_def->~GetLiquidType()))
+				{
+					var mat = contents_def->~GetLiquidType();
+					if (mat)
 						if (itemdef->IsLiquidContainerForMaterial(mat))
 							contents_defs[++n2] = contents_def;
+				}
 				if (n2)
 				{
 					option.Value = { ItemPlusParameter="liquid", ID=itemdef };

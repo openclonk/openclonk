@@ -295,29 +295,40 @@ private func ApplyCrewSettings(object crew)
 private func InitializeCrew(int plr)
 {
 	// Collect IDs of crew to create
-	var requested_crew = [], n=0, i, obj, idx, def;
+	var requested_crew = [], n=0;
 	for (var idlist_entry in starting_crew)
-		for (i=0; i<idlist_entry.count; ++i)
+		for (var i = 0; i < idlist_entry.count; ++i)
 			requested_crew[n++] = idlist_entry.id;
 	// Match them to existing crew
-	for (i = GetCrewCount(plr)-1; i>=0; --i)
-		if (obj = GetCrew(plr, i))
-			if ((idx = GetIndexOf(requested_crew, obj->GetID())) >= 0)
+	for (var i = GetCrewCount(plr)-1; i>=0; --i)
+	{
+		var obj = GetCrew(plr, i);
+		if (obj) {
+			var idx = GetIndexOf(requested_crew, obj->GetID());
+			if (idx >= 0)
 			{
 				obj->SetPosition(GetX(), GetY() + GetDefHeight()/2 - obj->GetDefHeight()/2);
 				requested_crew[idx] = nil;
 			}
 			else
 				obj->RemoveObject(); // not in list: Kill
+		}
+	}
 	// Create any missing crew
-	for (def in requested_crew)
+	for (var def in requested_crew)
 		if (def)
-			if (obj = CreateObjectAbove(def, 0, GetDefHeight()/2, plr))
+		{
+			var obj = CreateObjectAbove(def, 0, GetDefHeight()/2, plr);
+			if (obj)
 				obj->MakeCrewMember(plr);
+		}
 	// Apply crew settings
-	for (i = GetCrewCount(plr)-1; i>=0; --i)
-		if (obj = GetCrew(plr, i))
+	for (var i = GetCrewCount(plr)-1; i>=0; --i)
+	{
+		var obj = GetCrew(plr, i);
+		if (obj)
 			ApplyCrewSettings(obj);
+	}
 	// Done!
 	return true;
 }
@@ -346,11 +357,13 @@ private func InitializeMaterial(int plr)
 	for (var idlist_entry in starting_material)
 	{
 		var best_target = nil, target_score, clonk;
-		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(),GetY()+GetDefHeight()/2, plr);
+		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(), GetY() + GetDefHeight() / 2, plr);
 		if (!obj || !obj.Collectible) continue;
 		var id = idlist_entry.id;
-		for (var j=0; j<GetCrewCount(plr); ++j)
-			if (clonk = GetCrew(plr, j))
+		for (var j=0; j < GetCrewCount(plr); ++j)
+		{
+			var clonk = GetCrew(plr, j);
+			if (clonk)
 			{
 				var clonk_score = 0;
 				// High penalty: Already has item of same type
@@ -363,6 +376,7 @@ private func InitializeMaterial(int plr)
 					target_score = clonk_score;
 				}
 			}
+		}
 		if (best_target) best_target->Collect(obj); // May fail due to contents full
 	}
 	return true;

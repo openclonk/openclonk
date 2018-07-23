@@ -102,15 +102,15 @@ global func FxIntScheduleCallTimer(object obj, effect fx)
 // documented in /docs/sdk/script/fn
 global func ClearScheduleCall(object obj, call_function)
 {
-	var i, fx;
+	var i;
 	// Count downwards from effectnumber, to remove effects.
 	i = GetEffectCount("IntScheduleCall", obj);
-	while (i--)
+	while (i--) {
 		// Check All ScheduleCall-Effects.
-		if (fx = GetEffect("IntScheduleCall", obj, i))
-			// Found right function.
-			if (fx.Function == call_function)
-				// Remove effect.
-				RemoveEffect(nil, obj, fx);
+		var fx = GetEffect("IntScheduleCall", obj, i);
+		if (fx && fx.Function == call_function)
+			// Found right function. Remove effect.
+			RemoveEffect(nil, obj, fx);
+	}
 	return;
 }

@@ -251,11 +251,14 @@ protected func Hit(int dx, int dy)
 
 private func SplitRock()
 {
-	var con = GetCon(), erock;
+	var con = GetCon();
 	// Explosive rocks do some damage
-	if (is_explosive) 
-		if (erock = CreateObjectAbove(Rock, 0, 4, GetController())) 
+	if (is_explosive)
+	{
+		var erock = CreateObjectAbove(Rock, 0, 4, GetController());
+		if (erock)
 			erock->Explode(Max(15 * con / 100, 3));
+	}
 	// Split the rock into smaller ones if it is big enough.
 	if (con > 40)
 	{

@@ -138,7 +138,8 @@ public func ReactivatePlayerControls(int plr)
 	// Ensure proper cursor.
 	if (!GetCursor(plr)) 
 		SetCursor(plr, GetCrew(plr));
-	if (crew = GetCursor(plr)) 
+	crew = GetCursor(plr);
+	if (crew)
 		SetPlrView(plr, crew);
 	return true;
 }
@@ -277,13 +278,15 @@ public func LoadScenarioSection(name, ...)
 	// Store objects: All clonks and sequence object
 	this.save_objs = [];
 	AddSectSaveObj(this);
-	var iplr, plr;
-	for (iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
+	for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
 	{
-		plr = GetPlayerByIndex(iplr, C4PT_User);
-		for (var icrew = 0, crew; icrew < GetCrewCount(iplr); ++icrew)
-			if (crew = GetCrew(plr, icrew))
+		var plr = GetPlayerByIndex(iplr, C4PT_User);
+		for (var icrew = 0; icrew < GetCrewCount(iplr); ++icrew)
+		{
+			var crew = GetCrew(plr, icrew);
+			if (crew)
 				AddSectSaveObj(crew);
+		}
 	}
 	var save_objs = this.save_objs;
 	// Load new section
@@ -295,9 +298,9 @@ public func LoadScenarioSection(name, ...)
 	if (this) 
 		this.save_objs = nil;
 	// Recover HUD
-	for (iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
+	for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
 	{
-		plr = GetPlayerByIndex(iplr, C4PT_User);
+		var plr = GetPlayerByIndex(iplr, C4PT_User);
 		var controllerDef = Library_HUDController->GetGUIControllerID();
 		var HUDcontroller = FindObject(Find_ID(controllerDef), Find_Owner(plr));
 		if (!HUDcontroller) HUDcontroller = CreateObjectAbove(controllerDef, 10, 10, plr);

@@ -78,10 +78,20 @@ public func GetDynamiteCount()
 public func SetDynamiteCount(int new_count)
 {
 	// Adjust dynamite counts to given amount
-	var dyna;
 	var change = new_count - GetDynamiteCount();
-	if (change > 0) while (change--) CreateContents(Dynamite);
-	if (change < 0) while (change++) if ((dyna = FindObject(Find_ID(Dynamite), Find_Container(this)))) dyna->RemoveObject();
+	if (change > 0)
+	{
+		while (change--)
+			CreateContents(Dynamite);
+	} else if (change < 0)
+	{
+		while (change++)
+		{
+			var dynamite = FindObject(Find_ID(Dynamite), Find_Container(this));
+			if (dynamite)
+				dynamite->RemoveObject();
+		}
+	}
 }
 
 // Empty this box and turn it into an igniter

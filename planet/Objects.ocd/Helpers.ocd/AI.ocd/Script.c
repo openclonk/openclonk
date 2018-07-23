@@ -181,7 +181,7 @@ public func ExecuteArm(effect fx)
 	// Find shield.
 	fx.shield = fx.Target->FindContents(Shield);
 	// Vehicle control overrides all other weapons
-	if (fx.weapon = fx.vehicle)
+	if ((fx.weapon = fx.vehicle) != nil)
 	{
 		if (this->CheckVehicleAmmo(fx, fx.weapon))
 		{

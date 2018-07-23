@@ -278,7 +278,9 @@ private func Env_AddAction(achance, afn, par0, par1, par2, par3, par4)
 {
 	// Make sure to not write into prototype proplist.
 	if (this.actions == this.Prototype.actions) this.actions = [];
-	return this.actions[GetLength(this.actions)] = { chance=achance, fn=afn, par=[par0, par1, par2, par3, par4] };
+	var action = { chance=achance, fn=afn, par=[par0, par1, par2, par3, par4] };
+	this.actions[GetLength(this.actions)] = action;
+	return action;
 }
 
 /* Default environment checks */

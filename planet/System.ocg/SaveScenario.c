@@ -451,7 +451,7 @@ global func SaveScenarioObject(props)
 		var all_prop_names = GetProperties(this.EditorProps), prop_name, prop;
 		for (prop_name in all_prop_names)
 		{
-			if ((prop=this.EditorProps[prop_name]))
+			if ((prop = this.EditorProps[prop_name]) != nil)
 			{
 				if (GetType(prop) == C4V_PropList)
 				{
@@ -497,9 +497,10 @@ global func SaveScenarioObject(props)
 global func SaveScenarioObjectAction(props)
 {
 	// Helper function to store action properties
-	var v;
 	props->AddCall("Action", this, "SetAction", Format("%v", GetAction() ?? "Idle"), GetActionTarget(), GetActionTarget(1));
-	if (v = GetPhase()) props->AddCall("Phase", this, "SetPhase", v);
+	var v = GetPhase();
+	if (v)
+		props->AddCall("Phase", this, "SetPhase", v);
 	return true;
 }
 

@@ -519,9 +519,8 @@ public func SaveScenarioObject(props)
 	// Checkpoints without a goal? Use regular saving.
 	if (!cp_con)
 	{
-		
-		if (v = GetCPMode()) props->AddCall("Checkpoint", this, "SetCPMode", GetBitmaskNameByValue(v, "PARKOUR_CP_"));
-		if (v = GetCPNumber()) props->AddCall("Checkpoint", this, "SetCPNumber", v);
+		if (GetCPMode()) props->AddCall("Checkpoint", this, "SetCPMode", GetBitmaskNameByValue(GetCPMode(), "PARKOUR_CP_"));
+		if (GetCPNumber()) props->AddCall("Checkpoint", this, "SetCPNumber", GetCPNumber());
 		return true;
 	}
 	else
