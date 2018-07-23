@@ -74,11 +74,13 @@ func RemovePlayer(int plr)
 private func TransferInventory(object from, object to)
 {
 	// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
-	var i = from->ContentsCount(), contents;
+	var i = from->ContentsCount();
 	while (i--)
-		if (contents = from->Contents(i))
-			if (contents->~IsDroppedOnDeath(from))
-				contents->Exit();
+	{
+		var contents = from->Contents(i);
+		if (contents && contents->~IsDroppedOnDeath(from))
+			contents->Exit();
+	}
 	return to->GrabContents(from);
 }
 
@@ -169,10 +171,13 @@ func OnClonkDeath(clonk, killed_by)
 	{
 		// Enemy clonk death
 		// Remove inventory
-		var i = clonk->ContentsCount(), obj;
-		while (i--) if (obj=clonk->Contents(i))
-			if (!obj->~OnContainerDeath())
+		var i = clonk->ContentsCount();
+		while (i--)
+		{
+			var obj = clonk->Contents(i);
+			if (obj && !obj->~OnContainerDeath())
 				obj->RemoveObject();
+		}
 		// Clear enemies from list
 		i = GetIndexOf(g_spawned_enemies, clonk);
 		if (i>=0)

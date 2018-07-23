@@ -20,7 +20,7 @@ public func FindTarget(effect fx, bool parent)
 private func FindInventoryWeapon(effect fx)
 {
 	// Extra weapons
-	if (fx.weapon = fx.Target->FindContents(Axe))
+	if (FindInventoryWeaponBase(fx, Axe))
 	{
 		fx.strategy = this.ExecuteMelee;
 		return true;
@@ -357,8 +357,12 @@ private func ExecuteRanged(effect fx)
 	// Path not free or out of range. Just wait for enemy to come...
 	fx.aim_weapon->ControlUseHolding(fx.Target,tx-x,ty-y);
 	// Might also change target if current is unreachable
-	var new_target;
-	if (!Random(3)) if (new_target = this->FindTarget(fx)) fx.target = new_target;
+	if (!Random(3))
+	{
+		var new_target = this->FindTarget(fx);
+		if (new_target)
+			fx.target = new_target;
+	}
 	return true;
 }
 
