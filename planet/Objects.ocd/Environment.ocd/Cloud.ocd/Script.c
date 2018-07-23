@@ -104,17 +104,17 @@ public func Place(int count)
 {
 	if (this != Cloud)
 		return;
-	var max_tries = count * 500;
-	for (var i = 0; i < count && max_tries > 0; max_tries--)
+	var created = 0;
+	for (var max_tries = count * 500; created < count && max_tries > 0; max_tries--)
 	{
-		var pos;
-		if ((pos = FindPosInMat("Sky", 0, 0, LandscapeWidth(), LandscapeHeight())) && MaterialDepthCheck(pos[0], pos[1], "Sky", 200))
+		var pos = FindPosInMat("Sky", 0, 0, LandscapeWidth(), LandscapeHeight());
+		if (pos && MaterialDepthCheck(pos[0], pos[1], "Sky", 200))
 		{
 			CreateObjectAbove(Cloud, pos[0], pos[1], NO_OWNER);
-			i++;
+			created++;
 		}
 	}
-	return i;
+	return created;
 }	
 
 // Changes the precipitation type of this cloud.

@@ -117,6 +117,9 @@ func Reposition(int x, int y)
 	y = BoundBy(y, -dimension_y - clonk_height/2, dimension_y + clonk_height/2);
 	// Try to combine the structure with other structures.
 	var found = false;
+	// Hopefully, in the end this contains a single sticking direction.
+	var single_stick_to = 0;
+
 	if (structure->~ConstructionCombineWith())
 	{
 		// There is no use in doing all the other checks if no sticking direction is defined at all
@@ -152,9 +155,6 @@ func Reposition(int x, int y)
 				// |_______|_Bottom__|_______|
 				//
 				// Whichever part is howered on is checked first for stick direction
-
-				// Hopefully, in the end this contains a single sticking direction.
-				var single_stick_to = 0;
 
 				// Left
 				if (other_offset_x < other_width / -6)

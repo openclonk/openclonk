@@ -93,14 +93,12 @@ private func GetRestingPlace(proplist coordinates)
 	// Try to rest in nearby grass
 	for (var grass in FindObjects(Find_Distance(150), Find_ID(Grass), Sort_Distance()))
 	{
-		if (!Random(2)) continue;
-		break;
-	}
-	if (grass)
-	{
-		coordinates.x = grass->GetX() + Random(4) - 2;
-		coordinates.y = grass->GetY() + 2;
-		return true;
+		if (!Random(2))
+		{
+			coordinates.x = grass->GetX() + Random(4) - 2;
+			coordinates.y = grass->GetY() + 2;
+			return true;
+		}
 	}
 	return false;
 }

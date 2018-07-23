@@ -56,15 +56,16 @@ protected func FxRestoreTimer(object target, effect, int time)
 	var init_x = effect.init_x;
 	var init_y = effect.init_y;
 	var to_container = effect.to_container;
+	var to_x, to_y;
 	if (to_container)
 	{
-		var to_x = to_container->GetX();
-		var to_y = to_container->GetY();
+		to_x = to_container->GetX();
+		to_y = to_container->GetY();
 	}
 	else
 	{
-		var to_x = effect.to_x;
-		var to_y = effect.to_y;
+		to_x = effect.to_x;
+		to_y = effect.to_y;
 	}
 	// Are the coordinates specified now, if not remove effect.
 	if (to_x == nil || to_y == nil)

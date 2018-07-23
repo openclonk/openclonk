@@ -197,8 +197,8 @@ private func Seed()
 			if (this.Confinement)
 				plant->KeepArea(this.Confinement);
 		}
+		return plant;
 	}
-	return plant;
 }
 
 local Name = "$Name$";

@@ -327,16 +327,17 @@ func TaskWalkTo(spot)
 {
 	var iX = GetX();
 	var iY = GetY();
+	var sX, sY;
 
 	if (GetType(spot) == C4V_C4Object)
 	{
-		var sX = spot->GetX();
-		var sY = spot->GetY();
+		sX = spot->GetX();
+		sY = spot->GetY();
 	}
 	else if (GetType(spot) == C4V_PropList)
 	{
-		var sX = spot.x;
-		var sY = spot.y;
+		sX = spot.x;
+		sY = spot.y;
 	}
 	else return;
 
@@ -361,16 +362,17 @@ func TaskSwimTo(spot)
 {
 	var iX = GetX();
 	var iY = GetY();
+	var sX, sY;
 
 	if (GetType(spot) == C4V_C4Object)
 	{
-		var sX = spot->GetX();
-		var sY = spot->GetY();
+		sX = spot->GetX();
+		sY = spot->GetY();
 	}
 	else if (GetType(spot) == C4V_PropList)
 	{
-		var sX = spot.x;
-		var sY = spot.y;
+		sX = spot.x;
+		sY = spot.y;
 	}
 	else return;
 

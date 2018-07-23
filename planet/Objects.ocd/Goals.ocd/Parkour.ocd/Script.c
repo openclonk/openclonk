@@ -517,10 +517,11 @@ static const SBRD_BestTime = 1;
 
 private func UpdateScoreboardTitle()
 {
+	var caption;
 	if (cp_count > 0)
-		var caption = Format("$MsgCaptionX$", cp_count);
+		caption = Format("$MsgCaptionX$", cp_count);
 	else
-		var caption = "$MsgCaptionNone$";
+		caption = "$MsgCaptionNone$";
 	return Scoreboard->SetTitle(caption);
 }
 
@@ -581,7 +582,7 @@ protected func FxIntDirNextCPTimer(object target, effect fx)
 	var green = BoundBy(510 - dist, 0, 255);
 	var blue = 0;
 	// Arrow is colored a little different for the finish.
-	if (cp->GetCPMode() & PARKOUR_CP_Finish)
+	if (nextcp->GetCPMode() & PARKOUR_CP_Finish)
 		blue = 128;
 	var color = RGBa(red, green, blue, 128);
 	// Draw arrow.

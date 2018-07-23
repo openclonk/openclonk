@@ -98,15 +98,17 @@ public func SetData(
 	var index = -1;
 	for(var i = 0; i < GetLength(Scoreboard_data); ++i)
 	{
-		if(Scoreboard_data[i].ID != ID) continue;
-		index = i;
-		break;
+		if(Scoreboard_data[i].ID == ID)
+		{
+			index = i;
+			break;
+		}
 	}
 	if(index == -1) return;
 	
-	Scoreboard_data[i][key] = to;
+	Scoreboard_data[index][key] = to;
 	if(sort_parameter)
-		Scoreboard_data[i][Format("%s_", key)] = sort_parameter;
+		Scoreboard_data[index][Format("%s_", key)] = sort_parameter;
 	Scoreboard->Update(ID);
 }
 
