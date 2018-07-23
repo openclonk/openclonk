@@ -37,6 +37,7 @@ func InitializeRound() // called by Goal_MultiRoundMelee
 				var boompack = CreateObjectAbove(Boompack,pos.x,pos.y);
 			}
 		}
+	}
 	// Materials: Firestones
 	for (i=0; i<30; ++i)
 	{
