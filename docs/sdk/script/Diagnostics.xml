@@ -171,6 +171,25 @@ func f() {
         </col>
       </row>
       <row>
+        <col>variable_out_of_scope</col>
+        <col>
+          <text>
+            A variable has been used outside of the block it has been
+            declared in. This is accepted only for backwards compatibility
+            and may be removed in a future release.
+          </text>
+          <part>
+            <code>func f(a) {
+&#9;i = 0;
+&#9;if (a) {
+&#9;&#9;var i = 1;
+&#9;}
+&#9;return i;
+}</code>
+          </part>
+        </col>
+      </row>
+      <row>
         <col>undeclared_varargs</col>
         <col>
           <text>

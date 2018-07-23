@@ -132,6 +132,22 @@ TEST_F(AulDiagnosticsTest, variable_shadows_variable)
 	}
 }
 
+TEST_F(AulDiagnosticsTest, variable_out_of_scope)
+{
+	{
+		EXPECT_WARNING(variable_out_of_scope);
+		RunCode("i = 0; { var i; }");
+	}
+	{
+		EXPECT_WARNING(variable_out_of_scope);
+		RunCode("{ var i; } i = 0;");
+	}
+	{
+		EXPECT_WARNING(variable_out_of_scope).Times(0);
+		RunCode("var i; { i = 0; }");
+	}
+}
+
 TEST_F(AulDiagnosticsTest, DiagnosticsSelection)
 {
 	{

@@ -23,6 +23,7 @@
 #include "script/C4ScriptHost.h"
 
 #include <cinttypes>
+#include <deque>
 
 #define C4AUL_Inherited     "inherited"
 #define C4AUL_SafeInherited "_inherited"
@@ -175,6 +176,12 @@ class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
 
 	std::stack<Loop> active_loops;
 
+	struct Scope
+	{
+		std::set<std::string> variables;
+	};
+	std::deque<Scope> scopes;
+
 	// The type of the variable on top of the value stack. C4V_Any if unknown.
 	C4V_Type type_of_stack_top = C4V_Any;
 	
@@ -254,6 +261,29 @@ class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
 			}
 		}
 	};
+	
+	class ScopeGuard
+	{
+		// Ensures that the scope stack is properly updated
+		CodegenAstVisitor * const parent;
+	public:
+		explicit ScopeGuard(CodegenAstVisitor *parent) : parent(parent)
+		{
+			parent->scopes.emplace_front();
+		}
+		~ScopeGuard()
+		{
+			parent->scopes.pop_front();
+		}
+
+		// moveable, not copyable
+		ScopeGuard(ScopeGuard &&rhs) = default;
+		ScopeGuard &operator=(ScopeGuard &&) = default;
+
+		ScopeGuard(const ScopeGuard &) = delete;
+		ScopeGuard &operator=(const ScopeGuard &) = delete;
+	};
+	ScopeGuard enterScope() { return ScopeGuard(this); }
 
 	void WarnOnAssignment(const ::aul::ast::ExprPtr &n) const
 	{
@@ -1047,6 +1077,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 {
 	StackGuard g(this, 1);
 	assert(Fn);
+	assert(!scopes.empty());
 	C4Value dummy;
 	const char *cname = n->identifier.c_str();
 	C4String *interned = ::Strings.FindString(cname);
@@ -1068,6 +1099,13 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 	}
 	else if (Fn->VarNamed.GetItemNr(cname) != -1)
 	{
+		const bool in_scope = end(scopes) != std::find_if(begin(scopes), end(scopes), [n](const Scope &scope) {
+			return scope.variables.find(n->identifier) != scope.variables.end();
+		});
+		if (!in_scope)
+		{
+			Warn(target_host, host, n, Fn, C4AulWarningId::variable_out_of_scope, cname);
+		}
 		AddVarAccess(n->loc, AB_DUP, Fn->VarNamed.GetItemNr(cname));
 	}
 	// Can't use Fn->Parent->HasProperty here because that only returns true
@@ -1408,6 +1446,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ParExpr *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Block *n)
 {
+	auto scope = enterScope();
 	for (const auto &s : n->children)
 	{
 		StackGuard g(this, 0);
@@ -1442,6 +1481,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 	// continue jumps to incr
 	// break jumps to exit
 
+	auto scope = enterScope();
 	if (n->init)
 	{
 		if (SafeVisit(n->init))
@@ -1497,6 +1537,9 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::RangeLoop *n)
 	// continue jumps to cond
 	// break jumps to exit
 
+	auto scope = enterScope();
+	scopes.front().variables.insert(n->var);
+
 	const char *cname = n->var.c_str();
 	int var_id = Fn->VarNamed.GetItemNr(cname);
 	assert(var_id != -1 && "CodegenAstVisitor: unable to find variable in foreach");
@@ -1524,6 +1567,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::RangeLoop *n)
 void C4AulCompiler::CodegenAstVisitor::EmitFunctionCode(const ::aul::ast::Function *f, const ::aul::ast::Node *n)
 {
 	assert(Fn != nullptr);
+	assert(scopes.empty());
 
 	Fn->ClearCode();
 
@@ -1532,6 +1576,7 @@ void C4AulCompiler::CodegenAstVisitor::EmitFunctionCode(const ::aul::ast::Functi
 		AddBCC(n->loc, AB_STACK, Fn->VarNamed.iSize);
 	stack_height = 0;
 
+	auto scope = enterScope();
 	try
 	{
 		f->body->accept(this);
@@ -1559,6 +1604,7 @@ void C4AulCompiler::CodegenAstVisitor::EmitFunctionCode(const ::aul::ast::Functi
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::DoLoop *n)
 {
+	auto scope = enterScope();
 	int body = AddJumpTarget();
 	PushLoop();
 	if (SafeVisit(n->body))
@@ -1575,6 +1621,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::DoLoop *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::WhileLoop *n)
 {
+	auto scope = enterScope();
 	int cond = AddJumpTarget();
 	PushLoop();
 	// XXX:
@@ -1604,6 +1651,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Continue *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::If *n)
 {
+	auto scope = enterScope();
 	WarnOnAssignment(n->cond);
 	SafeVisit(n->cond);
 	int jump = AddBCC(n->loc, AB_CONDN);
@@ -1639,6 +1687,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarDecl *n)
 		switch (n->scope)
 		{
 		case ::aul::ast::VarDecl::Scope::Func:
+			scopes.front().variables.insert(dec.name);
 			if (dec.init)
 			{
 				// Emit code for the initializer
