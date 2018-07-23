@@ -272,10 +272,11 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 	if (sep == nil) 
 		sep = 250;
 
+	var x, y;
 	for (var i = 0; i < 100; i++)
 	{
-		var x = main_island_x + xpos + Random(sep*2+1)-sep;
-		var y = main_island_y / 2 - 220;
+		x = main_island_x + xpos + Random(sep*2+1)-sep;
+		y = main_island_y / 2 - 220;
 		
 		while (!GBackSolid(x, y) && y < LandscapeHeight()*3/4)
 			y++;
