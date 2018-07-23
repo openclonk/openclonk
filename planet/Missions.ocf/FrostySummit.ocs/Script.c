@@ -9,10 +9,12 @@ func Initialize()
 	// Rules
 	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
 	// Environment
-	var loc;
 	for (var i=0; i<5; ++i)
-		if (loc = FindLocation(Loc_InRect(0,80*8,40*8,20*8), Loc_Material("Earth")))
+	{
+		var loc = FindLocation(Loc_InRect(0,80*8,40*8,20*8), Loc_Material("Earth"));
+		if (loc)
 			CreateObjectAbove(Rock, loc.x, loc.y+3);
+	}
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	var relaunch_rule = GetRelaunchRule();
 	relaunch_rule->SetInventoryTransfer(true);

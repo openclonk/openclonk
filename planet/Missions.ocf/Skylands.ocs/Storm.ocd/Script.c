@@ -117,7 +117,7 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 	// create streams
 	n_streams = ((Abs(LandscapeWidth()*dir_y) + Abs(LandscapeHeight()*dir_x))/d - 2*stream_border_dist) / stream_density;
 	streams = CreateArray(n_streams);
-	var i_stream = 0, s, x0, y0, sgn_x=1, sgn_y=1;
+	var i_stream = 0, x0, y0, sgn_x=1, sgn_y=1;
 	var wdt = LandscapeWidth()-1, hgt = LandscapeHeight()-1;
 	if (dir_y<0) { y0 = hgt; sgn_y = -1; }
 	if (dir_x<0) { x0 = wdt; sgn_x = -1; }
@@ -132,7 +132,8 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 			if (dpos<=wdt)
 			{
 				// streams from horizontal border of landscape
-				if (s=CreateStream(wdt-x0-dpos*sgn_x, y0)) streams[i_stream++] = s;
+				var s = CreateStream(wdt - x0 - dpos * sgn_x, y0);
+				if (s) streams[i_stream++] = s;
 				continue;
 			}
 			pos -= Abs(wdt*dir_y/d);
@@ -140,7 +141,8 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 		// streams from vertical border of landscape
 		pos=Abs(pos*d/dir_x);
 		//Log("@%d", pos);
-		if (s=CreateStream(x0, y0+pos*sgn_y)) streams[i_stream++] = s;
+		var s = CreateStream(x0, y0 + pos * sgn_y);
+		if (s) streams[i_stream++] = s;
 	}
 	n_streams=i_stream;
 	//Log("%d total", n_streams);
@@ -276,8 +278,9 @@ private func ExecuteStream(proplist s)
 				if (obj->Stuck()) continue;
 				if (!PathFree(x,y,obj->GetX(),obj->GetY())) continue; // don't push through solid
 				// determine push strength. subsequent pushes of overlapping storm pathes stack diminishingly
-				var push_strength = strength/20,pushfx;
-				if (pushfx=GetEffect("StormPush",obj))
+				var push_strength = strength/20;
+				var pushfx = GetEffect("StormPush",obj);
+				if (pushfx)
 				{
 					push_strength /= pushfx.count++;
 					if (!push_strength) continue;

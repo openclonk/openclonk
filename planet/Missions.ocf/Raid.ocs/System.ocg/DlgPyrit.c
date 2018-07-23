@@ -114,13 +114,15 @@ func Dlg_Pyrit_15(object clonk)
 // called every 10 frames after plane+oil task has been given
 func CheckOilAtPlane()
 {
-	var barrel;
-	for (var plane in FindObjects(Find_ID(Airplane)))
-		if (barrel = plane->FindObject(plane->Find_AtRect(-30,-10,60,20), Find_ID(MetalBarrel)))
+	for (var plane in FindObjects(Find_ID(Airplane))) 
+	{
+		var barrel = plane->FindObject(plane->Find_AtRect(-30,-10,60,20), Find_ID(MetalBarrel));
+		if (barrel)
 		{
 			RemoveTimer(Scenario.CheckOilAtPlane);
 			ScheduleCall(nil, Global.GameCall, 1,1, "OnPlaneLoaded", plane, barrel);
 		}
+	}
 	return true;
 }
 

@@ -29,9 +29,10 @@ private func DoInit(int first_player)
 	// Horax
 	g_king.JumpSpeed = 200;
 	// Update AI stuff
-	var fx;
 	for (var enemy in FindObjects(Find_ID(Clonk), Find_Owner(NO_OWNER)))
-		if (fx = AI->GetAI(enemy))
+	{
+		var fx = AI->GetAI(enemy);
+		if (fx)
 		{
 			fx.weapon = fx.target = nil;
 			AI->BindInventory(enemy);
@@ -41,6 +42,7 @@ private func DoInit(int first_player)
 			
 			SetSpecialDeathMessage(enemy);
 		}
+	}
 	g_farmer.portrait = { Source=DialogueCastle };
 	// Start intro if not yet started
 	StartSequence("Intro", 0, GetCrew(first_player));

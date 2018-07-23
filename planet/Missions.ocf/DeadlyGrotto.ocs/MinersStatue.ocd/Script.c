@@ -31,8 +31,8 @@ func SetIntact()
 
 func Check4Head()
 {
-	var head;
-	if (head = FindObject(Find_InRect(-23,-40,46,80), Find_ID(MinersStatue_Head)))
+	var head = FindObject(Find_InRect(-23,-40,46,80), Find_ID(MinersStatue_Head));
+	if (head)
 	{
 		SetIntact();
 		head->RemoveObject();

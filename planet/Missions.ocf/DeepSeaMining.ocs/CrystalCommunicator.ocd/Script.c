@@ -118,8 +118,9 @@ private func FxIntGemGlitterTimer(target)
 	// Glitter at random gem position
 	if (Random(2))
 	{
-		var i = Random(12), gem;
-		if (gem = target.gem_overlays[i])
+		var i = Random(12);
+		var gem = target.gem_overlays[i];
+		if (gem)
 		{
 			var x = CrystalCommunicator_GemsX[i]/5 - 45;
 			var y = CrystalCommunicator_GemsY[i]/5 - 35;

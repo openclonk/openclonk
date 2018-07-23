@@ -275,7 +275,8 @@ func FxNewtonHammeringTimer(object c, proplist fx, int time)
 	var len = c->GetAnimationLength("StrikePickaxe");
 	var a = len*70/100;
 	var b = len*94/100;
-	if (fx.phase = !fx.phase)
+	fx.phase = !fx.phase;
+	if (fx.phase)
 	{
 		if ((!Random(5) && GetPlayerCount()) || this.was_walk_interrupted)
 		{
