@@ -23,13 +23,14 @@ func LaunchPlayer(int plr)
 {
 	// Position and materials
 	var starting_cave = g_caves[0];
-	var i, crew, obj;
+	var i, crew;
 	for (i=0; crew=GetCrew(plr,i); ++i)
 	{
 		crew->SetPosition(starting_cave.X/2, starting_cave.Y-18);
 		for (var tool in [Pickaxe, GrappleBow, SprayCan])
 		{
-			if (obj = FindObject(Find_ID(tool), Find_Owner(plr), Find_NoContainer())) obj->RemoveObject();
+			var obj = FindObject(Find_ID(tool), Find_Owner(plr), Find_NoContainer());
+			if (obj) obj->RemoveObject();
 			crew->CreateContents(tool);
 		}
 		crew->CreateContents(Dynamite,2);

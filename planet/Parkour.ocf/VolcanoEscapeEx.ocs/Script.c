@@ -65,13 +65,16 @@ func VolcanoTimer()
 	// Get volcano height
 	var y_volcano = g_volcano->GetLavaPeak();
 	// Get player progress
-	var y_plr, crew, n_crew;
+	var y_plr, n_crew;
 	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
-		if (crew = GetCursor(GetPlayerByIndex(i, C4PT_User)))
+	{
+		var crew = GetCursor(GetPlayerByIndex(i, C4PT_User));
+		if (crew)
 		{
 			y_plr += crew->GetY();
 			++n_crew;
 		}
+	}
 	if (n_crew) y_plr = y_plr / n_crew;
 	// Calc rubber band
 	var rubber_length = 85 * y_plr / LandscapeHeight() + 65;
