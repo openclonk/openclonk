@@ -20,10 +20,11 @@ public func SetToFront(bool is_in_front)
 {
 	if (is_in_front)
 	{
-		return this.Plane = 510;
+		this.Plane = 510;
 	}
 	else
 	{
-		return this.Plane = 110;	
+		this.Plane = 110;	
 	}
+	return this.Plane;
 }
