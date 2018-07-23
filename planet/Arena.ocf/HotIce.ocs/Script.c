@@ -14,7 +14,9 @@ func InitializeRound() // called by Goal_MultiRoundMelee
 	// Chests in regular mode. Boom packs in grenade launcher mode.
 	var num_extras = [6,12][SCENPAR_Weapons];
 	for (i=0; i<num_extras; ++i)
-		if (pos=FindLocation(Loc_InRect(0,chest_area_y,ls_wdt,chest_area_hgt-100), Loc_Wall(CNAT_Bottom))) // Loc_Wall adds us 100 pixels...
+	{
+		var pos = FindLocation(Loc_InRect(0,chest_area_y,ls_wdt,chest_area_hgt-100), Loc_Wall(CNAT_Bottom)); // Loc_Wall adds us 100 pixels...
+		if (pos)
 		{
 			if (SCENPAR_Weapons == 0)
 			{
@@ -32,19 +34,25 @@ func InitializeRound() // called by Goal_MultiRoundMelee
 			}
 			else
 			{
-				var boompack= CreateObjectAbove(Boompack,pos.x,pos.y);
+				var boompack = CreateObjectAbove(Boompack,pos.x,pos.y);
 			}
 		}
 	// Materials: Firestones
 	for (i=0; i<30; ++i)
-		if (pos=FindLocation(Loc_InRect(0,chest_area_y,ls_wdt,chest_area_hgt), Loc_Solid()))
+	{
+		var pos = FindLocation(Loc_InRect(0,chest_area_y,ls_wdt,chest_area_hgt), Loc_Solid());
+		if (pos)
 			if (IsFirestoneSpot(pos.x,pos.y))
 				CreateObjectAbove(Firestone,pos.x,pos.y-1);
+	}
 	// Some firestones and bombs in lower half. For ap type 1, more firestones in lower than upper half.
 	for (i=0; i<30; ++i)
-		if (pos=FindLocation(Loc_InRect(0,ls_hgt/2,ls_wdt,ls_hgt/3), Loc_Solid()))
+	{
+		var pos = FindLocation(Loc_InRect(0,ls_hgt/2,ls_wdt,ls_hgt/3), Loc_Solid());
+		if (pos)
 			if (IsFirestoneSpot(pos.x,pos.y))
 				CreateObjectAbove([Firestone,IronBomb][Random(Random(3))],pos.x,pos.y-1);
+	}
 
 	SetSky(g_theme.Sky);
 	g_theme->InitializeRound();

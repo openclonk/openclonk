@@ -42,11 +42,11 @@ func InitTheme()
 	if (theme == 0) // Random Ice
 		theme = 1 + Random(3);
 	if (theme == 1) // Hot Ice
-		return g_theme = HotIce;
-	if (theme == 2) // Miami Ice
-		return g_theme = MiamiIce;
-	if (theme == 3) // Eci Toh
-		return g_theme = EciToh;
+		g_theme = HotIce;
+	else if (theme == 2) // Miami Ice
+		g_theme = MiamiIce;
+	else if (theme == 3) // Eci Toh
+		g_theme = EciToh;
 }
 
 func SpawnPositionCount()
