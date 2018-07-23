@@ -97,10 +97,6 @@ TEST_F(AulDiagnosticsTest, suspicious_assignment)
 		RunCode("var a = 0; if (a += 1) {}");
 	}
 	{
-		EXPECT_WARNING(suspicious_assignment);
-		RunCode("for (var a = 0; a = 0;) {}");
-	}
-	{
 		EXPECT_WARNING(suspicious_assignment).Times(0);
 		RunCode("for (var a = 0; a == 1;) {}");
 		RunCode("for (var a = 0; a != 0;) {}");

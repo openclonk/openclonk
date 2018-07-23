@@ -1451,7 +1451,10 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 	PushLoop();
 	if (n->cond)
 	{
-		WarnOnAssignment(n->cond);
+		// XXX:
+		// Assignments in the condition here should warn as well (like they do in
+		// if conditions) but a ton of code uses those assignments at the moment
+		// and people are divided about allowing it
 		cond = AddJumpTarget();
 		SafeVisit(n->cond);
 		active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
@@ -1561,6 +1564,10 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::DoLoop *n)
 	if (SafeVisit(n->body))
 		MaybePopValueOf(n->body);
 	int cond = AddJumpTarget();
+	// XXX:
+	// Assignments in the condition here should warn as well (like they do in
+	// if conditions) but a ton of code uses those assignments at the moment
+	// and people are divided about allowing it
 	SafeVisit(n->cond);
 	AddJumpTo(n->loc, AB_COND, body);
 	PopLoop(cond);
@@ -1572,8 +1579,8 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::WhileLoop *n)
 	PushLoop();
 	// XXX:
 	// Assignments in the condition here should warn as well (like they do in
-	// for and if conditions) but a ton of code uses those assignments at the
-	// moment and people are divided about allowing it
+	// if conditions) but a ton of code uses those assignments at the moment
+	// and people are divided about allowing it
 	SafeVisit(n->cond);
 	active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
 	if (SafeVisit(n->body))
