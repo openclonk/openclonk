@@ -107,9 +107,10 @@ public func UpdateIndexedItem(int index)
 			for (var req in entry.requirements)
 				if (!techs[req])
 					available = false;
+		var tier;
 		if (entry.tiers)
 		{
-			var tier = techs[entry.tech];
+			tier = techs[entry.tech];
 			entry.graphic = Format(entry.graphics, tier+1);
 			entry.cost = entry.costs[tier];
 		}
