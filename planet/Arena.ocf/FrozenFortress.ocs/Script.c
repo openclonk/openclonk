@@ -164,27 +164,28 @@ global func FxFillBaseChestStart(object target, effect, int temporary, bool supp
 		return 1;
 		
 	effect.supply_type=supply;
+	var w_list;
 	if(effect.supply_type) 
-		var w_list = [Firestone, Dynamite, IronBomb, Shovel, Loam, Ropeladder];
+		w_list = [Firestone, Dynamite, IronBomb, Shovel, Loam, Ropeladder];
 	else
-		var w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
+		w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
 	for(var i=0; i<5; i++)
 		target->CreateChestContents(w_list[i]);
 	return 1;
 }
 global func FxFillBaseChestTimer(object target, effect)
 {
-	var maxcount = [];
+	var maxcount = [], w_list = [];
 	
 	if(effect.supply_type) 
 	{
-		var w_list = [Firestone, Dynamite, IronBomb, Shovel, Loam, Ropeladder];
-		var maxcount = [2,2,1,2,1];
+		w_list = [Firestone, Dynamite, IronBomb, Shovel, Loam, Ropeladder];
+		maxcount = [2,2,1,2,1];
 	}
 	else
 	{
-		var w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
-		var maxcount = [1,2,1,1,1,2];
+		w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
+		maxcount = [1,2,1,1,1,2];
 	}
 	
 	var contents;

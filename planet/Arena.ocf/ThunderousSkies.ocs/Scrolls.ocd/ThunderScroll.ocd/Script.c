@@ -99,10 +99,10 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 	{
 		if(iEffectTime%3)
 		{
-			for (var y = 0; !GBackSolid(x+move+5,y) && y < LandscapeHeight(); y += Random(4) + 3)
+			for (var y = 0; !GBackSolid(move+5,y) && y < LandscapeHeight(); y += Random(4) + 3)
 			{
 				var add=Random((iEffectTime*5))*((Random(2)*2) -1);
-				CreateParticle("Air", x+move+5+add, y, PV_Random(-2, 2), PV_Random(-10, -5), PV_Random(5, 20), effect.particles_air);
+				CreateParticle("Air", move+5+add, y, PV_Random(-2, 2), PV_Random(-10, -5), PV_Random(5, 20), effect.particles_air);
 			}
 		}
 	}

@@ -97,6 +97,7 @@ func InitPlayerRound(int plr, object crew) // called by Goal_MultiRoundMelee
 		crew->SetAction("Ride", balloon);
 		balloon->SetSpeed(0,0);
 		crew->SetSpeed(0,0);
+		balloon->CreateEffect(IntNoGravity, 1, 1);
 	}
 	// initial material
 	if (SCENPAR_Weapons == 0)
@@ -129,9 +130,6 @@ func InitPlayerRound(int plr, object crew) // called by Goal_MultiRoundMelee
 	}
 	crew.MaxEnergy = 100000;
 	crew->DoEnergy(1000);
-
-	if (SCENPAR_SpawnType == 1 && balloon)
-		balloon->CreateEffect(IntNoGravity, 1, 1);
 }
 
 func StartRound() // called by Goal_MultiRoundMelee
