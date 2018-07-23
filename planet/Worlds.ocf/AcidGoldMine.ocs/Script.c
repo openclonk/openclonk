@@ -129,15 +129,21 @@ private func InitMaterial(int amount)
 			lorry->SetPosition(lorry->GetX(), lorry->GetY()-1);
 	}
 	// Create some chests in caves.
-	var chest_pos, chest;
 	var chest_sets = [[[DynamiteBox,2], [Dynamite,5], [Bread,5]], [[Loam,5], [WallKit,3], [Wood,8]], [[Bread,10],[Firestone,5],[Wood,8]]];
 	for (var i = 0; i < 3; ++i)
-		if (chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom)))
-			if (chest = CreateObjectAbove(Chest, chest_pos.x, chest_pos.y))
+	{
+		var chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom));
+		if (chest_pos)
+		{
+			var chest = CreateObjectAbove(Chest, chest_pos.x, chest_pos.y);
+			if (chest)
 				for (var chest_fill in chest_sets[i])
 					chest->CreateContents(chest_fill[0], chest_fill[1]);
+		}
+	}
 	// A barrel somewhere in a cave.
-	if (chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom)))
+	var chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom));
+	if (chest_pos)
 		CreateObjectAbove(Barrel, chest_pos.x, chest_pos.y);
 
 	return;
