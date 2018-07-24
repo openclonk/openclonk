@@ -690,16 +690,11 @@ void C4CustomKey::Update(const C4CustomKey *pByKey)
 	}
 }
 
-bool C4KeyboardCallbackInterfaceHasOriginalKey(C4KeyboardCallbackInterface *pIntfc, const C4CustomKey *pCheckKey)
-{
-	return pIntfc->IsOriginalKey(pCheckKey);
-}
-
 void C4CustomKey::KillCallbacks(const C4CustomKey *pOfKey)
 {
 	// remove all instances from list
 	CBVec::iterator i;
-	while ((i = std::find_if(vecCallbacks.begin(), vecCallbacks.end(), std::bind2nd(std::ptr_fun(&C4KeyboardCallbackInterfaceHasOriginalKey), pOfKey))) != vecCallbacks.end())
+	while ((i = std::find_if(vecCallbacks.begin(), vecCallbacks.end(), [pOfKey](CBVec::value_type pIntfc) { return pIntfc->IsOriginalKey(pOfKey); })) != vecCallbacks.end())
 	{
 		C4KeyboardCallbackInterface *pItfc = *i;
 		vecCallbacks.erase(i);
