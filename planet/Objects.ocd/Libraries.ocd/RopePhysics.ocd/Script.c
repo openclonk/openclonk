@@ -276,7 +276,6 @@ public func DoLength(int dolength)
 
 		last_length = GetLastLength();
 	}
-	var i = 0;
 	while (last_length > LIB_ROPE_SegmentLength * LIB_ROPE_Precision * 3 / 2)
 	{
 		lib_rope_particle_count++;

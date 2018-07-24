@@ -156,7 +156,6 @@ global func GetSurfaceVector(int x, int y)
 {
 	var normal = [0, 0];
 	
-	var fac = 1;
 	for(var fac = 1; fac <= 4; fac *= 2)
 	{
 		if(GBackSolid(x + fac, y)) --normal[0];

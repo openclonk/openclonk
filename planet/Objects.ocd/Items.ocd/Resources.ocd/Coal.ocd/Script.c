@@ -25,8 +25,7 @@ func OnBurnDown()
 	};
 	
 	var r = GetR();
-	var size = GetCon() * 110 / 100;
-	
+
 	for(var cnt = 0; cnt < 5; ++cnt)
 	{
 		var distance = 3;

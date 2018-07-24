@@ -1057,7 +1057,10 @@ private func EvalAct_CastObjects(proplist props, proplist context)
 	var mean_angle = EvaluateValue("Integer", props.MeanAngle, context);
 	var angle_deviation = EvaluateValue("Integer", props.AngleDeviation, context);
 	var position = EvaluatePosition(props.Position, context);
-	context.last_casted_objects = CastObjects(create_id, amount, speed, position[0], position[1], mean_angle, angle_deviation);
+	var objects = CastObjects(create_id, amount, speed, position[0], position[1], mean_angle, angle_deviation);
+	for (var obj in objects)
+		obj->SetOwner(owner);
+	context.last_casted_objects = objects;
 }
 
 private func EvalAct_CastParticles(proplist props, proplist context)
@@ -1071,7 +1074,6 @@ private func EvalAct_CastParticles(proplist props, proplist context)
 	if (lifetime <= 0) return;
 	var position = EvaluatePosition(props.Position, context);
 	var color = (EvaluateValue("Color", props.Color, context) ?? 0xffffff) | 0xff000000;
-	var blit_mode = props.BlitMode;
 	var fadeout = props.FadeOut;
 	var gravity = EvaluateValue("Integer", props.Gravity, context);
 	var collision_func = props.CollisionFunc;

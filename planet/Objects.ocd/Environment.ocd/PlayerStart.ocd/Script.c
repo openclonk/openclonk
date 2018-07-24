@@ -356,7 +356,7 @@ private func InitializeMaterial(int plr)
 	// So e.g. each clonk can get one shovel
 	for (var idlist_entry in starting_material)
 	{
-		var best_target = nil, target_score, clonk;
+		var best_target = nil, target_score;
 		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(), GetY() + GetDefHeight() / 2, plr);
 		if (!obj || !obj.Collectible) continue;
 		var id = idlist_entry.id;

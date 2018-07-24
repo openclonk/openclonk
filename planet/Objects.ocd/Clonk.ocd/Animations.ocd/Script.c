@@ -672,8 +672,6 @@ func FxIntScaleTimer(target, number, time)
 		}
 		this.dist = dist;
 		SetAnimationPosition(number.animation_id, Anim_Const(GetAnimationLength("ScaleTop")*dist/800));
-		// The animation's graphics has to be shifet a bit to adjust to the clonk movement
-		var pos = GetAnimationPosition(number.animation_id);
 		SetScaleRotation(0, 0, 0, 0, 0, true);
 		// Check if corner scale help is needed
 		if (CheckScaleTopHelper())

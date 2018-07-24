@@ -179,7 +179,6 @@ func Place(object clonk, int x, int y, bool box)
 // and puts the offset to the wall into "xo, yo" - looking from the clonk
 func GetWall(int angle)
 {
-	var dist = 12;
 	for (var dist = 12; dist < 18; dist++)
 	{
 		var x = Sin(angle, dist);

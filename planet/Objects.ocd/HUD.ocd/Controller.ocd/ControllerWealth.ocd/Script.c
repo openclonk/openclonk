@@ -28,7 +28,6 @@ public func ShowWealth()
 	if (GetType(this) == C4V_Def)
 	{
 		GUI_Controller_Wealth_shown = true; // for players joining later
-		var plr;
 		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);
@@ -49,7 +48,6 @@ public func HideWealth()
 	if (GetType(this) == C4V_Def)
 	{
 		GUI_Controller_Wealth_shown = false; // for players joining later
-		var plr;
 		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);

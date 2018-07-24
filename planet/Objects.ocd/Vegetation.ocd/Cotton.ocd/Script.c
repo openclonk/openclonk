@@ -218,8 +218,7 @@ public func FruitFills(int branch, int time, bool fullgrown)
 	if (fullgrown)
 		SetAnimationPosition(branches[branch].grow_animation, Anim_Const(GetAnimationLength("grow", branches[branch].attach_slot)), branches[branch].attach_slot);
 	else
-		SetAnimationPosition(branches[branch].grow_animation, Anim_Linear(GetAnimationPosition(branches[branch].grow_animation,
-		                                                                  branches[branch].attach_slot),
+		SetAnimationPosition(branches[branch].grow_animation, Anim_Linear(pos,
 		                                                                  0, 
 		                                                                  GetAnimationLength("grow", branches[branch].attach_slot),
 		                                                                  time,

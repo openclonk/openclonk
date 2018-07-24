@@ -167,7 +167,7 @@ global func DrawParticleLine(string particle, int x0, int y0, int x1, int y1, in
 	// Create particles.
 	while (i >= 0)
 	{
-		var i1, i2, b;
+		var i1, i2;
 		i2 = i * 256 / prtnum;
 		i1 = 256 - i2;
 

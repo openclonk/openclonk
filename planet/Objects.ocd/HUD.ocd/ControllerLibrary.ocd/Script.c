@@ -92,7 +92,6 @@ public func Reset()
 	{
 		// Definition call: Reset for all players
 		RemoveAll(Find_ID(GetGUIControllerID()));
-		var plr;
 		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);

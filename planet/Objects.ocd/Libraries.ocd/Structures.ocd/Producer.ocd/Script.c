@@ -968,10 +968,6 @@ private func ConvertToLiquid(object obj)
 	if (liquid)
 	{
 		liquid->Enter(this);
-		for (var item in FindObjects(Find_Container(this)))
-		{
-			//Log("* %v %s", item, item->GetName());
-		}
 		obj->RemoveObject();
 	}
 }

@@ -569,7 +569,7 @@ global func GetBitmaskNameByValue(v, prefix)
 {
 	// Compose bitmask of names of individual bits
 	// e.g. GetBitmaskNameByValue(3, "C4D_") == "C4D_StaticBack|C4D_Structure"
-	var s, n=0;
+	var s;
 	for (var i=0; i<31 && v; ++i)
 	{
 		var v2 = 1<<i;

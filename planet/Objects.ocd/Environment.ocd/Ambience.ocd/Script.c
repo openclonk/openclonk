@@ -81,12 +81,12 @@ func InitializeEnvironments()
 	AddEnvironment(underwater, 1400);
 	
 	// City: Clonk is surrounded by buildings
-	var city = this.env_city = new Environment
+	this.env_city = new Environment
 	{
 		Name = "City",
 		CheckPlayer = this.EnvCheck_City,
 	};
-	//AddEnvironment(city, 1200); - no music/sound for now
+	//AddEnvironment(this.env_city, 1200); - no music/sound for now
 	
 	// Lava: Lava material is nearby
 	var lava = this.env_lava = new Environment

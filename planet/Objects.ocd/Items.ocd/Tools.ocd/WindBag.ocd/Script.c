@@ -45,7 +45,6 @@ protected func ControlUse(object clonk, x, y)
 
 func ReadyToBeUsed(proplist data)
 {
-	var clonk = data.clonk;
 	return !GetEffect("IntReload", this);
 }
 
