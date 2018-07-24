@@ -29,6 +29,31 @@
 #define C4AUL_SafeInherited "_inherited"
 #define C4AUL_DebugBreak    "__debugbreak"
 
+namespace
+{
+	enum class ScriptLinkType
+	{
+		Include,
+		Same,
+		Appendto,
+	};
+}
+static ScriptLinkType GetScriptLinkType(const C4ScriptHost *source_host, const C4ScriptHost *target_host)
+{
+	if (source_host == target_host)
+		return ScriptLinkType::Same;
+
+	const auto &sources = target_host->SourceScripts;
+	const auto source_script_index = std::find(begin(sources), end(sources), source_host);
+	const auto target_script_index = std::find(begin(sources), end(sources), target_host);
+	assert(source_script_index != target_script_index);
+	if (source_script_index < target_script_index)
+		return ScriptLinkType::Include;
+	else if (source_script_index > target_script_index)
+		return ScriptLinkType::Appendto;
+	return ScriptLinkType::Same;
+}
+
 static std::string FormatCodePosition(const C4ScriptHost *source_host, const char *pos, const C4ScriptHost *target_host = nullptr, const C4AulScriptFunc *func = nullptr)
 {
 	std::string s;
@@ -48,14 +73,16 @@ static std::string FormatCodePosition(const C4ScriptHost *source_host, const cha
 		int line = SGetLine(source_host->GetScript(), pos);
 		int col = SLineGetCharacters(source_host->GetScript(), pos);
 
-		s += strprintf("%s:%d:%d)",
-			source_host->GetFilePath(),
-			line, col
-		);
+		s += strprintf("%s:%d:%d)", source_host->GetFilePath(), line, col);
 	}
 	if (target_host && source_host != target_host)
 	{
-		s += strprintf(" (as #appendto/#include to %s)", target_host->ScriptName.getData());
+		assert(source_script_index != target_script_index);
+
+		if (GetScriptLinkType(source_host, target_host) == ScriptLinkType::Include)
+			s += strprintf(" (included by %s)", target_host->ScriptName.getData());
+		else
+			s += strprintf(" (appended to %s)", target_host->ScriptName.getData());
 	}
 	return s;
 }
@@ -73,6 +100,12 @@ static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, cons
 #define DIAG(id, msg, enabled) if (warning == C4AulWarningId::id && !enabled) return;
 #include "C4AulWarnings.h"
 #undef DIAG
+	}
+	else if (target_host && GetScriptLinkType(host, target_host) == ScriptLinkType::Include)
+	{
+		// Don't re-emit warnings for an #include'd script, they've already
+		// been shown when the original script was compiled
+		return;
 	}
 	else if (!host->IsWarningEnabled(SPos, warning))
 	{

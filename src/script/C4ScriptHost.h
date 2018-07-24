@@ -25,6 +25,7 @@
 #include "script/C4AulAST.h"
 
 #include <bitset>
+#include <deque>
 
 // aul script state
 enum C4AulScriptState
@@ -53,7 +54,7 @@ public:
 	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
 	// Translate a string using the script's lang table
 	std::string Translate(const std::string &text) const;
-	std::list<C4ScriptHost *> SourceScripts;
+	std::deque<C4ScriptHost *> SourceScripts;
 	StdCopyStrBuf ScriptName; // script name
 
 	bool IsWarningEnabled(const char *pos, C4AulWarningId warning) const;
