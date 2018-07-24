@@ -77,6 +77,7 @@ global func SaveScenarioObjects(f, duplicate_objects)
 	obj_data = SaveScen_SetContainers(obj_data);
 	// Write header
 	FileWrite(f, "/* Automatically created objects file */\n\n");
+	FileWrite(f, "#warning disable\n\n");
 	// Declare static variables for objects that wish to have them
 	for (obj in objs)
 	{
