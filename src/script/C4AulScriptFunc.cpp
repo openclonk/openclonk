@@ -74,8 +74,8 @@ void C4AulScriptFunc::RemoveLastBCC()
 
 void C4AulScriptFunc::ClearCode()
 {
-	while(Code.size() > 0)
-		RemoveLastBCC();
+	Code.clear();
+	PosForCode.clear();
 	// This function is now broken until an AddBCC call
 }
 
