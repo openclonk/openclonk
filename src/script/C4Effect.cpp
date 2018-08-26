@@ -442,10 +442,21 @@ int C4Effect::CallStop(int reason, bool temporary)
 }
 int C4Effect::CallTimer(int time)
 {
-	if (!GetCallbackScript())
-		return Call(P_Timer, &C4AulParSet(time)).getInt();
-	if (pFnTimer)
-		return pFnTimer->Exec(GetCallbackScript(), &C4AulParSet(Obj(Target), this, time)).getInt();
+	try
+	{
+		if (!GetCallbackScript())
+			return Call(P_Timer, &C4AulParSet(time), true).getInt();
+		if (pFnTimer)
+			return pFnTimer->Exec(GetCallbackScript(), &C4AulParSet(Obj(Target), this, time), true).getInt();
+	}
+	catch (C4AulError &e)
+	{
+		// Script error: remove the timer.
+		// TODO: The error message is printed after the stack trace. No way around that currently.
+		::ScriptEngine.GetErrorHandler()->OnError(e.what());
+		// => Removing effect { ... }
+		DebugLogF(" Removing %s", C4Value(this).GetDataString(3).getData());
+	}
 	return C4Fx_Execute_Kill;
 }
 void C4Effect::CallDamage(int32_t & damage, int damagetype, int plr)
