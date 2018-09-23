@@ -105,12 +105,13 @@
 
 /* Enable automatic update system */
 #cmakedefine WITH_AUTOMATIC_UPDATE 1
+#cmakedefine WITH_APPDIR_INSTALLATION 1
 
 /* Select an audio provider */
 #define AUDIO_TK AUDIO_TK_${Audio_TK_UPPER}
 #else
 #define AUDIO_TK AUDIO_TK_NONE
-#endif
+#endif // USE_CONSOLE
 
 #define AUDIO_TK_NONE 0
 #define AUDIO_TK_OPENAL 1
@@ -118,6 +119,13 @@
 
 /* Include OpenAL extensions (alext.h) for sound modifiers */
 #cmakedefine HAVE_ALEXT 1
+
+/* Path to data directory */
+#ifdef WITH_APPDIR_INSTALLATION
+#define OC_SYSTEM_DATA_DIR "../share/games/openclonk"
+#else
+#define OC_SYSTEM_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/games/openclonk"
+#endif
 
 /* Path to /proc/self/exe (Linux) or equivalent */
 #cmakedefine PROC_SELF_EXE "${PROC_SELF_EXE}"
