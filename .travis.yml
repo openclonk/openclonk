@@ -23,13 +23,15 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libgtest-dev']
+          packages: ['g++-5', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libgtest-dev', 'curl']
       env:
           - CCOMPILER=gcc-5
           - CXXCOMPILER=g++-5
-          - TYPE=Debug 
+          - TYPE=RelWithDebInfo
           - CXX_FLAGS="-fdiagnostics-color"
           - BSYS="Ninja#ninja -k30" PCH=on
+          - UPLOAD_SNAPSHOT=1
+          - CMAKE_FLAGS="-DCMAKE_INSTALL_PREFIX=/usr -DWITH_AUTOMATIC_UPDATE=ON -DWITH_APPDIR_INSTALLATION=ON"
 
     - os: linux
       compiler: clang
@@ -57,9 +59,19 @@ before_script:
       -DUSE_GCC_PCH=${PCH:-off}
       -DGTEST_ROOT=$PWD/googletest-release-1.7.0
       -DGMOCK_ROOT=$PWD/googlemock-release-1.7.0
+      $CMAKE_FLAGS
       .
 
 script:
     - ${BSYS/*#/} all netpuncher tests aul_test
     - ./tests/tests 
     - ./tests/aul_test
+
+after_success:
+    - >
+      [ "$UPLOAD_SNAPSHOT" = 1 ] && 
+      echo "Creating AppImage..." &&
+      tools/create_appimage.sh &&
+      echo "Uploading snapshot..." &&
+      tools/upload_snapshot.sh OpenClonk-x86_64.AppImage ||
+      echo "Snapshot creation has failed"
