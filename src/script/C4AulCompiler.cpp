@@ -77,8 +77,6 @@ static std::string FormatCodePosition(const C4ScriptHost *source_host, const cha
 	}
 	if (target_host && source_host != target_host)
 	{
-		assert(source_script_index != target_script_index);
-
 		if (GetScriptLinkType(source_host, target_host) == ScriptLinkType::Include)
 			s += strprintf(" (included by %s)", target_host->ScriptName.getData());
 		else
