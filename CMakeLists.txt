@@ -1577,6 +1577,7 @@ if(NOT C4GROUP_TOOL_ONLY)
 				MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
 				DEPENDS "${native_c4group}"
 				VERBATIM
+				USES_TERMINAL # Hack: prevent parallel execution (for ninja), c4group tends to fail otherwise
 			)
 			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/games/openclonk)
 		endif()
