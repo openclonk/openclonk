@@ -101,9 +101,11 @@ if(USE_GCC_STYLE_LTCG)
 
 	# Use GCC's ar and ranlib wrappers if necessary, because the plain ones 
 	# don't understand lto objects without an explicit plugin parameter
-	if(CMAKE_C_COMPILER MATCHES "gcc$")
+	# Note that versioned gcc executables need splitting: gcc-5 -> gcc-ar-5
+	if(CMAKE_C_COMPILER MATCHES "^(.*gcc)(-[0-9.])?$")
 		set(LTCG_NEEDS_AR_WRAPPER 1)
-		set(LTCG_AR_WRAPPER_PREFIX "${CMAKE_C_COMPILER}")
+		set(LTCG_AR_WRAPPER_PREFIX "${CMAKE_MATCH_1}")
+		set(LTCG_AR_WRAPPER_SUFFIX "${CMAKE_MATCH_2}")
 	elseif(CMAKE_C_COMPILER MATCHES "cc$")
 		set(LTCG_NEEDS_AR_WRAPPER 1)
 		set(LTCG_AR_WRAPPER_PREFIX "gcc")
@@ -112,12 +114,12 @@ if(USE_GCC_STYLE_LTCG)
 	endif()
 
 	if(LTCG_NEEDS_AR_WRAPPER)
-		find_program(AR_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ar")
+		find_program(AR_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ar${LTCG_AR_WRAPPER_SUFFIX}")
 		if (AR_WRAPPER)
 			message("Using ${AR_WRAPPER} instead of ${CMAKE_AR} to support lto objects.")
 			set(CMAKE_AR "${AR_WRAPPER}" CACHE FILEPATH "Path to an ar that supports lto objects." FORCE)
 		endif()
-		find_program(RANLIB_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ranlib")
+		find_program(RANLIB_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ranlib${LTCG_AR_WRAPPER_SUFFIX}")
 		if (RANLIB_WRAPPER)
 			message("Using ${RANLIB_WRAPPER} instead of ${CMAKE_RANLIB} to support lto objects.")
 			set(CMAKE_RANLIB "${RANLIB_WRAPPER}" CACHE FILEPATH "Path to a ranlib that supports lto objects." FORCE)
