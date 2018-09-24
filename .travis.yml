@@ -64,7 +64,8 @@ before_script:
 
 script:
     - ${BSYS/*#/} all netpuncher tests aul_test
-    - ./tests/tests 
+      # TODO: Remove SKIP_IPV6_TEST once Travis generally adds ::1 as loopback address.
+    - SKIP_IPV6_TEST=1 ./tests/tests 
     - ./tests/aul_test
 
 after_success:

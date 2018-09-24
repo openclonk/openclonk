@@ -88,6 +88,11 @@ TEST_F(C4NetIOTest, HostAddressCategories)
 // Tests C4NetIOTCP::Bind
 TEST_F(C4NetIOTest, TCPBind)
 {
+	if (getenv("SKIP_IPV6_TEST")) {
+		printf("Skipping C4NetIOTest.TCPBind...\n");
+		return;
+	}
+
 	C4NetIOTCP NetIO;
 	ASSERT_TRUE(NetIO.Init());
 
