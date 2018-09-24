@@ -2,7 +2,7 @@
 
 language: cpp
 dist: trusty
-sudo: required # not actually required, but the virtualization builds are more stable and have better single core performance. If in doubt, remove.
+sudo: required # for Qt libraries. Additionally, the virtualization builds are more stable and have better single core performance.
 
 matrix:
   include:
@@ -22,13 +22,15 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libgtest-dev', 'curl']
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: ppa:beineri/opt-qt596-trusty
+          packages: ['g++-5', 'build-essential', 'cmake', 'libpng-dev', 'libjpeg-dev', 'libfreetype6-dev', 'libglew-dev', 'libreadline-dev', 'libsdl2-dev', 'qt59base', 'libalut-dev', 'libvorbis-dev', 'libopenal-dev', 'libdw-dev', 'libgtest-dev', 'ninja-build']
       env:
           - CCOMPILER=gcc-5
           - CXXCOMPILER=g++-5
           - TYPE=RelWithDebInfo
-          - CXX_FLAGS="-fdiagnostics-color"
+          - CXX_FLAGS="-fdiagnostics-color -I/usr/include/AL"
           - BSYS="Ninja#ninja -k30" PCH=on
           - UPLOAD_SNAPSHOT=1
           - CMAKE_FLAGS="-DCMAKE_INSTALL_PREFIX=/usr -DWITH_AUTOMATIC_UPDATE=ON -DWITH_APPDIR_INSTALLATION=ON"
@@ -48,6 +50,9 @@ matrix:
 
 before_install:
     - for t in test mock; do wget https://github.com/google/google$t/archive/release-1.7.0.tar.gz -Og$t.tgz && tar xvf g$t.tgz; done 
+
+install:
+    - '[ -e /opt/qt59/bin/qt59-env.sh ] && source /opt/qt59/bin/qt59-env.sh || echo building without Qt'
 
 before_script:
     - export CXX="$CXXCOMPILER" CC="$CCOMPILER"
