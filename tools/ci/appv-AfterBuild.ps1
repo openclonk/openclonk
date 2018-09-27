@@ -1,7 +1,7 @@
 ﻿pushd $env:BUILD_TARGET_FOLDER
 trap {popd}
 
-[void]([System.Reflection.Assembly]::LoadWithPartialName('Microsoft.Build'))
+Add-Type -Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\Microsoft.Build.dll"
 $projects = New-Object Microsoft.Build.Evaluation.ProjectCollection
 $projects.SetGlobalProperty('Configuration', $env:CONFIGURATION)
 
@@ -92,13 +92,6 @@ SRCSRV: source files ---------------------------------------
     }
 }
 
-if (-not $env:APPVEYOR) {
-    function Push-AppveyorArtifact {
-        param([string]$Path)
-        "Uploading $Path.... (dry run)"
-    }
-}
-
 Get-Item *.vcxproj | %{
     $p = $projects.LoadProject($_.FullName)
     if ($p.GetPropertyValue('ConfigurationType') -eq 'Application') {
@@ -106,12 +99,12 @@ Get-Item *.vcxproj | %{
         $binary = $p.GetPropertyValue('TargetPath')
         if (Test-Path $binary) {
             # Upload the executable itself as an artifact
-            Push-AppveyorArtifact $binary
+            appveyor PushArtifact $binary
             $pdb = $p.ItemDefinitions['Link'].GetMetadataValue('ProgramDataBaseFile')
             if (Test-Path $pdb) {
                 # If we generated a .pdb file, add source server information
                 Add-SourceServerData $pdb
-                Push-AppveyorArtifact $pdb
+                appveyor PushArtifact $pdb
             }
         }
     }

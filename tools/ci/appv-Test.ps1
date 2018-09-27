@@ -1,7 +1,7 @@
 ﻿pushd $env:BUILD_TARGET_FOLDER
 trap {popd}
 
-[void]([System.Reflection.Assembly]::LoadWithPartialName('Microsoft.Build'))
+Add-Type -Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\Microsoft.Build.dll"
 $projects = New-Object Microsoft.Build.Evaluation.ProjectCollection
 $projects.SetGlobalProperty('Configuration', $env:CONFIGURATION)
 
