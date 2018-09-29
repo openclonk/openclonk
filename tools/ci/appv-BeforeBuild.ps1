@@ -11,7 +11,12 @@ pushd $env:BUILD_TARGET_FOLDER
 try {
     $(cmake --version)[0]
     $ErrorActionPreference='SilentlyContinue'
-    cmake -G $cmake_generator -DCMAKE_PREFIX_PATH:PATH="$env:BUILD_DEPS_FOLDER\$env:PLATFORM;$qt" $env:APPVEYOR_BUILD_FOLDER 2>&1
+    cmake `
+        -G $cmake_generator `
+        -DCMAKE_PREFIX_PATH:PATH="$env:BUILD_DEPS_FOLDER\$env:PLATFORM;$qt" `
+        -DGMOCK_ROOT:PATH="$env:BUILD_DEPS_FOLDER\$env:PLATFORM\src\googletest\googlemock" `
+        -DGTEST_ROOT:PATH="$env:BUILD_DEPS_FOLDER\$env:PLATFORM\src\googletest\googletest" `
+        $env:APPVEYOR_BUILD_FOLDER 2>&1
     $ErrorActionPreference='Stop'
     if ($LASTEXITCODE -ne 0) {
         if (Test-Path CMakeFiles\CMakeOutput.log) {
