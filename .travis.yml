@@ -56,6 +56,7 @@ install:
 
 before_script:
     - export CXX="$CXXCOMPILER" CC="$CCOMPILER"
+    - export C4REVISION_BRANCH="$TRAVIS_BRANCH"
     - >
       cmake
       -G"${BSYS/\#*/}"
