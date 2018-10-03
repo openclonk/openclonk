@@ -80,5 +80,5 @@ after_success:
       echo "Creating AppImage..." &&
       tools/create_appimage.sh &&
       echo "Uploading snapshot..." &&
-      tools/upload_snapshot.sh OpenClonk-x86_64.AppImage ||
+      tools/upload_snapshot.sh OpenClonk-x86_64.AppImage OpenClonk-x86_64.AppImage.zsync ||
       echo "Snapshot creation has failed"

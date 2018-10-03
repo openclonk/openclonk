@@ -17,11 +17,13 @@ branch=$(git symbolic-ref --short HEAD)
 date=$(date --date="$(git show -s --format=%ci)" -u -Is | sed 's/+00:\?00$/Z/')
 [[ -n $date ]] || error "could not get commit date"
 
-file=${1:?no file to upload given}
 : ${OC_REL_URL:?target URL not set}
+(($# > 0)) || error "no files to upload given"
 
-upload_path="/snapshots/$date-$branch-$revision/$(basename "$file")"
-echo "uploading $upload_path"
+for file in "$@"; do
+	upload_path="/snapshots/$date-$branch-$revision/$(basename "$file")"
+	echo "uploading $upload_path"
 
-curl -XPOST "$OC_REL_URL$upload_path" --data-binary "@$file" \
-	|| error "file upload failed"
+	curl -XPOST "$OC_REL_URL$upload_path" --data-binary "@$file" \
+		|| error "file upload failed"
+done
