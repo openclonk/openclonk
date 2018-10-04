@@ -1440,21 +1440,6 @@ if(CMAKE_GENERATOR MATCHES "^Visual Studio 14 2015")
 endif()
 
 ############################################################################
-# Precompiled header support, gcc part (it needs the cxx flags)
-############################################################################
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-	include(GccPchSupport)
-	option(USE_GCC_PCH "Use GCC precompiled headers" OFF)
-endif()
-if(USE_GCC_PCH)
-	add_precompiled_header(libmisc src/C4Include.h)
-	add_precompiled_header(libc4script src/C4Include.h)
-	add_precompiled_header(openclonk src/C4Include.h)
-	add_precompiled_header(openclonk-server src/C4Include.h)
-endif()
-
-############################################################################
 # installation
 ############################################################################
 # Don't allow installation for WITH_AUTOMATIC_UPDATE because otherwise
