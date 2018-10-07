@@ -153,7 +153,7 @@ if ($env:DEPLOYMENT_URL -and $env:DEPLOYMENT_SECRET) {
     while ($unresolved.Count -gt 0) {
         $library = $unresolved.Dequeue()
         $file = Join-Path $deploy_dir $library
-        $dep_file = "${env:BUILD_DEPS_FOLDER}\bin\${library}"
+        $dep_file = "${env:BUILD_DEPS_FOLDER}\${env:PLATFORM}\bin\${library}"
         if (-not (Test-Path $file) -and (Test-Path $dep_file)) {
             Write-Host "Bundling ${library}"
             Copy-Item $dep_file $file
