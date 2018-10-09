@@ -84,6 +84,16 @@ openclonk.ilk
 *.vcxproj
 *.vcxproj.filters
 /ipch
+.vs/
+c4group_autogen/
+c4script_autogen/
+libc4script_autogen/
+libmisc_autogen/
+libopenclonk_autogen/
+netpuncher_autogen/
+openclonk-server_autogen/
+openclonk_autogen/
+thirdparty/blake2/blake2_autogen/
 
 # Temporary files created by Microsoft Visual Studio
 *.ncb
