@@ -270,6 +270,8 @@ void C4ConfigControls::CompileFunc(StdCompiler *pComp)
 #endif
 }
 
+#undef s
+
 C4Config::C4Config()
 {
 	Default();
