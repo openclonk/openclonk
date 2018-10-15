@@ -153,7 +153,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		// Open contents menu.
 		CancelUse();
-		GUI_ObjectInteractionMenu->CreateFor(this);
+		GUI_ObjectInteractionMenu->CreateFor(this, GUI_OIM_NewStyle);
 		// the interaction menu calls SetMenu(this) in the clonk
 		// so after this call menu = the created menu
 		if(GetMenu())

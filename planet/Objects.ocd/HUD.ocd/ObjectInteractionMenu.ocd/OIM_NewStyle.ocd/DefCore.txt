@@ -1,0 +1,5 @@
+[DefCore]
+id=GUI_OIM_NewStyle
+Version=8,0
+Category=C4D_StaticBack
+HideInCreator=true

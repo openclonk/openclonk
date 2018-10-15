@@ -8,8 +8,6 @@
 local Name = "$Name$";
 local Description = "$Description$";
 
-static const InteractionMenu_SideBarSize = 40; // in tenth-em
-
 static const InteractionMenu_Contents = 2;
 static const InteractionMenu_Custom = 4;
 
@@ -111,7 +109,7 @@ func Destruction()
 }
 
 // used as a static function
-func CreateFor(object cursor)
+func CreateFor(object cursor, id style_def, array settings)
 {
 	var obj = CreateObject(GUI_ObjectInteractionMenu, AbsX(0), AbsY(0), cursor->GetOwner());
 	obj.Visibility = VIS_Owner;
@@ -129,16 +127,42 @@ func CreateFor(object cursor)
 	{
 		obj.minimized = false;
 	}
-	
-	obj->Init(cursor);
+	if (settings != nil)
+	{
+		obj.Settings = settings;
+		for (var setting in settings)
+			obj[setting[0]] = setting[1];
+	}
+	obj->Init(cursor, style_def);
 	cursor->SetMenu(obj);
 	return obj;
 }
 
+// Reopen the menu with a certain settings value set (arbitrarily defined)
+// All previous settings will be kept
+public func ReopenWithSetting(string setting_name, value)
+{
+	var last_cursor = this.cursor;
+	var settings = [];
+	if (this.Settings != nil)
+		var settings = this.Settings[:];
+	var i;
+	for (i = 0; i < GetLength(settings); i++)
+		if (settings[i][0] == setting_name)
+			break;
+	settings[i] = [setting_name, value];
+	var style_def = this.style_def;
+	RemoveObject();
+	GUI_ObjectInteractionMenu->CreateFor(last_cursor, style_def, settings);
+}
 
-func Init(object cursor)
+
+public func Init(object cursor, id style_def)
 {
 	this.cursor = cursor;
+	this.style_def = style_def;
+	this.style_def->Init(this);
+	//this.Uncollapsed = uncollapsed;
 	var checking_effect = AddEffect("IntCheckObjects", cursor, 1, 10, this);
 	// Notify the Clonk. This can be used to create custom entries in the objects list via helper objects. For example the "Your Environment" tab.
 	// Note that the cursor is NOT informed when the menu is closed again. Helper objects can be attached to the livetime of this menu by, f.e., effects.
@@ -290,28 +314,13 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	current_menus[slot].menu_object = main.Target;
 	// Now, the sidebar.
 	var sidebar = CreateSideBar(slot);
-	
-	var sidebar_size_em = ToEmString(InteractionMenu_SideBarSize);
-	var part_menu =
-	{
-		Left = "0%", Right = "50%-3em",
-		Bottom = "100%-7em",
-		sidebar = sidebar, main = main,
-		Target = current_menus[slot].menu_object,
-		ID = 1
-	};
-	
-	if (slot == 1)
-	{
-		part_menu.Left = "50%-1em";
-		part_menu.Right = "100%-2em";
-	}
-	
+
+	var part_menu = this.style_def->CreatePartMenu(this, slot, current_menus[slot].menu_object, sidebar, main);
+
 	if (this.minimized)
 	{
 		part_menu.Bottom = nil; // maximum height
 	}
-	
 
 	// need to open a completely new menu?
 	if (!current_main_menu_id)
@@ -325,91 +334,9 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 		if (!current_center_column_target)
 			current_center_column_target = CreateDummy();
 		
-		var root_menu =
-		{
-			_one_part = part_menu,
-			Target = this,
-			Decoration = GUI_MenuDeco,
-			BackgroundColor = RGB(0, 0, 0),
-			minimize_button = 
-			{
-				Bottom = "100%",
-				Top = "100% - 2em",
-				Left = "100% - 2em",
-				Tooltip = "$Minimize$",
-				Symbol = Icon_Arrow,
-				GraphicsName = "Down",
-				BackgroundColor = {Std = nil, OnHover = 0x50ffff00},
-				OnMouseIn = GuiAction_SetTag("OnHover"),
-				OnMouseOut = GuiAction_SetTag("Std"),
-				OnClick = GuiAction_Call(this, "OnToggleMinimizeClicked")
-			},
-			center_column =
-			{
-				Left = "50%-3em",
-				Right = "50%-1em",
-				Top = "1.75em",
-				Bottom = "100%-7em",
-				Style = GUI_VerticalLayout,
-				move_all_left =
-				{
-					Target = current_center_column_target,
-					ID = 10 + 0,
-					Right = "2em", Bottom = "3em",
-					Style = GUI_TextHCenter | GUI_TextVCenter,
-					Symbol = Icon_MoveItems, GraphicsName = "Left",
-					Tooltip = "",
-					BackgroundColor ={Std = 0, Hover = 0x50ffff00},
-					OnMouseIn = GuiAction_SetTag("Hover"),
-					OnMouseOut = GuiAction_SetTag("Std"),
-					OnClick = GuiAction_Call(this, "OnMoveAllToClicked", 0)
-				},
-				move_all_right =
-				{
-					Target = current_center_column_target,
-					ID = 10 + 1,
-					Right = "2em", Bottom = "3em",
-					Style = GUI_TextHCenter | GUI_TextVCenter,
-					Symbol = Icon_MoveItems,
-					Tooltip = "",
-					BackgroundColor ={Std = 0, Hover = 0x50ffff00},
-					OnMouseIn = GuiAction_SetTag("Hover"),
-					OnMouseOut = GuiAction_SetTag("Std"),
-					OnClick = GuiAction_Call(this, "OnMoveAllToClicked", 1)
-				}
-			},
-			description_box =
-			{
-				Top = "100%-5em",
-				Right = "100% - 2em",
-				Margin = [sidebar_size_em, "0em"],
-				BackgroundColor = RGB(25, 25, 25),
-				symbol_part =
-				{
-					Right = "5em",
-					Symbol = nil,
-					Margin = "0.5em",
-					ID = 1,
-					Target = current_description_box.symbol_target
-				},
-				desc_part =
-				{
-					Left = "5em",
-					Margin = "0.5em",
-					ID = 1,
-					Target = current_description_box.target,
-					real_contents = // nested one more time so it can dynamically be replaced without messing up the layout
-					{
-						ID = 1,
-						Target = current_description_box.desc_target
-					}
-				}
-			}
-		};
-		
-		// Allow the menu to be closed with a clickable button.
-		GuiAddCloseButton(root_menu, this, "Close");
-		
+		var root_menu = this.style_def->CreateRootMenu(this, current_center_column_target, current_description_box);
+		root_menu._one_part = part_menu;
+
 		// Special setup for a minimized menu.
 		if (this.minimized)
 		{
@@ -553,22 +480,9 @@ public func OnMoveAllToClicked(int menu_id)
 func CreateSideBar(int slot)
 {
 	var other_menu = current_menus[1 - slot];
-	
-	var em_size = ToEmString(InteractionMenu_SideBarSize);
-	var sidebar =
-	{
-		Priority = 10,
-		Right = em_size,
-		Style = GUI_VerticalLayout,
-		Target = current_menus[slot].menu_object,
-		ID = 2
-	};
-	if (slot == 1)
-	{
-		sidebar.Left = Format("100%% %s", ToEmString(-InteractionMenu_SideBarSize));
-		sidebar.Right = "100%";
-	}
-	
+
+	var sidebar = this.style_def->CreateSideBar(this, slot, current_menus[slot].menu_object);
+
 	// Now show the current_objects list as entries.
 	// If there is a forced-open menu, also add it to bottom of sidebar..
 	var sidebar_items = nil;
@@ -579,43 +493,11 @@ func CreateSideBar(int slot)
 	}
 	else
 		sidebar_items = current_objects;
-		
+
 	for (var obj in sidebar_items)
 	{
-		var background_color = nil;
-		var symbol = {Std = SidebarIconStandard(), OnHover = SidebarIconOnHover()};
-		// figure out whether the object is already selected
-		// if so, highlight the entry
-		if (current_menus[slot].target == obj)
-		{
-			background_color = RGBa(255, 255, 0, 10);
-			symbol = SidebarIconSelected();
-		}
-		var priority = 10000 - obj.Plane;
-		// Cross-out the entry?
-		var deactivation_symbol = nil;
-		if (other_menu && other_menu.target == obj)
-			deactivation_symbol = Icon_Cancel;
-		// Always show Clonk at top.
-		if (obj == cursor) priority = 1;
-		var entry = 
-		{
-			// The object is added as the target of the entry, so it can easily be identified later.
-			// For example, to apply show the grey haze to indicate that it cannot be clicked.
-			Target = obj,
-			Right = em_size, Bottom = em_size,
-			Symbol = symbol,
-			Priority = priority,
-			Style = GUI_TextBottom | GUI_TextHCenter,
-			BackgroundColor = background_color,
-			OnMouseIn = GuiAction_SetTag("OnHover"),
-			OnMouseOut = GuiAction_SetTag("Std"),
-			OnClick = GuiAction_Call(this, "OnSidebarEntrySelected", {slot = slot, obj = obj}),
-			Text = obj->GetName(),
-			obj_symbol = {Symbol = obj, Margin = "0.25em", Priority = 1},
-			obj_symbol_deactivated = {Symbol = deactivation_symbol, Margin = "0.5em", Priority = 2, Target = obj, ID = 1 + slot}
-		};
-		
+		var entry = this.style_def->CreateSideBarItem(this, slot, obj, current_menus[slot].target == obj, other_menu && other_menu.target == obj, obj == cursor);
+
 		GuiAddSubwindow(entry, sidebar);
 	}
 	return sidebar;
@@ -648,37 +530,13 @@ func OnSidebarEntrySelected(data, int player, int ID, int subwindowID, object ta
 */
 func CreateMainMenu(object obj, int slot)
 {
-	var big_menu =
-	{
-		Target = CreateDummy(),
-		Priority = 5,
-		Right = Format("100%% %s", ToEmString(-InteractionMenu_SideBarSize)),
-		container =
-		{
-			Top = "1em",
-			Style = GUI_VerticalLayout,
-			BackgroundColor = RGB(25, 25, 25),
-		},
-		headline = 
-		{
-			Bottom = "1em",
-			Text = obj->GetName(),
-			Style = GUI_TextHCenter | GUI_TextVCenter,
-			BackgroundColor = 0xff000000
-		}
-		
-	};
+	var big_menu = this.style_def->CreateMainMenu(this, slot, CreateDummy(), obj);
+
 	var container = big_menu.container;
-	
-	if (slot == 0)
-	{
-		big_menu.Left = ToEmString(InteractionMenu_SideBarSize);
-		big_menu.Right = "100%";
-	}
-	
+
 	// Do virtually nothing if the building/object is not ready to be interacted with. This can be caused by several things.
 	var error_message = obj->~RejectInteractionMenu(cursor);
-	
+
 	if (error_message)
 	{
 		if (GetType(error_message) != C4V_String)
@@ -688,7 +546,7 @@ func CreateMainMenu(object obj, int slot)
 		current_menus[slot].menus = [];
 		return big_menu;
 	}
-	
+
 	var menus = obj->~GetInteractionMenus(cursor) ?? [];
 	// get all interaction info from the object and put it into a menu
 	// contents first
@@ -702,86 +560,44 @@ func CreateMainMenu(object obj, int slot)
 			entries_callback = nil,
 			callback = "OnContentsSelection",
 			callback_target = this,
-			decoration = GUI_MenuDecoInventoryHeader,
+			BackgroundColor = RGB(0, 50, 0),
 			Priority = 10
 		};
 		PushBack(menus, info);
 	}
-	
+
 	current_menus[slot].menus = menus;
-	
+
 	// now generate the actual menus from the information-list
 	for (var i = 0; i < GetLength(menus); ++i)
 	{
 		var menu = menus[i];
+
+		// Everything not flagged is a custom entry
 		if (!menu.flag)
 		{
 			menu.flag = InteractionMenu_Custom;
 		}
+		// If a callback is given, try to get entries
 		if (menu.entries_callback)
 		{
-			var call_from = menu.entries_callback_target ?? obj;			
+			var call_from = menu.entries_callback_target ?? obj;
 			menu.entries = call_from->Call(menu.entries_callback, cursor, menu.entries_callback_parameter);
 		}
+		// Empty entries should not be there
 		if (menu.entries == nil)
 		{
 			FatalError(Format("An interaction menu did not return valid entries. %s -> %v() (object %v)", obj->GetName(), menu.entries_callback, obj));
 			continue;
 		}
-		menu.menu_object = CreateObject(MenuStyle_Grid);
-		if (menu.flag == InteractionMenu_Contents)
-		{
-			menu.menu_object->SetTightGridLayout();
-		}
-	
-		menu.menu_object.Top = "+1em";
-		menu.menu_object.Priority = 2;
-		menu.menu_object->SetPermanent();
-		menu.menu_object->SetFitChildren();
-		menu.menu_object->SetMouseOverCallback(this, "OnMenuEntryHover");
-		for (var e = 0; e < GetLength(menu.entries); ++e)
-		{
-			var entry = menu.entries[e];
-			entry.unique_index = ++menu.entry_index_count;
-			// This also allows the interaction-menu user to supply a custom entry with custom layout f.e.
-			var added_entry = menu.menu_object->AddItem(entry.symbol, entry.text, entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = i }, entry["custom"]);
-			// Remember the menu entry's ID (e.g. for passing it to an update effect after the menu has been opened).
-			entry.ID = added_entry.ID;
-		}
-		
-		var all =
-		{
-			Priority = menu.Priority ?? i,
-			Style = GUI_FitChildren,
-			title_bar = 
-			{
-				Priority = 1,
-				Style = GUI_TextVCenter | GUI_TextHCenter,
-				Bottom = "+1em",
-				Text = menu.title,
-				BackgroundColor = 0xa0000000,
-				//Decoration = menu.decoration
-				hline = {Bottom = "0.05em", BackgroundColor = RGB(100, 100, 100)}
-			},
-			Margin = [nil, nil, nil, "0.25em"],
-			real_menu = menu.menu_object,
-			spacer = {Left = "0em", Right = "0em", Bottom = "3em"} // guarantees a minimum height
-		};
-		if (menu.flag == InteractionMenu_Contents)
-		{
-			all.BackgroundColor = RGB(0, 50, 0);
-		}
-		else if (menu.BackgroundColor)
-		{
-			all.BackgroundColor = menu.BackgroundColor;
-		}
-		else if (menu.decoration)
-		{
-			menu.menu_object.BackgroundColor = menu.decoration->FrameDecorationBackClr();
-		}
+
+		var all = this.style_def->CreateMainMenuItem(this, slot, obj, menu, cursor, i);
+		if (!all)
+			continue;
+
 		GuiAddSubwindow(all, container);
 	}
-	
+
 	// add refreshing effects for all of the contents menus
 	for (var i = 0; i < GetLength(menus); ++i)
 	{
@@ -789,7 +605,7 @@ func CreateMainMenu(object obj, int slot)
 			continue;
 		AddEffect("IntRefreshContentsMenu", this, 1, 1, this, nil, obj, slot, i);
 	}
-	
+
 	return big_menu;
 }
 
@@ -824,7 +640,7 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 	if (!info.menu.callback_target || !info.menu.callback_hover)
 	{
 		var text = Format("%s:|%s", info.entry.symbol->GetName(), info.entry.symbol.Description);
-		
+
 		// For contents menus, we can sometimes present additional information about objects.
 		if (info.menu.flag == InteractionMenu_Contents)
 		{
@@ -860,7 +676,7 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 					text = Format("%s||%s", text, additional);
 			}
 		}
-		
+
 		GuiUpdateText(text, current_main_menu_id, 1, current_description_box.desc_target);
 	}
 	else
@@ -873,25 +689,25 @@ func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
 {
 	var info = GetEntryInformation(menu_info, entry_index);
 	if (!info.entry) return;
-	
+
 	var callback_target;
 	if (!(callback_target = info.menu.callback_target)) return;
 	if (!info.menu.callback) return; // The menu can actually decide to handle user interaction itself and not provide a callback.
-	callback_target->Call(info.menu.callback, info.entry.symbol, info.entry.extra_data, cursor);
-	
-	// todo: trigger refresh for special value of callback result?
+	var result = callback_target->Call(info.menu.callback, info.entry.symbol, info.entry.extra_data, cursor);
+
+	// todo: trigger refresh for special value of result?
 }
 
 private func OnContentsSelection(symbol, extra_data)
 {
-	if (!current_menus[extra_data.slot]) return;
+	if (!extra_data || !current_menus[extra_data.slot]) return;
 	var target = current_menus[extra_data.slot].target;
 	if (!target) return;
 	// no target to swap to?
 	if (!current_menus[1 - extra_data.slot]) return;
 	var other_target = current_menus[1 - extra_data.slot].target;
 	if (!other_target) return;
-	
+
 	// Only if the object wants to be interacted with (hostility etc.)
 	if (other_target->~RejectInteractionMenu(cursor)) return;
 	
@@ -901,10 +717,10 @@ private func OnContentsSelection(symbol, extra_data)
 		cursor->~PlaySoundDoubt(true, nil, cursor->GetOwner());
 		return;
 	}
-	
+
 	var transfer_only_one = GetPlayerControlState(GetOwner(), CON_ModifierMenu1) == 0; // Transfer ONE object of the stack?
 	var to_transfer = nil;
-	
+
 	if (transfer_only_one)
 	{
 		for (var possible in extra_data.objects)
@@ -918,7 +734,7 @@ private func OnContentsSelection(symbol, extra_data)
 	{
 		to_transfer = extra_data.objects;
 	}
-	
+
 	var successful_transfers = TransferObjectsFromTo(to_transfer, target, other_target);
 	
 	// Did we at least transfer one item?
@@ -1023,7 +839,7 @@ func FxIntRefreshContentsMenuTimer(object target, effect, int time)
 	{
 		var symbol = obj;
 		var extra_data = {slot = effect.slot, menu_index = effect.menu_index, objects = []};
-		
+
 		// check if already exists (and then stack!)
 		var found = false;
 		// Never stack containers with (different) contents, though.
@@ -1064,6 +880,8 @@ func FxIntRefreshContentsMenuTimer(object target, effect, int time)
 			// This object has a custom symbol (because it's a container)? Then the normal text would not be displayed.
 			if (inv.custom != nil)
 			{
+				if (inv.custom.top == nil)
+					inv.custom.top = {};
 				inv.custom.top.Text = inv.text;
 				inv.custom.top.Style = inv.custom.top.Style | GUI_TextRight | GUI_TextBottom;
 			}
@@ -1076,27 +894,26 @@ func FxIntRefreshContentsMenuTimer(object target, effect, int time)
 		if (!found)
 		{
 			PushBack(extra_data.objects, obj);
-			
-			// Do we need a custom entry when the object has contents?
-			var custom = nil;
+
+			// Use a default grid-menu entry as the base.
+			var custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
+			custom.BackgroundColor = {Std = 0, OnHover = RGB(0, 100, 0)};
 			if (is_container)
 			{
-				// Use a default grid-menu entry as the base.
-				custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
-				// Pack it into a larger frame to allow for another button below.
+				// Pack the custom entry into a larger frame to allow for another button below.
 				// The priority offset makes sure that double-height items are at the front.
 				custom = {Right = custom.Right, Bottom = "4em", top = custom, Priority = -10000 + obj->GetValue()};
 				// Then add a little container-symbol (that can be clicked).
 				custom.bottom =
 				{
 					Top = "2em",
-					BackgroundColor = {Std = 0, Selected = RGBa(255, 100, 100, 100)},
+					BackgroundColor = {Std = 0, Selected = RGB(0, 100, 0)},
 					OnMouseIn = GuiAction_SetTag("Selected"),
 					OnMouseOut = GuiAction_SetTag("Std"),
 					OnClick = GuiAction_Call(this, "OnExtraSlotClicked", {slot = effect.slot, objects = extra_data.objects, ID = obj->GetID()}),
 					container = 
 					{
-						Symbol = Chest,
+						Symbol = Icon_ExtraSlot,
 						Priority = 1
 					}
 				};
@@ -1136,15 +953,10 @@ func FxIntRefreshContentsMenuTimer(object target, effect, int time)
 			var overlay = obj->~GetInventoryIconOverlay();
 			if (overlay != nil)
 			{
-				if (!custom)
-				{
-					custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
-					custom.Priority = obj->GetValue();
-					custom.top = {};
-				}
-				custom.top._overlay = overlay;
+				custom.Priority = obj->GetValue();
+				custom.top = { _overlay = overlay };
 			}
-			
+
 			// Add to menu!
 			var text = nil;
 			if (object_amount > 1)
@@ -1159,36 +971,50 @@ func FxIntRefreshContentsMenuTimer(object target, effect, int time)
 				});
 		}
 	}
-	
+
 	// Add a contents counter on top.
 	var contents_count_bar = 
 	{
-		BackgroundColor = RGBa(0, 0, 0, 100),
-		Priority = -1,
+		// Too low a value (-5000 doesn't work) and the bar will be at the bottom when
+		// an extra slot item is in the container and the HUD breaks
+		Priority = -10000,
 		Bottom = "1em",
-		text  = 
+		Style = GUI_NoCrop,
+		text = 
 		{
-			Priority = 2,
-			Style = GUI_TextRight | GUI_TextVCenter
+			Priority = 3,
+			Style = GUI_TextRight | GUI_TextVCenter,
+			Bottom = "1em"
 		}
 	};
-	
+
 	if (effect.obj.MaxContentsCount)
 	{
 		var count = effect.obj->ContentsCount();
 		var max = effect.obj.MaxContentsCount;
 		contents_count_bar.text.Text = Format("<c eeeeee>%3d / %3d</c>", count, max);
-		contents_count_bar.bar = 
+		contents_count_bar.Bottom = "0.5em";
+		contents_count_bar.bar =
+		{
+			Priority = 2,
+			BackgroundColor = RGB(0, 100, 0),
+			Right = ToPercentString(1000 * count / max, 10),
+			Bottom = "50%"
+		};
+		contents_count_bar.background =
 		{
 			Priority = 1,
-			BackgroundColor = RGBa(0, 255, 0, 50),
-			Right = ToPercentString(1000 * count / max, 10)
-		}; 
+			BackgroundColor = RGBa(0, 0, 0, 100),
+			Bottom = "50%"
+		};
 	}
-	else contents_count_bar.text.Text = Format("<c eeeeee>%3d</c>", effect.obj->ContentsCount());
-	
+	else
+	{
+		contents_count_bar.text.Text = Format("<c eeeeee>%3d</c>", effect.obj->ContentsCount());
+	}
+
 	PushBack(inventory, {symbol = nil, text = nil, custom = contents_count_bar});
-	
+
 	// Check if nothing changed. If so, we don't need to update.
 	if (GetLength(inventory) == GetLength(effect.last_inventory))
 	{
@@ -1203,7 +1029,7 @@ func FxIntRefreshContentsMenuTimer(object target, effect, int time)
 		if (same)
 			return FX_OK;
 	}
-	
+
 	effect.last_inventory = inventory[:];
 	DoMenuRefresh(effect.slot, effect.menu_index, inventory);
 	return FX_OK;
