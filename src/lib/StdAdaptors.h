@@ -227,7 +227,10 @@ inline StdRawAdapt mkRawAdapt(void *pData, size_t iSize, StdCompiler::RawCompile
 template <typename T>
 inline StdRawAdapt mkRawAdaptM(T &val)
 {
+	// GCC 4.x doesn't support std::is_trivially_copyable
+#if !defined(__GNUC__) || __GNUC__ > 4
 	static_assert(std::is_trivially_copyable<T>::value, "StdRawAdapt: type must be trivially copyable");
+#endif
 	return mkRawAdapt(&val, sizeof(val));
 }
 
