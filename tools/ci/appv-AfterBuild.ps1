@@ -139,9 +139,10 @@ if ($env:DEPLOYMENT_URL -and $env:DEPLOYMENT_SECRET) {
             GetMetadataValue('Outputs')
     }
 
-    # Copy executable, Qt
+    # Copy executables, Qt
     C:\Qt\5.11.1\msvc2017_64\bin\windeployqt.exe --no-translations --no-compiler-runtime --dir $deploy_dir $openclonk.GetPropertyValue('TargetPath')
     Copy-Item $openclonk.GetPropertyValue('TargetPath') "${deploy_dir}\"
+    Copy-Item $c4group.GetPropertyValue('TargetPath') "${deploy_dir}\"
 
     # Copy other DLLs openclonk depends on
     function Get-Imports {
@@ -150,6 +151,7 @@ if ($env:DEPLOYMENT_URL -and $env:DEPLOYMENT_SECRET) {
     }
     $unresolved = [System.Collections.Queue]::new()
     Get-Imports $openclonk.GetPropertyValue('TargetPath') | %{ $unresolved.Enqueue($_) }
+    Get-Imports $c4group.GetPropertyValue('TargetPath') | %{ $unresolved.Enqueue($_) }
     while ($unresolved.Count -gt 0) {
         $library = $unresolved.Dequeue()
         $file = Join-Path $deploy_dir $library
