@@ -3,7 +3,7 @@
 switch ($env:PLATFORM) {
     'x64' {
         $cmake_generator = 'Visual Studio 15 2017 Win64'
-        $qt = 'C:\Qt\5.11.1\msvc2017_64'
+        $qt = 'C:\Qt\5.11\msvc2017_64'
     }
 }
 
