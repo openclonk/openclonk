@@ -140,7 +140,7 @@ if ($env:DEPLOYMENT_URL -and $env:DEPLOYMENT_SECRET) {
     }
 
     # Copy executables, Qt
-    C:\Qt\5.11.1\msvc2017_64\bin\windeployqt.exe --no-translations --no-compiler-runtime --dir $deploy_dir $openclonk.GetPropertyValue('TargetPath')
+    C:\Qt\5.11\msvc2017_64\bin\windeployqt.exe --no-translations --no-compiler-runtime --dir $deploy_dir $openclonk.GetPropertyValue('TargetPath')
     Copy-Item $openclonk.GetPropertyValue('TargetPath') "${deploy_dir}\"
     Copy-Item $c4group.GetPropertyValue('TargetPath') "${deploy_dir}\"
 
