@@ -453,7 +453,7 @@ func GetInteractableObjects(array sort)
 				can_be_entered &= (interactable->~IsContainer() || interactable->~AllowsVehicleEntrance());
 			}
 		}
-		if (can_be_entered && (!can_only_use_container || can_be_exited))
+		if (can_be_exited || (can_be_entered && !can_only_use_container))
 		{
 			var priority = 29;
 			if (can_be_exited)
