@@ -558,9 +558,16 @@ static long FnGetPhase(C4Object *Obj)
 	return Obj->Action.Phase;
 }
 
-static long FnGetEnergy(C4Object *Obj)
+static long FnGetEnergy(C4Object *Obj, bool fExact)
 {
-	return 100*Obj->Energy/C4MaxPhysical;
+	if (fExact)
+	{
+		return Obj->Energy;
+	}
+	else
+	{
+		return 100*Obj->Energy/C4MaxPhysical;
+	}
 }
 
 static long FnGetBreath(C4Object *Obj)
