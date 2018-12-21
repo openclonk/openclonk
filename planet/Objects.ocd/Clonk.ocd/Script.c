@@ -282,6 +282,13 @@ public func RejectInteractionMenu(object to)
 	return _inherited(to, ...);
 }
 
+// You can not display the Clonk as a content entry in a building.
+// Otherwise you can transfer a crew member to your inventory...
+public func RejectInteractionMenuContentEntry(object menu_target, object container)
+{
+	return true;
+}
+
 public func GetSurroundingEntryMessage(object for_clonk)
 {
 	if (!GetAlive()) return Format("{{Clonk_Grave}} %s", Clonk_Grave->GetInscriptionForClonk(this));

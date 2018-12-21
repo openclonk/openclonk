@@ -837,6 +837,12 @@ func FxIntRefreshContentsMenuTimer(object target, effect, int time)
 	var obj, i = 0;
 	while (obj = effect.obj->Contents(i++))
 	{
+		// Ignore objects that do not want to be shown as contents
+		if (obj->~RejectInteractionMenuContentEntry(cursor, effect.obj))
+		{
+			continue;
+		}
+
 		var symbol = obj;
 		var extra_data = {slot = effect.slot, menu_index = effect.menu_index, objects = []};
 
