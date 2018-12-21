@@ -753,9 +753,15 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	effect.Duration += effect.Interval;
 	
 	// Check if production time has been reached.
-	if (effect.Duration >= ProductionTime(effect.Product))
+	var production_time = ProductionTime(effect.Product);
+	if (effect.Duration >= production_time)
+	{
 		return FX_Execute_Kill;
-	
+	}
+
+	// Issue a callback to the producer, where production progress of the product is indicated from 0 to 1000
+	// The 1000 mark should never be reached, though, because OnProductionFinish() is called before that.
+	this->~OnProductionProgress(effect.Product, BoundBy(effect.Duration * 1000 / production_time, 0, 1000));
 	return FX_OK;
 }
 
