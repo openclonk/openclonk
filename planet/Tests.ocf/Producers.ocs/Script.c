@@ -427,9 +427,9 @@ global func Test5_OnStart(int plr)
 	
 	Log("Testing the behaviour of ProductionCosts()");
 	
-	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[Ore, 1]]);
-	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[Metal, 1], [Wood, 1]]);
-	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[Flour, 1], [Water, 50]]);
+	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[Ore, 1, nil]]);
+	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[Metal, 1, nil], [Wood, 1, nil]]);
+	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[Flour, 1, nil], [Water, 50, nil]]);
 	
 	producer->RemoveObject();
 	return passed;
@@ -856,8 +856,13 @@ global func doTest(description, returned, expected)
 		
 		for (var i = 0; i < GetLength(expected); ++i)
 		{
-			passed &= doTest(Format("*%s", description), returned[i], expected[i]);
-		}		
+			passed &= doTest(Format("* %s", description), returned[i], expected[i]);
+		}
+		// Additional output if the returned values are more than expected
+		for (var i = GetLength(expected); i < GetLength(returned); ++i)
+		{
+			passed &= doTest(Format("* %s", description), returned[i], expected[i]);
+		}
 		return passed;
 	}
 
