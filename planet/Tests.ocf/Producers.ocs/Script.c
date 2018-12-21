@@ -430,6 +430,8 @@ global func Test5_OnStart(int plr)
 	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[Ore, 1, nil]]);
 	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[Metal, 1, nil], [Wood, 1, nil]]);
 	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[Flour, 1, nil], [Water, 50, nil]]);
+	passed &= doTest("Costs for object with a single substitute component (Loam). Got %v, expected %v.", producer->ProductionCosts(Loam), [[Earth, 2, Sand], [Water, 60, nil]]);
+	passed &= doTest("Costs for object with multiple substitute components (TeleGlove). Got %v, expected %v.", producer->ProductionCosts(TeleGlove), [[Diamond, 1, [Ruby, Amethyst]], [Metal, 2, nil]]);
 	
 	producer->RemoveObject();
 	return passed;
