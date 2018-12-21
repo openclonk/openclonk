@@ -427,11 +427,11 @@ global func Test5_OnStart(int plr)
 
 	Log("Testing the behaviour of ProductionCosts()");
 
-	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[Ore, 1, nil]]);
-	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[Metal, 1, nil], [Wood, 1, nil]]);
-	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[Flour, 1, nil], [Water, 50, nil]]);
-	passed &= doTest("Costs for object with a single substitute component (Loam). Got %v, expected %v.", producer->ProductionCosts(Loam), [[Earth, 2, Sand], [Water, 60, nil]]);
-	passed &= doTest("Costs for object with multiple substitute components (TeleGlove). Got %v, expected %v.", producer->ProductionCosts(TeleGlove), [[Diamond, 1, [Ruby, Amethyst]], [Metal, 2, nil]]);
+	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[{Resource = Ore, Amount = 1}]]);
+	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[{Resource = Metal, Amount = 1}], [{Resource = Wood, Amount = 1}]]);
+	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[{Resource = Flour, Amount = 1}], [{Resource = Water, Amount = 50}]]);
+	passed &= doTest("Costs for object with a single substitute component (Loam). Got %v, expected %v.", producer->ProductionCosts(Loam), [[{Resource = Earth, Amount = 2}, {Resource = Sand, Amount = 2}], [{Resource = Water, Amount = 60}]]);
+	passed &= doTest("Costs for object with multiple substitute components (TeleGlove). Got %v, expected %v.", producer->ProductionCosts(TeleGlove), [[{Resource = Diamond, Amount = 1}, {Resource = Ruby, Amount = 1}, {Resource = Amethyst, Amount = 1}], [{Resource = Metal, Amount = 2}]]);
 
 	producer->RemoveObject();
 	return passed;
@@ -974,7 +974,16 @@ global func doTest(description, returned, expected)
 		return passed;
 	}
 
-	var test = (returned == expected);
+	var test;
+	if (GetType(returned) == C4V_PropList
+	 || GetType(expected) == C4V_PropList)
+	{
+		test = DeepEqual(returned, expected);
+	}
+	else
+	{
+		test = (returned == expected);
+	}
 
 	var predicate = "[Fail]";
 	if (test) predicate = "[Pass]";

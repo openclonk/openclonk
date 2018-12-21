@@ -180,44 +180,35 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 
 	var product_id = symbol;
 	var costs = ProductionCosts(product_id);
-	var cost_msg = "";
-	for (var comp in costs)
+	var cost_message = "";
+	for (var cost_options in costs)
 	{
-		if (GetLength(cost_msg))
+		if (GetLength(cost_options) == 0) // Must be an array with entries
 		{
-			cost_msg = Format("%s +", cost_msg);
+			continue;
 		}
-		if (!comp[2])
+		if (GetLength(cost_message))
 		{
-			cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0]);
+			cost_message = Format("%s +", cost_message);
 		}
-		else
+
+		// Append the original resource cost
+		cost_message = Format("%s %s {{%i}}", cost_message, GetCostString(cost_options[0].Amount, CheckComponent(cost_options[0])), cost_options[0].Resource);
+		// Append all of its substitutes
+		for (var i = 1; i < GetLength(cost_options); ++i)
 		{
-			if (GetType(comp[2]) == C4V_Array)
-			{
-				cost_msg = Format("%s (%s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0]);
-				for (var subs in comp[2])
-				{
-					cost_msg = Format("%s / %s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(subs, comp[1])), subs);
-				}
-				cost_msg = Format("%s)", cost_msg);
-			}
-			else
-			{
-				cost_msg = Format("%s (%s {{%i}} / %s {{%i}})", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0], GetCostString(comp[1], CheckComponent(comp[2], comp[1])), comp[2]);
-				//cost_msg = Format("%s %s ({{%i}} / {{%i}})", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0], comp[2]);
-			}
+			cost_message = Format("%s / %s {{%i}}", cost_message, GetCostString(cost_options[i].Amount, CheckComponent(cost_options[i])), cost_options[i].Resource);
 		}
 	}
 	if (this->~FuelNeed(product_id))
 	{
-		cost_msg = Format("%s %s {{Icon_Producer_Fuel}}", cost_msg, GetCostString(1, CheckFuel(product_id)));
+		cost_message = Format("%s %s {{Icon_Producer_Fuel}}", cost_message, GetCostString(1, CheckFuel(product_id)));
 	}
 	if (this->~PowerNeed(product_id))
 	{
-		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
+		cost_message = Format("%s + {{Library_PowerConsumer}}", cost_message);
 	}
-	new_box.requirements.Text = cost_msg;
+	new_box.requirements.Text = cost_message;
 	GuiUpdate(new_box, menu_id, 1, desc_menu_target);
 }
 
@@ -336,22 +327,80 @@ public func GetProducts(object for_clonk)
 
 /**
 	Determines the production costs for an item.
+	
+	For each component of the item the function returns an array
+	of the original component definition and its possible substitutes.
+	Substitutes can be defined in the product, by the callback:
+	
+	Callback to product ID:
+	- GetSubstituteComponent(id component_id, int amount)
+	- the function may return one of the following:
+	  * an ID; in this case it is assumed, that the component
+	           can be substituted with this ID and the original amount
+	  * a proplist {Resource = substitude_id, Amount = amount};
+	    in this case that proplist defines the new amount.
+	  * an array of either ID or proplist as above (can be mixed, but this is not recommended)
+	    for multiple substitute options.
+
 	@param item_id id of the item under consideration.
 	@return a list of objects and their respective amounts.
+	        The list is an array of arrays. Each entry in the list
+	        is an array of proplists {Resource = id, Amount = int}
+	        for the options, e.g. [{Resource = Ore, Amount = 2}, {Resource = Metal, Amount = 1}].
 */
 public func ProductionCosts(id item_id)
 {
 	/* NOTE: This may be overloaded by the producer */
-	var comp_list = [];
-	var comp_id, index = 0;
-	while (comp_id = item_id->GetComponent(nil, index))
+	var component_list = [];
+	var component_id, index = 0;
+	while (component_id = item_id->GetComponent(nil, index))
 	{
-		var amount = item_id->GetComponent(comp_id);
-		var substitute = item_id->~GetSubstituteComponent(comp_id);
-		comp_list[index] = [comp_id, amount, substitute];
+		var amount = item_id->GetComponent(component_id);
+		var options = [ProductionCostData(component_id, amount)];
+		var substitute = item_id->~GetSubstituteComponent(component_id, amount);
+		if (GetType(substitute) == C4V_Array)
+		{
+			for (var option in substitute)
+			{
+				var data = ProductionCostData(option, amount);
+				if (data)
+				{
+					PushBack(options, data);
+				}
+			}
+		}
+		else
+		{
+			var data = ProductionCostData(substitute, amount);
+			if (data)
+			{
+				PushBack(options, data);
+			}
+		}
+		component_list[index] = options;
 		index++;
 	}
-	return comp_list;
+	return component_list;
+}
+
+
+func ProductionCostData(component, int amount)
+{
+	// Assume that it already has the correct format
+	if (GetType(component) == C4V_PropList)
+	{
+		return component;
+	}
+	// The actual format
+	else if (GetType(component) == C4V_Def)
+	{
+		return {Resource = component, Amount = amount};
+	}
+	// Invalid value
+	else
+	{
+		return nil;
+	}
 }
 
 
@@ -609,47 +658,29 @@ func CheckComponents(id product, bool remove)
 {
 	for (var item in ProductionCosts(product))
 	{
-		var mat_id = item[0];
-		var mat_cost = item[1];
-		var mat_substitute = item[2];
-		if (!CheckComponent(mat_id, mat_cost))
+		// No cost specified?
+		if (GetLength(item) == 0)
 		{
-			if (mat_substitute)
+			return false;
+		}
+		var mat_id;
+		var mat_cost;
+
+		var found = false;
+		// Check all possible resource options
+		for (var option in item)
+		{
+			if (CheckComponent(option))
 			{
-				if (GetType(mat_substitute) == C4V_Array)
-				{
-					var found = false;
-					for (var substitute in mat_substitute) // Check all possible substitutes
-					{
-						if (CheckComponent(substitute, mat_cost))
-						{
-							mat_id = substitute;
-							found = true;
-							break;
-						}
-					}
-					if (!found)
-					{
-						return false; // Substitutes missing.
-					}
-				}
-				else
-				{
-					// Check substitute components
-					if (CheckComponent(mat_substitute, mat_cost))
-					{
-						mat_id = mat_substitute;
-					}
-					else
-					{
-						return false; // Substitute missing.
-					}
-				}
+				mat_id = option.Resource;
+				mat_cost = option.Amount;
+				found = true;
+				break;
 			}
-			else
-			{
-				return false; // Components missing.
-			}
+		}
+		if (!found)
+		{
+			return false; // Resources are missing.
 		}
 		if (remove)
 		{
@@ -693,9 +724,21 @@ public func GetAvailableComponentAmount(id material)
 }
 
 
-public func CheckComponent(id component, int amount)
+public func CheckComponent(component, int amount)
 {
-	return GetAvailableComponentAmount(component) >= amount;
+	if (GetType(component) == C4V_Def)
+	{
+		return GetAvailableComponentAmount(component) >= amount;
+	}
+	else if (GetType(component) == C4V_PropList)
+	{
+		return CheckComponent(component.Resource, component.Amount);
+	}
+	else
+	{
+		FatalError(Format("Unsupported parameter format: %v", component));
+		return false;
+	}
 }
 
 
@@ -935,8 +978,14 @@ public func RequestAllMissingComponents(proplist product)
 	// Request all currently unavailable components.
 	for (var item in ProductionCosts(item_id))
 	{
-		var mat_id = item[0];
-		var mat_cost = item[1];
+		// Must actually define items
+		if (GetLength(item) == 0)
+		{
+			continue;
+		}
+		// TODO: Smartly request resources? Currently it will only request the first of the possible options (the default components)
+		var mat_id = item[0].Resource;
+		var mat_cost = item[0].Amount;
 		// No way to request liquids currently, player must use pumps instead.
 		if (mat_id->~IsLiquid())
 		{
