@@ -435,10 +435,11 @@ func GetInteractableObjects(array sort)
 		}
 		
 		// Can be entered or exited?
-		var can_be_exited = interactable == Contained();
-		var can_be_entered = interactable->GetOCF() & OCF_Entrance;
+		var has_entrance = interactable->GetOCF() & OCF_Entrance;
+		var can_be_exited = has_entrance && uses_container;
 		// Check if object shape overlaps with entrance area.
-		if (can_be_entered)
+		var can_be_entered = false;
+		if (has_entrance)
 		{
 			var entrance = interactable->GetEntranceRectangle();
 			var shape = GetShape();
@@ -453,7 +454,7 @@ func GetInteractableObjects(array sort)
 				can_be_entered &= (interactable->~IsContainer() || interactable->~AllowsVehicleEntrance());
 			}
 		}
-		if (can_be_exited || (can_be_entered && !can_only_use_container))
+		if (has_entrance && ((can_be_entered && !can_only_use_container) || can_be_exited))
 		{
 			var priority = 29;
 			if (can_be_exited)
