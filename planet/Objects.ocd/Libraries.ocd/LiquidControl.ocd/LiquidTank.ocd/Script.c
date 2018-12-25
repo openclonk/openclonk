@@ -102,7 +102,9 @@ public func GetPipeControlMenuEntries(object clonk)
 			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, GetConnectedPipeMessage("$MsgCutSource$", GetSourcePipe()), 1, LIBRARY_TANK_Menu_Action_Cut_Source, RGB(102, 136, 34)));
 	}
 	else if (source_pipe)
+	{
 		PushBack(menu_entries, GetTankMenuEntry(source_pipe, GetConnectedPipeMessage("$MsgConnectSource$", source_pipe), 1, LIBRARY_TANK_Menu_Action_Add_Source, RGB(102, 136, 34)));
+	}
 
 	if (GetDrainPipe())
 	{
@@ -110,7 +112,9 @@ public func GetPipeControlMenuEntries(object clonk)
 			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, GetConnectedPipeMessage("$MsgCutDrain$", GetDrainPipe()), 2, LIBRARY_TANK_Menu_Action_Cut_Drain, RGB(238, 102, 0)));
 	}
 	else if (drain_pipe)
+	{
 		PushBack(menu_entries, GetTankMenuEntry(drain_pipe, GetConnectedPipeMessage("$MsgConnectDrain$", drain_pipe), 2, LIBRARY_TANK_Menu_Action_Add_Drain, RGB(238, 102, 0)));
+	}
 
 	if (GetNeutralPipe())
 	{
@@ -118,10 +122,14 @@ public func GetPipeControlMenuEntries(object clonk)
 			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, GetConnectedPipeMessage("$MsgCutNeutral$", GetNeutralPipe()), 3, LIBRARY_TANK_Menu_Action_Cut_Neutral, RGB(80, 80, 120)));
 	}
 	else if (neutral_pipe)
+	{
 		PushBack(menu_entries, GetTankMenuEntry(neutral_pipe, GetConnectedPipeMessage("$MsgConnectNeutral$", neutral_pipe), 3, LIBRARY_TANK_Menu_Action_Add_Neutral, RGB(80, 80, 120)));
+	}
 
 	if (IsAllowedSwapSourceDrain())
+	{
 		PushBack(menu_entries, GetTankMenuEntry(Icon_Swap, GetConnectedPipeMessage("$MsgSwapSourceDrain$", GetSourcePipe(), GetDrainPipe()), 10, LIBRARY_TANK_Menu_Action_Swap_SourceDrain, nil));
+	}
 
 	return menu_entries;
 }
