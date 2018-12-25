@@ -477,7 +477,7 @@ global func Test6_OnStart(int plr)
 	
 	var pump = CreateObjectAbove(Pump, 250, 160, plr);
 	CreateObjectAbove(Flagpole, 280, 160, plr);
-	pump->SetMaterialSelection([Concrete]);
+	pump->SetResourceSelection([Concrete]);
 	var source = CreateObjectAbove(Pipe, 168, 292, plr);
 	source->ConnectPipeTo(pump, PIPE_STATE_Source);
 	source->ConnectPipeTo(foundry, PIPE_STATE_Source);

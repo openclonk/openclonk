@@ -212,7 +212,7 @@ global func Test2_OnStart(int plr)
 	drain->ConnectPipeTo(foundry, PIPE_STATE_Drain);
 	
 	var pump = CreateObjectAbove(Pump, 240, 160, plr);
-	pump->SetMaterialSelection([Concrete]);
+	pump->SetResourceSelection([Concrete]);
 	var source = CreateObjectAbove(Pipe, 168, 292, plr);
 	source->ConnectPipeTo(pump, PIPE_STATE_Source);
 	source->ConnectPipeTo(foundry, PIPE_STATE_Source);
