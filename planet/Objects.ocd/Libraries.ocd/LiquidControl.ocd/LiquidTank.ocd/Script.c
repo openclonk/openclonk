@@ -160,22 +160,36 @@ public func OnPipeControlHover(symbol_or_object, string action, desc_menu_target
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
 
-public func OnPipeControl(symbol_or_object, string action, bool alt)
+public func OnPipeControl(symbol_or_object, string action, object clonk)
 {
 	if (action == LIBRARY_TANK_Menu_Action_Add_Source)
+	{
 		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Source);
+	}
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Source)
-		this->DoCutPipe(GetSourcePipe());
+	{
+		this->DoCutPipe(GetSourcePipe(), clonk);
+	}
 	else if (action == LIBRARY_TANK_Menu_Action_Add_Drain)
+	{
 		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Drain);
+	}
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Drain)
-		this->DoCutPipe(GetDrainPipe());
+	{
+		this->DoCutPipe(GetDrainPipe(), clonk);
+	}
 	else if (action == LIBRARY_TANK_Menu_Action_Add_Neutral)
+	{
 		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Neutral);
+	}
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Neutral)
-		this->DoCutPipe(GetNeutralPipe());
+	{
+		this->DoCutPipe(GetNeutralPipe(), clonk);
+	}
 	else if (action == LIBRARY_TANK_Menu_Action_Swap_SourceDrain)
+	{
 		this->DoSwapSourceDrain(GetSourcePipe(), GetDrainPipe());
+	}
 
 	UpdateInteractionMenus(this.GetPipeControlMenuEntries);
 }
@@ -236,11 +250,11 @@ public func DoConnectPipe(object pipe, string specific_pipe_state)
 	pipe->ConnectPipeTo(this, specific_pipe_state);
 }
 
-public func DoCutPipe(object pipe)
+public func DoCutPipe(object pipe, object clonk)
 {
 	if (pipe)
 	{
-		pipe->CutLineConnection(this);		
+		pipe->CutLineConnection(this, clonk);		
 	}
 }
 

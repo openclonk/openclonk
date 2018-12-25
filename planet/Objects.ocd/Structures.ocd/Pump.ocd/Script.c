@@ -226,11 +226,11 @@ public func OnPipeControlHover(symbol_or_object, string action, desc_menu_target
 	return inherited(symbol_or_object, action, desc_menu_target, menu_id, ...);
 }
 
-public func OnPipeControl(symbol_or_object, string action, bool alt)
+public func OnPipeControl(symbol_or_object, string action, object clonk)
 {
 	if (action == LIBRARY_TANK_Menu_Action_Cut_AirPipe)
 	{
-		this->DoCutPipe(GetDrainPipe());
+		this->DoCutPipe(GetDrainPipe(), clonk);
 		UpdateInteractionMenus(this.GetPipeControlMenuEntries);
 		return;
 	}
@@ -240,7 +240,7 @@ public func OnPipeControl(symbol_or_object, string action, bool alt)
 		UpdateInteractionMenus(this.GetPipeControlMenuEntries);
 		return;
 	}
-	return inherited(symbol_or_object, action, alt, ...);
+	return inherited(symbol_or_object, action, clonk, ...);
 }
 
 
