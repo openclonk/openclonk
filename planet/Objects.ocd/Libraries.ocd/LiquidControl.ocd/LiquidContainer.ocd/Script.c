@@ -116,24 +116,26 @@ Inserts liquid into the container.
 */
 public func PutLiquid(liquid_name, int amount, object source)
 {
-	amount = amount ?? this->GetLiquidAmountRemaining();
-
+	amount = amount ?? this->GetLiquidAmountRemaining(liquid_name);
 	if (amount < 0)
 	{
 		FatalError(Format("You can insert positive amounts of liquid only, got %d", amount));
 	}
 
 	var type = GetLiquidDef(liquid_name);
-	
+
+	// Do nothing?
 	var max = this->GetLiquidContainerMaxFillLevel(liquid_name);
 	var before = GetLiquidAmount(liquid_name);
 	if (max > 0 && before >= max) return 0;
 
+	// Limit to the actual maximum
+	amount = Min(amount, max);
 	if (type)
 	{
 		var liquid = type->~CreateLiquid(amount);
 		if (liquid) Collect(liquid, true);
-		// the check is necessary here, because the liquid may get removed if the barrel already
+		// The check is necessary here, because the liquid may get removed if the barrel already
 		// has a stack inside
 		if (liquid && !(liquid->Contained())) liquid->RemoveObject();
 	}
@@ -149,12 +151,20 @@ public func AcceptsLiquid(liquid_name, int amount)
 	return IsLiquidContainerForMaterial(liquid_type) && amount <= this->GetLiquidContainerMaxFillLevel(liquid_name) - GetLiquidAmount(liquid_name);
 }
 
-private func GetLiquidDef(liquid_name)
+func GetLiquidDef(liquid_name)
 {
 	if (GetType(liquid_name) == C4V_String)
+	{
 		return GetDefinition(liquid_name);
+	}
 	else if (GetType(liquid_name) == C4V_Def)
+	{
 		return liquid_name;
+	}
+	else if (GetType(liquid_name) == C4V_C4Object)
+	{
+		return liquid_name->GetID();
+	}
 	FatalError(Format("The first parameter of GetLiquidDef() must either be a string or definition. You passed %v.", liquid_name));
 	return nil;
 }
