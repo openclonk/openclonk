@@ -67,7 +67,7 @@ global func Particles_Smoke(bool heavy)
 	{
 		CollisionVertex = 500,
 		OnCollision = PC_Stop(),
-		ForceY = PV_Gravity(-100 + heavy*90),
+		ForceY = PV_Gravity(100 + heavy*400, -10),
 		ForceX = PV_Wind(200 - heavy*180),
 		DampingX = 900, DampingY = 900,
 		Alpha = PV_Linear(255, 0),
