@@ -235,6 +235,22 @@ public func GetDrainPipe() { return lib_pipe_control.drain_pipe;}
 public func GetSourcePipe() { return lib_pipe_control.source_pipe;}
 public func GetNeutralPipe() { return lib_pipe_control.neutral_pipe;}
 
+public func GetConnectedObject(object pipe, bool strict)
+{
+	if (pipe)
+	{
+		return pipe->GetConnectedObject(this);
+	}
+	if (strict)
+	{
+		return nil;
+	}
+	else
+	{
+		return this;
+	}
+}
+
 public func SetAirPipe(object air_pipe)
 {
 	lib_pipe_control.air_pipe = air_pipe;
