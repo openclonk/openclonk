@@ -179,8 +179,8 @@ private func SetInfoMessage(string msg)
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);
 }
 
-static const LIBRARY_TANK_Menu_Action_Cut_AirPipe = "cutairpipe";
-static const LIBRARY_TANK_Menu_Action_Add_AirPipe = "addairpipe";
+static const LIBRARY_PIPE_Menu_Action_Cut_AirPipe = "cutairpipe";
+static const LIBRARY_PIPE_Menu_Action_Add_AirPipe = "addairpipe";
 
 // Extend liquid tank connection interface to air pipes.
 public func GetPipeControlMenuEntries(object clonk)
@@ -193,9 +193,9 @@ public func GetPipeControlMenuEntries(object clonk)
 	{
 		for (var entry in menu_entries)
 		{
-			if (entry.extra_data == LIBRARY_TANK_Menu_Action_Cut_Drain)
+			if (entry.extra_data == LIBRARY_PIPE_Menu_Action_Cut_Drain)
 			{
-				entry.extra_data = LIBRARY_TANK_Menu_Action_Cut_AirPipe;
+				entry.extra_data = LIBRARY_PIPE_Menu_Action_Cut_AirPipe;
 				entry.Priority = 4;
 				entry.custom.image.BackgroundColor = RGB(0, 153, 255);
 				entry.custom.text.Text = GetConnectedPipeMessage("$MsgCutAirPipe$", GetDrainPipe());
@@ -207,18 +207,18 @@ public func GetPipeControlMenuEntries(object clonk)
 	// Add attach air pipe menu entry.
 	var air_pipe = FindAvailablePipe(clonk, Find_Func("IsAirPipe"));
 	if (!drain_pipe && air_pipe)
-		PushBack(menu_entries, GetTankMenuEntry(air_pipe, GetConnectedPipeMessage("$MsgConnectAirPipe$", air_pipe), 4, LIBRARY_TANK_Menu_Action_Add_AirPipe, RGB(0, 153, 255)));
+		PushBack(menu_entries, GetTankMenuEntry(air_pipe, GetConnectedPipeMessage("$MsgConnectAirPipe$", air_pipe), 4, LIBRARY_PIPE_Menu_Action_Add_AirPipe, RGB(0, 153, 255)));
 	return menu_entries;
 }
 
 public func OnPipeControlHover(symbol_or_object, string action, desc_menu_target, menu_id)
 {
-	if (action == LIBRARY_TANK_Menu_Action_Cut_AirPipe)
+	if (action == LIBRARY_PIPE_Menu_Action_Cut_AirPipe)
 	{
 		GuiUpdateText(GetConnectedPipeDescription("$DescCutAirPipe$", GetDrainPipe()), menu_id, 1, desc_menu_target);
 		return;
 	}
-	if (action == LIBRARY_TANK_Menu_Action_Add_AirPipe)
+	if (action == LIBRARY_PIPE_Menu_Action_Add_AirPipe)
 	{
 		GuiUpdateText(GetConnectedPipeDescription("$DescConnectAirPipe$", symbol_or_object), menu_id, 1, desc_menu_target);
 		return;
@@ -228,13 +228,13 @@ public func OnPipeControlHover(symbol_or_object, string action, desc_menu_target
 
 public func OnPipeControl(symbol_or_object, string action, object clonk)
 {
-	if (action == LIBRARY_TANK_Menu_Action_Cut_AirPipe)
+	if (action == LIBRARY_PIPE_Menu_Action_Cut_AirPipe)
 	{
 		this->DoCutPipe(GetDrainPipe(), clonk);
 		UpdateInteractionMenus(this.GetPipeControlMenuEntries);
 		return;
 	}
-	if (action == LIBRARY_TANK_Menu_Action_Add_AirPipe)
+	if (action == LIBRARY_PIPE_Menu_Action_Add_AirPipe)
 	{
 		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Air);
 		UpdateInteractionMenus(this.GetPipeControlMenuEntries);
