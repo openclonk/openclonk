@@ -1,17 +1,17 @@
 /**
-	Liquid Tank
-	A structure that can contain liquids. Connecting pipes to the
-	structure can be allowed, but this has to be implemented by the
+	Pipe Control
+
+	Provides the interface for adding pipes (source, drain, air) to an object.
+
+	Connecting pipes has to be implemented by the
 	object. This is controlled with the callbacks
 	 - QueryConnectPipe
 	 - OnPipeConnect
 	 - OnPipeDisconnect
 	in that structure.
-	
-	@author Marky
-*/
 
-#include Library_LiquidContainer
+	@author Maikel, Marky
+*/
 
 
 static const LIBRARY_TANK_Menu_Action_Add_Drain = "adddrain";
@@ -46,8 +46,6 @@ public func Construction()
 	
 	_inherited(...);
 }
-
-public func IsLiquidTank() { return true; }
 
 
 /*-- Menu Entries --*/

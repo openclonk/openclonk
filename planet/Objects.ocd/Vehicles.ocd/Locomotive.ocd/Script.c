@@ -6,7 +6,8 @@
 */
 
 #include Library_ElevatorControl
-#include Library_Tank
+#include Library_LiquidContainer
+#include Library_PipeControl
 
 
 local move_dir;
