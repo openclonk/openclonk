@@ -108,16 +108,24 @@ public func GetResourceSelectionMenuEntries(object clonk)
 		 && this->IsResourceSelectionParent(resource, nil)) // Ignore those with parent resource, because they will be added/removed together with the parent
 		{
 			var enabled = IsInResourceSelection(resource);
-			var action, status;
+			var action;
 			if (enabled)
 			{
 				action = RESOURCE_SELECT_Menu_Action_Resource_Disable;
-				status = Icon_Ok;
 			}
 			else
 			{
 				action = RESOURCE_SELECT_Menu_Action_Resource_Enable;
-				status = Icon_Cancel;
+			}
+			var icon = this->GetResourceSelectionIcon(resource, enabled), icon_type, icon_gfx;
+			if (GetType(icon) == C4V_C4Object || GetType(icon) == C4V_Def)
+			{
+				icon_type = icon;
+			}
+			else if (icon)
+			{
+				icon_type = icon.Symbol;
+				icon_gfx = icon.GraphicsName;
 			}
 			PushBack(menu_entries, 
 				{symbol = resource, extra_data = action, 
@@ -126,8 +134,8 @@ public func GetResourceSelectionMenuEntries(object clonk)
 						Right = "2em", Bottom = "2em",
 						BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
 						Priority = index,
-						status = {Right = "1em", Top = "1em", Symbol = status},
-						image = {Symbol = resource}
+						image =  {Priority = 1, Symbol = resource},
+						icon =   {Priority = 2, Right = "1em", Top = "1em", Symbol = icon_type, GraphicsName = icon_gfx},
 				}}
 			);
 		}
@@ -195,4 +203,28 @@ func InitResourceSelection()
 			AddToResourceSelection(resource);
 	return;	
 */
+}
+
+/**
+	Defines how the icons for selection are displayed,
+	in the lower left corner.
+
+	By default, the enabled icon is a green check mark,
+	the disabled icon is a red cross mark.
+	
+	Return values can be either:
+	- ID: for an icon
+	- Object: for an object
+	- Proplist: {Symbol, GraphicsName}, as in usual script GUIs
+ */
+func GetResourceSelectionIcon(id resource, bool enabled)
+{
+	if (enabled)
+	{
+		return Icon_Ok;
+	}
+	else
+	{
+		return Icon_Cancel;
+	}
 }
