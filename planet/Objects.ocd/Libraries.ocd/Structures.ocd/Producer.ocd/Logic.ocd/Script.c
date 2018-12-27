@@ -691,7 +691,7 @@ func CheckComponents(id product, bool remove)
 		{
 			for (var i = 0; i < mat_cost; i++)
 			{
-				var obj = FindObject(Find_Container(this), Find_ID(mat_id));
+				var obj = FindObject(this->Find_AvailableToProducer(), Find_ID(mat_id));
 				// First try to remove some objects from the stack.
 				if (obj->~IsStackable())
 				{
@@ -712,14 +712,14 @@ func CheckComponents(id product, bool remove)
 
 public func GetAvailableComponentAmount(id material)
 {
+	var contents = FindObjects(this->Find_AvailableToProducer(), Find_ID(material));
 	// Normal object?
 	if (!material->~IsStackable())
 	{
-		return ContentsCount(material);
+		return GetLength(contents);
 	}
 	// If not, we need to check stacked objects.
 	var real_amount = 0;
-	var contents = FindObjects(Find_Container(this), Find_ID(material));
 	for (var obj in contents)
 	{
 		var count = obj->~GetStackCount() ?? 1;
@@ -754,7 +754,7 @@ public func CheckFuel(id product, bool remove)
 	{
 		var fuel_amount = 0;
 		// Find fuel in this producer.
-		for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
+		for (var fuel in FindObjects(this->Find_AvailableToProducer(), Find_Func("IsFuel")))
 		{
 			fuel_amount += fuel->~GetFuelAmount();
 		}
@@ -765,7 +765,7 @@ public func CheckFuel(id product, bool remove)
 		else if (remove)
 		{
 			// Convert existing objects.
-			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
+			for (var fuel in FindObjects(this->Find_AvailableToProducer(), Find_Func("IsFuel")))
 			{
 				// Extract the fuel amount from stored objects
 				var fuel_extracted = fuel->~GetFuelAmount(fuel_needed);
@@ -783,6 +783,18 @@ public func CheckFuel(id product, bool remove)
 		}
 	}
 	return true;
+}
+
+/**
+	Overloadable function, for finding objects that are available to
+	the producer (e.g. certain producers might take objects from their
+	surrounding, instead of their inventory).
+
+	Defaults to being contained in the producer.
+ */
+func Find_AvailableToProducer()
+{
+	return Find_Container(this);
 }
 
 
