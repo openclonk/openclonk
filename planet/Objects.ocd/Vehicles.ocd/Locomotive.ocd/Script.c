@@ -71,24 +71,6 @@ public func GetLiquidContainerMaxFillLevel(liquid_name)
 	return this.LiquidCapacity;
 }
 
-// The locomotive may only have a drain pipe.
-public func QueryConnectPipe(object pipe, bool do_msg)
-{
-	if (pipe->IsDrainPipe() && GetDrainPipe())
-	{
-		if (do_msg)
-			pipe->Report("$MsgHasDrainPipe$");
-		return true;
-	}
-	if (pipe->IsSourcePipe() || pipe->IsAirPipe())
-	{
-		if (do_msg)
-			pipe->Report("$MsgPipeProhibited$");
-		return true;
-	}
-	return false;
-}
-
 // Set to source or drain pipe.
 public func OnPipeConnect(object pipe, string specific_pipe_state)
 {
@@ -253,3 +235,8 @@ local BorderBound = C4D_Border_Sides;
 local ContactCalls = true;
 local Components = {Wood = 1, Metal = 4};
 local LiquidCapacity = 2400;
+
+// The locomotive may only have a drain pipe.
+local PipeLimit_Air = 0;
+local PipeLimit_Drain = 1;
+local PipeLimit_Source = 0;

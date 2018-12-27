@@ -213,32 +213,6 @@ public func GetLiquidContainerMaxFillLevel(liquid_name)
 	return 300;
 }
 
-// The foundry may have one drain and one source.
-public func QueryConnectPipe(object pipe, bool do_msg)
-{
-	if (GetDrainPipe() && GetSourcePipe())
-	{
-		if (do_msg) pipe->Report("$MsgHasPipes$");
-		return true;
-	}
-	else if (GetSourcePipe() && pipe->IsSourcePipe())
-	{
-		if (do_msg) pipe->Report("$MsgSourcePipeProhibited$");
-		return true;
-	}
-	else if (GetDrainPipe() && pipe->IsDrainPipe())
-	{
-		if (do_msg) pipe->Report("$MsgDrainPipeProhibited$");
-		return true;
-	}
-	else if (pipe->IsAirPipe())
-	{
-		if (do_msg) pipe->Report("$MsgPipeProhibited$");
-		return true;
-	}
-	return false;
-}
-
 // Set to source or drain pipe.
 public func OnPipeConnect(object pipe, string specific_pipe_state)
 {
@@ -329,3 +303,8 @@ local FireproofContainer = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local Components = {Rock = 6, Metal = 3};
+
+// The steam engine may have one drain and one source.
+local PipeLimit_Air = 0;
+local PipeLimit_Drain = 1;
+local PipeLimit_Source = 1;

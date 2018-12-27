@@ -7,5 +7,3 @@ MsgNoCoalAndWater=No coal and water available!
 MsgStuck=Locomotive is stuck
 
 MsgConnectedPipe=Connected pipe.
-MsgHasDrainPipe=Locomotive already has a drain pipe.
-MsgPipeProhibited=Only connecting a drain pipe is allowed.

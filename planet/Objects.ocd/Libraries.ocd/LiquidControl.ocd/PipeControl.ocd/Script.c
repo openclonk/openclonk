@@ -13,6 +13,7 @@
 	@author Maikel, Marky
 */
 
+/* --- Constants --- */
 
 static const LIBRARY_PIPE_Menu_Action_Add_Drain = "adddrain";
 static const LIBRARY_PIPE_Menu_Action_Add_Source = "addsource";
@@ -23,11 +24,22 @@ static const LIBRARY_PIPE_Menu_Action_Cut_Neutral = "cutneutral";
 static const LIBRARY_PIPE_Menu_Action_Swap_SourceDrain = "swapsourcedrain";
 static const LIBRARY_PIPE_Menu_Action_Description = "description";
 
+/* --- Properties --- */
 
-local lib_pipe_control; // proplist for local variables
+local lib_pipe_control; // Proplist for local variables
+
+// Numerical limits for pipe connections, per pipe type; Meaning:
+// - nil = unlimited connections allowed
+// - 0 = no connections allowed
+// - 1 = 1 connection allowed
+// - connections > 1 may work, but are not integrated properly yet.
+local PipeLimit_Air = nil;
+local PipeLimit_Drain = nil;
+local PipeLimit_Neutral = nil;
+local PipeLimit_Source = nil;
 
 
-/*-- Callbacks --*/
+/* --- Callbacks --- */
 
 public func Construction()
 {
@@ -48,7 +60,7 @@ public func Construction()
 }
 
 
-/*-- Menu Entries --*/
+/* --- Menu Entries --- */
 
 public func HasInteractionMenu() { return true; }
 
@@ -216,11 +228,18 @@ public func GetConnectedPipeDescription(string base_desc, object pipe1, object p
 	return desc;
 }
 
-/*-- Handle Connections --*/
+/* --- Handle Connections --- */
 
+public func GetAirPipe() { return lib_pipe_control.air_pipe;}
 public func GetDrainPipe() { return lib_pipe_control.drain_pipe;}
 public func GetSourcePipe() { return lib_pipe_control.source_pipe;}
 public func GetNeutralPipe() { return lib_pipe_control.neutral_pipe;}
+
+public func SetAirPipe(object air_pipe)
+{
+	lib_pipe_control.air_pipe = air_pipe;
+	return lib_pipe_control.air_pipe;
+}
 
 public func SetDrainPipe(object drain_pipe)
 {
@@ -241,7 +260,7 @@ public func SetNeutralPipe(object neutral_pipe)
 }
 
 
-/*-- Menu Callbacks --*/
+/* --- Menu Callbacks --- */
 
 public func DoConnectPipe(object pipe, string specific_pipe_state)
 {
@@ -300,7 +319,7 @@ public func FindAvailablePipe(object container, find_state)
 }
 
 
-/*-- Pipe Callbacks --*/
+/* --- Pipe Callbacks --- */
 
 public func CanConnectPipe(){ return true;}
 
@@ -313,11 +332,107 @@ public func OnPipeDisconnect(object pipe)
 }
 
 
-/*-- Scenario Saving --*/
+public func QueryConnectPipe(object pipe, bool report_message)
+{
+	// Do not allow connections from this object to itself
+	if (pipe->~IsConnectedTo(this)
+	 || pipe->~GetConnectedLine() && pipe->GetConnectedLine()->~IsConnectedTo(this))
+	{
+		if (report_message) pipe->Report(Format("$MsgPipeAlreadyConnected$", this->GetName()));
+		return true;
+	}
+
+	// All limits hit?
+	if (AllPipeLimitsReached())
+	{
+		if (report_message)
+		{
+			var possible_connections;
+			for (var limit in GetPipeLimits())
+			{
+				if (!limit.HasLimit) continue;
+				if (possible_connections)
+				{
+					possible_connections = Format("%s, %s", possible_connections, limit.Description);
+				}
+				else
+				{
+					possible_connections = limit.Description;
+				}
+			}
+			pipe->Report(Format("$MsgHasPipes$", this->GetName(), possible_connections));
+		}
+		return true;
+	}
+	// Check limits individually
+	if (IsPipeLimitReached(pipe, pipe->IsSourcePipe(), this.PipeLimit_Source, GetSourcePipe(), report_message, "$MsgSourcePipeProhibited$")
+	||  IsPipeLimitReached(pipe, pipe->IsDrainPipe(), this.PipeLimit_Drain, GetDrainPipe(), report_message, "$MsgDrainPipeProhibited$")
+	||  IsPipeLimitReached(pipe, pipe->IsAirPipe(), this.PipeLimit_Air, GetAirPipe(), report_message, "$MsgAirPipeProhibited$")
+	||  IsPipeLimitReached(pipe, pipe->IsNeutralPipe(), this.PipeLimit_Neutral, GetNeutralPipe(), report_message, "$MsgNeutralPipeProhibited$"))
+	{
+		return true;
+	}
+	return false;
+}
+
+
+func IsPipeLimitReached(object pipe, bool apply_limit, int limit, object existing_pipe, bool report_message, string message)
+{
+	// Limit does not even apply?
+	if (!apply_limit ||  nil == limit)
+	{
+		return false;
+	}
+	// Pipes of this type are always prohibited?
+	if (0 == limit)
+	{
+		if (report_message) pipe->Report(Format("$MsgPipeProhibited$", this->GetName()));
+		return true;
+	}
+	// Pipes of this type are limited?
+	if (!!existing_pipe)
+	{
+		if (report_message) pipe->Report(Format(message ?? "$MsgPipeProhibited$", this->GetName()));
+		return true;
+	}
+	return false;
+}
+
+func AllPipeLimitsReached()
+{
+	var limits = GetPipeLimits();
+
+	var has_limit = false;
+	for (var limit in limits)
+	{
+		if (!limit.HasLimit)
+		{
+			continue;
+		}
+		has_limit = true;
+		if (!limit.Current)
+		{
+			return false;
+		}
+	}
+	return has_limit;
+}
+
+func GetPipeLimits()
+{
+	return [{HasLimit = this.PipeLimit_Air,     Current = GetAirPipe(),     Description = "$MsgPipeAir$", },
+	        {HasLimit = this.PipeLimit_Drain,   Current = GetDrainPipe(),   Description = "$MsgPipeDrain$", }, 
+	        {HasLimit = this.PipeLimit_Neutral, Current = GetNeutralPipe(), Description = "$MsgPipeNeutral$", }, 
+	        {HasLimit = this.PipeLimit_Source,  Current = GetSourcePipe(),  Description = "$MsgPipeSource$", }];
+}
+
+
+/* --- Scenario Saving --- */
 
 public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
+	if (lib_pipe_control.air_pipe) props->AddCall("AirPipe", this, "SetAirPipe", lib_pipe_control.air_pipe);
 	if (lib_pipe_control.drain_pipe) props->AddCall("DrainPipe", this, "SetDrainPipe", lib_pipe_control.drain_pipe);
 	if (lib_pipe_control.source_pipe) props->AddCall("SourcePipe", this, "SetSourcePipe", lib_pipe_control.source_pipe);
 	if (lib_pipe_control.neutral_pipe) props->AddCall("NeutralPipe", this, "SetNeutralPipe", lib_pipe_control.neutral_pipe);
