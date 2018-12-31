@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2009-2016, The OpenClonk Team and contributors
+# Copyright (c) 2009-2018, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -35,8 +35,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Version)
 
-set(CMAKE_ADDITIONAL_DEPS_PATH "${CMAKE_CURRENT_BINARY_DIR}/deps" CACHE PATH "Additional directory to search for libraries and headers")
-list(APPEND CMAKE_PREFIX_PATH ${CMAKE_ADDITIONAL_DEPS_PATH})
+if(DEFINED CMAKE_ADDITIONAL_DEPS_PATH)
+	message(WARNING "CMAKE_ADDITIONAL_DEPS_PATH is deprecated and will be removed in a future version. Set CMAKE_PREFIX_PATH instead.")
+	set(CMAKE_PREFIX_PATH ${CMAKE_ADDITIONAL_DEPS_PATH})
+endif()
 
 ############################################################################
 # User selectable options
