@@ -198,7 +198,6 @@ check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
 ############################################################################
 include(CheckIncludeFileCXX)
 include(CheckIncludeFilesCXX)
-CHECK_INCLUDE_FILE_CXX(direct.h HAVE_DIRECT_H)
 CHECK_INCLUDE_FILE_CXX(io.h HAVE_IO_H)
 CHECK_INCLUDE_FILE_CXX(locale.h HAVE_LOCALE_H)
 CHECK_INCLUDE_FILE_CXX(share.h HAVE_SHARE_H)

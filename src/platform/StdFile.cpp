@@ -23,9 +23,6 @@
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
-#ifdef HAVE_DIRECT_H
-#include <direct.h>
-#endif
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"
 #endif
