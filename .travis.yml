@@ -11,7 +11,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.9', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'libgtest-dev']
+          packages: ['g++-4.9', 'build-essential', 'cmake3', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'libgtest-dev']
       env: 
           - CCOMPILER=gcc-4.9 
           - CXXCOMPILER=g++-4.9 
@@ -25,7 +25,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - sourceline: ppa:beineri/opt-qt596-trusty
-          packages: ['g++-5', 'build-essential', 'cmake', 'libpng-dev', 'libjpeg-dev', 'libfreetype6-dev', 'libglew-dev', 'libreadline-dev', 'libsdl2-dev', 'qt59base', 'libalut-dev', 'libvorbis-dev', 'libopenal-dev', 'libdw-dev', 'libgtest-dev', 'ninja-build']
+          packages: ['g++-5', 'build-essential', 'cmake3', 'libpng-dev', 'libjpeg-dev', 'libfreetype6-dev', 'libglew-dev', 'libreadline-dev', 'libsdl2-dev', 'qt59base', 'libalut-dev', 'libvorbis-dev', 'libopenal-dev', 'libdw-dev', 'libgtest-dev', 'ninja-build']
       env:
           - CCOMPILER=gcc-5
           - CXXCOMPILER=g++-5
@@ -40,7 +40,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
-          packages: ['clang-3.8', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libc++-dev', 'libc++1', 'libgtest-dev']
+          packages: ['clang-3.8', 'build-essential', 'cmake3', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libc++-dev', 'libc++1', 'libgtest-dev']
       env: 
           - CCOMPILER=clang-3.8 
           - CXXCOMPILER=clang++-3.8 
