@@ -11,9 +11,6 @@
 /* Define to 1 if you have the <history.h> header file. */
 #cmakedefine HAVE_HISTORY_H 1
 
-/* Define to 1 if you have the <inttypes.h> header file. */
-#cmakedefine HAVE_INTTYPES_H 1
-
 /* Define to 1 if you have the <io.h> header file. */
 #cmakedefine HAVE_IO_H 1
 
@@ -40,9 +37,6 @@
 
 /* Define to 1 if you have the <signal.h> header file. */
 #cmakedefine HAVE_SIGNAL_H 1
-
-/* Define to 1 if you have the <stdint.h> header file. */
-#cmakedefine HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <sys/eventfd.h> header file. */
 #cmakedefine HAVE_SYS_EVENTFD_H 1
