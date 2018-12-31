@@ -3227,6 +3227,7 @@ bool C4Landscape::FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32
 		// Try to find a way out
 		int i = 1;
 		for (; i < iPushRange; i++)
+		{
 			if (GetDensity(x - i, y) <= mdens)
 			{
 				x -= i; dir = R; break;
@@ -3243,14 +3244,15 @@ bool C4Landscape::FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32
 			{
 				y += i; dir = U; break;
 			}
-			// Not found?
-			if (i >= iPushRange) return false;
-			// Done?
-			if (GetDensity(x, y) < mdens)
-			{
-				fx = x; fy = y;
-				return true;
-			}
+		}
+		// Not found?
+		if (i >= iPushRange) return false;
+		// Done?
+		if (GetDensity(x, y) < mdens)
+		{
+			fx = x; fy = y;
+			return true;
+		}
 	}
 	// Save startpoint of search
 	int32_t sx = x, sy = y, sdir = dir;
