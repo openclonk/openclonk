@@ -33,9 +33,6 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#ifdef HAVE_LOCALE_H
-#include <clocale>
-#endif
 
 #ifdef USE_CONSOLE
 #define DONCOFF 0
