@@ -11,7 +11,7 @@
 # To redistribute this file separately, substitute the full license texts
 # for the above references.
 
-cmake_minimum_required (VERSION 3.0.2)
+cmake_minimum_required (VERSION 3.5.1)
 
 # Don't allow people to build "Release" builds because there's no reason to do that.
 # Use one of RelWithDebInfo or MinSizeRel instead.
@@ -24,12 +24,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 project (openclonk CXX C)
-
-# CMP0054: Only interpret if() arguments as variables or keywords when unquoted
-# (since CMake 3.1)
-if(POLICY CMP0054)
-	cmake_policy(SET CMP0054 NEW)
-endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
