@@ -23,6 +23,37 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE RelWithDebInfo)
 endif()
 
+if(POLICY CMP0067)
+	cmake_policy(SET CMP0067 NEW)
+else()
+	# Wrap try_compile such that it correctly passes the standard flags to the
+	# compiler on CMake versions below 3.8. Remove when you update the minimum
+	# required version to 3.8 or later.
+	macro(try_compile)
+		set(_tc_langs)
+		foreach(_tc_lang CXX C)
+			if(DEFINED CMAKE_${_tc_lang}_STANDARD)
+				list(APPEND _tc_langs ${_tc_lang})
+			endif()
+		endforeach()
+		foreach(_tc_lang ${_tc_langs})
+			if (${CMAKE_${_tc_lang}_EXTENSIONS})
+				set(_tc_ext EXTENSION)
+			else()
+				set(_tc_ext STANDARD)
+			endif()
+			set(_backup_${_tc_lang}_flags "${CMAKE_${_tc_lang}_FLAGS}")
+			set(CMAKE_${_tc_lang}_FLAGS "${CMAKE_${_tc_lang}_FLAGS} ${CMAKE_${_tc_lang}${CMAKE_${_tc_lang}_STANDARD}_${_tc_ext}_COMPILE_OPTION}")
+		endforeach()
+
+		_try_compile(${ARGN})
+	
+		foreach(_tc_lang ${_tc_langs})
+			set(CMAKE_${_tc_lang}_FLAGS "${_backup_${_tc_lang}_flags}")
+		endforeach()
+	endmacro()
+endif()
+
 project (openclonk CXX C)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
