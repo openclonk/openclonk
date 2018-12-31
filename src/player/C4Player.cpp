@@ -1515,7 +1515,8 @@ int32_t C4Player::GetSelectedCrewCount()
 void C4Player::EvaluateLeague(bool fDisconnected, bool fWon)
 {
 	// already evaluated?
-	if (LeagueEvaluated) return; LeagueEvaluated=true;
+	if (LeagueEvaluated) return;
+	LeagueEvaluated=true;
 	// set fate
 	C4PlayerInfo *pInfo = GetInfo();
 	if (pInfo)

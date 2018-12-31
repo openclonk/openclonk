@@ -2437,19 +2437,19 @@ void C4Object::Clear()
 {
 	ClearParticleLists();
 
-	if (pEffects) { delete pEffects; pEffects=nullptr; }
-	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=nullptr; }
-	if (Menu) delete Menu; Menu=nullptr;
-	if (MaterialContents) delete MaterialContents; MaterialContents=nullptr;
+	delete pEffects; pEffects = nullptr;
+	delete pSolidMaskData; pSolidMaskData = nullptr;
+	delete Menu; Menu = nullptr;
+	delete MaterialContents; MaterialContents = nullptr;
 	// clear commands!
 	C4Command *pCom, *pNext;
 	for (pCom=Command; pCom; pCom=pNext)
 	{
 		pNext=pCom->Next; delete pCom; pCom=pNext;
 	}
-	if (pDrawTransform) { delete pDrawTransform; pDrawTransform=nullptr; }
-	if (pGfxOverlay) { delete pGfxOverlay; pGfxOverlay=nullptr; }
-	if (pMeshInstance) { delete pMeshInstance; pMeshInstance = nullptr; }
+	delete pDrawTransform; pDrawTransform = nullptr;
+	delete pGfxOverlay; pGfxOverlay = nullptr;
+	delete pMeshInstance; pMeshInstance = nullptr;
 }
 
 bool C4Object::MenuCommand(const char *szCommand)
@@ -2504,7 +2504,7 @@ void C4Object::SyncClearance()
 	// Menu
 	CloseMenu(true);
 	// Material contents
-	if (MaterialContents) delete MaterialContents; MaterialContents=nullptr;
+	delete MaterialContents; MaterialContents=nullptr;
 	// reset speed of staticback-objects
 	if (Category & C4D_StaticBack)
 	{
@@ -3430,11 +3430,13 @@ void C4Object::ExecAction()
 		case COMD_Up: case COMD_UpRight:  case COMD_UpLeft:
 			if (ydir > 0) ydir -= decel;
 			else ydir -= accel;
-			if (ydir < -limit) ydir = -limit; break;
+			if (ydir < -limit) ydir = -limit;
+			break;
 		case COMD_Down: case COMD_DownRight: case COMD_DownLeft:
 			if (ydir < 0) ydir += decel;
 			else ydir += accel;
-			if (ydir > +limit) ydir = +limit; break;
+			if (ydir > +limit) ydir = +limit;
+			break;
 		case COMD_Left: case COMD_Right: case COMD_Stop:
 			if (ydir < 0) ydir += decel;
 			if (ydir > 0) ydir -= decel;
@@ -3561,8 +3563,8 @@ void C4Object::ExecAction()
 		// xdir/ydir bounds, don't apply if COMD_None
 		if (Action.ComDir != COMD_None)
 		{
-			if (ydir<-limit) ydir=-limit; if (ydir>+limit) ydir=+limit;
-			if (xdir>+limit) xdir=+limit; if (xdir<-limit) xdir=-limit;
+			ydir = Clamp(ydir, -limit, limit);
+			xdir = Clamp(xdir, -limit, limit);
 		}
 		// Surface dir bound
 		if (!GBackLiquid(GetX(),GetY()-1+Def->Float*Con/FullCon-1)) if (ydir<0) ydir=0;
@@ -3635,8 +3637,17 @@ void C4Object::ExecAction()
 		if (GetY()-iPushDistance > say+sahgt && iTXDir) { if (iTXDir>0) sax+=sawdt/2; sawdt/=2; }
 		// Horizontal follow
 		iTargetX=Clamp(GetX(),sax-iPushDistance,sax+sawdt-1+iPushDistance);
-		if (GetX()==iTargetX) xdir=0;
-		else { if (GetX()<iTargetX) xdir=+limit; if (GetX()>iTargetX) xdir=-limit; }
+		if (GetX()==iTargetX)
+		{
+			xdir=0;
+		}
+		else
+		{
+			if (GetX()<iTargetX)
+				xdir=+limit;
+			else if (GetX()>iTargetX)
+				xdir=-limit;
+		}
 		// Phase by XDir
 		iPhaseAdvance=0;
 		if (xdir<0) { iPhaseAdvance=-fixtoi(xdir*10); SetDir(DIR_Left);  }
@@ -3794,8 +3805,8 @@ void C4Object::ExecAction()
 		// xdir/ydir bounds, don't apply if COMD_None
 		if (Action.ComDir != COMD_None)
 		{
-			if (ydir<-limit) ydir=-limit; if (ydir>+limit) ydir=+limit;
-			if (xdir>+limit) xdir=+limit; if (xdir<-limit) xdir=-limit;
+			ydir = Clamp(ydir, -limit, limit);
+			xdir = Clamp(xdir, -limit, limit);
 		}
 
 		Mobile=true;
@@ -4111,7 +4122,8 @@ bool C4Object::IsInLiquidCheck() const
 
 void C4Object::SetRotation(int32_t nr)
 {
-	while (nr<0) nr+=360; nr%=360;
+	while (nr<0) nr+=360;
+	nr%=360;
 	// remove solid mask
 	if (pSolidMaskData) pSolidMaskData->Remove(false);
 	// set rotation
@@ -4194,7 +4206,8 @@ bool C4Object::Collect(C4Object *pObj)
 bool C4Object::GrabInfo(C4Object *pFrom)
 {
 	// safety
-	if (!pFrom) return false; if (!Status || !pFrom->Status) return false;
+	if (!pFrom) return false;
+	if (!Status || !pFrom->Status) return false;
 	// even more safety (own info: success)
 	if (pFrom == this) return true;
 	// only if other object has info

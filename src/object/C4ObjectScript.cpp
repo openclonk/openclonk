@@ -115,7 +115,8 @@ static bool FnPunch(C4Object *Obj, C4Object *target, long punch)
 
 static bool FnKill(C4PropList * _this, C4Object *pObj, bool fForced)
 {
-	if (!pObj) pObj=Object(_this); if (!pObj) return false;
+	if (!pObj) pObj=Object(_this);
+	if (!pObj) return false;
 	if (!pObj->GetAlive()) return false;
 	// Trace kills by player-owned objects
 	// Do not trace for NO_OWNER, because that would include e.g. the Suicide-rule
@@ -1274,7 +1275,8 @@ static long FnSetTransferZone(C4Object *Obj, long iX, long iY, long iWdt, long i
 
 static long FnObjectDistance(C4PropList * _this, C4Object *pObj2, C4Object *pObj)
 {
-	if (!pObj) pObj=Object(_this); if (!pObj || !pObj2) return 0;
+	if (!pObj) pObj=Object(_this);
+	if (!pObj || !pObj2) return 0;
 	return Distance(pObj->GetX(),pObj->GetY(),pObj2->GetX(),pObj2->GetY());
 }
 
@@ -1286,7 +1288,8 @@ static long FnObjectNumber(C4Object *Obj)
 
 static long FnShowInfo(C4Object *Obj, C4Object *pObj)
 {
-	if (!pObj) pObj=Obj; if (!pObj) return false;
+	if (!pObj) pObj=Obj;
+	if (!pObj) return false;
 	return Obj->ActivateMenu(C4MN_Info,0,0,0,pObj);
 }
 

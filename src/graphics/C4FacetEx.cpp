@@ -58,8 +58,14 @@ bool C4FacetSurface::Create(int iWdt, int iHgt, int iWdt2, int iHgt2)
 	Face.Default();
 	if (!Face.Create(iWdt,iHgt)) return false;
 	// Set facet
-	if (iWdt2==C4FCT_Full) iWdt2=Face.Wdt; if (iWdt2==C4FCT_Height) iWdt2=Face.Hgt; if (iWdt2==C4FCT_Width) iWdt2=Face.Wdt;
-	if (iHgt2==C4FCT_Full) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Height) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Width) iHgt2=Face.Wdt;
+	if (iWdt2 == C4FCT_Full || iWdt2 == C4FCT_Width)
+		iWdt2 = Face.Wdt;
+	else if (iWdt2 == C4FCT_Height)
+		iWdt2 = Face.Hgt;
+	if (iHgt2 == C4FCT_Full || iHgt2 == C4FCT_Height)
+		iHgt2 = Face.Hgt;
+	else if (iHgt2 == C4FCT_Width)
+		iHgt2 = Face.Wdt;
 	Set(&Face,0,0,iWdt2,iHgt2);
 	return true;
 }
@@ -96,8 +102,14 @@ bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHg
 	// Load surface
 	if (!Face.Load(hGroup,szFilename,false,fNoErrIfNotFound, iFlags)) return false;
 	// Set facet
-	if (iWdt==C4FCT_Full) iWdt=Face.Wdt; if (iWdt==C4FCT_Height) iWdt=Face.Hgt; if (iWdt==C4FCT_Width) iWdt=Face.Wdt;
-	if (iHgt==C4FCT_Full) iHgt=Face.Hgt; if (iHgt==C4FCT_Height) iHgt=Face.Hgt; if (iHgt==C4FCT_Width) iHgt=Face.Wdt;
+	if (iWdt == C4FCT_Full || iWdt == C4FCT_Width)
+		iWdt = Face.Wdt;
+	else if (iWdt == C4FCT_Height)
+		iWdt = Face.Hgt;
+	if (iHgt == C4FCT_Full || iHgt == C4FCT_Height)
+		iHgt = Face.Hgt;
+	else if (iHgt == C4FCT_Width)
+		iHgt = Face.Wdt;
 	Set(&Face,0,0,iWdt,iHgt);
 	return true;
 }

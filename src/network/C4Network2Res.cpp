@@ -625,7 +625,8 @@ bool C4Network2Res::GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, b
 	if (!fSetOfficial && iSize != Core.getFileSize())
 	{
 		// remove file
-		if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone); szStandalone[0] = '\0';
+		if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone);
+		szStandalone[0] = '\0';
 		// sorry, this version isn't good enough :(
 		return false;
 	}
@@ -638,7 +639,8 @@ bool C4Network2Res::GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, b
 	if (!fSetOfficial && iCRC32 != Core.getFileCRC())
 	{
 		// remove file, return
-		if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone); szStandalone[0] = '\0';
+		if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone);
+		szStandalone[0] = '\0';
 		return false;
 	}
 

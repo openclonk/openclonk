@@ -527,7 +527,8 @@ C4Network2ClientListDlg::C4Network2ClientListDlg()
 
 C4Network2ClientListDlg::~C4Network2ClientListDlg()
 {
-	if (this==pInstance) pInstance=nullptr; Application.Remove(this);
+	if (this==pInstance) pInstance=nullptr;
+	Application.Remove(this);
 }
 
 void C4Network2ClientListDlg::Update()

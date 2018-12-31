@@ -152,7 +152,9 @@ int32_t StrToI32(const char *str, int base, const char **scan_end)
 void SCopy(const char *szSource, char *sTarget, size_t iMaxL)
 {
 	if (szSource == sTarget) return;
-	if (!sTarget) return; *sTarget=0; if (!szSource) return;
+	if (!sTarget) return;
+	*sTarget=0;
+	if (!szSource) return;
 	while (*szSource && (iMaxL>0))
 		{ *sTarget=*szSource; iMaxL--; szSource++; sTarget++; }
 	*sTarget=0;
@@ -161,14 +163,18 @@ void SCopy(const char *szSource, char *sTarget, size_t iMaxL)
 void SCopy(const char *szSource, char *sTarget)
 {
 	if (szSource == sTarget) return;
-		if (!sTarget) return; *sTarget=0; if (!szSource) return;
-		strcpy(sTarget,szSource);
+	if (!sTarget) return;
+	*sTarget=0;
+	if (!szSource) return;
+	strcpy(sTarget,szSource);
 }
 
 void SCopyUntil(const char *szSource, char *sTarget, char cUntil, int iMaxL, int iIndex)
 {
 	if (szSource == sTarget) return;
-	if (!sTarget) return; *sTarget=0; if (!szSource) return;
+	if (!sTarget) return;
+	*sTarget=0;
+	if (!szSource) return;
 	while ( *szSource && ((*szSource!=cUntil) || (iIndex>0)) && (iMaxL!=0) )
 		{ *sTarget=*szSource; if (*szSource==cUntil) iIndex--; szSource++; sTarget++; iMaxL--; }
 	*sTarget=0;

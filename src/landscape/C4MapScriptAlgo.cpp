@@ -373,7 +373,8 @@ C4MapScriptAlgoTurbulence::C4MapScriptAlgoTurbulence(const C4PropList *props) : 
 	if (!seed) seed = Random(65536);
 	GetXYProps(props, P_Amplitude, amp, true);
 	GetXYProps(props, P_Scale, scale, true);
-	if (!scale[0]) scale[0] = 10; if (!scale[1]) scale[1] = 10;
+	if (!scale[0]) scale[0] = 10;
+	if (!scale[1]) scale[1] = 10;
 	if (!amp[0] && !amp[1]) { amp[0] = amp[1] = 10; }
 	iterations = props->GetPropertyInt(P_Iterations);
 	if (!iterations) iterations = 2;

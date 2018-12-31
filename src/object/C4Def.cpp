@@ -327,9 +327,19 @@ void C4Def::Clear()
 	Graphics.Clear();
 
 	StringTable.Clear();
-	if (pClonkNames && fClonkNamesOwned) delete pClonkNames; pClonkNames=nullptr;
-	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=nullptr;
-	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=nullptr;
+	
+	if (fClonkNamesOwned)
+		delete pClonkNames;
+	pClonkNames = nullptr;
+
+	if (fRankNamesOwned)
+		delete pRankNames;
+	pRankNames = nullptr;
+
+	if (fRankSymbolsOwned)
+		delete pRankSymbols;
+	pRankSymbols = nullptr;
+	
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
 	delete pSolidMask; pSolidMask = nullptr;
 }
@@ -528,7 +538,7 @@ void C4Def::LoadScript(C4Group &hGroup, const char* szLanguage)
 void C4Def::LoadClonkNames(C4Group &hGroup, C4ComponentHost* pClonkNames, const char* szLanguage)
 {
 	// clear any previous
-	if (pClonkNames) delete pClonkNames; pClonkNames = nullptr;
+	delete pClonkNames; pClonkNames = nullptr;
 	if (hGroup.FindEntry(C4CFN_ClonkNameFiles))
 	{
 		// create new
@@ -545,7 +555,7 @@ void C4Def::LoadClonkNames(C4Group &hGroup, C4ComponentHost* pClonkNames, const 
 void C4Def::LoadRankNames(C4Group &hGroup, const char* szLanguage)
 {
 	// clear any previous
-	if (pRankNames) delete pRankNames; pRankNames = nullptr;
+	delete pRankNames; pRankNames = nullptr;
 	if (hGroup.FindEntry(C4CFN_RankNameFiles))
 	{
 		// create new
@@ -563,7 +573,7 @@ void C4Def::LoadRankNames(C4Group &hGroup, const char* szLanguage)
 void C4Def::LoadRankFaces(C4Group &hGroup)
 {
 	// clear any previous
-	if (pRankSymbols) delete pRankSymbols; pRankSymbols = nullptr;
+	delete pRankSymbols; pRankSymbols = nullptr;
 	// load new
 	if (hGroup.AccessEntry(C4CFN_RankFacesPNG))
 	{
