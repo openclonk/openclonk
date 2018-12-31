@@ -55,13 +55,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ${PROJECT_FOLDERS})
 ############################################################################
 include(CheckCXXCompilerFlag)
 
-# Required for CMake >= 3.1.0 and Qt >= 5.7
 set(CMAKE_CXX_STANDARD 14)
-
-CHECK_CXX_COMPILER_FLAG("-std=gnu++14" USE_GCC_STD_14)
-if(USE_GCC_STD_14)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
-endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Enable link-time code generation. We have to do this manually because while
 # there is a INTERPROCEDURAL_OPTIMIZATION cmake flag, it's only implemented
