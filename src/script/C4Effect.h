@@ -145,12 +145,7 @@ protected:
 	void TempReaddUpperEffects(C4Effect *pLastReaddEffect); // temp remove all effects with higher priority
 };
 
-// fire effect constants
-#define MaxFirePhase        15
-#define C4Fx_Fire           "Fire"
+// Effect name patterns
 #define C4Fx_AnyFire        "*Fire*"
-#define C4Fx_Internal       "Int*"
-#define C4Fx_FirePriority   100
-#define C4Fx_FireTimer      1
 
 #endif
