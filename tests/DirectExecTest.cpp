@@ -31,8 +31,8 @@ bool operator==(const C4Set<T>& lhs, const C4Set<T>& rhs)
 	if (lhs.GetSize() != rhs.GetSize()) return false;
 	auto lit = lhs.First();
 	auto rit = rhs.First();
-	while(lit != nullptr) {
-		if (*lit != *rit) return false;
+	while(!!lit) {
+		if (!C4Set<T>::Equals(*lit, *rit)) return false;
 		lit = lhs.Next(lit);
 		rit = lhs.Next(rit);
 	}
