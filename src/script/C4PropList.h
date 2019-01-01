@@ -58,6 +58,7 @@ public:
 	const char *GetSafeKey() const { if (Key && Key->GetCStr()) return Key->GetCStr(); return ""; } // get key as C string; return "" if undefined. never return nullptr
 };
 
+template<>
 inline bool C4Set<C4Property>::Equals(const C4Property &a, const C4Property &b)
 {
 	return a.Key == b.Key;
