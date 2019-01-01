@@ -54,8 +54,6 @@ public:
 	C4String * Key{nullptr};
 	C4Value Value;
 	operator const void * () const { return Key; }
-	C4Property & operator = (void * p)
-	{ assert(!p); if (Key) Key->DecRef(); Key = nullptr; Value.Set0(); return *this; }
 	bool operator < (const C4Property &cmp) const { return strcmp(GetSafeKey(), cmp.GetSafeKey())<0; }
 	const char *GetSafeKey() const { if (Key && Key->GetCStr()) return Key->GetCStr(); return ""; } // get key as C string; return "" if undefined. never return nullptr
 };
