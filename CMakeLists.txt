@@ -168,6 +168,7 @@ if(MSVC)
 	# Enable LTCG for release builds
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Ob2 /GL")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /Ob2 /GL")
+	add_linker_flags(optimized MODULES exe shared FLAGS "/INCREMENTAL:NO")
 	add_linker_flags(optimized MODULES exe shared static FLAGS "/LTCG:incremental")
 
 	# do not link the release CRT in debug builds
