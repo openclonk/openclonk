@@ -428,10 +428,10 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			Game.RecordStream.Copy(szParameter);
 		}
 		// Direct join by URL
-		if (SEqual2NoCase(szParameter, "clonk:"))
+		if (SEqual2NoCase(szParameter, "clonk:") || SEqual2NoCase(szParameter, "openclonk:"))
 		{
 			// Store address
-			SCopy(szParameter + 6, Game.DirectJoinAddress, _MAX_PATH);
+			SCopy(SAdvancePast(szParameter, ':'), Game.DirectJoinAddress, _MAX_PATH);
 			SClearFrontBack(Game.DirectJoinAddress, '/');
 			// Special case: if the target address is "update" then this is used for update initiation by url
 			if (SEqualNoCase(Game.DirectJoinAddress, "update"))

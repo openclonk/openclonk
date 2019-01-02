@@ -9,4 +9,4 @@ Icon=openclonk
 Exec=openclonk
 Categories=Game;ActionGame;StrategyGame;ArcadeGame;
 StartupNotify=true
-MimeType=x-scheme-handler/clonk;
+MimeType=x-scheme-handler/clonk;x-scheme-handler/openclonk;
