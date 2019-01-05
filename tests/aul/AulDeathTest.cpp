@@ -1,7 +1,7 @@
 /*
 * OpenClonk, http://www.openclonk.org
 *
-* Copyright (c) 2016, The OpenClonk Team and contributors
+* Copyright (c) 2016-2019, The OpenClonk Team and contributors
 *
 * Distributed under the terms of the ISC license; see accompanying file
 * "COPYING" for details.
@@ -43,6 +43,19 @@ TEST_F(AulDeathTest, issue1891)
 		try
 		{
 			RunExpr("eval(\"Sin(\\\"\\\")\")");
+		}
+		catch (C4AulExecError &)
+		{}
+	);
+}
+
+TEST_F(AulDeathTest, SetLengthWithNil)
+{
+	// Github #79: NULL dereference when SetLength is called with nil parameter
+	EXPECT_NO_DEATH(
+		try
+		{
+			RunExpr("SetLength(nil, 0)");
 		}
 		catch (C4AulExecError &)
 		{}
