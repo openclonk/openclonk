@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2016, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2019, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -811,9 +811,21 @@ static bool FnDeepEqual(C4PropList * _this, const C4Value & v1, const C4Value & 
 
 static void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
 {
-	// safety
-	if (iNewSize<0 || iNewSize > C4ValueArray::MaxSize)
-		throw C4AulExecError(FormatString("SetLength: invalid array size (%d)", iNewSize).getData());
+	if (!pArray)
+	{
+		throw C4AulExecError(strprintf(R"(call to "%s" parameter %d: passed %s, but expected %s)",
+			"SetLength", 1, GetC4VName(C4V_Nil), GetC4VName(C4V_Array))
+			.c_str()
+		);
+	}
+
+	if (iNewSize < 0 || iNewSize > C4ValueArray::MaxSize)
+	{
+		throw C4AulExecError(strprintf(R"(call to "SetLength": parameter 2: invalid array size (expected value between 0 and %d, but got %d)",
+			C4ValueArray::MaxSize, iNewSize)
+			.c_str()
+		);
+	}
 
 	// set new size
 	pArray->SetSize(iNewSize);
