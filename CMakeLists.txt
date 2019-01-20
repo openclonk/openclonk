@@ -1287,6 +1287,7 @@ if(NOT C4GROUP_TOOL_ONLY)
 	if(HAVE_BACKWARD)
 		target_link_libraries(openclonk-server Backward::Backward)
 	endif()
+	install(TARGETS openclonk-server DESTINATION bin)
 endif()
 
 if(GTK3_FOUND AND GTK3_gtksourceview_FOUND AND NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
