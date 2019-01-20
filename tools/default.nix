@@ -50,7 +50,6 @@ pkgs.stdenv.mkDerivation rec {
 
   postInstall = ''
     mkdir -p $out/bin
-    ln -s $out/games/openclonk $out/bin/
   '';
 
 
