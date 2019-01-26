@@ -19,7 +19,7 @@ ala             - Fire/Spark1&2&3, Objects/Weapons/Musket/Click1&2&3, Clonk/Acti
                      Chirp, Flutter1&2&3, Noise1&2&3
                   Animals/Mooq:
                      Die1-5, DieFat, Hurt1-2, Munch1-4, Snort1-3, Snorting1-2, Spit1-2
-K-Pone          - Objects/Pickaxe/ClangHard1 Fire/Blast3alt Fire/BlastLiquid3alt
+K-Pone          - Objects/Pickaxe/ClangHard1 Fire/Blast3alt Fire/BlastLiquid3alt GlassHit3-4
 Ringwaul        - Monster/Growl1-3, Monster/Die, Wipf/Snuff1-2, Wipf/Aroof, Wipf/Whine, Chest/Open, Chest/Close
                   Winbag/Charge, Winbag/ChargeStop, Winbag/Gust, Pickaxe/Clang1-3
 
