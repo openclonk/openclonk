@@ -1,0 +1,10 @@
+DescItems=Amount of items to spawn.
+ItemsNormal=Normal
+ItemsMany=Many
+TeamsTogether=Teams together
+DescTeamsTogether=The players of a team start together.
+Yes=Yes
+No=No
+
+Rounds=Number of rounds
+DescRounds=Play for multiple rounds

@@ -1,0 +1,2 @@
+Name=Quicksand Bomb
+Description=Falls through earth.

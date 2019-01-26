@@ -1,0 +1,24 @@
+[Head]
+Title=Flint Brawl
+Version=9,0
+MinPlayer=2
+MaxPlayer=20
+Icon=40
+
+[Game]
+Mode=Melee
+Goals=Goal_MultiRoundMelee=1;
+Rules=Rule_KillLogs=1;Rule_Gravestones=1;
+
+[Landscape]
+MapWidth=64
+MapHeight=40
+TopOpen=1
+BottomOpen=1
+LeftOpen=10000
+RightOpen=10000
+AutoScanSideOpen=0
+MapZoom=18,0,0,18
+
+[Weather]
+Climate=0

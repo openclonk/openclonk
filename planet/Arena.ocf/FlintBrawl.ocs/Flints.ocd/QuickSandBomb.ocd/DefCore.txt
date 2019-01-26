@@ -1,0 +1,15 @@
+[DefCore]
+id=QuickSandBomb
+Version=6,0
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=1
+VertexX=0
+VertexY=0
+VertexFriction=20
+Value=5
+Mass=10
+Projectile=1
+Fragile=1
