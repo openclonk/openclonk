@@ -170,10 +170,15 @@ public func PlaceStars(int lw, int lh)
 	// First remove possible old star objects, to prevent too many.
 	RemoveAll(Find_ID(Stars));
 	
-	// Since stars are almost completely parallax (=in screen coordinates), we only need
-	// to place stars for max. a reasonable maximum resolution, let's say 1920x1200.
-	lw = lw ?? 1920;
-	lh = lh ?? 1200;
+	// Note: The defaults used to be geared just to the (assumed) screen size, because the stars
+	// have parallaxity. This did not work well for two reasons:
+	// 1. Screens have gained a lot of pixels recently, with 4K-and-larger screens getting common.
+	// 2. Even on smaller low-density screens, full map screenshots simulate a way larger viewport.
+	// To be resolably future-proof, I've bumped the maximum screen size to 5K. To fix the second
+	// issue, always create enough stars to fill the whole landscape and also add a 12% margin for
+	// the parallaxity.
+	lw = lw ?? Max(5120, LandscapeWidth())  * 112 / 100;
+	lh = lh ?? Max(2880, LandscapeHeight()) * 112 / 100;
 	
 	// Star Creation.
 	var maxfailedtries = lw * lh / 40000;
