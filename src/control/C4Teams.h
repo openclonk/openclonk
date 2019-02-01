@@ -195,6 +195,9 @@ public:
 	// any changed players will be flagged "updated"
 	void RecheckTeams();
 
+	// Makes sure that there's the right amount of teams when switching to random teams.
+	void EnsureTeamCount();
+
 	// marks all unjoined players as not-in-team and reassigns a team for them
 	// also automatically flags all affected player infos as updated
 	void ReassignAllTeams();
