@@ -364,8 +364,33 @@ bool IsWildcardString(const char *szString)
 {
 	// safety
 	if (!szString) return false;
-	// known wildcard characters: *?
-	return (SCharCount('?', szString)>0) || (SCharCount('*', szString)>0);
+	// known wildcard characters: *?[
+	return (SCharCount('?', szString)>0) || (SCharCount('*', szString)>0) || (SCharCount('[', szString)>0);
+}
+
+// Parses a character class, skips over it and returns whether it matches the given character.
+static bool WildcardMatchCharacterClass(const char **charclass, char matchchar)
+{
+	const char *cc = *charclass;
+	if (*cc++ != '[') return false;
+	bool match = false;
+	// ] is allowed as first character, e.g. []]
+	do
+	{
+		// range, e.g. [a-z]
+		if (cc[1] == '-' && cc[2] != ']')
+		{
+			if (matchchar >= cc[0] && matchchar <= cc[2])
+				match = true;
+			cc += 2;
+		}
+		// single character
+		else if (*cc == matchchar)
+			match = true;
+	}
+	while (*++cc && *cc != ']');
+	*charclass = cc;
+	return match;
 }
 
 bool WildcardMatch(const char *szWildcard, const char *szString)
@@ -382,8 +407,10 @@ bool WildcardMatch(const char *szWildcard, const char *szString)
 	// nothing left to match?
 		else if (!*pPos)
 			break;
-	// equal or one-character-wildcard? proceed
-		else if (*pWild == '?' || tolower(*pWild) == tolower(*pPos))
+	// character class, equal or one-character-wildcard? proceed
+		else if ((*pWild == '[' && WildcardMatchCharacterClass(&pWild, *pPos))
+				|| *pWild == '?'
+				|| tolower(*pWild) == tolower(*pPos))
 			{ pWild++; pPos++; }
 	// backtrack possible?
 		else if (pLPos)

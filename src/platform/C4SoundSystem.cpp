@@ -89,7 +89,7 @@ void C4SoundSystem::Execute()
 C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 {
 	// Remember wildcards before adding .* extension - if there are 2 versions with different file extensions, play the last added
-	bool bRandomSound = SCharCount('?',szSndName) || SCharCount('*',szSndName);
+	bool bRandomSound = IsWildcardString(szSndName);
 	// Evaluate sound name
 	char szName[C4MaxSoundName+2+1];
 	SCopy(szSndName,szName,C4MaxSoundName);
