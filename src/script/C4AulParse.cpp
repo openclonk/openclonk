@@ -791,11 +791,11 @@ void C4AulParse::Parse_WarningPragma()
 	auto start = cursor;
 	cursor = std::find_if(start, end, IsWhiteSpace);
 	bool enable_warning = false;
-	if (std::equal(start, cursor, C4Aul_Warning_enable))
+	if (cursor - start == sizeof(C4Aul_Warning_enable) - 1 && std::equal(start, cursor, C4Aul_Warning_enable))
 	{
 		enable_warning = true;
 	}
-	else if (std::equal(start, cursor, C4Aul_Warning_disable))
+	else if (cursor - start == sizeof(C4Aul_Warning_disable) - 1 && std::equal(start, cursor, C4Aul_Warning_disable))
 	{
 		enable_warning = false;
 	}
