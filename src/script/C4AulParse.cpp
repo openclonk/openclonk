@@ -778,12 +778,9 @@ void C4AulParse::UnexpectedToken(const char * Expected)
 void C4AulParse::Parse_WarningPragma()
 {
 	assert(SEqual2(TokenSPos, C4AUL_Warning));
-	assert(std::isspace(TokenSPos[sizeof(C4AUL_Warning) - 1]));
-
-
-	// Read parameters in to string buffer. The sizeof() includes the terminating \0, but
-	// that's okay because we need to skip (at least) one whitespace character anyway.
-	std::string line(TokenSPos + sizeof(C4AUL_Warning), SPos);
+	
+	// Read parameters in to string buffer.
+	std::string line(TokenSPos + sizeof(C4AUL_Warning) - 1, SPos);
 	auto end = line.end();
 	auto cursor = std::find_if_not(begin(line), end, IsWhiteSpace);
 

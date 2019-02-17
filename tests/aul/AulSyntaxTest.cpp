@@ -88,6 +88,14 @@ TEST(AulSyntaxTest, ParseSyntaxErrors)
 	EXPECT_THROW(ParseStatement("func Main() {}"), C4AulParseError);
 }
 
+TEST(AulSyntaxTest, PragmaWarningWithInsufficientData)
+{
+	EXPECT_THROW(ParseScript("#warning"), C4AulParseError);
+	EXPECT_THROW(ParseScript("#warning\n"), C4AulParseError);
+	EXPECT_THROW(ParseScript("#warning "), C4AulParseError);
+	EXPECT_THROW(ParseScript("#warning \n"), C4AulParseError);
+}
+
 using namespace ::aul::ast;
 TEST(AulSyntaxTest, ParseLiterals)
 {
