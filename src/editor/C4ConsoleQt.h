@@ -21,9 +21,6 @@
 
 #ifdef WITH_QT_EDITOR
 
-// Avoid some name conflicts
-#undef new
-#undef delete
 // disable OPENGL_ES
 // (not necessery if Qt is compiled with -opengl desktop)
 //#define QT_OPENGL_ES_2

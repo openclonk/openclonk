@@ -528,8 +528,6 @@ bool CStdGLCtx::PageFlip()
 #endif // USE_*
 
 #ifdef WITH_QT_EDITOR
-#undef new
-#undef delete
 #include <QOpenGLWidget>
 #include <QOpenGLContext>
 #include <QOffscreenSurface>
