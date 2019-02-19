@@ -311,19 +311,19 @@ bool C4TextureMap::SaveMap(C4Group &hGroup, const char *szEntryName)
 	// build file in memory
 	StdStrBuf sTexMapFile;
 	// add desc
-	sTexMapFile.Append("# Automatically generated texture map" LineFeed);
-	sTexMapFile.Append("# Contains material-texture-combinations added at runtime" LineFeed);
+	sTexMapFile.Append("# Automatically generated texture map\n");
+	sTexMapFile.Append("# Contains material-texture-combinations added at runtime\n");
 	// add overload-entries
-	if (fOverloadMaterials) sTexMapFile.Append("# Import materials from global file as well" LineFeed "OverloadMaterials" LineFeed);
-	if (fOverloadTextures) sTexMapFile.Append("# Import textures from global file as well" LineFeed "OverloadTextures" LineFeed);
-	sTexMapFile.Append(LineFeed);
+	if (fOverloadMaterials) sTexMapFile.Append("# Import materials from global file as well\nOverloadMaterials\n");
+	if (fOverloadTextures) sTexMapFile.Append("# Import textures from global file as well\nOverloadTextures\n");
+	sTexMapFile.Append("\n");
 	// add entries
 	for (auto i : Order)
 	{
 		if (!Entry[i].isNull())
 		{
 			// compose line
-			sTexMapFile.AppendFormat("%d=%s-%s" LineFeed, i, Entry[i].GetMaterialName(), Entry[i].GetTextureName());
+			sTexMapFile.AppendFormat("%d=%s-%s\n", i, Entry[i].GetMaterialName(), Entry[i].GetTextureName());
 		}
 	}
 	// create new buffer allocated with new [], because C4Group cannot handle StdStrBuf-buffers

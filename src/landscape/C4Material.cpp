@@ -575,11 +575,11 @@ bool C4MaterialMap::SaveEnumeration(C4Group &hGroup)
 {
 	char *mapbuf = new char [1000];
 	mapbuf[0]=0;
-	SAppend("[Enumeration]",mapbuf); SAppend(LineFeed,mapbuf);
+	SAppend("[Enumeration]",mapbuf); SAppend("\n",mapbuf);
 	for (int32_t cnt=0; cnt<Num; cnt++)
 	{
 		SAppend(Map[cnt].Name,mapbuf);
-		SAppend(LineFeed,mapbuf);
+		SAppend("\n",mapbuf);
 	}
 	return hGroup.Add(C4CFN_MatMap,mapbuf,SLen(mapbuf),false,true);
 }

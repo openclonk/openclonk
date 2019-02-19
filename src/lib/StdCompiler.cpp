@@ -234,7 +234,7 @@ void StdCompilerINIWrite::NameEnd(bool fBreak)
 {
 	// Append newline
 	if (!fPutName && !fInSection)
-		Buf.Append("\r\n");
+		Buf.Append("\n");
 	fPutName = false;
 	// Note this makes it impossible to distinguish an empty name section from
 	// a non-existing name section.
@@ -432,11 +432,11 @@ void StdCompilerINIWrite::WriteIndent(bool fSection)
 void StdCompilerINIWrite::PutName(bool fSection)
 {
 	if (fSection && Buf.getLength())
-		Buf.Append("\r\n");
+		Buf.Append("\n");
 	WriteIndent(fSection);
 	// Put name
 	if (fSection)
-		Buf.AppendFormat("[%s]\r\n", pNaming->Name.getData());
+		Buf.AppendFormat("[%s]\n", pNaming->Name.getData());
 	else
 		Buf.AppendFormat("%s=", pNaming->Name.getData());
 	// Set flag

@@ -239,7 +239,7 @@ bool C4GameSave::SaveDesc(C4Group &hToGroup)
 
 	// Scenario title
 	sBuffer.Append(Game.ScenarioTitle.getData());
-	sBuffer.Append(LineFeed LineFeed);
+	sBuffer.Append("\n\n");
 
 	// OK; each specializations has its own desc format
 	WriteDesc(sBuffer);
@@ -256,7 +256,7 @@ bool C4GameSave::SaveDesc(C4Group &hToGroup)
 void C4GameSave::WriteDescLineFeed(StdStrBuf &sBuf)
 {
 	// paragraph end + cosmetics
-	sBuf.Append(LineFeed LineFeed);
+	sBuf.Append("\n\n");
 }
 
 void C4GameSave::WriteDescDate(StdStrBuf &sBuf, bool fRecord)

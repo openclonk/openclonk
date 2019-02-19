@@ -22,7 +22,6 @@
 #ifdef WITH_QT_EDITOR
 
 // Avoid some name conflicts
-#undef LineFeed
 #undef new
 #undef delete
 // disable OPENGL_ES

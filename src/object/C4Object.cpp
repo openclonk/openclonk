@@ -1633,38 +1633,38 @@ StdStrBuf C4Object::GetDataString()
 	// Owner
 	if (ValidPlr(Owner))
 	{
-		Output.Append(LineFeed);
+		Output.Append("\n");
 		Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),::Players.Get(Owner)->GetName());
 	}
 	// Contents
 	if (Contents.ObjectCount())
 	{
-		Output.Append(LineFeed);
+		Output.Append("\n");
 		Output.Append(LoadResStr("IDS_CNS_CONTENTS"));
 		Output.Append(Contents.GetNameList(::Definitions));
 	}
 	// Action
 	if (GetAction())
 	{
-		Output.Append(LineFeed);
+		Output.Append("\n");
 		Output.Append(LoadResStr("IDS_CNS_ACTION"));
 		Output.Append(GetAction()->GetName());
 	}
 	// Properties
-	Output.Append(LineFeed);
+	Output.Append("\n");
 	Output.Append(LoadResStr("IDS_CNS_PROPERTIES"));
-	Output.Append(LineFeed "  ");
-	AppendDataString(&Output, LineFeed "  ");
+	Output.Append("\n  ");
+	AppendDataString(&Output, "\n  ");
 	// Effects
 	if (pEffects)
 	{
-		Output.Append(LineFeed);
+		Output.Append("\n");
 		Output.Append(LoadResStr("IDS_CNS_EFFECTS"));
 		Output.Append(": ");
 	}
 	for (C4Effect *pEffect = pEffects; pEffect; pEffect = pEffect->pNext)
 	{
-		Output.Append(LineFeed);
+		Output.Append("\n");
 		// Effect name
 		Output.AppendFormat("  %s: Priority %d, Interval %d", pEffect->GetName(), pEffect->iPriority, pEffect->iInterval);
 	}
@@ -1674,7 +1674,7 @@ StdStrBuf C4Object::GetDataString()
 	DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(mkInsertAdapt(mkParAdapt(*this, &numbers),
 	                                                                    mkNamingAdapt(numbers, "Values"), false),
 	                                                      "Object"), &Output2, "C4Object::GetDataString");
-	Output.Append(LineFeed);
+	Output.Append("\n");
 	Output.Append(Output2);
 	return Output;
 }

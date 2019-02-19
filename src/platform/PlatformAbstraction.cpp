@@ -65,7 +65,6 @@ bool EraseItemSafe(const char *szFilename)
 }
 
 #if defined(WITH_QT_EDITOR)
-#undef LineFeed
 #include <QDesktopServices>
 #include <QUrl>
 bool OpenURL(char const* url)

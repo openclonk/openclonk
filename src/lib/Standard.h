@@ -144,8 +144,6 @@ int SLineGetCharacters(const char *szText, const char *cpPosition);
 // can match strings like  "*Cl?nk*vour" to "Clonk Endeavour"
 bool SWildcardMatchEx(const char *szString, const char *szWildcard);
 
-#define LineFeed "\x00D\x00A"
-
 // sprintf wrapper
 
 #ifdef _WIN32
