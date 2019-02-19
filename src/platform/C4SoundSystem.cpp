@@ -50,11 +50,13 @@ bool C4SoundSystem::Init()
 #if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_AllocateChannels(C4MaxSoundInstances);
 #endif
+	initialized = true;
 	return true;
 }
 
 void C4SoundSystem::Clear()
 {
+	initialized = false;
 	ClearEffects();
 	Modifiers.Clear();
 	// Close sound file
@@ -122,15 +124,13 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 C4SoundInstance *C4SoundSystem::NewEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// Sound not active
-	if (!Config.Sound.RXSound) return nullptr;
+	if (!initialized || !Config.Sound.RXSound) return nullptr;
 	// Get sound
 	C4SoundEffect *csfx;
 	if (!(csfx = GetEffect(szSndName)))
 	{
 		// Warn about missing or incorrectly spelled sound to allow finding mistakes earlier.
-#if !defined(USE_CONSOLE)
 		DebugLogF("Warning: could not find sound matching '%s'", szSndName);
-#endif
 		return nullptr;
 	}
 	// Play
