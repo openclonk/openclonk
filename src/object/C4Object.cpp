@@ -4125,7 +4125,7 @@ void C4Object::SetRotation(int32_t nr)
 	while (nr<0) nr+=360;
 	nr%=360;
 	// remove solid mask
-	if (pSolidMaskData) pSolidMaskData->Remove(false);
+	RemoveSolidMask(false);
 	// set rotation
 	fix_r=itofix(nr);
 	// Update face
@@ -4156,6 +4156,14 @@ void C4Object::DrawSolidMask(C4TargetFacet &cgo) const
 	pSolidMaskData->Draw(cgo);
 }
 
+void C4Object::RemoveSolidMask(bool fBackupAttachment)
+{
+	if (pSolidMaskData)
+	{
+		pSolidMaskData->Remove(fBackupAttachment);
+	}
+}
+
 void C4Object::UpdateSolidMask(bool fRestoreAttachedObjects)
 {
 	// solidmask doesn't make sense with non-existant objects
@@ -4172,7 +4180,9 @@ void C4Object::UpdateSolidMask(bool fRestoreAttachedObjects)
 			pSolidMaskData = new C4SolidMask(this);
 		}
 		else
+		{
 			pSolidMaskData->Remove(false);
+		}
 		pSolidMaskData->Put(true, nullptr, fRestoreAttachedObjects);
 		SetHalfVehicleSolidMask(HalfVehicleSolidMask);
 	}

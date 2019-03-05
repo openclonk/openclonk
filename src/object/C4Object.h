@@ -102,6 +102,7 @@ class C4Object: public C4PropListNumbered
 private:
 	void UpdateInMat();
 	void Splash();
+	void RemoveSolidMask(bool fBackupAttachment); // Remove solid mask data, if existing
 public:
 	C4Object();
 	~C4Object() override;
