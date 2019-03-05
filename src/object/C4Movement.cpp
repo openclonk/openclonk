@@ -169,9 +169,9 @@ int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack
 	{
 		for (int32_t ccnat = 0; ccnat < 4; ccnat++) // Left, right, top bottom
 		{
-			if (Shape.ContactCNAT & (1<<ccnat))
+			if (Shape.ContactCNAT & (1 << ccnat))
 			{
-				if (Contact(1<<ccnat))
+				if (Contact(1 << ccnat))
 				{
 					break; // Will stop on first positive return contact call!
 				}
@@ -192,8 +192,8 @@ void C4Object::SideBounds(C4Real &ctcox)
 		C4PropList* pActionDef = GetAction();
 		if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 		{
-			C4Real lbound = itofix(Layer->GetX() + Layer->Shape.GetX() - Shape.GetX()),
-			       rbound = itofix(Layer->GetX() + Layer->Shape.GetX() + Layer->Shape.Wdt - (Shape.GetX() + Shape.Wdt));
+			C4Real lbound = itofix(Layer->GetX() + Layer->Shape.GetX() - Shape.GetX());
+			C4Real rbound = itofix(Layer->GetX() + Layer->Shape.GetX() + Layer->Shape.Wdt - (Shape.GetX() + Shape.Wdt));
 			if (ctcox < lbound)
 			{
 				StopAndContact(ctcox, lbound, xdir, CNAT_Left);
@@ -205,8 +205,8 @@ void C4Object::SideBounds(C4Real &ctcox)
 		}
 	}
 	// landscape bounds
-	C4Real lbound = itofix(0 - Shape.GetX()),
-	       rbound = itofix(::Landscape.GetWidth() - (Shape.GetX() + Shape.Wdt));
+	C4Real lbound = itofix(0 - Shape.GetX());
+	C4Real rbound = itofix(::Landscape.GetWidth() - (Shape.GetX() + Shape.Wdt));
 	if (ctcox < lbound && GetPropertyInt(P_BorderBound) & C4D_Border_Sides)
 	{
 		StopAndContact(ctcox, lbound, xdir, CNAT_Left);
@@ -225,8 +225,8 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 		C4PropList* pActionDef = GetAction();
 		if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 		{
-			C4Real tbound = itofix(Layer->GetY() + Layer->Shape.GetY() - Shape.GetY()),
-			       bbound = itofix(Layer->GetY() + Layer->Shape.GetY() + Layer->Shape.Hgt - (Shape.GetY() + Shape.Hgt));
+			C4Real tbound = itofix(Layer->GetY() + Layer->Shape.GetY() - Shape.GetY());
+			C4Real bbound = itofix(Layer->GetY() + Layer->Shape.GetY() + Layer->Shape.Hgt - (Shape.GetY() + Shape.Hgt));
 			if (ctcoy < tbound)
 			{
 				StopAndContact(ctcoy, tbound, ydir, CNAT_Top);
@@ -238,8 +238,8 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 		}
 	}
 	// landscape bounds
-	C4Real tbound = itofix(0 - Shape.GetY()),
-	       bbound = itofix(::Landscape.GetHeight() - (Shape.GetY() + Shape.Hgt));
+	C4Real tbound = itofix(0 - Shape.GetY());
+	C4Real bbound = itofix(::Landscape.GetHeight() - (Shape.GetY() + Shape.Hgt));
 	if (ctcoy < tbound && GetPropertyInt(P_BorderBound) & C4D_Border_Top)
 	{
 		StopAndContact(ctcoy, tbound, ydir, CNAT_Top);
@@ -255,9 +255,9 @@ void C4Object::DoMovement()
 	int32_t iContact = 0;
 	bool fAnyContact = false;
 	int iContacts = 0;
-	BYTE fTurned = 0,
-		 fRedirectYR = 0,
-		 fNoAttach = 0;
+	BYTE fTurned = 0;
+	BYTE fRedirectYR = 0;
+	BYTE fNoAttach = 0;
 	// Restrictions
 	if (Def->NoHorizontalMove)
 	{
@@ -293,8 +293,8 @@ void C4Object::DoMovement()
 	}
 
 	// store previous movement and ocf
-	C4Real oldxdir(xdir),
-		   oldydir(ydir);
+	C4Real oldxdir(xdir);
+	C4Real oldydir(ydir);
 	uint32_t old_ocf = OCF;
 
 	bool fMoved = false;
@@ -360,7 +360,7 @@ void C4Object::DoMovement()
 				else
 				{
 					// living things are always capable of keeping their rotation
-					if (OCF & OCF_Rotate) if (iContact == 1) if (!Alive)
+					if ((OCF & OCF_Rotate) && iContact == 1 && !Alive)
 					{
 						RedirectForce(ydir, rdir, -ContactVtxWeight(this));
 						fRedirectYR = 1;
@@ -382,8 +382,8 @@ void C4Object::DoMovement()
 		do
 		{
 			// Set next step target
-			int step_x = 0,
-				step_y = 0;
+			int step_x = 0;
+			int step_y = 0;
 			if (fixtoi(new_x) != GetX())
 			{
 				step_x = Sign(fixtoi(new_x) - GetX());
@@ -500,7 +500,7 @@ void C4Object::DoMovement()
 				// last UpdateShape-call might have changed sector lists!
 				UpdatePos();
 				// Redirect to GetY()
-				if (iContact == 1) if (!fRedirectYR)
+				if (iContact == 1 && !fRedirectYR)
 				{
 					RedirectForce(rdir, ydir, -1);
 				}
