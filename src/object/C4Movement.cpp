@@ -71,15 +71,14 @@ void ApplyFriction(C4Real &tval, int32_t percent)
 
 bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir)
 {
-	bool fcontact = false;
 	for (int32_t cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
 	{
 		if (cobj->Shape.VtxContactCNAT[cnt] & cnat_dir)
 		{
-			fcontact = true;
+			return true;
 		}
 	}
-	return fcontact;
+	return false;
 }
 
 // Finds first vertex with contact flag set.
