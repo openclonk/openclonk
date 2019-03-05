@@ -56,14 +56,15 @@ void ApplyFriction(C4Real &tval, int32_t percent)
 	if (tval > +ffric)
 	{
 		tval -= ffric;
-		return;
 	}
-	if (tval <- ffric)
+	else if (tval <- ffric)
 	{
 		tval += ffric;
-		return;
 	}
-	tval = 0;
+	else
+	{
+		tval = 0;
+	}
 }
 
 // Compares all Shape.VtxContactCNAT[] CNAT flags to search flag.
