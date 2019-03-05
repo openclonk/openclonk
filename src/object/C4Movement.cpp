@@ -57,7 +57,7 @@ void ApplyFriction(C4Real &tval, int32_t percent)
 	{
 		tval -= ffric;
 	}
-	else if (tval <- ffric)
+	else if (tval < -ffric)
 	{
 		tval += ffric;
 	}
