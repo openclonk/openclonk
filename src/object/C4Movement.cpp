@@ -839,16 +839,17 @@ bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensit
 bool SimFlightHitsLiquid(C4Real fcx, C4Real fcy, C4Real xdir, C4Real ydir)
 {
 	// Start in water?
-	int temp;
 	if (DensityLiquid(GBackDensity(fixtoi(fcx), fixtoi(fcy))))
 	{
-		if (!SimFlight(fcx, fcy, xdir, ydir, 0, C4M_Liquid - 1, temp = 10))
+		int temp = 10;
+		if (!SimFlight(fcx, fcy, xdir, ydir, 0, C4M_Liquid - 1, temp))
 		{
 			return false;
 		}
 	}
 	// Hits liquid?
-	if (!SimFlight(fcx, fcy, xdir, ydir, C4M_Liquid, 100, temp = -1))
+	int temp = -1;
+	if (!SimFlight(fcx, fcy, xdir, ydir, C4M_Liquid, 100, temp))
 	{
 		return false;
 	}
