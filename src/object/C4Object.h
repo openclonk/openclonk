@@ -327,6 +327,7 @@ public:
 protected:
 	void SideBounds(C4Real &ctcox);       // apply bounds at side; regarding bourder bound and pLayer
 	void VerticalBounds(C4Real &ctcoy);   // apply bounds at top and bottom; regarding border bound and pLayer
+	void RemoveSolidMask(bool fBackupAttachment); // Remove solid mask data, if existing
 
 public:
 	void BoundsCheck(C4Real &ctcox, C4Real &ctcoy) // do bound checks, correcting target positions as necessary and doing contact-calls
