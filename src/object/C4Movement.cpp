@@ -71,9 +71,8 @@ void ApplyFriction(C4Real &tval, int32_t percent)
 
 bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir)
 {
-	int32_t cnt;
 	bool fcontact = false;
-	for (cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
+	for (int32_t cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
 	{
 		if (cobj->Shape.VtxContactCNAT[cnt] & cnat_dir)
 		{
@@ -88,8 +87,7 @@ bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir)
 
 int32_t ContactVtxWeight(C4Object *cobj)
 {
-	int32_t cnt;
-	for (cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
+	for (int32_t cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
 	{
 		if (cobj->Shape.VtxContactCNAT[cnt])
 		{
@@ -111,8 +109,7 @@ int32_t ContactVtxWeight(C4Object *cobj)
 
 int32_t ContactVtxFriction(C4Object *cobj)
 {
-	int32_t cnt;
-	for (cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
+	for (int32_t cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
 	{
 		if (cobj->Shape.VtxContactCNAT[cnt])
 		{
