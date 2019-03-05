@@ -126,12 +126,12 @@ const char *CNATName(int32_t cnat)
 {
 	switch (cnat)
 	{
-		case CNAT_None:   return "None";
-		case CNAT_Left:   return "Left";
-		case CNAT_Right:  return "Right";
-		case CNAT_Top:    return "Top";
-		case CNAT_Bottom: return "Bottom";
-		case CNAT_Center: return "Center";
+	case CNAT_None:   return "None";
+	case CNAT_Left:   return "Left";
+	case CNAT_Right:  return "Right";
+	case CNAT_Top:    return "Top";
+	case CNAT_Bottom: return "Bottom";
+	case CNAT_Center: return "Center";
 	}
 	return "Undefined";
 }
