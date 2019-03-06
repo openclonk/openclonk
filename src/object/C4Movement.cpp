@@ -263,27 +263,7 @@ void C4Object::DoMovement()
 	}
 
 	// Dig free target area
-	C4PropList* current_action = GetAction();
-	if (current_action && (current_action->GetPropertyInt(P_DigFree)))
-	{
-		int target_x = fixtoi(fix_x + xdir);
-		int target_y = fixtoi(fix_y + ydir);
-		// Shape size square
-		if (current_action->GetPropertyInt(P_DigFree) == 1)
-		{
-			::Landscape.DigFreeRect(target_x + Shape.GetX(), target_y + Shape.GetY(), Shape.Wdt, Shape.Hgt, this);
-		}
-		// Free size round (variable size)
-		else
-		{
-			int32_t rad = current_action->GetPropertyInt(P_DigFree);
-			if (Con < FullCon)
-			{
-				rad = rad * 6 * Con / 5 / FullCon;
-			}
-			::Landscape.DigFree(target_x, target_y - 1, rad, this);
-		}
-	}
+	MovementDigFreeTargetArea();
 
 	// Store previous movement and ocf
 	C4Real old_xdir(xdir);
@@ -762,6 +742,31 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 		}
 	}
 	return true;
+}
+
+void C4Object::MovementDigFreeTargetArea()
+{
+	C4PropList* current_action = GetAction();
+	if (current_action && (current_action->GetPropertyInt(P_DigFree)))
+	{
+		int target_x = fixtoi(fix_x + xdir);
+		int target_y = fixtoi(fix_y + ydir);
+		// Shape size square
+		if (current_action->GetPropertyInt(P_DigFree) == 1)
+		{
+			::Landscape.DigFreeRect(target_x + Shape.GetX(), target_y + Shape.GetY(), Shape.Wdt, Shape.Hgt, this);
+		}
+		// Free size round (variable size)
+		else
+		{
+			int32_t rad = current_action->GetPropertyInt(P_DigFree);
+			if (Con < FullCon)
+			{
+				rad = rad * 6 * Con / 5 / FullCon;
+			}
+			::Landscape.DigFree(target_x, target_y - 1, rad, this);
+		}
+	}
 }
 
 bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t min_density, int32_t max_density, int32_t &iterations)
