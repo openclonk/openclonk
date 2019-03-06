@@ -186,7 +186,7 @@ int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack
 // Stop the object and do contact calls if it collides with the border
 void C4Object::SideBounds(C4Real &ctcox)
 {
-	// layer bounds
+	// Layer bounds
 	if (Layer && (Layer->GetPropertyInt(P_BorderBound) & C4D_Border_Layer))
 	{
 		C4PropList* pActionDef = GetAction();
@@ -204,7 +204,7 @@ void C4Object::SideBounds(C4Real &ctcox)
 			}
 		}
 	}
-	// landscape bounds
+	// Landscape bounds
 	C4Real lbound = itofix(0 - Shape.GetX());
 	C4Real rbound = itofix(::Landscape.GetWidth() - (Shape.GetX() + Shape.Wdt));
 	if (ctcox < lbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Sides))
@@ -219,7 +219,7 @@ void C4Object::SideBounds(C4Real &ctcox)
 
 void C4Object::VerticalBounds(C4Real &ctcoy)
 {
-	// layer bounds
+	// Layer bounds
 	if (Layer && (Layer->GetPropertyInt(P_BorderBound) & C4D_Border_Layer))
 	{
 		C4PropList* pActionDef = GetAction();
@@ -237,7 +237,7 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 			}
 		}
 	}
-	// landscape bounds
+	// Landscape bounds
 	C4Real tbound = itofix(0 - Shape.GetY());
 	C4Real bbound = itofix(::Landscape.GetHeight() - (Shape.GetY() + Shape.Hgt));
 	if (ctcoy < tbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Top))
@@ -292,7 +292,7 @@ void C4Object::DoMovement()
 		}
 	}
 
-	// store previous movement and ocf
+	// Store previous movement and ocf
 	C4Real old_xdir(xdir);
 	C4Real old_ydir(ydir);
 	uint32_t old_ocf = OCF;
@@ -359,7 +359,7 @@ void C4Object::DoMovement()
 				}
 				else
 				{
-					// living things are always capable of keeping their rotation
+					// Living things are always capable of keeping their rotation
 					if ((OCF & OCF_Rotate) && iContact == 1 && !Alive)
 					{
 						RedirectForce(ydir, rdir, -ContactVtxWeight(this));
@@ -477,19 +477,19 @@ void C4Object::DoMovement()
 			// Try next step
 			fix_r += Sign(target_r - fix_r);
 			UpdateShape();
-			// attached rotation: rotate around attachment pos
+			// Attached rotation: rotate around attachment pos
 			if (Action.t_attach && !lost_attachment)
 			{
-				// more accurately, attachment should be evaluated by a rotation around the attachment vertex
+				// More accurately, attachment should be evaluated by a rotation around the attachment vertex
 				// however, as long as this code is only used for some surfaces adjustment for large vehicles,
 				// it's enough to assume rotation around the center
 				current_x = GetX();
 				current_y = GetY();
-				// evaluate attachment, but do not bother about attachment loss
+				// Evaluate attachment, but do not bother about attachment loss
 				// that will then be done in next execution cycle
 				Shape.Attach(current_x, current_y, Action.t_attach);
 			}
-			// check for contact
+			// Check for contact
 			if ((iContact = ContactCheck(current_x, current_y))) // Contact
 			{
 				has_contact = true;
@@ -497,7 +497,7 @@ void C4Object::DoMovement()
 				// Undo step and abort movement
 				Shape = old_shape;
 				target_r = fix_r = old_rotation;
-				// last UpdateShape-call might have changed sector lists!
+				// Last UpdateShape-call might have changed sector lists!
 				UpdatePos();
 				// Redirect to GetY()
 				if (iContact == 1 && !redirected_force_from_ydir_to_rdir)
@@ -586,14 +586,14 @@ void C4Object::DoMovement()
 			Call(PSF_Hit3, &pars);
 		}
 	}
-	// Rotation gfx
+	// Update graphics to rotation
 	if (has_turned)
 	{
 		UpdateFace(true);
 	}
 	else
 	{
-		// pos changed?
+		// Position has changed?
 		if (has_moved)
 		{
 			UpdatePos();
@@ -603,12 +603,12 @@ void C4Object::DoMovement()
 
 void C4Object::Stabilize()
 {
-	// def allows stabilization?
+	// Definition allows stabilization?
 	if (Def->NoStabilize)
 	{
 		return;
 	}
-	// normalize angle
+	// Normalize angle
 	C4Real normalized_rotation = fix_r;
 	while (normalized_rotation < itofix(-180))
 	{
@@ -670,7 +670,7 @@ void C4Object::MovePosition(int32_t distance_x, int32_t distance_y)
 
 void C4Object::MovePosition(C4Real distance_x, C4Real distance_y)
 {
-	// move object position; repositions SolidMask
+	// Move object position; repositions SolidMask
 	RemoveSolidMask(true);
 	fix_x += distance_x;
 	fix_y += distance_y;
@@ -681,7 +681,7 @@ void C4Object::MovePosition(C4Real distance_x, C4Real distance_y)
 
 bool C4Object::ExecMovement() // Every Tick1 by Execute
 {
-	// update in which material this object is
+	// Update in which material this object is
 	UpdateInMat();
 
 	// Containment check
@@ -739,11 +739,11 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 	{
 		C4PropList* current_action = GetAction();
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
-		//  and the attached objects follow one frame later
+		// and the attached objects follow one frame later
 		if (!current_action || !Action.Target || current_action->GetPropertyP(P_Procedure) != DFA_ATTACH)
 		{
 			bool should_remove = true;
-			// never remove HUD objects
+			// Never remove HUD objects
 			if (Category & C4D_Parallax)
 			{
 				int parallaxity_x, parallaxity_y;
@@ -827,11 +827,11 @@ bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t min_den
 		ydir += GravAccel;
 	}
 	while (!break_main_loop);
-	// write position back
+	// Write position back
 	x = itofix(current_x);
 	y = itofix(current_y);
 
-	// how many steps did it take to get here?
+	// How many steps did it take to get here?
 	iterations -= index;
 
 	return hit_on_time;
@@ -854,7 +854,7 @@ bool SimFlightHitsLiquid(C4Real start_x, C4Real start_y, C4Real xdir, C4Real ydi
 	{
 		return false;
 	}
-	// liquid & deep enough?
+	// Liquid & deep enough?
 	return GBackLiquid(fixtoi(start_x), fixtoi(start_y)) && GBackLiquid(fixtoi(start_x), fixtoi(start_y) + 9);
 }
 
