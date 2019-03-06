@@ -156,10 +156,10 @@ void C4Object::StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32
 	Contact(cnat);
 }
 
-int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack_contacts, bool collide_halfvehic)
+int32_t C4Object::ContactCheck(int32_t at_x, int32_t at_y, uint32_t *border_hack_contacts, bool collide_halfvehic)
 {
 	// Check shape contact at given position
-	Shape.ContactCheck(iAtX, iAtY, border_hack_contacts, collide_halfvehic);
+	Shape.ContactCheck(at_x, at_y, border_hack_contacts, collide_halfvehic);
 
 	// Store shape contact values in object t_contact
 	t_contact = Shape.ContactCNAT;
@@ -184,7 +184,7 @@ int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack
 }
 
 // Stop the object and do contact calls if it collides with the border
-void C4Object::SideBounds(C4Real &ctcox)
+void C4Object::SideBounds(C4Real &target_x)
 {
 	// Layer bounds
 	if (Layer && (Layer->GetPropertyInt(P_BorderBound) & C4D_Border_Layer))
@@ -194,30 +194,30 @@ void C4Object::SideBounds(C4Real &ctcox)
 		{
 			C4Real lbound = itofix(Layer->GetX() + Layer->Shape.GetX() - Shape.GetX());
 			C4Real rbound = itofix(Layer->GetX() + Layer->Shape.GetX() + Layer->Shape.Wdt - (Shape.GetX() + Shape.Wdt));
-			if (ctcox < lbound)
+			if (target_x < lbound)
 			{
-				StopAndContact(ctcox, lbound, xdir, CNAT_Left);
+				StopAndContact(target_x, lbound, xdir, CNAT_Left);
 			}
-			if (ctcox > rbound)
+			if (target_x > rbound)
 			{
-				StopAndContact(ctcox, rbound, xdir, CNAT_Right);
+				StopAndContact(target_x, rbound, xdir, CNAT_Right);
 			}
 		}
 	}
 	// Landscape bounds
 	C4Real lbound = itofix(0 - Shape.GetX());
 	C4Real rbound = itofix(::Landscape.GetWidth() - (Shape.GetX() + Shape.Wdt));
-	if (ctcox < lbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Sides))
+	if (target_x < lbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Sides))
 	{
-		StopAndContact(ctcox, lbound, xdir, CNAT_Left);
+		StopAndContact(target_x, lbound, xdir, CNAT_Left);
 	}
-	if (ctcox > rbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Sides))
+	if (target_x > rbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Sides))
 	{
-		StopAndContact(ctcox, rbound, xdir, CNAT_Right);
+		StopAndContact(target_x, rbound, xdir, CNAT_Right);
 	}
 }
 
-void C4Object::VerticalBounds(C4Real &ctcoy)
+void C4Object::VerticalBounds(C4Real &target_y)
 {
 	// Layer bounds
 	if (Layer && (Layer->GetPropertyInt(P_BorderBound) & C4D_Border_Layer))
@@ -227,26 +227,26 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 		{
 			C4Real tbound = itofix(Layer->GetY() + Layer->Shape.GetY() - Shape.GetY());
 			C4Real bbound = itofix(Layer->GetY() + Layer->Shape.GetY() + Layer->Shape.Hgt - (Shape.GetY() + Shape.Hgt));
-			if (ctcoy < tbound)
+			if (target_y < tbound)
 			{
-				StopAndContact(ctcoy, tbound, ydir, CNAT_Top);
+				StopAndContact(target_y, tbound, ydir, CNAT_Top);
 			}
-			if (ctcoy > bbound)
+			if (target_y > bbound)
 			{
-				StopAndContact(ctcoy, bbound, ydir, CNAT_Bottom);
+				StopAndContact(target_y, bbound, ydir, CNAT_Bottom);
 			}
 		}
 	}
 	// Landscape bounds
 	C4Real tbound = itofix(0 - Shape.GetY());
 	C4Real bbound = itofix(::Landscape.GetHeight() - (Shape.GetY() + Shape.Hgt));
-	if (ctcoy < tbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Top))
+	if (target_y < tbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Top))
 	{
-		StopAndContact(ctcoy, tbound, ydir, CNAT_Top);
+		StopAndContact(target_y, tbound, ydir, CNAT_Top);
 	}
-	if (ctcoy > bbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Bottom))
+	if (target_y > bbound && (GetPropertyInt(P_BorderBound) & C4D_Border_Bottom))
 	{
-		StopAndContact(ctcoy, bbound, ydir, CNAT_Bottom);
+		StopAndContact(target_y, bbound, ydir, CNAT_Bottom);
 	}
 }
 

@@ -247,7 +247,7 @@ public:
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf) const;
 	bool CloseMenu(bool fForce);
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=nullptr);
-	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=nullptr, bool collide_halfvehic=false);
+	int32_t ContactCheck(int32_t at_x, int32_t at_y, uint32_t *border_hack_contacts=nullptr, bool collide_halfvehic = false);
 	bool Contact(int32_t cnat);
 	void StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32_t cnat);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
@@ -261,7 +261,7 @@ public:
 	bool Enter(C4Object *pTarget, bool fCalls=true, bool fCopyMotion=true, bool *pfRejectCollect=nullptr);
 	bool Exit(int32_t iX=0, int32_t iY=0, int32_t iR=0, C4Real iXDir=Fix0, C4Real iYDir=Fix0, C4Real iRDir=Fix0, bool fCalls=true);
 	void CopyMotion(C4Object *from);
-	void ForcePosition(C4Real tx, C4Real ty);
+	void ForcePosition(C4Real target_x, C4Real target_y);
 	void MovePosition(int32_t dx, int32_t dy);
 	void MovePosition(C4Real dx, C4Real dy);
 	void DoMotion(int32_t mx, int32_t my);
@@ -326,12 +326,12 @@ public:
 	int32_t AddObjectAndContentsToArray(C4ValueArray *target_array, int32_t index=0); // add self, contents and child contents count recursively to value array. Return index after last added item.
 
 protected:
-	void SideBounds(C4Real &ctcox);       // apply bounds at side; regarding bourder bound and pLayer
-	void VerticalBounds(C4Real &ctcoy);   // apply bounds at top and bottom; regarding border bound and pLayer
+	void SideBounds(C4Real &target_x);       // apply bounds at side; regarding bourder bound and pLayer
+	void VerticalBounds(C4Real &target_y);   // apply bounds at top and bottom; regarding border bound and pLayer
 
 public:
-	void BoundsCheck(C4Real &ctcox, C4Real &ctcoy) // do bound checks, correcting target positions as necessary and doing contact-calls
-	{ SideBounds(ctcox); VerticalBounds(ctcoy); }
+	void BoundsCheck(C4Real &target_x, C4Real &target_y) // do bound checks, correcting target positions as necessary and doing contact-calls
+	{ SideBounds(target_x); VerticalBounds(target_y); }
 
 	bool DoSelect(); // cursor callback if not disabled
 	void UnSelect(); // unselect callback
