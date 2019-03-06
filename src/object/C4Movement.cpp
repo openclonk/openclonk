@@ -169,12 +169,10 @@ int32_t C4Object::ContactCheck(int32_t at_x, int32_t at_y, uint32_t *border_hack
 	{
 		for (int32_t ccnat = 0; ccnat < 4; ccnat++) // Left, right, top bottom
 		{
-			if (Shape.ContactCNAT & (1 << ccnat))
+			// Will stop on first positive return contact call!
+			if ((Shape.ContactCNAT & (1 << ccnat)) && Contact(1 << ccnat))
 			{
-				if (Contact(1 << ccnat))
-				{
-					break; // Will stop on first positive return contact call!
-				}
+				break;
 			}
 		}
 	}
@@ -540,12 +538,9 @@ void C4Object::DoMovement()
 	{
 		if (!InLiquid) // Enter liquid
 		{
-			if (OCF & OCF_HitSpeed2)
+			if ((OCF & OCF_HitSpeed2) && (Mass > 3))
 			{
-				if (Mass > 3)
-				{
-					Splash();
-				}
+				Splash();
 			}
 			lost_attachment = false;
 			InLiquid = true;
@@ -618,25 +613,22 @@ void C4Object::Stabilize()
 	{
 		normalized_rotation -= 360;
 	}
-	if (normalized_rotation != Fix0)
+	if ((normalized_rotation != Fix0) && Inside<C4Real>(normalized_rotation, itofix(-StableRange), itofix(+StableRange)))
 	{
-		if (Inside<C4Real>(normalized_rotation, itofix(-StableRange), itofix(+StableRange)))
-		{
-			// Save step undos
-			C4Real old_rotation = fix_r;
-			C4Shape old_shape = Shape;
-			// Try rotation
-			fix_r = Fix0;
-			UpdateShape();
-			if (ContactCheck(GetX(), GetY()))
-			{ // Undo rotation
-				Shape = old_shape;
-				fix_r = old_rotation;
-			}
-			else
-			{ // Stabilization okay
-				UpdateFace(true);
-			}
+		// Save step undos
+		C4Real old_rotation = fix_r;
+		C4Shape old_shape = Shape;
+		// Try rotation
+		fix_r = Fix0;
+		UpdateShape();
+		if (ContactCheck(GetX(), GetY()))
+		{ // Undo rotation
+			Shape = old_shape;
+			fix_r = old_rotation;
+		}
+		else
+		{ // Stabilization okay
+			UpdateFace(true);
 		}
 	}
 }
