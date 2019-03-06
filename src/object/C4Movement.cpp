@@ -250,6 +250,7 @@ void C4Object::VerticalBounds(C4Real &target_y)
 
 void C4Object::DoMovement()
 {
+	bool has_moved = false;
 	bool has_contact = false;
 	int contact_count = 0;
 	BYTE has_turned = 0;
@@ -260,32 +261,27 @@ void C4Object::DoMovement()
 	{
 		xdir = 0;
 	}
+
 	// Dig free target area
 	C4PropList* current_action = GetAction();
-	if (current_action)
+	if (current_action && (current_action->GetPropertyInt(P_DigFree)))
 	{
-		if (current_action->GetPropertyInt(P_DigFree))
+		int target_x = fixtoi(fix_x + xdir);
+		int target_y = fixtoi(fix_y + ydir);
+		// Shape size square
+		if (current_action->GetPropertyInt(P_DigFree) == 1)
 		{
-			int target_x, target_y;
-			// Shape size square
-			if (current_action->GetPropertyInt(P_DigFree) == 1)
+			::Landscape.DigFreeRect(target_x + Shape.GetX(), target_y + Shape.GetY(), Shape.Wdt, Shape.Hgt, this);
+		}
+		// Free size round (variable size)
+		else
+		{
+			int32_t rad = current_action->GetPropertyInt(P_DigFree);
+			if (Con < FullCon)
 			{
-				target_x = fixtoi(fix_x + xdir);
-				target_y = fixtoi(fix_y + ydir);
-				::Landscape.DigFreeRect(target_x + Shape.GetX(), target_y + Shape.GetY(), Shape.Wdt, Shape.Hgt, this);
+				rad = rad * 6 * Con / 5 / FullCon;
 			}
-			// Free size round (variable size)
-			else
-			{
-				target_x = fixtoi(fix_x + xdir);
-				target_y = fixtoi(fix_y + ydir);
-				int32_t rad = current_action->GetPropertyInt(P_DigFree);
-				if (Con < FullCon)
-				{
-					rad = rad * 6 * Con / 5 / FullCon;
-				}
-				::Landscape.DigFree(target_x, target_y - 1, rad, this);
-			}
+			::Landscape.DigFree(target_x, target_y - 1, rad, this);
 		}
 	}
 
@@ -294,9 +290,11 @@ void C4Object::DoMovement()
 	C4Real old_ydir(ydir);
 	uint32_t old_ocf = OCF;
 
-	bool has_moved = false;
+	// Store new target x and y
 	C4Real new_x = fix_x + xdir;
 	C4Real new_y = fix_y + ydir;
+
+	// Apply bounds
 	SideBounds(new_x);
 
 	if (!Action.t_attach) // Unattached movement  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
