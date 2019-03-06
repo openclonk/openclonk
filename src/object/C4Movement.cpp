@@ -44,10 +44,10 @@ const C4Real DefaultGravAccel = C4REAL100(20);
 
 void RedirectForce(C4Real &from, C4Real &to, int32_t tdir)
 {
-	C4Real fred;
-	fred = std::min(Abs(from), FRedirect);
-	from -= fred * Sign(from);
-	to += fred * tdir;
+	C4Real force_redirected;
+	force_redirected = std::min(Abs(from), FRedirect);
+	from -= force_redirected * Sign(from);
+	to += force_redirected * tdir;
 }
 
 void ApplyFriction(C4Real &tval, int32_t percent)
@@ -70,11 +70,11 @@ void ApplyFriction(C4Real &tval, int32_t percent)
 // Compares all Shape.VtxContactCNAT[] CNAT flags to search flag.
 // Returns true if CNAT match has been found.
 
-bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir)
+bool ContactVtxCNAT(C4Object *object, BYTE cnat_dir)
 {
-	for (int32_t cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
+	for (int32_t index = 0; index < object->Shape.VtxNum; index++)
 	{
-		if (cobj->Shape.VtxContactCNAT[cnt] & cnat_dir)
+		if (object->Shape.VtxContactCNAT[index] & cnat_dir)
 		{
 			return true;
 		}
@@ -85,17 +85,17 @@ bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir)
 // Finds first vertex with contact flag set.
 // Returns -1/0/+1 for relation on vertex to object center.
 
-int32_t ContactVtxWeight(C4Object *cobj)
+int32_t ContactVtxWeight(C4Object *object)
 {
-	for (int32_t cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
+	for (int32_t index = 0; index < object->Shape.VtxNum; index++)
 	{
-		if (cobj->Shape.VtxContactCNAT[cnt])
+		if (object->Shape.VtxContactCNAT[index])
 		{
-			if (cobj->Shape.VtxX[cnt] < 0)
+			if (object->Shape.VtxX[index] < 0)
 			{
 				return -1;
 			}
-			if (cobj->Shape.VtxX[cnt] > 0)
+			if (object->Shape.VtxX[index] > 0)
 			{
 				return +1;
 			}
@@ -107,13 +107,13 @@ int32_t ContactVtxWeight(C4Object *cobj)
 // ContactVtxFriction: Returns 0-100 friction value of first
 //                     contacted vertex;
 
-int32_t ContactVtxFriction(C4Object *cobj)
+int32_t ContactVtxFriction(C4Object *object)
 {
-	for (int32_t cnt = 0; cnt < cobj->Shape.VtxNum; cnt++)
+	for (int32_t index = 0; index < object->Shape.VtxNum; index++)
 	{
-		if (cobj->Shape.VtxContactCNAT[cnt])
+		if (object->Shape.VtxContactCNAT[index])
 		{
-			return cobj->Shape.VtxFriction[cnt];
+			return object->Shape.VtxFriction[index];
 		}
 	}
 	return 0;
@@ -142,11 +142,11 @@ bool C4Object::Contact(int32_t iCNAT)
 	return false;
 }
 
-void C4Object::DoMotion(int32_t mx, int32_t my)
+void C4Object::DoMotion(int32_t distance_x, int32_t distance_y)
 {
 	RemoveSolidMask(true);
-	fix_x += mx;
-	fix_y += my;
+	fix_x += distance_x;
+	fix_y += distance_y;
 }
 
 void C4Object::StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32_t cnat)
@@ -609,29 +609,29 @@ void C4Object::Stabilize()
 		return;
 	}
 	// normalize angle
-	C4Real nr = fix_r;
-	while (nr < itofix(-180))
+	C4Real normalized_rotation = fix_r;
+	while (normalized_rotation < itofix(-180))
 	{
-		nr += 360;
+		normalized_rotation += 360;
 	}
-	while (nr > itofix(180))
+	while (normalized_rotation > itofix(180))
 	{
-		nr -= 360;
+		normalized_rotation -= 360;
 	}
-	if (nr != Fix0)
+	if (normalized_rotation != Fix0)
 	{
-		if (Inside<C4Real>(nr, itofix(-StableRange), itofix(+StableRange)))
+		if (Inside<C4Real>(normalized_rotation, itofix(-StableRange), itofix(+StableRange)))
 		{
 			// Save step undos
-			C4Real lcobjr = fix_r;
-			C4Shape lshape = Shape;
+			C4Real old_rotation = fix_r;
+			C4Shape old_shape = Shape;
 			// Try rotation
 			fix_r = Fix0;
 			UpdateShape();
 			if (ContactCheck(GetX(), GetY()))
 			{ // Undo rotation
-				Shape = lshape;
-				fix_r = lcobjr;
+				Shape = old_shape;
+				fix_r = old_rotation;
 			}
 			else
 			{ // Stabilization okay
@@ -641,39 +641,39 @@ void C4Object::Stabilize()
 	}
 }
 
-void C4Object::CopyMotion(C4Object *from)
+void C4Object::CopyMotion(C4Object *from_object)
 {
 	// Designed for contained objects, no static
-	if (fix_x != from->fix_x || fix_y != from->fix_y)
+	if (fix_x != from_object->fix_x || fix_y != from_object->fix_y)
 	{
-		fix_x = from->fix_x;
-		fix_y = from->fix_y;
+		fix_x = from_object->fix_x;
+		fix_y = from_object->fix_y;
 		// Resort into sectors
 		UpdatePos();
 	}
-	xdir = from->xdir;
-	ydir = from->ydir;
+	xdir = from_object->xdir;
+	ydir = from_object->ydir;
 }
 
-void C4Object::ForcePosition(C4Real tx, C4Real ty)
+void C4Object::ForcePosition(C4Real target_x, C4Real target_y)
 {
-	fix_x = tx;
-	fix_y = ty;
+	fix_x = target_x;
+	fix_y = target_y;
 	UpdatePos();
 	UpdateSolidMask(false);
 }
 
-void C4Object::MovePosition(int32_t dx, int32_t dy)
+void C4Object::MovePosition(int32_t distance_x, int32_t distance_y)
 {
-	MovePosition(itofix(dx), itofix(dy));
+	MovePosition(itofix(distance_x), itofix(distance_y));
 }
 
-void C4Object::MovePosition(C4Real dx, C4Real dy)
+void C4Object::MovePosition(C4Real distance_x, C4Real distance_y)
 {
 	// move object position; repositions SolidMask
 	RemoveSolidMask(true);
-	fix_x += dx;
-	fix_y += dy;
+	fix_x += distance_x;
+	fix_y += distance_y;
 	UpdatePos();
 	UpdateSolidMask(true);
 }
@@ -742,27 +742,28 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 		//  and the attached objects follow one frame later
 		if (!pActionDef || !Action.Target || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 		{
-			bool fRemove = true;
+			bool should_remove = true;
 			// never remove HUD objects
 			if (Category & C4D_Parallax)
 			{
-				int parX, parY;
-				GetParallaxity(&parX, &parY);
-				fRemove = false;
+				int parallaxity_x, parallaxity_y;
+				GetParallaxity(&parallaxity_x, &parallaxity_y);
+
+				should_remove = false;
 				if (GetX() > ::Landscape.GetWidth() || GetY() > ::Landscape.GetHeight())
 				{
-					fRemove = true; // except if they are really out of the viewport to the right...
+					should_remove = true; // except if they are really out of the viewport to the right...
 				}
-				else if (GetX() < 0 && !!parX)
+				else if (GetX() < 0 && !!parallaxity_x)
 				{
-					fRemove = true; // ...or it's not HUD horizontally and it's out to the left
+					should_remove = true; // ...or it's not HUD horizontally and it's out to the left
 				}
-				else if (!parX && GetX() < -::Landscape.GetWidth())
+				else if (!parallaxity_x && GetX() < -::Landscape.GetWidth())
 				{
-					fRemove = true; // ...or it's HUD horizontally and it's out to the left
+					should_remove = true; // ...or it's HUD horizontally and it's out to the left
 				}
 			}
-			if (fRemove)
+			if (should_remove)
 			{
 				AssignDeath(true);
 				AssignRemoval();
@@ -772,19 +773,19 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 	return true;
 }
 
-bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t &iIter)
+bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t min_density, int32_t max_density, int32_t &iterations)
 {
-	bool hitOnTime = true;
-	bool fBreak = false;
-	int32_t ctcox, ctcoy;
-	int32_t cx = fixtoi(x);
-	int32_t cy = fixtoi(y);
-	int32_t i = iIter;
+	bool hit_on_time = true;
+	bool break_main_loop = false;
+	int32_t target_x, target_y;
+	int32_t current_x = fixtoi(x);
+	int32_t current_y = fixtoi(y);
+	int32_t index = iterations;
 	do
 	{
-		if (!--i)
+		if (!--index)
 		{
-			hitOnTime = false;
+			hit_on_time = false;
 			break;
 		}
 		// If the object isn't moving and there is no gravity either, abort
@@ -793,67 +794,67 @@ bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensit
 			return false;
 		}
 		// If the object is above the landscape flying upwards in no/negative gravity, abort
-		if (ydir <= 0 && GravAccel <= 0 && cy < 0)
+		if (ydir <= 0 && GravAccel <= 0 && current_y < 0)
 		{
 			return false;
 		}
 		// Set target position by momentum
 		x += xdir;
 		y += ydir;
-		// Movement to target
-		ctcox = fixtoi(x);
-		ctcoy = fixtoi(y);
-		// Bounds
-		if (!Inside<int32_t>(ctcox, 0, ::Landscape.GetWidth()) || (ctcoy >= ::Landscape.GetHeight()))
+		// Set target position, then iterate towards this position, checking for contact
+		target_x = fixtoi(x);
+		target_y = fixtoi(y);
+		// Is the target position outside of the landscape?
+		if (!Inside<int32_t>(target_x, 0, ::Landscape.GetWidth()) || (target_y >= ::Landscape.GetHeight()))
 		{
 			return false;
 		}
-		// Move to target
+		// Check the way towards the target position, by doing minimal movement steps
 		do
 		{
 			// Set next step target
-			cx += Sign(ctcox - cx);
-			cy += Sign(ctcoy - cy);
+			current_x += Sign(target_x - current_x);
+			current_y += Sign(target_y - current_y);
 			// Contact check
-			if (Inside(GBackDensity(cx, cy), iDensityMin, iDensityMax))
+			if (Inside(GBackDensity(current_x, current_y), min_density, max_density))
 			{
-				fBreak = true;
+				break_main_loop = true;
 				break;
 			}
 		}
-		while ((cx != ctcox) || (cy != ctcoy));
+		while ((current_x != target_x) || (current_y != target_y));
 		// Adjust GravAccel once per frame
 		ydir += GravAccel;
 	}
-	while (!fBreak);
+	while (!break_main_loop);
 	// write position back
-	x = itofix(cx);
-	y = itofix(cy);
+	x = itofix(current_x);
+	y = itofix(current_y);
 
 	// how many steps did it take to get here?
-	iIter -= i;
+	iterations -= index;
 
-	return hitOnTime;
+	return hit_on_time;
 }
 
-bool SimFlightHitsLiquid(C4Real fcx, C4Real fcy, C4Real xdir, C4Real ydir)
+bool SimFlightHitsLiquid(C4Real start_x, C4Real start_y, C4Real xdir, C4Real ydir)
 {
 	// Start in water?
-	if (DensityLiquid(GBackDensity(fixtoi(fcx), fixtoi(fcy))))
+	if (DensityLiquid(GBackDensity(fixtoi(start_x), fixtoi(start_y))))
 	{
 		int temp = 10;
-		if (!SimFlight(fcx, fcy, xdir, ydir, 0, C4M_Liquid - 1, temp))
+		if (!SimFlight(start_x, start_y, xdir, ydir, 0, C4M_Liquid - 1, temp))
 		{
 			return false;
 		}
 	}
 	// Hits liquid?
 	int temp = -1;
-	if (!SimFlight(fcx, fcy, xdir, ydir, C4M_Liquid, 100, temp))
+	if (!SimFlight(start_x, start_y, xdir, ydir, C4M_Liquid, 100, temp))
 	{
 		return false;
 	}
 	// liquid & deep enough?
-	return GBackLiquid(fixtoi(fcx), fixtoi(fcy)) && GBackLiquid(fixtoi(fcx), fixtoi(fcy) + 9);
+	return GBackLiquid(fixtoi(start_x), fixtoi(start_y)) && GBackLiquid(fixtoi(start_x), fixtoi(start_y) + 9);
 }
 
