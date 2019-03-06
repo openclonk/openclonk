@@ -250,7 +250,6 @@ void C4Object::VerticalBounds(C4Real &target_y)
 
 void C4Object::DoMovement()
 {
-	int32_t iContact = 0;
 	bool has_contact = false;
 	int iContacts = 0;
 	BYTE has_turned = 0;
@@ -309,7 +308,7 @@ void C4Object::DoMovement()
 			// Next step
 			int step_x = Sign(new_x - fix_x);
 			uint32_t border_hack_contacts = 0;
-			iContact = ContactCheck(GetX() + step_x, GetY(), &border_hack_contacts);
+			int32_t iContact = ContactCheck(GetX() + step_x, GetY(), &border_hack_contacts);
 			if (iContact || border_hack_contacts)
 			{
 				has_contact = true;
@@ -339,7 +338,8 @@ void C4Object::DoMovement()
 		{
 			// Next step
 			int step_y = Sign(new_y - fix_y);
-			if ((iContact = ContactCheck(GetX(), GetY() + step_y, nullptr, ydir > 0)))
+			int32_t iContact = ContactCheck(GetX(), GetY() + step_y, nullptr, ydir > 0);
+			if (iContact)
 			{
 				has_contact = true;
 				iContacts |= t_contact;
@@ -413,7 +413,7 @@ void C4Object::DoMovement()
 			}
 			// Contact check & evaluation
 			uint32_t border_hack_contacts = 0;
-			iContact = ContactCheck(step_target_x, step_target_y, &border_hack_contacts);
+			int32_t iContact = ContactCheck(step_target_x, step_target_y, &border_hack_contacts);
 			if (iContact || border_hack_contacts)
 			{
 				has_contact = true;
@@ -488,7 +488,8 @@ void C4Object::DoMovement()
 				Shape.Attach(current_x, current_y, Action.t_attach);
 			}
 			// Check for contact
-			if ((iContact = ContactCheck(current_x, current_y))) // Contact
+			int32_t iContact = ContactCheck(current_x, current_y);
+			if (iContact) // Contact
 			{
 				has_contact = true;
 				iContacts |= t_contact;
