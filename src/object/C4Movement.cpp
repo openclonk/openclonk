@@ -850,7 +850,7 @@ bool SimFlightHitsLiquid(C4Real start_x, C4Real start_y, C4Real xdir, C4Real ydi
 	}
 	// Hits liquid?
 	int temp = -1;
-	if (!SimFlight(start_x, start_y, xdir, ydir, C4M_Liquid, 100, temp))
+	if (!SimFlight(start_x, start_y, xdir, ydir, C4M_Liquid, C4M_Vehicle, temp))
 	{
 		return false;
 	}
