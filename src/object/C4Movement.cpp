@@ -253,51 +253,51 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 void C4Object::DoMovement()
 {
 	int32_t iContact = 0;
-	bool fAnyContact = false;
+	bool has_contact = false;
 	int iContacts = 0;
-	BYTE fTurned = 0;
-	BYTE fRedirectYR = 0;
-	BYTE fNoAttach = 0;
+	BYTE has_turned = 0;
+	BYTE redirected_force_from_ydir_to_rdir = 0;
+	BYTE lost_attachment = 0;
 	// Restrictions
 	if (Def->NoHorizontalMove)
 	{
 		xdir = 0;
 	}
 	// Dig free target area
-	C4PropList* pActionDef = GetAction();
-	if (pActionDef)
+	C4PropList* current_action = GetAction();
+	if (current_action)
 	{
-		if (pActionDef->GetPropertyInt(P_DigFree))
+		if (current_action->GetPropertyInt(P_DigFree))
 		{
-			int ctcox, ctcoy;
+			int target_x, target_y;
 			// Shape size square
-			if (pActionDef->GetPropertyInt(P_DigFree) == 1)
+			if (current_action->GetPropertyInt(P_DigFree) == 1)
 			{
-				ctcox = fixtoi(fix_x + xdir);
-				ctcoy = fixtoi(fix_y + ydir);
-				::Landscape.DigFreeRect(ctcox + Shape.GetX(), ctcoy + Shape.GetY(), Shape.Wdt, Shape.Hgt, this);
+				target_x = fixtoi(fix_x + xdir);
+				target_y = fixtoi(fix_y + ydir);
+				::Landscape.DigFreeRect(target_x + Shape.GetX(), target_y + Shape.GetY(), Shape.Wdt, Shape.Hgt, this);
 			}
 			// Free size round (variable size)
 			else
 			{
-				ctcox = fixtoi(fix_x + xdir);
-				ctcoy = fixtoi(fix_y + ydir);
-				int32_t rad = pActionDef->GetPropertyInt(P_DigFree);
+				target_x = fixtoi(fix_x + xdir);
+				target_y = fixtoi(fix_y + ydir);
+				int32_t rad = current_action->GetPropertyInt(P_DigFree);
 				if (Con < FullCon)
 				{
 					rad = rad * 6 * Con / 5 / FullCon;
 				}
-				::Landscape.DigFree(ctcox, ctcoy - 1, rad, this);
+				::Landscape.DigFree(target_x, target_y - 1, rad, this);
 			}
 		}
 	}
 
 	// store previous movement and ocf
-	C4Real oldxdir(xdir);
-	C4Real oldydir(ydir);
+	C4Real old_xdir(xdir);
+	C4Real old_ydir(ydir);
 	uint32_t old_ocf = OCF;
 
-	bool fMoved = false;
+	bool has_moved = false;
 	C4Real new_x = fix_x + xdir;
 	C4Real new_y = fix_y + ydir;
 	SideBounds(new_x);
@@ -309,12 +309,12 @@ void C4Object::DoMovement()
 		while (fixtoi(new_x) != fixtoi(fix_x))
 		{
 			// Next step
-			int step = Sign(new_x - fix_x);
+			int step_x = Sign(new_x - fix_x);
 			uint32_t border_hack_contacts = 0;
-			iContact = ContactCheck(GetX() + step, GetY(), &border_hack_contacts);
+			iContact = ContactCheck(GetX() + step_x, GetY(), &border_hack_contacts);
 			if (iContact || border_hack_contacts)
 			{
-				fAnyContact = true;
+				has_contact = true;
 				iContacts |= t_contact | border_hack_contacts;
 			}
 			if (iContact)
@@ -327,8 +327,8 @@ void C4Object::DoMovement()
 			}
 			else // Free horizontal movement
 			{
-				DoMotion(step, 0);
-				fMoved = true;
+				DoMotion(step_x, 0);
+				has_moved = true;
 			}
 		}
 		// Vertical movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -340,10 +340,10 @@ void C4Object::DoMovement()
 		while (fixtoi(new_y) != fixtoi(fix_y))
 		{
 			// Next step
-			int step = Sign(new_y - fix_y);
-			if ((iContact = ContactCheck(GetX(), GetY() + step, nullptr, ydir > 0)))
+			int step_y = Sign(new_y - fix_y);
+			if ((iContact = ContactCheck(GetX(), GetY() + step_y, nullptr, ydir > 0)))
 			{
-				fAnyContact = true;
+				has_contact = true;
 				iContacts |= t_contact;
 				new_y = fix_y;
 				// Vertical contact horizontal friction
@@ -363,15 +363,15 @@ void C4Object::DoMovement()
 					if ((OCF & OCF_Rotate) && iContact == 1 && !Alive)
 					{
 						RedirectForce(ydir, rdir, -ContactVtxWeight(this));
-						fRedirectYR = 1;
+						redirected_force_from_ydir_to_rdir = 1;
 					}
 					ydir = 0;
 				}
 			}
 			else // Free vertical movement
 			{
-				DoMotion(0, step);
-				fMoved = true;
+				DoMotion(0, step_y);
+				has_moved = true;
 			}
 		}
 	}
@@ -392,58 +392,58 @@ void C4Object::DoMovement()
 			{
 				step_y = Sign(fixtoi(new_y) - GetY());
 			}
-			int32_t ctx = GetX() + step_x;
-			int32_t cty = GetY() + step_y;
+			int32_t step_target_x = GetX() + step_x;
+			int32_t step_target_y = GetY() + step_y;
 			// Attachment check
-			if (!Shape.Attach(ctx, cty, Action.t_attach))
+			if (!Shape.Attach(step_target_x, step_target_y, Action.t_attach))
 			{
-				fNoAttach = 1;
+				lost_attachment = 1;
 			}
 			else
 			{
-				// Attachment change to ctx/cty overrides target
-				if (ctx != GetX() + step_x)
+				// Attachment change to step_target_x/step_target_y overrides target
+				if (step_target_x != GetX() + step_x)
 				{
 					xdir = Fix0;
-					new_x = itofix(ctx);
+					new_x = itofix(step_target_x);
 				}
-				if (cty != GetY() + step_y)
+				if (step_target_y != GetY() + step_y)
 				{
 					ydir = Fix0;
-					new_y = itofix(cty);
+					new_y = itofix(step_target_y);
 				}
 			}
 			// Contact check & evaluation
 			uint32_t border_hack_contacts = 0;
-			iContact = ContactCheck(ctx, cty, &border_hack_contacts);
+			iContact = ContactCheck(step_target_x, step_target_y, &border_hack_contacts);
 			if (iContact || border_hack_contacts)
 			{
-				fAnyContact = true;
+				has_contact = true;
 				iContacts |= border_hack_contacts | t_contact;
 			}
 			if (iContact)
 			{
 				// Abort movement
-				if (ctx != GetX())
+				if (step_target_x != GetX())
 				{
-					ctx = GetX();
+					step_target_x = GetX();
 					new_x = fix_x;
 				}
-				if (cty != GetY())
+				if (step_target_y != GetY())
 				{
-					cty = GetY();
+					step_target_y = GetY();
 					new_y = fix_y;
 				}
 			}
-			DoMotion(ctx - GetX(), cty - GetY());
-			fMoved = true;
+			DoMotion(step_target_x - GetX(), step_target_y - GetY());
+			has_moved = true;
 		}
 		while (fixtoi(new_x) != GetX() || fixtoi(new_y) != GetY());
 	}
 
 	if (fix_x != new_x || fix_y != new_y)
 	{
-		fMoved = true;
+		has_moved = true;
 		RemoveSolidMask(true);
 		fix_x = new_x;
 		fix_y = new_y;
@@ -453,7 +453,7 @@ void C4Object::DoMovement()
 	{
 		C4Real target_r = fix_r + rdir * 5;
 		// Rotation limit
-		if (Def->Rotateable>1)
+		if (Def->Rotateable > 1)
 		{
 			if (target_r > itofix(Def->Rotateable))
 			{
@@ -466,41 +466,41 @@ void C4Object::DoMovement()
 				rdir = 0;
 			}
 		}
-		int32_t ctx = GetX();
-		int32_t cty = GetY();
+		int32_t current_x = GetX();
+		int32_t current_y = GetY();
 		// Move to target
 		while (fixtoi(fix_r) != fixtoi(target_r))
 		{
 			// Save step undos
-			C4Real lcobjr = fix_r;
-			C4Shape lshape = Shape;
+			C4Real old_rotation = fix_r;
+			C4Shape old_shape = Shape;
 			// Try next step
 			fix_r += Sign(target_r - fix_r);
 			UpdateShape();
 			// attached rotation: rotate around attachment pos
-			if (Action.t_attach && !fNoAttach)
+			if (Action.t_attach && !lost_attachment)
 			{
 				// more accurately, attachment should be evaluated by a rotation around the attachment vertex
 				// however, as long as this code is only used for some surfaces adjustment for large vehicles,
 				// it's enough to assume rotation around the center
-				ctx = GetX();
-				cty = GetY();
+				current_x = GetX();
+				current_y = GetY();
 				// evaluate attachment, but do not bother about attachment loss
 				// that will then be done in next execution cycle
-				Shape.Attach(ctx, cty, Action.t_attach);
+				Shape.Attach(current_x, current_y, Action.t_attach);
 			}
 			// check for contact
-			if ((iContact = ContactCheck(ctx, cty))) // Contact
+			if ((iContact = ContactCheck(current_x, current_y))) // Contact
 			{
-				fAnyContact = true;
+				has_contact = true;
 				iContacts |= t_contact;
 				// Undo step and abort movement
-				Shape = lshape;
-				target_r = fix_r = lcobjr;
+				Shape = old_shape;
+				target_r = fix_r = old_rotation;
 				// last UpdateShape-call might have changed sector lists!
 				UpdatePos();
 				// Redirect to GetY()
-				if (iContact == 1 && !fRedirectYR)
+				if (iContact == 1 && !redirected_force_from_ydir_to_rdir)
 				{
 					RedirectForce(rdir, ydir, -1);
 				}
@@ -509,11 +509,11 @@ void C4Object::DoMovement()
 			}
 			else
 			{
-				fTurned = 1;
-				if (ctx != GetX() || cty != GetY())
+				has_turned = 1;
+				if (current_x != GetX() || current_y != GetY())
 				{
-					fix_x = itofix(ctx);
-					fix_y = itofix(cty);
+					fix_x = itofix(current_x);
+					fix_y = itofix(current_y);
 				}
 			}
 		}
@@ -529,7 +529,7 @@ void C4Object::DoMovement()
 		fix_r = target_r;
 	}
 	// Reput solid mask if moved by motion
-	if (fMoved || fTurned)
+	if (has_moved || has_turned)
 	{
 		UpdateSolidMask(true);
 	}
@@ -547,7 +547,7 @@ void C4Object::DoMovement()
 					Splash();
 				}
 			}
-			fNoAttach = false;
+			lost_attachment = false;
 			InLiquid = true;
 		}
 	}
@@ -559,20 +559,20 @@ void C4Object::DoMovement()
 		}
 	}
 	// Contact Action
-	if (fAnyContact)
+	if (has_contact)
 	{
 		t_contact = iContacts;
 		ContactAction();
 	}
 	// Attachment Loss Action
-	if (fNoAttach)
+	if (lost_attachment)
 	{
 		NoAttachAction();
 	}
 	// Movement Script Execution
-	if (fAnyContact)
+	if (has_contact)
 	{
-		C4AulParSet pars(fixtoi(oldxdir, 100), fixtoi(oldydir, 100));
+		C4AulParSet pars(fixtoi(old_xdir, 100), fixtoi(old_ydir, 100));
 		if (old_ocf & OCF_HitSpeed1)
 		{
 			Call(PSF_Hit, &pars);
@@ -587,14 +587,14 @@ void C4Object::DoMovement()
 		}
 	}
 	// Rotation gfx
-	if (fTurned)
+	if (has_turned)
 	{
 		UpdateFace(true);
 	}
 	else
 	{
 		// pos changed?
-		if (fMoved)
+		if (has_moved)
 		{
 			UpdatePos();
 		}
@@ -737,10 +737,10 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 	if ((!Inside<int32_t>(GetX() + Shape.GetX(), -Shape.Wdt, ::Landscape.GetWidth()) && !(GetPropertyInt(P_BorderBound) & C4D_Border_Sides))
 	    || ((GetY() + Shape.GetY() > ::Landscape.GetHeight()) && !(GetPropertyInt(P_BorderBound) & C4D_Border_Bottom)))
 	{
-		C4PropList* pActionDef = GetAction();
+		C4PropList* current_action = GetAction();
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
 		//  and the attached objects follow one frame later
-		if (!pActionDef || !Action.Target || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
+		if (!current_action || !Action.Target || current_action->GetPropertyP(P_Procedure) != DFA_ATTACH)
 		{
 			bool should_remove = true;
 			// never remove HUD objects
