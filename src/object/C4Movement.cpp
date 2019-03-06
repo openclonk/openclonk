@@ -308,13 +308,13 @@ void C4Object::DoMovement()
 			// Next step
 			int step_x = Sign(new_x - fix_x);
 			uint32_t border_hack_contacts = 0;
-			int32_t iContact = ContactCheck(GetX() + step_x, GetY(), &border_hack_contacts);
-			if (iContact || border_hack_contacts)
+			int32_t current_contacts = ContactCheck(GetX() + step_x, GetY(), &border_hack_contacts);
+			if (current_contacts || border_hack_contacts)
 			{
 				has_contact = true;
 				iContacts |= t_contact | border_hack_contacts;
 			}
-			if (iContact)
+			if (current_contacts)
 			{
 				// Abort horizontal movement
 				new_x = fix_x;
@@ -338,8 +338,8 @@ void C4Object::DoMovement()
 		{
 			// Next step
 			int step_y = Sign(new_y - fix_y);
-			int32_t iContact = ContactCheck(GetX(), GetY() + step_y, nullptr, ydir > 0);
-			if (iContact)
+			int32_t current_contacts = ContactCheck(GetX(), GetY() + step_y, nullptr, ydir > 0);
+			if (current_contacts)
 			{
 				has_contact = true;
 				iContacts |= t_contact;
@@ -358,7 +358,7 @@ void C4Object::DoMovement()
 				else
 				{
 					// Living things are always capable of keeping their rotation
-					if ((OCF & OCF_Rotate) && iContact == 1 && !Alive)
+					if ((OCF & OCF_Rotate) && current_contacts == 1 && !Alive)
 					{
 						RedirectForce(ydir, rdir, -ContactVtxWeight(this));
 						redirected_force_from_ydir_to_rdir = 1;
@@ -413,13 +413,13 @@ void C4Object::DoMovement()
 			}
 			// Contact check & evaluation
 			uint32_t border_hack_contacts = 0;
-			int32_t iContact = ContactCheck(step_target_x, step_target_y, &border_hack_contacts);
-			if (iContact || border_hack_contacts)
+			int32_t current_contacts = ContactCheck(step_target_x, step_target_y, &border_hack_contacts);
+			if (current_contacts || border_hack_contacts)
 			{
 				has_contact = true;
 				iContacts |= border_hack_contacts | t_contact;
 			}
-			if (iContact)
+			if (current_contacts)
 			{
 				// Abort movement
 				if (step_target_x != GetX())
@@ -488,8 +488,8 @@ void C4Object::DoMovement()
 				Shape.Attach(current_x, current_y, Action.t_attach);
 			}
 			// Check for contact
-			int32_t iContact = ContactCheck(current_x, current_y);
-			if (iContact) // Contact
+			int32_t current_contacts = ContactCheck(current_x, current_y);
+			if (current_contacts) // Contact
 			{
 				has_contact = true;
 				iContacts |= t_contact;
@@ -499,7 +499,7 @@ void C4Object::DoMovement()
 				// Last UpdateShape-call might have changed sector lists!
 				UpdatePos();
 				// Redirect to GetY()
-				if (iContact == 1 && !redirected_force_from_ydir_to_rdir)
+				if (current_contacts == 1 && !redirected_force_from_ydir_to_rdir)
 				{
 					RedirectForce(rdir, ydir, -1);
 				}
