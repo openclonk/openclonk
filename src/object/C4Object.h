@@ -248,7 +248,7 @@ public:
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf) const;
 	bool CloseMenu(bool fForce);
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=nullptr);
-	int32_t ContactCheck(int32_t at_x, int32_t at_y, uint32_t *border_hack_contacts=nullptr, bool collide_halfvehic = false);
+	int32_t ContactCheck(int32_t at_x, int32_t at_y, uint32_t *border_hack_contacts = nullptr, bool collide_halfvehic = false);
 	bool Contact(int32_t cnat);
 	void StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32_t cnat);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };

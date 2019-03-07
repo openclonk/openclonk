@@ -44,8 +44,7 @@ const C4Real DefaultGravAccel = C4REAL100(20);
 
 void RedirectForce(C4Real &from, C4Real &to, int32_t tdir)
 {
-	C4Real force_redirected;
-	force_redirected = std::min(Abs(from), FRedirect);
+	C4Real force_redirected = std::min(Abs(from), FRedirect);
 	from -= force_redirected * Sign(from);
 	to += force_redirected * tdir;
 }
