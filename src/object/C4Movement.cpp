@@ -249,12 +249,12 @@ void C4Object::VerticalBounds(C4Real &target_y)
 
 void C4Object::DoMovement()
 {
+	int contact_count = 0;
 	bool has_moved = false;
 	bool has_contact = false;
-	int contact_count = 0;
-	BYTE has_turned = 0;
-	BYTE redirected_force_from_ydir_to_rdir = 0;
-	BYTE lost_attachment = 0;
+	bool has_turned = false;
+	bool lost_attachment = false;
+	bool redirected_force_from_ydir_to_rdir = false;
 	// Restrictions
 	if (Def->NoHorizontalMove)
 	{
@@ -338,7 +338,7 @@ void C4Object::DoMovement()
 					if ((OCF & OCF_Rotate) && current_contacts == 1 && !Alive)
 					{
 						RedirectForce(ydir, rdir, -ContactVtxWeight(this));
-						redirected_force_from_ydir_to_rdir = 1;
+						redirected_force_from_ydir_to_rdir = true;
 					}
 					ydir = 0;
 				}
@@ -372,7 +372,7 @@ void C4Object::DoMovement()
 			// Attachment check
 			if (!Shape.Attach(step_target_x, step_target_y, Action.t_attach))
 			{
-				lost_attachment = 1;
+				lost_attachment = true;
 			}
 			else
 			{
@@ -485,7 +485,7 @@ void C4Object::DoMovement()
 			}
 			else
 			{
-				has_turned = 1;
+				has_turned = true;
 				if (current_x != GetX() || current_y != GetY())
 				{
 					fix_x = itofix(current_x);
