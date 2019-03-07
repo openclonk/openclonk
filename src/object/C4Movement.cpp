@@ -148,9 +148,9 @@ void C4Object::DoMotion(int32_t distance_x, int32_t distance_y)
 	fix_y += distance_y;
 }
 
-void C4Object::StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32_t cnat)
+void C4Object::StopAndContact(C4Real &contact_coordinate, C4Real limit, C4Real &speed, int32_t cnat)
 {
-	ctco = limit;
+	contact_coordinate = limit;
 	speed = 0;
 	Contact(cnat);
 }
