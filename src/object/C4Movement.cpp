@@ -249,7 +249,7 @@ void C4Object::VerticalBounds(C4Real &target_y)
 
 void C4Object::DoMovement()
 {
-	int contact_count = 0;
+	int contact_bits = 0;
 	bool has_moved = false;
 	bool has_contact = false;
 	bool has_turned = false;
@@ -289,7 +289,7 @@ void C4Object::DoMovement()
 			if (current_contacts || border_hack_contacts)
 			{
 				has_contact = true;
-				contact_count |= t_contact | border_hack_contacts;
+				contact_bits |= t_contact | border_hack_contacts;
 			}
 			if (current_contacts)
 			{
@@ -319,7 +319,7 @@ void C4Object::DoMovement()
 			if (current_contacts)
 			{
 				has_contact = true;
-				contact_count |= t_contact;
+				contact_bits |= t_contact;
 				new_y = fix_y;
 				// Vertical contact horizontal friction
 				ApplyFriction(xdir, ContactVtxFriction(this));
@@ -394,7 +394,7 @@ void C4Object::DoMovement()
 			if (current_contacts || border_hack_contacts)
 			{
 				has_contact = true;
-				contact_count |= border_hack_contacts | t_contact;
+				contact_bits |= border_hack_contacts | t_contact;
 			}
 			if (current_contacts)
 			{
@@ -469,7 +469,7 @@ void C4Object::DoMovement()
 			if (current_contacts) // Contact
 			{
 				has_contact = true;
-				contact_count |= t_contact;
+				contact_bits |= t_contact;
 				// Undo step and abort movement
 				Shape = old_shape;
 				target_r = fix_r = old_rotation;
@@ -534,7 +534,7 @@ void C4Object::DoMovement()
 	// Contact Action
 	if (has_contact)
 	{
-		t_contact = contact_count;
+		t_contact = contact_bits;
 		ContactAction();
 	}
 	// Attachment Loss Action
