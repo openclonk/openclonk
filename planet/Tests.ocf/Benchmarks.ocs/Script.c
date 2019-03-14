@@ -78,6 +78,8 @@ static const BenchmarkRun = new Global
 	OnStart    = nil,    // Function call when the benchmark starts
 	IsFinished = nil,    // Function call that determines whether the benchmark is over
 	OnFinish   = nil,    // Function call when the benchmark is over
+	Succeed    = nil,    // Function call when the benchmark follows after another benchmark; Parameter: previous BenchmarkRun
+	
 	Timeout    = 120000, // Timeout in milliseconds when the run is force-stopped,
 	FPSLimit   = 5,      // Queue another run with more object if the limit is not hit
 };
@@ -94,6 +96,7 @@ static const Run_Coconuts = new Run_LaunchObjects
 {
 	Types = [Coconut],
 	Amount = [1000],
+	Progress = [Global.DoubleAmount],
 };
 
 
@@ -101,12 +104,13 @@ static const Run_Coconuts = new Run_LaunchObjects
 
 static const Run_LaunchObjects = new BenchmarkRun
 {
-	Types = [],
-	Amount = [1000],
-	RangeX = [30, 240],
-	RangeY = [30, 120],
-	Speed = 50,
-	Launched = [],
+	Types    = [],        // This type of objects is launched
+	Amount   = [1000],    // This amount is launched
+	Progress = [],        // This is the progress function for successor runs; Defaults to adding the base amount
+	RangeX   = [30, 240], // Position range for object
+	RangeY   = [30, 120], // Position range for object
+	Speed    = 50,        // Speed range for object
+	Launched = [],        // Saves all launched objects
 
 	OnStart = func (int nr)
 	{
@@ -153,26 +157,27 @@ static const Run_LaunchObjects = new BenchmarkRun
 			if (target) target->RemoveObject();
 		}
 	},
+	
+	Succeed = func (proplist previous)
+	{
+		var progressed_amount = []; // Save everything in a temp array, because some functions rely on the array 'Amount'
+		for (var i = 0; i < GetLength(Amount); ++i)
+		{
+			progressed_amount[i] = Call(Progress[i] ?? Global.AddInitialAmount, previous.Amount[i], Amount[i]);
+		}
+		Amount = progressed_amount;
+	},
 };
 
 //-----------------------------------
-
-global func Test4_OnStart(int player)
+// Successor functions
+	
+global func AddInitialAmount (int their_amount, int my_amount)
 {
-
-	GetControl().start_time = GetTime();
-	GetControl().start_frame = FrameCounter();
-	StartScriptProfiler();
-	return true;
+	return their_amount + my_amount;
 }
 
-global func Test4_OnFinished()
+global func DoubleAmount (int their_amount, int my_amount)
 {
-	StopScriptProfiler();
-	var frames_passed = Max(0, FrameCounter() - GetControl().start_frame);
-	var millis_passed = Max(1, GetTime() - GetControl().start_time);
-		var fps = 1000 * frames_passed / millis_passed;
-		Log("Benchmark result: %d frames passed, took %d milliseconds. Average FPS: %d", frames_passed, millis_passed, fps);
-		Log("Note: Benchmark is non-deterministic regarding frame count");
+	return 2 * their_amount;
 }
-

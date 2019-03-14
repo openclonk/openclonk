@@ -17,7 +17,7 @@ static const IntBenchmarkControl = new Effect
 	ScenarioQueue = [],
 	ScenarioCurrent = nil,
 	RunData = nil,
-	RunNr = 1,
+	RunNr = 0,
 
 	// Internal status
 	start_time = 0,  // Time in ms when the benchmark started, for FPS evaluation
@@ -69,11 +69,17 @@ static const IntBenchmarkControl = new Effect
 					StopTimer();
 					StopRun();
 
-					RunData = nil;
-					FinishScenario();
+					// Determine end of benchmark scenario
+					if (timeout_exceeded || calc_fps <= RunData.FPSLimit)
+					{
+						FinishScenario();
+					}
+					else
+					{
+						StartRun();
+						StartTimer();
+					}
 				}
-
-				var frames_passed = Max(0, FrameCounter() - GetControl().start_frame);
 			}
 			else // Start!
 			{
@@ -99,11 +105,20 @@ static const IntBenchmarkControl = new Effect
 
 	StartRun = func ()
 	{
+		Log("Run benchmark %d:", RunNr);
+
+		// Setup data
 		var data = { Prototype = ScenarioCurrent.Run };
+		if (RunData)
+		{
+			data->Succeed(RunData);
+		}
 		data->OnStart(RunNr);
+
+		// Start
+		RunNr += 1;
 		RunData = data;
 		is_running = true;
-		Log("Run benchmark %d:", RunNr);
 		Log("==============================");
 	},
 
