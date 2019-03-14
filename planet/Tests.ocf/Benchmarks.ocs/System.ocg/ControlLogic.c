@@ -53,7 +53,7 @@ static const IntBenchmarkControl = new Effect
 				ScenarioCurrent = PopFront(ScenarioQueue);
 
 				Log("=========================================================================================="); // Large separator
-				Log("Starting benchmark: %s", ScenarioCurrent.Description);
+				Log("Starting benchmark: %s / %v", ScenarioCurrent.Description, ScenarioQueue);
 				Log("=========================================================================================="); // Large separator
 			}
 		}
@@ -169,6 +169,7 @@ static const IntBenchmarkControl = new Effect
 	Queue = func (proplist scenario)
 	{
 		PushBack(this.ScenarioQueue, scenario);
+		return this;
 	},
 };
 

@@ -64,7 +64,10 @@ func RemovePlayer(int player)
 global func StartBenchmarks()
 {
 	GetControl(true)
-	->Queue(new Scenario_Coconuts{});
+	//->Queue(new Scenario_Coconuts{})
+	//->Queue(new Scenario_Firestone{})
+	//->Queue(new Scenario_Bombs{})
+	->Queue(new Scenario_MixedObjects{});
 }
 
 static const BenchmarkScenario = new Global
@@ -100,13 +103,75 @@ static const Run_Coconuts = new Run_LaunchObjects
 };
 
 
+static const Scenario_Firestone = new BenchmarkScenario
+{
+	Description = "Launch explosive objects (Firestone(s)) in a confined area",
+	Run = Run_Firestone,
+};
+
+static const Run_Firestone = new Run_LaunchObjects
+{
+	Types = [Firestone],
+	Amount = [1000],
+	Progress = [Global.DoubleAmount],
+};
+
+
+static const Scenario_Bombs = new BenchmarkScenario
+{
+	Description = "Launch objects with effects (IronBomb(s)) in a confined area",
+	Run = Run_Bombs,
+};
+
+static const Run_Bombs = new Run_LaunchObjects
+{
+	Types = [IronBomb],
+	Amount = [50],
+	Callback = ["Fuse"],
+};
+
+
+static const Scenario_MixedObjects = new BenchmarkScenario
+{
+	Description = "Launch complex objects (Clonk(s), Lorry(s)) that come under the effect of simple and more complex objects",
+	Run = Run_MixedObjects,
+};
+
+static const Run_MixedObjects = new Run_LaunchObjects
+{
+	Types = [Clonk, Coconut, IronBomb, Lorry],
+	Amount = [200, 100, 10, 2],
+	Progress = [Global.DoubleAmount, Global.DoubleAmount, Global.DoubleAmount, Global.DoubleAmount],
+	Callback = [nil, nil, "Fuse", nil],
+	
+	IsFinished = func ()
+	{
+		for (var target in this.Launched)
+		{
+			if (!target) continue;
+			if (target->GetID() == Lorry) continue;
+
+			if (target->GetSpeed() > 1)
+			{
+				return false;
+			}
+		}
+		return true;
+	},
+};
+
+
 /* --- Templates --- */
 
 static const Run_LaunchObjects = new BenchmarkRun
 {
+	// It may be more useful to create multiple runs inside a scenario, 
+	// instead of mapping the data by index
+	
 	Types    = [],        // This type of objects is launched
 	Amount   = [1000],    // This amount is launched
 	Progress = [],        // This is the progress function for successor runs; Defaults to adding the base amount
+	Callback = [],        // This function is called in the launched target of that type
 	RangeX   = [30, 240], // Position range for object
 	RangeY   = [30, 120], // Position range for object
 	Speed    = 50,        // Speed range for object
@@ -119,6 +184,7 @@ static const Run_LaunchObjects = new BenchmarkRun
 		{
 			var amount = Amount[t];
 			var type = Types[t];
+			var callback = Callback[t];
 			for (var i = 0; i < amount; ++i)
 			{
 				var to_launch = CreateObject(type, 0, 0, NO_OWNER);
@@ -133,6 +199,10 @@ static const Run_LaunchObjects = new BenchmarkRun
 					placement_invalid = to_launch->Stuck();
 				}
 				to_launch->SetSpeed(RandomX(-this.Speed, this.Speed), RandomX(-this.Speed, this.Speed));
+				if (callback)
+				{
+					to_launch->Call(callback);
+				}
 			}
 			Log("Launched %d %i(s)", amount, type);
 		}
@@ -152,9 +222,15 @@ static const Run_LaunchObjects = new BenchmarkRun
 	
 	OnFinished = func ()
 	{
+		// Remove known objects
 		for (var target in this.Launched)
 		{
 			if (target) target->RemoveObject();
+		}
+		// Remove side effects
+		for (var garbage in FindObjects(Find_Not(Find_Owner(), Find_OCF(OCF_CrewMember))))
+		{
+			if (garbage) garbage->RemoveObject();
 		}
 	},
 	
