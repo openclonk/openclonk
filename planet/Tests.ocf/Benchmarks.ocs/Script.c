@@ -64,9 +64,9 @@ func RemovePlayer(int player)
 global func StartBenchmarks()
 {
 	GetControl(true)
-	//->Queue(new Scenario_Coconuts{})
-	//->Queue(new Scenario_Firestone{})
-	//->Queue(new Scenario_Bombs{})
+	->Queue(new Scenario_Coconuts{})
+	->Queue(new Scenario_Firestone{})
+	->Queue(new Scenario_Bombs{})
 	->Queue(new Scenario_MixedObjects{});
 }
 
