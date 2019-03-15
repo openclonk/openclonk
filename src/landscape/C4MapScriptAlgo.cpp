@@ -488,10 +488,26 @@ bool C4MapScriptAlgoFilter::operator () (int32_t x, int32_t y, uint8_t& fg, uint
 	return filter(fg, bg);
 }
 
-C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
+C4MapScriptAlgoSetMaterial::C4MapScriptAlgoSetMaterial(C4MapScriptAlgo *inner, int fg, int bg)
+	: inner(inner), fg(fg), bg(bg)
 {
-	// Convert script function parameter to internal C4MapScriptAlgo class. Also resolve all parameters and nested child algos.
-	if (!algo_par) return nullptr;
+	assert(inner);
+	/* member initializers only */
+}
+
+C4MapScriptAlgoSetMaterial::~C4MapScriptAlgoSetMaterial() {
+	delete inner;
+}
+
+bool C4MapScriptAlgoSetMaterial::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const {
+	bool result = (*inner)(x, y, fg, bg);
+	fg = this->fg;
+	bg = this->bg;
+	return result;
+}
+
+static C4MapScriptAlgo *FnParAlgoInner(C4PropList *algo_par)
+{
 	// if algo is a layer, take that directly
 	C4MapScriptLayer *algo_layer = algo_par->GetMapScriptLayer();
 	if (algo_layer) return new C4MapScriptAlgoLayer(algo_layer);
@@ -518,4 +534,23 @@ C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
 		throw C4AulExecError(FormatString("got invalid algo: %d", algo_par->GetPropertyInt(P_Algo)).getData());
 	}
 	return nullptr;
+}
+
+C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
+{
+	// Convert script function parameter to internal C4MapScriptAlgo class. Also resolve all parameters and nested child algos.
+	if (!algo_par) return nullptr;
+
+	C4MapScriptAlgo *inner = FnParAlgoInner(algo_par);
+
+	// if the Material property is set, use that material:
+	C4String *material = algo_par->GetPropertyStr(P_Material);
+	if (material) { // set inner material by wrapping with SetMaterial algo.
+		uint8_t fg = 0, bg = 0;
+		if (!FnParTexCol(material, fg, bg))
+			throw C4AulExecError("Invalid Material in map script algorithm.");
+		return new C4MapScriptAlgoSetMaterial(inner, fg, bg);
+	}
+
+	return inner; // otherwise, just return the original algo
 }
