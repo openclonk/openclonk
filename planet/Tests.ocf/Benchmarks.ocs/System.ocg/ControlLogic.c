@@ -105,7 +105,7 @@ static const IntBenchmarkControl = new Effect
 		Log("=========================================================================================="); // Large separator
 		ScenarioCurrent = nil;
 		RunData = nil;
-		RunNr = 1;
+		RunNr = 0;
 	},
 
 	StartRun = func ()
