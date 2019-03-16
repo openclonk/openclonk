@@ -18,6 +18,7 @@ static const IntBenchmarkControl = new Effect
 	ScenarioCurrent = nil,
 	RunData = nil,
 	RunNr = 0,
+	RunResults = [],
 
 	// Internal status
 	start_time = 0,  // Time in ms when the benchmark started, for FPS evaluation
@@ -46,6 +47,10 @@ static const IntBenchmarkControl = new Effect
 			{
 				Log("=========================================================================================="); // Large separator
 				Log("All benchmarks have been completed!");
+				for (var statistic in RunResults)
+				{
+					Log(statistic);
+				}
 				return FX_Execute_Kill;
 			}
 			else
@@ -160,6 +165,7 @@ static const IntBenchmarkControl = new Effect
 			Log("%06d    FPS on average", calc_fps);
 			Log("Note: Benchmark is non-deterministic regarding frames per second");
 			Log("==============================");
+			PushBack(RunResults, Format("%06d FPS (%06d frames in %06dms): Run #%03d %s", calc_fps, frames_passed, millis_passed, RunNr, ScenarioCurrent.Description));
 			StopScriptProfiler();
 		}
 	},
