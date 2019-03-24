@@ -278,49 +278,48 @@ void C4Object::DoMovement()
 
 	if (!Action.t_attach) // Unattached movement  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	{
-		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		VerticalBounds(new_y);
 		// Move to target
-		while (fixtoi(new_x) != fixtoi(fix_x))
+		do
 		{
-			// Next step
-			int step_x = Sign(new_x - fix_x);
+			// Set next step target
+			int step_x = 0;
+			int step_y = 0;
+			if (fixtoi(new_x) != GetX())
+			{
+				step_x = Sign(fixtoi(new_x) - GetX());
+			}
+			else if (fixtoi(new_y) != GetY())
+			{
+				step_y = Sign(fixtoi(new_y) - GetY());
+			}
+			int32_t step_target_x = GetX() + step_x;
+			int32_t step_target_y = GetY() + step_y;
+
+			// Contact check & evaluation
 			uint32_t border_hack_contacts = 0;
-			int32_t current_contacts = ContactCheck(GetX() + step_x, GetY(), &border_hack_contacts);
+			int32_t current_contacts = ContactCheck(step_target_x, step_target_y, &border_hack_contacts, ydir > 0);
 			if (current_contacts || border_hack_contacts)
 			{
 				has_contact = true;
-				contact_bits |= t_contact | border_hack_contacts;
+				contact_bits |= border_hack_contacts | t_contact;
 			}
 			if (current_contacts)
 			{
-				// Abort horizontal movement
-				new_x = fix_x;
+				// Abort movement
+				if (step_target_x != GetX())
+				{
+					step_target_x = GetX();
+					new_x = fix_x;
+				}
+				if (step_target_y != GetY())
+				{
+					step_target_y = GetY();
+					new_y = fix_y;
+				}
 				// Vertical redirection (always)
 				RedirectForce(xdir, ydir, -1);
 				ApplyFriction(ydir, ContactVtxFriction(this));
-			}
-			else // Free horizontal movement
-			{
-				DoMotion(step_x, 0);
-				has_moved = true;
-			}
-		}
-		// Vertical movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		// Movement target
-		new_y = fix_y + ydir;
-		// Movement bounds (vertical)
-		VerticalBounds(new_y);
-		// Move to target
-		while (fixtoi(new_y) != fixtoi(fix_y))
-		{
-			// Next step
-			int step_y = Sign(new_y - fix_y);
-			int32_t current_contacts = ContactCheck(GetX(), GetY() + step_y, nullptr, ydir > 0);
-			if (current_contacts)
-			{
-				has_contact = true;
-				contact_bits |= t_contact;
-				new_y = fix_y;
 				// Vertical contact horizontal friction
 				ApplyFriction(xdir, ContactVtxFriction(this));
 				// Redirection slide or rotate
@@ -343,12 +342,10 @@ void C4Object::DoMovement()
 					ydir = 0;
 				}
 			}
-			else // Free vertical movement
-			{
-				DoMotion(0, step_y);
-				has_moved = true;
-			}
+			DoMotion(step_target_x - GetX(), step_target_y - GetY());
+			has_moved = true;
 		}
+		while (fixtoi(new_x) != GetX() || fixtoi(new_y) != GetY());
 	}
 	if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	{
