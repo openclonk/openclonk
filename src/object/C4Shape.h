@@ -77,6 +77,7 @@ public:
 	void CompileFunc(StdCompiler *pComp, const C4Shape *default_shape);
 private:
 	bool CheckTouchableMaterial(int32_t x, int32_t y, int32_t vtx_i, int32_t y_dir = 0, const C4DensityProvider &rDensityProvider = DefaultDensityProvider);
+	bool ScaledByCon(int32_t value, int32_t con);
 };
 
 #endif // INC_C4Shape

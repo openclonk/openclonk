@@ -138,16 +138,16 @@ void C4Shape::Rotate(C4Real angle, bool update_vertices)
 
 void C4Shape::Stretch(int32_t iCon, bool update_vertices)
 {
-	x = x * iCon / FullCon;
-	y = y * iCon / FullCon;
-	Wdt = Wdt * iCon / FullCon;
-	Hgt = Hgt * iCon / FullCon;
+	x = ScaledByCon(x, iCon);
+	y = ScaledByCon(y, iCon);
+	Wdt = ScaledByCon(Wdt, iCon);
+	Hgt = ScaledByCon(Hgt, iCon);
 	if (update_vertices)
 	{
 		for (int32_t i = 0; i < VtxNum; i++)
 		{
-			VtxX[i] = VtxX[i] * iCon / FullCon;
-			VtxY[i] = VtxY[i] * iCon / FullCon;
+			VtxX[i] = ScaledByCon(VtxX[i], iCon);
+			VtxY[i] = ScaledByCon(VtxY[i], iCon);
 		}
 	}
 }
@@ -155,15 +155,21 @@ void C4Shape::Stretch(int32_t iCon, bool update_vertices)
 
 void C4Shape::Jolt(int32_t iCon, bool update_vertices)
 {
-	y = y * iCon / FullCon;
-	Hgt = Hgt * iCon / FullCon;
+	y = ScaledByCon(y, iCon);
+	Hgt = ScaledByCon(Hgt, iCon);
 	if (update_vertices)
 	{
 		for (int32_t i = 0; i < VtxNum; i++)
 		{
-			VtxY[i] = VtxY[i] * iCon / FullCon;
+			VtxY[i] = ScaledByCon(VtxY[i], iCon);
 		}
 	}
+}
+
+
+inline bool C4Shape::ScaledByCon(int32_t value, int32_t con)
+{
+	return value * con / FullCon;
 }
 
 
