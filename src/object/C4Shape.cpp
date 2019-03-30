@@ -391,7 +391,7 @@ bool C4Shape::InsertVertex(int32_t index_position, int32_t tx, int32_t ty)
 	{
 		return false;
 	}
-	if (index_position < 0 || index_position > VtxNum)
+	if (!Inside<int32_t>(index_position, 0, VtxNum))
 	{
 		return false;
 	}
@@ -625,16 +625,23 @@ int32_t C4DensityProvider::GetDensity(int32_t x, int32_t y) const
 
 int32_t C4Shape::GetVertexContact(int32_t iVertex, DWORD dwCheckMask, int32_t tx, int32_t ty, const C4DensityProvider &rDensityProvider)
 {
+	int32_t contact_bits = 0;
+
+	// Range check
+	if (!Inside<int32_t>(iVertex, 0, VtxNum - 1))
+	{
+		return contact_bits;
+	}
+
 	// Default check mask
 	if (!dwCheckMask)
 	{
 		dwCheckMask = VtxCNAT[iVertex];
 	}
 
-	// Check vertex positions (vtx num not range-checked!)
+	// Check vertex positions
 	tx += VtxX[iVertex];
 	ty += VtxY[iVertex];
-	int32_t contact_bits = 0;
 
 	// Check all directions for solid material
 	if (~VtxCNAT[iVertex] & CNAT_NoCollision)
