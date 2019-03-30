@@ -424,16 +424,16 @@ bool C4Shape::RemoveVertex(int32_t index_position)
 }
 
 
-bool C4Shape::CheckContact(int32_t cx, int32_t cy)
+bool C4Shape::CheckContact(int32_t at_x, int32_t at_y)
 {
 	// Check all vertices at given object position.
 	// Return true on any contact.
 
-	for (int32_t cvtx = 0; cvtx < VtxNum; cvtx++)
+	for (int32_t i = 0; i < VtxNum; i++)
 	{
-		if (!(VtxCNAT[cvtx] & CNAT_NoCollision))
+		if (!(VtxCNAT[i] & CNAT_NoCollision))
 		{
-			if (CheckTouchableMaterial(cx + VtxX[cvtx], cy + VtxY[cvtx], cvtx))
+			if (CheckTouchableMaterial(at_x + VtxX[i], at_y + VtxY[i], i))
 			{
 				return true;
 			}
@@ -444,7 +444,7 @@ bool C4Shape::CheckContact(int32_t cx, int32_t cy)
 }
 
 
-bool C4Shape::ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contacts, bool collide_halfvehic)
+bool C4Shape::ContactCheck(int32_t at_x, int32_t at_y, uint32_t *border_hack_contacts, bool collide_halfvehic)
 {
 	// Check all vertices at given object position.
 	// Set ContactCNAT and ContactCount.
@@ -454,35 +454,35 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contact
 	ContactCNAT = CNAT_None;
 	ContactCount = 0;
 
-	for (int32_t cvtx = 0; cvtx < VtxNum; cvtx++)
+	for (int32_t vertex = 0; vertex < VtxNum; vertex++)
 	{
 		// Ignore vertex if collision has been flagged out
-		if (!(VtxCNAT[cvtx] & CNAT_NoCollision))
+		if (!(VtxCNAT[vertex] & CNAT_NoCollision))
 		{
-			VtxContactCNAT[cvtx] = CNAT_None;
-			int32_t x = cx + VtxX[cvtx];
-			int32_t y = cy + VtxY[cvtx];
-			VtxContactMat[cvtx] = GBackMat(x, y);
+			VtxContactCNAT[vertex] = CNAT_None;
+			int32_t x = at_x + VtxX[vertex];
+			int32_t y = at_y + VtxY[vertex];
+			VtxContactMat[vertex] = GBackMat(x, y);
 
-			if (CheckTouchableMaterial(x, y, cvtx, collide_halfvehic? 1:0))
+			if (CheckTouchableMaterial(x, y, vertex, collide_halfvehic? 1:0))
 			{
-				ContactCNAT |= VtxCNAT[cvtx];
-				VtxContactCNAT[cvtx] |= CNAT_Center;
+				ContactCNAT |= VtxCNAT[vertex];
+				VtxContactCNAT[vertex] |= CNAT_Center;
 				ContactCount++;
 				// Vertex center contact, now check top, bottom, left, right
 				// Not using our style guideline here, is more readable in "table" format
-				if (CheckTouchableMaterial(x, y - 1, cvtx, collide_halfvehic ? 1 : 0)) VtxContactCNAT[cvtx] |= CNAT_Top;
-				if (CheckTouchableMaterial(x, y + 1, cvtx, collide_halfvehic ? 1 : 0)) VtxContactCNAT[cvtx] |= CNAT_Bottom;
-				if (CheckTouchableMaterial(x - 1, y, cvtx, collide_halfvehic ? 1 : 0)) VtxContactCNAT[cvtx] |= CNAT_Left;
-				if (CheckTouchableMaterial(x + 1, y, cvtx, collide_halfvehic ? 1 : 0)) VtxContactCNAT[cvtx] |= CNAT_Right;
+				if (CheckTouchableMaterial(x, y - 1, vertex, collide_halfvehic ? 1 : 0)) VtxContactCNAT[vertex] |= CNAT_Top;
+				if (CheckTouchableMaterial(x, y + 1, vertex, collide_halfvehic ? 1 : 0)) VtxContactCNAT[vertex] |= CNAT_Bottom;
+				if (CheckTouchableMaterial(x - 1, y, vertex, collide_halfvehic ? 1 : 0)) VtxContactCNAT[vertex] |= CNAT_Left;
+				if (CheckTouchableMaterial(x + 1, y, vertex, collide_halfvehic ? 1 : 0)) VtxContactCNAT[vertex] |= CNAT_Right;
 			}
 			if (border_hack_contacts)
 			{
-				if (x == 0 && CheckTouchableMaterial(x - 1, y, cvtx))
+				if (x == 0 && CheckTouchableMaterial(x - 1, y, vertex))
 				{
 					*border_hack_contacts |= CNAT_Left;
 				}
-				else if (x == ::Landscape.GetWidth() && CheckTouchableMaterial(x + 1, y, cvtx))
+				else if (x == ::Landscape.GetWidth() && CheckTouchableMaterial(x + 1, y, vertex))
 				{
 					*border_hack_contacts |= CNAT_Right;
 				}
