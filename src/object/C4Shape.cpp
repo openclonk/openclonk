@@ -47,23 +47,21 @@ void C4Shape::Default()
 
 void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 {
-	C4RCRotVtx rc;
-	int32_t i = 0;
 	if (Config.General.DebugRec)
 	{
+		C4RCRotVtx rc;
 		rc.x = x;
 		rc.y = y;
 		rc.wdt = Wdt;
 		rc.hgt = Hgt;
 		rc.r = fixtoi(Angle);
-		for (; i < 4; ++i)
+		for (int32_t i = 0; i < 4; ++i)
 		{
 			rc.VtxX[i] = VtxX[i];
 			rc.VtxY[i] = VtxY[i];
 		}
 		AddDbgRec(RCT_RotVtx1, &rc, sizeof(rc));
 	}
-	int32_t cnt, nvtx, nvty, nwdt, nhgt;
 
 	C4Real mtx[4];
 
@@ -74,18 +72,20 @@ void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 	if (bUpdateVertices)
 	{
 		// Rotate vertices
-		for (cnt = 0; cnt < VtxNum; cnt++)
+		for (int32_t cnt = 0; cnt < VtxNum; cnt++)
 		{
-			nvtx = fixtoi(mtx[0] * VtxX[cnt] + mtx[1] * VtxY[cnt]);
-			nvty = fixtoi(mtx[2] * VtxX[cnt] + mtx[3] * VtxY[cnt]);
+			int32_t nvtx = fixtoi(mtx[0] * VtxX[cnt] + mtx[1] * VtxY[cnt]);
+			int32_t nvty = fixtoi(mtx[2] * VtxX[cnt] + mtx[3] * VtxY[cnt]);
 			VtxX[cnt] = nvtx;
 			VtxY[cnt] = nvty;
 		}
 	}
 
 	// Enlarge Rect
-	nvtx = fixtoi(mtx[0] * x + mtx[1] * y);
-	nvty = fixtoi(mtx[2] * x + mtx[3] * y);
+	int32_t nvtx = fixtoi(mtx[0] * x + mtx[1] * y);
+	int32_t nvty = fixtoi(mtx[2] * x + mtx[3] * y);
+	int32_t nwdt = 0;
+	int32_t nhgt = 0;
 	if (mtx[0] > 0)
 	{
 		if (mtx[1] > 0)
@@ -124,11 +124,12 @@ void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 	Hgt = nhgt;
 	if (Config.General.DebugRec)
 	{
+		C4RCRotVtx rc;
 		rc.x = x;
 		rc.y = y;
 		rc.wdt = Wdt;
 		rc.hgt = Hgt;
-		for (i = 0; i < 4; ++i)
+		for (int32_t i = 0; i < 4; ++i)
 		{
 			rc.VtxX[i] = VtxX[i];
 			rc.VtxY[i] = VtxY[i];
@@ -140,14 +141,13 @@ void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 
 void C4Shape::Stretch(int32_t iCon, bool bUpdateVertices)
 {
-	int32_t cnt;
 	x = x * iCon / FullCon;
 	y = y * iCon / FullCon;
 	Wdt = Wdt * iCon / FullCon;
 	Hgt = Hgt * iCon / FullCon;
 	if (bUpdateVertices)
 	{
-		for (cnt = 0; cnt < VtxNum; cnt++)
+		for (int32_t cnt = 0; cnt < VtxNum; cnt++)
 		{
 			VtxX[cnt] = VtxX[cnt] * iCon / FullCon;
 			VtxY[cnt] = VtxY[cnt] * iCon / FullCon;
@@ -158,12 +158,11 @@ void C4Shape::Stretch(int32_t iCon, bool bUpdateVertices)
 
 void C4Shape::Jolt(int32_t iCon, bool bUpdateVertices)
 {
-	int32_t cnt;
 	y = y * iCon / FullCon;
 	Hgt = Hgt * iCon / FullCon;
 	if (bUpdateVertices)
 	{
-		for (cnt = 0; cnt<VtxNum; cnt++)
+		for (int32_t cnt = 0; cnt<VtxNum; cnt++)
 		{
 			VtxY[cnt] = VtxY[cnt] * iCon / FullCon;
 		}
@@ -173,12 +172,11 @@ void C4Shape::Jolt(int32_t iCon, bool bUpdateVertices)
 
 void C4Shape::GetVertexOutline(C4Rect &rRect)
 {
-	int32_t cnt;
 	rRect.x = 0;
 	rRect.y = 0;
 	rRect.Wdt = 0;
 	rRect.Hgt = 0;
-	for (cnt = 0; cnt < VtxNum; cnt++)
+	for (int32_t cnt = 0; cnt < VtxNum; cnt++)
 	{
 		// Extend left
 		if (VtxX[cnt] < rRect.x)
@@ -317,7 +315,7 @@ bool C4Shape::LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int3
 	// Check new path
 	int32_t ix;
 	int32_t iy;
-	if (PathFree(tx, ty, VtxX[cvtx + ld], VtxY[cvtx+ld], &ix, &iy))
+	if (PathFree(tx, ty, VtxX[cvtx + ld], VtxY[cvtx + ld], &ix, &iy))
 	{
 		// Okay, set vertex
 		VtxX[cvtx] = tx;
@@ -376,8 +374,8 @@ out:
 			cvtx++;
 		}
 		// Okay, set vertex
-		VtxX[cvtx]=tx;
-		VtxY[cvtx]=ty;
+		VtxX[cvtx] = tx;
+		VtxY[cvtx] = ty;
 		return true;
 	}
 
@@ -470,7 +468,7 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contact
 				VtxContactCNAT[cvtx] |= CNAT_Center;
 				ContactCount++;
 				// Vertex center contact, now check top, bottom, left, right
-				// Not using our style guideline here, seems more readable in "table" format
+				// Not using our style guideline here, is more readable in "table" format
 				if (CheckTouchableMaterial(x, y - 1, cvtx, collide_halfvehic ? 1 : 0)) VtxContactCNAT[cvtx] |= CNAT_Top;
 				if (CheckTouchableMaterial(x, y + 1, cvtx, collide_halfvehic ? 1 : 0)) VtxContactCNAT[cvtx] |= CNAT_Bottom;
 				if (CheckTouchableMaterial(x - 1, y, cvtx, collide_halfvehic ? 1 : 0)) VtxContactCNAT[cvtx] |= CNAT_Left;
