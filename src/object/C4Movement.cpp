@@ -277,20 +277,68 @@ void C4Object::DoMovement()
 	SideBounds(new_x);
 	VerticalBounds(new_y);
 
+	// Create a heuristic for moving diagonally, according to the initial speed.
+	// Motivation: At high velocities it will make a difference if you move
+	// horizontally at first exclusively (one might argue, that if you move e.g.
+	// 50 pixels horizontally first and then down one pixel it you not make
+	// much of a difference, but it does make a difference...).
+	// Idea: You have a major velocity component, which is the one
+	// with greater absolute value (after taking the boundaries into account).
+	// Instead of moving horizontally first and then vertically, you do
+	// a movement step in the minor velocity direction every n-th step,
+	// and step into major velocity direction the rest of the time.
+	int steps_x = Abs(fixtoi(new_x - fix_x));
+	int steps_y = Abs(fixtoi(new_y - fix_y));
+	int steps_total = steps_x + steps_y;
+	// Divide total steps by lower amount of steps, to find
+	// out when to do a step in the minor velocity component.
+	// Minimum value is 2, which means alternating steps
+	int step_mod;
+	bool prefer_vertical_movement = steps_y > steps_x;
+	if (prefer_vertical_movement)
+	{
+		step_mod = std::max(2, (1 + steps_total) / std::max(1, steps_x));
+	}
+	else
+	{
+		step_mod = std::max(2, (1 + steps_total) / std::max(1, steps_y));
+	}
+
+
 	// Move to target
+	int step_counter = 0;
 	do
 	{
+		step_counter = (step_counter + 1) % step_mod;
+
 		// Set next step target
 		int step_x = 0;
 		int step_y = 0;
-		if (fixtoi(new_x) != GetX())
+
+		// Do a step in the major velocity component direction
+		if (step_counter > 0)
 		{
-			step_x = Sign(fixtoi(new_x) - GetX());
+			if (prefer_vertical_movement)
+			{
+				step_y = Sign(fixtoi(new_y) - GetY());
+			}
+			else
+			{
+				step_x = Sign(fixtoi(new_x) - GetX());
+			}
 		}
-		else if (fixtoi(new_y) != GetY())
+		else // Do a step in the minor velocity component direction
 		{
-			step_y = Sign(fixtoi(new_y) - GetY());
+			if (prefer_vertical_movement)
+			{
+				step_x = Sign(fixtoi(new_x) - GetX());
+			}
+			else
+			{
+				step_y = Sign(fixtoi(new_y) - GetY());
+			}
 		}
+
 		if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		{
 			int32_t step_target_x = GetX() + step_x;
@@ -353,7 +401,7 @@ void C4Object::DoMovement()
 				{
 					// Abort horizontal movement
 					new_x = fix_x;
-					// Vertical redirection (always)
+					// Vertical redirection (always), this is important for pushing vehicles over bumps in the landscape
 					RedirectForce(xdir, ydir, -1);
 					ApplyFriction(ydir, ContactVtxFriction(this));
 					// Update direction
