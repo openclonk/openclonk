@@ -45,7 +45,7 @@ void C4Shape::Default()
 }
 
 
-void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
+void C4Shape::Rotate(C4Real angle, bool update_vertices)
 {
 	if (Config.General.DebugRec)
 	{
@@ -54,7 +54,7 @@ void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 		rc.y = y;
 		rc.wdt = Wdt;
 		rc.hgt = Hgt;
-		rc.r = fixtoi(Angle);
+		rc.r = fixtoi(angle);
 		for (int32_t i = 0; i < 4; ++i)
 		{
 			rc.VtxX[i] = VtxX[i];
@@ -63,65 +63,62 @@ void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 		AddDbgRec(RCT_RotVtx1, &rc, sizeof(rc));
 	}
 
-	C4Real mtx[4];
-
 	// Calculate rotation matrix
-	mtx[0] = Cos(Angle);  mtx[1] = -Sin(Angle);
-	mtx[2] = -mtx[1];     mtx[3] = mtx[0];
+	C4Real rot_matrix[4];
+	rot_matrix[0] = Cos(angle);  rot_matrix[1] = -Sin(angle);
+	rot_matrix[2] = -rot_matrix[1];     rot_matrix[3] = rot_matrix[0];
 
-	if (bUpdateVertices)
+	if (update_vertices)
 	{
 		// Rotate vertices
 		for (int32_t cnt = 0; cnt < VtxNum; cnt++)
 		{
-			int32_t nvtx = fixtoi(mtx[0] * VtxX[cnt] + mtx[1] * VtxY[cnt]);
-			int32_t nvty = fixtoi(mtx[2] * VtxX[cnt] + mtx[3] * VtxY[cnt]);
-			VtxX[cnt] = nvtx;
-			VtxY[cnt] = nvty;
+			VtxX[cnt] = fixtoi(rot_matrix[0] * VtxX[cnt] + rot_matrix[1] * VtxY[cnt]);
+			VtxY[cnt] = fixtoi(rot_matrix[2] * VtxX[cnt] + rot_matrix[3] * VtxY[cnt]);
 		}
 	}
 
 	// Enlarge Rect
-	int32_t nvtx = fixtoi(mtx[0] * x + mtx[1] * y);
-	int32_t nvty = fixtoi(mtx[2] * x + mtx[3] * y);
-	int32_t nwdt = 0;
-	int32_t nhgt = 0;
-	if (mtx[0] > 0)
+	int32_t new_x = fixtoi(rot_matrix[0] * x + rot_matrix[1] * y);
+	int32_t new_y = fixtoi(rot_matrix[2] * x + rot_matrix[3] * y);
+	int32_t new_wdt = 0;
+	int32_t new_hgt = 0;
+	if (rot_matrix[0] > 0)
 	{
-		if (mtx[1] > 0)
+		if (rot_matrix[1] > 0)
 		{
-			nwdt = fixtoi(mtx[0] * Wdt + mtx[1] * Hgt);
-			nhgt = fixtoi(mtx[1] * Wdt + mtx[0] * Hgt);
-			x = nvtx;
-			y = nvty - fixtoi(mtx[1] * Wdt);
+			new_wdt = fixtoi(rot_matrix[0] * Wdt + rot_matrix[1] * Hgt);
+			new_hgt = fixtoi(rot_matrix[1] * Wdt + rot_matrix[0] * Hgt);
+			x = new_x;
+			y = new_y - fixtoi(rot_matrix[1] * Wdt);
 		}
 		else
 		{
-			nwdt = fixtoi(mtx[0] * Wdt - mtx[1] * Hgt);
-			nhgt = fixtoi(- mtx[1] * Wdt + mtx[0] * Hgt);
-			x = nvtx + fixtoi(mtx[1] * Hgt);
-			y = nvty;
+			new_wdt = fixtoi(rot_matrix[0] * Wdt - rot_matrix[1] * Hgt);
+			new_hgt = fixtoi(- rot_matrix[1] * Wdt + rot_matrix[0] * Hgt);
+			x = new_x + fixtoi(rot_matrix[1] * Hgt);
+			y = new_y;
 		}
 	}
 	else
 	{
-		if (mtx[1] > 0)
+		if (rot_matrix[1] > 0)
 		{
-			nwdt = fixtoi(- mtx[0] * Wdt + mtx[1] * Hgt);
-			nhgt = fixtoi(mtx[1] * Wdt - mtx[0] * Hgt);
-			x = nvtx + fixtoi(mtx[0] * Wdt);
-			y = nvty - nhgt;
+			new_wdt = fixtoi(- rot_matrix[0] * Wdt + rot_matrix[1] * Hgt);
+			new_hgt = fixtoi(rot_matrix[1] * Wdt - rot_matrix[0] * Hgt);
+			x = new_x + fixtoi(rot_matrix[0] * Wdt);
+			y = new_y - new_hgt;
 		}
 		else
 		{
-			nwdt = fixtoi(- mtx[0] * Wdt - mtx[1] * Hgt);
-			nhgt = fixtoi(- mtx[1] * Wdt - mtx[0] * Hgt);
-			x = nvtx - nwdt;
-			y = nvty + fixtoi(mtx[0] * Hgt);
+			new_wdt = fixtoi(- rot_matrix[0] * Wdt - rot_matrix[1] * Hgt);
+			new_hgt = fixtoi(- rot_matrix[1] * Wdt - rot_matrix[0] * Hgt);
+			x = new_x - new_wdt;
+			y = new_y + fixtoi(rot_matrix[0] * Hgt);
 		}
 	}
-	Wdt = nwdt;
-	Hgt = nhgt;
+	Wdt = new_wdt;
+	Hgt = new_hgt;
 	if (Config.General.DebugRec)
 	{
 		C4RCRotVtx rc;
@@ -139,32 +136,32 @@ void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 }
 
 
-void C4Shape::Stretch(int32_t iCon, bool bUpdateVertices)
+void C4Shape::Stretch(int32_t iCon, bool update_vertices)
 {
 	x = x * iCon / FullCon;
 	y = y * iCon / FullCon;
 	Wdt = Wdt * iCon / FullCon;
 	Hgt = Hgt * iCon / FullCon;
-	if (bUpdateVertices)
+	if (update_vertices)
 	{
-		for (int32_t cnt = 0; cnt < VtxNum; cnt++)
+		for (int32_t i = 0; i < VtxNum; i++)
 		{
-			VtxX[cnt] = VtxX[cnt] * iCon / FullCon;
-			VtxY[cnt] = VtxY[cnt] * iCon / FullCon;
+			VtxX[i] = VtxX[i] * iCon / FullCon;
+			VtxY[i] = VtxY[i] * iCon / FullCon;
 		}
 	}
 }
 
 
-void C4Shape::Jolt(int32_t iCon, bool bUpdateVertices)
+void C4Shape::Jolt(int32_t iCon, bool update_vertices)
 {
 	y = y * iCon / FullCon;
 	Hgt = Hgt * iCon / FullCon;
-	if (bUpdateVertices)
+	if (update_vertices)
 	{
-		for (int32_t cnt = 0; cnt<VtxNum; cnt++)
+		for (int32_t i = 0; i < VtxNum; i++)
 		{
-			VtxY[cnt] = VtxY[cnt] * iCon / FullCon;
+			VtxY[i] = VtxY[i] * iCon / FullCon;
 		}
 	}
 }
@@ -176,29 +173,29 @@ void C4Shape::GetVertexOutline(C4Rect &rRect)
 	rRect.y = 0;
 	rRect.Wdt = 0;
 	rRect.Hgt = 0;
-	for (int32_t cnt = 0; cnt < VtxNum; cnt++)
+	for (int32_t i = 0; i < VtxNum; i++)
 	{
 		// Extend left
-		if (VtxX[cnt] < rRect.x)
+		if (VtxX[i] < rRect.x)
 		{
-			rRect.Wdt += rRect.x - VtxX[cnt];
-			rRect.x = VtxX[cnt];
+			rRect.Wdt += rRect.x - VtxX[i];
+			rRect.x = VtxX[i];
 		}
 		// Extend right
-		else if (VtxX[cnt] > rRect.x + rRect.Wdt)
+		else if (VtxX[i] > rRect.x + rRect.Wdt)
 		{
-			rRect.Wdt = VtxX[cnt] - rRect.x;
+			rRect.Wdt = VtxX[i] - rRect.x;
 		}
 		// Extend up
-		if (VtxY[cnt] < rRect.y)
+		if (VtxY[i] < rRect.y)
 		{
-			rRect.Hgt += rRect.y - VtxY[cnt];
-			rRect.y = VtxY[cnt];
+			rRect.Hgt += rRect.y - VtxY[i];
+			rRect.y = VtxY[i];
 		}
 		// Extend down
-		else if (VtxY[cnt] > rRect.y + rRect.Hgt)
+		else if (VtxY[i] > rRect.y + rRect.Hgt)
 		{
-			rRect.Hgt = VtxY[cnt] - rRect.y;
+			rRect.Hgt = VtxY[i] - rRect.y;
 		}
 	}
 
@@ -274,7 +271,6 @@ bool C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
 					iAttachY = ay + ycd;
 					iAttachVtx = i;
 				}
-
 			}
 		}
 		if (found)
@@ -383,39 +379,39 @@ out:
 }
 
 
-bool C4Shape::InsertVertex(int32_t iPos, int32_t tx, int32_t ty)
+bool C4Shape::InsertVertex(int32_t index_position, int32_t tx, int32_t ty)
 {
 	if (VtxNum + 1 > C4D_MaxVertex)
 	{
 		return false;
 	}
-	if (iPos < 0 || iPos > VtxNum)
+	if (index_position < 0 || index_position > VtxNum)
 	{
 		return false;
 	}
 	// Insert vertex before iPos
-	for (int32_t cnt = VtxNum; cnt > iPos; cnt--)
+	for (int32_t i = VtxNum; i > index_position; i--)
 	{
-		VtxX[cnt] = VtxX[cnt - 1];
-		VtxY[cnt] = VtxY[cnt - 1];
+		VtxX[i] = VtxX[i - 1];
+		VtxY[i] = VtxY[i - 1];
 	}
-	VtxX[iPos] = tx;
-	VtxY[iPos] = ty;
+	VtxX[index_position] = tx;
+	VtxY[index_position] = ty;
 	VtxNum++;
 	return true;
 }
 
 
-bool C4Shape::RemoveVertex(int32_t iPos)
+bool C4Shape::RemoveVertex(int32_t index_position)
 {
-	if (!Inside<int32_t>(iPos, 0, VtxNum - 1))
+	if (!Inside<int32_t>(index_position, 0, VtxNum - 1))
 	{
 		return false;
 	}
-	for (int32_t cnt = iPos; cnt + 1 < VtxNum; cnt++)
+	for (int32_t i = index_position; i + 1 < VtxNum; i++)
 	{
-		VtxX[cnt] = VtxX[cnt + 1];
-		VtxY[cnt] = VtxY[cnt + 1];
+		VtxX[i] = VtxX[i + 1];
+		VtxY[i] = VtxY[i + 1];
 	}
 	VtxNum--;
 	return true;
@@ -545,30 +541,30 @@ int32_t C4Shape::GetVertexY(int32_t iVertex)
 	return VtxY[iVertex];
 }
 
-void C4Shape::CopyFrom(C4Shape rFrom, bool bCpyVertices, bool fCopyVerticesFromSelf)
+void C4Shape::CopyFrom(C4Shape shape_from, bool copy_vertices, bool copy_vertices_from_self)
 {
-	if (bCpyVertices)
+	if (copy_vertices)
 	{
 		// Truncate / copy vertex count
-		VtxNum = (fCopyVerticesFromSelf ? std::min<int32_t>(VtxNum, C4D_VertexCpyPos) : rFrom.VtxNum);
+		VtxNum = (copy_vertices_from_self ? std::min<int32_t>(VtxNum, C4D_VertexCpyPos) : shape_from.VtxNum);
 
 		// Restore vertices from back of own buffer (retaining count)
-		int32_t iCopyPos = (fCopyVerticesFromSelf ? C4D_VertexCpyPos : 0);
-		C4Shape &rVtxFrom = (fCopyVerticesFromSelf ? *this : rFrom);
+		int32_t iCopyPos = (copy_vertices_from_self ? C4D_VertexCpyPos : 0);
+		C4Shape &vertices_from = (copy_vertices_from_self ? *this : shape_from);
 
-		memcpy(VtxX, rVtxFrom.VtxX + iCopyPos, VtxNum * sizeof(*VtxX));
-		memcpy(VtxY, rVtxFrom.VtxY + iCopyPos, VtxNum * sizeof(*VtxY));
-		memcpy(VtxCNAT, rVtxFrom.VtxCNAT + iCopyPos, VtxNum * sizeof(*VtxCNAT));
-		memcpy(VtxFriction, rVtxFrom.VtxFriction + iCopyPos, VtxNum * sizeof(*VtxFriction));
-		memcpy(VtxContactCNAT, rVtxFrom.VtxContactCNAT + iCopyPos, VtxNum * sizeof(*VtxContactCNAT));
-		memcpy(VtxContactMat, rVtxFrom.VtxContactMat + iCopyPos, VtxNum * sizeof(*VtxContactMat));
+		memcpy(VtxX,           vertices_from.VtxX + iCopyPos,           VtxNum * sizeof(*VtxX));
+		memcpy(VtxY,           vertices_from.VtxY + iCopyPos,           VtxNum * sizeof(*VtxY));
+		memcpy(VtxCNAT,        vertices_from.VtxCNAT + iCopyPos,        VtxNum * sizeof(*VtxCNAT));
+		memcpy(VtxFriction,    vertices_from.VtxFriction + iCopyPos,    VtxNum * sizeof(*VtxFriction));
+		memcpy(VtxContactCNAT, vertices_from.VtxContactCNAT + iCopyPos, VtxNum * sizeof(*VtxContactCNAT));
+		memcpy(VtxContactMat,  vertices_from.VtxContactMat + iCopyPos,  VtxNum * sizeof(*VtxContactMat));
 	}
 
 	// Copies other members
-	*((C4Rect *) this) = rFrom;
-	AttachMat = rFrom.AttachMat;
-	ContactCNAT = rFrom.ContactCNAT;
-	ContactCount = rFrom.ContactCount;
+	*((C4Rect *) this) = shape_from;
+	AttachMat = shape_from.AttachMat;
+	ContactCNAT = shape_from.ContactCNAT;
+	ContactCount = shape_from.ContactCount;
 }
 
 
@@ -621,44 +617,44 @@ int32_t C4DensityProvider::GetDensity(int32_t x, int32_t y) const
 }
 
 
-int32_t C4Shape::GetVertexContact(int32_t iVtx, DWORD dwCheckMask, int32_t tx, int32_t ty, const C4DensityProvider &rDensityProvider)
+int32_t C4Shape::GetVertexContact(int32_t iVertex, DWORD dwCheckMask, int32_t tx, int32_t ty, const C4DensityProvider &rDensityProvider)
 {
 	// Default check mask
 	if (!dwCheckMask)
 	{
-		dwCheckMask = VtxCNAT[iVtx];
+		dwCheckMask = VtxCNAT[iVertex];
 	}
 
 	// Check vertex positions (vtx num not range-checked!)
-	tx += VtxX[iVtx];
-	ty += VtxY[iVtx];
-	int32_t iContact = 0;
+	tx += VtxX[iVertex];
+	ty += VtxY[iVertex];
+	int32_t contact_bits = 0;
 
 	// Check all directions for solid material
-	if (~VtxCNAT[iVtx] & CNAT_NoCollision)
+	if (~VtxCNAT[iVertex] & CNAT_NoCollision)
 	{
 		// Not using our style guideline here, is more readable in "table" format
-		if (dwCheckMask & CNAT_Center) if (CheckTouchableMaterial(tx, ty  , iVtx, 0, rDensityProvider)) iContact |= CNAT_Center;
-		if (dwCheckMask & CNAT_Left)   if (CheckTouchableMaterial(tx-1, ty, iVtx, 0, rDensityProvider)) iContact |= CNAT_Left;
-		if (dwCheckMask & CNAT_Right)  if (CheckTouchableMaterial(tx+1, ty, iVtx, 0, rDensityProvider)) iContact |= CNAT_Right;
-		if (dwCheckMask & CNAT_Top)    if (CheckTouchableMaterial(tx, ty-1, iVtx, 0, rDensityProvider)) iContact |= CNAT_Top;
-		if (dwCheckMask & CNAT_Bottom) if (CheckTouchableMaterial(tx, ty+1, iVtx, 1, rDensityProvider)) iContact |= CNAT_Bottom;
+		if (dwCheckMask & CNAT_Center) if (CheckTouchableMaterial(tx, ty  , iVertex, 0, rDensityProvider)) contact_bits |= CNAT_Center;
+		if (dwCheckMask & CNAT_Left)   if (CheckTouchableMaterial(tx-1, ty, iVertex, 0, rDensityProvider)) contact_bits |= CNAT_Left;
+		if (dwCheckMask & CNAT_Right)  if (CheckTouchableMaterial(tx+1, ty, iVertex, 0, rDensityProvider)) contact_bits |= CNAT_Right;
+		if (dwCheckMask & CNAT_Top)    if (CheckTouchableMaterial(tx, ty-1, iVertex, 0, rDensityProvider)) contact_bits |= CNAT_Top;
+		if (dwCheckMask & CNAT_Bottom) if (CheckTouchableMaterial(tx, ty+1, iVertex, 1, rDensityProvider)) contact_bits |= CNAT_Bottom;
 	}
 	// Return resulting bitmask
-	return iContact;
+	return contact_bits;
 }
 
 
-void C4Shape::CreateOwnOriginalCopy(C4Shape &rFrom)
+void C4Shape::CreateOwnOriginalCopy(C4Shape &shape_from)
 {
 	// Copy vertices from original buffer, including count
-	VtxNum = std::min<int32_t>(rFrom.VtxNum, C4D_VertexCpyPos);
-	memcpy(VtxX + C4D_VertexCpyPos, rFrom.VtxX, VtxNum * sizeof(*VtxX));
-	memcpy(VtxY + C4D_VertexCpyPos, rFrom.VtxY, VtxNum * sizeof(*VtxY));
-	memcpy(VtxCNAT + C4D_VertexCpyPos, rFrom.VtxCNAT, VtxNum * sizeof(*VtxCNAT));
-	memcpy(VtxFriction + C4D_VertexCpyPos, rFrom.VtxFriction, VtxNum * sizeof(*VtxFriction));
-	memcpy(VtxContactCNAT + C4D_VertexCpyPos, rFrom.VtxContactCNAT, VtxNum * sizeof(*VtxContactCNAT));
-	memcpy(VtxContactMat + C4D_VertexCpyPos, rFrom.VtxContactMat, VtxNum * sizeof(*VtxContactMat));
+	VtxNum = std::min<int32_t>(shape_from.VtxNum, C4D_VertexCpyPos);
+	memcpy(VtxX + C4D_VertexCpyPos,           shape_from.VtxX,           VtxNum * sizeof(*VtxX));
+	memcpy(VtxY + C4D_VertexCpyPos,           shape_from.VtxY,           VtxNum * sizeof(*VtxY));
+	memcpy(VtxCNAT + C4D_VertexCpyPos,        shape_from.VtxCNAT,        VtxNum * sizeof(*VtxCNAT));
+	memcpy(VtxFriction + C4D_VertexCpyPos,    shape_from.VtxFriction,    VtxNum * sizeof(*VtxFriction));
+	memcpy(VtxContactCNAT + C4D_VertexCpyPos, shape_from.VtxContactCNAT, VtxNum * sizeof(*VtxContactCNAT));
+	memcpy(VtxContactMat + C4D_VertexCpyPos,  shape_from.VtxContactMat,  VtxNum * sizeof(*VtxContactMat));
 }
 
 
