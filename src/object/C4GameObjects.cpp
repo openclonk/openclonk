@@ -208,12 +208,9 @@ C4Object *C4GameObjects::ObjectPointer(int32_t object_number)
 C4Object *C4GameObjects::SafeObjectPointer(int32_t object_number)
 {
 	C4Object *object = ObjectPointer(object_number);
-	if (object)
+	if (object && !object->Status)
 	{
-		if (!object->Status)
-		{
-			return nullptr;
-		}
+		return nullptr;
 	}
 	return object;
 }
