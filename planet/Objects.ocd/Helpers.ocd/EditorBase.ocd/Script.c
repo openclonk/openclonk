@@ -30,11 +30,11 @@ func Definition(def)
 		Name = { Name="$Name$", Type = "string", AsyncGet = "GetName", Set = "SetName" },
 		CustomInitializationScript = { Type = "string", Name = "$CustomInitialization$", EditorHelp = "$CustomInitializationHelp$" }
 	};
-	// Property delegate types
-	CountedID = { Type = "proplist", Display = "{{count}}x{{id}}", DefaultValue = { count=1, id=nil }, Name = "$IDListEntry$", EditorProps = {
+	// Property delegate types; initialize via new EditorBase.<Property> {} to avoid accidental changes to the EditorBase list, as proplists are a reference
+	CountedID = { Type = "proplist", Display = "{{count}}x{{id}}", Name = "$IDListEntry$", EditorProps = {
 		count = { Type = "int", Min = 1 },
 		id = { Type = "def" } } };
-	IDList = { Name = "ID list", Type = "array", Display = 3, Elements = CountedID };
+	IDList = { Name = "ID list", Type = "array", Display = 3, DefaultValue = { count=1, id=nil }, Elements = CountedID };
 	AnyDef = { Type = "def" };
 	IDSet = { Name = "ID set", Type = "array", Display = 5, Elements = AnyDef };
 	PlayerNumber = { Type="int" };
