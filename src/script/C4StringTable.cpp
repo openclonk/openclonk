@@ -117,6 +117,7 @@ C4StringTable::C4StringTable()
 	P[P_LineWidth] = "LineWidth";
 	P[P_OffX] = "OffX";
 	P[P_OffY] = "OffY";
+	P[P_Material] = "Material";
 	P[P_Proplist] = "Proplist";
 	P[P_proplist] = "proplist";
 	P[P_FacetBase] = "FacetBase";

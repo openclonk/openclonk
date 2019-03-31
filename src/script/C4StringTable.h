@@ -349,6 +349,7 @@ enum C4PropertyName
 	P_LineWidth,
 	P_OffX,
 	P_OffY,
+	P_Material,
 	P_proplist,
 	P_Proplist,
 	P_FacetBase,
