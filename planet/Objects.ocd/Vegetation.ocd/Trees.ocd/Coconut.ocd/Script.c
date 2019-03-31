@@ -25,7 +25,9 @@ private func Seed()
 	if(!IsStanding()) return;
 	if(OnFire()) return;
 	if(GetGrowthValue()) return; // still growing
+	// Limit coconuts by attached and dropped coconuts (issue #1916)
 	if(coconuts >= MaxCoconuts) return;
+	if(ObjectCount(Find_ID(Coconut), Find_InRect(GetLeft(), GetTop(), GetObjWidth(), GetObjHeight())) >= MaxCoconuts) return;
 
 	// Always create coconuts; the coconut will determine if it seeds
 	if (Random(10000) < SeedChance())
