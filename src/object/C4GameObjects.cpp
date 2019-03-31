@@ -146,17 +146,21 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 								{
 									hit_energy = std::max(hit_energy / 3, 1);
 								}
-								// Apply damage to the goal
-								goal->DoEnergy(-hit_energy / 5, false, C4FxCall_EngObjHit, ball->Controller);
-								// Fling it around - light objects will be flung stronger
-								int goal_mass = std::max<int32_t>(goal->Mass, 50);
+								// Apply damage to the goal - not sure why this is divided by 5 yet again
+								int32_t damage = -hit_energy / 5;
+								goal->DoEnergy(damage, false, C4FxCall_EngObjHit, ball->Controller);
+								// Fling it around:
+								// light objects will be flung with full speed,
+								// heavier objects will be affected less
+								int min_mass = 50;
+								int goal_mass = std::max<int32_t>(goal->Mass, min_mass);
 								C4PropList* pActionDef = goal->GetAction();
 								if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyP(P_Procedure) != DFA_FLIGHT))
 								{
-									goal->Fling(ball->xdir * 50 / goal_mass, -Abs(ball->ydir / 2) * 50 / goal_mass, false);
+									goal->Fling(ball->xdir * min_mass / goal_mass, -Abs(ball->ydir / 2) * min_mass / goal_mass, false);
 								}
 								// Callback with the damage value
-								goal->Call(PSF_CatchBlow, &C4AulParSet(-hit_energy / 5, ball));
+								goal->Call(PSF_CatchBlow, &C4AulParSet(damage, ball));
 								// <goal> might have been tampered with
 								if (!goal->Status || goal->Contained || !(goal->OCF & goal_required_ocf))
 								{
