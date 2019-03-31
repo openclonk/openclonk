@@ -15,7 +15,7 @@ protected func Hit(x, y)
 
 public func IsFoundryIngredient() { return true; }
 public func IsValuable(){ return true; }
-public func QueryRebuy(){ return true; }
+public func QueryRejectRebuy(){ return true; }
 
 
 local Collectible = 1;

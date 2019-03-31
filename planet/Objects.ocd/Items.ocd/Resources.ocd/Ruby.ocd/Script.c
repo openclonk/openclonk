@@ -41,7 +41,7 @@ func FxSparkleTimer(target, effect, effect_time)
 }
 
 func IsValuable() { return true; }
-func QueryRebuy() { return true; }
+func QueryRejectRebuy() { return true; }
 
 func OnSale(int to_player, object sale_base)
 {

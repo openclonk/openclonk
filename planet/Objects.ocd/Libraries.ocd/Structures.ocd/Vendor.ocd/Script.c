@@ -112,7 +112,7 @@ public func DoSell(object obj, int wealth_player)
 	Sound("UI::Cash", {player = wealth_player});
 	
 	// Add the item to the homebase material.
-	if (!obj->~QueryRebuy(wealth_player, this))
+	if (!obj->~QueryRejectRebuy(wealth_player, this))
 	{
 		this->ChangeBuyableAmount(wealth_player, obj->GetID(), +1);
 	}

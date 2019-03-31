@@ -13,7 +13,7 @@ public func Place(int amount, proplist area, ...)
 }
 
 public func IsValuable() { return true; }
-public func QueryRebuy() { return true; }
+public func QueryRejectRebuy() { return true; }
 
 public func SaveScenarioObject(props, ...)
 {
