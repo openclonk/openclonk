@@ -90,86 +90,90 @@ bool C4GameObjects::Remove(C4Object *game_object)
 
 void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 {
-	DWORD focf, tocf;
+	// Reverse area check: Checks for all <ball> at <goal>
+	// Using a sports metaphor here, because that is easier to visualize when reading the code
 
-	// Reverse area check: Checks for all obj2 at obj1
+	// Only those objects that have the required OCFs will be checked for collision/collection
+	DWORD goal_required_ocf = OCF_None;
+	goal_required_ocf |= OCF_Collection;
+	goal_required_ocf |= OCF_Alive;
 
-	focf = tocf = OCF_None;
-	// High level: Collection, Hit
+	// Only those objects that have the required OCFs can cause a collision/collection
+	DWORD ball_required_ocf = OCF_None;
+	ball_required_ocf |= OCF_HitSpeed2;
+	// Fewer checks for collection
 	if (!::Game.iTick3)
 	{
-		tocf |= OCF_Carryable;
+		ball_required_ocf |= OCF_Carryable;
 	}
-	focf |= OCF_Collection;
-	focf |= OCF_Alive;
-	tocf |= OCF_HitSpeed2;
 
-	for (C4Object* obj1 : *this)
+	for (C4Object* goal : *this)
 	{
-		if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
+		if (goal->Status && !goal->Contained && (goal->OCF & goal_required_ocf))
 		{
 			uint32_t Marker = GetNextMarker();
-			C4LSector *pSct;
-			for (C4ObjectList *pLst = obj1->Area.FirstObjects(&pSct); pLst; pLst = obj1->Area.NextObjects(pLst, &pSct))
+			C4LSector *sector;
+			for (C4ObjectList *in_goal_area = goal->Area.FirstObjects(&sector); in_goal_area; in_goal_area = goal->Area.NextObjects(in_goal_area, &sector))
 			{
-				for (C4Object* obj2 : *pLst)
+				for (C4Object* ball : *in_goal_area)
 				{
-					if ((obj2 != obj1) && obj2->Status && !obj2->Contained && (obj2->OCF & tocf) &&
-					    Inside<int32_t>(obj2->GetX() - (obj1->GetX() + obj1->Shape.x), 0, obj1->Shape.Wdt - 1) &&
-					    Inside<int32_t>(obj2->GetY() - (obj1->GetY() + obj1->Shape.y), 0, obj1->Shape.Hgt - 1) &&
-					    obj1->Layer == obj2->Layer)
+					if ((ball != goal) && ball->Status && !ball->Contained && (ball->OCF & ball_required_ocf) &&
+					    Inside<int32_t>(ball->GetX() - (goal->GetX() + goal->Shape.x), 0, goal->Shape.Wdt - 1) &&
+					    Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Shape.y), 0, goal->Shape.Hgt - 1) &&
+					    goal->Layer == ball->Layer)
 					{
 						// Handle collision only once
-						if (obj2->Marker == Marker)
+						if (ball->Marker == Marker)
 						{
 							continue;
 						}
-						obj2->Marker = Marker;
+						ball->Marker = Marker;
 						// Only hit if target is alive and projectile is an object
-						if ((obj1->OCF & OCF_Alive) && (obj2->Category & C4D_Object))
+						if ((goal->OCF & OCF_Alive) && (ball->Category & C4D_Object))
 						{
-							C4Real dXDir = obj2->xdir - obj1->xdir;
-							C4Real dYDir = obj2->ydir - obj1->ydir;
-							C4Real speed = dXDir * dXDir + dYDir * dYDir;
+							C4Real relative_xdir = ball->xdir - goal->xdir;
+							C4Real relative_ydir = ball->ydir - goal->ydir;
+							C4Real speed = relative_xdir * relative_xdir + relative_ydir * relative_ydir;
 							// Only hit if obj2's speed and relative speeds are larger than HitSpeed2
-							if ((obj2->OCF & OCF_HitSpeed2) && speed > HitSpeed2 &&
-							   !obj1->Call(PSF_QueryCatchBlow, &C4AulParSet(obj2)))
+							if ((ball->OCF & OCF_HitSpeed2) && speed > HitSpeed2 &&
+							   !goal->Call(PSF_QueryCatchBlow, &C4AulParSet(ball)))
 							{
-								int32_t iHitEnergy = fixtoi(speed * obj2->Mass / 5);
+								int32_t hit_energy = fixtoi(speed * ball->Mass / 5);
 								// Hit energy reduced to 1/3rd, but do not drop to zero because of this division
-								iHitEnergy = std::max<int32_t>(iHitEnergy/3, !!iHitEnergy);
-								obj1->DoEnergy(-iHitEnergy / 5, false, C4FxCall_EngObjHit, obj2->Controller);
-								int tmass = std::max<int32_t>(obj1->Mass, 50);
-								C4PropList* pActionDef = obj1->GetAction();
+								hit_energy = std::max<int32_t>(hit_energy/3, !!hit_energy);
+								goal->DoEnergy(-hit_energy / 5, false, C4FxCall_EngObjHit, ball->Controller);
+								int tmass = std::max<int32_t>(goal->Mass, 50);
+								C4PropList* pActionDef = goal->GetAction();
 								if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyP(P_Procedure) != DFA_FLIGHT))
 								{
-									obj1->Fling(obj2->xdir * 50 / tmass, -Abs(obj2->ydir / 2) * 50 / tmass, false);
+									goal->Fling(ball->xdir * 50 / tmass, -Abs(ball->ydir / 2) * 50 / tmass, false);
 								}
-								obj1->Call(PSF_CatchBlow, &C4AulParSet(-iHitEnergy / 5, obj2));
-								// obj1 might have been tampered with
-								if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
+								goal->Call(PSF_CatchBlow, &C4AulParSet(-hit_energy / 5, ball));
+								// <goal> might have been tampered with
+								if (!goal->Status || goal->Contained || !(goal->OCF & goal_required_ocf))
 								{
-									goto out1;
+									goto check_next_object;
 								}
 								continue;
 							}
 						}
 						// Collection
-						if ((obj1->OCF & OCF_Collection) && (obj2->OCF & OCF_Carryable) &&
-						    Inside<int32_t>(obj2->GetX() - (obj1->GetX() + obj1->Def->Collection.x), 0, obj1->Def->Collection.Wdt - 1) &&
-						    Inside<int32_t>(obj2->GetY() - (obj1->GetY() + obj1->Def->Collection.y), 0, obj1->Def->Collection.Hgt - 1))
+						if ((goal->OCF & OCF_Collection) && (ball->OCF & OCF_Carryable) &&
+						    Inside<int32_t>(ball->GetX() - (goal->GetX() + goal->Def->Collection.x), 0, goal->Def->Collection.Wdt - 1) &&
+						    Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Def->Collection.y), 0, goal->Def->Collection.Hgt - 1))
 						{
-							obj1->Collect(obj2);
-							// obj1 might have been tampered with
-							if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
+							goal->Collect(ball);
+							// <goal> might have been tampered with
+							if (!goal->Status || goal->Contained || !(goal->OCF & goal_required_ocf))
 							{
-								goto out1;
+								goto check_next_object;
 							}
 						}
 					}
 				}
 			}
-			out1: ;
+			// Goto-marker for more obvious loop-control
+			check_next_object: ;
 		}
 	}
 }
