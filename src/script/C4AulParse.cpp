@@ -1006,18 +1006,18 @@ void C4AulParse::Parse_Function(::aul::ast::Function *func)
 		// Type identifier?
 		// All recognizable tokens must be listed here explicitly,
 		// because unless we shift the function parsing will not work correctly
-		C4V_Type token_type = C4V_Any;
-		if (SEqual(Idtf, C4AUL_TypeInt))           { token_type = C4V_Int;      Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeBool))     { token_type = C4V_Bool;     Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeC4ID))     { token_type = C4V_Def;      Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeDef))      { token_type = C4V_Def;      Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeEffect))   { token_type = C4V_Effect;   Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeC4Object)) { token_type = C4V_Object;   Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypePropList)) { token_type = C4V_PropList; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeString))   { token_type = C4V_String;   Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeArray))    { token_type = C4V_Array;    Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeFunction)) { token_type = C4V_Function; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeAny))      { token_type = C4V_Any;      Shift(); }
+		C4V_Type parameter_type = C4V_Any;
+		if (SEqual(Idtf, C4AUL_TypeInt))           { parameter_type = C4V_Int;      Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeBool))     { parameter_type = C4V_Bool;     Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeC4ID))     { parameter_type = C4V_Def;      Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeDef))      { parameter_type = C4V_Def;      Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeEffect))   { parameter_type = C4V_Effect;   Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeC4Object)) { parameter_type = C4V_Object;   Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypePropList)) { parameter_type = C4V_PropList; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeString))   { parameter_type = C4V_String;   Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeArray))    { parameter_type = C4V_Array;    Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeFunction)) { parameter_type = C4V_Function; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeAny))      { parameter_type = C4V_Any;      Shift(); }
 		// a parameter name which matched a type name?
 		std::string par_name;
 		if (TokenType == ATT_BCLOSE || TokenType == ATT_COMMA)
@@ -1031,7 +1031,7 @@ void C4AulParse::Parse_Function(::aul::ast::Function *func)
 			par_name = Idtf;
 			Shift();
 		}
-		func->params.emplace_back(par_name, token_type);
+		func->params.emplace_back(par_name, parameter_type);
 		// end of params?
 		if (TokenType == ATT_BCLOSE)
 		{
