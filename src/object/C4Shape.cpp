@@ -25,7 +25,6 @@
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Material.h"
 
-
 bool C4Shape::AddVertex(int32_t iX, int32_t iY)
 {
 	if (VtxNum >= C4D_MaxVertex)
@@ -38,12 +37,10 @@ bool C4Shape::AddVertex(int32_t iX, int32_t iY)
 	return true;
 }
 
-
 void C4Shape::Default()
 {
 	InplaceReconstruct(this);
 }
-
 
 void C4Shape::Rotate(C4Real angle, bool update_vertices)
 {
@@ -135,7 +132,6 @@ void C4Shape::Rotate(C4Real angle, bool update_vertices)
 	}
 }
 
-
 void C4Shape::Stretch(int32_t iCon, bool update_vertices)
 {
 	x = ScaledByCon(x, iCon);
@@ -152,7 +148,6 @@ void C4Shape::Stretch(int32_t iCon, bool update_vertices)
 	}
 }
 
-
 void C4Shape::Jolt(int32_t iCon, bool update_vertices)
 {
 	y = ScaledByCon(y, iCon);
@@ -166,12 +161,10 @@ void C4Shape::Jolt(int32_t iCon, bool update_vertices)
 	}
 }
 
-
 inline bool C4Shape::ScaledByCon(int32_t value, int32_t con)
 {
 	return value * con / FullCon;
 }
-
 
 void C4Shape::GetVertexOutline(C4Rect &rRect)
 {
@@ -209,13 +202,11 @@ void C4Shape::GetVertexOutline(C4Rect &rRect)
 	rRect.y = y;
 }
 
-
 inline bool C4Shape::CheckTouchableMaterial(int32_t x, int32_t y, int32_t vtx_i, int32_t ydir, const C4DensityProvider &rDensityProvider)
 {
 	return rDensityProvider.GetDensity(x, y) >= ContactDensity
 		&& ((ydir > 0 && !(CNAT_PhaseHalfVehicle & VtxCNAT[vtx_i])) || !IsMCHalfVehicle(::Landscape.GetPix(x, y)));
 }
-
 
 // Adjust given position to one pixel before contact
 // at vertices matching CNAT request.
@@ -298,7 +289,6 @@ bool C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
 	}
 	return any_contact;
 }
-
 
 bool C4Shape::LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int32_t oldx, int32_t oldy)
 {
@@ -384,7 +374,6 @@ out:
 	return false;
 }
 
-
 bool C4Shape::InsertVertex(int32_t index_position, int32_t tx, int32_t ty)
 {
 	if (VtxNum + 1 > C4D_MaxVertex)
@@ -407,7 +396,6 @@ bool C4Shape::InsertVertex(int32_t index_position, int32_t tx, int32_t ty)
 	return true;
 }
 
-
 bool C4Shape::RemoveVertex(int32_t index_position)
 {
 	if (!Inside<int32_t>(index_position, 0, VtxNum - 1))
@@ -422,7 +410,6 @@ bool C4Shape::RemoveVertex(int32_t index_position)
 	VtxNum--;
 	return true;
 }
-
 
 bool C4Shape::CheckContact(int32_t at_x, int32_t at_y)
 {
@@ -442,7 +429,6 @@ bool C4Shape::CheckContact(int32_t at_x, int32_t at_y)
 
 	return false;
 }
-
 
 bool C4Shape::ContactCheck(int32_t at_x, int32_t at_y, uint32_t *border_hack_contacts, bool collide_halfvehic)
 {
@@ -494,7 +480,6 @@ bool C4Shape::ContactCheck(int32_t at_x, int32_t at_y, uint32_t *border_hack_con
 	return !!ContactCount;
 }
 
-
 bool C4Shape::CheckScaleToWalk(int x, int y)
 {
 	for (int32_t i = 0; i < VtxNum; i++)
@@ -527,7 +512,6 @@ bool C4Shape::CheckScaleToWalk(int x, int y)
 	return true;
 }
 
-
 int32_t C4Shape::GetVertexX(int32_t iVertex)
 {
 	if (!Inside<int32_t>(iVertex, 0, VtxNum - 1))
@@ -536,7 +520,6 @@ int32_t C4Shape::GetVertexX(int32_t iVertex)
 	}
 	return VtxX[iVertex];
 }
-
 
 int32_t C4Shape::GetVertexY(int32_t iVertex)
 {
@@ -573,7 +556,6 @@ void C4Shape::CopyFrom(C4Shape shape_from, bool copy_vertices, bool copy_vertice
 	ContactCount = shape_from.ContactCount;
 }
 
-
 int32_t C4Shape::GetBottomVertex()
 {
 	// Return bottom-most vertex
@@ -590,7 +572,6 @@ int32_t C4Shape::GetBottomVertex()
 	}
 	return iMax;
 }
-
 
 int C4Shape::GetBottom()
 {
@@ -612,16 +593,13 @@ int C4Shape::GetBottom()
 	return b;
 }
 
-
 C4DensityProvider DefaultDensityProvider;
-
 
 int32_t C4DensityProvider::GetDensity(int32_t x, int32_t y) const
 {
 	// Default density provider checks the landscape
 	return GBackDensity(x, y);
 }
-
 
 int32_t C4Shape::GetVertexContact(int32_t iVertex, DWORD dwCheckMask, int32_t tx, int32_t ty, const C4DensityProvider &rDensityProvider)
 {
@@ -657,7 +635,6 @@ int32_t C4Shape::GetVertexContact(int32_t iVertex, DWORD dwCheckMask, int32_t tx
 	return contact_bits;
 }
 
-
 void C4Shape::CreateOwnOriginalCopy(C4Shape &shape_from)
 {
 	// Copy vertices from original buffer, including count
@@ -669,7 +646,6 @@ void C4Shape::CreateOwnOriginalCopy(C4Shape &shape_from)
 	memcpy(VtxContactCNAT + C4D_VertexCpyPos, shape_from.VtxContactCNAT, VtxNum * sizeof(*VtxContactCNAT));
 	memcpy(VtxContactMat + C4D_VertexCpyPos,  shape_from.VtxContactMat,  VtxNum * sizeof(*VtxContactMat));
 }
-
 
 void C4Shape::CompileFunc(StdCompiler *pComp, const C4Shape *default_shape)
 {
