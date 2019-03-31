@@ -520,31 +520,23 @@ void C4GameObjects::ResortUnsorted()
 bool C4GameObjects::ValidateOwners()
 {
 	// Validate in sublists
-	bool fSucc = true;
-	if (!C4ObjectList::ValidateOwners())
-	{
-		fSucc = false;
-	}
-	if (!InactiveObjects.ValidateOwners())
-	{
-		fSucc = false;
-	}
-	return fSucc;
+	// Note: Both functions need to be called,
+	// before the evaluation. Do not call foo() && bar()
+	// because then only foo() will be evaluated.
+	bool object_list_valid = C4ObjectList::ValidateOwners();
+	bool inactive_objects_valid = InactiveObjects.ValidateOwners();
+	return object_list_valid && inactive_objects_valid;
 }
 
 bool C4GameObjects::AssignInfo()
 {
 	// Assign in sublists
-	bool fSucc = true;
-	if (!C4ObjectList::AssignInfo())
-	{
-		fSucc = false;
-	}
-	if (!InactiveObjects.AssignInfo())
-	{
-		fSucc = false;
-	}
-	return fSucc;
+	// Note: Both functions need to be called,
+	// before the evaluation. Do not call foo() && bar()
+	// because then only foo() will be evaluated.
+	bool object_list_assigned = C4ObjectList::AssignInfo();
+	bool inactive_objects_assigned = InactiveObjects.AssignInfo();
+	return object_list_assigned && inactive_objects_assigned;
 }
 
 void C4GameObjects::AssignLightRange()
