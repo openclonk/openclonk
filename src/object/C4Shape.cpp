@@ -343,10 +343,7 @@ out:
 			ciy = oldy;
 			if (!PathFreeIgnoreVehicle(cix, ciy, tx, ty) || !PathFreeIgnoreVehicle(cix, ciy, VtxX[cvtx + ld], VtxY[cvtx + ld]))
 			{
-				if (!PathFreeIgnoreVehicle(cix, ciy, tx, ty) || !PathFreeIgnoreVehicle(cix, ciy, VtxX[cvtx + ld], VtxY[cvtx + ld]))
-				{
-					return false; // Found no bend vertex
-				}
+				return false; // Found no bend vertex
 			}
 		}
 		// Insert bend vertex
