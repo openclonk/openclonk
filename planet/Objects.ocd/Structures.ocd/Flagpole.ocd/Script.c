@@ -52,14 +52,14 @@ public func AllowBuyMenuEntries(){ return ObjectCount(Find_ID(Rule_BuyAtFlagpole
 public func RejectCollect(id def, object obj)
 {
 	if (obj->~IsValuable())
-		if (!obj->~QueryOnSell(obj->GetController()))
+		if (!obj->~QueryRejectSell(obj->GetController()))
 	 		return _inherited(def, obj, ...);
 	return true;
 }
 
 public func Collection(object obj)
 {
-	if (obj->~IsValuable() && !obj->~QueryOnSell(obj->GetController()))
+	if (obj->~IsValuable() && !obj->~QueryRejectSell(obj->GetController()))
 	{
 		DoSell(obj, obj->GetController());
 	}

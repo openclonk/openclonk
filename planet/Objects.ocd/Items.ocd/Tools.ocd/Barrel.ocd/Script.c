@@ -145,7 +145,7 @@ public func CanBeStackedWith(object other)
 
 // Sells the contents only, leaving an empty barrel.
 // Empty barrels can then be sold separately.
-public func QueryOnSell(int for_player, object in_base)
+public func QueryRejectSell(int for_player, object in_base)
 {
 	if (Contents() && in_base)
 	{
