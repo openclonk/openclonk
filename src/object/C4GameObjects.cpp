@@ -88,11 +88,6 @@ bool C4GameObjects::Remove(C4Object *game_object)
 	return C4ObjectList::Remove(game_object);
 }
 
-C4ObjectList &C4GameObjects::ObjectsAt(int x, int y)
-{
-	return Sectors.SectorAt(x, y)->ObjectShapes;
-}
-
 void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 {
 	DWORD focf, tocf;
@@ -177,33 +172,6 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 			out1: ;
 		}
 	}
-}
-
-C4Object* C4GameObjects::AtObject(int world_x, int world_y, DWORD &ocf, C4Object *exclude)
-{
-	DWORD cocf;
-	for (C4Object *game_object : ObjectsAt(world_x, world_y))
-	{
-		if (!exclude || (game_object != exclude && exclude->Layer == game_object->Layer)) if (game_object->Status)
-		{
-			cocf = ocf | OCF_Exclusive;
-			if (game_object->At(world_x, world_y, cocf))
-			{
-				// Search match
-				if (cocf & ocf)
-				{
-					ocf = cocf;
-					return game_object;
-				}
-				// EXCLUSIVE block
-				else
-				{
-					return nullptr;
-				}
-			}
-		}
-	}
-	return nullptr;
 }
 
 void C4GameObjects::Synchronize()

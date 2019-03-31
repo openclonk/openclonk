@@ -47,10 +47,7 @@ public:
 	bool Add(C4Object *nObj); // add object
 	bool Remove(C4Object *pObj) override; // clear pointers to object
 
-	C4ObjectList &ObjectsAt(int ix, int iy); // get object list for map pos
-
 	void CrossCheck(); // various collision-checks
-	C4Object *AtObject(int ctx, int cty, DWORD &ocf, C4Object *exclude=nullptr); // find object at ctx/cty
 	void Synchronize(); // network synchronization
 	void UpdateSolidMasks();
 
