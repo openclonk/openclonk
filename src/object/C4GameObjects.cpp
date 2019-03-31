@@ -75,7 +75,7 @@ bool C4GameObjects::Add(C4Object *game_object)
 
 bool C4GameObjects::Remove(C4Object *game_object)
 {
-	// If it's an inactive object, simply remove from the inactiv elist
+	// If it's an inactive object, simply remove it from the inactive list
 	if (game_object->Status == C4OS_INACTIVE)
 	{
 		return InactiveObjects.Remove(game_object);
@@ -139,20 +139,28 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 							   !goal->Call(PSF_QueryCatchBlow, &C4AulParSet(ball)))
 							{
 								int32_t hit_energy = fixtoi(speed * ball->Mass / 5);
-								// Hit energy reduced to 1/3rd, but do not drop to zero because of this division
-								hit_energy = std::max<int32_t>(hit_energy/3, !!hit_energy);
+								// Hit energy reduced to 1/3rd, but do not drop to zero because of this division.
+								// However, if the hit energy is low because of either speed or <ball> mass, then
+								// having it stay 0 is OK.
+								if (hit_energy != 0)
+								{
+									hit_energy = std::max(hit_energy / 3, 1);
+								}
+								// Apply damage to the goal
 								goal->DoEnergy(-hit_energy / 5, false, C4FxCall_EngObjHit, ball->Controller);
-								int tmass = std::max<int32_t>(goal->Mass, 50);
+								// Fling it around - light objects will be flung stronger
+								int goal_mass = std::max<int32_t>(goal->Mass, 50);
 								C4PropList* pActionDef = goal->GetAction();
 								if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyP(P_Procedure) != DFA_FLIGHT))
 								{
-									goal->Fling(ball->xdir * 50 / tmass, -Abs(ball->ydir / 2) * 50 / tmass, false);
+									goal->Fling(ball->xdir * 50 / goal_mass, -Abs(ball->ydir / 2) * 50 / goal_mass, false);
 								}
+								// Callback with the damage value
 								goal->Call(PSF_CatchBlow, &C4AulParSet(-hit_energy / 5, ball));
 								// <goal> might have been tampered with
 								if (!goal->Status || goal->Contained || !(goal->OCF & goal_required_ocf))
 								{
-									goto check_next_object;
+									goto check_next_goal;
 								}
 								continue;
 							}
@@ -166,14 +174,14 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 							// <goal> might have been tampered with
 							if (!goal->Status || goal->Contained || !(goal->OCF & goal_required_ocf))
 							{
-								goto check_next_object;
+								goto check_next_goal;
 							}
 						}
 					}
 				}
 			}
 			// Goto-marker for more obvious loop-control
-			check_next_object: ;
+			check_next_goal: ;
 		}
 	}
 }
@@ -260,9 +268,9 @@ int C4GameObjects::PostLoad(bool keep_inactive_objects, C4ValueNumbers *numbers)
 
 	// Denumerate pointers:
 	// On section load, inactive object numbers will be adjusted afterwards,
-	// so fake inactive object list empty. Meanwhile, note this has to be done
-	// to prevent an assertion fail when denumerating non-enumerated inactive objects,
-	// even if object numbers did not collide.
+	// so fake inactive object list empty meanwhile.
+	// Note: this has to be done to prevent an assertion fail when denumerating
+	// non-enumerated inactive objects, even if object numbers did not collide.
 	C4ObjectList inactiveObjectsCopy;
 	if (keep_inactive_objects)
 	{
