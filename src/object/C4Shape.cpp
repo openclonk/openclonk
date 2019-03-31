@@ -530,16 +530,16 @@ int32_t C4Shape::GetVertexY(int32_t iVertex)
 	return VtxY[iVertex];
 }
 
-void C4Shape::CopyFrom(C4Shape shape_from, bool copy_vertices, bool copy_vertices_from_self)
+void C4Shape::CopyFrom(C4Shape source, bool copy_vertices, bool copy_vertices_from_self)
 {
 	if (copy_vertices)
 	{
 		// Truncate / copy vertex count
-		VtxNum = (copy_vertices_from_self ? std::min<int32_t>(VtxNum, C4D_VertexCpyPos) : shape_from.VtxNum);
+		VtxNum = (copy_vertices_from_self ? std::min<int32_t>(VtxNum, C4D_VertexCpyPos) : source.VtxNum);
 
 		// Restore vertices from back of own buffer (retaining count)
 		int32_t iCopyPos = (copy_vertices_from_self ? C4D_VertexCpyPos : 0);
-		C4Shape &vertices_from = (copy_vertices_from_self ? *this : shape_from);
+		C4Shape &vertices_from = (copy_vertices_from_self ? *this : source);
 
 		memcpy(VtxX,           vertices_from.VtxX + iCopyPos,           VtxNum * sizeof(*VtxX));
 		memcpy(VtxY,           vertices_from.VtxY + iCopyPos,           VtxNum * sizeof(*VtxY));
@@ -550,10 +550,10 @@ void C4Shape::CopyFrom(C4Shape shape_from, bool copy_vertices, bool copy_vertice
 	}
 
 	// Copies other members
-	*((C4Rect *) this) = shape_from;
-	AttachMat = shape_from.AttachMat;
-	ContactCNAT = shape_from.ContactCNAT;
-	ContactCount = shape_from.ContactCount;
+	*((C4Rect *) this) = source;
+	AttachMat = source.AttachMat;
+	ContactCNAT = source.ContactCNAT;
+	ContactCount = source.ContactCount;
 }
 
 int32_t C4Shape::GetBottomVertex()
@@ -635,16 +635,16 @@ int32_t C4Shape::GetVertexContact(int32_t iVertex, DWORD dwCheckMask, int32_t tx
 	return contact_bits;
 }
 
-void C4Shape::CreateOwnOriginalCopy(C4Shape &shape_from)
+void C4Shape::CreateOwnOriginalCopy(C4Shape &source)
 {
 	// Copy vertices from original buffer, including count
-	VtxNum = std::min<int32_t>(shape_from.VtxNum, C4D_VertexCpyPos);
-	memcpy(VtxX + C4D_VertexCpyPos,           shape_from.VtxX,           VtxNum * sizeof(*VtxX));
-	memcpy(VtxY + C4D_VertexCpyPos,           shape_from.VtxY,           VtxNum * sizeof(*VtxY));
-	memcpy(VtxCNAT + C4D_VertexCpyPos,        shape_from.VtxCNAT,        VtxNum * sizeof(*VtxCNAT));
-	memcpy(VtxFriction + C4D_VertexCpyPos,    shape_from.VtxFriction,    VtxNum * sizeof(*VtxFriction));
-	memcpy(VtxContactCNAT + C4D_VertexCpyPos, shape_from.VtxContactCNAT, VtxNum * sizeof(*VtxContactCNAT));
-	memcpy(VtxContactMat + C4D_VertexCpyPos,  shape_from.VtxContactMat,  VtxNum * sizeof(*VtxContactMat));
+	VtxNum = std::min<int32_t>(source.VtxNum, C4D_VertexCpyPos);
+	memcpy(VtxX + C4D_VertexCpyPos,           source.VtxX,           VtxNum * sizeof(*VtxX));
+	memcpy(VtxY + C4D_VertexCpyPos,           source.VtxY,           VtxNum * sizeof(*VtxY));
+	memcpy(VtxCNAT + C4D_VertexCpyPos,        source.VtxCNAT,        VtxNum * sizeof(*VtxCNAT));
+	memcpy(VtxFriction + C4D_VertexCpyPos,    source.VtxFriction,    VtxNum * sizeof(*VtxFriction));
+	memcpy(VtxContactCNAT + C4D_VertexCpyPos, source.VtxContactCNAT, VtxNum * sizeof(*VtxContactCNAT));
+	memcpy(VtxContactMat + C4D_VertexCpyPos,  source.VtxContactMat,  VtxNum * sizeof(*VtxContactMat));
 }
 
 void C4Shape::CompileFunc(StdCompiler *pComp, const C4Shape *default_shape)
