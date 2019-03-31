@@ -462,10 +462,16 @@ private func UpdateEnemyDisplay()
 {
 	// Show enemy type as text above this object
 	var msg;
+	var error = false;
 	if (enemy)
 	{
 		var enemy_def = EnemyDefs[enemy.Type];
-		if (enemy_def.GetInfoString)
+		if (enemy_def == nil)
+		{
+			msg = Format("Unknown enemy type %v", enemy.Type);
+			error = true;
+		}
+		else if (enemy_def.GetInfoString)
 		{
 			// Custom dynamic info string
 			msg = enemy_def->GetInfoString(enemy);
@@ -487,6 +493,10 @@ private func UpdateEnemyDisplay()
 		}
 	}
 	if (msg) Message("@%s", msg); else Message("");
+	if (error)
+	{
+		FatalError("EnemySpawn: %s", msg); 
+	}
 }
 
 public func EditorPropertyChanged()
