@@ -10,14 +10,26 @@ protected func AttachTargetLost() { RemoveObject(); }
 // Remove arrow if target object entered a container.
 protected func Entrance() { RemoveObject(); }
 
+static const ARROW_DEFAULT_ANGLE = 135;
+static const ARROW_DEFAULT_DIST = 16;
+static const ARROW_INCREASE_DIST = 8;
+
 /*-- Arrow Creation --*/
+
+protected func Construction()
+{
+	// Remove FoW
+	SetLightRange(80);
+}
 
 /** Removes all tutorial arrows.
 */
 global func TutArrowClear()
 {
 	for (var arrow in FindObjects(Find_ID(TutorialArrow)))
+	{
 		arrow->RemoveObject();
+	}
 	return;
 }
 
@@ -30,15 +42,15 @@ global func TutArrowClear()
 */
 global func TutArrowShowPos(int x, int y, int angle, int dist)
 {
-	if (angle == nil) 
-		angle = 135;
-	if (dist == nil) 
-		dist = 16;
 	var arrow = CreateObject(TutorialArrow, x, y, NO_OWNER);
-	if (!arrow) 
+	if (!arrow)
+	{
 		return;
+	}
 	// Display bouncing arrow, corrected for arrow size.
-	dist += 8;
+	angle = angle ?? ARROW_DEFAULT_ANGLE;
+	dist = dist ?? ARROW_DEFAULT_DIST;
+	dist += ARROW_INCREASE_DIST;
 	x -= Sin(angle, dist);
 	y += Cos(angle, dist);
 	arrow->SetAction("Show");
@@ -56,16 +68,18 @@ global func TutArrowShowPos(int x, int y, int angle, int dist)
 global func TutArrowShowTarget(object target, int angle, int dist)
 {
 	if (!target)
+	{
 		return;	
-	if (angle == nil) 
-		angle = 135;
-	if (dist == nil) 
-		dist = 16;
+	}
 	var arrow = CreateObject(TutorialArrow, target->GetX(), target->GetY(), NO_OWNER);
-	if (!arrow) 
+	if (!arrow)
+	{
 		return;
+	}
 	// Display spinning arrow, corrected for arrow size.
-	dist += 8;
+	angle = angle ?? ARROW_DEFAULT_ANGLE;
+	dist = dist ?? ARROW_DEFAULT_DIST;
+	dist += ARROW_INCREASE_DIST;
 	arrow->SetAction("Attach", target);
 	arrow->SetR(angle);
 	arrow->SetVertex(0, VTX_Y, -dist, VTX_SetPermanentUpd);
@@ -81,19 +95,17 @@ global func TutArrowShowTarget(object target, int angle, int dist)
 */
 global func TutArrowShowGUIPos(int x, int y, int angle, int dist)
 {
-	if (angle == nil) 
-		angle = 135;
-	if (dist == nil) 
-		dist = 16;
 	var arrow = CreateObject(TutorialArrow, x, y, NO_OWNER);
 	arrow.MeshTransformation = Trans_Scale(3600);
 	if (!arrow) 
+	{
 		return;
+	}
 	// Change arrow category to C4D_Gui.
 	arrow->SetCategory(C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax);
 	arrow.Plane = 2500;
 	// Display bouncing arrow, corrected for arrow size.
-	dist += 8;
+	dist += ARROW_INCREASE_DIST;
 	x -= Sin(angle, dist);
 	y += Cos(angle, dist);
 	arrow->SetAction("Show");
@@ -111,20 +123,23 @@ global func TutArrowShowGUIPos(int x, int y, int angle, int dist)
 global func TutArrowShowGUITarget(object target, int angle, int dist)
 {
 	if (!target)
+	{
 		return;	
-	if (angle == nil) 
-		angle = 135;
-	if (dist == nil) 
-		dist = 16;
+	}
 	var arrow = CreateObject(TutorialArrow, target->GetX(), target->GetY(), NO_OWNER);
 	arrow.MeshTransformation = Trans_Scale(3600);
-	if (!arrow) 
+	if (!arrow)
+	{
 		return;
+	}
 	// Change arrow category to C4D_Gui and set correct plane.
 	arrow->SetCategory(C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax);
 	arrow.Plane = target.Plane;
 	// Display spinning arrow, corrected for GUI and arrow size.
-	dist += 8 + target->GetID()->GetDefHeight() / 2;
+	angle = angle ?? ARROW_DEFAULT_ANGLE;
+	dist = dist ?? ARROW_DEFAULT_DIST;
+	dist += ARROW_INCREASE_DIST;
+	dist += target->GetID()->GetDefHeight() / 2;
 	arrow->SetAction("Attach", target);
 	arrow->SetR(angle);
 	arrow->SetVertex(0, VTX_Y, -dist, VTX_SetPermanentUpd);
