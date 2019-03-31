@@ -132,6 +132,11 @@ void C4Shape::Rotate(C4Real angle, bool update_vertices)
 	}
 }
 
+static inline int32_t ScaledByCon(int32_t value, int32_t con)
+{
+	return value * con / FullCon;
+}
+
 void C4Shape::Stretch(int32_t iCon, bool update_vertices)
 {
 	x = ScaledByCon(x, iCon);
@@ -159,11 +164,6 @@ void C4Shape::Jolt(int32_t iCon, bool update_vertices)
 			VtxY[i] = ScaledByCon(VtxY[i], iCon);
 		}
 	}
-}
-
-inline bool C4Shape::ScaledByCon(int32_t value, int32_t con)
-{
-	return value * con / FullCon;
 }
 
 void C4Shape::GetVertexOutline(C4Rect &rRect)
