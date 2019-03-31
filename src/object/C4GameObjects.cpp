@@ -582,23 +582,23 @@ void C4GameObjects::OnSynchronized()
 
 void C4GameObjects::ResetAudibility()
 {
-	for (C4Object *obj : *this)
+	for (C4Object *game_object : *this)
 	{
-		if (obj)
+		if (game_object)
 		{
-			obj->Audible = obj->AudiblePan = 0;
-			obj->AudiblePlayer = NO_OWNER;
+			game_object->Audible = game_object->AudiblePan = 0;
+			game_object->AudiblePlayer = NO_OWNER;
 		}
 	}
 }
 
 void C4GameObjects::SetOCF()
 {
-	for (C4Object *obj : *this)
+	for (C4Object *game_object : *this)
 	{
-		if (obj->Status)
+		if (game_object->Status)
 		{
-			obj->SetOCF();
+			game_object->SetOCF();
 		}
 	}
 }
@@ -610,11 +610,11 @@ uint32_t C4GameObjects::GetNextMarker()
 	// If all markers are exceeded, restart marker at 1 and reset all object markers to zero.
 	if (!marker)
 	{
-		for (C4Object *cobj : *this)
+		for (C4Object *game_object : *this)
 		{
-			if (cobj)
+			if (game_object)
 			{
-				cobj->Marker = 0;
+				game_object->Marker = 0;
 			}
 		}
 		marker = ++LastUsedMarker;
