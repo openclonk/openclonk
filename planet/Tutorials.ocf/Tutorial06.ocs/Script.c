@@ -186,7 +186,6 @@ protected func InitializePlayer(int plr)
 	// Knowledge and base material for this round.
 	SetPlrKnowledge(plr, Compensator);
 	SetPlrKnowledge(plr, SteamEngine);
-	SetPlrKnowledge(plr, Airplane);
 	SetBaseMaterial(plr, Metal, 20);
 	
 	// Set wealth to buy items.
@@ -285,7 +284,7 @@ global func FxTutorialFinishedCompensatorTimer(object target, proplist effect)
 
 global func FxTutorialLookedAtPowerOverviewTimer(object target, proplist effect)
 {
-	// TODO: fix me (should be triggered when the E menu is openend).
+	// TODO: fix me (should be triggered when the E menu is opened).
 	if (effect.looked_at || true)
 	{
 		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
@@ -363,6 +362,18 @@ global func FxTutorialReachedMiddleIslandSecondTimer(object target, proplist eff
 	{
 		guide->AddGuideMessage("$MsgTutorialFinishSteamEngine$");
 		guide->ShowGuideMessage();
+		var new_effect = AddEffect("TutorialFinishSteamEngine", nil, 100, 5);
+		new_effect.plr = effect.plr;
+		return FX_Execute_Kill;
+	}
+	return FX_OK;
+}
+
+global func FxTutorialFinishSteamEngineTimer(object target, proplist effect)
+{
+	if (FindObject(Find_OCF(OCF_Fullcon), Find_ID(SteamEngine), Find_Owner(effect.plr)))
+	{
+		SetPlrKnowledge(effect.plr, Airplane);
 		return FX_Execute_Kill;
 	}
 	return FX_OK;
