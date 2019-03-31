@@ -52,40 +52,40 @@ void C4GameObjects::Init(int32_t width, int32_t height)
 	Sectors.Init(width, height);
 }
 
-bool C4GameObjects::Add(C4Object *game_object)
+bool C4GameObjects::Add(C4Object *object)
 {
 	// Add inactive objects to the inactive list only
-	if (game_object->Status == C4OS_INACTIVE)
+	if (object->Status == C4OS_INACTIVE)
 	{
-		return InactiveObjects.Add(game_object, C4ObjectList::stMain);
+		return InactiveObjects.Add(object, C4ObjectList::stMain);
 	}
 	// If this is a foreground object, add it to the list
-	if (game_object->Category & C4D_Foreground)
+	if (object->Category & C4D_Foreground)
 	{
-		ForeObjects.Add(game_object, C4ObjectList::stMain);
+		ForeObjects.Add(object, C4ObjectList::stMain);
 	}
 	// Manipulate main list
-	if (!C4ObjectList::Add(game_object, C4ObjectList::stMain))
+	if (!C4ObjectList::Add(object, C4ObjectList::stMain))
 		return false;
 	// Add to sectors
-	Sectors.Add(game_object, this);
+	Sectors.Add(object, this);
 	return true;
 }
 
 
-bool C4GameObjects::Remove(C4Object *game_object)
+bool C4GameObjects::Remove(C4Object *object)
 {
 	// If it's an inactive object, simply remove it from the inactive list
-	if (game_object->Status == C4OS_INACTIVE)
+	if (object->Status == C4OS_INACTIVE)
 	{
-		return InactiveObjects.Remove(game_object);
+		return InactiveObjects.Remove(object);
 	}
 	// Remove from sectors
-	Sectors.Remove(game_object);
+	Sectors.Remove(object);
 	// Remove from forelist
-	ForeObjects.Remove(game_object);
+	ForeObjects.Remove(object);
 	// Manipulate main list
-	return C4ObjectList::Remove(game_object);
+	return C4ObjectList::Remove(object);
 }
 
 void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
@@ -197,34 +197,34 @@ void C4GameObjects::Synchronize()
 C4Object *C4GameObjects::ObjectPointer(int32_t object_number)
 {
 	// Search own list
-	C4PropList *game_object = C4PropListNumbered::GetByNumber(object_number);
-	if (game_object)
+	C4PropList *object = C4PropListNumbered::GetByNumber(object_number);
+	if (object)
 	{
-		return game_object->GetObject();
+		return object->GetObject();
 	}
 	return nullptr;
 }
 
 C4Object *C4GameObjects::SafeObjectPointer(int32_t object_number)
 {
-	C4Object *game_object = ObjectPointer(object_number);
-	if (game_object)
+	C4Object *object = ObjectPointer(object_number);
+	if (object)
 	{
-		if (!game_object->Status)
+		if (!object->Status)
 		{
 			return nullptr;
 		}
 	}
-	return game_object;
+	return object;
 }
 
 void C4GameObjects::UpdateSolidMasks()
 {
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object->Status)
+		if (object->Status)
 		{
-			game_object->UpdateSolidMask(false);
+			object->UpdateSolidMask(false);
 		}
 	}
 }
@@ -254,14 +254,14 @@ int C4GameObjects::PostLoad(bool keep_inactive_objects, C4ValueNumbers *numbers)
 {
 	// Process objects
 	int32_t max_object_number = 0;
-	for (C4Object *game_object : reverse())
+	for (C4Object *object : reverse())
 	{
 		// Keep track of numbers
-		max_object_number = std::max(max_object_number, game_object->Number);
+		max_object_number = std::max(max_object_number, object->Number);
 		// Add to list of foreobjects
-		if (game_object->Category & C4D_Foreground)
+		if (object->Category & C4D_Foreground)
 		{
-			ForeObjects.Add(game_object, C4ObjectList::stMain, this);
+			ForeObjects.Add(object, C4ObjectList::stMain, this);
 		}
 		// Unterminate end
 	}
@@ -292,56 +292,56 @@ int C4GameObjects::PostLoad(bool keep_inactive_objects, C4ValueNumbers *numbers)
 	// Special checks:
 	// -contained/contents-consistency
 	// -StaticBack-objects zero speed
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object->Status)
+		if (object->Status)
 		{
 			// Staticback must not have speed
-			if (game_object->Category & C4D_StaticBack)
+			if (object->Category & C4D_StaticBack)
 			{
-				game_object->xdir = game_object->ydir = 0;
+				object->xdir = object->ydir = 0;
 			}
 			// contained must be in contents list
-			if (game_object->Contained)
+			if (object->Contained)
 			{
-				if (!game_object->Contained->Contents.GetLink(game_object))
+				if (!object->Contained->Contents.GetLink(object))
 				{
-					DebugLogF("Error in Objects.txt: Container of #%d is #%d, but not found in contents list!", game_object->Number, game_object->Contained->Number);
-					game_object->Contained->Contents.Add(game_object, C4ObjectList::stContents);
+					DebugLogF("Error in Objects.txt: Container of #%d is #%d, but not found in contents list!", object->Number, object->Contained->Number);
+					object->Contained->Contents.Add(object, C4ObjectList::stContents);
 				}
 			}
 			// All contents must have contained set; otherwise, remove them!
-			auto contents_iterator = game_object->Contents.begin();
+			auto contents_iterator = object->Contents.begin();
 			while (!contents_iterator.atEnd())
 			{
 				C4Object* contained_object = *contents_iterator;
 				// Check double links
-				auto contents_iterator2 = game_object->Contents.begin();
+				auto contents_iterator2 = object->Contents.begin();
 				if (contents_iterator2.find(contained_object) && contents_iterator2 != contents_iterator)
 				{
-					DebugLogF("Error in Objects.txt: Double containment of #%d by #%d!", contained_object->Number, game_object->Number);
+					DebugLogF("Error in Objects.txt: Double containment of #%d by #%d!", contained_object->Number, object->Number);
 					// This remove-call will only remove the previous (doubled) link, so cLnkCont should be save
-					game_object->Contents.Remove(contained_object);
+					object->Contents.Remove(contained_object);
 					// Contents checked already
 					continue;
 				}
 				// Check contents/contained-relation
-				if (contained_object->Status && contained_object->Contained != game_object)
+				if (contained_object->Status && contained_object->Contained != object)
 				{
-					DebugLogF("Error in Objects.txt: Object #%d not in container #%d as referenced!", contained_object->Number, game_object->Number);
-					contained_object->Contained = game_object;
+					DebugLogF("Error in Objects.txt: Object #%d not in container #%d as referenced!", contained_object->Number, object->Number);
+					contained_object->Contained = object;
 				}
 				contents_iterator++;
 			}
 		}
 	}
 	// Sort out inactive objects
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object->Status == C4OS_INACTIVE)
+		if (object->Status == C4OS_INACTIVE)
 		{
-			Remove(game_object);
-			InactiveObjects.Add(game_object, C4ObjectList::stNone);
+			Remove(object);
+			InactiveObjects.Add(object, C4ObjectList::stNone);
 		}
 	}
 
@@ -359,17 +359,17 @@ int C4GameObjects::PostLoad(bool keep_inactive_objects, C4ValueNumbers *numbers)
 	FixObjectOrder();
 
 	// Misc updates
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object->Status)
+		if (object->Status)
 		{
 			// Add to plrview
-			game_object->UpdateLight();
+			object->UpdateLight();
 			// Update flipdir (for old objects.txt with no flipdir defined),
 			// assigns Action.DrawDir as well
-			game_object->UpdateFlipDir();
+			object->UpdateFlipDir();
 			// Initial OCF update
-			game_object->SetOCF();
+			object->SetOCF();
 		}
 	}
 	// Done
@@ -392,11 +392,11 @@ void C4GameObjects::UpdateScriptPointers()
 C4Value C4GameObjects::GRBroadcast(const char *function_name, C4AulParSet *parameters, bool pass_error, bool reject_test)
 {
 	// Call objects first - scenario script might overwrite hostility, etc...
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object && (game_object->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && game_object->Status)
+		if (object && (object->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && object->Status)
 		{
-			C4Value vResult = game_object->Call(function_name, parameters, pass_error);
+			C4Value vResult = object->Call(function_name, parameters, pass_error);
 			// Rejection tests abort on first nonzero result
 			if (reject_test && !!vResult)
 			{
@@ -407,17 +407,17 @@ C4Value C4GameObjects::GRBroadcast(const char *function_name, C4AulParSet *param
 	return C4Value();
 }
 
-void C4GameObjects::UpdatePos(C4Object *game_object)
+void C4GameObjects::UpdatePos(C4Object *object)
 {
 	// Position might have changed. Update sector lists
-	Sectors.Update(game_object, this);
+	Sectors.Update(object, this);
 }
 
-void C4GameObjects::UpdatePosResort(C4Object *game_object)
+void C4GameObjects::UpdatePosResort(C4Object *object)
 {
 	// Object order for this object was changed. Readd object to sectors
-	Sectors.Remove(game_object);
-	Sectors.Add(game_object, this);
+	Sectors.Remove(object);
+	Sectors.Add(object, this);
 }
 
 void C4GameObjects::FixObjectOrder()
@@ -511,19 +511,19 @@ void C4GameObjects::FixObjectOrder()
 
 void C4GameObjects::ResortUnsorted()
 {
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object->Unsorted)
+		if (object->Unsorted)
 		{
 			// Readd to main object list
-			Remove(game_object);
+			Remove(object);
 			// Reset flag so that Add correctly sorts this object
-			game_object->Unsorted = false;
-			if (!Add(game_object))
+			object->Unsorted = false;
+			if (!Add(object))
 			{
 				// readd failed: Better kill object to prevent leaking...
-				Game.ClearPointers(game_object);
-				delete game_object;
+				Game.ClearPointers(object);
+				delete object;
 			}
 		}
 	}
@@ -553,56 +553,56 @@ bool C4GameObjects::AssignInfo()
 
 void C4GameObjects::AssignLightRange()
 {
-	for (C4Object *game_object : reverse())
+	for (C4Object *object : reverse())
 	{
-		if (game_object->Status)
+		if (object->Status)
 		{
-			game_object->AssignLightRange();
+			object->AssignLightRange();
 		}
 	}
 }
 
 void C4GameObjects::SyncClearance()
 {
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object)
+		if (object)
 		{
-			game_object->SyncClearance();
+			object->SyncClearance();
 		}
 	}
 }
 
 void C4GameObjects::OnSynchronized()
 {
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object)
+		if (object)
 		{
-			game_object->Call(PSF_OnSynchronized);
+			object->Call(PSF_OnSynchronized);
 		}
 	}
 }
 
 void C4GameObjects::ResetAudibility()
 {
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object)
+		if (object)
 		{
-			game_object->Audible = game_object->AudiblePan = 0;
-			game_object->AudiblePlayer = NO_OWNER;
+			object->Audible = object->AudiblePan = 0;
+			object->AudiblePlayer = NO_OWNER;
 		}
 	}
 }
 
 void C4GameObjects::SetOCF()
 {
-	for (C4Object *game_object : *this)
+	for (C4Object *object : *this)
 	{
-		if (game_object->Status)
+		if (object->Status)
 		{
-			game_object->SetOCF();
+			object->SetOCF();
 		}
 	}
 }
@@ -614,11 +614,11 @@ uint32_t C4GameObjects::GetNextMarker()
 	// If all markers are exceeded, restart marker at 1 and reset all object markers to zero.
 	if (!marker)
 	{
-		for (C4Object *game_object : *this)
+		for (C4Object *object : *this)
 		{
-			if (game_object)
+			if (object)
 			{
-				game_object->Marker = 0;
+				object->Marker = 0;
 			}
 		}
 		marker = ++LastUsedMarker;
