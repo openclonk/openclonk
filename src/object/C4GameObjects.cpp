@@ -117,10 +117,14 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 			{
 				for (C4Object* ball : *in_goal_area)
 				{
-					if ((ball != goal) && ball->Status && !ball->Contained && (ball->OCF & ball_required_ocf) &&
-					    Inside<int32_t>(ball->GetX() - (goal->GetX() + goal->Shape.x), 0, goal->Shape.Wdt - 1) &&
-					    Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Shape.y), 0, goal->Shape.Hgt - 1) &&
-					    goal->Layer == ball->Layer)
+					if ((ball != goal)                 // Ball should not hit itself,
+					&&  ball->Status                   // it cannot hit if it was deleted,
+					&& !ball->Contained                // it cannot hit if it is contained,
+					&& (ball->OCF & ball_required_ocf) // it must have the required OFC
+					// TODO: Instead of a custom check, use C4Rect::Contains with the correct coordinates
+					&&  Inside<int32_t>(ball->GetX() - (goal->GetX() + goal->Shape.x), 0, goal->Shape.Wdt - 1)
+					&&  Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Shape.y), 0, goal->Shape.Hgt - 1)
+					&& (goal->Layer == ball->Layer))   // and must be in the correct layer
 					{
 						// Handle collision only once
 						if (ball->Marker == Marker)
@@ -128,17 +132,16 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 							continue;
 						}
 						ball->Marker = Marker;
-						// Only hit if target is alive and projectile is an object
+						// Only hit if <goal> is alive and <ball> is an object
 						if ((goal->OCF & OCF_Alive) && (ball->Category & C4D_Object))
 						{
 							C4Real relative_xdir = ball->xdir - goal->xdir;
 							C4Real relative_ydir = ball->ydir - goal->ydir;
-							C4Real speed = relative_xdir * relative_xdir + relative_ydir * relative_ydir;
-							// Only hit if obj2's speed and relative speeds are larger than HitSpeed2
-							if ((ball->OCF & OCF_HitSpeed2) && speed > HitSpeed2 &&
-							   !goal->Call(PSF_QueryCatchBlow, &C4AulParSet(ball)))
+							C4Real hit_speed = relative_xdir * relative_xdir + relative_ydir * relative_ydir;
+							// Only hit if <ball>'s speed and relative speeds are larger than HitSpeed2
+							if ((hit_speed > HitSpeed2) && !goal->Call(PSF_QueryCatchBlow, &C4AulParSet(ball)))
 							{
-								int32_t hit_energy = fixtoi(speed * ball->Mass / 5);
+								int32_t hit_energy = fixtoi(hit_speed * ball->Mass / 5);
 								// Hit energy reduced to 1/3rd, but do not drop to zero because of this division.
 								// However, if the hit energy is low because of either speed or <ball> mass, then
 								// having it stay 0 is OK.
@@ -146,7 +149,8 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 								{
 									hit_energy = std::max(hit_energy / 3, 1);
 								}
-								// Apply damage to the goal - not sure why this is divided by 5 yet again
+								// Apply damage to the goal - not sure why this is divided by 5 yet again,
+								// and this time we allow it being reduced to 0...
 								int32_t damage = -hit_energy / 5;
 								goal->DoEnergy(damage, false, C4FxCall_EngObjHit, ball->Controller);
 								// Fling it around:
@@ -169,10 +173,12 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 								continue;
 							}
 						}
-						// Collection
-						if ((goal->OCF & OCF_Collection) && (ball->OCF & OCF_Carryable) &&
-						    Inside<int32_t>(ball->GetX() - (goal->GetX() + goal->Def->Collection.x), 0, goal->Def->Collection.Wdt - 1) &&
-						    Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Def->Collection.y), 0, goal->Def->Collection.Hgt - 1))
+						// Collection, across all layers
+						if ((goal->OCF & OCF_Collection)
+						&&  (ball->OCF & OCF_Carryable)
+						// TODO: Instead of a custom check, use C4Rect::Contains with the correct coordinates
+						&&  Inside<int32_t>(ball->GetX() - (goal->GetX() + goal->Def->Collection.x), 0, goal->Def->Collection.Wdt - 1)
+						&&  Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Def->Collection.y), 0, goal->Def->Collection.Hgt - 1))
 						{
 							goal->Collect(ball);
 							// <goal> might have been tampered with
