@@ -120,11 +120,11 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 					if ((ball != goal)                 // Ball should not hit itself,
 					&&  ball->Status                   // it cannot hit if it was deleted,
 					&& !ball->Contained                // it cannot hit if it is contained,
-					&& (ball->OCF & ball_required_ocf) // it must have the required OFC
+					&& (ball->OCF & ball_required_ocf) // it must have the required OFC,
+					&& (goal->Layer == ball->Layer)    // and must be in the correct layer
 					// TODO: Instead of a custom check, use C4Rect::Contains with the correct coordinates
 					&&  Inside<int32_t>(ball->GetX() - (goal->GetX() + goal->Shape.x), 0, goal->Shape.Wdt - 1)
-					&&  Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Shape.y), 0, goal->Shape.Hgt - 1)
-					&& (goal->Layer == ball->Layer))   // and must be in the correct layer
+					&&  Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Shape.y), 0, goal->Shape.Hgt - 1))
 					{
 						// Handle collision only once
 						if (ball->Marker == Marker)
@@ -173,7 +173,13 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 								continue;
 							}
 						}
-						// Collection, across all layers
+						// Collection
+						// Note: the layer check was already done further above
+						// This is confusing, though, because the OCF_Collection and OCF_Carryable
+						// are part of the OCF_requirement further above, and this right here requires
+						// the ball to be both inside the goal shape AND the goal collection area, so
+						// collection areas that go further than the goal shape are useless, as well
+						// as collection areas that are entirely outside of the goal shape.
 						if ((goal->OCF & OCF_Collection)
 						&&  (ball->OCF & OCF_Carryable)
 						// TODO: Instead of a custom check, use C4Rect::Contains with the correct coordinates
