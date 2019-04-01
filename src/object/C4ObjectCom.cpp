@@ -38,15 +38,13 @@ bool SimFlightHitsLiquid(C4Real fcx, C4Real fcy, C4Real xdir, C4Real ydir);
 
 bool ObjectActionWalk(C4Object *cObj)
 {
-	if (!cObj->SetActionByName("Walk")) return false;
-	return true;
+	return cObj->SetActionByName("Walk");
 }
 
 bool ObjectActionStand(C4Object *cObj)
 {
-	cObj->Action.ComDir=COMD_Stop;
-	if (!ObjectActionWalk(cObj)) return false;
-	return true;
+	cObj->Action.ComDir = COMD_Stop;
+	return ObjectActionWalk(cObj);
 }
 
 bool ObjectActionJump(C4Object *cObj, C4Real xdir, C4Real ydir, bool fByCom)
