@@ -27,26 +27,29 @@
 
 C4IDListChunk::C4IDListChunk()
 {
-	// prepare list
-	pNext=nullptr;
+	// Prepare list
+	pNext = nullptr;
 }
 
 C4IDListChunk::~C4IDListChunk()
 {
-	// empty the list
+	// Empty the list
 	Clear();
 }
 
 void C4IDListChunk::Clear()
 {
-	// kill all chunks
-	C4IDListChunk *pChunk=pNext,*pChunk2;
+	// Kill all chunks
+	C4IDListChunk *pChunk = pNext;
+	C4IDListChunk *pChunk2;
 	while (pChunk)
 	{
-		pChunk2=pChunk->pNext; pChunk->pNext=nullptr;
-		delete pChunk; pChunk=pChunk2;
+		pChunk2 = pChunk->pNext;
+		pChunk->pNext = nullptr;
+		delete pChunk;
+		pChunk = pChunk2;
 	}
-	pNext=nullptr;
+	pNext = nullptr;
 }
 
 C4IDList::C4IDList() : C4IDListChunk()
@@ -62,33 +65,34 @@ C4IDList::C4IDList(const C4IDList &rCopy): C4IDListChunk()
 
 C4IDList &C4IDList::operator = (const C4IDList &rCopy)
 {
-	// clear previous list
+	// Clear previous list
 	Clear();
-	// copy primary
+	// Copy primary
 	memcpy(this, &rCopy, sizeof(C4IDList));
-	// copy all chunks
-	C4IDListChunk *pTo=this;
-	for (C4IDListChunk *pFrom=rCopy.pNext; pFrom; pFrom=pFrom->pNext)
+	// Copy all chunks
+	C4IDListChunk *pTo = this;
+	for (C4IDListChunk *pFrom = rCopy.pNext; pFrom; pFrom = pFrom->pNext)
 	{
 		C4IDListChunk *pNew = new C4IDListChunk(*pFrom);
-		pTo->pNext=pNew; pTo=pNew;
+		pTo->pNext = pNew;
+		pTo = pNew;
 	}
-	// finalize
-	pTo->pNext=nullptr;
+	// Finalize
+	pTo->pNext = nullptr;
 	return *this;
 }
 
 C4IDList::~C4IDList()
 {
-	// destruction is done in chunk
+	// Destruction is done in chunk
 }
 
 void C4IDList::Clear()
 {
-	// inherited
+	// Inherited
 	C4IDListChunk::Clear();
-	// reset count
-	Count=0;
+	// Reset count
+	Count = 0;
 }
 
 bool C4IDList::IsClear() const
@@ -98,99 +102,129 @@ bool C4IDList::IsClear() const
 
 C4ID C4IDList::GetID(size_t index, int32_t *ipCount) const
 {
-	// outside list?
-	if (!Inside<size_t>(index+1,1u,Count)) return C4ID::None;
-	// get chunk to query
-	const C4IDListChunk *pQueryChunk=this;
-	while (index>=C4IDListChunkSize) { pQueryChunk=pQueryChunk->pNext; index-=C4IDListChunkSize; }
-	// query it
-	if (ipCount) *ipCount=pQueryChunk->Count[index];
+	// Outside list?
+	if (!Inside<size_t>(index + 1, 1u, Count))
+	{
+		return C4ID::None;
+	}
+	// Get chunk to query
+	const C4IDListChunk *pQueryChunk = this;
+	while (index >= C4IDListChunkSize)
+	{
+		pQueryChunk = pQueryChunk->pNext;
+		index -= C4IDListChunkSize;
+	}
+	// Query it
+	if (ipCount)
+	{
+		*ipCount = pQueryChunk->Count[index];
+	}
 	return pQueryChunk->id[index];
 }
 
 int32_t C4IDList::GetCount(size_t index) const
 {
-	// outside list?
-	if (!Inside<size_t>(index+1,1u,Count)) return 0;
-	// get chunk to query
-	const C4IDListChunk *pQueryChunk=this;
-	while (index>=C4IDListChunkSize) { pQueryChunk=pQueryChunk->pNext; index-=C4IDListChunkSize; }
-	// query it
+	// Outside list?
+	if (!Inside<size_t>(index + 1, 1u, Count))
+	{
+		return 0;
+	}
+	// Get chunk to query
+	const C4IDListChunk *pQueryChunk = this;
+	while (index >= C4IDListChunkSize)
+	{
+		pQueryChunk = pQueryChunk->pNext;
+		index -= C4IDListChunkSize;
+	}
+	// Query it
 	return pQueryChunk->Count[index];
 }
 
 bool C4IDList::SetCount(size_t index, int32_t iCount)
 {
-	// outside list?
-	if (!Inside<size_t>(index+1,1u,Count)) return false;
-	// get chunk to set in
-	C4IDListChunk *pQueryChunk=this;
-	while (index>=C4IDListChunkSize) { pQueryChunk=pQueryChunk->pNext; index-=C4IDListChunkSize; }
-	// set it
-	pQueryChunk->Count[index]=iCount;
-	// success
+	// Outside list?
+	if (!Inside<size_t>(index + 1, 1u, Count))
+	{
+		return false;
+	}
+	// Get chunk to set in
+	C4IDListChunk *pQueryChunk = this;
+	while (index >= C4IDListChunkSize)
+	{
+		pQueryChunk = pQueryChunk->pNext;
+		index -= C4IDListChunkSize;
+	}
+	// Set it
+	pQueryChunk->Count[index] = iCount;
+	// Success
 	return true;
 }
 
 int32_t C4IDList::GetIDCount(C4ID c_id, int32_t iZeroDefVal) const
 {
-	// find id
-	const C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
+	// Find id
+	const C4IDListChunk *pQueryChunk = this;
+	size_t cnt = Count;
+	size_t cntl = 0;
 	while (cnt--)
 	{
-		if (pQueryChunk->id[cntl]==c_id)
+		if (pQueryChunk->id[cntl] == c_id)
 		{
-			int32_t iCount=pQueryChunk->Count[cntl];
+			int32_t iCount = pQueryChunk->Count[cntl];
 			return iCount ? iCount : iZeroDefVal;
 		}
-		if (++cntl==C4IDListChunkSize)
+		if (++cntl == C4IDListChunkSize)
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
-	// none found
+	// None found
 	return 0;
 }
 
 bool C4IDList::SetIDCount(C4ID c_id, int32_t iCount, bool fAddNewID)
 {
-	// find id
-	C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
+	// Find id
+	C4IDListChunk *pQueryChunk = this;
+	size_t cnt = Count;
+	size_t cntl = 0;
 	while (cnt--)
 	{
-		if (pQueryChunk->id[cntl]==c_id)
+		if (pQueryChunk->id[cntl] == c_id)
 		{
-			pQueryChunk->Count[cntl]=iCount; return true;
+			pQueryChunk->Count[cntl] = iCount;
+			return true;
 		}
 		if (++cntl==C4IDListChunkSize)
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
-	// none found: add new
+	// None found: add new
 	if (fAddNewID)
 	{
 		// if end was reached, add new chunk
 		if (!pQueryChunk)
 		{
-			C4IDListChunk *pLast=this;
-			while (pLast->pNext) pLast=pLast->pNext;
-			pQueryChunk=new C4IDListChunk();
-			pLast->pNext=pQueryChunk;
+			C4IDListChunk *pLast = this;
+			while (pLast->pNext)
+			{
+				pLast = pLast->pNext;
+			}
+			pQueryChunk = new C4IDListChunk();
+			pLast->pNext = pQueryChunk;
 		}
-		// set id
-		pQueryChunk->id[cntl]=c_id;
-		pQueryChunk->Count[cntl]=iCount;
-		// count id!
+		// Set id
+		pQueryChunk->id[cntl] = c_id;
+		pQueryChunk->Count[cntl] = iCount;
+		// Count id!
 		++Count;
-		// success
+		// Success
 		return true;
 	}
-	// failure
+	// Failure
 	return false;
 }
 
@@ -201,60 +235,74 @@ int32_t C4IDList::GetNumberOfIDs() const
 
 int32_t C4IDList::GetIndex(C4ID c_id) const
 {
-	// find id in list
-	const C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
+	// Find id in list
+	const C4IDListChunk *pQueryChunk = this;
+	size_t cnt = Count;
+	size_t cntl = 0;
 	while (cnt--)
 	{
-		if (pQueryChunk->id[cntl]==c_id) return Count-cnt-1;
-		if (++cntl==C4IDListChunkSize)
+		if (pQueryChunk->id[cntl] == c_id)
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			return Count-cnt-1;
+		}
+		if (++cntl == C4IDListChunkSize)
+		{
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
-	// not found
+	// Not found
 	return -1;
 }
 
 bool C4IDList::IncreaseIDCount(C4ID c_id, bool fAddNewID, int32_t IncreaseBy, bool fRemoveEmpty)
 {
-	// find id in list
-	C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
+	// Find id in list
+	C4IDListChunk *pQueryChunk = this;
+	size_t cnt = Count;
+	size_t cntl = 0;
 	while (cnt--)
 	{
-		if (pQueryChunk->id[cntl]==c_id)
+		if (pQueryChunk->id[cntl] == c_id)
 		{
-			// increase count
-			pQueryChunk->Count[cntl]+=IncreaseBy;
-			// check count
-			if (fRemoveEmpty && !pQueryChunk->Count[cntl]) DeleteItem(Count-cnt-1);
-			// success
+			// Increase count
+			pQueryChunk->Count[cntl] += IncreaseBy;
+			// Check count
+			if (fRemoveEmpty && !pQueryChunk->Count[cntl])
+			{
+				DeleteItem(Count - cnt - 1);
+			}
+			// Success
 			return true;
 		}
-		if (++cntl==C4IDListChunkSize)
+		if (++cntl == C4IDListChunkSize)
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
-	// add desired?
-	if (!fAddNewID) return true;
-	// add it
-	// if end was reached, add new chunk
+	// Add desired?
+	if (!fAddNewID)
+	{
+		return true;
+	}
+	// Add it
+	// If end was reached, add new chunk
 	if (!pQueryChunk)
 	{
-		C4IDListChunk *pLast=this;
-		while (pLast->pNext) pLast=pLast->pNext;
-		pQueryChunk=new C4IDListChunk();
-		pLast->pNext=pQueryChunk;
+		C4IDListChunk *pLast = this;
+		while (pLast->pNext)
+		{
+			pLast = pLast->pNext;
+		}
+		pQueryChunk = new C4IDListChunk();
+		pLast->pNext = pQueryChunk;
 	}
-	// set id
-	pQueryChunk->id[cntl]=c_id;
-	pQueryChunk->Count[cntl]=IncreaseBy;
+	// Set id
+	pQueryChunk->id[cntl] = c_id;
+	pQueryChunk->Count[cntl] = IncreaseBy;
 	++Count;
-	// success
+	// Success
 	return true;
 }
 
@@ -262,23 +310,34 @@ bool C4IDList::IncreaseIDCount(C4ID c_id, bool fAddNewID, int32_t IncreaseBy, bo
 // Access by category-sorted index
 C4ID C4IDList::GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount) const
 {
-	int32_t cindex=-1;
+	int32_t cindex = -1;
 	C4Def *cDef;
-	if (ipCount) *ipCount=0;
-	// find id
-	const C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
+	if (ipCount)
+	{
+		*ipCount = 0;
+	}
+	// Find id
+	const C4IDListChunk *pQueryChunk = this;
+	size_t cnt = Count;
+	size_t cntl = 0;
 	while (cnt--)
 	{
-		if ((dwCategory==C4D_All) || ( (cDef=rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
+		if ((dwCategory == C4D_All) || ( (cDef = rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
 		{
 			cindex++;
-			if (cindex==index) { if (ipCount) *ipCount=pQueryChunk->Count[cntl]; return pQueryChunk->id[cntl]; }
+			if (cindex==index)
+			{
+				if (ipCount)
+				{
+					*ipCount = pQueryChunk->Count[cntl];
+				}
+				return pQueryChunk->id[cntl];
+			}
 		}
-		if (++cntl==C4IDListChunkSize)
+		if (++cntl == C4IDListChunkSize)
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
 	return C4ID::None;
@@ -286,21 +345,25 @@ C4ID C4IDList::GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_
 
 int32_t C4IDList::GetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index) const
 {
-	int32_t cindex=-1;
+	int32_t cindex = -1;
 	C4Def *cDef;
-	const C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
+	const C4IDListChunk *pQueryChunk = this;
+	size_t cnt = Count;
+	size_t cntl = 0;
 	while (cnt--)
 	{
-		if ((dwCategory==C4D_All) || ( (cDef=rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
+		if ((dwCategory == C4D_All) || ( (cDef = rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
 		{
 			cindex++;
-			if (cindex==index) return pQueryChunk->Count[cntl];
+			if (cindex == index)
+			{
+				return pQueryChunk->Count[cntl];
+			}
 		}
-		if (++cntl==C4IDListChunkSize)
+		if (++cntl == C4IDListChunkSize)
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
 	return 0;
@@ -308,21 +371,26 @@ int32_t C4IDList::GetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index) 
 
 bool C4IDList::SetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t iCount)
 {
-	int32_t cindex=-1;
+	int32_t cindex = -1;
 	C4Def *cDef;
-	C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
+	C4IDListChunk *pQueryChunk = this;
+	size_t cnt = Count;
+	size_t cntl = 0;
 	while (cnt--)
 	{
-		if ((dwCategory==C4D_All) || ( (cDef=rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
+		if ((dwCategory == C4D_All) || ( (cDef = rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
 		{
 			cindex++;
-			if (cindex==index) { pQueryChunk->Count[cntl]=iCount; return true; }
+			if (cindex == index)
+			{
+				pQueryChunk->Count[cntl] = iCount;
+				return true;
+			}
 		}
-		if (++cntl==C4IDListChunkSize)
+		if (++cntl == C4IDListChunkSize)
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
 	return false;
@@ -330,18 +398,21 @@ bool C4IDList::SetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index, int
 
 int32_t C4IDList::GetNumberOfIDs(C4DefList &rDefs, int32_t dwCategory) const
 {
-	int32_t idnum=0;
+	int32_t idnum = 0;
 	C4Def *cDef;
-	const C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
+	const C4IDListChunk *pQueryChunk = this;
+	size_t cnt = Count;
+	size_t cntl = 0;
 	while (cnt--)
 	{
-		if ((dwCategory==C4D_All) || ( (cDef=rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
-			idnum++;
-		if (++cntl==C4IDListChunkSize)
+		if ((dwCategory == C4D_All) || ( (cDef = rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			idnum++;
+		}
+		if (++cntl == C4IDListChunkSize)
+		{
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
 	return idnum;
@@ -350,15 +421,16 @@ int32_t C4IDList::GetNumberOfIDs(C4DefList &rDefs, int32_t dwCategory) const
 
 bool C4IDList::Add(C4IDList &rList)
 {
-	C4IDListChunk *pQueryChunk=&rList;
-	size_t cnt=rList.Count,cntl=0;
+	C4IDListChunk *pQueryChunk = &rList;
+	size_t cnt = rList.Count;
+	size_t cntl = 0;
 	while (cnt--)
 	{
 		IncreaseIDCount(pQueryChunk->id[cntl], true, pQueryChunk->Count[cntl]);
-		if (++cntl==C4IDListChunkSize)
+		if (++cntl == C4IDListChunkSize)
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
 	return true;
@@ -366,26 +438,27 @@ bool C4IDList::Add(C4IDList &rList)
 
 bool C4IDList::ConsolidateValids(C4DefList &rDefs, int32_t dwCategory)
 {
-	bool fIDsRemoved=false;
-	C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
+	bool fIDsRemoved = false;
+	C4IDListChunk *pQueryChunk = this;
+	size_t cnt = Count;
+	size_t cntl = 0;
 	C4Def* pDef;
 	while (cnt--)
 	{
 		// ID does not resolve to a valid def or category is specified and def does not match category
 		if (!(pDef = rDefs.ID2Def(pQueryChunk->id[cntl])) || (dwCategory && !(pDef->Category & dwCategory)))
 		{
-			// delete it
-			DeleteItem(Count-cnt-1);
-			// handle this list index again!
+			// Delete it
+			DeleteItem(Count - cnt - 1);
+			// Handle this list index again!
 			--cntl;
-			// something was done
-			fIDsRemoved=true;
+			// Something was done
+			fIDsRemoved = true;
 		}
-		if (++cntl==C4IDListChunkSize)
+		if (++cntl == C4IDListChunkSize)
 		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
+			pQueryChunk = pQueryChunk->pNext;
+			cntl = 0;
 		}
 	}
 	return fIDsRemoved;
@@ -398,19 +471,21 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 
 	int32_t sections = cgo.GetSectionCount();
 	int32_t idnum = GetNumberOfIDs(rDefs,dwCategory);
-	int32_t firstid = Clamp<int32_t>(iSelection-sections/2,0,std::max<int32_t>(idnum-sections,0));
+	int32_t firstid = Clamp<int32_t>(iSelection - sections / 2, 0, std::max<int32_t>(idnum - sections, 0));
 	int32_t idcount;
 	C4ID c_id;
 	C4Facet cgo2;
 	char buf[10];
-	for (int32_t cnt=0; (cnt<sections) && (c_id=GetID(rDefs,dwCategory,firstid+cnt,&idcount)); cnt++)
+	for (int32_t cnt = 0; (cnt<sections) && (c_id = GetID(rDefs, dwCategory, firstid + cnt, &idcount)); cnt++)
 	{
 		cgo2 = cgo.TruncateSection(iAlign);
-		rDefs.Draw(c_id,cgo2,(firstid+cnt==iSelection),0);
-		sprintf(buf,"%dx",idcount);
-		if (fCounts) pDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.GetLineHeight(),C4Draw::DEFAULT_MESSAGE_COLOR,ARight);
+		rDefs.Draw(c_id, cgo2, (firstid + cnt == iSelection), 0);
+		sprintf(buf, "%dx", idcount);
+		if (fCounts)
+		{
+			pDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface, cgo2.X + cgo2.Wdt - 1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.GetLineHeight(), C4Draw::DEFAULT_MESSAGE_COLOR, ARight);
+		}
 	}
-
 }
 
 void C4IDList::Default()
@@ -422,49 +497,69 @@ void C4IDList::Default()
 
 bool C4IDList::DeleteItem(size_t iIndex)
 {
-	// invalid index
-	if (!Inside<size_t>(iIndex+1,1u,Count)) return false;
-	// get chunk to delete of
-	size_t index=iIndex;
-	C4IDListChunk *pQueryChunk=this;
-	while (index>=C4IDListChunkSize) { pQueryChunk=pQueryChunk->pNext; index-=C4IDListChunkSize; }
-	// shift down all entries behind
-	size_t cnt=--Count-iIndex,cntl=index,cntl2=cntl;
-	C4IDListChunk *pNextChunk=pQueryChunk;
+	// Invalid index
+	if (!Inside<size_t>(iIndex + 1, 1u, Count))
+	{
+		return false;
+	}
+	// Get chunk to delete of
+	size_t index = iIndex;
+	C4IDListChunk *pQueryChunk = this;
+	while (index >= C4IDListChunkSize)
+	{
+		pQueryChunk = pQueryChunk->pNext;
+		index -= C4IDListChunkSize;
+	}
+	// Shift down all entries behind
+	size_t cnt = --Count - iIndex;
+	size_t cntl = index;
+	size_t cntl2 = cntl;
+	C4IDListChunk *pNextChunk = pQueryChunk;
 	while (cnt--)
 	{
-		// check for list overlap
-		if (++cntl2==C4IDListChunkSize)
+		// Check for list overlap
+		if (++cntl2 == C4IDListChunkSize)
 		{
-			pNextChunk=pQueryChunk->pNext;
-			cntl2=0;
+			pNextChunk = pQueryChunk->pNext;
+			cntl2 = 0;
 		}
-		// move down
-		pQueryChunk->id[cntl]=pNextChunk->id[cntl2];
-		pQueryChunk->Count[cntl]=pNextChunk->Count[cntl2];
-		// next item
-		pQueryChunk=pNextChunk; cntl=cntl2;
+		// Move down
+		pQueryChunk->id[cntl] = pNextChunk->id[cntl2];
+		pQueryChunk->Count[cntl] = pNextChunk->Count[cntl2];
+		// Next item
+		pQueryChunk = pNextChunk;
+		cntl = cntl2;
 	}
-	// done
+	// Done
 	return true;
 }
 
 bool C4IDList::operator==(const C4IDList& rhs) const
 {
-	// compare counts
-	if (Count != rhs.Count) return false;
-	// compare all chunks
+	// Compare counts
+	if (Count != rhs.Count)
+	{
+		return false;
+	}
+	// Compare all chunks
 	const C4IDListChunk *pChunk1 = this;
 	const C4IDListChunk *pChunk2 = &rhs;
-	int32_t cnt=Count;
+	int32_t cnt = Count;
 	while (pChunk1 && pChunk2)
 	{
-		if (memcmp(pChunk1->id, pChunk2->id, sizeof(C4ID)*std::min<int32_t>(cnt, C4IDListChunkSize)) ) return false;
-		if (memcmp(pChunk1->Count, pChunk2->Count, sizeof(int32_t)*std::min<int32_t>(cnt, C4IDListChunkSize)) ) return false;
-		pChunk1=pChunk1->pNext; pChunk2=pChunk2->pNext;
-		cnt-=C4IDListChunkSize;
+		if (memcmp(pChunk1->id, pChunk2->id, sizeof(C4ID)*std::min<int32_t>(cnt, C4IDListChunkSize)) )
+		{
+			return false;
+		}
+		if (memcmp(pChunk1->Count, pChunk2->Count, sizeof(int32_t)*std::min<int32_t>(cnt, C4IDListChunkSize)) )
+		{
+			return false;
+		}
+		pChunk1 = pChunk1->pNext;
+		pChunk2 = pChunk2->pNext;
+		cnt -= C4IDListChunkSize;
 	}
-	// equal!
+	// Equal!
 	return true;
 }
 
@@ -474,13 +569,20 @@ void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
 	bool deserializing = pComp->isDeserializer();
 	bool fNaming = pComp->hasNaming();
 	// Compiling: Clear existing data first
-	if (deserializing) Clear();
+	if (deserializing)
+	{
+		Clear();
+	}
 	// Start
 	C4IDListChunk *pChunk = this;
-	size_t iNr = 0, iCNr = 0;
+	size_t iNr = 0;
+	size_t iCNr = 0;
 	// Without naming: Compile Count
 	int32_t iCount = Count;
-	if (!fNaming) pComp->Value(iCount);
+	if (!fNaming)
+	{
+		pComp->Value(iCount);
+	}
 	Count = iCount;
 	// Read
 	for (;;)
@@ -489,7 +591,10 @@ void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
 		if (!deserializing)
 		{
 			// End of list?
-			if (iNr >= Count) break;
+			if (iNr >= Count)
+			{
+				break;
+			}
 			// End of chunk?
 			if (iCNr >= C4IDListChunkSize)
 			{
@@ -500,7 +605,10 @@ void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
 		else
 		{
 			// End of list?
-			if (!fNaming) if (iNr >= Count) break;
+			if (!fNaming && iNr >= Count)
+			{
+				break;
+			}
 			// End of chunk?
 			if (iCNr >= C4IDListChunkSize)
 			{
@@ -509,24 +617,38 @@ void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
 			}
 		}
 		// Separator (';')
-		if (iNr > 0) if (!pComp->Separator(StdCompiler::SEP_SEP2)) break;
+		if (iNr > 0 && !pComp->Separator(StdCompiler::SEP_SEP2))
+		{
+			break;
+		}
 		// ID
 		pComp->Value(mkDefaultAdapt(pChunk->id[iCNr], C4ID::None));
 		// ID not valid? Note that C4ID::None is invalid.
-		if (pChunk->id[iCNr] == C4ID::None) break;
+		if (pChunk->id[iCNr] == C4ID::None)
+		{
+			break;
+		}
 		// Value: Skip this part if requested
 		if (fValues)
 		{
 			// Separator ('=')
 			if (pComp->Separator(StdCompiler::SEP_SET))
+			{
 				// Count
 				pComp->Value(mkDefaultAdapt(pChunk->Count[iCNr], 0));
+			}
 		}
 		else if (deserializing)
+		{
 			pChunk->Count[iCNr] = 0;
+		}
 		// Goto next entry
-		iNr++; iCNr++;
+		iNr++;
+		iCNr++;
 		// Save back count
-		if (deserializing && fNaming) Count = iNr;
+		if (deserializing && fNaming)
+		{
+			Count = iNr;
+		}
 	}
 }
