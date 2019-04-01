@@ -2119,7 +2119,7 @@ static long FnGetObjectStatus(C4Object *Obj)
 static bool FnAdjustWalkRotation(C4Object *Obj, long iRangeX, long iRangeY, long iSpeed)
 {
 	// must be rotateable and attached to solid ground
-	if (!Obj->Def->Rotateable || ~(Obj->Action.t_attach & CNAT_Bottom) || Obj->Shape.AttachMat == MNone)
+	if (!Obj->Def->Rotateable || (~Obj->Action.t_attach & CNAT_Bottom) || Obj->Shape.AttachMat == MNone)
 	{
 		return false;
 	}
