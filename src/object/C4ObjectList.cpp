@@ -270,9 +270,9 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 						if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
 						{
 							if ((cLnk->Obj->GetPlane() == nObj->GetPlane())
-							&&  (cLnk->Obj->id == nObj->id)
+							&&  (cLnk->Obj->id == nObj->id))
 							{
-									break;
+								break;
 							}
 							cPrev = cLnk;
 						}
