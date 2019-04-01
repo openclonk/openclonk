@@ -110,7 +110,7 @@ static void FnDeathAnnounce(C4Object *Obj)
 
 static bool FnGrabContents(C4Object *Obj, C4Object *from)
 {
-	if (!from && Obj == from)
+	if (!from || Obj == from)
 	{
 		return false;
 	}
