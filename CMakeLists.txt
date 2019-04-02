@@ -736,6 +736,7 @@ set(OC_CLONK_SOURCES
 	src/object/C4ObjectContents.cpp
 	src/object/C4Object.cpp
 	src/object/C4Object.h
+	src/object/C4ObjectGraphics.cpp
 	src/object/C4ObjectInfo.cpp
 	src/object/C4ObjectInfo.h
 	src/object/C4ObjectInfoList.cpp
