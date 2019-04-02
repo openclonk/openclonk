@@ -37,7 +37,6 @@
 #include "platform/C4SoundSystem.h"
 #include "player/C4Player.h"
 #include "player/C4PlayerList.h"
-#include "player/C4RankSystem.h"
 #include "script/C4Effect.h"
 
 
@@ -663,20 +662,6 @@ void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 		pMeshInstance->SetCompletion(Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
 }
 
-void C4Object::DoExperience(int32_t change)
-{
-	const int32_t MaxExperience = 100000000;
-
-	if (!Info) return;
-
-	Info->Experience=Clamp<int32_t>(Info->Experience+change,0,MaxExperience);
-
-	// Promotion check
-	if (Info->Experience<MaxExperience)
-		if (Info->Experience>=::DefaultRanks.Experience(Info->Rank+1))
-			Promote(Info->Rank+1, false, false);
-}
-
 bool C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
 {
 
@@ -802,29 +787,6 @@ int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 			iValue = r.getInt();
 	}
 	return iValue;
-}
-
-bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
-{
-	if (!Info) return false;
-	// get rank system
-	C4Def *pUseDef = C4Id2Def(Info->id);
-	C4RankSystem *pRankSys;
-	if (pUseDef && pUseDef->pRankNames)
-		pRankSys = pUseDef->pRankNames;
-	else
-		pRankSys = &::DefaultRanks;
-	// always promote info
-	Info->Promote(torank,*pRankSys, fForceRankName);
-	// silent update?
-	if (!pRankSys->GetRankName(torank,false)) return false;
-	GameMsgObject(FormatString(LoadResStr("IDS_OBJ_PROMOTION"),GetName (),Info->sRankName.getData()).getData(),this);
-
-	// call to object
-	Call(PSF_Promotion);
-
-	StartSoundEffect("UI::Trumpet",false,100,this);
-	return true;
 }
 
 void C4Object::ClearPointers(C4Object *pObj)
