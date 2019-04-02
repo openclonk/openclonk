@@ -733,6 +733,7 @@ set(OC_CLONK_SOURCES
 	src/object/C4MeshDenumerator.h
 	src/object/C4ObjectCom.cpp
 	src/object/C4ObjectCom.h
+	src/object/C4ObjectContents.cpp
 	src/object/C4Object.cpp
 	src/object/C4Object.h
 	src/object/C4ObjectInfo.cpp
@@ -744,8 +745,8 @@ set(OC_CLONK_SOURCES
 	src/object/C4ObjectMenu.cpp
 	src/object/C4ObjectMenu.h
 	src/object/C4ObjectOCF.cpp
-	src/object/C4ObjectVisibility.cpp
 	src/object/C4ObjectScript.cpp
+	src/object/C4ObjectVisibility.cpp
 	src/platform/C4App.cpp
 	src/platform/C4App.h
 	src/platform/C4AppWin32Impl.h
