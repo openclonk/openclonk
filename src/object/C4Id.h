@@ -34,7 +34,7 @@ private:
 	static NamesList names;
 	void assign(const std::string &s);
 	template<size_t N>
-	explicit C4ID(const char (&s)[N]) { assign(s); } // TODO: v is not assigned
+	explicit C4ID(const char (&s)[N]) { assign(s); } // @suppress("Class members should be properly initialized"): The call to assign() initializes 'v'
 public:
 	static const C4ID None; // Invalid ID
 	DEPRECATED static const C4ID Flag;
