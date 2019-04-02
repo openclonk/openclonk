@@ -374,10 +374,7 @@ bool C4ObjectList::Remove(C4Object *obj)
 	}
 
 #if defined(_DEBUG)
-	if (GetLink(obj))
-	{
-		BREAKPOINT_HERE;
-	}
+	assert(!GetLink(obj));
 #endif
 
 	return true;
