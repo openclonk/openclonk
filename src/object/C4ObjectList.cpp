@@ -215,27 +215,27 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 			{
 				cPrev = nullptr;
 				cLnk = First;
-				while(cLnk && (!cLnk->Obj->Status || cLnk->Obj->Unsorted))
+				while (cLnk && (!cLnk->Obj->Status || cLnk->Obj->Unsorted))
 				{
 					cLnk = cLnk->Next;
 				}
 
 #ifndef _DEBUG
-				if(cLnk)
+				if (cLnk)
 #endif
 				{
 					C4ObjectLink* cLnk2;
-					for(cLnk2 = pLstSorted->First; cLnk2; cLnk2 = cLnk2->Next)
+					for (cLnk2 = pLstSorted->First; cLnk2; cLnk2 = cLnk2->Next)
 					{
-						if(cLnk2->Obj->Status && !cLnk2->Obj->Unsorted)
+						if (cLnk2->Obj->Status && !cLnk2->Obj->Unsorted)
 						{
-							if(cLnk2->Obj == nObj)
+							if (cLnk2->Obj == nObj)
 							{
 								assert(!cLnk || cLnk->Obj != nObj);
 								break;
 							}
 
-							if(cLnk && cLnk2->Obj == cLnk->Obj)
+							if (cLnk && cLnk2->Obj == cLnk->Obj)
 							{
 								cPrev = cLnk;
 								cLnk = cLnk->Next;
