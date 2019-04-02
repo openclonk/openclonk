@@ -733,6 +733,7 @@ set(OC_CLONK_SOURCES
 	src/object/C4MeshDenumerator.h
 	src/object/C4ObjectCom.cpp
 	src/object/C4ObjectCom.h
+	src/object/C4ObjectCommand.cpp
 	src/object/C4ObjectContents.cpp
 	src/object/C4Object.cpp
 	src/object/C4Object.h
