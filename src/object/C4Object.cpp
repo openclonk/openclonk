@@ -22,7 +22,6 @@
 #include "object/C4Object.h"
 
 #include "control/C4Record.h"
-#include "game/C4Application.h"
 #include "game/C4GraphicsSystem.h"
 #include "game/C4Physics.h"
 #include "game/C4Viewport.h"
@@ -34,7 +33,7 @@
 #include "landscape/C4Particles.h"
 #include "landscape/C4SolidMask.h"
 #include "landscape/fow/C4FoW.h"
-#include "lib/C4Random.h"
+#include "lib/StdColors.h" // This was imported via C4GameMessage.h, but should be listed extra imo
 #include "object/C4Command.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
@@ -2231,14 +2230,6 @@ bool C4Object::AssignInfo()
 	return false;
 }
 
-bool C4Object::AssignLightRange()
-{
-	if (!lightRange && !lightFadeoutRange) return true;
-
-	UpdateLight();
-	return true;
-}
-
 void C4Object::ClearInfo(C4ObjectInfo *pInfo)
 {
 	if (Info==pInfo)
@@ -3830,103 +3821,6 @@ bool C4Object::SetOwner(int32_t iOwner)
 	Call(PSF_OnOwnerChanged, &C4AulParSet(Owner, iOldOwner));
 	// done
 	return true;
-}
-
-
-bool C4Object::SetLightRange(int32_t iToRange, int32_t iToFadeoutRange)
-{
-	// set new range
-	lightRange = iToRange;
-	lightFadeoutRange = iToFadeoutRange;
-	// resort into player's FoW-repeller-list
-	UpdateLight();
-	// success
-	return true;
-}
-
-
-bool C4Object::SetLightColor(uint32_t iValue)
-{
-	// set new color value
-	lightColor = iValue;
-	// resort into player's FoW-repeller-list
-	UpdateLight();
-	// success
-	return true;
-}
-
-
-void C4Object::UpdateLight()
-{
-	if (Landscape.HasFoW()) Landscape.GetFoW()->Add(this);
-}
-
-void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY, int32_t player)
-{
-	// target pos (parallax)
-	float offX, offY, newzoom;
-	GetDrawPosition(cgo, iX, iY, cgo.Zoom, offX, offY, newzoom);
-	int32_t audible_at_pos = Clamp(100 - 100 * Distance(cgo.X + cgo.Wdt / 2, cgo.Y + cgo.Hgt / 2, offX, offY) / 700, 0, 100);
-	if (audible_at_pos > Audible)
-	{
-		Audible = audible_at_pos;
-		AudiblePan = Clamp<int>(200 * (offX - cgo.X - (cgo.Wdt / 2)) / cgo.Wdt, -100, 100);
-		AudiblePlayer = player;
-	}
-}
-
-bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay) const
-{
-	bool fDraw;
-	C4Value vis;
-	if (!GetProperty(P_Visibility, &vis))
-		return true;
-
-	int32_t Visibility;
-	C4ValueArray *parameters = vis.getArray();
-	if (parameters && parameters->GetSize())
-	{
-		Visibility = parameters->GetItem(0).getInt();
-	}
-	else
-	{
-		Visibility = vis.getInt();
-	}
-	// check layer
-	if (Layer && Layer != this && !fAsOverlay)
-	{
-		fDraw = Layer->IsVisible(iForPlr, false);
-		if (Layer->GetPropertyInt(P_Visibility) & VIS_LayerToggle) fDraw = !fDraw;
-		if (!fDraw) return false;
-	}
-	// no flags set?
-	if (!Visibility) return true;
-	// check overlay
-	if (Visibility & VIS_OverlayOnly)
-	{
-		if (!fAsOverlay) return false;
-		if (Visibility == VIS_OverlayOnly) return true;
-	}
-	// editor visibility
-	if (::Application.isEditor)
-	{
-		if (Visibility & VIS_Editor) return true;
-	}
-	// check visibility
-	fDraw=false;
-	if (Visibility & VIS_Owner) fDraw = fDraw || (iForPlr==Owner);
-	if (iForPlr!=NO_OWNER)
-	{
-		// check all
-		if (Visibility & VIS_Allies)  fDraw = fDraw || (iForPlr!=Owner && !Hostile(iForPlr, Owner));
-		if (Visibility & VIS_Enemies) fDraw = fDraw || (iForPlr!=Owner && Hostile(iForPlr, Owner));
-		if (parameters)
-		{
-			if (Visibility & VIS_Select)  fDraw = fDraw || parameters->GetItem(1+iForPlr).getBool();
-		}
-	}
-	else fDraw = fDraw || (Visibility & VIS_God);
-	return fDraw;
 }
 
 bool C4Object::IsInLiquidCheck() const

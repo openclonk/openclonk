@@ -18,13 +18,13 @@
 /* Object Character Flag logic */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "object/C4Object.h"
 
 #include "control/C4Record.h"
 #include "game/C4Physics.h"
 #include "landscape/C4Landscape.h"
 #include "object/C4Def.h"
-#include "object/C4Object.h"
-
 
 
 void C4Object::SetOCF()

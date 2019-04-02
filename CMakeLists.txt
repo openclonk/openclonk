@@ -744,6 +744,7 @@ set(OC_CLONK_SOURCES
 	src/object/C4ObjectMenu.cpp
 	src/object/C4ObjectMenu.h
 	src/object/C4ObjectOCF.cpp
+	src/object/C4ObjectVisibility.cpp
 	src/object/C4ObjectScript.cpp
 	src/platform/C4App.cpp
 	src/platform/C4App.h
