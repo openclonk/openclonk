@@ -23,6 +23,7 @@
 
 #include "object/C4Command.h"
 #include "object/C4Def.h"
+#include "object/C4ObjectCom.h"
 
 
 void C4Object::ClearCommands()
@@ -158,4 +159,45 @@ bool C4Object::ExecuteCommand()
 	while (Command && Command->Finished) ClearCommand(Command);
 	// Done
 	return true;
+}
+
+bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject) // Called by GetTryEnter
+{
+	// get unused object
+	C4Object *pUnusedObject;
+	C4AulFunc *pFnObj2Drop = GetFunc(PSF_GetObject2Drop);
+	if (pFnObj2Drop)
+		pUnusedObject = pFnObj2Drop->Exec(this, &C4AulParSet(pToMakeRoomForObject)).getObj();
+	else
+	{
+		// is there any unused object to put away?
+		if (!Contents.GetLastObject()) return false;
+		// defaultly, it's the last object in the list
+		// (contents list cannot have invalid status-objects)
+		pUnusedObject = Contents.GetLastObject();
+	}
+	// no object to put away? fail
+	if (!pUnusedObject) return false;
+	// grabbing something?
+	bool fPushing = (GetProcedure()==DFA_PUSH);
+	if (fPushing)
+		// try to put it in there
+		if (ObjectComPut(this, Action.Target, pUnusedObject))
+			return true;
+	// in container? put in there
+	if (Contained)
+	{
+		// try to put it in directly
+		// note that this works too, if an object is grabbed inside the container
+		if (ObjectComPut(this, Contained, pUnusedObject))
+			return true;
+		// now putting didn't work - drop it outside
+		AddCommand(C4CMD_Drop, pUnusedObject);
+		AddCommand(C4CMD_Exit);
+		return true;
+	}
+	else
+		// if uncontained, simply try to drop it
+		// if this doesn't work, it won't ever
+		return !!ObjectComDrop(this, pUnusedObject);
 }

@@ -31,16 +31,13 @@
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
 #include "object/C4GameObjects.h"
-#include "object/C4MeshAnimation.h"
 #include "object/C4MeshDenumerator.h"
-#include "object/C4ObjectCom.h"
 #include "object/C4ObjectInfo.h"
 #include "object/C4ObjectMenu.h"
 #include "platform/C4SoundSystem.h"
 #include "player/C4Player.h"
 #include "player/C4PlayerList.h"
 #include "player/C4RankSystem.h"
-#include "script/C4AulExec.h"
 #include "script/C4Effect.h"
 
 
@@ -870,16 +867,6 @@ void C4Object::ClearPointers(C4Object *pObj)
 	}
 }
 
-bool C4Object::SetPhase(int32_t iPhase)
-{
-	C4PropList* pActionDef = GetAction();
-	if (!pActionDef) return false;
-	const int32_t length = pActionDef->GetPropertyInt(P_Length);
-	Action.Phase=Clamp<int32_t>(iPhase,0,length);
-	Action.PhaseDelay = 0;
-	return true;
-}
-
 void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	bool deserializing = pComp->isDeserializer();
@@ -1224,47 +1211,6 @@ void C4Object::UnSelect()
 {
 	// do callback
 	Call(PSF_CrewSelection, &C4AulParSet(true));
-}
-
-bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)
-{
-	// get unused object
-	C4Object *pUnusedObject;
-	C4AulFunc *pFnObj2Drop = GetFunc(PSF_GetObject2Drop);
-	if (pFnObj2Drop)
-		pUnusedObject = pFnObj2Drop->Exec(this, &C4AulParSet(pToMakeRoomForObject)).getObj();
-	else
-	{
-		// is there any unused object to put away?
-		if (!Contents.GetLastObject()) return false;
-		// defaultly, it's the last object in the list
-		// (contents list cannot have invalid status-objects)
-		pUnusedObject = Contents.GetLastObject();
-	}
-	// no object to put away? fail
-	if (!pUnusedObject) return false;
-	// grabbing something?
-	bool fPushing = (GetProcedure()==DFA_PUSH);
-	if (fPushing)
-		// try to put it in there
-		if (ObjectComPut(this, Action.Target, pUnusedObject))
-			return true;
-	// in container? put in there
-	if (Contained)
-	{
-		// try to put it in directly
-		// note that this works too, if an object is grabbed inside the container
-		if (ObjectComPut(this, Contained, pUnusedObject))
-			return true;
-		// now putting didn't work - drop it outside
-		AddCommand(C4CMD_Drop, pUnusedObject);
-		AddCommand(C4CMD_Exit);
-		return true;
-	}
-	else
-		// if uncontained, simply try to drop it
-		// if this doesn't work, it won't ever
-		return !!ObjectComDrop(this, pUnusedObject);
 }
 
 bool C4Object::StatusActivate()

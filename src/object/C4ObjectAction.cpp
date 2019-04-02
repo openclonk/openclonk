@@ -446,6 +446,16 @@ void C4Object::SetDir(int32_t iDir)
 		Action.DrawDir=iDir;
 }
 
+bool C4Object::SetPhase(int32_t iPhase)
+{
+	C4PropList* pActionDef = GetAction();
+	if (!pActionDef) return false;
+	const int32_t length = pActionDef->GetPropertyInt(P_Length);
+	Action.Phase=Clamp<int32_t>(iPhase,0,length);
+	Action.PhaseDelay = 0;
+	return true;
+}
+
 int32_t C4Object::GetProcedure() const
 {
 	C4PropList* pActionDef = GetAction();
