@@ -22,54 +22,51 @@
 #include "object/C4ObjectList.h"
 #include "object/C4Sector.h"
 
-// main object list class
+// Main object list class
 class C4GameObjects : public C4NotifyingObjectList
 {
 public:
 	C4GameObjects(); // constructor
 	~C4GameObjects() override; // destructor
 	void Default() override;
-	void Init(int32_t iWidth, int32_t iHeight);
+	void Init(int32_t width, int32_t height);
 	void Clear(bool fClearInactive); // clear objects
-	// don't use default parameters so we get a correct vtbl entry
-	// don't clear internal objects, because they should not be cleared on section load
+	// Don't use default parameters so we get a correct vtbl entry
+	// Don't clear internal objects, because they should not be cleared on section load
 	void Clear() override { Clear(false); }
 
 private:
-	uint32_t LastUsedMarker; // last used value for C4Object::Marker
+	uint32_t LastUsedMarker; // Last used value for C4Object::Marker
 
 public:
-	C4LSectors Sectors; // section object lists
-	C4ObjectList InactiveObjects; // inactive objects (Status=2)
-	C4ObjectList ForeObjects; // objects in foreground (C4D_Foreground)
+	C4LSectors Sectors; // Section object lists
+	C4ObjectList InactiveObjects; // Inactive objects (Status=2)
+	C4ObjectList ForeObjects; // Objects in foreground (C4D_Foreground)
 
 	using C4ObjectList::Add;
-	bool Add(C4Object *nObj); // add object
-	bool Remove(C4Object *pObj) override; // clear pointers to object
+	bool Add(C4Object *game_object); // Add object
+	bool Remove(C4Object *game_object) override; // Clear pointers to object
 
-	C4ObjectList &ObjectsAt(int ix, int iy); // get object list for map pos
-
-	void CrossCheck(); // various collision-checks
-	C4Object *AtObject(int ctx, int cty, DWORD &ocf, C4Object *exclude=nullptr); // find object at ctx/cty
-	void Synchronize(); // network synchronization
+	void CrossCheck(); // Various collision-checks
+	void Synchronize(); // Network synchronization
 	void UpdateSolidMasks();
 
-	C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
-	C4Object* SafeObjectPointer(int32_t iNumber);
+	C4Object *ObjectPointer(int32_t object_number); // Object pointer by number
+	C4Object* SafeObjectPointer(int32_t object_number);
 
-	int PostLoad(bool fKeepInactive, C4ValueNumbers *);
+	int PostLoad(bool keep_inactive_objects, C4ValueNumbers *);
 	void Denumerate(C4ValueNumbers *);
 
-	void UpdateScriptPointers(); // update pointers to C4AulScript *
-	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest);  // call function in all goals/rules/environment objects
+	void UpdateScriptPointers(); // Update pointers to C4AulScript *
+	C4Value GRBroadcast(const char *function_name, C4AulParSet *parameters, bool pass_error, bool reject_test);  // Call function in all goals/rules/environment objects
 
-	void UpdatePos(C4Object *pObj);
-	void UpdatePosResort(C4Object *pObj);
+	void UpdatePos(C4Object *game_object);
+	void UpdatePosResort(C4Object *game_object);
 
 	void FixObjectOrder(); // Called after loading: Resort any objects that are out of order
-	void ResortUnsorted(); // resort any objects with unsorted-flag set into lists
+	void ResortUnsorted(); // Resort any objects with unsorted-flag set into lists
 
-	void DeleteObjects(bool fDeleteInactive); // delete all objects and links
+	void DeleteObjects(bool delete_inactive_objects); // Delete all objects and links
 
 	bool ValidateOwners() override;
 	bool AssignInfo() override;
