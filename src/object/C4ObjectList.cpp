@@ -783,22 +783,9 @@ void C4ObjectList::Sort()
 
 void C4ObjectList::RemoveLink(C4ObjectLink *pLnk)
 {
-	if (pLnk->Prev)
-	{
-		pLnk->Prev->Next = pLnk->Next;
-	}
-	else
-	{
-		First = pLnk->Next;
-	}
-	if (pLnk->Next)
-	{
-		pLnk->Next->Prev = pLnk->Prev;
-	}
-	else
-	{
-		Last = pLnk->Prev;
-	}
+	// Table format is OK here
+	if (pLnk->Prev) { pLnk->Prev->Next = pLnk->Next; }  else  { First = pLnk->Next; }
+	if (pLnk->Next) { pLnk->Next->Prev = pLnk->Prev; }  else  {  Last = pLnk->Prev; }
 }
 
 void C4ObjectList::InsertLink(C4ObjectLink *pLnk, C4ObjectLink *pAfter)
