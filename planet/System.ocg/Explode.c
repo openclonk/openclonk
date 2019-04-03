@@ -408,6 +408,8 @@ global func FxShakeViewportAdd(object target, effect e, string new_name, int new
 
 global func FxShakeViewportTimer(object target, effect e, int time)
 {
+	var maxShakeStrength = 500;
+
 	// shake for all players
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
@@ -419,6 +421,11 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 		var totalShakeStrength = 0;
 		for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
 		{
+			// ignore shakers if the offset is too high already
+			if (totalShakeStrength > maxShakeStrength)
+			{
+				continue;
+			}
 			var shaker = e.shakers[shakerIndex];
 			var shakerTime = time - shaker.time;
 
@@ -430,6 +437,8 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 			// calculate total shake strength by adding up all shake positions in the player's vicinity
 			totalShakeStrength += level / Max(1,shakerTime*2/3) - shakerTime**2 / 400;
 		}
+		// limit the strength, just to be sure
+		totalShakeStrength = Min(maxShakeStrength, totalShakeStrength);
 		SetViewOffset(plr, Sin(time * 100, totalShakeStrength), Cos(time * 100, totalShakeStrength));
 	}
 
@@ -446,6 +455,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 	// no shakers left: remove this effect
 	if(GetLength(e.shakers) == 0)
 	{
+		Log("Max recored shake %d", e.MaxRecordedShake);
 		return -1;
 	}
 }
