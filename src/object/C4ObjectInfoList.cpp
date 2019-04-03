@@ -105,12 +105,17 @@ bool C4ObjectInfoList::Add(C4ObjectInfo *pInfo)
 
 void C4ObjectInfoList::MakeValidName(char *sName)
 {
-	char tstr[_MAX_PATH];
+	// Append a number to the name if it already exists, starting at 2
+
+	// 1 space, up to 10 characters for integer max size,
+	// 1 terminating zero, 1 extra space for overflow (negative value) = 13 characters
+	char number_suffix[13];
 	size_t namelen = SLen(sName);
-	for (int32_t iname = 2; NameExists(sName); iname++)
+	for (int32_t identifier = 2; NameExists(sName); identifier++)
 	{
-		sprintf(tstr, " %d", iname);
-		SCopy(tstr, sName + std::min(namelen, C4MaxName - SLen(tstr)));
+		assert(identifier > 1);
+		sprintf(number_suffix, " %d", identifier);
+		SCopy(number_suffix, sName + std::min(namelen, C4MaxName - SLen(number_suffix)));
 	}
 }
 
