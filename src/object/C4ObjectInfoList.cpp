@@ -113,7 +113,6 @@ void C4ObjectInfoList::MakeValidName(char *sName)
 	size_t namelen = SLen(sName);
 	for (int32_t identifier = 2; NameExists(sName); identifier++)
 	{
-		assert(identifier > 1);
 		sprintf(number_suffix, " %d", identifier);
 		SCopy(number_suffix, sName + std::min(namelen, C4MaxName - SLen(number_suffix)));
 	}
