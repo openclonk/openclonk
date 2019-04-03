@@ -455,7 +455,6 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 	// no shakers left: remove this effect
 	if(GetLength(e.shakers) == 0)
 	{
-		Log("Max recored shake %d", e.MaxRecordedShake);
 		return -1;
 	}
 }
