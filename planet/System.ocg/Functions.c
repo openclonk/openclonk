@@ -63,7 +63,7 @@ global func AddFunction(func call, bool override)
 // documented in /docs/sdk/script/fn
 global func AddFunctions(array functions, bool override)
 {
-	AssertNotNil(call);
+	AssertNotNil(functions);
 	AssertNotEmpty(functions);
 
 	for (var call in functions)
