@@ -13,7 +13,7 @@
         <param>
           <type>string</type>
           <name>message</name>
-          <desc>Waring message to be displayed, gets the prefix <code>WARNING: </code> from the function.</desc>
+          <desc>Warning message to be displayed, gets the prefix <code>WARNING: </code> from the function.</desc>
           <optional />
         </param>
         <param>
