@@ -14,6 +14,6 @@
  */
 global func Warning(string message)
 {
-	DebugLog(Format("WARNING: %s", Format(message, ...)));
+	DebugLog("WARNING: %s", Format(message, ...));
 	LogCallStack();
 }
