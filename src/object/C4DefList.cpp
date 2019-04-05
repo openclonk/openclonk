@@ -140,7 +140,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 		}
 
 	// load additional system scripts for def groups only
-	if (!fPrimaryDef && fLoadSysGroups) Game.LoadAdditionalSystemGroup(hGroup);
+	if (fLoadSysGroups) Game.LoadAdditionalSystemGroup(hGroup);
 
 	if (fThisSearchMessage) { LogF(LoadResStr("IDS_PRC_DEFSLOADED"),iResult); }
 
