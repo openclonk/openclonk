@@ -29,27 +29,29 @@ C4Action::~C4Action() = default;
 
 void C4Action::Default()
 {
-	Dir=DIR_None;
-	DrawDir=Dir;
-	ComDir=COMD_Stop;
-	Time=0;
-	Data=0;
-	Target=Target2=nullptr;
-	Phase=PhaseDelay=0;
+	Dir = DIR_None;
+	DrawDir = Dir;
+	ComDir = COMD_Stop;
+	Time = 0;
+	Data = 0;
+	Target = nullptr;
+	Target2 = nullptr;
+	Phase = 0;
+	PhaseDelay = 0;
 	Facet.Default();
-	FacetX=FacetY=0;
-	t_attach=CNAT_None;
+	FacetX = 0;
+	FacetY = 0;
+	t_attach = CNAT_None;
 	Animation = nullptr;
 }
 
-void C4Action::CompileFunc(StdCompiler *pComp)
+void C4Action::CompileFunc(StdCompiler *comp)
 {
 	// Note: Compiled directly into "Object"-categories, so beware of name clashes (see C4Object::CompileFunc)
-	pComp->Value(mkNamingAdapt( Dir,                      "Dir",                DIR_None          ));
-	pComp->Value(mkNamingAdapt( ComDir,                   "ComDir",             COMD_Stop         ));
-	pComp->Value(mkNamingAdapt( Time,                     "ActionTime",         0                 ));
-	pComp->Value(mkNamingAdapt( Data,                     "ActionData",         0                 ));
-	pComp->Value(mkNamingAdapt( Phase,                    "Phase",              0                 ));
-	pComp->Value(mkNamingAdapt( PhaseDelay,               "PhaseDelay",         0                 ));
+	comp->Value(mkNamingAdapt( Dir,                      "Dir",                DIR_None          ));
+	comp->Value(mkNamingAdapt( ComDir,                   "ComDir",             COMD_Stop         ));
+	comp->Value(mkNamingAdapt( Time,                     "ActionTime",         0                 ));
+	comp->Value(mkNamingAdapt( Data,                     "ActionData",         0                 ));
+	comp->Value(mkNamingAdapt( Phase,                    "Phase",              0                 ));
+	comp->Value(mkNamingAdapt( PhaseDelay,               "PhaseDelay",         0                 ));
 }
-
