@@ -37,10 +37,7 @@ private:
 	explicit C4ID(const char (&s)[N]) { assign(s); } // @suppress("Class members should be properly initialized"): The call to assign() initializes 'v'
 public:
 	static const C4ID None; // Invalid ID
-	DEPRECATED static const C4ID Flag;
-	DEPRECATED static const C4ID Conkit; // Construction kit
 	static const C4ID Clonk;
-	DEPRECATED static const C4ID Melee;
 	static const C4ID Bubble;
 	static const C4ID EditorBase;
 
