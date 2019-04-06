@@ -24,6 +24,11 @@
       <dd>
         <text>The object script. See <emlink href="definition/script.html">object scripts</emlink> and <emlink href="lang.html">localization</emlink>.</text>
       </dd>
+      <dt id="Systemocg"><img height="16" src="../../images/icon_system.png" width="16"/>System.ocg</dt>
+      <dd>
+		<text>Definitions can contain a system folder with any number of script files (*.c). These can define or modify global functions, or append to loaded definitions.</text>
+		<text>Scripts for system folders are only loaded from definition groups (i.e. *.ocd folders without DefCore.txt) before OC 9.0.</text>
+      </dd>
 	</dl>
 	<h id="RasterGraphics">Raster Graphics</h>
 	<dl>
@@ -89,4 +94,5 @@
   </part>
   <author>Sven2</author><date>2002-04</date>
   <author>matthes</author><date>2004-06</date>
+  <author>Marky</author><date>2019-04</date>
 </doc>

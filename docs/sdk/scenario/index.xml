@@ -94,6 +94,10 @@ US:Attack of the Killer Wipfs</code>
       <dd>
         <text>Scenarios can overload individual entries of the global Graphics.ocg group as well as add new content like a sky background image or loader graphics (*.png or *.jpg). Sky graphics should either be tileable or big enough that it won't even tile if the player zooms out very far.  Loader screen are displayed while the scenario is loading. If multiple files are present (Loader1.png, Loader2.png, Loader3.png...), one is selected randomly. You can optionally specify which loader to use in Scenario.txt. Loader image files located in parent scenario folders are also used.See <a href="#UeberladungenOCS">overloading rules</a>.</text>
       </dd>
+      <dt id="Systemocg"><img height="16" src="../../images/icon_system.png" width="16"/>System.ocg</dt>
+      <dd>
+		<text>Scenarios can contain any number of script files (*.c). These can define or modify global functions, or append to loaded definitions. See <a href="#UeberladungenOCS">overloading rules</a>.</text>
+      </dd>
       <dt id="Namestxt"><img height="16" src="../../images/icon_text.png" width="16"/>Names.txt</dt>
       <dd>
         <text>These names are used for clonks created in this scenario.</text>
@@ -125,4 +129,5 @@ US:Attack of the Killer Wipfs</code>
   </part>
   <author>Sven2</author><date>2002-04</date>
   <author>matthes</author><date>2004-06</date>
+  <author>Marky</author><date>2019-04</date>
 </doc>
