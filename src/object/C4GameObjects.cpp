@@ -93,14 +93,12 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	// Reverse area check: Checks for all <ball> at <goal>
 	// Using a sports metaphor here, because that is easier to visualize when reading the code
 
-	// Only those objects that have the required OCFs will be checked for collision/collection
-	DWORD goal_required_ocf = OCF_None;
-	goal_required_ocf |= OCF_Collection;
-	goal_required_ocf |= OCF_Alive;
+	// Only those objects that have one of the required OCFs will be checked for collision/collection.
+	// This lets us filter the objects early, so that the loop does not get too large.
+	DWORD goal_required_ocf = OCF_None | OCF_Collection | OCF_Alive;
 
-	// Only those objects that have the required OCFs can cause a collision/collection
-	DWORD ball_required_ocf = OCF_None;
-	ball_required_ocf |= OCF_HitSpeed2;
+	// Only those objects that have one of the required OCFs can cause a collision/collection
+	DWORD ball_required_ocf = OCF_None | OCF_HitSpeed2;
 	// Fewer checks for collection
 	if (!::Game.iTick3)
 	{
@@ -120,26 +118,32 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 					if ((ball != goal)                 // Ball should not hit itself,
 					&&  ball->Status                   // it cannot hit if it was deleted,
 					&& !ball->Contained                // it cannot hit if it is contained,
-					&& (ball->OCF & ball_required_ocf) // it must have the required OFC,
+					&& (ball->OCF & ball_required_ocf) // it must have either of the required OFCs,
 					&& (goal->Layer == ball->Layer)    // and must be in the correct layer
 					// TODO: Instead of a custom check, use C4Rect::Contains with the correct coordinates
 					&&  Inside<int32_t>(ball->GetX() - (goal->GetX() + goal->Shape.x), 0, goal->Shape.Wdt - 1)
 					&&  Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Shape.y), 0, goal->Shape.Hgt - 1))
 					{
-						// Handle collision only once
+						// Handle cross check only once
 						if (ball->Marker == Marker)
 						{
 							continue;
 						}
 						ball->Marker = Marker;
-						// Only hit if <goal> is alive and <ball> is an object
-						if ((goal->OCF & OCF_Alive) && (ball->Category & C4D_Object))
+
+						// Collision check
+
+						// Note: the layer check was already done further above.
+
+						if ((goal->OCF & OCF_Alive)        // <goal> must be alive,
+						&&  (ball->OCF & OCF_HitSpeed2)    // <ball> is fast enough (otherwise a fast <goal> will collide when passing a non-moving ball)
+						&&  (ball->Category & C4D_Object)) // <ball> is an object
 						{
 							C4Real relative_xdir = ball->xdir - goal->xdir;
 							C4Real relative_ydir = ball->ydir - goal->ydir;
 							C4Real hit_speed = relative_xdir * relative_xdir + relative_ydir * relative_ydir;
-							// Only hit if <ball>'s speed and relative speeds are larger than HitSpeed2
-							if ((ball->OCF & OCF_HitSpeed2) &&  (hit_speed > HitSpeed2) &&  !goal->Call(PSF_QueryCatchBlow, &C4AulParSet(ball)))
+							// Only hit if the relative speed is larger than HitSpeed2, and the <goal> does not prevent getting hit
+							if ((hit_speed > HitSpeed2) &&  !goal->Call(PSF_QueryCatchBlow, &C4AulParSet(ball)))
 							{
 								int32_t hit_energy = fixtoi(hit_speed * ball->Mass / 5);
 								// Hit energy reduced to 1/3rd, but do not drop to zero because of this division.
@@ -170,18 +174,21 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 								{
 									goto check_next_goal;
 								}
+								// Skip collection check
 								continue;
 							}
 						}
-						// Collection
-						// Note: the layer check was already done further above
-						// This is confusing, though, because the OCF_Collection and OCF_Carryable
-						// are part of the OCF_requirement further above, and this right here requires
+
+						// Collection check
+
+						// Note: the layer check was already done further above.
+						// This is confusing, because this requires
 						// the ball to be both inside the goal shape AND the goal collection area, so
 						// collection areas that go further than the goal shape are useless, as well
 						// as collection areas that are entirely outside of the goal shape.
-						if ((goal->OCF & OCF_Collection)
-						&&  (ball->OCF & OCF_Carryable)
+
+						if ((goal->OCF & OCF_Collection) // <goal> has a collection area?
+						&&  (ball->OCF & OCF_Carryable)  // <ball> can be collected?
 						// TODO: Instead of a custom check, use C4Rect::Contains with the correct coordinates
 						&&  Inside<int32_t>(ball->GetX() - (goal->GetX() + goal->Def->Collection.x), 0, goal->Def->Collection.Wdt - 1)
 						&&  Inside<int32_t>(ball->GetY() - (goal->GetY() + goal->Def->Collection.y), 0, goal->Def->Collection.Hgt - 1))
