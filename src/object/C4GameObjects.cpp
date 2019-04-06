@@ -139,7 +139,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 							C4Real relative_ydir = ball->ydir - goal->ydir;
 							C4Real hit_speed = relative_xdir * relative_xdir + relative_ydir * relative_ydir;
 							// Only hit if <ball>'s speed and relative speeds are larger than HitSpeed2
-							if ((hit_speed > HitSpeed2) && !goal->Call(PSF_QueryCatchBlow, &C4AulParSet(ball)))
+							if ((ball->OCF & OCF_HitSpeed2) &&  (hit_speed > HitSpeed2) &&  !goal->Call(PSF_QueryCatchBlow, &C4AulParSet(ball)))
 							{
 								int32_t hit_energy = fixtoi(hit_speed * ball->Mass / 5);
 								// Hit energy reduced to 1/3rd, but do not drop to zero because of this division.
