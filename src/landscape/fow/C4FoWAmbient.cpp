@@ -17,6 +17,7 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "landscape/fow/C4FoWAmbient.h"
 #include "landscape/fow/C4FoW.h"
+#include "lib/StdColors.h"
 #include "graphics/C4Draw.h"
 
 namespace
@@ -215,4 +216,21 @@ void C4FoWAmbient::GetFragTransform(const FLOAT_RECT& vpRect, const C4Rect& clip
 
 	// Extract matrix
 	trans.Get2x3(ambientTransform);
+}
+
+void C4FoWAmbient::SetColor(long color)
+{
+	Color = color;
+	colorR = GetRedValue(color) / 255.0f;
+	colorG = GetGreenValue(color) / 255.0f;
+	colorB = GetBlueValue(color) / 255.0f;
+
+	float min = std::min(colorR, std::min(colorG, colorB));
+	colorV = std::max(std::max(colorR, std::max(colorG, colorB)), 1e-3f); // Prevent division by 0
+	colorL = (min + colorV) / 2.0f;
+
+	// Maximize color, so that dark colors will not be desaturated after normalization
+	colorR = std::min(colorR / colorV, 1.0f);
+	colorG = std::min(colorG / colorV, 1.0f);
+	colorB = std::min(colorB / colorV, 1.0f);
 }

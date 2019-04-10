@@ -68,6 +68,7 @@ enum C4SS_Uniforms
 	C4SSU_AmbientTex, // C4SSC_LIGHT
 	C4SSU_AmbientTransform, // C4SSC_LIGHT
 	C4SSU_AmbientBrightness, // C4SSC_LIGHT
+	C4SSU_AmbientColor, // C4SSC_LIGHT
 
 	C4SSU_MaterialAmbient, // for meshes
 	C4SSU_MaterialDiffuse, // for meshes

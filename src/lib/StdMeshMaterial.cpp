@@ -862,6 +862,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	uniformNames[C4SSU_AmbientTex] = "ambientTex";
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_AmbientColor] = "ambientColor";
 	uniformNames[C4SSU_MaterialAmbient] = "materialAmbient";
 	uniformNames[C4SSU_MaterialDiffuse] = "materialDiffuse";
 	uniformNames[C4SSU_MaterialSpecular] = "materialSpecular";

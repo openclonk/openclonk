@@ -49,11 +49,20 @@ private:
 	unsigned int SizeY{0};
 	// Brightness (not premultiplied)
 	double Brightness{1.};
+	long Color = 0xffffffff; // Return value for GetColor and object script
+	float colorR = 1.0; // red color component of the light source. 1.0 is maximum.
+	float colorG = 1.0; // green color component of the light source. 1.0 is maximum.
+	float colorB = 1.0; // blue color component of the light source. 1.0 is maximum.
+	float colorV = 1.0; // color value. 1.0 is maximum.
+	float colorL = 1.0; // color lightness. 1.0 is maximum.
 public:
 	void Clear();
 
 	void SetBrightness(double brightness) { Brightness = brightness; }
 	double GetBrightness() const { return Brightness; }
+	void SetColor(long color);
+	long GetColor() const { return Color; }
+	float *GetColorRGB() const { return new float[3] {colorR, colorG, colorB}; }
 
 	// High resolution will make the map coarser, but speed up the generation process
 	// and save video memory.
