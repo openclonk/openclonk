@@ -176,27 +176,6 @@ void Towards(C4Real &val, C4Real target, C4Real step)
 	if (val<target) val+=step; else val-=step;
 }
 
-void C4Action::SetBridgeData(int32_t iBridgeTime, bool fMoveClonk, bool fWall, int32_t iBridgeMaterial)
-{
-	// validity
-	iBridgeMaterial = std::min(iBridgeMaterial, ::MaterialMap.Num-1);
-	if (iBridgeMaterial < 0) iBridgeMaterial = 0xff;
-	iBridgeTime = Clamp<int32_t>(iBridgeTime, 0, 0xffff);
-	// mask in this->Data
-	Data = (uint32_t(iBridgeTime) << 16) + (uint32_t(fMoveClonk) << 8) + (uint32_t(fWall) << 9) + iBridgeMaterial;
-}
-
-void C4Action::GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfWall, int32_t &riBridgeMaterial)
-{
-	// mask from this->Data
-	uint32_t uiData = Data;
-	riBridgeTime = (uint32_t(uiData) >> 16);
-	rfMoveClonk = !!(uiData & 0x100);
-	rfWall = !!(uiData & 0x200);
-	riBridgeMaterial = (uiData & 0xff);
-	if (riBridgeMaterial == 0xff) riBridgeMaterial = -1;
-}
-
 void C4Object::UpdateFace(bool bUpdateShape, bool fTemp)
 {
 
@@ -779,7 +758,6 @@ void C4Object::ExecAction()
 	case DFA_WALK:
 	case DFA_KNEEL:
 	case DFA_THROW:
-	case DFA_BRIDGE:
 	case DFA_PUSH:
 	case DFA_PULL:
 	case DFA_DIG:
@@ -1026,19 +1004,6 @@ void C4Object::ExecAction()
 	case DFA_THROW:
 		Mobile=true;
 		break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case DFA_BRIDGE:
-	{
-		if (!DoBridge(this)) return;
-		switch (Action.ComDir)
-		{
-		case COMD_Left:  case COMD_UpLeft: SetDir(DIR_Left); break;
-		case COMD_Right: case COMD_UpRight: SetDir(DIR_Right); break;
-		}
-		ydir=0; xdir=0;
-		Mobile=true;
-	}
-	break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_PUSH:
 		// No target

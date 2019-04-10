@@ -316,8 +316,8 @@ void C4Command::MoveTo()
 			if (cObj->Action.Target)
 				{ cx=cObj->Action.Target->GetX(); cy=cObj->Action.Target->GetY(); }
 		break;
-		// dig, bridge: stop
-	case DFA_DIG: case DFA_BRIDGE:
+		// dig: stop
+	case DFA_DIG:
 		ObjectComStop(cObj);
 		break;
 	}

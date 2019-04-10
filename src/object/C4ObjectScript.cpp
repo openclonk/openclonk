@@ -481,23 +481,6 @@ static bool FnSetAction(C4Object *Obj, C4String *szAction,
 	                              C4Object::SAC_StartCall | C4Object::SAC_AbortCall, !!fDirect);
 }
 
-static bool FnSetBridgeActionData(C4Object *Obj, long iBridgeLength, bool fMoveClonk, bool fWall, long iBridgeMaterial)
-{
-	if (!Obj->Status)
-	{
-		return false;
-	}
-	C4PropList* pActionDef = Obj->GetAction();
-	// Action must be BRIDGE
-	if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_BRIDGE)
-	{
-		return false;
-	}
-	// Set data
-	Obj->Action.SetBridgeData(iBridgeLength, fMoveClonk, fWall, iBridgeMaterial);
-	return true;
-}
-
 static bool FnSetActionData(C4Object *Obj, long iData)
 {
 	if (!Obj->Status)
@@ -505,11 +488,6 @@ static bool FnSetActionData(C4Object *Obj, long iData)
 		return false;
 	}
 	C4PropList* pActionDef = Obj->GetAction();
-	// Bridge: Convert from old style
-	if (pActionDef && (pActionDef->GetPropertyP(P_Procedure) == DFA_BRIDGE))
-	{
-		return FnSetBridgeActionData(Obj, 0, false, false, iData);
-	}
 	// Attach: check for valid vertex indices
 	if (pActionDef && (pActionDef->GetPropertyP(P_Procedure) == DFA_ATTACH))
 	{
@@ -3344,7 +3322,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetAction);
 	F(SetActionData);
 
-	F(SetBridgeActionData);
 	F(GetAction);
 	F(GetActTime);
 	F(GetOwner);
