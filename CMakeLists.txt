@@ -89,65 +89,22 @@ include(CheckCXXCompilerFlag)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Enable link-time code generation. We have to do this manually because while
-# there is a INTERPROCEDURAL_OPTIMIZATION cmake flag, it's only implemented
-# for icc so far; https://cmake.org/Bug/view.php?id=15939
-function(add_linker_flags)
-	include(CMakeParseArguments)
-	set(options optimized debug)
-	set(oneValueArgs FLAGS)
-	set(multiValueArgs MODULES)
+# Try to enable link-time optimization / link-time code generation /
+# interprocedural optimization for release builds.
+if(POLICY CMP0069)
+	cmake_policy(SET CMP0069 NEW)
 
-	cmake_parse_arguments(_alf "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-	# Adds some linker flags to all optimized build configurations
-	set(_configurations "")
-	if(_alf_optimized)
-		list(APPEND _configurations MINSIZEREL RELWITHDEBINFO RELEASE)
-	endif()
-	if(_alf_debug)
-		list(APPEND _configurations DEBUG)
-	endif()
-
-	foreach(_module ${_alf_MODULES})
-		string(TOUPPER "${_module}" _obj_type)
-		foreach(_config ${_configurations})
-			set(CMAKE_${_obj_type}_LINKER_FLAGS_${_config} "${CMAKE_${_obj_type}_LINKER_FLAGS_${_config}} ${_alf_FLAGS}" PARENT_SCOPE)
+	include(CheckIPOSupported)
+	check_ipo_supported(RESULT result OUTPUT output)
+	if(result)
+		foreach(_config MINSIZEREL RELWITHDEBINFO RELEASE)
+			set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_${_config} TRUE)
 		endforeach()
-	endforeach()
-endfunction()
-
-CHECK_CXX_COMPILER_FLAG("-flto" USE_GCC_STYLE_LTCG)
-if(USE_GCC_STYLE_LTCG)
-	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -flto")
-	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -flto")
-	add_linker_flags(optimized MODULES exe shared FLAGS -flto)
-
-	# Use GCC's ar and ranlib wrappers if necessary, because the plain ones 
-	# don't understand lto objects without an explicit plugin parameter
-	# Note that versioned gcc executables need splitting: gcc-5 -> gcc-ar-5
-	if(CMAKE_C_COMPILER MATCHES "^(.*gcc)(-[0-9.])?$")
-		set(LTCG_NEEDS_AR_WRAPPER 1)
-		set(LTCG_AR_WRAPPER_PREFIX "${CMAKE_MATCH_1}")
-		set(LTCG_AR_WRAPPER_SUFFIX "${CMAKE_MATCH_2}")
-	elseif(CMAKE_C_COMPILER MATCHES "cc$")
-		set(LTCG_NEEDS_AR_WRAPPER 1)
-		set(LTCG_AR_WRAPPER_PREFIX "gcc")
 	else()
-		set(LTCG_NEEDS_AR_WRAPPER 0)
+		message(WARNING "IPO is not supported: ${output}")
 	endif()
-
-	if(LTCG_NEEDS_AR_WRAPPER)
-		find_program(AR_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ar${LTCG_AR_WRAPPER_SUFFIX}")
-		if (AR_WRAPPER)
-			message("Using ${AR_WRAPPER} instead of ${CMAKE_AR} to support lto objects.")
-			set(CMAKE_AR "${AR_WRAPPER}" CACHE FILEPATH "Path to an ar that supports lto objects." FORCE)
-		endif()
-		find_program(RANLIB_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ranlib${LTCG_AR_WRAPPER_SUFFIX}")
-		if (RANLIB_WRAPPER)
-			message("Using ${RANLIB_WRAPPER} instead of ${CMAKE_RANLIB} to support lto objects.")
-			set(CMAKE_RANLIB "${RANLIB_WRAPPER}" CACHE FILEPATH "Path to a ranlib that supports lto objects." FORCE)
-		endif()
-	endif()
+else()
+	message(WARNING "IPO is not supported because CMake is too old")
 endif()
 
 if(MSVC)
@@ -164,12 +121,6 @@ if(MSVC)
 
 	# Enable multi-core builds
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-
-	# Enable LTCG for release builds
-	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Ob2 /GL")
-	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /Ob2 /GL")
-	add_linker_flags(optimized MODULES exe shared FLAGS "/INCREMENTAL:NO")
-	add_linker_flags(optimized MODULES exe shared static FLAGS "/LTCG:incremental")
 
 	# do not link the release CRT in debug builds
 	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:MSVCRT")
