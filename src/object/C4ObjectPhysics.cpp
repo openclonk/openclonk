@@ -106,18 +106,18 @@ bool C4Object::At(int32_t ctx, int32_t cty, DWORD &ocf) const
 	return false;
 }
 
-void C4Object::Fling(C4Real txdir, C4Real tydir, bool fAddSpeed)
+void C4Object::Fling(C4Real fling_xdir, C4Real fling_ydir, bool add_speed)
 {
-	if (fAddSpeed)
+	if (add_speed)
 	{
-		txdir += xdir / 2;
-		tydir += ydir / 2;
+		fling_xdir += xdir / 2;
+		fling_ydir += ydir / 2;
 	}
-	if (!ObjectActionTumble(this, (txdir < 0), txdir, tydir)
-	&&  !ObjectActionJump(this, txdir, tydir, false))
+	if (!ObjectActionTumble(this, (fling_xdir < 0), fling_xdir, fling_ydir)
+	&&  !ObjectActionJump(this, fling_xdir, fling_ydir, false))
 	{
-		xdir = txdir;
-		ydir = tydir;
+		xdir = fling_xdir;
+		ydir = fling_ydir;
 		Mobile = true;
 		Action.t_attach &= ~CNAT_Bottom;
 	}
@@ -249,13 +249,16 @@ BYTE C4Object::GetMomentum(C4Real &rxdir, C4Real &rydir) const
 
 C4Real C4Object::GetSpeed() const
 {
-	C4Real cobjspd = Fix0;
-	if (xdir < 0) cobjspd -= xdir; else cobjspd += xdir;
-	if (ydir < 0) cobjspd -= ydir; else cobjspd += ydir;
-	return cobjspd;
+	// TODO: This is actually not the real speed of the object,
+	// it is actually a "Manhattan" speed :)
+	// Note: Relevant for OCF calculation only...
+	C4Real speed = Fix0;
+	if (xdir < 0) speed -= xdir; else speed += xdir;
+	if (ydir < 0) speed -= ydir; else speed += ydir;
+	return speed;
 }
 
-void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)
+void C4Object::SetSolidMask(int32_t x, int32_t y, int32_t wdt, int32_t hgt, int32_t tx, int32_t ty)
 {
 	// Remove old
 	if (pSolidMaskData)
@@ -264,7 +267,7 @@ void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, 
 		pSolidMaskData = nullptr;
 	}
 	// Set new data
-	SolidMask.Set(iX, iY, iWdt, iHgt, iTX, iTY);
+	SolidMask.Set(x, y, wdt, hgt, tx, ty);
 	// Re-put if valid
 	if (CheckSolidMaskRect())
 	{
@@ -284,15 +287,15 @@ void C4Object::SetHalfVehicleSolidMask(bool set)
 bool C4Object::CheckSolidMaskRect()
 {
 	// Ensure SolidMask rect lies within bounds of SolidMask bitmap in definition
-	CSurface8 *sfcGraphics = Def->pSolidMask;
-	if (!sfcGraphics)
+	CSurface8 *mask = Def->pSolidMask;
+	if (!mask)
 	{
 		// No graphics to set solid in
 		SolidMask.Set(0, 0, 0, 0, 0, 0);
 		return false;
 	}
-	SolidMask.Set(std::max<int32_t>(SolidMask.x,0), std::max<int32_t>(SolidMask.y,0),
-	              std::min<int32_t>(SolidMask.Wdt, sfcGraphics->Wdt-SolidMask.x), std::min<int32_t>(SolidMask.Hgt, sfcGraphics->Hgt-SolidMask.y),
+	SolidMask.Set(std::max<int32_t>(SolidMask.x,0), std::max<int32_t>(SolidMask.y, 0),
+	              std::min<int32_t>(SolidMask.Wdt, mask->Wdt - SolidMask.x), std::min<int32_t>(SolidMask.Hgt, mask->Hgt-SolidMask.y),
 	              SolidMask.tx, SolidMask.ty);
 	if (SolidMask.Hgt <= 0)
 	{
@@ -306,27 +309,25 @@ bool C4Object::IsInLiquidCheck() const
 	return GBackLiquid(GetX(), GetY() + Def->Float * Con / FullCon - 1);
 }
 
-void C4Object::SetRotation(int32_t nr)
+void C4Object::SetRotation(int32_t new_rotation)
 {
-	while (nr < 0)
+	while (new_rotation < 0)
 	{
-		nr += 360;
+		new_rotation += 360;
 	}
-	nr %= 360;
+	new_rotation %= 360;
 	// Remove solid mask
 	RemoveSolidMask(false);
 	// Set rotation
-	fix_r = itofix(nr);
+	fix_r = itofix(new_rotation);
 	// Update face
 	UpdateFace(true);
 }
 
 void C4Object::DrawSolidMask(C4TargetFacet &cgo) const
 {
-	// Mask must exist
 	if (pSolidMaskData)
 	{
-		// Draw it
 		pSolidMaskData->Draw(cgo);
 	}
 }
@@ -372,25 +373,25 @@ void C4Object::UpdateSolidMask(bool fRestoreAttachedObjects)
 	}
 }
 
-bool C4Object::AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpeed)
+bool C4Object::AdjustWalkRotation(int32_t range_x, int32_t range_y, int32_t speed)
 {
-	int32_t iDestAngle;
+	int32_t dest_angle;
 	// Attachment at middle (bottom) vertex?
-	if (Shape.iAttachVtx<0 || !Def->Shape.VtxX[Shape.iAttachVtx])
+	if (Shape.iAttachVtx < 0 || !Def->Shape.VtxX[Shape.iAttachVtx])
 	{
 		// Evaluate floor around attachment pos
-		int32_t iSolidLeft = 0;
-		int32_t iSolidRight = 0;
+		int32_t y_solid_left = 0;
+		int32_t y_solid_right = 0;
 		// Left
-		int32_t iXCheck = Shape.iAttachX - iRangeX;
-		if (GBackSolid(iXCheck, Shape.iAttachY))
+		int32_t check_x = Shape.iAttachX - range_x;
+		if (GBackSolid(check_x, Shape.iAttachY))
 		{
 			// Up
-			while (--iSolidLeft > -iRangeY)
+			while (--y_solid_left > -range_y)
 			{
-				if (GBackSolid(iXCheck, Shape.iAttachY + iSolidLeft))
+				if (GBackSolid(check_x, Shape.iAttachY + y_solid_left))
 				{
-					++iSolidLeft;
+					++y_solid_left;
 					break;
 				}
 			}
@@ -398,25 +399,25 @@ bool C4Object::AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpe
 		else
 		{
 			// Down
-			while (++iSolidLeft < iRangeY)
+			while (++y_solid_left < range_y)
 			{
-				if (GBackSolid(iXCheck, Shape.iAttachY + iSolidLeft))
+				if (GBackSolid(check_x, Shape.iAttachY + y_solid_left))
 				{
-					--iSolidLeft;
+					--y_solid_left;
 					break;
 				}
 			}
 		}
 		// Right
-		iXCheck += 2 * iRangeX;
-		if (GBackSolid(iXCheck, Shape.iAttachY))
+		check_x += 2 * range_x;
+		if (GBackSolid(check_x, Shape.iAttachY))
 		{
 			// Up
-			while (--iSolidRight > -iRangeY)
+			while (--y_solid_right > -range_y)
 			{
-				if (GBackSolid(iXCheck, Shape.iAttachY + iSolidRight))
+				if (GBackSolid(check_x, Shape.iAttachY + y_solid_right))
 				{
-					++iSolidRight;
+					++y_solid_right;
 					break;
 				}
 			}
@@ -424,18 +425,18 @@ bool C4Object::AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpe
 		else
 		{
 			// Down
-			while (++iSolidRight < iRangeY)
+			while (++y_solid_right < range_y)
 			{
-				if (GBackSolid(iXCheck, Shape.iAttachY + iSolidRight))
+				if (GBackSolid(check_x, Shape.iAttachY + y_solid_right))
 				{
-					--iSolidRight;
+					--y_solid_right;
 					break;
 				}
 			}
 		}
 		// Calculate destination angle
 		// 100% accurate for large values of Pi ;)
-		iDestAngle = (iSolidRight - iSolidLeft) * (35 / std::max<int32_t>(iRangeX, 1));
+		dest_angle = (y_solid_right - y_solid_left) * (35 / std::max<int32_t>(range_x, 1));
 	}
 	else
 	{
@@ -444,18 +445,18 @@ bool C4Object::AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpe
 		// bottom vertex hits solid ground
 		if (Shape.VtxX[Shape.iAttachVtx] > 0)
 		{
-			iDestAngle = -50;
+			dest_angle = -50;
 		}
 		else
 		{
-			iDestAngle = 50;
+			dest_angle = 50;
 		}
 	}
 	// Move to destination angle
-	if (Abs(iDestAngle - GetR()) > 2)
+	if (Abs(dest_angle - GetR()) > 2)
 	{
-		rdir = itofix(Clamp<int32_t>(iDestAngle-GetR(), -15, +15));
-		rdir /= (10000 / iSpeed);
+		rdir = itofix(Clamp<int32_t>(dest_angle-GetR(), -15, +15));
+		rdir /= (10000 / speed);
 	}
 	else
 	{
