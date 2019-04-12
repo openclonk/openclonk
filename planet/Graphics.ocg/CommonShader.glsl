@@ -11,6 +11,8 @@
 // uncomment the following lines to set the light color to pink for all lights for debugging:
 //#define LIGHT_DEBUG_PINK
 
+
+uniform vec3 ambientColor;
 #ifdef OC_DYNAMIC_LIGHT
 uniform sampler2D ambientTex;
 
@@ -133,6 +135,15 @@ slice(light)
 	light2 = mix(light2, ambientMul * (ambientAmbience + lightDot(normal2, ambientDir)), ambient);
 #endif
 	lightColor = mix(lightColor, vec3(1.0,1.0,1.0), ambient);
+}
+
+slice(color+1)
+{
+	// That is not how light mixing works, but whatever, it looks nice ingame...
+	// Anyway: Without ambient light color the screen will be fairly dark (0.3),
+	// and colored light illuminates that to normal brightness, combined
+	// with the color that is already established.
+	fragColor = vec4(fragColor.rgb * (vec3(0.3, 0.3, 0.3) + 0.7 * ambientColor), fragColor.a);
 }
 
 slice(color+5)
