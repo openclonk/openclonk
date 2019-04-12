@@ -6,6 +6,7 @@ sudo: required # for Qt libraries. Additionally, the virtualization builds are m
 
 matrix:
   include:
+    # "Legacy" build: oldest supported gcc and cmake
     - os: linux
       compiler: gcc
       addons:
@@ -13,11 +14,13 @@ matrix:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-4.9', 'build-essential', 'cmake3', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'libgtest-dev']
       env: 
+          - OLD_CMAKE=1
           - CCOMPILER=gcc-4.9 
           - CXXCOMPILER=g++-4.9 
           - TYPE=Debug # somehow, the linking fails for release builds. If someone could fix that, that would be great. 
           - BSYS="Unix Makefiles#make -k"
 
+    # "Current" gcc build, used for snapshots
     - os: linux
       compiler: gcc
       addons:
@@ -25,7 +28,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - sourceline: ppa:beineri/opt-qt596-trusty
-          packages: ['g++-5', 'build-essential', 'cmake3', 'libpng-dev', 'libjpeg-dev', 'libfreetype6-dev', 'libglew-dev', 'libreadline-dev', 'libsdl2-dev', 'qt59base', 'libalut-dev', 'libvorbis-dev', 'libopenal-dev', 'libdw-dev', 'libgtest-dev', 'ninja-build']
+          packages: ['g++-5', 'build-essential', 'libpng-dev', 'libjpeg-dev', 'libfreetype6-dev', 'libglew-dev', 'libreadline-dev', 'libsdl2-dev', 'qt59base', 'libalut-dev', 'libvorbis-dev', 'libopenal-dev', 'libdw-dev', 'libgtest-dev', 'ninja-build']
       env:
           - CCOMPILER=gcc-5
           - CXXCOMPILER=g++-5
@@ -35,12 +38,13 @@ matrix:
           - UPLOAD_SNAPSHOT=1
           - CMAKE_FLAGS="-DCMAKE_INSTALL_PREFIX=/usr -DWITH_AUTOMATIC_UPDATE=ON -DWITH_APPDIR_INSTALLATION=ON"
 
+    # "Current" clang build
     - os: linux
       compiler: clang
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
-          packages: ['clang-3.8', 'build-essential', 'cmake3', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libc++-dev', 'libc++1', 'libgtest-dev']
+          packages: ['clang-3.8', 'build-essential', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libc++-dev', 'libc++1', 'libgtest-dev']
       env: 
           - CCOMPILER=clang-3.8 
           - CXXCOMPILER=clang++-3.8 
@@ -50,6 +54,13 @@ matrix:
 
 before_install:
     - for t in test mock; do wget https://github.com/google/google$t/archive/release-1.7.0.tar.gz -Og$t.tgz && tar xvf g$t.tgz; done 
+    # Install current cmake version.
+    - >
+      if [ -z "$OLD_CMAKE" ]; then
+        CMAKE_VERSION=3.14.1
+        wget "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh"
+        sudo sh "cmake-${CMAKE_VERSION}-Linux-x86_64.sh" --skip-license --prefix=/usr/local
+      fi
 
 install:
     - '[ -e /opt/qt59/bin/qt59-env.sh ] && source /opt/qt59/bin/qt59-env.sh || echo building without Qt'
