@@ -68,12 +68,6 @@
         <col>Behaviour according to <emlink href="definition/actmap.html">activity</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
-      <row id="BRIDGE">
-        <col>DFA_BRIDGE</col>
-        <col>Bridge building</col>
-        <col>Removed in 9.0 OC.</col>
-        <col>CNAT_Bottom</col>
-      </row>
       <row id="PUSH">
         <col>DFA_PUSH</col>
         <col>Pushing</col>
