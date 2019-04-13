@@ -31,82 +31,6 @@
 #include "platform/C4SoundSystem.h"
 
 
-bool DoBridge(C4Object *clk)
-{
-	int32_t iBridgeTime; bool fMoveClonk, fWall; int32_t iBridgeMaterial;
-	clk->Action.GetBridgeData(iBridgeTime, fMoveClonk, fWall, iBridgeMaterial);
-	if (!iBridgeTime) iBridgeTime = 100; // default bridge time
-	if (clk->Action.Time>=iBridgeTime) { ObjectActionStand(clk); return false; }
-	// get bridge advancement
-	int32_t dtp;
-	if (fWall) switch (clk->Action.ComDir)
-		{
-		case COMD_Left: case COMD_Right: dtp = 4; fMoveClonk = false; break; // vertical wall: default 25 pixels
-		case COMD_UpLeft: case COMD_UpRight: dtp = 5; fMoveClonk = false; break; // diagonal roof over Clonk: default 20 pixels up and 20 pixels side (28 pixels - optimized to close tunnels completely)
-		case COMD_Up: dtp = 5; break; // horizontal roof over Clonk
-		default: return true; // bridge procedure just for show
-		}
-	else switch (clk->Action.ComDir)
-		{
-		case COMD_Left: case COMD_Right: dtp = 5; break; // horizontal bridges: default 20 pixels
-		case COMD_Up: dtp = 4; break; // vertical bridges: default 25 pixels (same as
-		case COMD_UpLeft: case COMD_UpRight: dtp = 6; break; // diagonal bridges: default 16 pixels up and 16 pixels side (23 pixels)
-		default: return true; // bridge procedure  just for show
-		}
-	if (clk->Action.Time % dtp) return true; // no advancement in this frame
-	// get target pos for Clonk and bridge
-	int32_t cx=clk->GetX(), cy=clk->GetY(), cw=clk->Shape.Wdt, ch=clk->Shape.Hgt;
-	int32_t tx=cx,ty=cy+ch/2;
-	int32_t dt;
-	if (fMoveClonk) dt = 0; else dt = clk->Action.Time / dtp;
-	if (fWall) switch (clk->Action.ComDir)
-		{
-		case COMD_Left: tx-=cw/2; ty+=-dt; break;
-		case COMD_Right: tx+=cw/2; ty+=-dt; break;
-		case COMD_Up:
-		{
-			int32_t x0;
-			if (fMoveClonk) x0=-3; else x0=(iBridgeTime/dtp)/-2;
-			tx+=(x0+dt)*((clk->Action.Dir==DIR_Right)*2-1); cx+=((clk->Action.Dir==DIR_Right)*2-1); ty-=ch+3; break;
-		}
-		case COMD_UpLeft: tx-=-4+dt; ty+=-ch-7+dt; break;
-		case COMD_UpRight: tx+=-4+dt; ty+=-ch-7+dt; break;
-		}
-	else switch (clk->Action.ComDir)
-		{
-		case COMD_Left: tx+=-3-dt; --cx; break;
-		case COMD_Right: tx+=+2+dt; ++cx; break;
-		case COMD_Up: tx+=(-cw/2+(cw-1)*(clk->Action.Dir==DIR_Right))*(!fMoveClonk); ty+=-dt-fMoveClonk; --cy; break;
-		case COMD_UpLeft: tx+=-5-dt+fMoveClonk*3; ty+=2-dt-fMoveClonk*3; --cx; --cy; break;
-		case COMD_UpRight: tx+=+5+dt-fMoveClonk*2; ty+=2-dt-fMoveClonk*3; ++cx; --cy; break;
-		}
-	// check if Clonk movement is posible
-	if (fMoveClonk)
-	{
-		int32_t cx2=cx, cy2=cy;
-		if (/*!clk->Shape.Attach(cx2, cy2, (clk->Action.t_attach & CNAT_Flags) | CNAT_Bottom) ||*/ clk->Shape.CheckContact(cx2, cy2-1))
-		{
-			// Clonk would collide here: Change to nonmoving Clonk mode and redo bridging
-			iBridgeTime -= clk->Action.Time;
-			clk->Action.Time = 0;
-			if (fWall && clk->Action.ComDir==COMD_Up)
-			{
-				// special for roof above Clonk: The nonmoving roof is started at bridgelength before the Clonk
-				// so, when interrupted, an action time halfway through the action must be set
-				clk->Action.Time = iBridgeTime;
-				iBridgeTime += iBridgeTime;
-			}
-			clk->Action.SetBridgeData(iBridgeTime, false, fWall, iBridgeMaterial);
-			return DoBridge(clk);
-		}
-	}
-	// draw bridge into landscape
-	::Landscape.DrawMaterialRect(iBridgeMaterial,tx-2,ty,4,3);
-	// Move Clonk
-	if (fMoveClonk) clk->MovePosition(cx-clk->GetX(), cy-clk->GetY());
-	return true;
-}
-
 void GrabLost(C4Object *cObj, C4Object *prev_target)
 {
 	// Grab lost script call on target (quite hacky stuff...)
@@ -174,27 +98,6 @@ void Towards(C4Real &val, C4Real target, C4Real step)
 	if (val==target) return;
 	if (Abs(val-target)<=step) { val=target; return; }
 	if (val<target) val+=step; else val-=step;
-}
-
-void C4Action::SetBridgeData(int32_t iBridgeTime, bool fMoveClonk, bool fWall, int32_t iBridgeMaterial)
-{
-	// validity
-	iBridgeMaterial = std::min(iBridgeMaterial, ::MaterialMap.Num-1);
-	if (iBridgeMaterial < 0) iBridgeMaterial = 0xff;
-	iBridgeTime = Clamp<int32_t>(iBridgeTime, 0, 0xffff);
-	// mask in this->Data
-	Data = (uint32_t(iBridgeTime) << 16) + (uint32_t(fMoveClonk) << 8) + (uint32_t(fWall) << 9) + iBridgeMaterial;
-}
-
-void C4Action::GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfWall, int32_t &riBridgeMaterial)
-{
-	// mask from this->Data
-	uint32_t uiData = Data;
-	riBridgeTime = (uint32_t(uiData) >> 16);
-	rfMoveClonk = !!(uiData & 0x100);
-	rfWall = !!(uiData & 0x200);
-	riBridgeMaterial = (uiData & 0xff);
-	if (riBridgeMaterial == 0xff) riBridgeMaterial = -1;
 }
 
 void C4Object::UpdateFace(bool bUpdateShape, bool fTemp)
@@ -779,7 +682,6 @@ void C4Object::ExecAction()
 	case DFA_WALK:
 	case DFA_KNEEL:
 	case DFA_THROW:
-	case DFA_BRIDGE:
 	case DFA_PUSH:
 	case DFA_PULL:
 	case DFA_DIG:
@@ -1026,19 +928,6 @@ void C4Object::ExecAction()
 	case DFA_THROW:
 		Mobile=true;
 		break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case DFA_BRIDGE:
-	{
-		if (!DoBridge(this)) return;
-		switch (Action.ComDir)
-		{
-		case COMD_Left:  case COMD_UpLeft: SetDir(DIR_Left); break;
-		case COMD_Right: case COMD_UpRight: SetDir(DIR_Right); break;
-		}
-		ydir=0; xdir=0;
-		Mobile=true;
-	}
-	break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_PUSH:
 		// No target

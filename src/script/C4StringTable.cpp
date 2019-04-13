@@ -322,7 +322,6 @@ C4StringTable::C4StringTable()
 	P[DFA_DIG] = "DIG";
 	P[DFA_SWIM] = "SWIM";
 	P[DFA_THROW] = "THROW";
-	P[DFA_BRIDGE] = "BRIDGE";
 	P[DFA_PUSH] = "PUSH";
 	P[DFA_LIFT] = "LIFT";
 	P[DFA_FLOAT] = "FLOAT";

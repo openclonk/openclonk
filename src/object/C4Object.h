@@ -91,10 +91,6 @@ public:
 public:
 	void Default();
 	void CompileFunc(StdCompiler *pComp);
-
-	// BRIDGE procedure: data mask
-	void SetBridgeData(int32_t iBridgeTime, bool fMoveClonk, bool fWall, int32_t iBridgeMaterial);
-	void GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfWall, int32_t &riBridgeMaterial);
 };
 
 class C4Object: public C4PropListNumbered
