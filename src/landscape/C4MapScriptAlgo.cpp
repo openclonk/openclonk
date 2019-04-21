@@ -524,7 +524,7 @@ static C4MapScriptAlgo *FnParAlgoInner(C4PropList *algo_par)
 	case MAPALGO_Scale:       return new C4MapScriptAlgoScale(algo_par);
 	case MAPALGO_Rotate:      return new C4MapScriptAlgoRotate(algo_par);
 	case MAPALGO_Rect:        return new C4MapScriptAlgoRect(algo_par);
-	case MAPALGO_Ellipsis:    Log("Warning: MAPALGO_Ellipsis is deprecated. Use MAPALGO_Ellipse instead.");
+	case MAPALGO_Ellipsis:    DebugLog("WARNING: MAPALGO_Ellipsis is deprecated. Use MAPALGO_Ellipse instead.");
 	                          /* fallthru */
 	case MAPALGO_Ellipse:     return new C4MapScriptAlgoEllipse(algo_par);
 	case MAPALGO_Polygon:     return new C4MapScriptAlgoPolygon(algo_par);
