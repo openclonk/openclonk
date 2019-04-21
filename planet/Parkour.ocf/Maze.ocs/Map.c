@@ -20,7 +20,7 @@ func FindCaves(int n)
 	{
 		var cave = {};
 		if (!mask->FindPosition(cave, "Rock", [border,border,this.Wdt-border*2,this.Hgt-border*2])) continue;
-		mask->Draw("Tunnel", {Algo=MAPALGO_Ellipsis, X=cave.X, Y=cave.Y, Wdt=min_cave_dist, Hgt=min_cave_dist});
+		mask->Draw("Tunnel", {Algo=MAPALGO_Ellipse, X=cave.X, Y=cave.Y, Wdt=min_cave_dist, Hgt=min_cave_dist});
 		cave.links = [];
 		cave.dirs = 0;
 		cave.rand = Random(65536);
@@ -183,7 +183,7 @@ func DrawCaves()
 {
 	for (var cave in caves)
 	{
-		var cave_algo = {Algo=MAPALGO_Ellipsis, X=cave.X, Y=cave.Y, Wdt=4, Hgt=4};
+		var cave_algo = {Algo=MAPALGO_Ellipse, X=cave.X, Y=cave.Y, Wdt=4, Hgt=4};
 		var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=8, Scale=15, Op=cave_algo};
 		Draw("Tunnel", turb_algo);
 		//var src = cave.path;
@@ -218,7 +218,7 @@ func DrawStart()
 
 func DrawEnd()
 {
-	Draw("Ruby", {Algo=MAPALGO_Ellipsis, X=end_cave.X, Y=end_cave.Y, Wdt=4, Hgt=4});
+	Draw("Ruby", {Algo=MAPALGO_Ellipse, X=end_cave.X, Y=end_cave.Y, Wdt=4, Hgt=4});
 	g_end_cave_x = end_cave.X;
 	g_end_cave_y = end_cave.Y;
 	return true;

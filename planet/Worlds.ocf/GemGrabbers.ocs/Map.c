@@ -109,7 +109,7 @@ public func DrawIsland(proplist map, int x, int y, int wdt, int hgt, array mats)
 		return false;
 	
 	// An island is just an ellipse with turbulence.
-	var island = {Algo = MAPALGO_Ellipsis, X = x, Y = y, Wdt = wdt / 2, Hgt = hgt / 2};
+	var island = {Algo = MAPALGO_Ellipse, X = x, Y = y, Wdt = wdt / 2, Hgt = hgt / 2};
 	island = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = [6, 12], Seed = Random(65536), Op = island};
 	Draw("Earth", island);
 	
@@ -164,7 +164,7 @@ public func DrawGems(string gem_mat, array rect, int size, proplist map, proplis
 	// Sometimes draw a large patch of tunnel behind the gems.
 	if (!Random(3))
 	{
-		var gem_tunnel = {Algo = MAPALGO_Ellipsis, X = low_spot.X, Y = low_spot.Y + 2, Wdt = size * 3, Hgt = 2 * size};
+		var gem_tunnel = {Algo = MAPALGO_Ellipse, X = low_spot.X, Y = low_spot.Y + 2, Wdt = size * 3, Hgt = 2 * size};
 		gem_tunnel = {Algo = MAPALGO_And, Op = [gem_tunnel, {Algo = MAPALGO_Not, Op = {Algo = MAPALGO_Lines, X = 1, Y = 0, OffX = Random(6), Distance = RandomX(4, 6)}}]};
 		gem_tunnel = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = 14, Scale = 8, Seed = Random(65536), Op = gem_tunnel};
 		gem_tunnel = {Algo = MAPALGO_And, Op = [gem_tunnel, {Algo = MAPALGO_Not, Op = island}]};
@@ -172,7 +172,7 @@ public func DrawGems(string gem_mat, array rect, int size, proplist map, proplis
 	}
 	
 	// Draw the gems.
-	var gems = {Algo = MAPALGO_Ellipsis, X = low_spot.X, Y = low_spot.Y + 1, Wdt = size - 1, Hgt = size};
+	var gems = {Algo = MAPALGO_Ellipse, X = low_spot.X, Y = low_spot.Y + 1, Wdt = size - 1, Hgt = size};
 	gems = {Algo = MAPALGO_Turbulence, Amplitude = 5, Scale = 5, Iterations = 2, Op = gems};
 	Draw(gem_mat, gems);
 	

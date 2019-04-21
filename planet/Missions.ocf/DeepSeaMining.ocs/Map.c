@@ -144,7 +144,7 @@ private func DrawSecondaryIsland(int size, array materials, bool has_border, int
 	}
 	
 	// Shape of the resource island
-	var island_algo = {Algo = MAPALGO_Ellipsis, X=x, Y=y, Wdt=size, Hgt=size};
+	var island_algo = {Algo = MAPALGO_Ellipse, X=x, Y=y, Wdt=size, Hgt=size};
 	island_algo = {Algo = MAPALGO_Turbulence, Amplitude = [20,5], Iterations = 3, Op = island_algo};
 	var island = CreateLayer();
 	island->Draw("Earth", island_algo);
@@ -219,13 +219,13 @@ private func DrawGround()
 		x=(x0+x1)/2;
 		var size = 9;
 		// Lava basin here
-		var lava_algo = {Algo = MAPALGO_Ellipsis, X=x, Y=y, Wdt=size, Hgt=size};
+		var lava_algo = {Algo = MAPALGO_Ellipse, X=x, Y=y, Wdt=size, Hgt=size};
 		lava_algo = {Algo = MAPALGO_Turbulence, Amplitude = 5, Iterations = 5, Op = lava_algo};
 		gem_spots->Draw("DuroLava", lava_algo);
 		// Gems at bottom center
 		y += 2;
 		size = 3;
-		var gem_algo = {Algo = MAPALGO_Ellipsis, X=x, Y=y, Wdt=size, Hgt=size};
+		var gem_algo = {Algo = MAPALGO_Ellipse, X=x, Y=y, Wdt=size, Hgt=size};
 		gem_algo = {Algo = MAPALGO_Turbulence, Amplitude = 3, Iterations = 1, Op = gem_algo};
 		gem_spots->Draw(gem_mat, gem_algo);
 		// Draw to map

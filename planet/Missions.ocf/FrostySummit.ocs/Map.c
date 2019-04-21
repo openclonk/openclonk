@@ -17,13 +17,13 @@ func InitializeMap(map)
 		y = 75+Random(3)-Sin(i*90/n_islands, 65);
 		var wdt = 2+Random(5), hgt = 2+Random(2);
 		if (i>=n_islands/2) wdt=2+Random(wdt);
-		sky_islands->DrawVaried("Granite", {Algo=MAPALGO_Turbulence, Op={Algo=MAPALGO_Ellipsis, X=x, Y=y, Wdt=wdt, Hgt=hgt}, Amplitude=10, Scale=5}, nil, "Rock");
+		sky_islands->DrawVaried("Granite", {Algo=MAPALGO_Turbulence, Op={Algo=MAPALGO_Ellipse, X=x, Y=y, Wdt=wdt, Hgt=hgt}, Amplitude=10, Scale=5}, nil, "Rock");
 	}
 	
 	// Final ruby island
 	x = 230+Random(15); y = 15;
-	sky_islands->Draw("Granite", {Algo=MAPALGO_Ellipsis, X=x, Y=y, Wdt=5, Hgt=2});
-	sky_islands->Draw("Ruby", {Algo=MAPALGO_Ellipsis, X=x, Y=y+3, Wdt=3, Hgt=2});
+	sky_islands->Draw("Granite", {Algo=MAPALGO_Ellipse, X=x, Y=y, Wdt=5, Hgt=2});
+	sky_islands->Draw("Ruby", {Algo=MAPALGO_Ellipse, X=x, Y=y+3, Wdt=3, Hgt=2});
 	sky_islands->Draw("Brick", nil, [x-3,y+2,7,1]);
 	
 	// Blit islands+snow

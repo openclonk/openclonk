@@ -130,25 +130,26 @@ Blit({Algo=MAPALGO_Or, Op=[
             <col>Height of rectangle.</col>
           </row>
        </table></text></part>
-    <h>MAPALGO_Ellipsis</h><part>
-    <text>Returns one if the position is in a given ellipsis and zero otherwise.</text>
+    <h>MAPALGO_Ellipse</h><part>
+    <text>Returns one if the position is in a given ellipse and zero otherwise.</text>
+    <text><em>Note: For compatibility reasons, the misspelling &quot;MAPALGO_Ellipsis&quot; is also accepted.</em></text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
             <col>X</col>
             <col>0</col>
-            <col>Horizontal center of ellipsis.</col>
+            <col>Horizontal center of ellipse.</col>
           </row><row>
             <col>Y</col>
             <col>0</col>
-            <col>Vertical center of ellipsis.</col>
+            <col>Vertical center of ellipse.</col>
           </row><row>
             <col>Wdt</col>
             <col>10</col>
-            <col>Horizontal radius of ellipsis.</col>
+            <col>Horizontal radius of ellipse.</col>
           </row><row>
             <col>Hgt</col>
             <col>10</col>
-            <col>Vertical radius of ellipsis</col>
+            <col>Vertical radius of ellipse</col>
           </row>
        </table></text></part>
     <h>MAPALGO_Polygon</h><part>

@@ -85,7 +85,7 @@ func InitializeMap(proplist map)
 	basin->DrawMaterial("Rock", basin, [10,4], 30);
 	
 	// Bottom acid cave containing gems
-	algo = { Algo=MAPALGO_Ellipsis, X=this.Wdt/2, Y=this.Hgt-bottom_off, Wdt=size_gem_cave, Hgt=size_gem_cave };
+	algo = { Algo=MAPALGO_Ellipse, X=this.Wdt/2, Y=this.Hgt-bottom_off, Wdt=size_gem_cave, Hgt=size_gem_cave };
 	algo = { Algo=MAPALGO_Turbulence, Op=algo, Amplitude=20, Scale=20 };
 	basin->Draw("Transparent", algo);
 	
@@ -129,7 +129,7 @@ func InitializeMap(proplist map)
 	// Empty starting area
 	var start_x = this.Wdt/4 + Random(this.Wdt/2);
 	var start_y = this.Hgt/3;
-	var start_algo = {Algo = MAPALGO_Ellipsis, X=start_x, Y=start_y, Wdt=10, Hgt=10};
+	var start_algo = {Algo = MAPALGO_Ellipse, X=start_x, Y=start_y, Wdt=10, Hgt=10};
 	Draw("Sky", start_algo);
 	g_start_map_x = start_x; g_start_map_y = start_y;
 	
@@ -144,7 +144,7 @@ func InitializeMap(proplist map)
 	Blit(basin);
 	
 	// Draw starting area
-	var algo = {Algo = MAPALGO_Ellipsis, X=start_x, Y=start_y+5, Wdt=6, Hgt=5};
+	var algo = {Algo = MAPALGO_Ellipse, X=start_x, Y=start_y+5, Wdt=6, Hgt=5};
 	algo = {Algo = MAPALGO_Turbulence, Iterations = 1, Amplitude=5, Scale=5, Op = algo};
 	Draw("Earth", algo);
 	Draw("Sky", nil, [start_x-4, start_y-6, 8, 8]);
@@ -183,7 +183,7 @@ private func DrawPatch(string mat, mask, size, bool allow_rotation, int turbulen
 		mask = "Snow";
 	}
 	if (!mask_layer->FindPosition(pos, mask, area)) return false;
-	var algo = {Algo = MAPALGO_Ellipsis, X=pos.X, Y=pos.Y, Wdt=size[0], Hgt=size[1]};
+	var algo = {Algo = MAPALGO_Ellipse, X=pos.X, Y=pos.Y, Wdt=size[0], Hgt=size[1]};
 	algo = {Algo = MAPALGO_Turbulence, Iterations = 3, Amplitude=turbulence, Scale=5, Op = algo};
 	if (allow_rotation) algo = {Algo= MAPALGO_Rotate, R=Random(360), OffX=pos.X, OffY=pos.Y, Op=algo};
 	return Draw(mat, algo);

@@ -61,7 +61,7 @@ public func DrawCavern(proplist map)
 	map->DrawMaterial("Rock", map_top, 3, 20);
    
     // The cavern is located a bit to the left and can be entered from the left side of the map.
-    var cavern = {Algo = MAPALGO_Ellipsis, X = wdt / 2 - 10, Y = cavern_hgt - 7, Wdt = 20, Hgt = 7};
+    var cavern = {Algo = MAPALGO_Ellipse, X = wdt / 2 - 10, Y = cavern_hgt - 7, Wdt = 20, Hgt = 7};
     cavern = {Algo = MAPALGO_Or, Op = [cavern, {Algo = MAPALGO_Turbulence, Iterations = 4, Seed = Random(65536), Op = cavern}]};
     cavern = {Algo = MAPALGO_Or, Op = [cavern, {Algo = MAPALGO_Rect, X = wdt / 2 - 30, Y = cavern_hgt - 7, Wdt = 40, Hgt = 7}]};
     cavern = {Algo = MAPALGO_And, Op = [cavern, map_top]};
@@ -223,7 +223,7 @@ public func FindVeinNodes(proplist map, int size, nr_nodes)
 		var node = {};
 		if (!mask->FindPosition(node, "Rock", [4, hgt - 10, wdt - 8, 6]))
 			continue;
-		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
+		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
 		node.is_gem = true;
 		node.tunnels = [];
 		PushBack(nodes, node);	
@@ -235,7 +235,7 @@ public func FindVeinNodes(proplist map, int size, nr_nodes)
 		var node = {};
 		if (!mask->FindPosition(node, "Rock", [4, hgt - size + 4, wdt - 8, size - 18]))
 			continue;
-		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
+		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
 		node.tunnels = [];
 		PushBack(nodes, node);
 	}

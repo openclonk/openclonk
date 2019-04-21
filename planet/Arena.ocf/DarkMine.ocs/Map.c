@@ -56,7 +56,7 @@ public func  FindLargeCave(proplist map, int size)
 	// Get the map coordinates.
 	var x = map.Wdt / 2;
 	var y = map.Hgt / 2;
-	var cave = {Algo = MAPALGO_Ellipsis, X = x, Y = y, Wdt = size, Hgt = 2 * size / 3};
+	var cave = {Algo = MAPALGO_Ellipse, X = x, Y = y, Wdt = size, Hgt = 2 * size / 3};
 	return cave;
 }
 
@@ -68,9 +68,9 @@ public func FindSmallCaves(proplist map, proplist large_cave, int nr_caves)
 	// Contruct the doughnut like shape in which the small caves may be found.
 	var x = map.Wdt / 2;
 	var y = map.Hgt / 2;
-	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = x, Y = y, Wdt = 24, Hgt = 24});
-	mask->Draw("Tunnel", {Algo = MAPALGO_Not, Op = {Algo = MAPALGO_Ellipsis, X = x, Y = y, Wdt = x - 2, Hgt = y - 2}});
-	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = large_cave.X, Y = large_cave.Y, Wdt = 3 * large_cave.Wdt / 2, Hgt = 14 * large_cave.Hgt / 10});
+	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = x, Y = y, Wdt = 24, Hgt = 24});
+	mask->Draw("Tunnel", {Algo = MAPALGO_Not, Op = {Algo = MAPALGO_Ellipse, X = x, Y = y, Wdt = x - 2, Hgt = y - 2}});
+	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = large_cave.X, Y = large_cave.Y, Wdt = 3 * large_cave.Wdt / 2, Hgt = 14 * large_cave.Hgt / 10});
 	// Array for the small caves.	
 	var caves = [];	
 	// Add caves for the exit points of the large caves.
@@ -86,7 +86,7 @@ public func FindSmallCaves(proplist map, proplist large_cave, int nr_caves)
 		var cave = {};
 		if (!mask->FindPosition(cave, "Rock", [border, border, map.Wdt - border * 2, map.Hgt - border * 2]))
 			continue;
-		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = cave.X, Y = cave.Y, Wdt = cave_dist, Hgt = cave_dist});	
+		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = cave.X, Y = cave.Y, Wdt = cave_dist, Hgt = cave_dist});	
 		PushBack(caves, cave);
 	}
 	return caves;
@@ -206,7 +206,7 @@ public func DrawSmallCaves(array small_caves)
 {
 	for (var cave in small_caves)
 	{
-		var cave_algo = {Algo = MAPALGO_Ellipsis, X = cave.X, Y = cave.Y, Wdt = RandomX(4, 6), Hgt = RandomX(4, 6)};
+		var cave_algo = {Algo = MAPALGO_Ellipse, X = cave.X, Y = cave.Y, Wdt = RandomX(4, 6), Hgt = RandomX(4, 6)};
 		var turb_cave = {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 8, Op = cave_algo};
 		Draw("Tunnel", turb_cave);
 		DrawMaterial("Tunnel-brickback", turb_cave, 2, 15);

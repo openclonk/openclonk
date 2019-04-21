@@ -44,7 +44,7 @@ func DrawSpots(string mat, int num, sizex, sizey, array rect, inmat, vary_mats)
 	if (!sizey) sizey = [5, 7];
 	if (!num) num=Max(this->GetPixelCount(inmat, rect) / (EvalIntParM(sizex)*EvalIntParM(sizey)*10), 1);
 	// Draw num spots
-	var spot = {Algo=MAPALGO_Ellipsis};
+	var spot = {Algo=MAPALGO_Ellipse};
 	while (num--)
 	{
 		if (!this->FindPosition(spot, inmat, rect)) break;
