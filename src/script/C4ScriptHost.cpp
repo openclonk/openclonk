@@ -105,6 +105,8 @@ void C4ScriptHost::UnlinkOwnedFunctions()
 				if (func_chain->OwnerOverloaded == func)
 				{
 					func_chain->OwnerOverloaded = func->OwnerOverloaded;
+					func->OwnerOverloaded = nullptr; // func_chain now takes care of this.
+					func->DecRef(); // decrease rc because func_chain no longer has a reference to func.
 					break;
 				}
 				assert(func_chain->OwnerOverloaded && "Removed function not found in inheritance chain");
