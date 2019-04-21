@@ -805,6 +805,9 @@ void C4AulParse::Parse_WarningPragma()
 		throw C4AulParseError(this, FormatString("'" C4Aul_Warning_enable "' or '" C4Aul_Warning_disable "' expected, but found '%s'", std::string(start, cursor).c_str()).getData());
 	}
 
+	if (!pOrgScript) // may be null for DirectExec. We cannot do anything here then.
+		return;
+
 	cursor = std::find_if_not(cursor, end, IsWhiteSpace);
 	if (cursor == end)
 	{
