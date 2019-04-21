@@ -96,7 +96,7 @@ public func DrawMaterials(proplist rect, proplist surface)
 public func DrawSkyIsland(proplist map, int x, int y, int wdt, int hgt)
 {
 	// An island is just an ellipse with turbulence.
-	var island = {Algo = MAPALGO_Ellipsis, X = x, Y = y, Wdt = wdt / 2, Hgt = hgt / 2};
+	var island = {Algo = MAPALGO_Ellipse, X = x, Y = y, Wdt = wdt / 2, Hgt = hgt / 2};
 	island = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = [8, 18], Seed = Random(65536), Op = island};
 	Draw("Earth", island);
 	

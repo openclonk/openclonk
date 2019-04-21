@@ -134,7 +134,7 @@ protected func InitializeMap(proplist map)
 		bat_cave = [pos.X, pos.Y];
 		break;
 	}
-	var cave = {Algo = MAPALGO_Ellipsis, X = bat_cave[0], Y = bat_cave[1], Wdt = 4, Hgt = 5};
+	var cave = {Algo = MAPALGO_Ellipse, X = bat_cave[0], Y = bat_cave[1], Wdt = 4, Hgt = 5};
 	cave = {Algo = MAPALGO_Or, Op = [cave, {Algo = MAPALGO_Turbulence, Iterations = 2, Amplitude = [0, 8], Scale = [0, 8], Seed = Random(65536), Op = {Algo = MAPALGO_Rect, X = bat_cave[0] - 8, Y = bat_cave[1] - 4, Wdt = 16, Hgt = 8}}]};
 	var cave_border = {Algo = MAPALGO_Border, Bottom = -2, Op = cave};
 	Draw("Tunnel", cave);

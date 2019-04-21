@@ -116,9 +116,9 @@ bool C4MapScriptAlgoRect::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_
 	return rect.Contains(x, y);
 }
 
-C4MapScriptAlgoEllipsis::C4MapScriptAlgoEllipsis(const C4PropList *props)
+C4MapScriptAlgoEllipse::C4MapScriptAlgoEllipse(const C4PropList *props)
 {
-	// Get MAPALGO_Ellipsis properties
+	// Get MAPALGO_Ellipse properties
 	cx = props->GetPropertyInt(P_X);
 	cy = props->GetPropertyInt(P_Y);
 	wdt = Abs(props->GetPropertyInt(P_Wdt));
@@ -127,11 +127,11 @@ C4MapScriptAlgoEllipsis::C4MapScriptAlgoEllipsis(const C4PropList *props)
 	if (!hgt) hgt = wdt;
 }
 
-bool C4MapScriptAlgoEllipsis::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
+bool C4MapScriptAlgoEllipse::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
-	// Evaluate MAPALGO_Ellipsis at x,y: Return 1 for pixels within ellipsis, 0 otherwise
+	// Evaluate MAPALGO_Ellipse at x,y: Return 1 for pixels within ellipse, 0 otherwise
 	// warning: overflows for large values (wdt or hgt >=256)
-	// but who would draw such large ellipsis anyway?
+	// but who would draw such large ellipse anyway?
 	uint64_t dx = Abs((cx-x)*hgt), dy = Abs((cy-y)*wdt);
 	return dx*dx+dy*dy < uint64_t(wdt)*wdt*hgt*hgt;
 }
@@ -524,7 +524,9 @@ static C4MapScriptAlgo *FnParAlgoInner(C4PropList *algo_par)
 	case MAPALGO_Scale:       return new C4MapScriptAlgoScale(algo_par);
 	case MAPALGO_Rotate:      return new C4MapScriptAlgoRotate(algo_par);
 	case MAPALGO_Rect:        return new C4MapScriptAlgoRect(algo_par);
-	case MAPALGO_Ellipsis:    return new C4MapScriptAlgoEllipsis(algo_par);
+	case MAPALGO_Ellipsis:    DebugLog("WARNING: MAPALGO_Ellipsis is deprecated. Use MAPALGO_Ellipse instead.");
+	                          /* fallthru */
+	case MAPALGO_Ellipse:     return new C4MapScriptAlgoEllipse(algo_par);
 	case MAPALGO_Polygon:     return new C4MapScriptAlgoPolygon(algo_par);
 	case MAPALGO_Lines:       return new C4MapScriptAlgoLines(algo_par);
 	case MAPALGO_Turbulence:  return new C4MapScriptAlgoTurbulence(algo_par);

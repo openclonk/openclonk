@@ -90,9 +90,9 @@ public func FindCheckPointLocations(proplist map, int nr_checkpoints, int game_m
 	var mask = map->CreateLayer();
 	mask->Draw("Rock");
 	// Remove the start, finish and middle island from the mask.
-	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = start_x, Y = island_y, Wdt = 38, Hgt = 38});
-	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = finish_x, Y = island_y, Wdt = 38, Hgt = 38});
-	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = middle_x, Y = island_y, Wdt = 38, Hgt = 38});
+	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = start_x, Y = island_y, Wdt = 38, Hgt = 38});
+	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = finish_x, Y = island_y, Wdt = 38, Hgt = 38});
+	mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = middle_x, Y = island_y, Wdt = 38, Hgt = 38});
 	// Remove the middle area between start and finish from the mask.
 	mask->Draw("Tunnel", {Algo = MAPALGO_Rect, X = start_x, Y = island_y - 16, Wdt = finish_x - start_x, Hgt = 16});	
 	// Array for the checkpoint islands.	
@@ -115,7 +115,7 @@ public func FindCheckPointLocations(proplist map, int nr_checkpoints, int game_m
 			Log("WARNING: Map script could not find a suitable checkpoint location, there will be one checkpoint less in this round.");
 			continue;
 		}
-		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = cp_island.X, Y = cp_island.Y, Wdt = cp_dist_x, Hgt = cp_dist_y});	
+		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = cp_island.X, Y = cp_island.Y, Wdt = cp_dist_x, Hgt = cp_dist_y});	
 		PushBack(checkpoint_islands, cp_island);
 	}
 	// Sort the checkpoints horizontally if the game mode is such.
@@ -149,7 +149,7 @@ public func DrawCheckpointIsland(proplist map, int x, int y, bool enclosed)
 	// Trap the checkpoint in rock / granite if it must be enclosed.
 	if (enclosed)
 	{
-		var border = {Algo = MAPALGO_Ellipsis, X = x, Y = y - 3, Wdt = 7, Hgt = 7};
+		var border = {Algo = MAPALGO_Ellipse, X = x, Y = y - 3, Wdt = 7, Hgt = 7};
 		border = {Algo = MAPALGO_Border, Op = border, Wdt = 2};
 		border = {Algo = MAPALGO_And, Op = [border, {Algo = MAPALGO_Not, Op = island}]};
 		Draw("Granite", border);
@@ -166,7 +166,7 @@ public func DrawSmallIslands(proplist map, array checkpoints, int start_x, int f
 	var map_border = 6;
 	// Remove checkpoints and middle area from mask.
 	for (var cp in checkpoints)
-		mask = {Algo = MAPALGO_Or, Op = [mask, {Algo = MAPALGO_Ellipsis, X = cp[0], Y = cp[1], Wdt = island_border, Hgt = island_border}]};
+		mask = {Algo = MAPALGO_Or, Op = [mask, {Algo = MAPALGO_Ellipse, X = cp[0], Y = cp[1], Wdt = island_border, Hgt = island_border}]};
 	mask = {Algo = MAPALGO_Or, Op = [mask, {Algo = MAPALGO_Rect, X = start_x, Y = island_y - 16, Wdt = finish_x - start_x, Hgt = 16}]};
 	mask = {Algo = MAPALGO_Not, Op = mask};
 	mask = {Algo = MAPALGO_And, Op = [mask, {Algo = MAPALGO_Rect, X = map_border, Y = map_border, Wdt = map.Wdt - 2 * map_border, Hgt = map.Hgt - 2 * map_border}]};

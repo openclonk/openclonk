@@ -126,7 +126,7 @@ public func DrawHurdle(proplist map, int type, int y, int side_wdt)
 	// Empty out part of the chine.
 	if (type == 1)
 	{
-		var ellipsis = {Algo = MAPALGO_Ellipsis, X = wdt / 2 + RandomX(-2, 2), Y = y, Wdt = wdt / 2 - side_wdt + RandomX(3, 5), Hgt = RandomX(8, 9)};
+		var ellipsis = {Algo = MAPALGO_Ellipse, X = wdt / 2 + RandomX(-2, 2), Y = y, Wdt = wdt / 2 - side_wdt + RandomX(3, 5), Hgt = RandomX(8, 9)};
 		ellipsis = {Algo = MAPALGO_Turbulence, Amplitude = 6, Scale = 6, Iterations = 4, Seed = Random(65536), Op = ellipsis};
 		map->Draw("Sky", ellipsis);
 		var ellipsis_top = {Algo = MAPALGO_Border, Top = -2, Op = ellipsis};
@@ -149,7 +149,7 @@ public func DrawHurdle(proplist map, int type, int y, int side_wdt)
 	if (type == 3)
 	{
 		var shift = (2 * Random(2) - 1) * 8;
-		var ellipsis = {Algo = MAPALGO_Ellipsis, X = wdt / 2 + shift, Y = y, Wdt = 8, Hgt = RandomX(5, 6)};
+		var ellipsis = {Algo = MAPALGO_Ellipse, X = wdt / 2 + shift, Y = y, Wdt = 8, Hgt = RandomX(5, 6)};
 		ellipsis = {Algo = MAPALGO_Turbulence, Amplitude = 4, Scale = 4, Iterations = 2, Seed = Random(65536), Op = ellipsis};
 		var top = {Algo = MAPALGO_And, Op = [ellipsis, {Algo = MAPALGO_Rect, X = 0, Y = y - 18, Wdt = wdt, Hgt = 18}]};
 		var bottom = {Algo = MAPALGO_And, Op = [ellipsis, {Algo = MAPALGO_Rect, X = 0, Y = y, Wdt = wdt, Hgt = 18}]};
