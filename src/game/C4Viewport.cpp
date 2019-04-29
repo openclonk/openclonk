@@ -900,6 +900,8 @@ bool C4ViewportList::CloseViewport(C4Viewport * cvp)
 				StartSoundEffect("UI::CloseViewport");
 			}
 		}
+	// Deleting a viewport may leave us with no context selected
+	if (pDraw) pDraw->EnsureMainContextSelected();
 	// Recalculate viewports
 	RecalculateViewports();
 	// Done
