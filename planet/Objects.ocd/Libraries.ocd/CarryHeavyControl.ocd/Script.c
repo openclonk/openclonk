@@ -174,7 +174,7 @@ private func StopCarryHeavy()
 
 /* Lifting / dropping effect */
 
-local lib_carryheavy_lifttime = 45;
+local lib_carryheavy_lifttime = 22;
 
 private func DoLiftCarryHeavy(object obj)
 {
