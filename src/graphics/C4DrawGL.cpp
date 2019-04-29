@@ -727,6 +727,9 @@ C4Shader* CStdGL::GetSpriteShader(int ssc)
 
 bool CStdGL::InitShaders(C4GroupSet* pGroups)
 {
+	if (!pCurrCtx)
+		EnsureMainContextSelected();
+
 	// Create sprite blitting shaders
 	if(!PrepareSpriteShader(SpriteShader, "sprite", 0, pGroups, nullptr, nullptr))
 		return false;
