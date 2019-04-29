@@ -27,7 +27,6 @@ C4FoW::~C4FoW()
 {
 	if (deleted_lights)
 	{
-		if (pDraw) pDraw->EnsureMainContextSelected();
 		ClearDeletedLights();
 	}
 }
