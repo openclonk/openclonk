@@ -202,8 +202,8 @@ public:
 	bool IsRoot();
 	bool mainWindowNeedsLayoutUpdate;
 
-	bool wasRemoved; // to notify the window that it should not inform its parent on Close() a second time
-	bool closeActionWasExecuted; // to prevent a window from calling the close-callback twice even if f.e. closed in the close-callback..
+	bool wasRemovedFromParent{ false }; // to notify the window that it should not inform its parent on Close() a second time
+	bool wasClosed{ false }; // to prevent a window from cleaning up twice even if e.g. closed in the close-callback..
 	C4Object *target;
 	const C4Object *GetTarget() { return target; }
 

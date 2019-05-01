@@ -675,8 +675,8 @@ void C4ScriptGuiWindow::Init()
 	props[C4ScriptGuiWindowPropertyName::priority].SetNull();
 	props[C4ScriptGuiWindowPropertyName::player].SetInt(ANY_OWNER);
 
-	wasRemoved = false;
-	closeActionWasExecuted = false;
+	wasRemovedFromParent = false;
+	wasClosed = false;
 	currentMouseState = MouseState::None;
 	target = nullptr;
 	pScrollBar->fAutoHide = true;
@@ -1162,10 +1162,11 @@ void C4ScriptGuiWindow::ClearPointers(C4Object *pObj)
 {
 	// not removing or clearing anything twice
 	// if this flag is set, the object will not be used after this frame (callbacks?) anyway
-	if (wasRemoved) return;
+	if (wasRemovedFromParent) return;
 
 	if (target == pObj)
 	{
+		MenuDebugLogF("Closing window (%d, %s, @%p, target: %p) due to target removal.", id, name, this, this->target);
 		Close();
 		return;
 	}
@@ -1296,11 +1297,14 @@ void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool a
 
 	if (child)
 	{
-		child->wasRemoved = true;
+		child->wasRemovedFromParent = true;
 		if (close) child->Close();
 		if (child->GetID() != 0)
 			ChildWithIDRemoved(child);
 		RemoveElement(static_cast<C4GUI::Element*>(child));
+		MenuDebugLogF("Deleting child (%d, %s, @%p, target: %p) from parent (%d, %s, @%p, target: %p).",
+			child->id, child->name, child, child->target,
+			id, name, this, target);
 		// RemoveElement does NOT delete the child itself.
 		delete child;
 	}
@@ -1310,7 +1314,11 @@ void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool a
 		for (Element * element : *this)
 		{
 			C4ScriptGuiWindow * child = static_cast<C4ScriptGuiWindow*>(element);
-			child->wasRemoved = true;
+			assert(child != nullptr);
+			MenuDebugLogF("Closing child (%d, %s, @%p, target: %p) due to parent (%d, %s, @%p, target: %p) removal.",
+				child->id, child->name, child, child->target,
+				id, name, this, target);
+			child->wasRemovedFromParent = true;
 			child->Close();
 			if (child->GetID() != 0)
 				ChildWithIDRemoved(child);
@@ -1328,25 +1336,24 @@ void C4ScriptGuiWindow::ClearChildren(bool close)
 
 void C4ScriptGuiWindow::Close()
 {
+	// This can only be called once.
+	if (wasClosed)
+		return;
+	wasClosed = true;
 	// first, close all children and dispose of them properly
 	ClearChildren(true);
 
-	if (!closeActionWasExecuted)
+	// make call to target object if applicable
+	C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onCloseAction].GetAction();
+	// only calls are valid actions for OnClose
+	if (action && action->action == C4ScriptGuiWindowActionID::Call)
 	{
-		closeActionWasExecuted = true;
-
-		// make call to target object if applicable
-		C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onCloseAction].GetAction();
-		// only calls are valid actions for OnClose
-		if (action && action->action == C4ScriptGuiWindowActionID::Call)
-		{
-			// close is always syncronized (script call/object removal) and thus the action can be executed immediately
-			// (otherwise the GUI&action would have been removed anyway..)
-			action->ExecuteCommand(action->id, this, NO_OWNER);
-		}
+		// close is always syncronized (script call/object removal) and thus the action can be executed immediately
+		// (otherwise the GUI&action would have been removed anyway..)
+		action->ExecuteCommand(action->id, this, NO_OWNER);
 	}
 
-	if (!wasRemoved)
+	if (!wasRemovedFromParent)
 	{
 		assert(GetParent() && "Close()ing GUIWindow without parent");
 		static_cast<C4ScriptGuiWindow*>(GetParent())->RemoveChild(this);
