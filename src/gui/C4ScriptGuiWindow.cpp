@@ -1164,13 +1164,6 @@ void C4ScriptGuiWindow::ClearPointers(C4Object *pObj)
 	// if this flag is set, the object will not be used after this frame (callbacks?) anyway
 	if (wasRemovedFromParent) return;
 
-	if (target == pObj)
-	{
-		MenuDebugLogF("Closing window (%d, %s, @%p, target: %p) due to target removal.", id, name, this, this->target);
-		Close();
-		return;
-	}
-	
 	// all properties which have anything to do with objects need to be called from here!
 	props[C4ScriptGuiWindowPropertyName::symbolObject].ClearPointers(pObj);
 	props[C4ScriptGuiWindowPropertyName::onClickAction].ClearPointers(pObj);
@@ -1184,6 +1177,12 @@ void C4ScriptGuiWindow::ClearPointers(C4Object *pObj)
 		// increment the iterator before (possibly) deleting the child
 		++iter;
 		child->ClearPointers(pObj);
+	}
+
+	if (target == pObj)
+	{
+		MenuDebugLogF("Closing window (%d, %s, @%p, target: %p) due to target removal.", id, name, this, this->target);
+		Close();
 	}
 }
 
@@ -1291,6 +1290,14 @@ C4ScriptGuiWindow *C4ScriptGuiWindow::GetSubWindow(int32_t childID, C4Object *ch
 
 void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool all)
 {
+	if (isRemovalLockedForClosingCallback())
+	{
+		// We are in potentially dangerous fields here (removing a window while another window is being removed).
+		// This has a decent chance to lead to accessing dead memory.
+		// It might still leave the GUI tree in an incorrect state (with dead target objects). But still better than a direct crash.
+		throw C4AulExecError("Trying to remove script GUI window (or window target) from within window closing callback.");
+	}
+
 	// do a layout update asap
 	if (!all && !IsRoot())
 		RequestLayoutUpdate();
@@ -1350,8 +1357,12 @@ void C4ScriptGuiWindow::Close()
 	{
 		// close is always syncronized (script call/object removal) and thus the action can be executed immediately
 		// (otherwise the GUI&action would have been removed anyway..)
+		lockRemovalForClosingCallback();
 		action->ExecuteCommand(action->id, this, NO_OWNER);
+		unlockRemovalForClosingCallback();
 	}
+
+	target = nullptr;
 
 	if (!wasRemovedFromParent)
 	{
@@ -2367,4 +2378,19 @@ bool C4ScriptGuiWindow::IsVisibleTo(int32_t player)
 	if (target && !target->IsVisible(player, false)) return false;
 	// Default to visible!
 	return true;
+}
+
+void C4ScriptGuiWindow::lockRemovalForClosingCallback()
+{
+	lockRemovalForClosingCallbackCounter += 1;
+	if (!isMainWindow)
+		static_cast<C4ScriptGuiWindow*>(GetParent())->lockRemovalForClosingCallback();
+}
+
+void C4ScriptGuiWindow::unlockRemovalForClosingCallback()
+{
+	assert(lockRemovalForClosingCallbackCounter > 0);
+	lockRemovalForClosingCallbackCounter -= 1;
+	if (!isMainWindow)
+		static_cast<C4ScriptGuiWindow*>(GetParent())->unlockRemovalForClosingCallback();
 }
