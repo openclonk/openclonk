@@ -593,11 +593,14 @@ void C4Game::Clear()
 
 	// Clear the particles before cleaning up the objects.
 	Particles.Clear();
+	// Clear the script GUI before cleaning up the objects.
+	// This prevents unnecessary ClearPointers callbacks when deleting the objects.
+	ScriptGuiRoot.reset();
+
 	DeleteObjects(true);
 
 	// exit gui
 	pGUI->Clear();
-	ScriptGuiRoot.reset();
 
 	// Clear landscape
 	Weather.Clear();
@@ -930,7 +933,8 @@ void C4Game::ClearPointers(C4Object * pObj)
 	::MessageInput.ClearPointers(pObj);
 	::Console.ClearPointers(pObj);
 	::MouseControl.ClearPointers(pObj);
-	ScriptGuiRoot->ClearPointers(pObj);
+	if (ScriptGuiRoot)
+		ScriptGuiRoot->ClearPointers(pObj);
 	TransferZones.ClearPointers(pObj);
 	if (::ScriptEngine.pGlobalEffects)
 		::ScriptEngine.pGlobalEffects->ClearPointers(pObj);
