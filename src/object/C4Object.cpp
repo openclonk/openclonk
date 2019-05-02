@@ -231,37 +231,70 @@ void C4Object::AssignRemoval(bool exit_contents)
 	{
 		C4RCCreateObj rc;
 		memset(&rc, '\0', sizeof(rc));
-		rc.oei=Number;
-		if (Def && Def->GetName()) strncpy(rc.id, Def->GetName(), 32+1);
-		rc.x=GetX(); rc.y=GetY(); rc.ownr=Owner;
+		rc.oei = Number;
+		if (Def && Def->GetName())
+		{
+			strncpy(rc.id, Def->GetName(), 32+1);
+		}
+		rc.x = GetX();
+		rc.y = GetY();
+		rc.ownr = Owner;
 		AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
 	}
+
+	// ----------------------------------------------------------
 	// Destruction call in container
 	if (Contained)
 	{
 		C4AulParSet pars(this);
 		Contained->Call(PSF_ContentsDestruction, &pars);
-		if (!Status) return;
+		// Destruction-callback might have deleted the object already
+		if (Status == C4OS_DELETED)
+		{
+			return;
+		}
 	}
+
+
+	// ----------------------------------------------------------
 	// Destruction call
 	Call(PSF_Destruction);
 	// Destruction-callback might have deleted the object already
-	if (!Status) return;
-	// remove all effects (extinguishes as well)
+	if (Status == C4OS_DELETED)
+	{
+		return;
+	}
+
+
+	// ----------------------------------------------------------
+	// Remove all effects (extinguishes as well)
 	if (pEffects)
 	{
 		pEffects->ClearAll(C4FxCall_RemoveClear);
 		// Effect-callback might actually have deleted the object already
-		if (!Status) return;
+		if (Status == C4OS_DELETED)
+		{
+			return;
+		}
 	}
-	// remove particles
+
+	// ----------------------------------------------------------
+	// Remove particles, no destruction check necessary
 	ClearParticleLists();
+
+	// ----------------------------------------------------------
 	// Action idle
 	SetAction(nullptr);
+	// Action callbacks might have deleted the object already
+	if (Status == C4OS_DELETED)
+	{
+		return;
+	}
+
 	// Object system operation
 	if (Status == C4OS_INACTIVE)
 	{
-		// object was inactive: activate first, then delete
+		// Object was inactive: activate first, then delete
 		::Objects.InactiveObjects.Remove(this);
 		Status = C4OS_NORMAL;
 		::Objects.Add(this);
