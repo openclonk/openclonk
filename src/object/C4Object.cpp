@@ -211,7 +211,7 @@ void C4Object::ClearParticleLists()
 	FrontParticles = BackParticles = nullptr;
 }
 
-void C4Object::AssignRemoval(bool fExitContents)
+void C4Object::AssignRemoval(bool exit_contents)
 {
 	// Multiple calls to this functions can cause really bad problems, so we have to cancel:
 	// - the def count may be decreased several times. This is really hard to notice if there
@@ -266,6 +266,15 @@ void C4Object::AssignRemoval(bool fExitContents)
 		Status = C4OS_NORMAL;
 		::Objects.Add(this);
 	}
+	FinishRemoval(exit_contents);
+}
+
+void C4Object::FinishRemoval(bool exit_contents)
+{
+	if (Status == C4OS_DELETED)
+	{
+		return;
+	}
 	Status = C4OS_DELETED;
 	// count decrease
 	Def->Count--;
@@ -275,7 +284,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// remove or exit contents 
 	for (C4Object *cobj : Contents)
 	{
-		if (fExitContents)
+		if (exit_contents)
 		{
 			// move objects to parent container or exit them completely
 			bool fRejectCollect;
