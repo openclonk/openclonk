@@ -213,8 +213,20 @@ void C4Object::ClearParticleLists()
 
 void C4Object::AssignRemoval(bool fExitContents)
 {
-	// check status
-	if (!Status) return;
+	// Multiple calls to this functions can cause really bad problems, so we have to cancel:
+	// - the def count may be decreased several times. This is really hard to notice if there
+	//   are a lot of objects, because you have to delete at least half of them to get to a
+	//   negative count, and even then it will only have an effect for functions that
+	//   actually evaluate the def count.
+	// - object status and effects must be updated before the object is removed,
+	//   but at the same time a lot if functions rely on the object being properly
+	//   deleted when the status of an object is C4OS_DELETED.
+	if (Status == C4OS_DELETING || Status == C4OS_DELETED)
+	{
+		return;
+	}
+	Status = C4OS_DELETING;
+
 	if (Config.General.DebugRec)
 	{
 		C4RCCreateObj rc;
@@ -254,7 +266,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 		Status = C4OS_NORMAL;
 		::Objects.Add(this);
 	}
-	Status=0;
+	Status = C4OS_DELETED;
 	// count decrease
 	Def->Count--;
 

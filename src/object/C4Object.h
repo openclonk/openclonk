@@ -34,6 +34,7 @@
 #define C4OS_DELETED  0
 #define C4OS_NORMAL   1
 #define C4OS_INACTIVE 2
+#define C4OS_DELETING 4
 
 /* Action.Dir is the direction the object is actually facing. */
 
