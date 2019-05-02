@@ -227,6 +227,8 @@ void C4Object::AssignRemoval(bool exit_contents)
 	}
 	Status = C4OS_DELETING;
 
+	// ----------------------------------------------------------
+	// Debugging
 	if (Config.General.DebugRec)
 	{
 		C4RCCreateObj rc;
@@ -255,7 +257,6 @@ void C4Object::AssignRemoval(bool exit_contents)
 		}
 	}
 
-
 	// ----------------------------------------------------------
 	// Destruction call
 	Call(PSF_Destruction);
@@ -264,7 +265,6 @@ void C4Object::AssignRemoval(bool exit_contents)
 	{
 		return;
 	}
-
 
 	// ----------------------------------------------------------
 	// Remove all effects (extinguishes as well)
@@ -280,12 +280,19 @@ void C4Object::AssignRemoval(bool exit_contents)
 
 	// ----------------------------------------------------------
 	// Remove particles, no destruction check necessary
-	ClearParticleLists();
+	ClearParticleLists(); // TODO: Move this to FinishRemoval(), too?
 
 	// ----------------------------------------------------------
 	// Action idle
 	SetAction(nullptr);
-	// Action callbacks might have deleted the object already
+
+	// ----------------------------------------------------------
+	// Actual cleanup
+	FinishRemoval(exit_contents);
+}
+
+void C4Object::FinishRemoval(bool exit_contents)
+{
 	if (Status == C4OS_DELETED)
 	{
 		return;
@@ -299,15 +306,7 @@ void C4Object::AssignRemoval(bool exit_contents)
 		Status = C4OS_NORMAL;
 		::Objects.Add(this);
 	}
-	FinishRemoval(exit_contents);
-}
 
-void C4Object::FinishRemoval(bool exit_contents)
-{
-	if (Status == C4OS_DELETED)
-	{
-		return;
-	}
 	Status = C4OS_DELETED;
 	// count decrease
 	Def->Count--;
