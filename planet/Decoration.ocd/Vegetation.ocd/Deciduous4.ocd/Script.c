@@ -33,7 +33,7 @@ public func StartSwing() {
 
 public func StopSwing() {
 	var anim_length = GetAnimationLength("swing");
-	PlayAnimation("swing", 1, Anim_Const(GetAnimationPosition(GetRootAnimation(1)), 0, anim_length, 500, ANIM_Loop));
+	PlayAnimation("swing", 1, Anim_Const(GetAnimationPosition(GetRootAnimation(1))));
 }
 
 local Name = "$Name$";
