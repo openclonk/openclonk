@@ -101,7 +101,7 @@ private:
 	void Splash();
 	void RemoveSolidMask(bool fBackupAttachment); // Remove solid mask data, if existing
 	void MovementDigFreeTargetArea(); // Dig the area free, according to action data
-	inline void FinishRemoval(bool exit_contents);
+	void FinishRemoval(bool exit_contents);
 public:
 	C4Object();
 	~C4Object() override;
