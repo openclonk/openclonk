@@ -14,7 +14,7 @@
         <code>public func InitializePlayer(int plr)
         {
 			if (IsEditor())
-				<funclink>SetWealth</funclink>funclink>(plr, 10**4);
+				<funclink>SetWealth</funclink>(plr, 10**4);
         }</code>
         <text>Gives the player a lot of wealth for testing purposes in editor mode.</text>
       </example>
