@@ -12,7 +12,8 @@ protected func Initialize()
 	return SetAction("Shine");
 }
 
-public func Definition(proplist def) {
+func Definition(proplist def)
+{
 	def.MeshTransformation = Trans_Scale(400);
 }
 

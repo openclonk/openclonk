@@ -7,7 +7,8 @@
 
 local extension = 0;
 
-public func Definition(proplist def) {
+func Definition(proplist def)
+{
 	def.MeshTransformation = Trans_Rotate(90, 0, 1, 0);
 }
 

@@ -2,12 +2,13 @@
 	@author Dustin Neß (dness.de)
 */
 
-public func Definition(proplist def)
+func Definition(proplist def)
 {
 	def.MeshTransformation = Trans_Scale(10, 10, 100);
 }
 
-public func Construction() {
+func Construction()
+{
 	// Note: We apply the scaling after the rotation, which is the "wrong"
 	//       order. However, due to what I believe is an engine bug,
 	//       scaling down too much along the z axis makes the object disappear.
