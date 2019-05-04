@@ -19,5 +19,3 @@ protected func Construction()
 
 	return true;
 }
-
-local Visibility = VIS_Editor;
