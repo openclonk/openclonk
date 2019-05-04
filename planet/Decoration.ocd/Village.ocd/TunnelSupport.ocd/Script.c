@@ -7,9 +7,14 @@
 
 local extension = 0;
 
+func Definition(proplist def)
+{
+	def.MeshTransformation = Trans_Rotate(90, 0, 1, 0);
+}
+
 func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Rotate(RandomX(75, 105), 0,1,0));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-15, 15), 0,1,0), GetID().MeshTransformation));
 }
 
 // Stretch the support beams
