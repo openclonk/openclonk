@@ -211,6 +211,7 @@ void C4Object::ClearParticleLists()
 	FrontParticles = BackParticles = nullptr;
 }
 
+// Start removing the object and do all the callbacks; See also FinishRemoval
 void C4Object::AssignRemoval(bool exit_contents)
 {
 	// Multiple calls to this functions can cause really bad problems, so we have to cancel:
@@ -296,6 +297,7 @@ void C4Object::AssignRemoval(bool exit_contents)
 	FinishRemoval(exit_contents);
 }
 
+// Actually remove the object, without callbacks; This should be done only after AssignRemoval
 void C4Object::FinishRemoval(bool exit_contents)
 {
 	if (Status == C4OS_DELETED)
