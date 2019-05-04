@@ -880,7 +880,9 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	if (Mode == C4CNS_ModeCreateObject && has_mouse_hover && creator_def)
 	{
 		C4TargetFacet cgo_creator;
-		cgo_creator.Set(cgo.Surface, X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY,
+		cgo_creator.Set(cgo.Surface,
+			X + cgo.X - cgo.TargetX + creator_def->Shape.x + creator_def->Shape.Wdt / 2,
+			Y + cgo.Y - cgo.TargetY + creator_def->Shape.y + creator_def->Shape.Hgt / 2,
 			creator_def->Shape.Wdt, creator_def->Shape.Hgt, 0, 0, cgo.Zoom, 0, 0);
 		if (!creator_overlay)
 		{
