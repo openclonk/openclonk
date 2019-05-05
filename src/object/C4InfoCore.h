@@ -56,7 +56,7 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 protected:
 	bool Compile(const char *szSource);
-	bool Decompile(char **ppOutput, size_t *ipSize);
+	bool Decompile(StdStrBuf &Buf);
 
 	void UpdateCustomRanks(C4DefList *pDefs); // sets NextRankName and NextRankExp
 };
@@ -105,7 +105,7 @@ public:
 	int32_t OldPrefAutoContextMenu;
 
 	// achievements indexed by achievement name and scenario
-	C4ScenarioParameters Achievements; 
+	C4ScenarioParameters Achievements;
 public:
 	void Default(C4RankSystem *pRanks=nullptr);
 	void Promote(int32_t iRank, C4RankSystem &rRanks);

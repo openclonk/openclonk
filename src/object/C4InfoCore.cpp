@@ -347,15 +347,13 @@ bool C4ObjectInfoCore::Save(C4Group &hGroup, C4DefList *pDefs)
 	{
 		UpdateCustomRanks(pDefs);
 	}
-	char *Buffer;
-	size_t BufferSize;
-	if (!Decompile(&Buffer, &BufferSize))
+	StdStrBuf Buffer;
+	if (!Decompile(Buffer))
 	{
 		return false;
 	}
-	if (!hGroup.Add(C4CFN_ObjectInfoCore, Buffer, BufferSize, false, true))
+	if (!hGroup.Add(C4CFN_ObjectInfoCore, Buffer, false, true))
 	{
-		delete [] Buffer;
 		return false;
 	}
 	return true;
@@ -402,31 +400,14 @@ bool C4ObjectInfoCore::Compile(const char *szSource)
 	return ret;
 }
 
-bool C4ObjectInfoCore::Decompile(char **ppOutput, size_t *ipSize)
+bool C4ObjectInfoCore::Decompile(StdStrBuf &Buf)
 {
-	StdStrBuf Buf;
 	if (!DecompileToBuf_Log<StdCompilerINIWrite>(
 	      mkNamingAdapt(*this, "ObjectInfo"),
 	      &Buf,
 	      "ObjectInfo"))
 	{
-		if (ppOutput)
-		{
-			*ppOutput = nullptr;
-		}
-		if (ipSize)
-		{
-			*ipSize = 0;
-		}
 		return false;
-	}
-	if (ppOutput)
-	{
-		*ppOutput = Buf.GrabPointer();
-	}
-	if (ipSize)
-	{
-		*ipSize = Buf.getSize();
 	}
 	return true;
 }
