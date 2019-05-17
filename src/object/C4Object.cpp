@@ -247,62 +247,27 @@ void C4Object::AssignRemoval(bool exit_contents)
 		AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
 	}
 
+	// Destruction call notification for container
 	if (Contained)
 	{
 		C4AulParSet pars(this);
 		Contained->Call(PSF_ContentsDestruction, &pars);
-		// Destruction-callback might have deleted the object already
-		// TODO: Not necessary if we get the status stuff right
-		if (Status == C4OS_DELETED)
-		{
-			return;
-		}
 	}
 
 	// Destruction call
 	Call(PSF_Destruction);
-	// Destruction-callback might have deleted the object already
-	// TODO: Not necessary if we get the status stuff right
-	if (Status == C4OS_DELETED)
-	{
-		return;
-	}
 
 	// Remove all effects (extinguishes as well)
 	if (pEffects)
 	{
 		pEffects->ClearAll(C4FxCall_RemoveClear);
-		// Effect-callback might actually have deleted the object already
-		// TODO: Not necessary if we get the status stuff right
-		if (Status == C4OS_DELETED)
-		{
-			return;
-		}
 	}
 
-	// Remove particles, no destruction check necessary
-	ClearParticleLists(); // TODO: Move this to the actual cleanup?
+	// Remove particles
+	ClearParticleLists();
 
 	// Action idle
 	SetAction(nullptr);
-	// Action callback might actually have deleted the object already
-	// TODO: Not necessary if we get the status stuff right
-	if (Status == C4OS_DELETED)
-	{
-		return;
-	}
-
-	// Actual cleanup
-	FinishRemoval(exit_contents);
-}
-
-// Actually remove the object, without callbacks; This should be done only after AssignRemoval
-void C4Object::FinishRemoval(bool exit_contents)
-{
-	if (Status == C4OS_DELETED)
-	{
-		return;
-	}
 
 	// Object system operation
 	if (Status == C4OS_INACTIVE)

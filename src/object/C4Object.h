@@ -100,7 +100,6 @@ private:
 	void Splash();
 	void RemoveSolidMask(bool fBackupAttachment); // Remove solid mask data, if existing
 	void MovementDigFreeTargetArea(); // Dig the area free, according to action data
-	void FinishRemoval(bool exit_contents); // Actually remove the object, without callbacks; This should be done only after AssignRemoval
 public:
 	C4Object();
 	~C4Object() override;
@@ -212,7 +211,7 @@ public:
 	void Denumerate(C4ValueNumbers *) override;
 	void DrawLine(C4TargetFacet &cgo, int32_t at_player);
 	bool SetPhase(int32_t iPhase);
-	void AssignRemoval(bool exit_contents = false); // Start removing the object and do all the callbacks; See also FinishRemoval
+	void AssignRemoval(bool exit_contents = false);
 	enum DrawMode { ODM_Normal=0, ODM_Overlay=1, ODM_BaseOnly=2 };
 	void Draw(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal, float offX=0, float offY=0);
 	void DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal, float offX=0, float offY=0);
