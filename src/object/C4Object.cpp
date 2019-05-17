@@ -214,7 +214,8 @@ void C4Object::ClearParticleLists()
 // Start removing the object and do all the callbacks; See also FinishRemoval
 void C4Object::AssignRemoval(bool exit_contents)
 {
-	// Multiple calls to this functions can cause really bad problems, so we have to cancel:
+	// Multiple calls to this functions can cause really bad problems, so we have to cancel
+	// in case the object is deleted or being deleted (final deletion happens after removal delay):
 	// - the def count may be decreased several times. This is really hard to notice if there
 	//   are a lot of objects, because you have to delete at least half of them to get to a
 	//   negative count, and even then it will only have an effect for functions that
@@ -222,15 +223,13 @@ void C4Object::AssignRemoval(bool exit_contents)
 	// - object status and effects must be updated before the object is removed,
 	//   but at the same time a lot if functions rely on the object being properly
 	//   deleted when the status of an object is C4OS_DELETED.
-	if (Status == C4OS_DELETING || Status == C4OS_DELETED)
+	if (Status == C4OS_DELETED || RemovalDelay > 0)
 	{
 		return;
 	}
 	// Set status to deleting, so that callbacks in this function that might delete
 	// the object do not delete it a second time.
-	// TODO: This causes problems if the status should change during one of those
-	// callbacks, or if the status was C4OS_INACTIVE
-	Status = C4OS_DELETING;
+	RemovalDelay = 2;
 
 	// Debugging
 	if (Config.General.DebugRec)
@@ -358,7 +357,6 @@ void C4Object::FinishRemoval(bool exit_contents)
 		pSolidMaskData = nullptr;
 	}
 	SolidMask.Wdt = 0;
-	RemovalDelay=2;
 }
 
 void C4Object::UpdateShape(bool bUpdateVertices)
