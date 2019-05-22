@@ -211,50 +211,74 @@ void C4Object::ClearParticleLists()
 	FrontParticles = BackParticles = nullptr;
 }
 
-void C4Object::AssignRemoval(bool fExitContents)
+// Start removing the object and do all the callbacks; See also FinishRemoval
+void C4Object::AssignRemoval(bool exit_contents)
 {
-	// check status
-	if (!Status) return;
+	// Multiple calls to this functions can cause really bad problems, so we have to cancel
+	// in case the object is deleted or being deleted (final deletion happens after removal delay):
+	// - the def count may be decreased several times. This is really hard to notice if there
+	//   are a lot of objects, because you have to delete at least half of them to get to a
+	//   negative count, and even then it will only have an effect for functions that
+	//   actually evaluate the def count.
+	// - object status and effects must be updated before the object is removed,
+	//   but at the same time a lot if functions rely on the object being properly
+	//   deleted when the status of an object is C4OS_DELETED.
+	if (Status == C4OS_DELETED || RemovalDelay > 0)
+	{
+		return;
+	}
+	// Set status to deleting, so that callbacks in this function that might delete
+	// the object do not delete it a second time.
+	RemovalDelay = 2;
+
+	// Debugging
 	if (Config.General.DebugRec)
 	{
 		C4RCCreateObj rc;
 		memset(&rc, '\0', sizeof(rc));
-		rc.oei=Number;
-		if (Def && Def->GetName()) strncpy(rc.id, Def->GetName(), 32+1);
-		rc.x=GetX(); rc.y=GetY(); rc.ownr=Owner;
+		rc.oei = Number;
+		if (Def && Def->GetName())
+		{
+			strncpy(rc.id, Def->GetName(), 32+1);
+		}
+		rc.x = GetX();
+		rc.y = GetY();
+		rc.ownr = Owner;
 		AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
 	}
-	// Destruction call in container
+
+	// Destruction call notification for container
 	if (Contained)
 	{
 		C4AulParSet pars(this);
 		Contained->Call(PSF_ContentsDestruction, &pars);
-		if (!Status) return;
 	}
+
 	// Destruction call
 	Call(PSF_Destruction);
-	// Destruction-callback might have deleted the object already
-	if (!Status) return;
-	// remove all effects (extinguishes as well)
+
+	// Remove all effects (extinguishes as well)
 	if (pEffects)
 	{
 		pEffects->ClearAll(C4FxCall_RemoveClear);
-		// Effect-callback might actually have deleted the object already
-		if (!Status) return;
 	}
-	// remove particles
+
+	// Remove particles
 	ClearParticleLists();
+
 	// Action idle
 	SetAction(nullptr);
+
 	// Object system operation
 	if (Status == C4OS_INACTIVE)
 	{
-		// object was inactive: activate first, then delete
+		// Object was inactive: activate first, then delete
 		::Objects.InactiveObjects.Remove(this);
 		Status = C4OS_NORMAL;
 		::Objects.Add(this);
 	}
-	Status=0;
+
+	Status = C4OS_DELETED;
 	// count decrease
 	Def->Count--;
 
@@ -263,7 +287,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// remove or exit contents 
 	for (C4Object *cobj : Contents)
 	{
-		if (fExitContents)
+		if (exit_contents)
 		{
 			// move objects to parent container or exit them completely
 			bool fRejectCollect;
@@ -298,7 +322,6 @@ void C4Object::AssignRemoval(bool fExitContents)
 		pSolidMaskData = nullptr;
 	}
 	SolidMask.Wdt = 0;
-	RemovalDelay=2;
 }
 
 void C4Object::UpdateShape(bool bUpdateVertices)
