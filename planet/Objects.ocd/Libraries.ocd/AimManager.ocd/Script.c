@@ -31,7 +31,7 @@
 		// If an animation is nil there is no new animation played and the clonk just waits *Time frames
 	};
 	The weapon gets the following callbacks
-	GetAnimationSet();         // Has to return the animation set
+	GetAnimationSet(object clonk);         // Has to return the animation set; The clonk is passed, so that modifications can be made according to its state.
 	// The following Stop* Callbacks, have to return true if the clonk doesn't have to be reset (e.g. stating aiming after loading)
 	FinishedLoading(object clonk);             // When the loading animation is over (after LoadTime frames)
 	FinishedAiming(object clonk, int angle);   // When the clonk has finished loading and aiming at the desired position
@@ -138,9 +138,9 @@ public func StartLoad(object weapon)
 
 		// Remember new
 		aim_weapon = weapon;
-		aim_set = weapon->~GetAnimationSet();
+		aim_set = weapon->~GetAnimationSet(this);
 
-		// Applay the set
+		// Apply the set
 		ApplySet(aim_set);
 
 		// Add effect to ensure procedure
@@ -179,7 +179,7 @@ public func StartAim(object weapon, int angle)
 
 		// Remember new
 		aim_weapon = weapon;
-		aim_set = weapon->~GetAnimationSet();
+		aim_set = weapon->~GetAnimationSet(this);
 
 		// Apply the set
 		ApplySet(aim_set);
@@ -200,9 +200,6 @@ public func StartAim(object weapon, int angle)
 			SetAnimationWeight(aim_animation_index, Anim_Const(500));
 		}
 	}
-
-//	aim_angle = -90;
-//	if(GetDir()) aim_angle = 90;
 	AddEffect("IntAim", this, 1, 1, this);
 }
 
@@ -271,7 +268,7 @@ public func StartShoot(object weapon)
 
 		// Remember new
 		aim_weapon = weapon;
-		aim_set = weapon->~GetAnimationSet();
+		aim_set = weapon->~GetAnimationSet(this);
 
 		// Applay the set
 		ApplySet(aim_set);
