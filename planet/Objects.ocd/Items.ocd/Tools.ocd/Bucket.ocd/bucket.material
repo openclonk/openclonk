@@ -1,20 +1,20 @@
-material bucket 
+material bucket
 {
-    receive_shadows on
-    technique b2ogre_1329088639.206
-    {
-        pass b2ogre_1329088639.206
-        {
-            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
-            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
-            specular 1 1 1 5.0 5.5
-            emissive 0.0 0.0 0.0 1.0
-						scene_blend alpha_blend
-            texture_unit b2ogre_1329088639.207
-            {
-                texture bucket_clr_mix.png
-                tex_address_mode wrap
-            }
-        }
-    }
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 1.000000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			scene_blend alpha_blend
+			texture_unit
+			{
+				texture bucket.jpg
+				tex_address_mode wrap
+			}
+		}
+	}
 }

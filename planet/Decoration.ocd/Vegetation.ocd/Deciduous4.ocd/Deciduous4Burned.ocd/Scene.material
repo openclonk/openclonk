@@ -1,0 +1,28 @@
+material tree09_burnt
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            scene_blend one zero
+
+            cull_hardware none
+
+            alpha_rejection greater_equal 128
+            alpha_to_coverage on
+
+            ambient 1.0 1.0 1.0 0.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0 0 0 0 23.5
+            emissive 0 0 0 0
+
+            texture_unit
+            {
+                texture tree_burnt.jpg
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}

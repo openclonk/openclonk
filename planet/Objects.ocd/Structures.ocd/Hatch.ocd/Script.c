@@ -12,7 +12,6 @@ local opened = false;
 
 func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(0,-10000), Trans_Rotate(-10,0,1,0), Trans_Rotate(-8,1,0,0)));
 	SetCategory(C4D_StaticBack);
 
 	return _inherited(...);
@@ -227,6 +226,7 @@ func CloseForReal()
 
 func Definition(def)
 {
+	def.MeshTransformation = Trans_Mul(Trans_Translate(0,-10000), Trans_Rotate(-10,0,1,0), Trans_Rotate(-8,1,0,0));
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,-3000,-5000), Trans_Rotate(-30,1,0,0), Trans_Rotate(30,0,1,0), Trans_Translate(1000,1,0)), def);
 	return _inherited(def);
 }

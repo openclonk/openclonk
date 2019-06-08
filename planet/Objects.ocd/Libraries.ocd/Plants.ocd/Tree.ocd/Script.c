@@ -170,6 +170,7 @@ private func Damage(int change, int cause)
 				burned->SetR(GetR());
 				burned->Incinerate(OnFire());
 				burned->SetPosition(GetX(), GetY());
+				burned->SetProperty("MeshTransformation", GetProperty("MeshTransformation"));
 				return RemoveObject();
 			}
 			// Something went wrong. Better Burst into ashes!
