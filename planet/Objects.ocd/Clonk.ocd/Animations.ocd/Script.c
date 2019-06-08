@@ -874,7 +874,10 @@ func PushActionSpeed(string action, int speed)
 	{
 		ActMap = { Prototype = this.Prototype.ActMap };
 	}
-	// Update the speed value
+	// Update the speed value.
+	// The old value is saved in the prototype and will be restored by PopActionSpeed
+	// E.g. PushActionSpeed("foo", 30), PushActionSpeed("foo", 40),
+	// PushActionSpeed("foo", 50), PopActionSpeed("foo") will result in a speed of 40.
 	ActMap[action] = { Prototype = ActMap[action], Speed = speed };
 	// Update the values for the current action
 	if (this.Action == ActMap[action].Prototype)
@@ -886,13 +889,20 @@ func PushActionSpeed(string action, int speed)
 /* Resets the named action to the previous one */
 func PopActionSpeed(string action)
 {
+	// The prototype is "Action", if the action is already the original action
+	// Returning in these cases prevents errors if PopActionSpeed is called before PushActionSpeed
+	if (ActMap[action].Prototype == nil || ActMap[action].Prototype == Action)
+	{
+		return;
+	}
+	
 	// FIXME: This only works if PushActionSpeed and PopActionSpeed are the only functions manipulating the ActMap
 	// Update the values for the current action
 	if (this.Action == ActMap[action])
 	{
 		this.Action = ActMap[action].Prototype;
 	}
-	// Reset the action to the prototype
+	// Reset the action to the prototype (previous value).
 	ActMap[action] = ActMap[action].Prototype;
 }
 
