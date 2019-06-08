@@ -883,42 +883,54 @@ func PushActionSpeed(string action, int speed, any identifier)
 	SetActionSpeed(action, speed, identifier);
 }
 
-/* Resets the named action to the previous one */
+/* Resets the named action to the previous (= prototype) one */
 func PopActionSpeed(string action, any identifier)
 {
 	SetActionSpeed(action, nil, identifier);
 }
 
-func SetActionSpeed(string action, int speed, any identifier)
+func SetActionSpeed(string action, int value, any identifier)
 {
+	// First lets do all the calculations
+	
+	// Initialize the speed map
+	var speedFixed = ActMap[action].SpeedFixed;
+	var speedScale = ActMap[action].SpeedScale ?? {};
+	// Set the value
+	if (identifier)
+	{
+		speedScale[Format("%v", identifier)] = value;
+	}
+	else
+	{
+		speedFixed = value;
+	}
+	// Calculate the new value
+	var speed = speedFixed ?? this.Prototype.ActMap[action].Speed;
+	for (var name in GetProperties(speedScale))
+	{
+		var scale = speedScale[name] ?? 1000;
+		speed = (scale * speed) / 1000;
+	}
+	
+	
+	// Finally, change the values in the actual ActMap
+	
 	// Create an actmap that can be manipulated, if necessary
 	if (ActMap == this.Prototype.ActMap)
 	{
 		ActMap = { Prototype = this.Prototype.ActMap };
 	}
-	// Initialize the speed map
-	if (ActMap[action].SpeedScale == nil)
-	{
-		ActMap[action].SpeedScale = {};
-	}
-	// Set the value
-	if (identifier)
-	{
-		ActMap[action].SpeedScale[Format("%v", identifier)] = speed;
-	}
-	else
-	{
-		ActMap[action].SpeedFixed = speed;
-	}
-	// Calculate the new value
-	ActMap[action].Speed = ActMap[action].SpeedFixed ?? ActMap[action].Prototype.Speed;
-	for (var name in GetProperties(ActMap[action].SpeedScale))
-	{
-		var scale = ActMap[action].SpeedScale[name] ?? 1000;
-		ActMap[action].Speed = (scale * ActMap[action].Speed) / 1000;
-	}
-	// Update, if necessary
-	if (this.Action == ActMap[action].Prototype)
+	// Update the action with the new values - this includes resetting the action values to their defaults (sword relies on that)
+	var action_with_old_values = ActMap[action];
+	ActMap[action] = {
+		Prototype = this.Prototype.ActMap[action], 
+		Speed = speed,           // Manipulated speed value
+		SpeedScale = speedScale, // Save for further function calls
+		SpeedFixed = speedFixed, // Save for further function calls
+	};
+	// Update, if necessary - if the action has the original values from the prototype
+	if (this.Action == action_with_old_values)
 	{
 		this.Action = ActMap[action];
 	}
