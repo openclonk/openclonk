@@ -867,20 +867,32 @@ func FxFallTimer(object target, effect, int timer)
 --*/
 
 /* Replaces the named action by an instance with a different speed */
-func PushActionSpeed(string action, int n)
+func PushActionSpeed(string action, int speed)
 {
+	// Create an actmap that can be manipulated, if necessary
 	if (ActMap == this.Prototype.ActMap)
+	{
 		ActMap = { Prototype = this.Prototype.ActMap };
-	ActMap[action] = { Prototype = ActMap[action], Speed = n };
+	}
+	// Update the speed value
+	ActMap[action] = { Prototype = ActMap[action], Speed = speed };
+	// Update the values for the current action
 	if (this.Action == ActMap[action].Prototype)
+	{
 		this.Action = ActMap[action];
+	}
 }
 
 /* Resets the named action to the previous one */
-func PopActionSpeed(string action, int n) {
+func PopActionSpeed(string action)
+{
 	// FIXME: This only works if PushActionSpeed and PopActionSpeed are the only functions manipulating the ActMap
+	// Update the values for the current action
 	if (this.Action == ActMap[action])
+	{
 		this.Action = ActMap[action].Prototype;
+	}
+	// Reset the action to the prototype
 	ActMap[action] = ActMap[action].Prototype;
 }
 
