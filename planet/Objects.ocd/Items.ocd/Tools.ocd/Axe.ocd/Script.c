@@ -371,14 +371,14 @@ func OnWeaponHitCheckStop(clonk)
 func FxAxeStrikeStopStart(pTarget, effect, iTemp)
 {
 	if(iTemp) return;
-	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed) / 100);
+	pTarget->PushActionSpeed("Walk", 10, GetID());
 }
 
 func FxAxeStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
 	if (iTemp)
 		return;
-	pTarget->PopActionSpeed("Walk");
+	pTarget->PopActionSpeed("Walk", GetID());
 	movement_effect = nil;
 }
 
