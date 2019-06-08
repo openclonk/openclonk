@@ -866,8 +866,15 @@ func FxFallTimer(object target, effect, int timer)
 	Adjust the speed sinusoidal. Plays two different stand animations according to the position the clonk stops.
 --*/
 
-/* Replaces the named action by an instance with a different speed */
-func PushActionSpeed(string action, int speed)
+/*
+	Replaces the named action by an instance with a different speed.
+	
+	@par action The name of the action
+	@par action The new speed value.
+	@par relative If true, the speed value will be interpreted
+	              as speed/1000 of the original speed.
+*/
+func PushActionSpeed(string action, int speed, bool relative)
 {
 	// Create an actmap that can be manipulated, if necessary
 	if (ActMap == this.Prototype.ActMap)
@@ -878,7 +885,15 @@ func PushActionSpeed(string action, int speed)
 	// The old value is saved in the prototype and will be restored by PopActionSpeed
 	// E.g. PushActionSpeed("foo", 30), PushActionSpeed("foo", 40),
 	// PushActionSpeed("foo", 50), PopActionSpeed("foo") will result in a speed of 40.
-	ActMap[action] = { Prototype = ActMap[action], Speed = speed };
+	ActMap[action] = { Prototype = ActMap[action] };
+	if (relative)
+	{
+		ActMap[action].Speed = speed * ActMap[action].Speed / 1000;
+	}
+	else
+	{
+		ActMap[action].Speed = speed;
+	}
 	// Update the values for the current action
 	if (this.Action == ActMap[action].Prototype)
 	{
