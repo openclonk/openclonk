@@ -873,52 +873,55 @@ func FxFallTimer(object target, effect, int timer)
 	@par action The new speed value.
 	@par relative If true, the speed value will be interpreted
 	              as speed/1000 of the original speed.
+	@par identifier If an identifier is specified,
+	                then the fixed speed value is scaled by
+	                speed/1000.
+	                Otherwise, the fixed speed value is set.
 */
-func PushActionSpeed(string action, int speed, bool relative)
+func PushActionSpeed(string action, int speed, any identifier)
+{
+	SetActionSpeed(action, speed, identifier);
+}
+
+/* Resets the named action to the previous one */
+func PopActionSpeed(string action, any identifier)
+{
+	SetActionSpeed(action, nil, identifier);
+}
+
+func SetActionSpeed(string action, int speed, any identifier)
 {
 	// Create an actmap that can be manipulated, if necessary
 	if (ActMap == this.Prototype.ActMap)
 	{
 		ActMap = { Prototype = this.Prototype.ActMap };
 	}
-	// Update the speed value.
-	// The old value is saved in the prototype and will be restored by PopActionSpeed
-	// E.g. PushActionSpeed("foo", 30), PushActionSpeed("foo", 40),
-	// PushActionSpeed("foo", 50), PopActionSpeed("foo") will result in a speed of 40.
-	ActMap[action] = { Prototype = ActMap[action] };
-	if (relative)
+	// Initialize the speed map
+	if (ActMap[action].SpeedScale == nil)
 	{
-		ActMap[action].Speed = speed * ActMap[action].Speed / 1000;
+		ActMap[action].SpeedScale = {};
+	}
+	// Set the value
+	if (identifier)
+	{
+		ActMap[action].SpeedScale[Format("%v", identifier)] = speed;
 	}
 	else
 	{
-		ActMap[action].Speed = speed;
+		ActMap[action].SpeedFixed = speed;
 	}
-	// Update the values for the current action
+	// Calculate the new value
+	ActMap[action].Speed = ActMap[action].SpeedFixed ?? ActMap[action].Prototype.Speed;
+	for (var name in GetProperties(ActMap[action].SpeedScale))
+	{
+		var scale = ActMap[action].SpeedScale[name] ?? 1000;
+		ActMap[action].Speed = (scale * ActMap[action].Speed) / 1000;
+	}
+	// Update, if necessary
 	if (this.Action == ActMap[action].Prototype)
 	{
 		this.Action = ActMap[action];
 	}
-}
-
-/* Resets the named action to the previous one */
-func PopActionSpeed(string action)
-{
-	// The prototype is "Action", if the action is already the original action
-	// Returning in these cases prevents errors if PopActionSpeed is called before PushActionSpeed
-	if (ActMap[action].Prototype == nil || ActMap[action].Prototype == Action)
-	{
-		return;
-	}
-	
-	// FIXME: This only works if PushActionSpeed and PopActionSpeed are the only functions manipulating the ActMap
-	// Update the values for the current action
-	if (this.Action == ActMap[action])
-	{
-		this.Action = ActMap[action].Prototype;
-	}
-	// Reset the action to the prototype (previous value).
-	ActMap[action] = ActMap[action].Prototype;
 }
 
 func StartHangle()
