@@ -431,7 +431,8 @@ public func ResetHands()
 	aim_stop = 0;
 	aim_angle = -90+180*GetDir();
 
-	StopAnimation(GetRootAnimation(10));
+	// Stop the aim/shoot animation
+	StopAnimation(GetRootAnimation(CLONK_ANIM_SLOT_Arms));
 
 	RemoveEffect("IntWalkSlow", this);
 	SetBackwardsSpeed(nil);
