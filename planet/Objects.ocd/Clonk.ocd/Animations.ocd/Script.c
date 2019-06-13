@@ -883,16 +883,16 @@ func FxFallTimer(object target, effect, int timer)
 */
 func PushActionSpeed(string action, int speed, any identifier)
 {
-	SetActionSpeed(action, speed, identifier);
+	SetActionSpeed(action, identifier, speed);
 }
 
 /* Resets the named action to the previous (= prototype) one */
 func PopActionSpeed(string action, any identifier)
 {
-	SetActionSpeed(action, nil, identifier);
+	SetActionSpeed(action, identifier, nil);
 }
 
-func SetActionSpeed(string action, int value, any identifier)
+func SetActionSpeed(string action, any identifier, int value)
 {
 	AssertNotNil(identifier, "identifier");
 	if (GetType(identifier) == C4V_Def)
