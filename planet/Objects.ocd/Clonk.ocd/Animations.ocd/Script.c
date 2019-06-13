@@ -346,13 +346,16 @@ func UpdateBackwardsSpeed()
 
 func FxIntWalkBackStart(pTarget, effect, fTmp, iValue)
 {
-	if(iValue == nil) iValue = 84;
-	pTarget->PushActionSpeed("Walk", iValue);
+	if (iValue == nil)
+	{
+		iValue = 420;
+	}
+	pTarget->PushActionSpeed("Walk", iValue, GetID());
 }
 
 func FxIntWalkBackStop(pTarget, effect)
 {
-	pTarget->PopActionSpeed("Walk");
+	pTarget->PopActionSpeed("Walk", GetID());
 }
 
 /* Walk */
@@ -891,22 +894,24 @@ func PopActionSpeed(string action, any identifier)
 
 func SetActionSpeed(string action, int value, any identifier)
 {
+	AssertNotNil(identifier, "identifier");
+	if (GetType(identifier) == C4V_Def)
+	{
+		identifier = Format("%i", identifier);
+	}
+	else if (GetType(identifier) != C4V_String)
+	{
+		FatalError("Parameter identifier must be a string or id");
+	}
+	
 	// First lets do all the calculations
 	
 	// Initialize the speed map
-	var speedFixed = ActMap[action].SpeedFixed;
 	var speedScale = ActMap[action].SpeedScale ?? {};
 	// Set the value
-	if (identifier)
-	{
-		speedScale[Format("%v", identifier)] = value;
-	}
-	else
-	{
-		speedFixed = value;
-	}
+	speedScale[identifier] = value;
 	// Calculate the new value
-	var speed = speedFixed ?? this.Prototype.ActMap[action].Speed;
+	var speed = this.Prototype.ActMap[action].Speed;
 	for (var name in GetProperties(speedScale))
 	{
 		var scale = speedScale[name] ?? 1000;
@@ -927,7 +932,6 @@ func SetActionSpeed(string action, int value, any identifier)
 		Prototype = this.Prototype.ActMap[action], 
 		Speed = speed,           // Manipulated speed value
 		SpeedScale = speedScale, // Save for further function calls
-		SpeedFixed = speedFixed, // Save for further function calls
 	};
 	// Update, if necessary - if the action has the original values from the prototype
 	if (this.Action == action_with_old_values)
@@ -954,7 +958,7 @@ func StopHangle()
 func FxIntHangleStart(pTarget, effect, fTmp)
 {
 	effect.hangle_speed = ActMap.Hangle.Speed;
-	PushActionSpeed("Hangle", effect.hangle_speed);
+	PushActionSpeed("Hangle", effect.hangle_speed * 5, GetID());
 	if(fTmp) return;
 
 	// is_moving: whether the clonk is currently moving or not (<=> current animation is Hangle or HangleStand)
@@ -967,7 +971,7 @@ func FxIntHangleStart(pTarget, effect, fTmp)
 
 func FxIntHangleStop(pTarget, effect, iReasonm, fTmp)
 {
-	PopActionSpeed("Hangle");
+	PopActionSpeed("Hangle", GetID());
 	if(fTmp) return;
 	// Delayed stop request
 	if (effect.request_stop) SetComDir(COMD_Stop);

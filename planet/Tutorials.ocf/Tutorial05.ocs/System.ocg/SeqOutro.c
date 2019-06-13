@@ -30,7 +30,7 @@ public func Outro_1()
 
 public func Outro_2()
 {
-	this.head.ActMap.Walk.Speed = 38;
+	this.head->PushActionSpeed("Walk", 190, "Outro");
 	this.head->SetPosition(458, 732);
 	this.head->SetCommand("MoveTo", nil, 816, 702);
 	MessageBox("$MsgVillageHeadComing$", this.plr_clonk, this.head, this.plr, true);
@@ -70,11 +70,7 @@ public func Outro_5()
 
 public func Outro_6()
 {
-	if (this.plr_clonk.ActMap == this.plr_clonk.Prototype.ActMap)
-		this.plr_clonk.ActMap = new this.plr_clonk.ActMap {};
-	if (this.plr_clonk.ActMap.Walk == this.plr_clonk.Prototype.ActMap.Walk)	
-		this.plr_clonk.ActMap.Walk = new this.plr_clonk.ActMap.Walk {};
-	this.plr_clonk.ActMap.Walk.Speed = 38;
+	this.plr_clonk->PushActionSpeed("Walk", 190, "Outro");
 	this.plr_clonk->SetCommand("MoveTo", nil, this.plr_clonk->GetX() + 90, this.plr_clonk->GetY());	
 	return ScheduleNext(180);
 }
@@ -88,8 +84,8 @@ public func Outro_7()
 
 public func Outro_8()
 {
-	this.plr_clonk.ActMap.Walk.Speed = Clonk.ActMap.Walk.Speed;
-	this.head.ActMap.Walk.Speed = Clonk.ActMap.Walk.Speed;
+	this.plr_clonk->PopActionSpeed("Walk", "Outro");
+	this.head->PopActionSpeed("Walk", "Outro");
 	return Stop();
 }
 

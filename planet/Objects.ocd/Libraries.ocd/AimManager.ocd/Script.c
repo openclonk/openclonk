@@ -395,11 +395,14 @@ public func ResetHands()
 
 func FxIntWalkSlowStart(pTarget, effect, fTmp, iValue)
 {
-	if(iValue == nil) iValue = 84;
-	pTarget->PushActionSpeed("Walk", iValue);
+	if(iValue == nil)
+	{
+		iValue = 420;
+	}
+	pTarget->PushActionSpeed("Walk", iValue, GetID());
 }
 
 func FxIntWalkSlowStop(pTarget, effect)
 {
-	pTarget->PopActionSpeed("Walk");
+	pTarget->PopActionSpeed("Walk", GetID());
 }
