@@ -50,14 +50,18 @@ global func Tan(int angle, int radius, int prec)
 
 global func Normalize(int angle, int start, int precision)
 {
-	if (!precision)
-		precision = 1;
-	var end = precision * 360 + start;
+	precision = precision ?? 1;
+	var range = precision * 360;
+	var end = start + range;
 	
 	while (angle < start)
-		angle += precision * 360;
+	{
+		angle += range;
+	}
 	while (angle >= end)
-		angle -= precision * 360;
+	{
+		angle -= range;
+	}
 
 	return angle;
 }
