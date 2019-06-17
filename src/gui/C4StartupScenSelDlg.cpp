@@ -1454,7 +1454,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	pSheetBook->AddElement(searchLabel);
 
 	searchBar = new C4GUI::CallbackEdit<C4StartupScenSelDlg>(caSearchBar.GetAll(), this, &C4StartupScenSelDlg::OnSearchBarEnter);
-	searchBar->SetToolTip("IDS_DLGTIP_SEARCHLIST");
+	searchBar->SetToolTip(LoadResStr("IDS_DLGTIP_SEARCHLIST"));
 	pSheetBook->AddElement(searchBar);
 
 	// scenario selection list box
