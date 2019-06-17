@@ -477,7 +477,8 @@ protected:
 
 	C4GUI::Edit::InputResult OnSearchBarEnter(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)
 	{
-		UpdateList(); return C4GUI::Edit::IR_Abort;
+		UpdateList();
+		return C4GUI::Edit::IR_Abort;
 	}
 
 	void OnLeagueOptionChanged() override;

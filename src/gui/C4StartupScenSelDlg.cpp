@@ -1445,7 +1445,8 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 
 	// search bar
 	const char *labelText = LoadResStr("IDS_DLG_SEARCH");
-	int32_t width = 100, height;
+	int32_t width = 100;
+	int32_t height; // there's no point in specifying a default height - it's set by GetTextExtent, and we can't know how high the text is
 	::GraphicsResource.TextFont.GetTextExtent(labelText, width, height, true);
 	C4GUI::ComponentAligner caSearchBar(caBookLeft.GetFromBottom(height), 0, 0);
 	auto *searchLabel = new C4GUI::WoodenLabel(labelText, caSearchBar.GetFromLeft(width + 10), C4GUI_Caption2FontClr, &::GraphicsResource.TextFont);
