@@ -204,13 +204,13 @@ func AdjustSolidMaskHelper()
 
 func FxShieldStopControlStart(object target, effect, temp)
 {
-	target->PushActionSpeed("Walk", 84);
+	target->PushActionSpeed("Walk", 420, GetID());
 	if(temp) return;
 }
 
 func FxShieldStopControlStop(object target, effect, iCause, temp)
 {
-	target->PopActionSpeed("Walk");
+	target->PopActionSpeed("Walk", GetID());
 	if(temp) return;
 }
 

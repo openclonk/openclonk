@@ -284,13 +284,13 @@ func CheckStrike(iTime)
 func FxSwordStrikeStopStart(pTarget, effect, iTemp)
 {
 	if(iTemp) return;
-	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed) / 100);
+	pTarget->PushActionSpeed("Walk", 10, GetID());
 }
 
 func FxSwordStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
 	if(iTemp) return;
-	pTarget->PopActionSpeed("Walk");
+	pTarget->PopActionSpeed("Walk", GetID());
 	if (this)
 		movement_effect = nil;
 }
@@ -302,8 +302,8 @@ func FxSwordStrikeStopTimer(pTarget, effect)
 
 func FxSwordStrikeSpeedUpStart(pTarget, effect, iTemp)
 {
-	pTarget->PushActionSpeed("Walk", pTarget.ActMap.Walk.Speed * 3);
-	pTarget.ActMap.Walk.Accel = 210;
+	pTarget->PushActionSpeed("Walk", 3000, GetID());
+	pTarget.ActMap.Walk.Accel = 210; // Relies on getting reset by PopActionSpeed(), too
 }
 
 func FxSwordStrikeSpeedUpTimer(pTarget, effect, iEffectTime)
@@ -316,7 +316,7 @@ func FxSwordStrikeSpeedUpTimer(pTarget, effect, iEffectTime)
 
 func FxSwordStrikeSpeedUpStop(pTarget, effect, iCause, iTemp)
 {
-	pTarget->PopActionSpeed("Walk");
+	pTarget->PopActionSpeed("Walk", GetID());
 	if(iTemp) return;
 	if(!pTarget->GetAlive()) return;
 	
@@ -325,7 +325,7 @@ func FxSwordStrikeSpeedUpStop(pTarget, effect, iCause, iTemp)
 
 func FxSwordStrikeSlowStart(pTarget, effect, iTemp, iTime)
 {
-	pTarget->PushActionSpeed("Walk", pTarget.ActMap.Walk.Speed / 3);
+	pTarget->PushActionSpeed("Walk", 333, GetID());
 	if(iTemp) return;
 	effect.starttime = iTime;
 }
@@ -338,7 +338,7 @@ func FxSwordStrikeSlowTimer(pTarget, effect, iEffectTime)
 
 func FxSwordStrikeSlowStop(pTarget, effect, iCause, iTemp)
 {
-	pTarget->PopActionSpeed("Walk");
+	pTarget->PopActionSpeed("Walk", GetID());
 }
 
 /*-- Production --*/
