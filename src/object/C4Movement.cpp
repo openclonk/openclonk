@@ -275,98 +275,72 @@ void C4Object::DoMovement()
 
 	// Apply bounds
 	SideBounds(new_x);
+	VerticalBounds(new_y);
 
-	if (!Action.t_attach) // Unattached movement  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+	// Create a heuristic for moving diagonally, according to the initial speed.
+	// Motivation: At high velocities it will make a difference if you move
+	// horizontally at first exclusively (one might argue, that if you move e.g.
+	// 50 pixels horizontally first and then down one pixel it you not make
+	// much of a difference, but it does make a difference...).
+	// Idea: You have a major velocity component, which is the one
+	// with greater absolute value (after taking the boundaries into account).
+	// Instead of moving horizontally first and then vertically, you do
+	// a movement step in the minor velocity direction every n-th step,
+	// and step into major velocity direction the rest of the time.
+	int steps_x = Abs(fixtoi(new_x - fix_x));
+	int steps_y = Abs(fixtoi(new_y - fix_y));
+	int steps_total = steps_x + steps_y;
+	// Divide total steps by lower amount of steps, to find
+	// out when to do a step in the minor velocity component.
+	// Minimum value is 2, which means alternating steps
+	int step_mod;
+	bool prefer_vertical_movement = steps_y > steps_x;
+	if (prefer_vertical_movement)
 	{
-		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		// Move to target
-		while (fixtoi(new_x) != fixtoi(fix_x))
-		{
-			// Next step
-			int step_x = Sign(new_x - fix_x);
-			uint32_t border_hack_contacts = 0;
-			int32_t current_contacts = ContactCheck(GetX() + step_x, GetY(), &border_hack_contacts);
-			if (current_contacts || border_hack_contacts)
-			{
-				has_contact = true;
-				contact_bits |= t_contact | border_hack_contacts;
-			}
-			if (current_contacts)
-			{
-				// Abort horizontal movement
-				new_x = fix_x;
-				// Vertical redirection (always)
-				RedirectForce(xdir, ydir, -1);
-				ApplyFriction(ydir, ContactVtxFriction(this));
-			}
-			else // Free horizontal movement
-			{
-				DoMotion(step_x, 0);
-				has_moved = true;
-			}
-		}
-		// Vertical movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		// Movement target
-		new_y = fix_y + ydir;
-		// Movement bounds (vertical)
-		VerticalBounds(new_y);
-		// Move to target
-		while (fixtoi(new_y) != fixtoi(fix_y))
-		{
-			// Next step
-			int step_y = Sign(new_y - fix_y);
-			int32_t current_contacts = ContactCheck(GetX(), GetY() + step_y, nullptr, ydir > 0);
-			if (current_contacts)
-			{
-				has_contact = true;
-				contact_bits |= t_contact;
-				new_y = fix_y;
-				// Vertical contact horizontal friction
-				ApplyFriction(xdir, ContactVtxFriction(this));
-				// Redirection slide or rotate
-				if (!ContactVtxCNAT(this, CNAT_Left))
-				{
-					RedirectForce(ydir, xdir, -1);
-				}
-				else if (!ContactVtxCNAT(this, CNAT_Right))
-				{
-					RedirectForce(ydir, xdir, +1);
-				}
-				else
-				{
-					// Living things are always capable of keeping their rotation
-					if ((OCF & OCF_Rotate) && current_contacts == 1 && !Alive)
-					{
-						RedirectForce(ydir, rdir, -ContactVtxWeight(this));
-						redirected_force_from_ydir_to_rdir = true;
-					}
-					ydir = 0;
-				}
-			}
-			else // Free vertical movement
-			{
-				DoMotion(0, step_y);
-				has_moved = true;
-			}
-		}
+		step_mod = std::max(2, (1 + steps_total) / std::max(1, steps_x));
 	}
-	if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+	else
 	{
-		VerticalBounds(new_y);
-		// Move to target
-		do
+		step_mod = std::max(2, (1 + steps_total) / std::max(1, steps_y));
+	}
+
+
+	// Move to target
+	int step_counter = 0;
+	do
+	{
+		step_counter = (step_counter + 1) % step_mod;
+
+		// Set next step target
+		int step_x = 0;
+		int step_y = 0;
+
+		// Do a step in the major velocity component direction
+		if (step_counter > 0)
 		{
-			// Set next step target
-			int step_x = 0;
-			int step_y = 0;
-			if (fixtoi(new_x) != GetX())
-			{
-				step_x = Sign(fixtoi(new_x) - GetX());
-			}
-			else if (fixtoi(new_y) != GetY())
+			if (prefer_vertical_movement)
 			{
 				step_y = Sign(fixtoi(new_y) - GetY());
 			}
+			else
+			{
+				step_x = Sign(fixtoi(new_x) - GetX());
+			}
+		}
+		else // Do a step in the minor velocity component direction
+		{
+			if (prefer_vertical_movement)
+			{
+				step_x = Sign(fixtoi(new_x) - GetX());
+			}
+			else
+			{
+				step_y = Sign(fixtoi(new_y) - GetY());
+			}
+		}
+
+		if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+		{
 			int32_t step_target_x = GetX() + step_x;
 			int32_t step_target_y = GetY() + step_y;
 			// Attachment check
@@ -411,10 +385,75 @@ void C4Object::DoMovement()
 				}
 			}
 			DoMotion(step_target_x - GetX(), step_target_y - GetY());
-			has_moved = true;
 		}
-		while (fixtoi(new_x) != GetX() || fixtoi(new_y) != GetY());
+		else // Unattached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+		{
+			if (step_x != 0)
+			{
+				uint32_t border_hack_contacts = 0;
+				int32_t current_contacts = ContactCheck(GetX() + step_x, GetY(), &border_hack_contacts, false);
+				if (current_contacts || border_hack_contacts)
+				{
+					has_contact = true;
+					contact_bits |= t_contact | border_hack_contacts;
+				}
+				if (current_contacts)
+				{
+					// Abort horizontal movement
+					new_x = fix_x;
+					// Vertical redirection (always), this is important for pushing vehicles over bumps in the landscape
+					RedirectForce(xdir, ydir, -1);
+					ApplyFriction(ydir, ContactVtxFriction(this));
+					// Update direction
+					new_y = fix_y + ydir;
+					VerticalBounds(new_y);
+				}
+				else // Free horizontal movement
+				{
+					DoMotion(step_x, 0);
+					has_moved = true;
+				}
+			}
+			if (step_y != 0)
+			{
+				int32_t current_contacts = ContactCheck(GetX(), GetY() + step_y, nullptr, ydir > 0);
+				if (current_contacts)
+				{
+					has_contact = true;
+					contact_bits |= t_contact;
+					new_y = fix_y;
+					// Vertical contact horizontal friction
+					ApplyFriction(xdir, ContactVtxFriction(this));
+					// Redirection slide or rotate
+					if (!ContactVtxCNAT(this, CNAT_Left))
+					{
+						RedirectForce(ydir, xdir, -1);
+					}
+					else if (!ContactVtxCNAT(this, CNAT_Right))
+					{
+						RedirectForce(ydir, xdir, +1);
+					}
+					else
+					{
+						// Living things are always capable of keeping their rotation
+						if ((OCF & OCF_Rotate) && current_contacts == 1 && !Alive)
+						{
+							RedirectForce(ydir, rdir, -ContactVtxWeight(this));
+							redirected_force_from_ydir_to_rdir = true;
+						}
+						ydir = 0;
+					}
+				}
+				else // Free vertical movement
+				{
+					DoMotion(0, step_y);
+					has_moved = true;
+				}
+			}
+		}
+		has_moved = true;
 	}
+	while (fixtoi(new_x) != GetX() || fixtoi(new_y) != GetY());
 
 	if (fix_x != new_x || fix_y != new_y)
 	{
