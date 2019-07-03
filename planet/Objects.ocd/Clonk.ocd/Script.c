@@ -41,9 +41,6 @@ func Construction()
 {
 	_inherited(...);
 
-	AddEffect("IntTurn", this, 1, 1, this);
-	AddEffect("IntEyes", this, 1, 35+Random(4), this);
-
 	AttachBackpack();
 
 	SetAction("Walk");
