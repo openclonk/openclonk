@@ -80,9 +80,9 @@ func AttachHandItem(bool secondary)
 
 func UpdateAttach()
 {
-	StopAnimation(GetRootAnimation(6));
+	StopAnimation(GetRootAnimation(CLONK_ANIM_SLOT_Hands));
 
-	if (this.hand_display.hand_mesh)
+	if (this.hand_display && this.hand_display.hand_mesh)
 	{
 		DetachHandItem(0);
 		DetachHandItem(1);
