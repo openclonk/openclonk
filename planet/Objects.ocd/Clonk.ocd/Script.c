@@ -161,9 +161,11 @@ func Bridge()
 
 public func IsBridging(){return WildcardMatch(GetAction(), "Bridge*");}
 
-/* Status */
+/* --- Status --- */
 
 public func IsPrey() { return true; }
+
+/* --- OC specific interaction menu --- */
 
 // Clonks act as containers for the interaction menu as long as they are alive.
 public func IsContainer() { return GetAlive(); }
@@ -203,7 +205,7 @@ public func OnInteractionMenuOpen(object menu)
 	}
 }
 
-/* Backpack */
+/* --- Backpack --- */
 
 local backpack;
 
@@ -222,44 +224,6 @@ func RemoveBackpack()
 		backpack = nil;
 	}
 	else return false;
-}
-
-// calback from engine
-func OnMaterialChanged(int new, int old)
-{
-	if(!GetAlive()) return;
-	var newdens = GetMaterialVal("Density","Material",new);
-	var olddens = GetMaterialVal("Density","Material",old);
-	var newliquid = (newdens >= C4M_Liquid) && (newdens < C4M_Solid);
-	var oldliquid = (olddens >= C4M_Liquid) && (olddens < C4M_Solid);
-	// into water
-	if(newliquid && !oldliquid)
-		AddEffect("Bubble", this, 1, 8, this);
-	// out of water
-	else if(!newliquid && oldliquid)
-		RemoveEffect("Bubble", this);
-}
-
-func FxBubbleTimer(pTarget, effect, iTime)
-{
-	if(GBackLiquid(0,-5))
-	{
-		var mouth_off = GetCon()/11;
-		var iRot = GetSwimRotation();
-		var mouth_off_x = Sin(iRot, mouth_off), mouth_off_y = Cos(iRot, mouth_off);
-		// Search for bubbles to breath from
-		var bubble = FindObject(Find_Func("CanBeBreathed", this), Find_AtRect(mouth_off_x-mouth_off/2, mouth_off_y, mouth_off, mouth_off/3));
-		if (bubble)
-		{
-			bubble->~OnClonkBreath(this);
-		}
-		else if (!Random(6))
-		{
-			// Make your own bubbles
-			
-			Bubble(1, mouth_off_x, mouth_off_y);
-		}
-	}
 }
 
 func SetSkin(int new_skin)

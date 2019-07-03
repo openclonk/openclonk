@@ -20,7 +20,7 @@ func Construction()
 }
 
 
-/* When adding to the crew of a player */
+/* --- When adding to the crew of a player --- */
 
 protected func Recruitment(int iPlr)
 {
@@ -37,7 +37,7 @@ protected func DeRecruitment(int iPlr) {
 	return _inherited(iPlr,...);
 }
 
-/* Events */
+/* --- Events --- */
 
 protected func Death(int killed_by)
 {
@@ -68,6 +68,8 @@ protected func Destruction(...)
 	return true;
 }
 
+/* --- Commands --- */
+
 protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 {
 	// RejectConstruction Callback for building via Drag'n'Drop form a building menu
@@ -84,7 +86,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 }
 
 
-/* Transformation */
+/* --- Transformation --- */
 
 public func Redefine(idTo)
 {
@@ -126,7 +128,7 @@ protected func CheckStuck()
 			SetPosition(GetX(), GetY() + 1);
 }
 
-/* Max energy */
+/* --- Max energy --- */
 
 func SetMaxEnergy(int new_max_energy)
 {
@@ -148,7 +150,7 @@ protected func OnEnergyChange(int change, int cause, int caused_by)
 }
 
 
-/* Scenario saving */
+/* --- Scenario saving --- */
 
 func SaveScenarioObject(props)
 {
@@ -169,7 +171,7 @@ func SetPortrait(proplist custom_portrait)
 	return true;
 }
 
-/* Properties */
+/* --- Properties --- */
 
 local NoBurnDecay = true;
 local FireproofContainer = true; // Don't burn down all tools/resources when the clonk dips into lava for a short time
