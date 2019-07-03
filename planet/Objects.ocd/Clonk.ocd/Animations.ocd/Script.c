@@ -68,7 +68,6 @@ func Construction()
 // todo, implement, make carryheavy decreasing it
 static const Clonk_TurnTime = 18;
 
-func SetMeshTransformation() { return _inherited(...); }
 func UpdateAttach() { return _inherited(...); }
 func GetHandAction() { return _inherited(...); }
 func DoThrow() { return _inherited(...); }

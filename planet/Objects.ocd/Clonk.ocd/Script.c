@@ -614,28 +614,6 @@ public func OnInteractionMenuOpen(object menu)
 	}
 }
 
-/* Mesh transformations */
-
-local mesh_transformation_list;
-
-func SetMeshTransformation(array transformation, int layer)
-{
-	if(!mesh_transformation_list) mesh_transformation_list = [];
-	if(GetLength(mesh_transformation_list) < layer)
-		SetLength(mesh_transformation_list, layer+1);
-	mesh_transformation_list[layer] = transformation;
-	var all_transformations = nil;
-	for(var trans in mesh_transformation_list)
-	{
-		if(!trans) continue;
-		if(all_transformations)
-			all_transformations = Trans_Mul(trans, all_transformations);
-		else
-			all_transformations = trans;
-	}
-	SetProperty("MeshTransformation", all_transformations);
-}
-
 /* Backpack */
 
 local backpack;
