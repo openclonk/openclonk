@@ -42,28 +42,6 @@ func Construction()
 	_inherited(...);
 
 	AttachBackpack();
-
-	SetAction("Walk");
-	SetDir(Random(2));
-	// Broadcast for rules
-	GameCallEx("OnClonkCreation", this);
-}
-
-/* When adding to the crew of a player */
-
-protected func Recruitment(int iPlr)
-{
-	// Broadcast for crew
-	GameCallEx("OnClonkRecruitment", this, iPlr);
-	
-	return _inherited(iPlr,...);
-}
-
-protected func DeRecruitment(int iPlr) {
-	// Broadcast for crew
-	GameCallEx("OnClonkDeRecruitment", this, iPlr);
-	
-	return _inherited(iPlr,...);
 }
 
 /* Events */
@@ -92,18 +70,11 @@ protected func Put()
 	Sound("Clonk::Action::Grab");
 }
 
-protected func Death(int killed_by)
+// Callback from Death() when the Clonk is really really dead
+protected func DeathEffects(int killed_by)
 {
-	// this must be done first, before any goals do funny stuff with the clonk
 	_inherited(killed_by,...);
-	
-	// Info-broadcasts for dying clonks.
-	GameCallEx("OnClonkDeath", this, killed_by);
-	
-	// The broadcast could have revived the clonk.
-	if (GetAlive())
-		return;
-	
+
 	// Some effects on dying.
 	if (!this.silent_death)
 	{
@@ -118,20 +89,6 @@ protected func Death(int killed_by)
 				other_cursor->~PlaySoundTaunt();
 		}
 	}
-	CloseEyes(1);
-
-	return true;
-}
-
-protected func Destruction(...)
-{
-	_inherited(...);
-	// If the clonk wasn't dead yet, he will be now.
-	// Always kill clonks first. This will ensure relaunch scripts, enemy kill counters, etc. are called
-	// even if clonks die in some weird way that causes direct removal
-	// (To prevent a death callback, you can use SetAlive(false); RemoveObject();)
-	if (GetAlive()) { this.silent_death=true; Kill(); }
-	return true;
 }
 
 protected func DeepBreath()

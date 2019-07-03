@@ -60,6 +60,14 @@ func Construction()
 	_inherited(...);
 }
 
+// Callback from Death() when the Clonk is really really dead
+protected func DeathEffects(int killed_by)
+{
+	_inherited(killed_by,...);
+
+	CloseEyes(1);
+}
+
 /*--
 	Turn
 

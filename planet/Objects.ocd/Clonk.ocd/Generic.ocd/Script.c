@@ -8,6 +8,65 @@
 --*/
 
 
+func Construction()
+{
+	_inherited(...);
+
+	// Assuming every Clonk/Humanoid has at least a "Walk" action
+	SetAction("Walk");
+	SetDir(Random(2));
+	// Broadcast for rules (this should be called last, ideally, but it was never used anywhere)
+	GameCallEx("OnClonkCreation", this);
+}
+
+
+/* When adding to the crew of a player */
+
+protected func Recruitment(int iPlr)
+{
+	// Broadcast for crew
+	GameCallEx("OnClonkRecruitment", this, iPlr);
+	
+	return _inherited(iPlr,...);
+}
+
+protected func DeRecruitment(int iPlr) {
+	// Broadcast for crew
+	GameCallEx("OnClonkDeRecruitment", this, iPlr);
+	
+	return _inherited(iPlr,...);
+}
+
+/* Events */
+
+protected func Death(int killed_by)
+{
+	// this must be done first, before any goals do funny stuff with the clonk
+	_inherited(killed_by,...);
+	
+	// Info-broadcasts for dying clonks.
+	GameCallEx("OnClonkDeath", this, killed_by);
+	
+	// The broadcast could have revived the clonk.
+	if (GetAlive())
+		return false;
+	
+	// Some effects on dying.
+	this->~DeathEffects(killed_by, ...);
+
+	return true;
+}
+
+protected func Destruction(...)
+{
+	_inherited(...);
+	// If the clonk wasn't dead yet, he will be now.
+	// Always kill clonks first. This will ensure relaunch scripts, enemy kill counters, etc. are called
+	// even if clonks die in some weird way that causes direct removal
+	// (To prevent a death callback, you can use SetAlive(false); RemoveObject();)
+	if (GetAlive()) { this.silent_death=true; Kill(); }
+	return true;
+}
 
 protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 {
