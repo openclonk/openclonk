@@ -102,6 +102,8 @@ public func Incineration()
 	return _inherited(...);
 }
 
+/* --- OC specific object interactions --- */
+
 public func Eat(object food)
 {
 	Heal(food->NutritionalValue());
@@ -157,17 +159,11 @@ func Bridge()
 	return true;
 }
 
+public func IsBridging(){return WildcardMatch(GetAction(), "Bridge*");}
+
 /* Status */
 
-// TODO: Make this more sophisticated, readd turn animation and other
-// adaptions
-public func IsClonk() { return true; }
 public func IsPrey() { return true; }
-
-public func IsJumping(){return WildcardMatch(GetAction(), "*Jump*");}
-public func IsWalking(){return GetProcedure() == "WALK";}
-public func IsSwimming(){return GetProcedure() == "SWIM";}
-public func IsBridging(){return WildcardMatch(GetAction(), "Bridge*");}
 
 // Clonks act as containers for the interaction menu as long as they are alive.
 public func IsContainer() { return GetAlive(); }

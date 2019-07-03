@@ -196,3 +196,17 @@ private func EvalAct_SetMaxContentsCount(proplist props, proplist context)
 	var number = BoundBy(UserAction->EvaluateValue("Integer", props.MaxContentsCount, context) ?? clonk->GetID().MaxContentsCount, 0, 10);
 	if (clonk) clonk->~SetMaxContentsCount(number);
 }
+
+/* --- Status --- */
+
+// These assume that certain actions exist in the ActMap,
+// but they should be basic enough to be regarded as
+// something that any Clonk/humanoid has or can do
+
+public func IsClonk() { return true; }
+
+// TODO: Make this more sophisticated, read turn animation and other
+// adaptions
+public func IsJumping(){return WildcardMatch(GetAction(), "*Jump*");}
+public func IsWalking(){return GetProcedure() == "WALK";}
+public func IsSwimming(){return GetProcedure() == "SWIM";}
