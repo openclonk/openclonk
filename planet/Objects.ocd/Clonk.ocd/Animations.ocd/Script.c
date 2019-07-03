@@ -408,22 +408,28 @@ func GetCurrentWalkAnimation()
 
 func Footstep()
 {
-	if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)) == 0)
-		Sound("Clonk::Movement::StepHard?");
+	var material = GetMaterial(0,10);
+	if (GetMaterialVal("DigFree", "Material", ) == 0)
+		this->~PlaySoundStepHard(material);
 	else
 	{
-		var dir = Sign(GetXDir());
-		var clr = GetAverageTextureColor(GetTexture(0,10));
-		var particles =
-		{
-			Prototype = Particles_Dust(),
-			R = (clr >> 16) & 0xff,
-			G = (clr >> 8) & 0xff,
-			B = clr & 0xff,
-		};
-		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
-		Sound("Clonk::Movement::StepSoft?");
+		FootstepDust();
+		this->~PlaySoundStepSoft(material);
 	}
+}
+
+func FootstepDust()
+{
+	var dir = Sign(GetXDir());
+	var clr = GetAverageTextureColor(GetTexture(0,10));
+	var particles =
+	{
+		Prototype = Particles_Dust(),
+		R = (clr >> 16) & 0xff,
+		G = (clr >> 8) & 0xff,
+		B = clr & 0xff,
+	};
+	CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
 }
 
 // Returns an animation position (Anim_* function) for new_anim depending on the position of the current animation
@@ -863,7 +869,7 @@ func FxFallTimer(object target, effect, int timer)
 	}
 	if(timer == 2 && GetYDir() < 1)
 	{
-		Sound("Clonk::Movement::Rustle?");
+		this->~PlaySoundRustle();
 	}
 
 	if(GetYDir() > 55 && GetAction() == "Jump")
@@ -1343,7 +1349,7 @@ func DoKneel(bool create_dust)
 
 	SetXDir(0);
 	SetAction("Kneel");
-	Sound("Clonk::Movement::RustleLand");
+	this->~PlaySoundKneel();
 	PlayAnimation("KneelDown", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("KneelDown"), iKneelDownSpeed, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
 	ScheduleCall(this, "EndKneel", iKneelDownSpeed, 1);
@@ -1408,7 +1414,7 @@ func DoRoll(bool is_falling)
 func OnStartRoll()
 {	
 	SetTurnForced(GetDir());
-	Sound("Clonk::Movement::Roll");
+	this->~PlaySoundRoll();
 	if(GetDir() == 1) lAnim.rollDir = 1;
 	else
 		lAnim.rollDir = -1;
@@ -1505,7 +1511,7 @@ public func FxIntDigStart(object target, effect fx, int temp)
 	UpdateAttach();
 
 	// Sound
-	Sound("Clonk::Action::Dig::Dig?");
+	PlaySoundDig();
 
 	// Set proper turn type
 	SetTurnType(0);
@@ -1516,7 +1522,7 @@ public func FxIntDigTimer(object target, effect fx, int time)
 {
 	if (time % 36 == 0)
 	{
-		Sound("Clonk::Action::Dig::Dig?");
+		PlaySoundDig();
 	}
 	if (time == 18 || time >= 36)
 	{
@@ -1532,6 +1538,11 @@ public func FxIntDigTimer(object target, effect fx, int time)
 		}
 	}
 	return FX_OK;
+}
+
+public func PlaySoundDig()
+{
+	Sound("Clonk::Action::Dig::Dig?");
 }
 
 /*--

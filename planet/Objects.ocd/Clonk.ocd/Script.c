@@ -48,26 +48,25 @@ func Construction()
 
 protected func CatchBlow()
 {
-	if (GetAction() == "Dead") return;
-	if (!Random(5)) PlaySoundHurt();
+	if (GetAlive() && !Random(5)) PlaySoundHurt();
 }
 
 protected func Grab(object pTarget, bool fGrab)
 {
 	if (fGrab)
-		Sound("Clonk::Action::Grab");
+		PlaySoundGrab();
 	else
-		Sound("Clonk::Action::UnGrab");
+		PlaySoundUnGrab();
 }
 
 protected func Get()
 {
-	Sound("Clonk::Action::Grab");
+	PlaySoundGrab();
 }
 
 protected func Put()
 {
-	Sound("Clonk::Action::Grab");
+	PlaySoundGrab();
 }
 
 // Callback from Death() when the Clonk is really really dead
@@ -93,7 +92,7 @@ protected func DeathEffects(int killed_by)
 
 protected func DeepBreath()
 {
-	Sound("Clonk::Action::Breathing");
+	PlaySoundDeepBreath();
 }
 
 public func Incineration()
@@ -108,7 +107,7 @@ public func Eat(object food)
 {
 	Heal(food->NutritionalValue());
 	food->RemoveObject();
-	Sound("Clonk::Action::Munch?");
+	PlaySoundEat();
 	SetAction("Eat");
 }
 
@@ -235,7 +234,7 @@ func SetSkin(int new_skin)
 }
 
 /*
-Helper functions to play some sounds. This are encapsulated here in case sound names change.
+Helper functions to play some sounds. These are encapsulated here in case sound names change.
 */
 public func PlaySoundConfirm(...)
 {
@@ -275,6 +274,51 @@ public func PlaySoundIdle(...)
 {
 	if (GetSoundSkinName() == "Steampunk")
 		PlaySkinSound("Singing*", ...);
+}
+
+public func PlaySoundGrab()
+{
+	Sound("Clonk::Action::Grab");
+}
+
+public func PlaySoundUnGrab()
+{
+	Sound("Clonk::Action::UnGrab");
+}
+
+public func PlaySoundDeepBreath()
+{
+	Sound("Clonk::Action::Breathing");
+}
+
+public func PlaySoundEat()
+{
+	Sound("Clonk::Action::Munch?");
+}
+
+public func PlaySoundStepHard(int material)
+{
+	Sound("Clonk::Movement::StepHard?");
+}
+
+public func PlaySoundStepSoft(int material)
+{
+	Sound("Clonk::Movement::StepSoft?");
+}
+
+public func PlaySoundRustle()
+{
+	Sound("Clonk::Movement::Rustle?");
+}
+
+public func PlaySoundKneel()
+{
+	Sound("Clonk::Movement::RustleLand");
+}
+
+public func PlaySoundRoll()
+{
+	Sound("Clonk::Movement::Roll");
 }
 
 // Callback from the engine when a command failed.
