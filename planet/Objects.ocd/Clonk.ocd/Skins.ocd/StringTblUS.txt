@@ -1,0 +1,2 @@
+Skin=Skin
+SkinHelp=How the clonk looks.

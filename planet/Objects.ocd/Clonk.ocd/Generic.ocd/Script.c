@@ -104,6 +104,12 @@ func SaveScenarioObject(props)
 	return true;
 }
 
+func SetPortrait(proplist custom_portrait)
+{
+	this.portrait = custom_portrait;
+	return true;
+}
+
 /* Properties */
 
 local NoBurnDecay = true;

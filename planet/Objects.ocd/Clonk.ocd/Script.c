@@ -14,7 +14,6 @@
 // manager for aiming
 #include Library_AimManager
 
-#include Clonk_Generic
 #include Clonk_Animations
 
 static const CLONK_MESH_TRANSFORM_SLOT_Turn = 0;             // for turning the clonk
@@ -27,6 +26,10 @@ static const CLONK_MESH_TRANSFORM_SLOT_Translation_Dive = 7; // for adjusting th
 
 // ladder climbing
 #include Library_CanClimbLadder
+
+// modularization
+#include Clonk_Generic
+#include Clonk_Skins
 
 /* Initialization */
 
@@ -45,8 +48,6 @@ func Construction()
 	this.hand_display.both_handed = false;
 	this.hand_display.on_back = false;
 
-	SetSkin(0);
-
 	SetAction("Walk");
 	SetDir(Random(2));
 	// Broadcast for rules
@@ -57,13 +58,6 @@ func Construction()
 
 protected func Recruitment(int iPlr)
 {
-	//The clonk's appearance
-	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
-	var skin = GetCrewExtraData("Skin");
-	if (skin == nil) skin = GetPlrClonkSkin(iPlr);
-	if(skin != nil) SetSkin(skin);
-	else SetSkin(Random(GetSkinCount()));
-
 	// Broadcast for crew
 	GameCallEx("OnClonkRecruitment", this, iPlr);
 	
@@ -626,61 +620,12 @@ func FxBubbleTimer(pTarget, effect, iTime)
 	}
 }
 
-
-local gender, skin, skin_name;
-
 func SetSkin(int new_skin)
 {
-	// Remember skin
-	skin = new_skin;
-	
-	//Adventurer
-	if(skin == 0)
-	{	SetGraphics(skin_name = nil);
-		gender = 0;	}
-
-	//Steampunk
-	if(skin == 1)
-	{	SetGraphics(skin_name = "Steampunk");
-		gender = 1; }
-
-	//Alchemist
-	if(skin == 2)
-	{	SetGraphics(skin_name = "Alchemist");
-		gender = 0;	}
-	
-	//Farmer
-	if(skin == 3)
-	{	SetGraphics(skin_name = "Farmer");
-		gender = 1;	}
+	_inherited(new_skin, ...);
 
 	RemoveBackpack(); //add a backpack
 	AttachBackpack();
-	//refreshes animation (whatever that means?)
-	// Go back to original action afterwards and hope
-	// that noone calls SetSkin during more compex activities
-	var prev_action = GetAction();
-	SetAction("Jump");
-	SetAction(prev_action);
-
-	return skin;
-}
-func GetSkinCount() { return 4; }
-
-func GetSkin() { return skin; }
-func GetSkinName() { return skin_name; }
-
-
-// Returns the skin name as used to select the right sound subfolder.
-public func GetSoundSkinName()
-{
-	if (skin_name == nil) return "Adventurer";
-	return skin_name;
-}
-
-public func PlaySkinSound(string sound, ...)
-{
-	Sound(Format("Clonk::Skin::%s::%s", GetSoundSkinName(), sound), ...);
 }
 
 /*
@@ -724,17 +669,6 @@ public func PlaySoundIdle(...)
 {
 	if (GetSoundSkinName() == "Steampunk")
 		PlaySkinSound("Singing*", ...);
-}
-//Portrait definition of this Clonk for messages
-func GetPortrait()
-{
-	return this.portrait ?? { Source = GetID(), Name = Format("Portrait%s", skin_name ?? ""), Color = GetColor() };
-}
-
-func SetPortrait(proplist custom_portrait)
-{
-	this.portrait = custom_portrait;
-	return true;
 }
 
 // Callback from the engine when a command failed.
@@ -795,20 +729,6 @@ public func DoMagicEnergy(int change, bool partial, int precision)
 
 	magic_energy = BoundBy(magic_energy + change, 0, this.MaxMagic);
 	this->~OnMagicEnergyChange(change);
-	return true;
-}
-
-/* Scenario saving */
-
-func SaveScenarioObject(props)
-{
-	if (!inherited(props, ...)) return false;
-	// Skins override mesh material
-	if (skin)
-	{
-		props->Remove("MeshMaterial");
-		props->AddCall("Skin", this, "SetSkin", skin);
-	}
 	return true;
 }
 
@@ -1166,14 +1086,6 @@ local ContactIncinerate = 10;
 func Definition(def) {
 	// Set perspective
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), def);
-
-	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.skin = { Name="$Skin$", EditorHelp="$SkinHelp$", Type="enum", Set="SetSkin", Options = [
-	{ Value=0, Name="Adventurer"},
-	{ Value=1, Name="Steampunk"},
-	{ Value=2, Name="Alchemist"},
-	{ Value=3, Name="Farmer"}
-	]};
 	
 	_inherited(def);
 }

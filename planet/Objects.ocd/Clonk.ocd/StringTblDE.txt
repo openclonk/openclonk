@@ -10,6 +10,3 @@ TxtDescend=Abspringen
 TxtEnergysupply=Energieversorgung
 
 MsgDeadClonk=%s ist tot.|Es sind keine Interaktionen möglich.
-
-Skin=Skin
-SkinHelp=Aussehen des Clonks.

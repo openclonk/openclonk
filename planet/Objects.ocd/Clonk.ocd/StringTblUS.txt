@@ -10,6 +10,3 @@ TxtDescend=Jump off
 TxtEnergysupply=Energy supply
 
 MsgDeadClonk=%s is dead.|No interactions are possible.
-
-Skin=Skin
-SkinHelp=How the clonk looks.
