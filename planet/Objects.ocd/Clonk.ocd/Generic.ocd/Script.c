@@ -209,6 +209,18 @@ protected func OnEnergyChange(int change, int cause, int caused_by)
 }
 
 
+// This is kind of generic, also kind of specific
+// Logically, you'd expect a humanoid to be able 
+// to eat, and the food object is also quite generic.
+public func Eat(object food)
+{
+	Heal(food->NutritionalValue());
+	food->RemoveObject();
+	this->PlaySoundEat();
+	SetAction("Eat");
+}
+
+
 /* --- Scenario saving --- */
 
 func SaveScenarioObject(props)

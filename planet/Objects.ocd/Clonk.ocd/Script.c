@@ -32,6 +32,7 @@ static const CLONK_MESH_TRANSFORM_SLOT_Translation_Dive = 7; // for adjusting th
 // modularization, order is important here
 #include Clonk_Generic
 #include Clonk_HandDisplay
+#include Clonk_InteractionMenu
 #include Clonk_Skins
 #include Clonk_Sounds
 
@@ -67,14 +68,6 @@ protected func DeathEffects(int killed_by)
 }
 
 /* --- OC specific object interactions --- */
-
-public func Eat(object food)
-{
-	Heal(food->NutritionalValue());
-	food->RemoveObject();
-	this->PlaySoundEat();
-	SetAction("Eat");
-}
 
 // Called when an object was dug free.
 func DigOutObject(object obj)
@@ -129,45 +122,6 @@ public func IsBridging(){return WildcardMatch(GetAction(), "Bridge*");}
 
 public func IsPrey() { return true; }
 
-/* --- OC specific interaction menu --- */
-
-// Clonks act as containers for the interaction menu as long as they are alive.
-public func IsContainer() { return GetAlive(); }
-
-// You can not interact with dead Clonks.
-// This would be the place to show a death message etc.
-public func RejectInteractionMenu(object to)
-{
-	if (!GetAlive())
-		return Format("$MsgDeadClonk$", GetName());
-	return _inherited(to, ...);
-}
-
-// You can not display the Clonk as a content entry in a building.
-// Otherwise you can transfer a crew member to your inventory...
-public func RejectInteractionMenuContentEntry(object menu_target, object container)
-{
-	return true;
-}
-
-public func GetSurroundingEntryMessage(object for_clonk)
-{
-	if (!GetAlive()) return Format("{{Clonk_Grave}} %s", Clonk_Grave->GetInscriptionForClonk(this));
-}
-
-
-/* Enable the Clonk to pick up stuff from its surrounding in the interaction menu */
-public func OnInteractionMenuOpen(object menu)
-{
-	_inherited(menu, ...);
-	
-	// Allow picking up stuff from the surrounding only if not in a container itself.
-	if (!Contained())
-	{
-		var surrounding = CreateObject(Helper_Surrounding);
-		surrounding->InitFor(this, menu);
-	}
-}
 
 /* --- Backpack --- */
 
