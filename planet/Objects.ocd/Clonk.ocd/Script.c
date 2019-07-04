@@ -33,6 +33,7 @@ static const CLONK_MESH_TRANSFORM_SLOT_Translation_Dive = 7; // for adjusting th
 #include Clonk_Generic
 #include Clonk_HandDisplay
 #include Clonk_Skins
+#include Clonk_Sounds
 
 
 /* Initialization */
@@ -71,7 +72,7 @@ public func Eat(object food)
 {
 	Heal(food->NutritionalValue());
 	food->RemoveObject();
-	PlaySoundEat();
+	this->PlaySoundEat();
 	SetAction("Eat");
 }
 
@@ -195,94 +196,6 @@ func SetSkin(int new_skin)
 
 	RemoveBackpack(); //add a backpack
 	AttachBackpack();
-}
-
-/*
-Helper functions to play some sounds. These are encapsulated here in case sound names change.
-*/
-public func PlaySoundConfirm(...)
-{
-	if (GetSoundSkinName() != "Farmer")
-		PlaySkinSound("Confirm*", ...);
-}
-public func PlaySoundDecline(...)
-{
-	if (GetSoundSkinName() != "Farmer")
-		PlaySkinSound("Decline*", ...);
-}
-// Doubtful sound, e.g. when trying a clearly impossible action.
-public func PlaySoundDoubt(...)
-{
-	if (GetSoundSkinName() != "Farmer")
-		PlaySkinSound("Doubt*", ...);
-}
-
-public func PlaySoundHurt(...) { PlaySkinSound("Hurt*", ...); }
-// Sound that is supposed to be funny in situations where the Clonk maybe did something "evil" like killing a teammate.
-public func PlaySoundTaunt(...)
-{
-	if (GetSoundSkinName() == "Alchemist")
-		PlaySkinSound("EvilConfirm*", ...);
-	else if (GetSoundSkinName() == "Steampunk")
-		PlaySkinSound("Laughter*", ...);
-}
-// Surprised sounds, e.g. when catching fire.
-public func PlaySoundShock(...)
-{
-	if (GetSoundSkinName() == "Steampunk" || GetSoundSkinName() == "Adventurer")
-		PlaySkinSound("Shock*", ...);
-}
-public func PlaySoundScream() { PlaySkinSound("Scream*"); }
-// General idle sounds, played when also playing an idle animation.
-public func PlaySoundIdle(...)
-{
-	if (GetSoundSkinName() == "Steampunk")
-		PlaySkinSound("Singing*", ...);
-}
-
-public func PlaySoundGrab()
-{
-	Sound("Clonk::Action::Grab");
-}
-
-public func PlaySoundUnGrab()
-{
-	Sound("Clonk::Action::UnGrab");
-}
-
-public func PlaySoundDeepBreath()
-{
-	Sound("Clonk::Action::Breathing");
-}
-
-public func PlaySoundEat()
-{
-	Sound("Clonk::Action::Munch?");
-}
-
-public func PlaySoundStepHard(int material)
-{
-	Sound("Clonk::Movement::StepHard?");
-}
-
-public func PlaySoundStepSoft(int material)
-{
-	Sound("Clonk::Movement::StepSoft?");
-}
-
-public func PlaySoundRustle()
-{
-	Sound("Clonk::Movement::Rustle?");
-}
-
-public func PlaySoundKneel()
-{
-	Sound("Clonk::Movement::RustleLand");
-}
-
-public func PlaySoundRoll()
-{
-	Sound("Clonk::Movement::Roll");
 }
 
 /* Act Map */
