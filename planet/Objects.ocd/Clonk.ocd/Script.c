@@ -44,31 +44,6 @@ func Construction()
 	AttachBackpack();
 }
 
-/* Events */
-
-protected func CatchBlow()
-{
-	if (GetAlive() && !Random(5)) PlaySoundHurt();
-}
-
-protected func Grab(object pTarget, bool fGrab)
-{
-	if (fGrab)
-		PlaySoundGrab();
-	else
-		PlaySoundUnGrab();
-}
-
-protected func Get()
-{
-	PlaySoundGrab();
-}
-
-protected func Put()
-{
-	PlaySoundGrab();
-}
-
 // Callback from Death() when the Clonk is really really dead
 protected func DeathEffects(int killed_by)
 {
@@ -88,17 +63,6 @@ protected func DeathEffects(int killed_by)
 				other_cursor->~PlaySoundTaunt();
 		}
 	}
-}
-
-protected func DeepBreath()
-{
-	PlaySoundDeepBreath();
-}
-
-public func Incineration()
-{
-	PlaySoundShock();
-	return _inherited(...);
 }
 
 /* --- OC specific object interactions --- */
@@ -319,17 +283,6 @@ public func PlaySoundKneel()
 public func PlaySoundRoll()
 {
 	Sound("Clonk::Movement::Roll");
-}
-
-// Callback from the engine when a command failed.
-public func CommandFailure(string command, object target)
-{
-	// Don't play a sound when an exit command fails (this is a hotfix, because exiting fails all the time).
-	if (command == "Exit")
-		return; 
-	// Otherwise play a sound that the clonk is doubting this command.
-	PlaySoundDoubt();
-	return;
 }
 
 /* Act Map */

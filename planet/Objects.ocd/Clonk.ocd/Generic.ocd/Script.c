@@ -68,6 +68,54 @@ protected func Destruction(...)
 	return true;
 }
 
+
+protected func CatchBlow()
+{
+	if (GetAlive() && !Random(5))
+	{
+		this->PlaySoundHurt();
+	}
+	return _inherited(...);
+}
+
+protected func Grab(object pTarget, bool fGrab)
+{
+	if (fGrab)
+	{
+		this->PlaySoundGrab();
+	}
+	else
+	{
+		this->PlaySoundUnGrab();
+	}
+	return _inherited(...);
+}
+
+protected func Get()
+{
+	this->PlaySoundGrab();
+	return _inherited(...);
+}
+
+protected func Put()
+{
+	this->PlaySoundGrab();
+	return _inherited(...);
+}
+
+protected func DeepBreath()
+{
+	this->PlaySoundDeepBreath();
+	return _inherited(...);
+}
+
+public func Incineration()
+{
+	this->PlaySoundShock();
+	return _inherited(...);
+}
+
+
 /* --- Commands --- */
 
 protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
@@ -83,6 +131,17 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 	}
 	// No overloaded command
 	return _inherited(szCommand, pTarget, iTx, iTy, pTarget2, Data, ...);
+}
+
+// Callback from the engine when a command failed.
+public func CommandFailure(string command, object target)
+{
+	// Don't play a sound when an exit command fails (this is a hotfix, because exiting fails all the time).
+	if (command == "Exit")
+		return; 
+	// Otherwise play a sound that the clonk is doubting this command.
+	this->PlaySoundDoubt();
+	return _inherited(command, target, ...);
 }
 
 
