@@ -460,10 +460,10 @@ public func ResetHands()
 func FxIntWalkSlowStart(pTarget, effect, fTmp, iValue)
 {
 	iValue = iValue ?? 420;
-	pTarget->PushActionSpeed("Walk", iValue);
+	pTarget->PushActionSpeed("Walk", iValue, Library_AimManager);
 }
 
 func FxIntWalkSlowStop(pTarget, effect)
 {
-	pTarget->PopActionSpeed("Walk", GetID());
+	pTarget->PopActionSpeed("Walk", Library_AimManager);
 }
