@@ -102,8 +102,8 @@ struct C4Landscape::P
 	bool Mat2Pal(); // assign material colors to landscape palette
 	void UpdatePixCnt(const C4Landscape *, const C4Rect &Rect, bool fCheck = false);
 	void UpdateMatCnt(const C4Landscape *, C4Rect Rect, bool fPlus);
-	void PrepareChange(const C4Landscape *d, const C4Rect &BoundingBox);
-	void FinishChange(C4Landscape *d, C4Rect BoundingBox);
+	void PrepareChange(const C4Landscape *d, const C4Rect &BoundingBox, bool updateMatCnt = true);
+	void FinishChange(C4Landscape *d, C4Rect BoundingBox, bool updateMatAndPixCnt = true);
 	bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade, uint8_t line_color, uint8_t line_color_bkg);
 	bool DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius, uint8_t line_color, uint8_t line_color_bkg);
 	uint8_t *GetBridgeMatConversion(const C4Landscape *d, int32_t for_material_col) const;
@@ -487,9 +487,9 @@ void C4Landscape::ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
 {
 	std::vector<int32_t> vertices(GetRectangle(tx, ty, wdt, hgt));
 	C4Rect r(tx, ty, wdt, hgt);
-	p->PrepareChange(this, r);
+	p->PrepareChange(this, r, false);
 	p->ForPolygon(this, &vertices[0], vertices.size() / 2, [this](int32_t x, int32_t y) { return ClearPix(x, y); });
-	p->FinishChange(this, r);
+	p->FinishChange(this, r, false);
 }
 
 int32_t C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object, bool no_dig2objects, bool no_instability_check)
@@ -3911,7 +3911,7 @@ BYTE C4Landscape::GetBackMapIndex(int32_t iX, int32_t iY) const
 	return p->MapBkg->GetPix(iX, iY);
 }
 
-void C4Landscape::P::PrepareChange(const C4Landscape *d, const C4Rect &BoundingBox)
+void C4Landscape::P::PrepareChange(const C4Landscape *d, const C4Rect &BoundingBox, const bool updateMatCnt)
 {
 	// move solidmasks out of the way
 	C4Rect SolidMaskRect = BoundingBox;
@@ -3921,10 +3921,10 @@ void C4Landscape::P::PrepareChange(const C4Landscape *d, const C4Rect &BoundingB
 	{
 		pSolid->RemoveTemporary(SolidMaskRect);
 	}
-	UpdateMatCnt(d, BoundingBox, false);
+	if (updateMatCnt) UpdateMatCnt(d, BoundingBox, false);
 }
 
-void C4Landscape::P::FinishChange(C4Landscape *d, C4Rect BoundingBox)
+void C4Landscape::P::FinishChange(C4Landscape *d, C4Rect BoundingBox, const bool updateMatAndPixCnt)
 {
 	// Intersect bounding box with landscape
 	BoundingBox.Intersect(C4Rect(0, 0, Width, Height));
@@ -3932,7 +3932,7 @@ void C4Landscape::P::FinishChange(C4Landscape *d, C4Rect BoundingBox)
 	// update render
 	if (pLandscapeRender)
 		pLandscapeRender->Update(BoundingBox, d);
-	UpdateMatCnt(d, BoundingBox, true);
+	if (updateMatAndPixCnt) UpdateMatCnt(d, BoundingBox, true);
 	// Restore Solidmasks
 	C4Rect SolidMaskRect = BoundingBox;
 	if (pLandscapeRender)
@@ -3942,7 +3942,7 @@ void C4Landscape::P::FinishChange(C4Landscape *d, C4Rect BoundingBox)
 		pSolid->Repair(SolidMaskRect);
 	}
 	C4SolidMask::CheckConsistency();
-	UpdatePixCnt(d, BoundingBox);
+	if (updateMatAndPixCnt) UpdatePixCnt(d, BoundingBox);
 	// update FoW
 	if (pFoW)
 	{
