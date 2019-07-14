@@ -147,7 +147,7 @@ public func OnPlayerRelaunch(int plr)
 
 public func RelaunchPosition(int iPlr, int iTeam)
 {
-	if(!g_respawn_flags[iTeam]) return;
+	if (!g_respawn_flags[iTeam]) return;
 	return [g_respawn_flags[iTeam]->GetX(), g_respawn_flags[iTeam]->GetY()];
 }
 

@@ -300,7 +300,7 @@ public func IsToolProduct() { return true; }
 
 public func GetCarryTransform(clonk)
 {
-	if(GetCarrySpecial(clonk))
+	if (GetCarrySpecial(clonk))
 		return Trans_Translate(1000, 6500, 0);
 	
 	return Trans_Translate(1500, 0, -1500);

@@ -307,8 +307,8 @@ public func Harvest(object clonk)
 {
 	var fruit = -1;
 	for (var i = 0; i < GetLength(branches); i++)
-		if(branches[i].fruit)
-			if(!branches[i].fruit->~IsGrowing())
+		if (branches[i].fruit)
+			if (!branches[i].fruit->~IsGrowing())
 			{
 				fruit = i;
 				break;

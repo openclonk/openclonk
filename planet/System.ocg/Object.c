@@ -198,8 +198,8 @@ global func LaunchProjectile(int angle, int dist, int speed, int x, int y, int p
 	var x_offset = x ?? Sin(angle, dist, precAng);
 	var y_offset = y ?? -Cos(angle, dist, precAng);
 	
-	if(!precAng) precAng = 1;
-	if(!precSpd) precSpd = 10;
+	if (!precAng) precAng = 1;
+	if (!precSpd) precSpd = 10;
 
 	if (Contained() != nil && rel_x == true)
 		if (Contained()->GetDir() == 0)

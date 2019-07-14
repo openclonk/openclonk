@@ -114,7 +114,7 @@ global func ExplosionParticles_Init()
 // documented in /docs/sdk/script/fn
 global func Explode(int level, bool silent, int damage_level)
 {
-	if(!this) FatalError("Function Explode must be called from object context");
+	if (!this) FatalError("Function Explode must be called from object context");
 	
 	// Special: Implode
 	if (level <= 0) return RemoveObject();
@@ -395,7 +395,7 @@ global func FxShakeViewportEffect(string new_name)
 
 global func FxShakeViewportStart(object target, effect e, int temporary, level, xpos, ypos, range)
 {
-	if(temporary != 0) return;
+	if (temporary != 0) return;
 	
 	e.shakers = CreateArray();
 	e.shakers[0] = { x = xpos, y = ypos, strength = level, time = 0, range = range };
@@ -453,7 +453,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 	RemoveHoles(e.shakers);
 	
 	// no shakers left: remove this effect
-	if(GetLength(e.shakers) == 0)
+	if (GetLength(e.shakers) == 0)
 	{
 		return -1;
 	}

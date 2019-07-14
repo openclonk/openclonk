@@ -191,9 +191,9 @@ public func Initialize()
 private func CheckDescription()
 {
 	// If neutral flagpoles exist, update name and description.
-	if(respawn_at_base)
+	if (respawn_at_base)
 	{
-		if(ObjectCount(Find_ID(Flagpole), Find_Func("IsNeutral")))
+		if (ObjectCount(Find_ID(Flagpole), Find_Func("IsNeutral")))
 		{
 			SetName("$Name2$");
 			this.Description = "$Description2$";
@@ -435,7 +435,7 @@ public func GetPlayerRelaunchCount(int plr)
 
 public func DoPlayerRelaunchCount(int plr, int value)
 {
-	if(HasUnlimitedRelaunches())
+	if (HasUnlimitedRelaunches())
 		return;
 	relaunches[plr] += value;
 	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr]);

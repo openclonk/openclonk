@@ -6,7 +6,7 @@ public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 800; }
 public func GetCarryTransform(clonk)
 {
-	if(GetCarrySpecial(clonk))
+	if (GetCarrySpecial(clonk))
 		return Trans_Translate(2000, 4500, 6500);
 }
 

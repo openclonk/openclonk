@@ -33,7 +33,7 @@ func DoInit(int first_player)
 	{
 		var stuff = [Firestone, Firestone, Rock, Rock, Rock, Nugget];
 		var location = FindLocation(Loc_Material("Earth"));//, Loc_Space(5, false), Loc_Space(5, true));
-		if(location)
+		if (location)
 		{
 			CreateObjectAbove(stuff[Random(GetLength(stuff))], location.x, location.y);
 		}

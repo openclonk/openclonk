@@ -124,7 +124,7 @@ private func ExecutePilot(effect fx)
 				fx.vehicle->Sink();
 		}
 	}
-	else if(fx.stuck_time)
+	else if (fx.stuck_time)
 	{
 		fx.stuck_time = 0;
 	}

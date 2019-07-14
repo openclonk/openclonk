@@ -2,7 +2,7 @@
 
 protected func Construction()
 {
-	if(GBackSemiSolid())
+	if (GBackSemiSolid())
 		SetGraphics("Old");
 }
 

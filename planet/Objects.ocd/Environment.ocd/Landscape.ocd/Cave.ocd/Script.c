@@ -33,7 +33,7 @@ public func Place(int amount, proplist area, proplist settings)
 	var height = settings.height ?? 100;
 	var realwidth = 50, realheight = 50;
 	
-	if(width < height)
+	if (width < height)
 	{
 		var aspect = (100 * width) / height;
 		realwidth = (aspect * realheight) / 100;

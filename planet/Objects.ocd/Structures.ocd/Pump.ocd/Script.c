@@ -519,7 +519,7 @@ public func CheckState()
 			SetInfoMessage("$StateNoSource$");
 		SetState("Wait");
 	}
-	else if(IsAirPipeConnected())
+	else if (IsAirPipeConnected())
 	{
 		if (!GetAirSourceOk())
 		{
@@ -771,7 +771,7 @@ private func SetState(string act)
 	{
 		SetAnimationPosition(animation, Anim_Linear(anim_pos, start, end, 35, ANIM_Loop));
 	}
-	else if(act == "WaitForLiquid")
+	else if (act == "WaitForLiquid")
 	{
 		SetAnimationPosition(animation, Anim_Linear(anim_pos, start, end, 350, ANIM_Loop));
 	}

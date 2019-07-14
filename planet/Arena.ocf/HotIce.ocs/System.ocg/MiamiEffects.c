@@ -13,11 +13,11 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	// Zero-size explosion doesn't affect anything
 	if (level <= 0) return;
 	
-	if(!silent) //Does object use it's own explosion sound effect?
+	if (!silent) //Does object use it's own explosion sound effect?
 	{
 		// Select sound according to level: from 1 to 3, add the * to allow alternatives.
 		var grade = BoundBy(level / 10 - 1, 1, 3);
-		if(GBackLiquid(x, y))
+		if (GBackLiquid(x, y))
 			SoundAt(Format("Fire::BlastLiquid%d*",grade), x, y);
 		else
 			SoundAt(Format("Fire::Blast%d*", grade), x, y);
@@ -49,7 +49,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	CreateParticle("Shockwave", x, y, 0, 0, 15, {Prototype = Particles_Colored(ExplosionParticles_Shockwave, clr), Size = shockwave_size}, nil);
 	
 	// cast either some sparks on land or bubbles under water
-	if(GBackLiquid(x, y) && Global.CastBubbles)
+	if (GBackLiquid(x, y) && Global.CastBubbles)
 	{
 		Global->CastBubbles(level * 7 / 10, level, x, y);
 	}

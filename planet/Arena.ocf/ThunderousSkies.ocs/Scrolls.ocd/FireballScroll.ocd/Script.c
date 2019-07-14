@@ -19,7 +19,7 @@ public func ControlUse(object pClonk, int ix, int iy)
 
 public func FxFireballStart(pTarget, effect, iTemp, owner, angle, x, y)
 {
-	if(iTemp) return;
+	if (iTemp) return;
 	x+=Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
 	effect.owner=owner;
@@ -50,7 +50,7 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 		CreateObjectAbove(Dynamite,x,y,effect.owner)->Explode(14);
 		for(var i=0; i<=3;i++) CreateObjectAbove(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),effect.owner)->Explode(6+Random(4));
 		var obj=FindObject(Find_Distance(22,x,y),Find_ID(TargetBalloon));
-		if(obj)
+		if (obj)
 		{
 			var arw=CreateObjectAbove(Arrow,0,0,effect.owner);
 			obj->OnProjectileHit(arw);
@@ -58,7 +58,7 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 		} 
 		return -1;
 	}	
-	else if(iEffectTime < 70)
+	else if (iEffectTime < 70)
 	{
 		angle+=Sin(iEffectTime*30,18);
 		var xspeed = Sin(angle, 6);

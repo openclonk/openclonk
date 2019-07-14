@@ -90,7 +90,7 @@ global func FxLifestealDamage(object target, effect, int damage, int cause, int 
 }
 global func FxLifedrainStart(object target, effect, int temporary,damage)
 {
-	if(temporary) return 1;
+	if (temporary) return 1;
 	effect.drain=damage/10;
 }
 global func FxLifedrainAdd(object target, effect, string new_name, int new_timer, damage)
@@ -99,14 +99,14 @@ global func FxLifedrainAdd(object target, effect, string new_name, int new_timer
 }
 global func FxLifedrainTimer(object target, effect, int timer)
 {
-	if(effect.drain>0) return -1;
+	if (effect.drain>0) return -1;
 	target->DoEnergy(+100,1,0,-1);
 	effect.drain+=10;
 }
 global func FxBlessTheKingTimer(object target, effect, int timer)
 {
-	if(!FindObject(Find_ID(KingOfTheHill_Location))) return 1;
-	if(FindObject(Find_ID(KingOfTheHill_Location))->GetKing() == nil) return 1;
+	if (!FindObject(Find_ID(KingOfTheHill_Location))) return 1;
+	if (FindObject(Find_ID(KingOfTheHill_Location))->GetKing() == nil) return 1;
 	
 	var king=FindObject(Find_ID(KingOfTheHill_Location))->GetKing();
 	var particles = ThunderousSkies_air_particles;
@@ -143,19 +143,19 @@ global func FxChanneledWindTimer()
 
 global func FxBalloonsTimer()
 {
-	if(ObjectCount(Find_ID(TargetBalloon)) > 2 )
+	if (ObjectCount(Find_ID(TargetBalloon)) > 2 )
 	{
 		return 1;
 	}
-	if(ObjectCount(Find_ID(TargetBalloon)) )
+	if (ObjectCount(Find_ID(TargetBalloon)) )
 	{
-		if(Random(6)) return 1;	
+		if (Random(6)) return 1;	
 	}
 
-	if(Random(2)) return 1;
+	if (Random(2)) return 1;
 	
 	var x = Random(300)+50;
-	if(Random(2)) x = LandscapeWidth() - x;
+	if (Random(2)) x = LandscapeWidth() - x;
 	var y = Random(50) + 100;
 	var target;
 	
@@ -190,7 +190,7 @@ global func PlaceGras()
 // Refill/fill chests.
 global func FxIntFillChestsStart(object target, effect, int temporary)
 {
-	if(temporary) return 1;
+	if (temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest),Find_InRect(0,0,LandscapeWidth(),610));
 	var w_list = [Shield, Javelin, FireballScroll, Bow, Blunderbuss, WindScroll, ThunderScroll];
 	
@@ -210,15 +210,15 @@ global func FxIntFillChestsTimer()
 	var contents;
 	for(var i=0; i<chest->GetLength(w_list); i++)
 		contents+=chest->ContentsCount(w_list[i]);
-	if(contents > 5) return 1;
+	if (contents > 5) return 1;
 	
-	if(!FindObject(Find_ID(Clonk),Find_Distance(20,chest->GetX(),chest->GetY())) && chest->ContentsCount()>2)
+	if (!FindObject(Find_ID(Clonk),Find_Distance(20,chest->GetX(),chest->GetY())) && chest->ContentsCount()>2)
 	{
 		var r=chest->Random(chest->ContentsCount());
 		var remove=true;
 		for(var i=0; i<GetLength(w_list); i++)
-			if(chest->Contents(r)->GetID() == w_list[i]) remove=false;
-		if(remove) chest->Contents(r)->RemoveObject();			
+			if (chest->Contents(r)->GetID() == w_list[i]) remove=false;
+		if (remove) chest->Contents(r)->RemoveObject();			
 	}
 	
 	for(var i=0; i<2 ; i++)

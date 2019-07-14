@@ -6,7 +6,7 @@
 protected func Construction()
 {
 	var graphic = Random(5);
-	if(graphic)
+	if (graphic)
 		SetGraphics(Format("%d",graphic));
 	_inherited(...);
 }

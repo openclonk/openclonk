@@ -14,7 +14,7 @@ func Place(int amount_percentage, proplist area)
 	// calculate amount that has to be placed
 	var amount = LandscapeWidth() / 100;
 	amount = (amount_percentage * amount) / 100;
-	if(!amount) return;
+	if (!amount) return;
 	
 	while(--amount)
 	{

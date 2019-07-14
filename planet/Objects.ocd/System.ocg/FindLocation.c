@@ -126,13 +126,13 @@ global func Loc_Liquid() { return [LOC_LIQUID]; }
 global func Loc_Wall(int direction, wall_condition1, ...)
 {
 	var x = 0, y = 0;
-	if(direction & CNAT_Left) x = -1;
+	if (direction & CNAT_Left) x = -1;
 	else
-	if(direction & CNAT_Right) x = 1;
+	if (direction & CNAT_Right) x = 1;
 	
-	if(direction & CNAT_Top) y = -1;
+	if (direction & CNAT_Top) y = -1;
 	else
-	if(direction & CNAT_Bottom) y = 1;
+	if (direction & CNAT_Bottom) y = 1;
 	
 	var both_left_right = !!((direction & CNAT_Left) && (direction & CNAT_Right));
 	var both_top_bottom = !!((direction & CNAT_Top) && (direction & CNAT_Bottom));

@@ -521,7 +521,7 @@ CreateEnvironmentObjects("Temperate", Rectangle(LandscapeWidth()/2, 0, Landscape
 	amount_percentage = amount_percentage ?? 100;
 	
 	// might be a string to allow CreateEnvironmentObjects("All")
-	if(GetType(what) != C4V_Array)
+	if (GetType(what) != C4V_Array)
 		what = [what];
 	
 	// iteratively find all the objects that are included in the selection
@@ -534,26 +534,26 @@ CreateEnvironmentObjects("Temperate", Rectangle(LandscapeWidth()/2, 0, Landscape
 		for(var obj in what)
 		{
 			var p = Environment_Attributes[obj];
-			if(p == nil) {Log("Warning: Environment object %s does not exist!", obj);}
-			else if(p == false) continue; // disabled by the scenario designer
+			if (p == nil) {Log("Warning: Environment object %s does not exist!", obj);}
+			else if (p == false) continue; // disabled by the scenario designer
 			
 			// add all objects included to the temporary list if existing
-			if(!p["includes"]) continue;
+			if (!p["includes"]) continue;
 			to_add = Concatenate(to_add, p["includes"]);
 		}
 		
 		// add every unique item from the temporary list to the object list
 		for(var obj in to_add)
 		{
-			if(IsValueInArray(what, obj)) continue;
+			if (IsValueInArray(what, obj)) continue;
 			
-			if(!!Environment_Attributes[obj]["includes"])
+			if (!!Environment_Attributes[obj]["includes"])
 				changed = true; // found changes, need further checking
 			
 			PushBack(what, obj);
 		}
 		
-		if(!changed)
+		if (!changed)
 			break;
 	}
 	
@@ -561,8 +561,8 @@ CreateEnvironmentObjects("Temperate", Rectangle(LandscapeWidth()/2, 0, Landscape
 	for(var obj in what)
 	{
 		var p, p_id;
-		if(!(p = Environment_Attributes[obj])) continue;
-		if(!(p_id = p["ID"])) continue;
+		if (!(p = Environment_Attributes[obj])) continue;
+		if (!(p_id = p["ID"])) continue;
 		
 		p_id->Place(amount_percentage, area);
 	}

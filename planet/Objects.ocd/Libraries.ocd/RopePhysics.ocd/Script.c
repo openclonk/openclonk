@@ -540,7 +540,7 @@ public func ForcesOnObjects()
 		}
 		if (speed > 150)
 			DoLength(1);
-		else if(speed < 50) 
+		else if (speed < 50) 
 			DoLength(-1); // TODO not just obj 1
 		else 
 			redo = 0;

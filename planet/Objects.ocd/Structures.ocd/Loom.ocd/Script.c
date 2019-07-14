@@ -36,7 +36,7 @@ public func PowerNeed() { return 40; }
 
 private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 {
-	if(effect.paused == true) return 1;
+	if (effect.paused == true) return 1;
 
 	var tickAmount = 50;
 	var animSpot = GetAnimationPosition(animWork);
@@ -45,7 +45,7 @@ private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 	var animLength = GetAnimationLength("Working") - 50;
 	
 	//loop anim
-	if(animSpot + tickAmount > animLength){
+	if (animSpot + tickAmount > animLength){
 		SetAnimationPosition(animWork, Anim_Const(animSpot + tickAmount - animLength));
 	}
 	//otherwise, advance animation

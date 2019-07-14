@@ -57,7 +57,7 @@ func Update()
 	for(var i = 0; i < l; ++i)
 	{
 		var obj = ring[i];
-		if(i >= last_colored)
+		if (i >= last_colored)
 		{
 			obj->SetGraphics(nil, back_image, 0, GFXOV_MODE_ObjectPicture, nil, GFX_BLIT_Custom);
 			obj->SetClrModulation(back_color);

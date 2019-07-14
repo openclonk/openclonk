@@ -163,7 +163,7 @@ private func UpdateInventory()
 {
 	// only display if we have a clonk and it's not disabled
 	var clonk = GetCursor(GetOwner());
-	if(!clonk || !clonk->GetCrewEnabled())
+	if (!clonk || !clonk->GetCrewEnabled())
 	{
 		if (inventory_gui_menu.Player != NO_OWNER)
 		{

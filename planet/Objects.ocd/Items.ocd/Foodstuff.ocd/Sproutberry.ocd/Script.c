@@ -20,7 +20,7 @@ func Hit()
 // sproutberries are extremely unstable and likely to grow a new plant if not carried
 func Departure(object what)
 {
-	if(!GetEffect("SproutCheck", this))
+	if (!GetEffect("SproutCheck", this))
 		AddEffect("SproutCheck", this, 1, 10, this);
 }
 
@@ -38,9 +38,9 @@ func SaveScenarioObject(props, ...)
 func FxSproutCheckTimer(target, effect, time)
 {
 	var c = Contained();
-	if(c)
+	if (c)
 	{
-		if(c->GetCategory() & C4D_Living)
+		if (c->GetCategory() & C4D_Living)
 		{
 			return -1;
 		}
@@ -48,9 +48,9 @@ func FxSproutCheckTimer(target, effect, time)
 	
 	// can only create a new bush after some time
 	// or faster if burried!
-	if(time < 35 * 30) return;
-	if(!GBackSolid(0, -1))
-		if(time < 35 * 60) return;
+	if (time < 35 * 30) return;
+	if (!GBackSolid(0, -1))
+		if (time < 35 * 60) return;
 	
 	// okay, create a bush or just remove
 	this.Collectible = 0;
@@ -61,11 +61,11 @@ func FxSproutCheckTimer(target, effect, time)
 	var y = -10;
 	for(;y < 10; ++y)
 	{
-		if(GBackSolid(0, y+1)) break;
+		if (GBackSolid(0, y+1)) break;
 	}
 	
 	// no fitting ground found :/
-	if((!GBackSolid(0, y+1)) || GBackSolid(0, y))
+	if ((!GBackSolid(0, y+1)) || GBackSolid(0, y))
 	{
 		return -1;
 	}
@@ -95,7 +95,7 @@ func FxSproutCheckTimer(target, effect, time)
 func FxBushSuitableTimer(target, effect, time)
 {
 	// bush could not grow yet :(
-	if(target.sprout_count == 0)
+	if (target.sprout_count == 0)
 	{
 		target->Die();
 	}
@@ -106,7 +106,7 @@ func FxBushSuitableTimer(target, effect, time)
 
 func FxShrinkStart(target, effect, temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.size = 1000;
 	effect.color_sub = 0;
 }
@@ -116,7 +116,7 @@ func FxShrinkTimer(target, effect, time)
 	effect.size -= 10;
 	
 	// if contained we do not need a visual effect before removing..
-	if((effect.size <= 0) || Contained())
+	if ((effect.size <= 0) || Contained())
 	{
 		RemoveObject();
 		return -1;
@@ -124,7 +124,7 @@ func FxShrinkTimer(target, effect, time)
 	
 	SetObjDrawTransform(1000, 0, 0, 0, effect.size, 1000 - effect.size);
 	
-	if(effect.color_sub < 255)
+	if (effect.color_sub < 255)
 	{
 		effect.color_sub = Min(effect.color_sub + 5, 255);
 		SetClrModulation(RGB(255 - effect.color_sub / 3, 255 - effect.color_sub / 2, 255 - effect.color_sub));

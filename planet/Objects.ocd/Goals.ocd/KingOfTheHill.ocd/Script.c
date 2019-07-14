@@ -62,7 +62,7 @@ func Init()
 
 func Destruction()
 {
-	if(location) location->RemoveObject();
+	if (location) location->RemoveObject();
 }
 
 func SearchPosition()
@@ -78,7 +78,7 @@ func SearchPosition()
 		
 		var block=PathFree2(0, m, LandscapeWidth(), m);
 		
-		if(!block)
+		if (!block)
 		{
 			a=m;
 		}
@@ -144,7 +144,7 @@ func OnClonkDeath(object clonk, int killer)
 	if (GetPlayerName(clonk->GetOwner()))
 		++player_deaths[clonk->GetOwner()];
 	 
-	if(GetPlayerName(clonk->GetOwner()))
+	if (GetPlayerName(clonk->GetOwner()))
 	if (killer == clonk->GetOwner() || killer == NO_OWNER)
 	{
 		// shame on the king who kills himself
@@ -157,7 +157,7 @@ func OnClonkDeath(object clonk, int killer)
 		{
 			// non-king suicide
 			player_suicides[clonk->GetOwner()]++;
-			if(player_suicides[clonk->GetOwner()] % 2 == 0)
+			if (player_suicides[clonk->GetOwner()] % 2 == 0)
 			{
 				DoPoint(clonk->GetOwner(),-1);
 			}
@@ -257,8 +257,8 @@ private func GetTeamList()
 		
 		var found = false;
 		for(var x=0;x<GetLength(teams);++x)
-			if(teams[x] == t) {found = true; break;}
-		if(found) continue;
+			if (teams[x] == t) {found = true; break;}
+		if (found) continue;
 		teams[GetLength(teams)]=t;
 	}
 	return teams;
@@ -278,12 +278,12 @@ private func GetTeamPoints()
 		for(var d=0;d<GetPlayerCount();++d)
 		{
 			var p=GetPlayerByIndex(d);
-			if(GetPlayerTeam(p) != t) continue;
+			if (GetPlayerTeam(p) != t) continue;
 			
 			p += player_points[p];
 
 			var comma = ", ";
-			if(GetLength(names) == 0) comma = "";
+			if (GetLength(names) == 0) comma = "";
 			names = Format("%s%s%s", names, comma, GetTaggedPlayerName(p));
 		}
 		

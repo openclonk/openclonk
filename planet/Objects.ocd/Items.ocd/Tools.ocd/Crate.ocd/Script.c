@@ -64,7 +64,7 @@ public func GetCarryPhase() { return 800; }
 
 public func GetCarryTransform(object clonk)
 {
-	if(GetCarrySpecial(clonk))
+	if (GetCarrySpecial(clonk))
 		return Trans_Translate(3500, 6500, 0);
 	
 	return Trans_Translate(0, 0, -1500);

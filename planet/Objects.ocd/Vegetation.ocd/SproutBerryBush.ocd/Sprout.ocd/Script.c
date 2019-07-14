@@ -40,11 +40,11 @@ public func IsHarvestable()
 public func Harvest(object clonk)
 {
 	var b = Contents();
-	if(!b) return Die();
+	if (!b) return Die();
 	b->Exit();
 	clonk->Collect(b);
 	
-	if(attached_berry != -1)
+	if (attached_berry != -1)
 	{
 		StopAnimation(attached_berry);
 		attached_berry = -1;
@@ -84,12 +84,12 @@ func AddLeaves(bool fullyGrown)
 	{
 		var rtrans = Trans_Rotate(Random(360), 1, 0, 0);
 		var matrix = Trans_Mul(Trans_Scale(1, 1, 1), rtrans);
-		if(fullyGrown)
+		if (fullyGrown)
 			matrix = rtrans;
 		leaves[i] = AttachMesh(SproutBerryBush_Leaf, Format("Leaf%d", i), "Main", matrix);
 		
 		var start_size = 0;
-		if(fullyGrown) start_size = 1500;
+		if (fullyGrown) start_size = 1500;
 		AddEffect("GrowLeaf", this, 1, 1, this, nil, i, rtrans, start_size);
 	}
 }
@@ -130,7 +130,7 @@ func Init(object bush)
 
 func FxVirtGrowStart(target, effect, temp, p1)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.step = p1;
 	effect.size = 1;
 }
@@ -138,19 +138,19 @@ func FxVirtGrowStart(target, effect, temp, p1)
 func FxVirtGrowTimer(target, effect, time)
 {
 	effect.size += effect.step;
-	if(effect.size >= 1000)
+	if (effect.size >= 1000)
 		effect.size = 1000;
 		
 	SetObjDrawTransform(effect.size, 0, 0, 0, effect.size, (1000-effect.size)/4);
 	
-	if(effect.size == 1000)
+	if (effect.size == 1000)
 		return -1;
 	return 1;
 }
 
 func FxGrowLeafStart(target, effect, temp, p1, p2, p3)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.leaf = p1;
 	effect.rtrans = p2;
 	effect.size = p3;
@@ -160,11 +160,11 @@ func FxGrowLeafStart(target, effect, temp, p1, p2, p3)
 func FxGrowLeafTimer(target, effect, time)
 {
 	effect.size += 3;
-	if(effect.size >= effect.leaf_size)
+	if (effect.size >= effect.leaf_size)
 		effect.size = effect.leaf_size;
 		
 	SetAttachTransform(leaves[effect.leaf], Trans_Mul(Trans_Scale(effect.size, effect.size, effect.size), effect.rtrans));
-	if(effect.size == effect.leaf_size)
+	if (effect.size == effect.leaf_size)
 		return -1;
 	return 1;
 }
@@ -173,7 +173,7 @@ func FxGrowLeafTimer(target, effect, time)
 func FullyGrown()
 {
 	AddEffect("LifeTimer", this, 1, 30+Random(10), this);
-	if(GetActionTarget())
+	if (GetActionTarget())
 		GetActionTarget()->SproutFullyGrown(this);
 }
 
@@ -184,22 +184,22 @@ func FxLifeTimerStart()
 
 func FxLifeTimerTimer(target, effect, time)
 {
-	if(!Contents())
+	if (!Contents())
 	{
 		var t = GetActionTarget();
-		if(!t) return;
+		if (!t) return;
 		
-		if(!Random(10))
+		if (!Random(10))
 		{
-			if(attached_flower != -1)
+			if (attached_flower != -1)
 			{
-				if(!GetEffect("FlowerTime", this))
+				if (!GetEffect("FlowerTime", this))
 					CreateBerry();
 			}
 		}
-		if((!Random(3)) && t->IsFlowerTime())
+		if ((!Random(3)) && t->IsFlowerTime())
 		{
-			if(attached_flower == -1)
+			if (attached_flower == -1)
 				CreateFlower();
 		}
 	}
@@ -208,7 +208,7 @@ func FxLifeTimerTimer(target, effect, time)
 func Damage()
 {
 	// splatter
-	if(grow_anim)
+	if (grow_anim)
 		CreateParticle("Dust", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(20, 60), Particles_Material(RGB(50, 50, 255)), 30);
 		
 	// ouch!
@@ -217,7 +217,7 @@ func Damage()
 
 public func IsProjectileTarget(object projectile, object shooter)
 {
-	if(Random(20))
+	if (Random(20))
 		return false;
 	return !projectile || ObjectDistance(this, projectile) < 15;
 }
@@ -236,14 +236,14 @@ func Retract()
 func Incineration()
 {
 	Extinguish();
-	if(!grow_anim) return;
+	if (!grow_anim) return;
 	Die(false);
 	SetClrModulation(RGB(50, 50, 50));
 }
 
 func Die(bool natural_cause)
 {
-	if(!grow_anim) return; // already dead
+	if (!grow_anim) return; // already dead
 		
 	// new property for the final Remove callback
 	this.isDead = !natural_cause;	
@@ -253,11 +253,11 @@ func Die(bool natural_cause)
 	PlayAnimation(grow_anim, 6, Anim_Linear(len, len, 0, time,  ANIM_Hold)); 
 	AddEffect("QuickFade", this, 1, 1, this, nil, time/2);
 	
-	if(this.isDead)
+	if (this.isDead)
 	{
 		var td = time;
 		var tick = SproutBerryBush_water_per_sprout / time;
-		if(tick <= 0)
+		if (tick <= 0)
 		{
 			tick = 1;
 			td = SproutBerryBush_water_per_sprout;
@@ -268,7 +268,7 @@ func Die(bool natural_cause)
 	{
 		// give a bit of water back to the bush
 		var t = GetActionTarget();
-		if(t)
+		if (t)
 		{
 			t.saved_water += SproutBerryBush_water_per_sprout / 3;
 		}
@@ -298,7 +298,7 @@ func Remove()
 	if (t)
 	{
 		// not natural cause?
-		if(this.isDead)
+		if (this.isDead)
 		{
 			// that hurt!
 			t.sprout_evolve_counter -= 2;
@@ -314,14 +314,14 @@ func Remove()
 
 func CreateBerry()
 {
-	if(attached_berry != -1) return;
+	if (attached_berry != -1) return;
 	var berry = CreateContents(Sproutberry);
 	attached_berry = AttachMesh(berry, "Head", "Main", nil, nil);
 	SetAttachTransform(attached_berry, Trans_Scale(1, 1, 1));
 	AddEffect("GrowAttachedBerry", this, 1, 2, this);
 	
 	// don't need the flower anymore
-	if(attached_flower != -1)
+	if (attached_flower != -1)
 		AddEffect("ShrinkAttachedFlower", this, 1, 2, this);
 	
 	// if not plucked, will eventually remove the berry
@@ -331,10 +331,10 @@ func CreateBerry()
 func FxRetractBerryTimer(target, effect, time)
 {
 	var t = GetActionTarget();
-	if(!t) return;
+	if (!t) return;
 	
 	// do not remove the bush with this action!
-	if(t.sprout_count == 1)
+	if (t.sprout_count == 1)
 	{
 		effect.Interval = 35 * 20;
 		return;
@@ -345,12 +345,12 @@ func FxRetractBerryTimer(target, effect, time)
 
 func CreateFlower()
 {
-	if(attached_flower != -1) return;
+	if (attached_flower != -1) return;
 	
 	// needs some water for this
 	var t = GetActionTarget();
-	if(!t) return;
-	if(t.saved_water < SproutBerryBush_water_per_berry) return;
+	if (!t) return;
+	if (t.saved_water < SproutBerryBush_water_per_berry) return;
 	t.saved_water -= SproutBerryBush_water_per_berry;
 	
 	// send the happy message
@@ -365,21 +365,21 @@ func CreateFlower()
 
 func FxGrowAttachedBerryStart(target, effect, temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.size = 1;
 }
 
 func FxGrowAttachedBerryTimer(target, effect, time)
 {
-	if(attached_berry == -1) return -1;
+	if (attached_berry == -1) return -1;
 	
 	effect.size += 20;
-	if(effect.size >= 750)
+	if (effect.size >= 750)
 		effect.size = 750;
 		
 	SetAttachTransform(attached_berry, Trans_Scale(effect.size, effect.size, effect.size));
 	
-	if(effect.size == 750)
+	if (effect.size == 750)
 		return -1;
 	return 1;
 }
@@ -388,42 +388,42 @@ static const SproutBerryBush_Flower_BlossomSize = 1000;
 
 func FxGrowAttachedFlowerStart(target, effect, temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.size = 1;
 }
 
 func FxGrowAttachedFlowerTimer(target, effect, time)
 {
-	if(attached_flower == -1) return -1;
+	if (attached_flower == -1) return -1;
 	
 	effect.size += 20;
-	if(effect.size >= SproutBerryBush_Flower_BlossomSize)
+	if (effect.size >= SproutBerryBush_Flower_BlossomSize)
 		effect.size = SproutBerryBush_Flower_BlossomSize;
 		
 	SetAttachTransform(attached_flower, Trans_Scale(effect.size, effect.size, effect.size));
 	
-	if(effect.size == SproutBerryBush_Flower_BlossomSize)
+	if (effect.size == SproutBerryBush_Flower_BlossomSize)
 		return -1;
 	return 1;
 }
 
 func FxShrinkAttachedFlowerStart(target, effect, temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.size = SproutBerryBush_Flower_BlossomSize;
 }
 
 func FxShrinkAttachedFlowerTimer(target, effect, time)
 {
-	if(attached_flower == -1) return -1;
+	if (attached_flower == -1) return -1;
 	
 	effect.size -= 20;
-	if(effect.size <= 0)
+	if (effect.size <= 0)
 		effect.size = 0;
 		
 	SetAttachTransform(attached_flower, Trans_Scale(effect.size, effect.size, effect.size));
 	
-	if(effect.size == 0)
+	if (effect.size == 0)
 	{
 		DetachMesh(attached_flower);
 		attached_flower = -1;
@@ -434,7 +434,7 @@ func FxShrinkAttachedFlowerTimer(target, effect, time)
 
 func Ejection(obj)
 {
-	if(attached_berry != -1)
+	if (attached_berry != -1)
 	{
 		DetachMesh(attached_berry);
 		attached_berry = -1;
@@ -443,7 +443,7 @@ func Ejection(obj)
 
 func FxQuickFadeStart(target, effect, temp, p1)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.t = p1;
 	effect.alpha = 255;
 	effect.step = 255 / effect.t;
@@ -451,10 +451,10 @@ func FxQuickFadeStart(target, effect, temp, p1)
 
 func FxQuickFadeTimer(target, effect, time)
 {
-	if(time < effect.t) return;
+	if (time < effect.t) return;
 	effect.alpha -= effect.step;
 	SetClrModulation(RGBa(255, 255, 255, effect.alpha));
-	if(effect.alpha <= 0) return -1;
+	if (effect.alpha <= 0) return -1;
 	return 1;
 }
 

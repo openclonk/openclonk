@@ -34,7 +34,7 @@ func Initialize(...)
 
 func Hit()
 {
-	if(GetEffect("Flight",this))
+	if (GetEffect("Flight",this))
 	{
 		Stick();
 		Sound("Objects::Weapons::Javelin::HitGround");
@@ -132,7 +132,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 
 public func ControlUseStop(object clonk, ix, iy)
 {
-	if(aiming)
+	if (aiming)
 		clonk->StopAim();
 	return true;
 }
@@ -175,7 +175,7 @@ public func DoThrow(object clonk, int angle)
 
 func Stick()
 {
-	if(GetEffect("Flight",this))
+	if (GetEffect("Flight",this))
 	{
 		SetXDir(0);
 		SetYDir(0);
@@ -187,9 +187,9 @@ func Stick()
 		var x=Sin(GetR(),+16);
 		var y=Cos(GetR(),-16);
 		var mat = GetMaterial(x,y);
-		if(mat != -1)
+		if (mat != -1)
 		{
-			//if(GetMaterialVal("DigFree","Material",mat))
+			//if (GetMaterialVal("DigFree","Material",mat))
 			//{
 			// stick in landscape
 			SetVertex(2,VTX_Y,-18,1);
@@ -259,12 +259,12 @@ public func GetCarryBone() { return "Javelin"; }
 
 public func GetCarrySpecial(clonk)
 {
-	if(aiming > 0) return "pos_hand2";
+	if (aiming > 0) return "pos_hand2";
 }
 
 public func GetCarryTransform()
 {
-	if(aiming == 1) return Trans_Rotate(180, 0, 0, 1);
+	if (aiming == 1) return Trans_Rotate(180, 0, 0, 1);
 }
 
 func Definition(def, ...) {

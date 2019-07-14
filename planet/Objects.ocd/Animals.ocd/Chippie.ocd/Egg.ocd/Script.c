@@ -22,10 +22,10 @@ public func Place(int amount, proplist area)
 	while(amount > 0)
 	{
 		var p = nil;
-		if(Random(2)) p = FindLocation(Loc_Tunnel(), location);
-		if(p == nil)
+		if (Random(2)) p = FindLocation(Loc_Tunnel(), location);
+		if (p == nil)
 			p = FindLocation(Loc_Solid(), location);
-		if(p == nil)
+		if (p == nil)
 		{
 			--amount;
 			continue;
@@ -68,7 +68,7 @@ private func GetLifeTime()
 
 public func Hit(int x, int y)
 {
-	if(Hatch()) return;
+	if (Hatch()) return;
 	
 	// Put one vertex into wall so that the egg sticks.
 	var angle = Angle(0, 0, x, y);
@@ -110,7 +110,7 @@ private func Yoink()
 
 private func FxWiggleStart(target, effect, temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.start = Random(360);
 }
 
@@ -121,31 +121,31 @@ private func FxWiggleTimer(target, effect, time)
 	var y = -Cos(effect.start + 5 * time, magnitude);
 	this.MeshTransformation = Trans_Mul(transform, Trans_Scale(1000 + x/4, 1000+y/4, 1000 + Max(x, y)/4));
 	
-	if(magnitude <= 1 && Random(2))
+	if (magnitude <= 1 && Random(2))
 		return -1;
 	return 1;
 }
 
 private func FxWiggleStop(target, effect, cause, temp)
 {
-	if(temp) return;
+	if (temp) return;
 	this.MeshTransformation = transform;
 }
 
 private func RndHatch()
 {
-	if(!Random(30))
+	if (!Random(30))
 		Hatch();
 }
 
 private func Hatch()
 {
-	if(GetLifeTime() < 36 * 120) return false;
-	if(Stuck()) return false;
-	if(Contained()) return false;
-	if(GBackSemiSolid(0, -1)) return false;
+	if (GetLifeTime() < 36 * 120) return false;
+	if (Stuck()) return false;
+	if (Contained()) return false;
+	if (GBackSemiSolid(0, -1)) return false;
 	var cnt = ObjectCount(Find_Distance(50), Find_ID(Chippie));
-	if(cnt >= 5) return false;
+	if (cnt >= 5) return false;
 	
 	var c = CreateObject(Chippie, 0, 0, GetOwner());
 	c->SetCon(50);

@@ -26,7 +26,7 @@ public func Ready(object clonk)
 {
 	if (!elevator) return false;
 	if (GetCasePusher()) return false;
-	if(GetEffect("MoveTo", this)) return false;
+	if (GetEffect("MoveTo", this)) return false;
 	// Clonk is out of reach
 	if (clonk->GetY() < elevator->GetY()) return false;
 	// No need to call?
@@ -106,9 +106,9 @@ public func Connect(object connect_to)
 
 private func Destruction()
 {
-	if(partner)
+	if (partner)
 		partner->LoseConnection();
-	if(elevator)
+	if (elevator)
 		elevator->LostCase();
 	return _inherited(...);
 }
@@ -125,7 +125,7 @@ public func StartConnection(object case)
 {
 	partner = case;
 	partner_was_synced = false;
-	if(case.partner != this)
+	if (case.partner != this)
 	{
 		case->StartConnection(this);
 		is_master = true;
@@ -144,7 +144,7 @@ public func LoseConnection()
 	partner = nil;
 	is_master = nil;
 	partner_was_synced = false;
-	if(GetEffect("TryToSync", this))
+	if (GetEffect("TryToSync", this))
 		RemoveEffect("TryToSync", this);
 	OvertakePartnerVertices(0, 0);
 	SetSolidMask(0, 0, 24, 3, 0, 23);
@@ -205,7 +205,7 @@ public func IsSlave() { return partner && !is_master && partner_was_synced; }
 private func FxTryToSyncTimer(object target, effect, int time)
 {
 	var diff = Abs(partner->GetY() - GetY());
-	if(diff > 5) return 1;
+	if (diff > 5) return 1;
 	ExecuteSync();
 	return -1;
 }
@@ -302,19 +302,19 @@ private func GetCasePusher()
 
 public func OutOfRange(object vehicle)
 {
-	if(Abs(GetY() - vehicle->GetY()) > 10) return true;
+	if (Abs(GetY() - vehicle->GetY()) > 10) return true;
 
 	var dist = vehicle->GetObjWidth();
 	var min_x = GetX() - dist;
 	var max_x = GetX() + dist;
-	if(IsMaster())
+	if (IsMaster())
 	{
 		min_x = Min(min_x, partner->GetX() - dist);
 		max_x = Max(max_x, partner->GetX() + dist);
 	}
 
-	if(vehicle->GetX() < min_x) return true;
-	if(vehicle->GetX() > max_x) return true;
+	if (vehicle->GetX() < min_x) return true;
+	if (vehicle->GetX() > max_x) return true;
 	return false;
 }
 
@@ -499,7 +499,7 @@ private func Halt(bool user_requested, bool power_out)
 		return;
 
 	// Stop the engine if it was still moving.
-	if(elevator)
+	if (elevator)
 		elevator->StopEngine();
 	if (IsMaster())
 		partner->ForwardEngineStop();
@@ -576,7 +576,7 @@ private func FxMoveToTimer(object target, proplist effect, int time)
 
 	// Target moves away from elevator shaft, finish movement but stop following
 	if (effect.target)
-		if(Abs(GetX() - effect.target->GetX()) > 100)
+		if (Abs(GetX() - effect.target->GetX()) > 100)
 		{
 			effect.move_to_y = effect.target->GetY();
 			effect.target = nil;

@@ -116,7 +116,7 @@ public func Hit()
 
 public func FxInFlightStart(object target, proplist effect, int temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.x = target->GetX();
 	effect.y = target->GetY();
 }
@@ -150,7 +150,7 @@ public func FxInFlightTimer(object target, proplist effect, int time)
 
 public func Entrance(object container)
 {
-	if(container->GetID() == GrappleBow) return;
+	if (container->GetID() == GrappleBow) return;
 	if (rope)
 		rope->BreakRope();
 	RemoveObject();

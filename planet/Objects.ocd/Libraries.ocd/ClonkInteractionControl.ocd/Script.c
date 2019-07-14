@@ -356,7 +356,7 @@ func GetInteractableObjects(array sort)
 	// find vehicles & structures & script interactables
 	// Get custom interactions from the clonk
 	// extra interactions are an array of proplists. proplists have to contain at least a function pointer "f", a description "desc" and an "icon" definition/object. Optional "front"-boolean for sorting in before/after other interactions.
-	var extra_interactions = this->~GetExtraInteractions() ?? []; // if not present, just use []. Less error prone than having multiple if(!foo).
+	var extra_interactions = this->~GetExtraInteractions() ?? []; // if not present, just use []. Less error prone than having multiple if (!foo).
 		
 	// all except structures only if outside
 	var can_only_use_container = !!Contained();
@@ -491,20 +491,20 @@ func ExecuteInteraction(proplist action_info)
 		return;
 		
 	// object is a pushable vehicle
-	if(action_info.actiontype == ACTIONTYPE_VEHICLE)
+	if (action_info.actiontype == ACTIONTYPE_VEHICLE)
 	{
 		var proc = GetProcedure();
 		// object is inside building -> activate
-		if(Contained() && action_info.interaction_object->Contained() == Contained())
+		if (Contained() && action_info.interaction_object->Contained() == Contained())
 		{
 			SetCommand("Activate", action_info.interaction_object);
 			return true;
 		}
 		// crew is currently pushing vehicle
-		else if(proc == "PUSH")
+		else if (proc == "PUSH")
 		{
 			// which is mine -> let go
-			if(GetActionTarget() == action_info.interaction_object)
+			if (GetActionTarget() == action_info.interaction_object)
 				ObjectCommand("UnGrab");
 			else
 				ObjectCommand("Grab", action_info.interaction_object);
@@ -512,7 +512,7 @@ func ExecuteInteraction(proplist action_info)
 			return true;
 		}
 		// grab
-		else if(proc == "WALK")
+		else if (proc == "WALK")
 		{
 			ObjectCommand("Grab", action_info.interaction_object);
 			return true;
@@ -537,7 +537,7 @@ func ExecuteInteraction(proplist action_info)
 	}
 	else if (action_info.actiontype == ACTIONTYPE_SCRIPT)
 	{
-		if(action_info.interaction_object->~IsInteractable(this))
+		if (action_info.interaction_object->~IsInteractable(this))
 		{
 			action_info.interaction_object->Interact(this, action_info.interaction_index);
 			return true;
@@ -545,7 +545,7 @@ func ExecuteInteraction(proplist action_info)
 	}
 	else if (action_info.actiontype == ACTIONTYPE_EXTRA)
 	{
-		if(action_info.extra_data)
+		if (action_info.extra_data)
 			action_info.extra_data.Object->Call(action_info.extra_data.Fn, this);
 	}
 }

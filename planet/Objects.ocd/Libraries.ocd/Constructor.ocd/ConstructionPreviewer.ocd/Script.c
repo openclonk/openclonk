@@ -87,7 +87,7 @@ public func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 			blocked = true;
 	}
 	
-	if(!blocked)
+	if (!blocked)
 	{
 		if (!stick_to)
 		{

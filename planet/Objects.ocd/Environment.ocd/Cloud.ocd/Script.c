@@ -449,7 +449,7 @@ private func DropHit(string material_name, int color, int x_orig, int y_orig)
 		Smoke(x, y, 3, RGB(150,160,150));
 	}
 	// Liquid? liquid splash!
-	else if(GBackLiquid(x,y))
+	else if (GBackLiquid(x,y))
 	{
 		particle_cache.splash_water = particle_cache.splash_water ?? Particles_SplashWater(color);
 		CreateParticle("RaindropSplashLiquid", x, y - 3, 0, 0, 20, particle_cache.splash_water);
@@ -457,10 +457,10 @@ private func DropHit(string material_name, int color, int x_orig, int y_orig)
 	// Solid? normal splash!
 	else
 	{
-		if( (material_name == "Acid" && GetMaterial(x,y) == Material("Earth")) || material_name == "Lava" || material_name == "DuroLava")
+		if ( (material_name == "Acid" && GetMaterial(x,y) == Material("Earth")) || material_name == "Lava" || material_name == "DuroLava")
 			Smoke(x, y, 3, RGB(150,160,150));
 		CreateParticle("RaindropSplash", x, y, 0, 0, 5, Particles_Splash(color), 0);
-		if(material_name == "Ice")
+		if (material_name == "Ice")
 		{
 			particle_cache.hail = particle_cache.hail ?? Particles_Hail(color);
 			CreateParticle("Hail", x, y - 1, RandomX(-2,2), -Random(10), PV_Random(300, 300), particle_cache.hail, 0);

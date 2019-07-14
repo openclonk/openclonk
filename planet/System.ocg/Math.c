@@ -94,14 +94,14 @@ global func GetTurnDirection(
 	SetSpeed(Sin(GetR(), 10), -Cos(GetR(), 10));
 */
 	 var dir;
-	 /*if(to < from)*/dir=to-from;
+	 /*if (to < from)*/dir=to-from;
 	 //else dir=from-to;
 
 	 var dif=360-from+to;
 	 var dif2=360-to+from;
-	 if(dif < 180)dir=+dif;
+	 if (dif < 180)dir=+dif;
 	 else
-	 if(dif2 < 180)dir=-dif2;
+	 if (dif2 < 180)dir=-dif2;
 	 
 	 return dir;
 }
@@ -136,10 +136,10 @@ global func GetCalcDir()
 // Moves param 'a' towards param 'b' by 'max' amount per frame.
 global func MoveTowards(int a, int b, int max)
 {
-	if(b == nil) return false;
-	if(max == nil) max = 1;
-	if(a < b) return BoundBy(a + max,a,b);
-	if(a > b) return BoundBy(a - max,b,a);
+	if (b == nil) return false;
+	if (max == nil) max = 1;
+	if (a < b) return BoundBy(a + max,a,b);
+	if (a > b) return BoundBy(a - max,b,a);
 }
 
 global func FindHeight(int x)
@@ -162,11 +162,11 @@ global func GetSurfaceVector(int x, int y)
 	
 	for(var fac = 1; fac <= 4; fac *= 2)
 	{
-		if(GBackSolid(x + fac, y)) --normal[0];
-		if(GBackSolid(x - fac, y)) ++normal[0];
+		if (GBackSolid(x + fac, y)) --normal[0];
+		if (GBackSolid(x - fac, y)) ++normal[0];
 			
-		if(GBackSolid(x, y + fac)) --normal[1];
-		if(GBackSolid(x, y - fac)) ++normal[1];
+		if (GBackSolid(x, y + fac)) --normal[1];
+		if (GBackSolid(x, y - fac)) ++normal[1];
 	}
 	
 	return normal;

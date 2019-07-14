@@ -104,7 +104,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 global func InitializePlayerControl(int plr, string controlset_name, bool keyboard, bool mouse, bool gamepad)
 {
 	// VC = VirtualCursor
-	if(!CON_VC_Players)
+	if (!CON_VC_Players)
 		CON_VC_Players = CreateArray();
 		
 	CON_VC_Players[plr] = !mouse;
@@ -262,16 +262,16 @@ global func GetEntranceObject()
 }
 global func NameComDir(comdir)
 {
-	if(comdir == COMD_Stop) return "COMD_Stop";
-	if(comdir == COMD_Up) return "COMD_Up";
-	if(comdir == COMD_UpRight) return "COMD_UpRight";
-	if(comdir == COMD_UpLeft) return "COMD_UpLeft";
-	if(comdir == COMD_Right) return "COMD_Right";
-	if(comdir == COMD_Left) return "COMD_Left";
-	if(comdir == COMD_Down) return "COMD_Down";
-	if(comdir == COMD_DownRight) return "COMD_DownRight";
-	if(comdir == COMD_DownLeft) return "COMD_DownLeft";
-	if(comdir == COMD_None) return "COMD_None";
+	if (comdir == COMD_Stop) return "COMD_Stop";
+	if (comdir == COMD_Up) return "COMD_Up";
+	if (comdir == COMD_UpRight) return "COMD_UpRight";
+	if (comdir == COMD_UpLeft) return "COMD_UpLeft";
+	if (comdir == COMD_Right) return "COMD_Right";
+	if (comdir == COMD_Left) return "COMD_Left";
+	if (comdir == COMD_Down) return "COMD_Down";
+	if (comdir == COMD_DownRight) return "COMD_DownRight";
+	if (comdir == COMD_DownLeft) return "COMD_DownLeft";
+	if (comdir == COMD_None) return "COMD_None";
 }
 // Called when CON_Left/Right/Up/Down controls are issued/released
 // Return whether handled
@@ -305,7 +305,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, int status, b
 		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) //Water jump
 		{
 			if (ctrl == CON_Up) return false;
-			else if(ctrl == CON_Jump) this->ObjectCommand("Jump");
+			else if (ctrl == CON_Jump) this->ObjectCommand("Jump");
 		}
 		if (proc == "SCALE") // Let go from scaling a wall
 		{

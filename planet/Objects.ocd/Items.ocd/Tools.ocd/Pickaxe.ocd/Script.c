@@ -123,17 +123,17 @@ func DoSwing(object clonk, int ix, int iy)
 	var target_obj = FindObject(Find_AtPoint(x2, y2), Find_Func("CanBeHitByPickaxe"));
 	
 	// notify the object that it has been hit
-	if(target_obj)
+	if (target_obj)
 		target_obj->~OnHitByPickaxe(this, clonk);
 		
 	// special effects only ifhit something
-	if(is_solid || target_obj)
+	if (is_solid || target_obj)
 	{	
 		var mat = GetMaterial(x2,y2);
 		var tex = GetTexture(x2,y2);
 
 		//Is the material struck made of a diggable material?
-		if(is_solid && GetMaterialVal("DigFree","Material",mat))
+		if (is_solid && GetMaterialVal("DigFree","Material",mat))
 		{
 			var clr = GetAverageTextureColor(tex);
 			var particles =
@@ -180,7 +180,7 @@ func DoSwing(object clonk, int ix, int iy)
 func FxIntPickaxeTimer(object clonk, proplist effect, int time)
 {
 	++swingtime;
-	if(swingtime >= Pickaxe_SwingTime) // Waits three seconds for animation to run (we could have a clonk swing his pick 3 times)
+	if (swingtime >= Pickaxe_SwingTime) // Waits three seconds for animation to run (we could have a clonk swing his pick 3 times)
 	{
 		DoSwing(clonk,effect.x,effect.y);
 		swingtime = 0;
@@ -228,7 +228,7 @@ public func GetCarryMode(object clonk, bool idle)
 		return CARRY_Back;
 }
 
-public func GetCarrySpecial(clonk) { if(using == 1) return "pos_hand2"; }
+public func GetCarrySpecial(clonk) { if (using == 1) return "pos_hand2"; }
 
 public func GetCarryTransform()
 {

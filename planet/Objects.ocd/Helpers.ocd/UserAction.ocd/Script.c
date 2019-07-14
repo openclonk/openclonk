@@ -244,7 +244,7 @@ func Definition(def)
 			{ Value=true, Name="$Immediate$" }
 			] }
 		} } );
-	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If], { }, { Type="proplist", Display="if({{Condition}}) {{TrueEvaluator}} else {{FalseEvaluator}}", EditorProps = {
+	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If], { }, { Type="proplist", Display="if ({{Condition}}) {{TrueEvaluator}} else {{FalseEvaluator}}", EditorProps = {
 		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$", Priority=60 },
 		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$", Priority=50 },
 		FalseEvaluator = new Evaluator.Action { Name="$FalseEvaluator$", EditorHelp="$FalseEvaluatorHelp$", Priority=30 }

@@ -120,15 +120,15 @@ private func CreateRope()
 
 private func Destruction()
 {
-	if(rope) rope->RemoveObject();
-	if(case) case->LostElevator();
+	if (rope) rope->RemoveObject();
+	if (case) case->LostElevator();
 	if (partner) partner->LoseCombination();
 }
 
 public func LostCase()
 {
-	if(partner) partner->LoseCombination();
-	if(rope) rope->RemoveObject();
+	if (partner) partner->LoseCombination();
+	if (rope) rope->RemoveObject();
 
 	StopEngine();
 

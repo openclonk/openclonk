@@ -25,7 +25,7 @@ public func ControlUseStart(object clonk, int x, int y)
 {
 	var arm = "R";
 	var carry_bone = "pos_hand2";
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+	if (clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
 		arm = "L";
 		carry_bone = "pos_hand1";
@@ -34,7 +34,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 	// Figure out the kind of animation to use
 	var length=15;
-	if(clonk->IsJumping())
+	if (clonk->IsJumping())
 		animation = Format("SwordJump2.%s",arm);
 
 	clonk->PlayAnimation(animation, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));

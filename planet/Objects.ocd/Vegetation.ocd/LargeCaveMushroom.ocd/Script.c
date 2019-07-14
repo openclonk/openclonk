@@ -103,13 +103,13 @@ private func Construction()
 
 private func Growing()
 {
-	if(GetCon() >= Min(RandomX(80, 500), 100))
+	if (GetCon() >= Min(RandomX(80, 500), 100))
 		return RemoveTimer("Growing");
 
-	if(!Random(4)) return;
+	if (!Random(4)) return;
 
 	var top = ((-36) * GetCon()) / 100;
-	if(GBackSolid(0, Min(-5, top))) return;
+	if (GBackSolid(0, Min(-5, top))) return;
 	DoCon(1);
 }
 
@@ -143,7 +143,7 @@ private func MaxDamage()
 // called from the plant library
 private func Seed()
 {
-	if(GetCon() < 20) return;
+	if (GetCon() < 20) return;
 
 	var size = SeedArea();
 	// Place a plant if we are lucky
@@ -151,7 +151,7 @@ private func Seed()
 	{
 		// select random angle at which we can throw the seed
 		var angle = RandomX(100, 140);
-		if(!Random(2)) angle = 360 - angle;
+		if (!Random(2)) angle = 360 - angle;
 		
 		var okay = false, x, y;
 		for (var i = 0; i < 3; ++i) // three is the magic number of tries

@@ -175,7 +175,7 @@ public func CreateConstructionSite(object clonk, id structure_id, int x, int y, 
 	site->PlayAnimation("LeftToRight", 1, Anim_Const(RandomX(0, GetAnimationLength("LeftToRight"))), Anim_Const(500));
 	
 	site->Set(structure_id, dir, stick_to);
-	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
+	//if (!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
 
 	site->TakeConstructionMaterials(clonk);		

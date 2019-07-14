@@ -53,7 +53,7 @@ protected func Damage()
 {
 	// Max damage reached -> fall down
 	if (GetDamage() > MaxDamage() && IsStanding()) ChopDown();
-	if(!IsStanding() && OnFire() && GetDamage() > MaxDamage() * 2)
+	if (!IsStanding() && OnFire() && GetDamage() > MaxDamage() * 2)
 		BurstIntoAshes();
 	_inherited(...);
 }

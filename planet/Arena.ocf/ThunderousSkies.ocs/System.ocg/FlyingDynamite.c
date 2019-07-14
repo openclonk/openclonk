@@ -8,7 +8,7 @@ func Initialize()
 
 func HasNoFadeOut()
 {
-	if(GetAction() == "Attach") return true;
+	if (GetAction() == "Attach") return true;
 	return false;
 }
 

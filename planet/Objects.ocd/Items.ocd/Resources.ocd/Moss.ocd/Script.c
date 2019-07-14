@@ -24,7 +24,7 @@ func Initialize()
 
 public func ControlUse(object clonk, int x, int y, bool box)
 {
-	if(!clonk->~IsWalking()) return true;
+	if (!clonk->~IsWalking()) return true;
 	// Search for ground
 	x = 0; y = 0;
 	if (GBackSemiSolid(x,y)) return true;

@@ -52,11 +52,11 @@ public func SetBarDimensions(int wdt, int hgt, int num)
 public func SetBarProgress(int promille, int num)
 {
 	// not existing
-	if(GetLength(layer) <= num) return false;
+	if (GetLength(layer) <= num) return false;
 
 	// width/height not set == 1000
-	if(!width[num]) width[num] = 1000;
-	if(!height[num]) height[num] = 1000;
+	if (!width[num]) width[num] = 1000;
+	if (!height[num]) height[num] = 1000;
 
 	var w = Library_Bars->GetDefWidth()/2;
 	

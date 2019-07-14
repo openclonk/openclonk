@@ -41,7 +41,7 @@ protected func Initialize()
 
 global func FxRainTimer(object pTarget, effect, int timer)
 {
-	if(timer<400)
+	if (timer<400)
 	{
 		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
 		return 1;
@@ -50,7 +50,7 @@ global func FxRainTimer(object pTarget, effect, int timer)
 	{
 		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
 	}
-	if(timer>(RUINS_RAIN_PERIOD_TIME+Random(800))) 
+	if (timer>(RUINS_RAIN_PERIOD_TIME+Random(800))) 
 	{
 	AddEffect("DryTime",nil,100,2);
 	return -1;	
@@ -60,13 +60,13 @@ global func FxRainTimer(object pTarget, effect, int timer)
 }
 global func FxDryTimeTimer(object pTarget, effect, int timer)
 {
-	if(timer<(380+Random(300))){
+	if (timer<(380+Random(300))){
 	InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
 		return 1;
 	}
 	ExtractLiquidAmount(310+Random(50),430+Random(10),6+Random(4));
 	
-	if(!GBackLiquid(335,430))
+	if (!GBackLiquid(335,430))
 	{
 		AddEffect("Rain",nil,100,2);
 		return -1;
@@ -78,7 +78,7 @@ global func FxDryTimeTimer(object pTarget, effect, int timer)
 // Refill/fill chests.
 global func FxIntFillChestsStart(object target, effect, int temporary)
 {
-	if(temporary) return 1;
+	if (temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));
 	var w_list = [Bow, Blunderbuss, Shield, Sword, Club, GrenadeLauncher, Bow, Blunderbuss, Shield, Sword, Club, GrenadeLauncher, DynamiteBox];
 	

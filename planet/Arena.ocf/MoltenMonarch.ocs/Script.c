@@ -73,7 +73,7 @@ global func FxBlessTheKingTimer(object target, effect fx, int timer)
 		if (!fx.koth_location) return FX_OK;
 	}
 	var king = fx.koth_location->GetKing(); 
-	if(king == nil) return 1;
+	if (king == nil) return 1;
 
 	var item = king->GetHandItem(0);
 	if (item) item->~MakeKingSize();
@@ -106,7 +106,7 @@ global func FxDeathByFireTimer(object target, effect fx, int timer)
 
 global func FxLavaBrickResetTimer(object target, effect, int timer)
 {
-	if(target->GetY() < 10)
+	if (target->GetY() < 10)
 		target->SetPosition(target->GetX(),LandscapeHeight()-10);
 	return 1;
 }
@@ -114,7 +114,7 @@ global func FxLavaBrickResetTimer(object target, effect, int timer)
 // Refill/fill chests.
 global func FxIntFillChestsStart(object target, effect, int temporary)
 {
-	if(temporary) return 1;
+	if (temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));
 	var w_list = [Bow, Blunderbuss, Shield, Sword, Club, Javelin, Bow, Blunderbuss, Shield, Sword, Club, Javelin, DynamiteBox];
 	

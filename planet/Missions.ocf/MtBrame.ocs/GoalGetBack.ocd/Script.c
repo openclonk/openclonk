@@ -25,7 +25,7 @@ public func IsFulfilled()
 	{
 		var plr = GetPlayerByIndex(i), obj;
 		for(var j = 0; obj = GetCrew(plr, j); ++j)
-			if(ObjectDistance(obj, cabin) > 80)
+			if (ObjectDistance(obj, cabin) > 80)
 				return false;
 	}
 

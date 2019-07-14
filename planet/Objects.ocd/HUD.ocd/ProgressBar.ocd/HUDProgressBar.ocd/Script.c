@@ -140,7 +140,7 @@ public func Init(to, max, cur, timeout, offset, visibility, data)
 	current = cur;
 	timeout_time = timeout;
 	
-	if(timeout_time)
+	if (timeout_time)
 	{
 		var e = AddEffect("TimeOut", this, 1, BoundBy(timeout_time/2, 5, 35), this);
 		e.t = timeout_time;
@@ -159,7 +159,7 @@ public func Init(to, max, cur, timeout, offset, visibility, data)
 private func FxTimeOutTimer(target, effect, time)
 {
 	effect.t -= effect.Interval;
-	if(effect.t > 0) return 1;
+	if (effect.t > 0) return 1;
 	Close();
 	return -1;
 }
@@ -171,7 +171,7 @@ public func SetValue(int to)
 	
 	current = BoundBy(to, 0, maximum);;
 	var e = GetEffect("TimeOut", this);
-	if(e)
+	if (e)
 		e.t = timeout_time;
 	
 	if (changed)

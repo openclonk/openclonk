@@ -13,11 +13,11 @@ private func SickleHarvesting() { return false; }
 protected func Construction()
 {
 	var graphic = Random(6);
-	if(graphic)
+	if (graphic)
 		SetGraphics(Format("%d",graphic));
 	_inherited(...);
 
-	if(GetCon() < 100) SetCon(100);
+	if (GetCon() < 100) SetCon(100);
 }
 
 protected func Initialize()

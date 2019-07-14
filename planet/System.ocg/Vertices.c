@@ -105,7 +105,7 @@ global func FxIntHalfVehicleFadeJumpStart(object target, effect fx, int temp)
 	}
 	fx.collideverts = CreateArray();
 	for (var i = target->GetVertexNum(); i-->0;)
-		if(!(target->GetVertex(i, VTX_CNAT) & CNAT_PhaseHalfVehicle)) {
+		if (!(target->GetVertex(i, VTX_CNAT) & CNAT_PhaseHalfVehicle)) {
 			PushBack(fx.collideverts, i);
 			target->SetVertexCNAT(i, CNAT_PhaseHalfVehicle, true);
 		}

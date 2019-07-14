@@ -122,9 +122,9 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 {
 	// RejectConstruction Callback for building via Drag'n'Drop form a building menu
 	// TODO: Check if we still need this with the new system
-	if(szCommand == "Construct")
+	if (szCommand == "Construct")
 	{
-		if(Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
+		if (Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
 		{
 			return 1;
 		}
@@ -182,8 +182,8 @@ public func QueryCatchBlow(object obj)
 protected func CheckStuck()
 {
 	// Prevents getting stuck on middle vertex
-	if(!GetXDir()) if(Abs(GetYDir()) < 5)
-		if(GBackSolid(0, 3))
+	if (!GetXDir()) if (Abs(GetYDir()) < 5)
+		if (GBackSolid(0, 3))
 			SetPosition(GetX(), GetY() + 1);
 }
 

@@ -30,12 +30,12 @@ protected func Initialize()
 //some left-overs from Lorry script. Not sure of it's purpose...
 protected func ContactLeft()
 {
-	if(Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
+	if (Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
 }
 
 protected func ContactRight()
 {
-	if(Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
+	if (Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
 }
 
 protected func RejectCollect(id def, object obj)
@@ -68,7 +68,7 @@ public func ControlUseStart(object clonk, int ix, int iy)
 		return true;
 	}
 			
-	if(clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
+	if (clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
 
 	//Animation
 	var r = ConvertAngle(Angle(0,0,ix,iy));
@@ -142,8 +142,8 @@ private func ConvertAngle(int angle)
 	//Message(Format("nR = %d|rL = %d",nR,r2));
 	
 	//Turn the cannon into the pointed direction
-	if(nR - (GetR() * angPrec) < 0 && turnDir == 1) TurnCannon(0);
-	if(nR - (GetR() * angPrec) > 0 && turnDir == 0) TurnCannon(1);
+	if (nR - (GetR() * angPrec) < 0 && turnDir == 1) TurnCannon(0);
+	if (nR - (GetR() * angPrec) > 0 && turnDir == 0) TurnCannon(1);
 	
 	//renormalize the angle to 0/360 from -180/180
 	return Normalize(nR,0,angPrec);
@@ -164,13 +164,13 @@ public func ControlUseStop(object clonk, int ix, int iy)
 	}
 
 	//Can't fire if cannon is cooling down or turning
-	if(GetEffect("IntCooldown",this) || GetEffect("IntTurning",this))	return true;
+	if (GetEffect("IntCooldown",this) || GetEffect("IntTurning",this))	return true;
 	
 	if (projectile)
 	{
 		DoFire(projectile, clonk, Angle(0,0,ix,iy,angPrec));
 		var powder = Contents(0)->GetPowderCount();
-		if(powder >= 1 || projectile->~IsSelfPropellent())
+		if (powder >= 1 || projectile->~IsSelfPropellent())
 		{
 			var powderkeg = Contents(0);
 			//If there is a powder keg, take powder from it
@@ -178,7 +178,7 @@ public func ControlUseStop(object clonk, int ix, int iy)
 			
 			DoFire(projectile, clonk, Angle(0,0,ix,iy, angPrec));
 			AddEffect("IntCooldown",this,1,1,this);
-			if(powderkeg->GetPowderCount() == 0)
+			if (powderkeg->GetPowderCount() == 0)
 			{
 				powderkeg->RemoveObject();
 				CreateObjectAbove(Barrel);
@@ -197,20 +197,20 @@ public func ControlUseCancel()
 //Stops the player from shooting for the defined amount of frames
 public func FxIntCooldownTimer(object target, effect, int timer)
 {
-	if(timer > 72) return -1;
+	if (timer > 72) return -1;
 }
 
 
 func ControlLeft(object clonk)
 {
-	if(turnDir == 1){
+	if (turnDir == 1){
 		TurnCannon(0);
 	}
 }
 
 func ControlRight(object clonk)
 {
-	if(turnDir == 0){
+	if (turnDir == 0){
 		TurnCannon(1);
 	}
 }
@@ -219,7 +219,7 @@ public func TurnCannon(int dir, bool instant)
 {
 	turnDir = dir;
 	//Remove any old effect
-	if(GetEffect("IntTurnCannon", this)) RemoveEffect("IntTurnCannon", this);
+	if (GetEffect("IntTurnCannon", this)) RemoveEffect("IntTurnCannon", this);
 	// Instant turn?
 	if (instant)
 	{
@@ -239,11 +239,11 @@ func FxIntTurnCannonTimer(object cannon, proplist effect, int timer)
 {
 	var current = GetAnimationPosition(animTurn);
 	var target = GetAnimationLength("TurnRight");
-	if(turnDir == 1) target = 0;	
+	if (turnDir == 1) target = 0;	
 	var tickAmount = 50;	//by how much the animation will move forward each frame	
 	
 	//advance turn animation
-	if((current != GetAnimationLength("TurnRight") && turnDir == 0) || (current != 0 && turnDir == 1)){
+	if ((current != GetAnimationLength("TurnRight") && turnDir == 0) || (current != 0 && turnDir == 1)){
 		SetAnimationPosition(animTurn, Anim_Const(MoveTowards(current, target, tickAmount)));
 	}
 	else return -1;
@@ -253,8 +253,8 @@ protected func DoFire(object iammo, object clonk, int angle)
 {
 	//Don't excede possible trajectory
 	var r = Normalize(angle,-180 * angPrec, angPrec);
-	if(r > 90 * angPrec + GetR() * angPrec) r = 90 * angPrec + GetR() * angPrec;
-	if(r < -90 * angPrec + GetR() * angPrec) r = -90 * angPrec + GetR() * angPrec;
+	if (r > 90 * angPrec + GetR() * angPrec) r = 90 * angPrec + GetR() * angPrec;
+	if (r < -90 * angPrec + GetR() * angPrec) r = -90 * angPrec + GetR() * angPrec;
 
 	//Send ammo flying
 	iammo->SetR(r / angPrec);
