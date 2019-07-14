@@ -90,7 +90,7 @@ public func CreateObjectInTreetop(id to_create, int tries, bool no_overlap_check
 			if (overlap) continue;
 			break;
 		}
-	} while(--tries);
+	} while (--tries);
 	if (overlap) return nil;
 
 	var attach = CreateObject(to_create, pos.x, pos.y, GetOwner());
@@ -262,7 +262,7 @@ public func ChopDown()
 	if (Stuck())
 	{
 		var i = 5;
-		while(Stuck() && i)
+		while (Stuck() && i)
 		{
 			SetPosition(GetX(), GetY()-1);
 			i--;

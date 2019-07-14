@@ -16,7 +16,7 @@ func Place(int amount_percentage, proplist area)
 	amount = (amount_percentage * amount) / 100;
 	if (!amount) return;
 	
-	while(--amount)
+	while (--amount)
 	{
 		// search for zicada spot position
 		// ..

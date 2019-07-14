@@ -68,7 +68,7 @@ global func FxGlobalItemSparksTimer(_, effect, time)
 	
 	var x=Random(max)+start;
 	var failsafe=0;
-	while(failsafe++ < 100 && GBackSolid(x, 1)) x=Random(max)+start;
+	while (failsafe++ < 100 && GBackSolid(x, 1)) x=Random(max)+start;
 	if (failsafe >= 100) return;
 	
 	// mirrors requires free sky
@@ -176,8 +176,8 @@ func FxSparkleDeathTimer(_, effect, effect_time)
 	effect.yT+=effect.velY;
 	effect.velY+=effect.vAcc;
 	var f=0;
-	while(Abs(effect.xT) > 10){if (effect.xT > 0) f=1; else f=-1; effect.x+=f; effect.xT-=f*10;}
-	while(Abs(effect.yT) > 10){if (effect.yT > 0) f=1; else f=-1; effect.y+=f; effect.yT-=f*10;}
+	while (Abs(effect.xT) > 10){if (effect.xT > 0) f=1; else f=-1; effect.x+=f; effect.xT-=f*10;}
+	while (Abs(effect.yT) > 10){if (effect.yT > 0) f=1; else f=-1; effect.y+=f; effect.yT-=f*10;}
 	
 	effect.size-=2;
 }

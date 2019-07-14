@@ -46,7 +46,7 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 		for (var i = (x-wdt); i < (wdt*2); i++ )
 		{
 			
-			while(!GBackSolid(i+move,y[i+wdt]) && y[i+wdt] < LandscapeHeight())
+			while (!GBackSolid(i+move,y[i+wdt]) && y[i+wdt] < LandscapeHeight())
 				y[i+wdt]++;
 	
 		}

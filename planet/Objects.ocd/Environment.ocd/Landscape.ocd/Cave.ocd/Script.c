@@ -60,7 +60,7 @@ public func Place(int amount, proplist area, proplist settings)
 
 	var failsafe = 100;
 	
-	while((--failsafe > 0) && amount > 0)
+	while ((--failsafe > 0) && amount > 0)
 	{
 		var spot = FindLocation(Loc_Solid(), Loc_Func(Landscape_Cave.IsGoodCaveSpot), Loc_InArea(area));
 		if (!spot) continue;

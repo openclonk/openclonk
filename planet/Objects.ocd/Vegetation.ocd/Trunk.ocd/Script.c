@@ -33,7 +33,7 @@ public func ChopDown()
 	if (Stuck())
 	{
 		var i = 5;
-		while(Stuck() && i)
+		while (Stuck() && i)
 		{
 			SetPosition(GetX(), GetY()-1);
 			i--;

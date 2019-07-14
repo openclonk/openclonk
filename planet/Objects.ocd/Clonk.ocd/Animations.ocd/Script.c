@@ -679,7 +679,7 @@ func FxIntScaleTimer(target, number, time)
 	{
 		// If the animation is not already set
 		var dist = 0;
-		while(!(GBackSolid(-3+6*GetDir(),dist-3) || GBackSolid(-5+10*GetDir(),dist+2)) && dist < 8) dist++;
+		while (!(GBackSolid(-3+6*GetDir(),dist-3) || GBackSolid(-5+10*GetDir(),dist+2)) && dist < 8) dist++;
 		dist *= 100;
 		// add the fractional part of the position (dist counts in the opposite direction of y)
 		dist -= GetY(100)-GetY()*100;
@@ -1438,7 +1438,7 @@ func FxRollingTimer(object target, effect effect, int timer)
 
 	//Hacky fun
 	var i = 3;
-	while(GBackSolid(lAnim.rollDir, 9) && i != 0)
+	while (GBackSolid(lAnim.rollDir, 9) && i != 0)
 	{
 		SetPosition(GetX(),GetY() - 1);
 		i--;

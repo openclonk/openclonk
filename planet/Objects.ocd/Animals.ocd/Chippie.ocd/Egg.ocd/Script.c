@@ -19,7 +19,7 @@ public func Place(int amount, proplist area)
 	var location = nil;
 	if (area) location = Loc_InArea(area->GetBoundingRectangle());
 
-	while(amount > 0)
+	while (amount > 0)
 	{
 		var p = nil;
 		if (Random(2)) p = FindLocation(Loc_Tunnel(), location);

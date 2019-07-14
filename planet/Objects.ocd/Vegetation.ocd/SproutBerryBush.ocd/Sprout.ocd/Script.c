@@ -281,9 +281,9 @@ func Die(bool natural_cause)
 func Drip(int tick)
 {
 	var y = 0;
-	while(GBackSolid(0, y) && (y > -5)) --y;
+	while (GBackSolid(0, y) && (y > -5)) --y;
 	var water = Material("Water");
-	while(tick-- > 0)
+	while (tick-- > 0)
 		InsertMaterial(water, 0, y, RandomX(-4, 4), RandomX(-4,4));
 }
 

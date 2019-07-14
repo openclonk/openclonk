@@ -72,7 +72,7 @@ func SearchPosition()
 	var lastX;
 	var lastY;
 	
-	while(Abs(a - b) > 10)
+	while (Abs(a - b) > 10)
 	{
 		var m=(a + b) / 2;
 		

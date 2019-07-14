@@ -155,7 +155,7 @@ func ForcesOnObjects()
 	if (!lib_rope_length) return;
 
 	var redo = LengthAutoTryCount();
-	while(lib_rope_length_auto && redo)
+	while (lib_rope_length_auto && redo)
 	{
 		var speed = Vec_Length(Vec_Sub([lib_rope_particles[-1].x, lib_rope_particles[-1].y], [lib_rope_particles[-1].oldx, lib_rope_particles[-1].oldy]));
 		if (lib_rope_length == GetMaxLength())

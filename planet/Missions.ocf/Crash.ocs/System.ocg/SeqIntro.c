@@ -162,7 +162,7 @@ func Intro_16()
 	this.pilot->Exit();
 	Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), this.pilot);
 	var clonk;
-	while(clonk = this.dialogue->Contents())
+	while (clonk = this.dialogue->Contents())
 	{
 		clonk->Exit();
 		Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), clonk);

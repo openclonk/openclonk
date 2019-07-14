@@ -71,7 +71,7 @@ global func FxGeysirExplosionTimer(object target, effect)
 	{
 		var x=600+Random(300);
 		var y=250+Random(200);
-		while(GetMaterial(x,y) != Material("Water"))
+		while (GetMaterial(x,y) != Material("Water"))
 		{
 			var x=600+Random(300);
 			var y=250+Random(200);
@@ -85,7 +85,7 @@ global func FxGeysirExplosionTimer(object target, effect)
 		{
 			var x=600+Random(300);
 			var y=250+Random(200);
-			while(GetMaterial(x,y) != Material("Water"))
+			while (GetMaterial(x,y) != Material("Water"))
 			{
 				var x=600+Random(300);
 				var y=250+Random(200);
@@ -97,7 +97,7 @@ global func FxGeysirExplosionTimer(object target, effect)
 	{
 		var x=LandscapeWidth()/2;
 		var y=280;
-		while(!GBackLiquid(x,y)) y++;
+		while (!GBackLiquid(x,y)) y++;
 		y-=3;
 		for (var i=0; i<(45); i++)InsertMaterial(Material("Water"),x+RandomX(-9,9),y-Random(5),RandomX(-10,10)+RandomX(-5,5)+RandomX(-10,10),-(10+Random(50)+Random(30)+Random(60)));
 		for (var i=0; i<(25); i++)InsertMaterial(Material("Water"),x+RandomX(-16,16),y-Random(5),RandomX(-10,10)+RandomX(-15,15)+RandomX(-20,20),-(10+Random(50)));

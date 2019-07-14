@@ -525,7 +525,7 @@ CreateEnvironmentObjects("Temperate", Rectangle(LandscapeWidth()/2, 0, Landscape
 		what = [what];
 	
 	// iteratively find all the objects that are included in the selection
-	while(true)
+	while (true)
 	{
 		var changed = false;
 		var to_add = [];

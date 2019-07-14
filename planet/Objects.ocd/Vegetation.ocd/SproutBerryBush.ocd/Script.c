@@ -29,7 +29,7 @@ func Place(int amount, proplist area, proplist settings)
 	settings.growth = settings.growth ?? 100000;
 		
 	var plants = [];
-	while(amount > 0)
+	while (amount > 0)
 	{
 		// place some sprout berries
 		var bush = PlaceVegetation(SproutBerryBush, 0, 0, LandscapeWidth(), LandscapeHeight(), 100000, area);
@@ -37,7 +37,7 @@ func Place(int amount, proplist area, proplist settings)
 		--amount;
 		PushBack(plants, bush);
 		var cluster = Random(3) + 3;
-		while(cluster > 0 && amount > 0)
+		while (cluster > 0 && amount > 0)
 		{
 			var p = PlaceVegetation(SproutBerryBush, bush->GetX() - 200, bush->GetY() - 200, 400, 400, 100000);
 			if (!p) break;

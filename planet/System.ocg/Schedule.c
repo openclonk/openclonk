@@ -57,7 +57,7 @@ global func RemoveTimer(call_function /* name or pointer to the timer to remove 
 		return false;
 		
 	var fx, index = 0;
-	while(fx = GetEffect("IntScheduleCall", this, index++))
+	while (fx = GetEffect("IntScheduleCall", this, index++))
 	{
 		if (fx.Function != call_function) continue;
 		if (fx.NoStop != true) continue;

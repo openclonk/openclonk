@@ -231,7 +231,7 @@ public func Launch(int angle, object clonk, object shooter)
 
 	var level = 16;
 	var i=0, count = 3+level/8, r = Random(360);
-	while(count > 0 && ++i < count*6) {
+	while (count > 0 && ++i < count*6) {
 		r += RandomX(40,80);
 		var smokex = +Sin(r,RandomX(level/4,level/2));
 		var smokey = -Cos(r,RandomX(level/4,level/2));

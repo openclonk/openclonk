@@ -15,7 +15,7 @@ public func Place(int amount, proplist area, proplist settings)
 	area = area ?? Shape->LandscapeRectangle();
 	var diamond_sockets = [];
 	var failsafe = amount * 100;
-	while((amount > 0) && (--failsafe > 0))
+	while ((amount > 0) && (--failsafe > 0))
 	{
 		// select cluster
 		var c_size = Min(RandomX(4, 6), amount);
