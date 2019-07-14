@@ -44,7 +44,7 @@ func Intro_JoinPlayer(int plr)
 {
 	if (this.intro_closed) return false; // too late for join - just join in village
 	var crew;
-	for(var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = GetCrew(plr, index); ++index)
 	{
 		crew->Enter(this.dialogue);
 	}

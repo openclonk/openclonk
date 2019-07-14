@@ -28,7 +28,7 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 {
 	var iX, iY;
 	var iMaterial = Material(sMat);
-	for(var i = 0; i < 500; i++)
+	for (var i = 0; i < 500; i++)
 	{
 		iX = AbsX(iXStart+Random(iWidth));
 		iY = AbsY(iYStart+Random(iHeight));

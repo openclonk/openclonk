@@ -312,7 +312,7 @@ func CheckStrike(iTime)
 	var width = 10;
 	var height = 20;
 	
-	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
+	for (var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
 							   Find_NoContainer(),
 							   Find_Exclude(Contained()),
 							   Find_Layer(GetObjectLayer())))

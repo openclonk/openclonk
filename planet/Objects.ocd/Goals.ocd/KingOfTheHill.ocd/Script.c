@@ -219,13 +219,13 @@ public func GetDescription(int plr)
 	var teams=GetTeamPoints();
 	var lines=[];
 	
-	for(var i=0;i<GetLength(teams);++i)
+	for (var i=0;i<GetLength(teams);++i)
 	{
 		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
 	}
 	
 	var msg=Format("$MsgGoalDesc$", GetPointLimit());
-	for(var i=0;i<GetLength(lines);++i)
+	for (var i=0;i<GetLength(lines);++i)
 		msg=Format("%s|%s", msg, lines[i]);
 	return msg;
 }
@@ -235,13 +235,13 @@ public func Activate(int byplr)
 	var teams=GetTeamPoints();
 	var lines=[];
 	
-	for(var i=0;i<GetLength(teams);++i)
+	for (var i=0;i<GetLength(teams);++i)
 	{
 		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
 	}
 	
 	var msg=Format("$MsgGoalDesc$", GetPointLimit());
-	for(var i=0;i<GetLength(lines);++i)
+	for (var i=0;i<GetLength(lines);++i)
 		msg=Format("%s|%s", msg, lines[i]);
 	return MessageWindow(msg, byplr);
 }
@@ -250,13 +250,13 @@ public func Activate(int byplr)
 private func GetTeamList()
 {
 	var teams=[];
-	for(var i = 0; i < GetPlayerCount(); i++)
+	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var p=GetPlayerByIndex(i);
 		var t=GetPlayerTeam(p);
 		
 		var found = false;
-		for(var x=0;x<GetLength(teams);++x)
+		for (var x=0;x<GetLength(teams);++x)
 			if (teams[x] == t) {found = true; break;}
 		if (found) continue;
 		teams[GetLength(teams)]=t;
@@ -270,12 +270,12 @@ private func GetTeamPoints()
 	var teams=GetTeamList();
 	var ret=[];
 	
-	for(var i=0;i<GetLength(teams);++i)
+	for (var i=0;i<GetLength(teams);++i)
 	{
 		var t = teams[i];
 		var p = 0;
 		var names = "";
-		for(var d=0;d<GetPlayerCount();++d)
+		for (var d=0;d<GetPlayerCount();++d)
 		{
 			var p=GetPlayerByIndex(d);
 			if (GetPlayerTeam(p) != t) continue;

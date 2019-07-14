@@ -122,7 +122,7 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 
 public func ApplyChanneledWindEffects(x, y, w, h, bottom)
 {
-	for(var obj in FindObjects(Find_InRect(x, y, w, h)))
+	for (var obj in FindObjects(Find_InRect(x, y, w, h)))
 	{
 		obj->SetYDir(Max(obj->GetYDir()-5,-50));
 		var x_dir = -1;
@@ -194,8 +194,8 @@ global func FxIntFillChestsStart(object target, effect, int temporary)
 	var chests = FindObjects(Find_ID(Chest),Find_InRect(0,0,LandscapeWidth(),610));
 	var w_list = [Shield, Javelin, FireballScroll, Bow, Blunderbuss, WindScroll, ThunderScroll];
 	
-	for(var chest in chests)
-		for(var i=0; i<4; ++i)
+	for (var chest in chests)
+		for (var i=0; i<4; ++i)
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
 }
@@ -208,7 +208,7 @@ global func FxIntFillChestsTimer()
 	var maxcount = [1,1,1,1,2,1,1,2,2,1,1];
 	
 	var contents;
-	for(var i=0; i<chest->GetLength(w_list); i++)
+	for (var i=0; i<chest->GetLength(w_list); i++)
 		contents+=chest->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
@@ -216,12 +216,12 @@ global func FxIntFillChestsTimer()
 	{
 		var r=chest->Random(chest->ContentsCount());
 		var remove=true;
-		for(var i=0; i<GetLength(w_list); i++)
+		for (var i=0; i<GetLength(w_list); i++)
 			if (chest->Contents(r)->GetID() == w_list[i]) remove=false;
 		if (remove) chest->Contents(r)->RemoveObject();			
 	}
 	
-	for(var i=0; i<2 ; i++)
+	for (var i=0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (chest->ContentsCount(w_list[r]) < maxcount[r])

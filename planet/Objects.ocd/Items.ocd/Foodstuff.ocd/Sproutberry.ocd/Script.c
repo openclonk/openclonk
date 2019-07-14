@@ -59,7 +59,7 @@ func FxSproutCheckTimer(target, effect, time)
 	AddEffect("Shrink", this, 1, 2, this);
 	
 	var y = -10;
-	for(;y < 10; ++y)
+	for (;y < 10; ++y)
 	{
 		if (GBackSolid(0, y+1)) break;
 	}

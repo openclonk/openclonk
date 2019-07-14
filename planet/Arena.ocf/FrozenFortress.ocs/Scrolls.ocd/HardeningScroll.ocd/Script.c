@@ -39,7 +39,7 @@ public func FxHardeningSpellTimer(pTarget, effect, iEffectTime)
 		effect.y+=effect.ydir;
 		return 1;
 	}
-	for(var i=0; i<5; i++)
+	for (var i=0; i<5; i++)
 	{
 		var r = Random(360);
 		var d = Random(8) + Random(6) + Random(6) + Random(6)+Random(3);

@@ -323,7 +323,7 @@ private func InDialogue(object clonk)
 
 public func MessageBoxAll(string message, object talker, bool as_message)
 {
-	for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		MessageBox(message, GetCursor(plr), talker, plr, as_message);
@@ -334,7 +334,7 @@ public func MessageBoxAll(string message, object talker, bool as_message)
 public func MessageBoxBroadcast(string message, object clonk, object talker, array options)
 {
 	// message copy to other players
-	for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		if (GetCursor(plr) != clonk)
@@ -351,7 +351,7 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 	// broadcast enabled: message copy to other players
 	if (dlg_broadcast && !as_message)
 	{
-		for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+		for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 		{
 			var other_plr = GetPlayerByIndex(i, C4PT_User);
 			if (GetCursor(other_plr) != clonk)
@@ -609,7 +609,7 @@ private func EvalAct_Message(proplist props, proplist context)
 	}
 	var text = UserAction->EvaluateString(props.Text, context);
 	// Show message to desired players
-	for(var plr in UserAction->EvaluateValue("PlayerList", props.TargetPlayers, context))
+	for (var plr in UserAction->EvaluateValue("PlayerList", props.TargetPlayers, context))
 	{
 		Dialogue->MessageBox(text, context.triggering_object, speaker, plr, after_message != "next" && !n_options, props._options_msg, context);
 		any_message = true;

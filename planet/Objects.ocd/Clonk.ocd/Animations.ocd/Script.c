@@ -741,9 +741,9 @@ func FxIntScaleTimer(target, number, time)
 		var x, x2;
 		var y = -7, y2 = 8;
 		var dir = -1+2*GetDir();
-		for(x = 0; x < 10; x++)
+		for (x = 0; x < 10; x++)
 			if (GBackSolid(x*dir, y)) break;
-		for(x2 = 0; x2 < 10; x2++)
+		for (x2 = 0; x2 < 10; x2++)
 			if (GBackSolid(x2*dir, y2)) break;
 		var angle = Angle(x2, y2, x, y)*dir;
 		var mid = (x+x2)*1000/2 - 5000 - this.Off;

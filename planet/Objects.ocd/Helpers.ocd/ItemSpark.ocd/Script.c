@@ -138,7 +138,7 @@ func FxSparkleTimer(_, effect)
 	CreateParticle("ItemSpark", PV_Random(0, GetXDir()/10), PV_Random(0, GetYDir()/10), GetXDir(), GetYDir(), 20, ItemSpark_particle_additive, 5); 
 	
 	if (!Random(36))
-	for(var i=0;i<3;++i)
+	for (var i=0;i<3;++i)
 	{
 		var e=AddEffect("SparkleDeath", nil, 5, 1, nil, GetID());
 		e.x=GetX();
@@ -194,7 +194,7 @@ func DoSpawn()
 		GameCall("SetupSparkItem", item);
 	}
 	
-	for(var cnt=0;cnt<5;++cnt) 
+	for (var cnt=0;cnt<5;++cnt) 
 	{
 		var effect=AddEffect("SparkleDeath", nil, 5, 1, nil, GetID());
 		effect.x=GetX();

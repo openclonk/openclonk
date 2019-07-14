@@ -182,7 +182,7 @@ private func OvertakePartnerVertices(int off_x, int off_y)
 {
 	var update_mode = 2; // force immediate update and store information
 	
-	for(var i = 0; i < ElevatorCase_additional_vertex_count; ++i)
+	for (var i = 0; i < ElevatorCase_additional_vertex_count; ++i)
 	{
 		SetVertex(ElevatorCase_additional_vertex_index_begin + i, VTX_X, GetVertex(ElevatorCase_normal_vertex_index_begin + i, VTX_X) + off_x, update_mode);
 		SetVertex(ElevatorCase_additional_vertex_index_begin + i, VTX_Y, GetVertex(ElevatorCase_normal_vertex_index_begin + i, VTX_Y) + off_y, update_mode);
@@ -192,7 +192,7 @@ private func OvertakePartnerVertices(int off_x, int off_y)
 public func MakeSlaveVertices()
 {
 	var update_mode = 2; // force immediate update and store information
-	for(var i = 0; i < GetVertexNum(); ++i)
+	for (var i = 0; i < GetVertexNum(); ++i)
 	{
 		SetVertex(i, VTX_X, GetVertex(0, VTX_X), update_mode);
 		SetVertex(i, VTX_Y, GetVertex(0, VTX_Y), update_mode);

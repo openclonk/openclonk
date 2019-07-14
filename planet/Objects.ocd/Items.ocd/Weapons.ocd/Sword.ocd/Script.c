@@ -209,7 +209,7 @@ func CheckStrike(iTime)
 			angle = (Max(5, Abs(Contained()->GetXDir())));
 	}
 	
-	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
+	for (var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
 							   Find_NoContainer(),
 							   Find_Exclude(Contained()),
 							   Find_Layer(GetObjectLayer())))

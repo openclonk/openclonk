@@ -99,7 +99,7 @@ public func Activate(int byplr)
 private func GetRelativeScore(int player)
 {
 	var bestplayer = -1, bestscore = -1;
-	for(var i = 0; i < GetPlayerCount(); ++i)
+	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i);
 		if (plr != player && ((GetKillCount(plr) > bestscore) || (bestplayer == -1))) {
@@ -128,7 +128,7 @@ private func GetTeamScore(int team)
 {
 	if (team < 1) return 0;
 	var score;
-	for(var i = 0; i < GetPlayerCount(); ++i)
+	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i);
 		var team2 = GetPlayerTeam(plr);

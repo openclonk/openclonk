@@ -85,7 +85,7 @@ func PostInit()
 
 func QuickSprout()
 {
-	for(var i = 0; i < 3; ++i)
+	for (var i = 0; i < 3; ++i)
 	{
 		var sprout = CreateObjectAbove(SproutBerryBush_Sprout, 0, 15, GetOwner());
 		++sprout_count;
@@ -101,14 +101,14 @@ func Sprout()
 	{
 		// get ground position
 		var i = 1;
-		for(; i < 10; i += 2)
+		for (; i < 10; i += 2)
 		{
 			if (GBackSolid(0, last_checked_y + i)) break;
 		}
 		last_checked_y += i - 2;
 		if (GBackSolid(0, last_checked_y))
 		{
-			for(var i = 0; i > -10;--i)
+			for (var i = 0; i > -10;--i)
 			{
 				if (!GBackSolid(0, last_checked_y + i))
 				{

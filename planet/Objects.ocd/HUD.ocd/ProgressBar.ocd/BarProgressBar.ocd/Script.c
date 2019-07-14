@@ -88,13 +88,13 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 
 	bars[0] = this;
 	
-	for(var i = 1; i < number_of_bars; ++i)
+	for (var i = 1; i < number_of_bars; ++i)
 	{
 		bars[i] = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 	}
 		
 	var cnt = 0;
-	for(var obj in bars)
+	for (var obj in bars)
 	{
 		if (image != nil)
 		{
@@ -126,7 +126,7 @@ func Update()
 	var last_colored = (l * p) / 100;
 	
 	
-	for(var i = 0; i < l; ++i)
+	for (var i = 0; i < l; ++i)
 	{
 		var obj = bars[i];
 		if (i >= last_colored)
@@ -151,7 +151,7 @@ func Close()
 func Destruction()
 {
 	if (GetType(bars) == C4V_Array)
-	for(var i = GetLength(bars) - 1; i > 0; --i) // off-by-one on purpose
+	for (var i = GetLength(bars) - 1; i > 0; --i) // off-by-one on purpose
 	{
 		var obj = bars[i];
 		if (obj)
@@ -196,7 +196,7 @@ func Set(to, number, max_num, size, offset, visibility)
 
 func SetFade(int a)
 {
-	for(var bar in bars)
+	for (var bar in bars)
 	{
 		var t_a = BoundBy(((bar.current_clr >> 24)) + a, 0, 255);
 		var clr = (bar.current_clr & 0xffffff) + (t_a << 24);
@@ -209,6 +209,6 @@ func SetPlane(int to)
 	// called on a slave?
 	if (GetType(bars) != C4V_Array) return;
 	
-	for(var bar in bars)
+	for (var bar in bars)
 		bar.Plane = to;
 }

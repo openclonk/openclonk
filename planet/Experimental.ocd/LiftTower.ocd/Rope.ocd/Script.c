@@ -73,7 +73,7 @@ func FxIntHangTimer() { TimeStep(); }
 func UpdateLines()
 {
 	var oldangle;
-	for(var i=1; i < lib_rope_particle_count; i++)
+	for (var i=1; i < lib_rope_particle_count; i++)
 	{
 		// Update the Position of the Segment
 		lib_rope_segments[i]->SetPosition(GetPartX(i), GetPartY(i));

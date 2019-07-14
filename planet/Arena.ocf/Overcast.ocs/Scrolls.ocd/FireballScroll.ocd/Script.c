@@ -45,7 +45,7 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 	 	)
 	{
 		CreateObjectAbove(Dynamite,x,y,-1)->Explode(14);
-		for(var i=0; i<=3;i++) CreateObjectAbove(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),-1)->Explode(6+Random(4));
+		for (var i=0; i<=3;i++) CreateObjectAbove(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),-1)->Explode(6+Random(4));
 		return -1;
 	}	
 	else if (iEffectTime < 70)

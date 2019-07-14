@@ -531,7 +531,7 @@ CreateEnvironmentObjects("Temperate", Rectangle(LandscapeWidth()/2, 0, Landscape
 		var to_add = [];
 		
 		// go through every object in the list
-		for(var obj in what)
+		for (var obj in what)
 		{
 			var p = Environment_Attributes[obj];
 			if (p == nil) {Log("Warning: Environment object %s does not exist!", obj);}
@@ -543,7 +543,7 @@ CreateEnvironmentObjects("Temperate", Rectangle(LandscapeWidth()/2, 0, Landscape
 		}
 		
 		// add every unique item from the temporary list to the object list
-		for(var obj in to_add)
+		for (var obj in to_add)
 		{
 			if (IsValueInArray(what, obj)) continue;
 			
@@ -558,7 +558,7 @@ CreateEnvironmentObjects("Temperate", Rectangle(LandscapeWidth()/2, 0, Landscape
 	}
 	
 	// now create all the selected objects
-	for(var obj in what)
+	for (var obj in what)
 	{
 		var p, p_id;
 		if (!(p = Environment_Attributes[obj])) continue;

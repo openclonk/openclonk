@@ -70,7 +70,7 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 		var dummy = CreateObjectAbove(Dummy,x,y,-1);
 		dummy->Sound("Hits::Materials::Glass::GlassShatter");
 		ScheduleCall(dummy, "RemoveObject", 36);
-		for(var i=0; i<=60;i++)
+		for (var i=0; i<=60;i++)
 		{
 			var r=Random(10)+Random(18);
 			DoBlueExplosion(x+Sin(i*6 ,r),y-Cos(i*6 ,r), 2+Random(3), nil, effect.owner, nil);

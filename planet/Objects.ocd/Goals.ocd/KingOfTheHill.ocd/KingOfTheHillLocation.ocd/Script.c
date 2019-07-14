@@ -32,7 +32,7 @@ func GetKing()
 
 func Destruction()
 {
-	for(var s in stars)
+	for (var s in stars)
 	{
 		if (s)
 			s->RemoveObject();
@@ -142,12 +142,12 @@ func CreateStarCircle()
 	
 	if (GetType(stars) != C4V_Array)
 		stars=[];
-	for(var star in stars) star->RemoveObject();
+	for (var star in stars) star->RemoveObject();
 	stars=[];
 	var amount=radius / 15;
 	
 	var cnt=0;
-	for(var i=0;i<360;i+=360/amount)
+	for (var i=0;i<360;i+=360/amount)
 	{
 		var star=CreateObjectAbove(KingOfTheHill_Star, Sin(i, radius), -Cos(i, radius) + 15);
 		star->Init(this, cnt++);

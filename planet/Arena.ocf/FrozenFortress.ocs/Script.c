@@ -81,7 +81,7 @@ global func FxGeysirExplosionTimer(object target, effect)
 	if (effect.counter>1900 && effect.counter<2030)
 	{
 
-		for(var i=0; i<(-(1900-effect.counter)); i+=10 )
+		for (var i=0; i<(-(1900-effect.counter)); i+=10 )
 		{
 			var x=600+Random(300);
 			var y=250+Random(200);
@@ -99,11 +99,11 @@ global func FxGeysirExplosionTimer(object target, effect)
 		var y=280;
 		while(!GBackLiquid(x,y)) y++;
 		y-=3;
-		for(var i=0; i<(45); i++)InsertMaterial(Material("Water"),x+RandomX(-9,9),y-Random(5),RandomX(-10,10)+RandomX(-5,5)+RandomX(-10,10),-(10+Random(50)+Random(30)+Random(60)));
-		for(var i=0; i<(25); i++)InsertMaterial(Material("Water"),x+RandomX(-16,16),y-Random(5),RandomX(-10,10)+RandomX(-15,15)+RandomX(-20,20),-(10+Random(50)));
+		for (var i=0; i<(45); i++)InsertMaterial(Material("Water"),x+RandomX(-9,9),y-Random(5),RandomX(-10,10)+RandomX(-5,5)+RandomX(-10,10),-(10+Random(50)+Random(30)+Random(60)));
+		for (var i=0; i<(25); i++)InsertMaterial(Material("Water"),x+RandomX(-16,16),y-Random(5),RandomX(-10,10)+RandomX(-15,15)+RandomX(-20,20),-(10+Random(50)));
 		CreateParticle("Air", PV_Random(x-6, x+6), PV_Random(y-3, y), PV_Random(-15, 15), PV_Random(-90, -5), PV_Random(20, 100), Particles_Air());
 		if (effect.counter>2072) effect.counter=0;
-		for(var obj in FindObjects(Find_InRect(x-30,y-200,60,210)))
+		for (var obj in FindObjects(Find_InRect(x-30,y-200,60,210)))
 		{
 			obj->SetYDir(Max(obj->GetYDir()-15,-50));
 		}
@@ -118,7 +118,7 @@ global func FxSnowyWinterTimer(object target, effect, int time)
 		var add=RandomX(-2,2);
 		effect.snow_count=BoundBy(effect.snow_count+add,1,5);	
 	}
-	for(var i=0; i<(effect.snow_count); i++)
+	for (var i=0; i<(effect.snow_count); i++)
 	{
 		InsertMaterial(Material("Snow"),RandomX(300,LandscapeWidth()-300),1,RandomX(-10,10),10);
 		ExtractLiquid(LandscapeWidth()/2,295);
@@ -129,7 +129,7 @@ global func FxSnowyWinterTimer(object target, effect, int time)
 	ExtractLiquid(400,340);
 	ExtractLiquid(1100,340);
 	ExtractLiquid(1160,340);
-	if (!Random(3)) for(var obj in FindObjects(Find_Or(Find_InRect(0,-250,300,280),Find_InRect(LandscapeWidth()-300,-250,300,280))))
+	if (!Random(3)) for (var obj in FindObjects(Find_Or(Find_InRect(0,-250,300,280),Find_InRect(LandscapeWidth()-300,-250,300,280))))
 	{
 		obj->~DoEnergy(-1); 
 	}
@@ -169,7 +169,7 @@ global func FxFillBaseChestStart(object target, effect, int temporary, bool supp
 		w_list = [Firestone, Dynamite, IronBomb, Shovel, Loam, Ropeladder];
 	else
 		w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
-	for(var i=0; i<5; i++)
+	for (var i=0; i<5; i++)
 		target->CreateChestContents(w_list[i]);
 	return 1;
 }
@@ -189,11 +189,11 @@ global func FxFillBaseChestTimer(object target, effect)
 	}
 	
 	var contents;
-	for(var i=0; i<target->GetLength(w_list); i++)
+	for (var i=0; i<target->GetLength(w_list); i++)
 		contents+=target->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
-	for(var i=0; i<2 ; i++)
+	for (var i=0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (target->ContentsCount(w_list[r]) < maxcount[r])
@@ -223,11 +223,11 @@ global func FxFillOtherChestTimer(object target)
 	var maxcount = [1,1,3,1,2,1,1,1];
 	
 	var contents;
-	for(var i=0; i<target->GetLength(w_list); i++)
+	for (var i=0; i<target->GetLength(w_list); i++)
 		contents+=target->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
-	for(var i=0; i<2 ; i++)
+	for (var i=0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (target->ContentsCount(w_list[r]) < maxcount[r])

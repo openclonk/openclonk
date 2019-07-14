@@ -27,13 +27,13 @@ public func BurstIntoAshes()
 	
 	var r = GetR();
 	
-	for(var cnt = 0; cnt < 5; ++cnt)
+	for (var cnt = 0; cnt < 5; ++cnt)
 	{
 		var distance = 3;
 		var x = Sin(r, distance);
 		var y = -Cos(r, distance);
 
-		for(var mirror = -1; mirror <= 1; mirror += 2)
+		for (var mirror = -1; mirror <= 1; mirror += 2)
 		{
 			CreateParticle("Dust", x * mirror, y * mirror, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 2);
 			CastPXS("Ashes", 1, 30, x * mirror, y * mirror);

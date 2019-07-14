@@ -123,7 +123,7 @@ public func ControlPlace(object clonk, int x, int y, bool box)
 			// in roughly the same direction as he clicked, then
 			// in each left or right of that direction and then
 			// in the opposite direction.
-			for(var i=0; i<=3; ++i)
+			for (var i=0; i<=3; ++i)
 			{
 
 				angle += plusminus * i * 90;

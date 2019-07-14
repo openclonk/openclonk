@@ -42,7 +42,7 @@ func InitializePlayer(int plr)
 	{
 		// Too late for entry? Just start in the valley
 		var index = 0;
-		for(var index = 0; crew = GetCrew(plr, index); ++index)
+		for (var index = 0; crew = GetCrew(plr, index); ++index)
 		{
 			var x = 260*8/10 + Random(50);
 			var y = 1350*8/10;

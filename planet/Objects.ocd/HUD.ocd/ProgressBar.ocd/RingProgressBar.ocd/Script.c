@@ -49,11 +49,11 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	
 	ring[0] = this;
 	
-	for(var i = 1; i < amount; ++i)
+	for (var i = 1; i < amount; ++i)
 		ring[i] = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 		
 	var cnt = 0;
-	for(var obj in ring)
+	for (var obj in ring)
 	{
 		obj->Set(to, radius, ((cnt * 360) / amount), offset, visibility);
 		++cnt;
@@ -76,7 +76,7 @@ func Update()
 	var last_colored = (l * p) / 100;
 	
 	
-	for(var i = 0; i < l; ++i)
+	for (var i = 0; i < l; ++i)
 	{
 		var obj = ring[i];
 		if (i > last_colored)
@@ -102,7 +102,7 @@ func Close()
 func Destruction()
 {
 	if (GetType(ring) == C4V_Array)
-	for(var i = GetLength(ring) - 1; i > 0; --i) // off-by-one on purpose
+	for (var i = GetLength(ring) - 1; i > 0; --i) // off-by-one on purpose
 	{
 		var obj = ring[i];
 		if (obj)
@@ -131,7 +131,7 @@ func Initialize()
 func SetParallax(f)
 {
 	f = f ?? true;
-	for(var obj in ring)
+	for (var obj in ring)
 	{
 		if (f)
 		{
@@ -151,7 +151,7 @@ func SetPlane(int to)
 {
 	if (to == nil) return;
 	
-	for(var obj in ring)
+	for (var obj in ring)
 	{
 		obj.Plane = to;
 	}
@@ -161,7 +161,7 @@ func SetPlane(int to)
 
 func MakeHUDElement()
 {
-	for(var obj in ring)
+	for (var obj in ring)
 	{
 		obj->SetCategory(C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax);
 	}

@@ -164,7 +164,7 @@ func Dlg_Newton_117(object clonk)
 func Dlg_Newton_118(object clonk)
 {
 	MessageBox("$Newton118$ $Newton119$", clonk, dlg_target); // excellent! go east, take shovel
-	for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var crew = GetCrew(plr);

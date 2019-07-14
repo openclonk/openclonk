@@ -419,7 +419,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 			continue;
 
 		var totalShakeStrength = 0;
-		for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+		for (var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
 		{
 			// ignore shakers if the offset is too high already
 			if (totalShakeStrength > maxShakeStrength)
@@ -443,7 +443,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 	}
 
 	// remove shakers that are done shaking
-	for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+	for (var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
 	{
 		var shaker = e.shakers[shakerIndex];
 		var shakerTime = time - shaker.time;
@@ -588,9 +588,9 @@ global func Fireworks(int color, int x, int y)
 	var start_angle = Random(360);
 	
 	var num = 25;
-	for(var i=0; i<num; ++i)
+	for (var i=0; i<num; ++i)
 	{
-		for(var j=0; j<num; ++j)
+		for (var j=0; j<num; ++j)
 		{
 			var speed = 1000;
 			var angle = start_angle + i*360/num + Random(15) + j*15;

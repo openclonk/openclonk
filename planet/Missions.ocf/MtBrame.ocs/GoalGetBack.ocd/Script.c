@@ -21,10 +21,10 @@ public func IsFulfilled()
 	if (!GetPlayerCount() || GetEffect("IntIntro"))
 		return false;
 
-	for(var i = 0; i < GetPlayerCount(); ++i)
+	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i), obj;
-		for(var j = 0; obj = GetCrew(plr, j); ++j)
+		for (var j = 0; obj = GetCrew(plr, j); ++j)
 			if (ObjectDistance(obj, cabin) > 80)
 				return false;
 	}

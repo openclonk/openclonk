@@ -48,7 +48,7 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 	 	)
 	{
 		CreateObjectAbove(Dynamite,x,y,effect.owner)->Explode(14);
-		for(var i=0; i<=3;i++) CreateObjectAbove(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),effect.owner)->Explode(6+Random(4));
+		for (var i=0; i<=3;i++) CreateObjectAbove(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),effect.owner)->Explode(6+Random(4));
 		var obj=FindObject(Find_Distance(22,x,y),Find_ID(TargetBalloon));
 		if (obj)
 		{

@@ -17,7 +17,7 @@ global func ShiftContents(bool shift_back, id target_id)
 		// move to target ID?
 		if (target_id)
 		{
-			for(var pos = 0; pos < this.MaxContentsCount; ++pos)
+			for (var pos = 0; pos < this.MaxContentsCount; ++pos)
 			{
 				var obj = this.inventory.objects[pos];
 				if (!obj) continue;
@@ -33,7 +33,7 @@ global func ShiftContents(bool shift_back, id target_id)
 		var move_dir = 1;
 		if (shift_back) move_dir = -1;
 		var current_pos = this->GetHandItemPos(0);
-		for(var i = this.MaxContentsCount; i > 0; --i)
+		for (var i = this.MaxContentsCount; i > 0; --i)
 		{
 			current_pos += move_dir;
 			if (current_pos < 0) current_pos = this.MaxContentsCount + current_pos;

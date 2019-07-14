@@ -38,7 +38,7 @@ public func NewEntry(
 	if (new_id)
 	{
 		var index = -1;
-		for(var i = 0; i < GetLength(Scoreboard_data); ++i)
+		for (var i = 0; i < GetLength(Scoreboard_data); ++i)
 		{
 			if (Scoreboard_data[i].ID != new_id) continue;
 			index = i;
@@ -64,7 +64,7 @@ public func RemoveEntry(
 	)
 {
 	var i, len = GetLength(Scoreboard_data);
-	for(i = 0; i < len; ++i) if (Scoreboard_data[i].ID == remove_id) break;
+	for (i = 0; i < len; ++i) if (Scoreboard_data[i].ID == remove_id) break;
 	if (i == len) return false; // not found
 	RemoveArrayIndex(Scoreboard_data, i);
 	// Clear all columns
@@ -96,7 +96,7 @@ public func SetData(
 	)
 {
 	var index = -1;
-	for(var i = 0; i < GetLength(Scoreboard_data); ++i)
+	for (var i = 0; i < GetLength(Scoreboard_data); ++i)
 	{
 		if (Scoreboard_data[i].ID == ID)
 		{
@@ -121,7 +121,7 @@ public func Update(
 {
 	if (index == nil)
 	{
-		for(var i = 0; i < GetLength(Scoreboard_data); ++i)
+		for (var i = 0; i < GetLength(Scoreboard_data); ++i)
 		{
 			if (Scoreboard_data[i].ID != ID) continue;
 			index = i;
@@ -136,7 +136,7 @@ public func Update(
 	SetScoreboardData(data.ID, Scoreboard_X_title, data.title, -1);
 	
 	var len = GetLength(Scoreboard_keys);
-	for(var i = 0; i < len; ++i)
+	for (var i = 0; i < len; ++i)
 	{
 		var col = Scoreboard_keys[i];
 		if (!col.key) continue;
@@ -175,7 +175,7 @@ public func UpdateSort()
 {
 	// do sorting for fields neccessary
 	var len = GetLength(Scoreboard_keys);
-	for(var i = len-1; i >= 0; --i)
+	for (var i = len-1; i >= 0; --i)
 	{
 		var col = Scoreboard_keys[i];
 		if (!col.key) continue;
@@ -191,7 +191,7 @@ public func UpdateAll()
 {
 	// for every row, do update
 	var len = GetLength(Scoreboard_data);
-	for(var i = 0; i < len; ++i)
+	for (var i = 0; i < len; ++i)
 	{
 		Scoreboard->Update(Scoreboard_data[i].ID, i);
 	}
@@ -238,12 +238,12 @@ public func Init(array values /* see description */)
 	}
 	
 	// merge arrays
-	for(var val in values)
+	for (var val in values)
 	{
 		if (val == nil) continue;
 		
 		var index = nil;
-		for(var i = GetLength(Scoreboard_keys)-1; i >= 0; --i)
+		for (var i = GetLength(Scoreboard_keys)-1; i >= 0; --i)
 		{
 			if (Scoreboard_keys[i].key != val.key) continue;
 			index = i;
@@ -256,7 +256,7 @@ public func Init(array values /* see description */)
 	
 	// title property set?
 	var found_title = false;
-	for(var col in Scoreboard_keys)
+	for (var col in Scoreboard_keys)
 	{
 		if (col.key != "title") continue;
 		found_title = true;
@@ -270,10 +270,10 @@ public func Init(array values /* see description */)
 	
 	// sort, selection sort
 	var len = GetLength(Scoreboard_keys);
-	for(var x = 0; x < len - 1; ++x)
+	for (var x = 0; x < len - 1; ++x)
 	{
 		var max = -1, max_val = nil;
-		for(var i = x; i < len; ++i)
+		for (var i = x; i < len; ++i)
 		{
 			var data = Scoreboard_keys[i]; 
 			if (max_val == nil || (data.priority > max_val))
@@ -291,7 +291,7 @@ public func Init(array values /* see description */)
 	
 	// assign indices to scoreboard data, they are now sorted - also create scoreboard
 	var len = GetLength(Scoreboard_keys);
-	for(var i = 0; i < len; ++i)
+	for (var i = 0; i < len; ++i)
 	{
 		Scoreboard_keys[i].index = i;
 		

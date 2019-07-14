@@ -229,7 +229,7 @@ private func FxActivityTimer(target, effect, time)
 	
 	if (!GetEffect("DmgShock", this) && !GBackSemiSolid())
 	{
-		for(var enemy in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()), Sort_Distance()))
+		for (var enemy in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()), Sort_Distance()))
 		{
 			if (!PathFree(GetX(), GetY(), enemy->GetX(), enemy->GetY())) continue;
 			
@@ -262,7 +262,7 @@ private func FxActivityTimer(target, effect, time)
 			Sound("Animals::Chippie::Talk*");
 			
 			var cnt = 0;
-			for(var obj in FindObjects(Find_Distance(100), Find_ID(GetID()), Find_Allied(GetOwner()), Sort_Distance()))
+			for (var obj in FindObjects(Find_Distance(100), Find_ID(GetID()), Find_Allied(GetOwner()), Sort_Distance()))
 			{
 				if (++cnt > 5) break;
 				obj->AddEffect("DoDance", obj, 1, 35*5, obj);

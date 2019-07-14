@@ -80,7 +80,7 @@ func InitGrown(object bush)
 func AddLeaves(bool fullyGrown)
 {
 	// add two leaves
-	for(var i = 1; i <= 2; ++i)
+	for (var i = 1; i <= 2; ++i)
 	{
 		var rtrans = Trans_Rotate(Random(360), 1, 0, 0);
 		var matrix = Trans_Mul(Trans_Scale(1, 1, 1), rtrans);
@@ -354,7 +354,7 @@ func CreateFlower()
 	t.saved_water -= SproutBerryBush_water_per_berry;
 	
 	// send the happy message
-	for(var obj in FindObjects(Find_Distance(200), Find_ID(SproutBerryBush), Find_Exclude(t)))
+	for (var obj in FindObjects(Find_Distance(200), Find_ID(SproutBerryBush), Find_Exclude(t)))
 		obj->StartSeason(35 * 3);
 	
 	attached_flower = AttachMesh(SproutBerryBush_Flower, "Head", "Main", nil, nil);

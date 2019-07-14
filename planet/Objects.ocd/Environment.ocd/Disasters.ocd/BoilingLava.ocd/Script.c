@@ -51,7 +51,7 @@ private func GetDefaultIntensity()
 
 private func Boiling()
 {
-	for(var i = 0; i < intensity; i++)
+	for (var i = 0; i < intensity; i++)
 	{
 		// Checks if there is a deep enough pool of lava at a random location of the map, then creates spawner on the surface
 		area->GetRandomPoint(last_boilpos);

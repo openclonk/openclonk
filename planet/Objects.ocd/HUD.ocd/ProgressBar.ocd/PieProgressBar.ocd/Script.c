@@ -55,11 +55,11 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	
 	ring[0] = this;
 	
-	for(var i = 1; i < amount; ++i)
+	for (var i = 1; i < amount; ++i)
 		ring[i] = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 
 	var cnt = 0;
-	for(var obj in ring)
+	for (var obj in ring)
 	{
 		obj->Set(to, 180 / amount + ((cnt * 360) / amount), offset, visibility, size);
 		++cnt;
@@ -74,7 +74,7 @@ func Update()
 	var last_colored = (l * p) / 100;
 	
 	
-	for(var i = 0; i < l; ++i)
+	for (var i = 0; i < l; ++i)
 	{
 		var obj = ring[i];
 		if (i >= last_colored)

@@ -155,7 +155,7 @@ global func FxFillBaseChestStart(object target, effect, int temporary, bool supp
 		w_list = [Firestone, Dynamite, Ropeladder, ShieldGem];
 	else
 		w_list = [Bow, Sword, Javelin, PyreGem];
-	for(var i=0; i<4; i++)
+	for (var i=0; i<4; i++)
 		target->CreateChestContents(w_list[i]);
 	return 1;
 }
@@ -174,11 +174,11 @@ global func FxFillBaseChestTimer(object target, effect)
 	}
 	
 	var contents;
-	for(var i=0; i<target->GetLength(w_list); i++)
+	for (var i=0; i<target->GetLength(w_list); i++)
 		contents+=target->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
-	for(var i=0; i<2 ; i++)
+	for (var i=0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (target->ContentsCount(w_list[r]) < maxcount[r])
@@ -207,11 +207,11 @@ global func FxFillOtherChestTimer(object target)
 
 	
 	var contents;
-	for(var i=0; i<target->GetLength(w_list); i++)
+	for (var i=0; i<target->GetLength(w_list); i++)
 		contents+=target->ContentsCount(w_list[i]);
 	if (contents > 6) return 1;
 	
-	for(var i=0; i<2 ; i++)
+	for (var i=0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (target->ContentsCount(w_list[r]) < maxcount[r])
@@ -234,7 +234,7 @@ global func FxFillSpecialChestTimer(object target)
 	
 	var w_list = [GrappleBow, DynamiteBox, Boompack];
 	var r=Random(3);
-	for(var i=0; i < GetLength(w_list); i++)
+	for (var i=0; i < GetLength(w_list); i++)
 		if (FindObject(Find_ID(w_list[i]))) return 1;
 	target->CreateChestContents(w_list[r]);
 	return 1;

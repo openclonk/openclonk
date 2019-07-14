@@ -55,7 +55,7 @@ local FxFloatPlane = new Effect
 func Intro_JoinPlayer(int plr)
 {
 	if (g_intro_done) return false; // too late for join - just join on island
-	for(var index = 0, crew; crew = GetCrew(plr, index); ++index) crew->Enter(this);
+	for (var index = 0, crew; crew = GetCrew(plr, index); ++index) crew->Enter(this);
 	return true;
 }
 
@@ -124,7 +124,7 @@ func Intro_10()
 	for (var i=0,plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
-		for(var index = 0, crew; crew = GetCrew(plr, index); ++index)
+		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
 		{
 			crew->Exit();
 			crew->SetPosition(this.plane->GetX()+10, this.plane->GetY());
@@ -147,7 +147,7 @@ func Intro_11()
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
 		GameCall("InitializePlayer", plr);
-		for(var index = 0, crew; crew = GetCrew(plr, index); ++index)
+		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
 		{
 			crew->SetPosition(g_tuesday_pos[0],-100);
 			crew->SetXDir(-10); crew->SetYDir(-30);
@@ -164,7 +164,7 @@ func Intro_20()
 	for (var i=0,plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
-		for(var index = 0, crew; crew = GetCrew(plr, index); ++index)
+		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
 		{
 			crew->SetCommand("MoveTo", nil, g_tuesday_pos[0]-15+Random(20), g_tuesday_pos[1]);
 		}

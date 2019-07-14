@@ -90,7 +90,7 @@ global func FxDeathByFireStart(object target, effect fx, bool temp)
 
 global func FxDeathByFireTimer(object target, effect fx, int timer)
 {
-	for(var obj in FindObjects(Find_InRect(55,0,50,70), Find_Category(C4D_Object | C4D_Living)))
+	for (var obj in FindObjects(Find_InRect(55,0,50,70), Find_Category(C4D_Object | C4D_Living)))
 	{
 		if (obj->GetAlive())
 			obj->Kill();
@@ -118,8 +118,8 @@ global func FxIntFillChestsStart(object target, effect, int temporary)
 	var chests = FindObjects(Find_ID(Chest));
 	var w_list = [Bow, Blunderbuss, Shield, Sword, Club, Javelin, Bow, Blunderbuss, Shield, Sword, Club, Javelin, DynamiteBox];
 	
-	for(var chest in chests)
-		for(var i=0; i<4; ++i)
+	for (var chest in chests)
+		for (var i=0; i<4; ++i)
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
 }
@@ -129,7 +129,7 @@ global func FxIntFillChestsTimer()
 	SetTemperature(100); 
 	var chests = FindObjects(Find_ID(Chest));
 	var w_list = [IronBomb, Rock, IronBomb, Firestone, Firestone, Bow, Blunderbuss, Sword, Javelin];
-	for(var chest in chests)
+	for (var chest in chests)
 		if (chest->ContentsCount() < 5 )
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;

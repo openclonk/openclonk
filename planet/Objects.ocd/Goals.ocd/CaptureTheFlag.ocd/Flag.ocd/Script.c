@@ -53,7 +53,7 @@ protected func FxFlagAutoPickupTimer(object target, effect)
 		return 1;
 
 	// Find a near clonk which can grab the flag.
-	for(var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20), Sort_Distance()))
+	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20), Sort_Distance()))
 	{
 		var plr = clonk->GetOwner();	
 		if (GetPlayerTeam(plr) != team)

@@ -17,7 +17,7 @@ global func IntroAddPlayer(int plr)
 	if (effect.Time > 30) return false;
 
 	var crew;
-	for(var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = GetCrew(plr, index); ++index)
 	{
 	        var skin = crew->GetCrewExtraData("Skin");
         	if (skin == nil) skin = GetPlrClonkSkin(plr);
@@ -96,7 +96,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 
 	if (effect.Time == 150)
 	{
-		for(var crew in effect.Players)
+		for (var crew in effect.Players)
 		{
 			crew = crew->Contained();
 
@@ -120,7 +120,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 
 	if (effect.Time == 370)
 	{
-		for(var crew in effect.Players)
+		for (var crew in effect.Players)
 		{
 			crew = crew->Contained();
 			crew->SetCommand("MoveTo", crew, 245 - crew->GetX(), 555 - crew->GetY());
@@ -130,7 +130,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 	if (effect.Time == 500)
 	{
 		effect.Sister->SetCommand("MoveTo", effect.Sister, 214 - effect.Sister->GetX(), 540 - effect.Sister->GetY());
-		for(var crew in effect.Players)
+		for (var crew in effect.Players)
 			crew->Contained()->SetDir(DIR_Left);
 		effect.Dialog->MessageBoxAll("$MsgIntro4$", GetCrew(GetPlayerByIndex(Random(GetPlayerCount())), 0));
 	}
@@ -141,13 +141,13 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 	if (effect.Time == 550)
 	{
 		effect.Sister->ObjectCommand("Throw", effect.Rock, 500, 100);
-		for(var i = 0; i < GetPlayerCount(); ++i)
+		for (var i = 0; i < GetPlayerCount(); ++i)
 			SetPlrView(GetPlayerByIndex(i), effect.Sister);
 	}
 	
 	if (effect.Time == 556)
 	{
-		for(var crew in effect.Players)
+		for (var crew in effect.Players)
 		{
 			crew->Contained()->Fling(2,-2);
 			crew->Contained()->PlaySoundScream();
@@ -181,13 +181,13 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 
 	if (effect.Time == 920)
 	{
-		for(var i = 0; i < GetPlayerCount(); ++i)
+		for (var i = 0; i < GetPlayerCount(); ++i)
 			GetCursor(GetPlayerByIndex(i))->CloseMenu();
 	}
 
 	if (effect.Time == 950)
 	{
-		for(var crew in effect.Players)
+		for (var crew in effect.Players)
 		{
 			SetPlrView(crew->GetOwner(), crew);
 			SetPlayerViewLock(crew->GetOwner(), true);
@@ -196,7 +196,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 			container->RemoveObject();
 		}
 
-		for(var i = 0; i < GetPlayerCount(); ++i)
+		for (var i = 0; i < GetPlayerCount(); ++i)
 			GetCursor(GetPlayerByIndex(i))->CloseMenu();
 	}
 

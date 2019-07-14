@@ -54,7 +54,7 @@ func Update()
 	var last_colored = (l * p) / 100;
 	
 	
-	for(var i = 0; i < l; ++i)
+	for (var i = 0; i < l; ++i)
 	{
 		var obj = ring[i];
 		if (i >= last_colored)

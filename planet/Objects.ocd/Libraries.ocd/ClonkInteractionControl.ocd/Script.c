@@ -363,7 +363,7 @@ func GetInteractableObjects(array sort)
 
 	// add extra-interactions
 	if (!can_only_use_container)
-	for(var interaction in extra_interactions)
+	for (var interaction in extra_interactions)
 	{
 		PushBackInteraction(possible_interactions,
 			{
@@ -400,7 +400,7 @@ func GetInteractableObjects(array sort)
 		// handle the script interactions first
 		// one object could have a scripted interaction AND be a vehicle
 		if (has_script_interaction && (!can_only_use_container || uses_container))
-		for(var index = 0; index < interaction_count; index++)
+		for (var index = 0; index < interaction_count; index++)
 		{
 			PushBackInteraction(possible_interactions,
 				{
