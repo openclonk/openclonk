@@ -53,8 +53,19 @@ func Construction()
 		rollDir = nil,
 		rollLength = nil
 	};
+
+	AddEffect("IntTurn", this, 1, 1, this);
+	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 	
 	_inherited(...);
+}
+
+// Callback from Death() when the Clonk is really really dead
+protected func DeathEffects(int killed_by)
+{
+	_inherited(killed_by,...);
+
+	CloseEyes(1);
 }
 
 /*--
@@ -68,7 +79,6 @@ func Construction()
 // todo, implement, make carryheavy decreasing it
 static const Clonk_TurnTime = 18;
 
-func SetMeshTransformation() { return _inherited(...); }
 func UpdateAttach() { return _inherited(...); }
 func GetHandAction() { return _inherited(...); }
 func DoThrow() { return _inherited(...); }
@@ -398,22 +408,28 @@ func GetCurrentWalkAnimation()
 
 func Footstep()
 {
-	if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)) == 0)
-		Sound("Clonk::Movement::StepHard?");
+	var material = GetMaterial(0,10);
+	if (GetMaterialVal("DigFree", "Material", ) == 0)
+		this->~PlaySoundStepHard(material);
 	else
 	{
-		var dir = Sign(GetXDir());
-		var clr = GetAverageTextureColor(GetTexture(0,10));
-		var particles =
-		{
-			Prototype = Particles_Dust(),
-			R = (clr >> 16) & 0xff,
-			G = (clr >> 8) & 0xff,
-			B = clr & 0xff,
-		};
-		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
-		Sound("Clonk::Movement::StepSoft?");
+		FootstepDust();
+		this->~PlaySoundStepSoft(material);
 	}
+}
+
+func FootstepDust()
+{
+	var dir = Sign(GetXDir());
+	var clr = GetAverageTextureColor(GetTexture(0,10));
+	var particles =
+	{
+		Prototype = Particles_Dust(),
+		R = (clr >> 16) & 0xff,
+		G = (clr >> 8) & 0xff,
+		B = clr & 0xff,
+	};
+	CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
 }
 
 // Returns an animation position (Anim_* function) for new_anim depending on the position of the current animation
@@ -853,7 +869,7 @@ func FxFallTimer(object target, effect, int timer)
 	}
 	if(timer == 2 && GetYDir() < 1)
 	{
-		Sound("Clonk::Movement::Rustle?");
+		this->~PlaySoundRustle();
 	}
 
 	if(GetYDir() > 55 && GetAction() == "Jump")
@@ -1277,6 +1293,44 @@ func FxIntDiveJumpTimer(pTarget, effect, iTime)
 	return FX_Execute_Kill;
 }
 
+// calback from engine
+func OnMaterialChanged(int new, int old)
+{
+	if(!GetAlive()) return;
+	var newdens = GetMaterialVal("Density","Material",new);
+	var olddens = GetMaterialVal("Density","Material",old);
+	var newliquid = (newdens >= C4M_Liquid) && (newdens < C4M_Solid);
+	var oldliquid = (olddens >= C4M_Liquid) && (olddens < C4M_Solid);
+	// into water
+	if(newliquid && !oldliquid)
+		AddEffect("Bubble", this, 1, 8, this);
+	// out of water
+	else if(!newliquid && oldliquid)
+		RemoveEffect("Bubble", this);
+}
+
+func FxBubbleTimer(pTarget, effect, iTime)
+{
+	if(GBackLiquid(0,-5))
+	{
+		var mouth_off = GetCon()/11;
+		var iRot = GetSwimRotation();
+		var mouth_off_x = Sin(iRot, mouth_off), mouth_off_y = Cos(iRot, mouth_off);
+		// Search for bubbles to breath from
+		var bubble = FindObject(Find_Func("CanBeBreathed", this), Find_AtRect(mouth_off_x-mouth_off/2, mouth_off_y, mouth_off, mouth_off/3));
+		if (bubble)
+		{
+			bubble->~OnClonkBreath(this);
+		}
+		else if (!Random(6))
+		{
+			// Make your own bubbles
+			
+			Bubble(1, mouth_off_x, mouth_off_y);
+		}
+	}
+}
+
 /*--
 	Roll and kneel
 	
@@ -1295,7 +1349,7 @@ func DoKneel(bool create_dust)
 
 	SetXDir(0);
 	SetAction("Kneel");
-	Sound("Clonk::Movement::RustleLand");
+	this->~PlaySoundKneel();
 	PlayAnimation("KneelDown", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("KneelDown"), iKneelDownSpeed, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
 	ScheduleCall(this, "EndKneel", iKneelDownSpeed, 1);
@@ -1360,7 +1414,7 @@ func DoRoll(bool is_falling)
 func OnStartRoll()
 {	
 	SetTurnForced(GetDir());
-	Sound("Clonk::Movement::Roll");
+	this->~PlaySoundRoll();
 	if(GetDir() == 1) lAnim.rollDir = 1;
 	else
 		lAnim.rollDir = -1;
@@ -1457,7 +1511,7 @@ public func FxIntDigStart(object target, effect fx, int temp)
 	UpdateAttach();
 
 	// Sound
-	Sound("Clonk::Action::Dig::Dig?");
+	PlaySoundDig();
 
 	// Set proper turn type
 	SetTurnType(0);
@@ -1468,7 +1522,7 @@ public func FxIntDigTimer(object target, effect fx, int time)
 {
 	if (time % 36 == 0)
 	{
-		Sound("Clonk::Action::Dig::Dig?");
+		PlaySoundDig();
 	}
 	if (time == 18 || time >= 36)
 	{
@@ -1484,6 +1538,11 @@ public func FxIntDigTimer(object target, effect fx, int time)
 		}
 	}
 	return FX_OK;
+}
+
+public func PlaySoundDig()
+{
+	Sound("Clonk::Action::Dig::Dig?");
 }
 
 /*--

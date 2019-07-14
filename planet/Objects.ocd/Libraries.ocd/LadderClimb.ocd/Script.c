@@ -430,6 +430,3 @@ public func SetLadderRotation(int r, int xoff, int yoff)
 	SetMeshTransformation(Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r, 0, 0, 1), Trans_Translate(xoff, 10000 + yoff)), CLONK_MESH_TRANSFORM_SLOT_Rotation_Ladder);
 	return;
 }
-
-// Defined to prevent an error, because SetMeshTransformation is overloaded by the clonk.
-func SetMeshTransformation() { return _inherited(...); }

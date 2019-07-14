@@ -8,15 +8,3 @@ CtxChop=Chop
 CtrlMenuDesc=Menu
 TxtDescend=Jump off
 TxtEnergysupply=Energy supply
-
-MsgDeadClonk=%s is dead.|No interactions are possible.
-
-SetMaxContentsCount=Change inventory size
-SetMaxContentsCountHelp=Modifies the maximum number of items a clonk can carry. Valid values range from 0 to 10. One additional carry-heavy object can always be carried.
-MaxContentsCount=Inventory slot count
-Default=Default
-
-Skin=Skin
-SkinHelp=How the clonk looks.
-TurnAround=Turn around
-TurnAroundHelp=Changes the view direction of the clonk.
