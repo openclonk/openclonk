@@ -90,7 +90,7 @@ public func CreateObjectInTreetop(id to_create, int tries, bool no_overlap_check
 			if (overlap) continue;
 			break;
 		}
-	} while(--tries);
+	} while (--tries);
 	if (overlap) return nil;
 
 	var attach = CreateObject(to_create, pos.x, pos.y, GetOwner());
@@ -225,13 +225,13 @@ public func BurstIntoAshes()
 	var r = GetR();
 	var size = GetCon() * 110 / 100;
 	
-	for(var cnt = 0; cnt < 10; ++cnt)
+	for (var cnt = 0; cnt < 10; ++cnt)
 	{
 		var distance = Random(size/2);
 		var x = Sin(r, distance);
 		var y = -Cos(r, distance);
 		
-		for(var mirror = -1; mirror <= 1; mirror += 2)
+		for (var mirror = -1; mirror <= 1; mirror += 2)
 		{
 			CreateParticle("Dust", x * mirror, y * mirror, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 2);
 			CastPXS("Ashes", 5, 30, x * mirror, y * mirror);
@@ -262,7 +262,7 @@ public func ChopDown()
 	if (Stuck())
 	{
 		var i = 5;
-		while(Stuck() && i)
+		while (Stuck() && i)
 		{
 			SetPosition(GetX(), GetY()-1);
 			i--;

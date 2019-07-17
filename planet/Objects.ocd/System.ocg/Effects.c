@@ -48,7 +48,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	CreateParticle("Shockwave", x, y, 0, 0, 15, {Prototype = ExplosionParticles_Shockwave, Size = shockwave_size}, nil);
 	
 	// cast either some sparks on land or bubbles under water
-	if(GBackLiquid(x, y) && Global.CastBubbles)
+	if (GBackLiquid(x, y) && Global.CastBubbles)
 	{
 		Global->CastBubbles(level * 7 / 10, level, x, y);
 	}

@@ -70,7 +70,7 @@ local lovely_tries = 0;
 private func GetAttraction(proplist coordinates)
 {
 	// GetAttraction will only be called for the swarm master, perfect to have just one being make sound
-	if(!Random(30))
+	if (!Random(30))
 		Sound("Animals::MosquitoBuzz", nil,nil,nil,nil, 200);
 
 	if (!lovely_place) lovely_place = CreateArray(3);

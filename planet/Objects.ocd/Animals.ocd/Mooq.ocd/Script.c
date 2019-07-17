@@ -85,9 +85,9 @@ func CatchBlow(int damage, object from)
 func CheckStuck()
 {
 	// Prevents getting stuck on middle vertex
-	if(!GetXDir())
-		if(Abs(GetYDir()) < 5)
-			if(GBackSolid(0, 3))
+	if (!GetXDir())
+		if (Abs(GetYDir()) < 5)
+			if (GBackSolid(0, 3))
 				SetPosition(GetX(), GetY() - 1);
 }
 
@@ -109,9 +109,9 @@ func StartWalk()
 
 func SpitPhase()
 {
-	if(GetActTime() > 45 && GetActTime() < 65)
+	if (GetActTime() > 45 && GetActTime() < 65)
 	{
-		if(!Random(4))
+		if (!Random(4))
 		{
 			var iX, iY;
 			iX = 5;
@@ -120,7 +120,7 @@ func SpitPhase()
 			Smoke(iX,iY,5);
 		}
 	}
-	if(GetActTime() == 58)
+	if (GetActTime() == 58)
 	{
 		var iX, iY, iXDir, iYDir;
 		iX = 10;
@@ -143,9 +143,9 @@ func EatPhase()
 {
 	var actt = GetActTime();
 
-	if(actt > 13 && actt < 25)
+	if (actt > 13 && actt < 25)
 	{
-		if(!Random(4))
+		if (!Random(4))
 		{
 			var iX, iY;
 			iX = 5;
@@ -154,7 +154,7 @@ func EatPhase()
 			Smoke(iX,iY,5);
 		}
 	}
-	if(actt == 22)
+	if (actt == 22)
 	{
 		if (!food) return;
 
@@ -162,9 +162,9 @@ func EatPhase()
 		DoEnergy(food->GetMass());
 		food->RemoveObject();
 	}
-	if(actt > 43 && actt < 55)
+	if (actt > 43 && actt < 55)
 	{
-		if(!Random(4))
+		if (!Random(4))
 		{
 			var iX, iY;
 			iX = 5;
@@ -180,7 +180,7 @@ func EatPhase()
 func ActivitySwimming()
 {
 	CheckBreathe();
-	if(GetMaterial() == Material("Water"))
+	if (GetMaterial() == Material("Water"))
 		CheckFossilize();
 
 	// Stuck?
@@ -191,7 +191,7 @@ func ActivitySwimming()
 	}
 
 	// Fossilizing?
-	if(GetEffect("IntFossilizing", this))
+	if (GetEffect("IntFossilizing", this))
 	{
 		var lava_spot = FindLava();
 		if (lava_spot)
@@ -212,7 +212,7 @@ func ActivityWalking()
 	// Stuck?
 	if (GetComDir() && !GetXDir() && !GetYDir())
 	{
-		if(GetDir())
+		if (GetDir())
 			Walk(0);
 		else
 			Walk(1);
@@ -220,7 +220,7 @@ func ActivityWalking()
 	}
 
 	// Fossilizing?
-	if(GetEffect("IntFossilizing", this))
+	if (GetEffect("IntFossilizing", this))
 	{
 		var lava_spot = FindLava();
 		if (lava_spot) return TaskWalkTo(lava_spot);
@@ -345,14 +345,14 @@ func TaskWalkTo(spot)
 	{
 		if (GetDir() == DIR_Right)
 			if (iY > sY + 6)
-				if (Random(2)) if(DoJump())
+				if (Random(2)) if (DoJump())
 					return true;
 
 		return Walk(DIR_Right);
 	} else {
 		if (GetDir() == DIR_Left)
-			if(iY > sY + 6)
-				if(Random(2)) if(DoJump())
+			if (iY > sY + 6)
+				if (Random(2)) if (DoJump())
 					return true;
 		return Walk(DIR_Left);
 	}
@@ -379,15 +379,15 @@ func TaskSwimTo(spot)
 	if (iX < sX)
 	{
 		if (GetDir() == DIR_Right)
-			if(iY > sY)
-				if(DoJump(true))
+			if (iY > sY)
+				if (DoJump(true))
 					return true;
 
 		return Swim(DIR_Right);
 	} else {
 		if (GetDir() == DIR_Left)
-			if(iY > sY)
-				if(DoJump(true))
+			if (iY > sY)
+				if (DoJump(true))
 					return true;
 		return Swim(DIR_Left);
 	}
@@ -412,7 +412,7 @@ func Turn(int dir, bool move)
 			dir = DIR_Left;
 	}
 
-	if(GetDir() == dir) return;
+	if (GetDir() == dir) return;
 
 	return CheckTurn(dir, move);
 }
@@ -667,7 +667,7 @@ func FxIntFossilizingTimer(object target, effect fx, int time)
 		if (JumpSpeed < MaxJumpSpeed)
 		{
 			JumpSpeed += Random(3);
-			if(JumpSpeed > MaxJumpSpeed) JumpSpeed = MaxJumpSpeed;
+			if (JumpSpeed > MaxJumpSpeed) JumpSpeed = MaxJumpSpeed;
 		}
 	} else {
 		color--;
@@ -675,7 +675,7 @@ func FxIntFossilizingTimer(object target, effect fx, int time)
 		if (JumpSpeed > 0)
 		{
 			JumpSpeed -= Random(3);
-			if(JumpSpeed < 0) JumpSpeed = 0;
+			if (JumpSpeed < 0) JumpSpeed = 0;
 		}
 	}
 	if (color < 45 || color > 255)

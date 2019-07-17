@@ -68,9 +68,9 @@ global func PlaceGrass(int amount, int start, int end, int height, int bottom)
 		start = 0;
 	if (!end)
 		end = LandscapeWidth();
-	if(!height)
+	if (!height)
 		height = 0;
-	if(!bottom)
+	if (!bottom)
 		bottom = LandscapeHeight();
 		
 	var x = start, y; 

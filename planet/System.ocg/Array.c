@@ -31,7 +31,7 @@ global func Subtract(array subject, array subtract)
 				break;
 			}
 		}
-		if(!removed)
+		if (!removed)
 			diff[GetLength(diff)] = obj;
 	}
 	return diff;
@@ -44,7 +44,7 @@ global func RemoveHoles(array leerdammer)
 	var len = GetLength(leerdammer);
 	for (var i = 0; i < len; ++i)
 	{
-		if(leerdammer[i] == nil)
+		if (leerdammer[i] == nil)
 		{
 			++move;
 			continue;

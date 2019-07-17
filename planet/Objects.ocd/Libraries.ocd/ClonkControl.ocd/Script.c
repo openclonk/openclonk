@@ -73,7 +73,7 @@ public func NoStackedContentMenu() { return true; }	// Contents-Menu shall displ
 
 protected func Construction()
 {
-	if(this.control == nil)
+	if (this.control == nil)
 		this.control = {};
 	this.control.hotkeypressed = false;
 
@@ -86,9 +86,9 @@ protected func OnActionChanged(string oldaction)
 	var old_act = this["ActMap"][oldaction];
 	var act = this["ActMap"][GetAction()];
 	var old_proc = 0;
-	if(old_act) old_proc = old_act["Procedure"];
+	if (old_act) old_proc = old_act["Procedure"];
 	var proc = 0;
-	if(act) proc = act["Procedure"];
+	if (act) proc = act["Procedure"];
 	// if the object's procedure has changed from a non Push/Attach
 	// to a Push/Attach action or the other way round, the usage needs
 	// to be cancelled
@@ -156,7 +156,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		GUI_ObjectInteractionMenu->CreateFor(this, GUI_OIM_NewStyle);
 		// the interaction menu calls SetMenu(this) in the clonk
 		// so after this call menu = the created menu
-		if(GetMenu())
+		if (GetMenu())
 			GetMenu()->~Show();		
 		return true;
 	}
@@ -276,7 +276,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			}
 		}
 		// releasing the use-key always cancels shelved commands (in that case no GetUsedObject() exists)
-		if(status == CONS_Up) StopShelvedCommand();
+		if (status == CONS_Up) StopShelvedCommand();
 		// Release commands are always forwarded even if contents is 0, in case we
 		// need to cancel use of an object that left inventory
 		if (contents || (status == CONS_Up && GetUsedObject()))
@@ -381,7 +381,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Fall through half-solid mask
 	if (ctrl == CON_FallThrough)
 	{
-		if(status == CONS_Down)
+		if (status == CONS_Down)
 		{
 			if (this->IsWalking())
 			{
@@ -637,12 +637,12 @@ public func ControlJumpExecute(int ydir)
 		{
 			AddEffect("WallKick", this, 1);
 			var xdir;
-			if(GetDir() == DIR_Right)
+			if (GetDir() == DIR_Right)
 			{
 				xdir = -1;
 				SetDir(DIR_Left);
 			}
-			else if(GetDir() == DIR_Left)
+			else if (GetDir() == DIR_Left)
 			{
 				xdir = 1;
 				SetDir(DIR_Right);

@@ -508,7 +508,7 @@ public func OnCrewBreathChange(object clonk, int change)
 			{
 				SetNextBreathValue(1000 * breath_val / breath_phys);
 			}
-			else if(change < 0 && breath_val < breath_phys) // Show a warning if decreasing
+			else if (change < 0 && breath_val < breath_phys) // Show a warning if decreasing
 			{
 				IssueWarning(clonk, Icon_Bubbles, "");
 			}

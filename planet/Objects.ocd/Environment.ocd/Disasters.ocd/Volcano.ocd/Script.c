@@ -217,7 +217,7 @@ private func Erupt()
 	}
 
 	// Reduce strength.
-	if(!Random(3))
+	if (!Random(3))
 		str--;
 	if (str <= 0)
 		return RemoveObject();

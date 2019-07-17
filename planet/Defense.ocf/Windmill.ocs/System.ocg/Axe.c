@@ -5,7 +5,7 @@
 public func ControlUse(object clonk, int iX, int iY)
 {
 	// Combat
-	if(!CanStrikeWithWeapon(clonk) || !clonk->HasHandAction())
+	if (!CanStrikeWithWeapon(clonk) || !clonk->HasHandAction())
 	{
 		return false;
 	}
@@ -17,21 +17,21 @@ public func ControlUse(object clonk, int iX, int iY)
 
 	var length = this.StrikingLength;
 
-	if(clonk->IsWalking())
+	if (clonk->IsWalking())
 	{
-		if(!GetEffect("AxeStrikeStop", clonk, 0))
+		if (!GetEffect("AxeStrikeStop", clonk, 0))
 			AddEffect("AxeStrikeStop", clonk, 2, length, this);
 	}
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+	if (clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
 		arm = "L";
 		carry_bone = "pos_hand1";
 		animation  = Format("SwordSlash%d.%s", rand, arm);
 	}
-	if(clonk->IsJumping())
+	if (clonk->IsJumping())
 	{
 		rand = 1;
-		if(clonk->GetYDir() < -5) rand = 2;
+		if (clonk->GetYDir() < -5) rand = 2;
 		animation = Format("SwordJump%d.%s",rand,arm);
 	}
 

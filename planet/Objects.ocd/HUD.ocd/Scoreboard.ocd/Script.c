@@ -35,18 +35,18 @@ public func NewEntry(
 	// not initialized yet? Then init empty.
 	if (!Scoreboard_keys) Init([]);
 	// check for duplicates
-	if(new_id)
+	if (new_id)
 	{
 		var index = -1;
-		for(var i = 0; i < GetLength(Scoreboard_data); ++i)
+		for (var i = 0; i < GetLength(Scoreboard_data); ++i)
 		{
-			if(Scoreboard_data[i].ID != new_id) continue;
+			if (Scoreboard_data[i].ID != new_id) continue;
 			index = i;
 			break;
 		}
 		
 		// duplicate?
-		if(index != -1) return nil;
+		if (index != -1) return nil;
 	}
 	else // no ID provided, get new one
 	{
@@ -64,7 +64,7 @@ public func RemoveEntry(
 	)
 {
 	var i, len = GetLength(Scoreboard_data);
-	for(i = 0; i < len; ++i) if(Scoreboard_data[i].ID == remove_id) break;
+	for (i = 0; i < len; ++i) if (Scoreboard_data[i].ID == remove_id) break;
 	if (i == len) return false; // not found
 	RemoveArrayIndex(Scoreboard_data, i);
 	// Clear all columns
@@ -96,18 +96,18 @@ public func SetData(
 	)
 {
 	var index = -1;
-	for(var i = 0; i < GetLength(Scoreboard_data); ++i)
+	for (var i = 0; i < GetLength(Scoreboard_data); ++i)
 	{
-		if(Scoreboard_data[i].ID == ID)
+		if (Scoreboard_data[i].ID == ID)
 		{
 			index = i;
 			break;
 		}
 	}
-	if(index == -1) return;
+	if (index == -1) return;
 	
 	Scoreboard_data[index][key] = to;
-	if(sort_parameter)
+	if (sort_parameter)
 		Scoreboard_data[index][Format("%s_", key)] = sort_parameter;
 	Scoreboard->Update(ID);
 }
@@ -119,15 +119,15 @@ public func Update(
 	, int index /* optional, internal index. leave at nil.*/
 	)
 {
-	if(index == nil)
+	if (index == nil)
 	{
-		for(var i = 0; i < GetLength(Scoreboard_data); ++i)
+		for (var i = 0; i < GetLength(Scoreboard_data); ++i)
 		{
-			if(Scoreboard_data[i].ID != ID) continue;
+			if (Scoreboard_data[i].ID != ID) continue;
 			index = i;
 			break;
 		}
-		if(index == nil) return;
+		if (index == nil) return;
 	}
 	
 	var data = Scoreboard_data[index];
@@ -136,34 +136,34 @@ public func Update(
 	SetScoreboardData(data.ID, Scoreboard_X_title, data.title, -1);
 	
 	var len = GetLength(Scoreboard_keys);
-	for(var i = 0; i < len; ++i)
+	for (var i = 0; i < len; ++i)
 	{
 		var col = Scoreboard_keys[i];
-		if(!col.key) continue;
-		if(col.key == "title") continue; // already set
+		if (!col.key) continue;
+		if (col.key == "title") continue; // already set
 		
 		// aquire value
 		var value = col.default;
-		if(data[col.key] != nil) value = data[col.key];
+		if (data[col.key] != nil) value = data[col.key];
 		
 		// get sorting parameter
 		var sort = data[Format("%s_", col.key)];
-		if(sort == nil)
-			if(GetType(value) == C4V_Int) sort = value;
+		if (sort == nil)
+			if (GetType(value) == C4V_Int) sort = value;
 		
 		// the column provides a conditional function
-		if(col.conditional)
+		if (col.conditional)
 		{
 			value = col->conditional(value);
 			
 			// overwrite old sort?
-			if(GetType(value) == C4V_Int) sort = value;
+			if (GetType(value) == C4V_Int) sort = value;
 		}
 		
-		if(value == nil) value = "";
-		else if(GetType(value) == C4V_Int) {value = Format("%d", value);}
-		else if(GetType(value) == C4V_Def) value = Format("{{%i}}", value);
-		else if(GetType(value) == C4V_Bool) {sort = value; if(value) value = "X"; else value = "";}
+		if (value == nil) value = "";
+		else if (GetType(value) == C4V_Int) {value = Format("%d", value);}
+		else if (GetType(value) == C4V_Def) value = Format("{{%i}}", value);
+		else if (GetType(value) == C4V_Bool) {sort = value; if (value) value = "X"; else value = "";}
 
 		SetScoreboardData(data.ID, col.index, value, sort);
 	}
@@ -175,11 +175,11 @@ public func UpdateSort()
 {
 	// do sorting for fields neccessary
 	var len = GetLength(Scoreboard_keys);
-	for(var i = len-1; i >= 0; --i)
+	for (var i = len-1; i >= 0; --i)
 	{
 		var col = Scoreboard_keys[i];
-		if(!col.key) continue;
-		if(!col.sorted) continue;
+		if (!col.key) continue;
+		if (!col.sorted) continue;
 		
 		SortScoreboard(col.index, col.desc);
 	}
@@ -191,7 +191,7 @@ public func UpdateAll()
 {
 	// for every row, do update
 	var len = GetLength(Scoreboard_data);
-	for(var i = 0; i < len; ++i)
+	for (var i = 0; i < len; ++i)
 	{
 		Scoreboard->Update(Scoreboard_data[i].ID, i);
 	}
@@ -227,62 +227,62 @@ public func RemoveColumn(string key)
 public func Init(array values /* see description */)
 {
 	// first call?
-	if(Scoreboard_unique_ids == nil)
+	if (Scoreboard_unique_ids == nil)
 	{
 		Scoreboard_unique_ids = 0xffffff;
 		Scoreboard_keys = [];
 		Scoreboard_data = [];
 		
-		if(!Scoreboard_title_set)
+		if (!Scoreboard_title_set)
 			Scoreboard->SetTitle("Scoreboard");
 	}
 	
 	// merge arrays
-	for(var val in values)
+	for (var val in values)
 	{
-		if(val == nil) continue;
+		if (val == nil) continue;
 		
 		var index = nil;
-		for(var i = GetLength(Scoreboard_keys)-1; i >= 0; --i)
+		for (var i = GetLength(Scoreboard_keys)-1; i >= 0; --i)
 		{
-			if(Scoreboard_keys[i].key != val.key) continue;
+			if (Scoreboard_keys[i].key != val.key) continue;
 			index = i;
 			break;
 		}
-		if(index == nil)
+		if (index == nil)
 			PushBack(Scoreboard_keys, val); // new entry
 		else Scoreboard_keys[index] = val; // overwrite
 	}
 	
 	// title property set?
 	var found_title = false;
-	for(var col in Scoreboard_keys)
+	for (var col in Scoreboard_keys)
 	{
-		if(col.key != "title") continue;
+		if (col.key != "title") continue;
 		found_title = true;
 		break;
 	}
 	
 	// if not, add
-	if(!found_title)
+	if (!found_title)
 		PushBack(Scoreboard_keys, {key = "title", title = ""});
 	
 	
 	// sort, selection sort
 	var len = GetLength(Scoreboard_keys);
-	for(var x = 0; x < len - 1; ++x)
+	for (var x = 0; x < len - 1; ++x)
 	{
 		var max = -1, max_val = nil;
-		for(var i = x; i < len; ++i)
+		for (var i = x; i < len; ++i)
 		{
 			var data = Scoreboard_keys[i]; 
-			if(max_val == nil || (data.priority > max_val))
+			if (max_val == nil || (data.priority > max_val))
 			{
 				max = i;
 				max_val = data.priority;
 			}
 		}
-		if(max == -1) break;
+		if (max == -1) break;
 		
 		var t = Scoreboard_keys[x];
 		Scoreboard_keys[x] = Scoreboard_keys[max];
@@ -291,11 +291,11 @@ public func Init(array values /* see description */)
 	
 	// assign indices to scoreboard data, they are now sorted - also create scoreboard
 	var len = GetLength(Scoreboard_keys);
-	for(var i = 0; i < len; ++i)
+	for (var i = 0; i < len; ++i)
 	{
 		Scoreboard_keys[i].index = i;
 		
-		if(Scoreboard_keys[i].key == "title") // title has special index and no headline
+		if (Scoreboard_keys[i].key == "title") // title has special index and no headline
 		{
 			Scoreboard_keys[i].index = Scoreboard_X_title;
 			// don't set headline for title (first) column, because that would change the scoreboard title
@@ -303,11 +303,11 @@ public func Init(array values /* see description */)
 		}
 		
 		// check title
-		if(GetType(Scoreboard_keys[i].title) == C4V_Def)
+		if (GetType(Scoreboard_keys[i].title) == C4V_Def)
 			Scoreboard_keys[i].title = Format("{{%i}}", Scoreboard_keys[i].title);
 					
 		var data = -0xffffff;
-		if(Scoreboard_keys[i].desc) data = 0xffffff;
+		if (Scoreboard_keys[i].desc) data = 0xffffff;
 		SetScoreboardData(Scoreboard_Y_title, Scoreboard_keys[i].index, Scoreboard_keys[i].title, data);
 	}
 	

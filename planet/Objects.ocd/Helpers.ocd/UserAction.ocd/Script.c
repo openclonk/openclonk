@@ -244,7 +244,7 @@ func Definition(def)
 			{ Value=true, Name="$Immediate$" }
 			] }
 		} } );
-	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If], { }, { Type="proplist", Display="if({{Condition}}) {{TrueEvaluator}} else {{FalseEvaluator}}", EditorProps = {
+	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If], { }, { Type="proplist", Display="if ({{Condition}}) {{TrueEvaluator}} else {{FalseEvaluator}}", EditorProps = {
 		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$", Priority=60 },
 		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$", Priority=50 },
 		FalseEvaluator = new Evaluator.Action { Name="$FalseEvaluator$", EditorHelp="$FalseEvaluatorHelp$", Priority=30 }
@@ -254,17 +254,17 @@ func Definition(def)
 		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" },
 		Value = new Evaluator.Any { Name="$Value$", EditorHelp="$SetVariableValueHelp$" }
 		} } );
-	AddEvaluator("Action", "$Script$", "$ForInteger$", "$ForIntegerHelp$", "for_int", [def, def.EvalAct_For, def.EvalAct_For_IntRange], { Start={ Function="int_constant", Value=1}, End={ Function="int_constant", Value=10}, Step={ Function="int_constant", Value=1} }, { Type="proplist", HideFullName=true, Display="for({{Start}}:{{Step}}:{{End}}) {{Action}}", EditorProps = {
+	AddEvaluator("Action", "$Script$", "$ForInteger$", "$ForIntegerHelp$", "for_int", [def, def.EvalAct_For, def.EvalAct_For_IntRange], { Start={ Function="int_constant", Value=1}, End={ Function="int_constant", Value=10}, Step={ Function="int_constant", Value=1} }, { Type="proplist", HideFullName=true, Display="for ({{Start}}:{{Step}}:{{End}}) {{Action}}", EditorProps = {
 		Action = new Evaluator.Action { Name="$UserAction$", EditorHelp="$ForActionHelp$", Priority=100 },
 		Start = new Evaluator.Integer { Name="$Start$", EditorHelp="$ForStartHelp$", Priority=90 },
 		End = new Evaluator.Integer { Name="$End$", EditorHelp="$ForEndHelp$", Priority=80 },
 		Step = new Evaluator.Integer { Name="$Step$", EditorHelp="$ForStepHelp$", Priority=70 }
 		} } );
-	AddEvaluator("Action", "$Script$", "$ForPlayer$", "$ForPlayerHelp$", "for_player", [def, def.EvalAct_For, def.EvalAct_For_PlayerList], { Players={ Function="all_players" } }, { Type="proplist", HideFullName=true, Display="for({{Players}}) {{Action}}", EditorProps = {
+	AddEvaluator("Action", "$Script$", "$ForPlayer$", "$ForPlayerHelp$", "for_player", [def, def.EvalAct_For, def.EvalAct_For_PlayerList], { Players={ Function="all_players" } }, { Type="proplist", HideFullName=true, Display="for ({{Players}}) {{Action}}", EditorProps = {
 		Action = new Evaluator.Action { Name="$UserAction$", EditorHelp="$ForActionHelp$", Priority=100 },
 		Players = new Evaluator.PlayerList { EditorHelp="$ForPlayersHelp$" }
 		} } );
-	AddEvaluator("Action", "$Script$", "$ForObject$", "$ForObjectHelp$", "for_object", [def, def.EvalAct_For, def.EvalAct_For_ObjectList], { }, { Type="proplist", HideFullName=true, Display="for({{Objects}}) {{Action}}", EditorProps = {
+	AddEvaluator("Action", "$Script$", "$ForObject$", "$ForObjectHelp$", "for_object", [def, def.EvalAct_For, def.EvalAct_For_ObjectList], { }, { Type="proplist", HideFullName=true, Display="for ({{Objects}}) {{Action}}", EditorProps = {
 		Action = new Evaluator.Action { Name="$UserAction$", EditorHelp="$ForActionHelp$", Priority=100 },
 		Objects = new Evaluator.ObjectList { EditorHelp="$ForObjectsHelp$" }
 		} } );

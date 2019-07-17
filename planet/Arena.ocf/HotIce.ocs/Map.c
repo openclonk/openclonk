@@ -66,7 +66,7 @@ func DrawBigIslandMap(proplist map)
 	map->Draw(g_theme.IceMats[1], nil, [w*3/10,h*13/20,w*4/10+1,1]); 
 	// Smaller floating
 	var n_islands = 12;
-	while(n_islands--)
+	while (n_islands--)
 	{
 		var x = w*1/10 + Random(w*8/10);
 		var y = h*2/10 + Random(h*3/10);
@@ -87,7 +87,7 @@ func DrawSmallIslandsMap(proplist map)
 	var w = map.Wdt, h=map.Hgt, x, y, szx, szy;
 	// Islands in center of map
 	var n_islands = 35;
-	while(n_islands--)
+	while (n_islands--)
 	{
 		y = h*3/10 + Random(h*5/10 - 3);
 		var xrange = w * (y)/(h*9/10);

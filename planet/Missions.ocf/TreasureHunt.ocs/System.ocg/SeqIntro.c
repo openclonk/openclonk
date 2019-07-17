@@ -53,7 +53,7 @@ func Intro_JoinPlayer(int plr)
 {
 	// Players joining initially start out in plane
 	// Late joiners are placed at flagpole
-	for(var index = 0, crew; crew = GetCrew(plr, index); ++index)
+	for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
 	{
 		if (this.plane_crashed)
 			crew->SetPosition(this.flagpole->GetX(), this.flagpole->GetY());

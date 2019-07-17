@@ -9,13 +9,13 @@ func Initialize()
 
 func StartWalk()
 {
-	if(!GetEffect("IntWalk", this))
+	if (!GetEffect("IntWalk", this))
 		AddEffect("IntWalk", this, 1, 1, this);
 }
 
 func StopWalk()
 {
-	if(GetAction() != "Walk") RemoveEffect("IntWalk", this);
+	if (GetAction() != "Walk") RemoveEffect("IntWalk", this);
 }
 
 func Footstep()

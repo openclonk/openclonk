@@ -37,7 +37,7 @@ global func ShowStatusSymbol(id symbol)
 	if (!this) 
 		return false;
 	var h = StatusSymbol->GetStatusSymbolHelper(this);
-	if(!h) 
+	if (!h) 
 		return false;
 	
 	h->AddSymbol(symbol);

@@ -52,7 +52,7 @@ func AnimationForward()
 {
 	var i = 50;
 	//Loop animation
-	if(GetAnimationPosition(propanim) + i > GetAnimationLength("Flight"))
+	if (GetAnimationPosition(propanim) + i > GetAnimationLength("Flight"))
 	{
 		SetAnimationPosition(propanim, Anim_Const(GetAnimationPosition(propanim) + i - GetAnimationLength("Flight")));
 		return 1;
@@ -108,7 +108,7 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 			Sound("Structures::FanLoop", {loop_count = 1, pitch = enginesound - 50});
 		}
 	}
-	else if(enginesound)
+	else if (enginesound)
 	{
 		// Fade pitch from 0 to minimum -45, then turn off
 		enginesound = Max(enginesound - 10);

@@ -119,7 +119,7 @@ private func GetNextGrowableBranch(bool fullgrown)
 {
 	var ret = -1;
 	var i = -1;
-	while(++i < GetLength(branches))
+	while (++i < GetLength(branches))
 	{
 		if (branches[i].grown) continue;
 		if (branches[i].grow_animation != branch_proto.grow_animation && !fullgrown) continue;
@@ -188,7 +188,7 @@ private func GetNextFruitableBranch(bool fullgrown)
 {
 	var ret = -1;
 	var i = -1;
-	while(++i < GetLength(branches))
+	while (++i < GetLength(branches))
 	{
 		if (branches[i].no_fruit) continue;
 		if (branches[i].fruit && !(fullgrown && branches[i].fruit->IsGrowing())) continue;
@@ -307,8 +307,8 @@ public func Harvest(object clonk)
 {
 	var fruit = -1;
 	for (var i = 0; i < GetLength(branches); i++)
-		if(branches[i].fruit)
-			if(!branches[i].fruit->~IsGrowing())
+		if (branches[i].fruit)
+			if (!branches[i].fruit->~IsGrowing())
 			{
 				fruit = i;
 				break;

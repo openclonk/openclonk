@@ -150,7 +150,7 @@ public func QueryRejectSell(int for_player, object in_base)
 	if (Contents() && in_base)
 	{
 		// Sell contents first
-		for(var contents in FindObjects(Find_Container(this)))
+		for (var contents in FindObjects(Find_Container(this)))
 		{
 			in_base->~DoSell(contents, for_player);
 		}
@@ -300,7 +300,7 @@ public func IsToolProduct() { return true; }
 
 public func GetCarryTransform(clonk)
 {
-	if(GetCarrySpecial(clonk))
+	if (GetCarrySpecial(clonk))
 		return Trans_Translate(1000, 6500, 0);
 	
 	return Trans_Translate(1500, 0, -1500);

@@ -32,7 +32,7 @@ func Hit() {
 }
 
 func Sparkle() {
-    if(Contained())
+    if (Contained())
         return false;
 
     var clusterflight = {

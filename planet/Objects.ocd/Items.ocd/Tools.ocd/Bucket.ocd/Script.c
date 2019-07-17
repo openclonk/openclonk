@@ -104,11 +104,11 @@ public func IsBucketEmpty()
 func PlayBucketAnimation(object clonk)
 {
 	// animation only available for jumping and walking
-	if(!clonk->IsJumping() && !clonk->IsWalking())
+	if (!clonk->IsJumping() && !clonk->IsWalking())
 		return;
 
 	var arm, carry_bone;
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+	if (clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
 		arm = "L";
 		carry_bone = "pos_hand1";
@@ -122,7 +122,7 @@ func PlayBucketAnimation(object clonk)
 	// figure out the kind of animation to use
 	var length=15;
 	var animation;
-	if(clonk->IsJumping())
+	if (clonk->IsJumping())
 		animation = Format("SwordJump2.%s",arm);
 	else
 		animation = Format("SwordSlash2.%s", arm);

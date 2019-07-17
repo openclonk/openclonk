@@ -16,7 +16,7 @@ public func ControlUse(object pClonk)
 }
 global func FxThunderStrikeStart(pTarget, effect, iTemp, owner, x)
 {
-	if(iTemp) return;
+	if (iTemp) return;
 	effect.owner=owner;
 	effect.x=x;
 	
@@ -30,7 +30,7 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 {
 	var move = effect.x;
 
-	if(iEffectTime>36)
+	if (iEffectTime>36)
 	{
 		var particles_lightning =
 		{
@@ -43,42 +43,42 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 		var wdt = 18;
 		var y = [];
 		var targets=[];
-		for(var i = (x-wdt); i < (wdt*2); i++ )
+		for (var i = (x-wdt); i < (wdt*2); i++ )
 		{
 			
-			while(!GBackSolid(i+move,y[i+wdt]) && y[i+wdt] < LandscapeHeight())
+			while (!GBackSolid(i+move,y[i+wdt]) && y[i+wdt] < LandscapeHeight())
 				y[i+wdt]++;
 	
 		}
 		
-		for(var i = (x-wdt); i < (wdt*2); i++ )
+		for (var i = (x-wdt); i < (wdt*2); i++ )
 		{
 			var particles = Particles_ElectroSpark1();
 			if (Random(2))
 				particles = Particles_ElectroSpark2();
-			if(!(i%5))
-				for(var k=0; k<y[i+wdt]; k+=10+Random(5))
+			if (!(i%5))
+				for (var k=0; k<y[i+wdt]; k+=10+Random(5))
 				{	
 					CreateParticle("ElectroSpark", i+move,k, PV_Random(-12, 12), PV_Random(-40, -10), PV_Random(20, 40), Particles_ElectroSpark1(), 3);
 				}
 			
-			for(var l=0; l<3; l++)
+			for (var l=0; l<3; l++)
 				CreateParticle("ElectroSpark", i+move, y[i+wdt]-l-2, PV_Random(-20, 20), PV_Random(-20, -30), PV_Random(10, 20), particles, 3);
 
-			if(i%3 == 0)
+			if (i%3 == 0)
 				CreateParticle("LightningStrike", i+move, y[i+wdt]-32, 0, 0, PV_Random(3, 10), particles_lightning);
-			for(var t in FindObjects(Find_Or(Find_And(Find_ID(Clonk),Find_OCF(OCF_Alive)), Find_ID(TargetBalloon)),Find_OnLine(i+move,-0,i+move,y[i+wdt])))
+			for (var t in FindObjects(Find_Or(Find_And(Find_ID(Clonk),Find_OCF(OCF_Alive)), Find_ID(TargetBalloon)),Find_OnLine(i+move,-0,i+move,y[i+wdt])))
 			{
 				var add=true;
-				for(var j=0; j<GetLength(targets); j++)
-					if(targets[j] == t) add=false;
-				if(add) targets[GetLength(targets)] = t;
+				for (var j=0; j<GetLength(targets); j++)
+					if (targets[j] == t) add=false;
+				if (add) targets[GetLength(targets)] = t;
 			}
 		}
 		
-		for(var t in targets)
+		for (var t in targets)
 		{
-			if(t->GetID() == TargetBalloon)
+			if (t->GetID() == TargetBalloon)
 			{
 				var arw=CreateObjectAbove(Arrow,0,0,owner);
 				t->OnProjectileHit(arw);
@@ -86,7 +86,7 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 			}
 			else
 			{
-				if(t->GetOwner() != owner)
+				if (t->GetOwner() != owner)
 				{
 					t->DoEnergy(-15,0,0,owner);
 					t->Fling(BoundBy((t->GetX()-(move))/4,-3,3),-6);
@@ -95,9 +95,9 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 		}
 		return -1;
 	}
-	else if(iEffectTime<4)
+	else if (iEffectTime<4)
 	{
-		if(iEffectTime%3)
+		if (iEffectTime%3)
 		{
 			for (var y = 0; !GBackSolid(move+5,y) && y < LandscapeHeight(); y += Random(4) + 3)
 			{

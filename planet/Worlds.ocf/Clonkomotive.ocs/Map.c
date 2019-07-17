@@ -87,7 +87,7 @@ protected func InitializeMap(proplist map)
 	// Construct brick platforms on either side for a small village.
 	var x = 10;
 	var height = 0;
-	while(!GetPixel(x, height) && height < map.Hgt)
+	while (!GetPixel(x, height) && height < map.Hgt)
     	height++;
     var brick = {Algo = MAPALGO_Rect, X = 0, Y = height, Wdt = 32, Hgt = 2};
     brick = {Algo = MAPALGO_Or, Op = [brick, {Algo = MAPALGO_Turbulence, Iterations = 2, Amplitude = [0, 8], Scale = [0, 8], Seed = Random(65536), Op = brick}]};
@@ -95,7 +95,7 @@ protected func InitializeMap(proplist map)
 	Draw("Sky", {Algo = MAPALGO_Rect, X = 0, Y = height - 8, Wdt = 36, Hgt = 8}); 
 	var x = map.Wdt - 10;
 	var height = 0;
-	while(!GetPixel(x, height) && height < map.Hgt)
+	while (!GetPixel(x, height) && height < map.Hgt)
     	height++;
     var brick = {Algo = MAPALGO_Rect, X = map.Wdt - 32, Y = height, Wdt = 32, Hgt = 2};
     brick = {Algo = MAPALGO_Or, Op = [brick, {Algo = MAPALGO_Turbulence, Iterations = 2, Amplitude = [0, 8], Scale = [0, 8], Seed = Random(65536), Op = brick}]};

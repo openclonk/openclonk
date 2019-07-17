@@ -8,13 +8,13 @@ func Initialize()
 
 func HasNoFadeOut()
 {
-	if(GetAction() == "Attach") return true;
+	if (GetAction() == "Attach") return true;
 	return false;
 }
 
 func Fall(int from) 
 {
-	for(var i=0; i < 7 + Random(2); i++) 
+	for (var i=0; i < 7 + Random(2); i++) 
 	{
 		var dyn=CreateObjectAbove(Dynamite,0,0,from);
 		dyn->SetController(from);

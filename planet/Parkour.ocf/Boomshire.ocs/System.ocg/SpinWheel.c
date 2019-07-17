@@ -9,7 +9,7 @@ public func SetArrowWheel()
 
 public func ControlUp(object clonk)
 {
-	if(GetEffect("SparklingAttention",this)) RemoveEffect("SparklingAttention",this);
+	if (GetEffect("SparklingAttention",this)) RemoveEffect("SparklingAttention",this);
 	if (!shoot_arrow) return _inherited(clonk, ...);
 
 	if (GetAction() == "Still")

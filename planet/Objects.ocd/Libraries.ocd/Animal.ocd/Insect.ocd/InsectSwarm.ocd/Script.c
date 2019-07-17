@@ -115,7 +115,7 @@ private func Destruction()
 		if (lib_swarm_helper->GetMaster() == this)
 			lib_swarm_helper->MakeNewMaster(lib_swarm_nextinline);
 	// Destruction of a slave
-	if(lib_swarm_previnline && lib_swarm_nextinline)
+	if (lib_swarm_previnline && lib_swarm_nextinline)
 	{
 		lib_swarm_nextinline->SetPreviousInLine(lib_swarm_previnline);
 		lib_swarm_previnline->SetNextInLine(lib_swarm_nextinline);

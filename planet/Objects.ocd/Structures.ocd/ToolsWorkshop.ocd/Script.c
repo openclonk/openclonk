@@ -62,7 +62,7 @@ public func OnProductionFinish(id product)
 
 protected func FxWorkingTimer()
 {
-	if(!hold_production)
+	if (!hold_production)
 		Smoking();
 	return 1;
 }

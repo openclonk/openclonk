@@ -53,14 +53,14 @@ global func AddTimer(call_function, int interval)
 // removes a timer from an object that was added earlier with AddTimer. This removes exactly one timer that fits to the name and returns true on success
 global func RemoveTimer(call_function /* name or pointer to the timer to remove */)
 {
-	if(!this)
+	if (!this)
 		return false;
 		
 	var fx, index = 0;
-	while(fx = GetEffect("IntScheduleCall", this, index++))
+	while (fx = GetEffect("IntScheduleCall", this, index++))
 	{
-		if(fx.Function != call_function) continue;
-		if(fx.NoStop != true) continue;
+		if (fx.Function != call_function) continue;
+		if (fx.NoStop != true) continue;
 		RemoveEffect(nil, this, fx);
 		return true;
 	}

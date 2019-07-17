@@ -64,7 +64,7 @@ public func OnPlayerRespawn(int iPlr, object cp)
 
 global func FxDynamiteEruptionTimer(object nobject, effect, int timer)
 {
-	if(Random(5))
+	if (Random(5))
 	{
 		var dyn=CreateObjectAbove(Firestone,2460+Random(20),670);
 		dyn->SetYDir(-80);
@@ -96,7 +96,7 @@ global func FxAutoOpenTimer(object pTarget, effect, int timer)
 			}
 		}
 	}
-	if(FindObject(Find_ID(Airplane),Find_InRect(0,0,2000,500)))
+	if (FindObject(Find_ID(Airplane),Find_InRect(0,0,2000,500)))
 	{
 		pTarget->OpenDoor();
 		return FX_Execute_Kill;
@@ -140,7 +140,7 @@ global func FxSparklingAttentionTimer(object target, effect fx, int timer)
 
 global func FxPlaneResetTimer(object target, effect, int time)
 {
-	if(target->GetX() > 3000 || target->Contents())
+	if (target->GetX() > 3000 || target->Contents())
 	{
 		effect.count=0;
 		return FX_OK;
@@ -148,7 +148,7 @@ global func FxPlaneResetTimer(object target, effect, int time)
 	else
 		effect.count++;
 	
-	if(effect.count<4) return FX_OK;
+	if (effect.count<4) return FX_OK;
 	
 	var particles =
 	{

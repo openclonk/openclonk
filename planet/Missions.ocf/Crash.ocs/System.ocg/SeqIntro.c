@@ -46,7 +46,7 @@ func Intro_JoinPlayer(int plr)
 {
 	if (this.intro_closed) return false; // too late for join - just join in village
 	var crew;
-	for(var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = GetCrew(plr, index); ++index)
 	{
 		crew->Enter(this.dialogue);
 	}
@@ -162,7 +162,7 @@ func Intro_16()
 	this.pilot->Exit();
 	Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), this.pilot);
 	var clonk;
-	while(clonk = this.dialogue->Contents())
+	while (clonk = this.dialogue->Contents())
 	{
 		clonk->Exit();
 		Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), clonk);

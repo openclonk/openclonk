@@ -24,7 +24,7 @@ public func ControlUse(object pClonk, int ix, int iy)
 
 public func FxFrostboltStart(pTarget, effect, iTemp, owner, angle, x, y)
 {
-	if(iTemp) return;
+	if (iTemp) return;
 	x+=Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
 	effect.owner=owner;
@@ -70,14 +70,14 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 		var dummy = CreateObjectAbove(Dummy,x,y,-1);
 		dummy->Sound("Hits::Materials::Glass::GlassShatter");
 		ScheduleCall(dummy, "RemoveObject", 36);
-		for(var i=0; i<=60;i++)
+		for (var i=0; i<=60;i++)
 		{
 			var r=Random(10)+Random(18);
 			DoBlueExplosion(x+Sin(i*6 ,r),y-Cos(i*6 ,r), 2+Random(3), nil, effect.owner, nil);
 		}
 		return -1;
 	}	
-	else if(iEffectTime < 70)
+	else if (iEffectTime < 70)
 	{
 		angle+=Sin(iEffectTime*50,2)*8;
 		x+=Sin(angle, 9);

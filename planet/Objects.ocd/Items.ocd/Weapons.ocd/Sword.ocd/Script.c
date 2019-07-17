@@ -147,7 +147,7 @@ public func ControlUse(object clonk, int x, int y)
 
 func FxVisualJumpStrikeStart(target, effect, temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.x_add = 20;
 	if (target->GetXDir() < 0)
 	{
@@ -170,8 +170,8 @@ func FxVisualJumpStrikeTimer(target, effect, time)
 
 func FxVisualJumpStrikeStop(target, effect, reason, temp)
 {
-	if(temp) return;
-	if(!effect.visual) return;
+	if (temp) return;
+	if (!effect.visual) return;
 	effect.visual->FadeOut();
 }
 
@@ -182,7 +182,7 @@ func SwordDamage(int shield)
 
 func CheckStrike(iTime)
 {
-	//if(iTime < 20) return;
+	//if (iTime < 20) return;
 	var offset_x = 7;
 	var offset_y = 0;
 	if (Contained()->GetDir() == DIR_Left)
@@ -209,7 +209,7 @@ func CheckStrike(iTime)
 			angle = (Max(5, Abs(Contained()->GetXDir())));
 	}
 	
-	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
+	for (var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
 							   Find_NoContainer(),
 							   Find_Exclude(Contained()),
 							   Find_Layer(GetObjectLayer())))
@@ -283,13 +283,13 @@ func CheckStrike(iTime)
 
 func FxSwordStrikeStopStart(pTarget, effect, iTemp)
 {
-	if(iTemp) return;
+	if (iTemp) return;
 	pTarget->PushActionSpeed("Walk", 10, GetID());
 }
 
 func FxSwordStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
-	if(iTemp) return;
+	if (iTemp) return;
 	pTarget->PopActionSpeed("Walk", GetID());
 	if (this)
 		movement_effect = nil;
@@ -317,8 +317,8 @@ func FxSwordStrikeSpeedUpTimer(pTarget, effect, iEffectTime)
 func FxSwordStrikeSpeedUpStop(pTarget, effect, iCause, iTemp)
 {
 	pTarget->PopActionSpeed("Walk", GetID());
-	if(iTemp) return;
-	if(!pTarget->GetAlive()) return;
+	if (iTemp) return;
+	if (!pTarget->GetAlive()) return;
 	
 	AddEffect("SwordStrikeSlow", pTarget, 1, 5, nil, Sword, effect.Time);
 }
@@ -326,7 +326,7 @@ func FxSwordStrikeSpeedUpStop(pTarget, effect, iCause, iTemp)
 func FxSwordStrikeSlowStart(pTarget, effect, iTemp, iTime)
 {
 	pTarget->PushActionSpeed("Walk", 333, GetID());
-	if(iTemp) return;
+	if (iTemp) return;
 	effect.starttime = iTime;
 }
 
@@ -362,7 +362,7 @@ public func GetCarryTransform(clonk, sec, back)
 {
 	if (sec) return Trans_Mul(Trans_Rotate(130, 0, 0, 1), Trans_Translate(-3500, 0, 2800));
 
-	if(back) return Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Rotate(-90,1,0,0), Trans_Translate(-7000,0,0));
+	if (back) return Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Rotate(-90,1,0,0), Trans_Translate(-7000,0,0));
 	return Trans_Rotate(-90, 1, 0, 0);
 }
 

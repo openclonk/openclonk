@@ -23,10 +23,10 @@ func GetOrigin()
 
 func FxTimerTimer()
 {
-	if(!origin) return RemoveObject();
+	if (!origin) return RemoveObject();
 	
 	var x, y;
-	if(origin->GetKing())
+	if (origin->GetKing())
 	{
 		x=origin->GetKing()->GetX();
 		y=origin->GetKing()->GetY() - 20;
@@ -37,7 +37,7 @@ func FxTimerTimer()
 		y=origin->GetY();
 	}
 	
-	if(Distance(this->GetX(), this->GetY(), x, y) <= 15)
+	if (Distance(this->GetX(), this->GetY(), x, y) <= 15)
 	{
 		this->SetPosition(x, y);
 	}

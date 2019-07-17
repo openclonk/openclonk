@@ -15,7 +15,7 @@ public func Place(int amount, proplist area, proplist settings)
 	area = area ?? Shape->LandscapeRectangle();
 	var diamond_sockets = [];
 	var failsafe = amount * 100;
-	while((amount > 0) && (--failsafe > 0))
+	while ((amount > 0) && (--failsafe > 0))
 	{
 		// select cluster
 		var c_size = Min(RandomX(4, 6), amount);
@@ -38,7 +38,7 @@ public func Place(int amount, proplist area, proplist settings)
 			break;
 		}
 		
-		if(failsafe2 <= 0) continue;
+		if (failsafe2 <= 0) continue;
 		
 		// color of cluster
 		var hsl = HSL(Random(255), 50, 150);
@@ -190,8 +190,8 @@ private func DugOutDust()
 public func OnHitByPickaxe()
 {
 	var c = Contents();
-	if(!c) return;
-	if(Random(3)) return;
+	if (!c) return;
+	if (Random(3)) return;
 	
 	Sound("Hits::Materials::Rock::RockHit*");
 	DetachMesh(attached_mesh);

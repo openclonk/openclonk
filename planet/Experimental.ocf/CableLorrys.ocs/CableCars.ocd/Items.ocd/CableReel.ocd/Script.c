@@ -37,7 +37,7 @@ protected func ControlUse(object clonk, int x, int y)
 		var other_obj = nil;
 		if (line->GetActionTarget(0) == this)
 			other_obj = line->GetActionTarget(1);
-		else if(line->GetActionTarget(1) == this)
+		else if (line->GetActionTarget(1) == this)
 			other_obj = line->GetActionTarget(0);
 		else
 			return FatalError("Cable reel: line not connected to reel while trying to connect crossings.");

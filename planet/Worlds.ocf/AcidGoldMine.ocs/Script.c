@@ -49,7 +49,7 @@ protected func InitializePlayer(int plr)
 	{
 		var pos = FindTopSpot();
 		crew->SetPosition(pos.x, pos.y - 10);
-		while(crew->Stuck())
+		while (crew->Stuck())
 			crew->SetPosition(pos.x, crew->GetY()-1);
 		crew->CreateContents(Shovel);
 		// First clonk can construct, others can chop.
@@ -125,7 +125,7 @@ private func InitMaterial(int amount)
 		lorry->CreateContents(Firestone, 5);
 		lorry->CreateContents(Dynamite, 3);
 		lorry->CreateContents(DynamiteBox, 2);
-		while(lorry->Stuck())
+		while (lorry->Stuck())
 			lorry->SetPosition(lorry->GetX(), lorry->GetY()-1);
 	}
 	// Create some chests in caves.

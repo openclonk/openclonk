@@ -418,12 +418,12 @@ public func LandscapeRectangle()
 global func Rectangle(int x2, int y2, int w2, int h2)
 {
 	// normalize
-	if(w2 < 0)
+	if (w2 < 0)
 	{
 		x2 += w2;
 		w2 = -w2;
 	}
-	if(h2 < 0)
+	if (h2 < 0)
 	{
 		y2 += h2;
 		h2 = - h2;

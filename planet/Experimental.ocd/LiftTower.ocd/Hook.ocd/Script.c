@@ -85,7 +85,7 @@ public func GetInteractionMetaInfo(object clonk)
 
 public func Interact(object clonk)
 {
-	if(clonk->Collect(this))
+	if (clonk->Collect(this))
 	{
 		RemoveEffect("Connecting", this);
 		Unhook();
@@ -123,7 +123,7 @@ func SetRope(bool no_connect)
 
 public func Destruction()
 {
-	if(rope)
+	if (rope)
 		rope->HookRemoved();
 }
 

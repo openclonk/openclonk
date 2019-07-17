@@ -85,7 +85,7 @@ public func Reset()
 		this->~Destruction();
 		Construction();
 		
-		if(GetCursor(GetOwner()))
+		if (GetCursor(GetOwner()))
 			this->~OnCrewSelection(GetCursor(GetOwner()));
 	}
 	else

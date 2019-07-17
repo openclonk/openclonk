@@ -14,7 +14,7 @@ static const Library_Rope_MAXLENGTH = 1000;
 // Call this to break the rope.
 public func BreakRope(bool silent)
 {
-	if(lib_rope_length == -1) return;
+	if (lib_rope_length == -1) return;
 	lib_rope_length = -1;
 	var act1 = lib_rope_objects[0][0];
 	var act2 = lib_rope_objects[1][0];
@@ -34,7 +34,7 @@ public func BreakRope(bool silent)
 /* To be overloaded for special segment behaviour */
 private func CreateSegment(int index, object previous)
 {
-	if(index == 0) return;
+	if (index == 0) return;
 	var segment;
 	segment = CreateObjectAbove(LiftTower_Rope);
 	return segment;
@@ -73,7 +73,7 @@ func FxIntHangTimer() { TimeStep(); }
 func UpdateLines()
 {
 	var oldangle;
-	for(var i=1; i < lib_rope_particle_count; i++)
+	for (var i=1; i < lib_rope_particle_count; i++)
 	{
 		// Update the Position of the Segment
 		lib_rope_segments[i]->SetPosition(GetPartX(i), GetPartY(i));
@@ -85,7 +85,7 @@ func UpdateLines()
 		var start = [lib_rope_particles[i-1].x, lib_rope_particles[i-1].y];
 		var end   = [lib_rope_particles[i].x, lib_rope_particles[i].y];
 
-		if(i == 1 && lib_rope_particle_count > 2)
+		if (i == 1 && lib_rope_particle_count > 2)
 		{
 			angle = Angle(lib_rope_particles[2].x, lib_rope_particles[2].y, lib_rope_particles[0].x, lib_rope_particles[0].y);
 			end = [lib_rope_particles[0].x, lib_rope_particles[0].y];
@@ -94,7 +94,7 @@ func UpdateLines()
 			lib_rope_segments[i]->SetGraphics("Invis");
 		}
 		
-		if(i == 2)
+		if (i == 2)
 		{
 			angle = Angle(lib_rope_particles[2].x, lib_rope_particles[2].y, lib_rope_particles[0].x, lib_rope_particles[0].y);
 			start = [lib_rope_particles[0].x, lib_rope_particles[0].y];
@@ -108,12 +108,12 @@ func UpdateLines()
 		var diffangle = Vec_Angle(diff, [0,0]);
 		var length = Vec_Length(diff)*1000/LIB_ROPE_Precision/10;
 	
-		if(i ==  lib_rope_particle_count-1)
+		if (i ==  lib_rope_particle_count-1)
 		{
 			var old = [lib_rope_particles[i-2].x, lib_rope_particles[i-2].y];
 			var old_diff = Vec_Sub(start,old);
 			var o_length = Vec_Length(old_diff)*1000/LIB_ROPE_Precision/10;
-			if(!o_length) diff = old_diff;
+			if (!o_length) diff = old_diff;
 			else diff = Vec_Div(Vec_Mul(old_diff, length),o_length);
 			diffangle = Vec_Angle(diff, [0,0]);
 			point = Vec_Add(start, Vec_Div(diff, 2));
@@ -129,12 +129,12 @@ func UpdateLines()
 
 public func GetHookAngle()
 {
-	if(lib_rope_particle_count > 3)
+	if (lib_rope_particle_count > 3)
 	return Angle(lib_rope_particles[-2].x, lib_rope_particles[-2].y, lib_rope_particles[-3].x, lib_rope_particles[-3].y)+180;
 }
 
 public func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
-	if(!MirrorSegments) MirrorSegments = 1;
+	if (!MirrorSegments) MirrorSegments = 1;
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values
 	obj->SetObjDrawTransform (
@@ -152,22 +152,22 @@ local pull_position, pull_faults, pull_frame;
 // impulses to every direction
 func ForcesOnObjects()
 {
-	if(!lib_rope_length) return;
+	if (!lib_rope_length) return;
 
 	var redo = LengthAutoTryCount();
-	while(lib_rope_length_auto && redo)
+	while (lib_rope_length_auto && redo)
 	{
 		var speed = Vec_Length(Vec_Sub([lib_rope_particles[-1].x, lib_rope_particles[-1].y], [lib_rope_particles[-1].oldx, lib_rope_particles[-1].oldy]));
-		if(lib_rope_length == GetMaxLength())
+		if (lib_rope_length == GetMaxLength())
 		{
-			if(ObjContact(lib_rope_objects[1][0]))
+			if (ObjContact(lib_rope_objects[1][0]))
 				speed = 40;
 			else speed = 100;
 		}
-		if(speed > 150) DoLength(1);
-		else if(speed < 50) DoLength(-1);
+		if (speed > 150) DoLength(1);
+		else if (speed < 50) DoLength(-1);
 		else redo = 0;
-		if(redo) redo --;
+		if (redo) redo --;
 	}
 	var j = 0;
 	if (PullObjects())
@@ -218,7 +218,7 @@ func ForcesOnObjects()
 // Altered to function in 'ConnectPull' mode
 public func ConstraintObjects()
 {
-	if(lib_rope_length < GetMaxLength()) // in the rope library this is
+	if (lib_rope_length < GetMaxLength()) // in the rope library this is
 	{
 		for (var i = 0, i2 = 0; i < 2; i++ || i2--)
 			SetParticleToObject(i2, i);

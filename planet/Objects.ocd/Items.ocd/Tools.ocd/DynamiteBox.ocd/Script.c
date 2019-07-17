@@ -210,7 +210,7 @@ public func ControlUse(object clonk, int x, int y)
 
 	// Connect with a fuse: Move last wire to dynamite
 	var wire = FindFuses()[0];
-	if(wire)
+	if (wire)
 		wire->Connect(wire->GetConnectedItem(this), dynamite);
 	// Create new wire from box to dynamite
 	Fuse->Create(dynamite, this);

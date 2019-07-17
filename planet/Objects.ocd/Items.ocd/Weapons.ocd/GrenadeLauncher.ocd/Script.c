@@ -57,7 +57,7 @@ func Hit()
 func RejectCollect(id shotid, object shot)
 {
 	// Only collect grenade launcher ammo
-	if(!(shot->~IsGrenadeLauncherAmmo())) return true;
+	if (!(shot->~IsGrenadeLauncherAmmo())) return true;
 }
 
 /*-- Callbacks --*/
@@ -68,17 +68,17 @@ public func GetAnimationSet() { return animation_set; }
 public func FinishedLoading(object clonk)
 {
 	SetLoaded();
-	if(holding) clonk->StartAim(this);
+	if (holding) clonk->StartAim(this);
 	return holding; // false means stop here and reset the clonk
 }
 
 // Callback from the clonk, when he actually has stopped aiming
 public func FinishedAiming(object clonk, int angle)
 {
-	if(!loaded) return;
+	if (!loaded) return;
 	
 	// Fire
-	if(Contents(0) && Contents(0)->~IsGrenadeLauncherAmmo())
+	if (Contents(0) && Contents(0)->~IsGrenadeLauncherAmmo())
 		FireWeapon(clonk, angle);
 	Trajectory->Remove(clonk);
 	clonk->StartShoot(this);
@@ -103,7 +103,7 @@ public func RejectUse(object clonk)
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// nothing in extraslot?
-	if(!Contents(0))
+	if (!Contents(0))
 	{
 		// put something inside
 		var obj = FindObject(Find_Container(clonk), Find_Func("IsGrenadeLauncherAmmo"));
@@ -114,7 +114,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	}
 	
 	// something in extraslot
-	if(!Contents(0))
+	if (!Contents(0))
 	{
 		clonk->CancelUse();
 		return true;
@@ -124,7 +124,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	holding = true;
 	
 	// reload weapon if not loaded yet
-	if(!loaded)
+	if (!loaded)
 		clonk->StartLoad(this);
 	else
 		clonk->StartAim(this);
@@ -188,7 +188,7 @@ func FireWeapon(object clonk, int angle)
 	Sound("Objects::Weapons::Blunderbuss::GunShoot?");
 
 	// Muzzle Flash & gun smoke
-	if(Abs(Normalize(angle,-180)) > 90)
+	if (Abs(Normalize(angle,-180)) > 90)
 		IY=Cos(180-angle,MuzzleDown)+MuzzleOffset;
 
 	var x = Sin(angle, 20);

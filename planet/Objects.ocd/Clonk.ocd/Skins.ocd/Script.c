@@ -19,7 +19,7 @@ protected func Recruitment(int player)
 	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
 	var skin_setting = GetCrewExtraData("Skin");
 	if (skin_setting == nil) skin_setting = GetPlrClonkSkin(player);
-	if(skin_setting != nil) SetSkin(skin_setting);
+	if (skin_setting != nil) SetSkin(skin_setting);
 	else SetSkin(Random(GetSkinCount()));
 
 	return _inherited(player, ...);
@@ -32,22 +32,22 @@ func SetSkin(int new_skin)
 	skin = new_skin;
 	
 	//Adventurer
-	if(skin == 0)
+	if (skin == 0)
 	{	SetGraphics(skin_name = nil);
 		gender = 0;	}
 
 	//Steampunk
-	if(skin == 1)
+	if (skin == 1)
 	{	SetGraphics(skin_name = "Steampunk");
 		gender = 1; }
 
 	//Alchemist
-	if(skin == 2)
+	if (skin == 2)
 	{	SetGraphics(skin_name = "Alchemist");
 		gender = 0;	}
 	
 	//Farmer
-	if(skin == 3)
+	if (skin == 3)
 	{	SetGraphics(skin_name = "Farmer");
 		gender = 1;	}
 

@@ -111,7 +111,7 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 	// Don't use up loam if the mouse position is reached...
 	// wait for the mouse being moved and then continue bridging
 	// into that direction
-	if(d <= 1) return FX_OK;
+	if (d <= 1) return FX_OK;
 
 	// Calculate offset edges of rectangle (which are meant to be added to a side's midpoint).
 	var off_x = Sin(angle + 90, line_wdt);

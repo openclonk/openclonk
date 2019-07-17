@@ -15,7 +15,7 @@ public func GetCarryBone() { return "main"; }
 public func GetCarrySpecial(clonk)
 {
 	var action = clonk->~GetAction();
-	if(action == "Scale" || action == "Hangle" || action == "Push" || action == "Swim")
+	if (action == "Scale" || action == "Hangle" || action == "Push" || action == "Swim")
 		return "skeleton_body";
 }
 

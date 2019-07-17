@@ -143,17 +143,17 @@ public func IsActive()
 public func Aim(int ctrl, object clonk, int strength, int repeat, int status)
 {
 	// start (stealth) aiming
-	if(!GetEffect("Move",this))
+	if (!GetEffect("Move",this))
 		CreateMoveEffect(clonk);
 
 	// aiming with analog pad
 	if (status == CONS_Moved &&
 		(ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight))
 	{
-		if(ctrl == CON_AimAxisUp) ypos = -strength;
-		if(ctrl == CON_AimAxisDown) ypos = strength;
-		if(ctrl == CON_AimAxisLeft) xpos = -strength;
-		if(ctrl == CON_AimAxisRight) xpos = strength;
+		if (ctrl == CON_AimAxisUp) ypos = -strength;
+		if (ctrl == CON_AimAxisDown) ypos = strength;
+		if (ctrl == CON_AimAxisLeft) xpos = -strength;
+		if (ctrl == CON_AimAxisRight) xpos = strength;
 		return true;
 	}
 	return false;
@@ -161,16 +161,16 @@ public func Aim(int ctrl, object clonk, int strength, int repeat, int status)
 
 public func Direction(int ctrl)
 {
-	if(!crew) return;
+	if (!crew) return;
 	
 	angle = Normalize(angle,-1800,10);
 	//Message("%d, %d",this,angle,ctrl);
-	if(ctrl == CON_Left)
-		if(angle > 0)
+	if (ctrl == CON_Left)
+		if (angle > 0)
 			MirrorCursor();
 		
-	if(ctrl == CON_Right)
-		if(angle < 0)
+	if (ctrl == CON_Right)
+		if (angle < 0)
 			MirrorCursor();		
 	
 	return;

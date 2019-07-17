@@ -114,7 +114,7 @@ global func ExplosionParticles_Init()
 // documented in /docs/sdk/script/fn
 global func Explode(int level, bool silent, int damage_level)
 {
-	if(!this) FatalError("Function Explode must be called from object context");
+	if (!this) FatalError("Function Explode must be called from object context");
 	
 	// Special: Implode
 	if (level <= 0) return RemoveObject();
@@ -395,7 +395,7 @@ global func FxShakeViewportEffect(string new_name)
 
 global func FxShakeViewportStart(object target, effect e, int temporary, level, xpos, ypos, range)
 {
-	if(temporary != 0) return;
+	if (temporary != 0) return;
 	
 	e.shakers = CreateArray();
 	e.shakers[0] = { x = xpos, y = ypos, strength = level, time = 0, range = range };
@@ -419,7 +419,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 			continue;
 
 		var totalShakeStrength = 0;
-		for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+		for (var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
 		{
 			// ignore shakers if the offset is too high already
 			if (totalShakeStrength > maxShakeStrength)
@@ -443,7 +443,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 	}
 
 	// remove shakers that are done shaking
-	for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+	for (var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
 	{
 		var shaker = e.shakers[shakerIndex];
 		var shakerTime = time - shaker.time;
@@ -453,7 +453,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 	RemoveHoles(e.shakers);
 	
 	// no shakers left: remove this effect
-	if(GetLength(e.shakers) == 0)
+	if (GetLength(e.shakers) == 0)
 	{
 		return -1;
 	}
@@ -588,9 +588,9 @@ global func Fireworks(int color, int x, int y)
 	var start_angle = Random(360);
 	
 	var num = 25;
-	for(var i=0; i<num; ++i)
+	for (var i=0; i<num; ++i)
 	{
-		for(var j=0; j<num; ++j)
+		for (var j=0; j<num; ++j)
 		{
 			var speed = 1000;
 			var angle = start_angle + i*360/num + Random(15) + j*15;

@@ -12,7 +12,7 @@ func Fall(int from_plr)
 
 func HasNoFadeOut()
 {
-	if(GetAction() == "Attach") return true;
+	if (GetAction() == "Attach") return true;
 	return false;
 }
 

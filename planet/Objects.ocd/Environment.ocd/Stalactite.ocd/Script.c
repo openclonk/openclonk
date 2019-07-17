@@ -16,7 +16,7 @@ public func Construction()
 		var rand = Random(2);
 		if (rand == 0) 
 			transformation = Trans_Rotate(RandomX(-20, 20), 1, 0, 0);
-		else if(rand == 1)
+		else if (rand == 1)
 			transformation = Trans_Rotate(RandomX(-20, 20), 0, 0, 1);
 		sibling = TransformBone(bone, transformation, 1, Anim_Const(1000), sibling);
 	}

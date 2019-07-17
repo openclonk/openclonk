@@ -53,7 +53,7 @@ public func ControlUse(object clonk, int x, int y)
 			Unroll(-1, COMD_Left);
 		}
 	}
-	else if(clonk->GetAction() == "Hangle")
+	else if (clonk->GetAction() == "Hangle")
 	{
 		Exit(0, 0);
 		Unroll(dir, COMD_Up);
@@ -438,7 +438,7 @@ public func OnLadderClimb(object clonk, int index)
 		lib_rope_particles[index-2].x -= dir * Ladder_Precision / 5;
 		lib_rope_particles[index+2].x += dir * Ladder_Precision / 5;
 	}
-	else if(index > 2 && index < lib_rope_particle_count - 2)
+	else if (index > 2 && index < lib_rope_particle_count - 2)
 	{
 		lib_rope_particles[index-2].x -= dir * Ladder_Precision / 5;
 		lib_rope_particles[index+1].x += dir * Ladder_Precision / 5;

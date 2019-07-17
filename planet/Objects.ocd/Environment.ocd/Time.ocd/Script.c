@@ -310,9 +310,9 @@ private func DoSkyShade()
 	
 	if (Inside(time, time_set.sunrise_start, time_set.sunrise_end))
 		sunrise = true;
-	else if(Inside(time, time_set.sunrise_end, time_set.sunset_start))
+	else if (Inside(time, time_set.sunrise_end, time_set.sunset_start))
 		day = true;
-	else if(Inside(time, time_set.sunset_start, time_set.sunset_end))
+	else if (Inside(time, time_set.sunset_start, time_set.sunset_end))
 		sunset = true;
 	else
 		night = true;
@@ -329,7 +329,7 @@ private func DoSkyShade()
 	if (!day)
 	{
 		var satellite = FindObject(Find_ID(Moon));
-		if(satellite)
+		if (satellite)
 		{
 			var lightness = satellite->GetMoonLightness();
 			nightcolour = [ 6 * lightness / 100, 8 + 25 * lightness / 100, 15 + 60 * lightness / 100 ];

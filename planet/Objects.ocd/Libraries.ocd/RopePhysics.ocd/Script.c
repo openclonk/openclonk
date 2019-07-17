@@ -540,7 +540,7 @@ public func ForcesOnObjects()
 		}
 		if (speed > 150)
 			DoLength(1);
-		else if(speed < 50) 
+		else if (speed < 50) 
 			DoLength(-1); // TODO not just obj 1
 		else 
 			redo = 0;
@@ -640,7 +640,7 @@ func LogSpeed()
 {
 	// Helperfunction for Debugpurpose
 	var speed_array = [];
-	for(var i = 0; i < lib_rope_particle_count; i++)
+	for (var i = 0; i < lib_rope_particle_count; i++)
 		PushBack(speed_array, Distance(lib_rope_particles[i].x - lib_rope_particles[i].oldx, lib_rope_particles[i].y - lib_rope_particles[i].oldy));
 	return Log("%v", speed_array);
 }

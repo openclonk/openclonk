@@ -29,11 +29,11 @@ func DoInit(int first_player)
 	CreateConstruction(WindGenerator, 203*8, 45*8, first_player, 100, true);
 
 	// Earth objects
-	for(var i = 0; i < 70; ++i)
+	for (var i = 0; i < 70; ++i)
 	{
 		var stuff = [Firestone, Firestone, Rock, Rock, Rock, Nugget];
 		var location = FindLocation(Loc_Material("Earth"));//, Loc_Space(5, false), Loc_Space(5, true));
-		if(location)
+		if (location)
 		{
 			CreateObjectAbove(stuff[Random(GetLength(stuff))], location.x, location.y);
 		}

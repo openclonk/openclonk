@@ -85,7 +85,7 @@ func InitializePlayer(int plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Late joining players just start in the village
 	var index;
-	for(index = 0; crew = GetCrew(plr, index); ++index)
+	for (index = 0; crew = GetCrew(plr, index); ++index)
 	{
 		if (!crew->Contained()) // if not put into plane by intro
 		{
@@ -99,7 +99,7 @@ func InitializePlayer(int plr)
 	if (g_has_bought_plans) GiveExtraPlans(plr);
 
 	// Give clonks initial tools
-	for(var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = GetCrew(plr, index); ++index)
 	{
 		crew->CreateContents(Shovel);
 		// First Clonk can construct and mine.

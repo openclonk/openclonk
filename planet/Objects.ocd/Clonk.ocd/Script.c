@@ -136,7 +136,7 @@ func AttachBackpack()
 
 func RemoveBackpack()
 {
-	if(backpack)
+	if (backpack)
 	{
 		DetachMesh(backpack);
 		backpack = nil;

@@ -60,7 +60,7 @@ protected func InitializePlayer(int plr)
 	{
 		crew->SetPosition(96 + RandomX(-12, 12), LandscapeHeight() - 92);
 		var u = 0;
-		while(crew->Stuck())
+		while (crew->Stuck())
 		{
 			crew->SetPosition(crew->GetX(), crew->GetY()-1);
 			++u;

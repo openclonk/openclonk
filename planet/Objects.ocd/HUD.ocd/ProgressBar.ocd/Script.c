@@ -25,7 +25,7 @@ global func CreateProgressBar(
 	current = current ?? 0;
 	data = data ?? {};
 	
-	if(!ID)
+	if (!ID)
 		FatalError("CreateProgressBar called without valid ID");
 		
 	var obj = CreateObject(ID, AbsX(0), AbsY(0), owner);

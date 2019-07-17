@@ -89,9 +89,9 @@ global func BlueExplosionEffect(int level, int x, int y)
 	// Blast particle.
 	CreateParticle("SmokeDirty", x, y, PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(20, 40), smoke, 10);
 	CreateParticle("MagicFire", x, y, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 10), fire, 20);
-	if(!GBackLiquid(x,y)) CreateParticle("SphereSpark", x, y, PV_Random(-100, 100), PV_Random(-100, 100), PV_Random(5, 36 * 3), glimmer, level);
+	if (!GBackLiquid(x,y)) CreateParticle("SphereSpark", x, y, PV_Random(-100, 100), PV_Random(-100, 100), PV_Random(5, 36 * 3), glimmer, level);
 
-	if(GBackLiquid(x,y)) CastObjects(Fx_Bubble, level * 4 / 10, level, x, y);
+	if (GBackLiquid(x,y)) CastObjects(Fx_Bubble, level * 4 / 10, level, x, y);
 	return;
 }
 

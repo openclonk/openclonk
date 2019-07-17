@@ -23,7 +23,7 @@ public func FxIntFadeOutTimer(object target, effect, int time)
 
 	if ((!(target->Contained()) && effect.x == target->GetX() && effect.y == target->GetY()) || target->~FadeOutForced()) // some objects must always fade out (e.g. Airships)
 	{
-		if(time >= fade_time) 
+		if (time >= fade_time) 
 		{
 			target->RemoveObject();
 			return -1;

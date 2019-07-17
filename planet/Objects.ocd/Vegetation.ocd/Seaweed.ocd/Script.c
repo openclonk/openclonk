@@ -29,7 +29,7 @@ private func Initialize()
 
 private func Check()
 {
-	if(!GBackLiquid()) SetAction("Limp");
+	if (!GBackLiquid()) SetAction("Limp");
 }
 
 // Not moved by tele glove and windbag, in contrast to most plants this plant does not per sé have a vertex that is stuck.

@@ -8,7 +8,7 @@
 public func RejectUse(object clonk)
 {
 	// General inability?
-	if(clonk->GetProcedure() != "WALK") return true;
+	if (clonk->GetProcedure() != "WALK") return true;
 	if (GBackSemiSolid(0, 0)) return true;
 	/*
 	This check might make sense, so that you can just hold the button and walk over the ground until the soil is fitting.

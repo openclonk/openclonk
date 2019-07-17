@@ -8,9 +8,9 @@ public func FinishedAiming(object clonk, int angle)
 	iArrowMesh = nil;
 
 	// shoot
-	if(Contents(0))
+	if (Contents(0))
 	{
-		if(Contents(0)->~IsArrow())
+		if (Contents(0)->~IsArrow())
 		{
 			var arrow = Contents(0)->TakeObject();
 			arrow->Launch(angle,shooting_strength,clonk);

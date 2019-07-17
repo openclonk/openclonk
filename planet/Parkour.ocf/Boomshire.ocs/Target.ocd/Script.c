@@ -20,7 +20,7 @@ public func SetGate(object g)
 public func OnProjectileHit()
 {
 	//Makes balloon fly away
-	if(GetActionTarget()!=nil)
+	if (GetActionTarget()!=nil)
 	{
 	GetActionTarget()->AddEffect("FlyOff",GetActionTarget(),1,1,GetActionTarget());
 	}
