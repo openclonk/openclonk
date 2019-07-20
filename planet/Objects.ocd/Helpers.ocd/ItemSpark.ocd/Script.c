@@ -64,7 +64,7 @@ global func FxGlobalItemSparksTimer(_, effect, time)
 		start = 0;
 	}
 
-	if (effect.mirror){ max/=2; if (Random(2)) start = LandscapeWidth()/2;}
+	if (effect.mirror){ max /= 2; if (Random(2)) start = LandscapeWidth()/2;}
 	
 	var x = Random(max)+start;
 	var failsafe = 0;
