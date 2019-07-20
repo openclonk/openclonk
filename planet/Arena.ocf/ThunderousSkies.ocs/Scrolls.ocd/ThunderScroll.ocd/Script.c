@@ -57,7 +57,7 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 			if (Random(2))
 				particles = Particles_ElectroSpark2();
 			if (!(i%5))
-				for (var k = 0; k<y[i + wdt]; k+=10 + Random(5))
+				for (var k = 0; k<y[i + wdt]; k += 10 + Random(5))
 				{	
 					CreateParticle("ElectroSpark", i + move,k, PV_Random(-12, 12), PV_Random(-40, -10), PV_Random(20, 40), Particles_ElectroSpark1(), 3);
 				}

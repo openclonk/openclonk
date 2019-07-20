@@ -35,8 +35,8 @@ public func FxHardeningSpellTimer(pTarget, effect, iEffectTime)
 	
 	if (!GBackSolid(x,y))
 	{
-		effect.x+=effect.xdir;
-		effect.y+=effect.ydir;
+		effect.x += effect.xdir;
+		effect.y += effect.ydir;
 		return 1;
 	}
 	for (var i = 0; i<5; i++)

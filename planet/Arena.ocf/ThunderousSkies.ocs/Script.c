@@ -95,13 +95,13 @@ global func FxLifedrainStart(object target, effect, int temporary,damage)
 }
 global func FxLifedrainAdd(object target, effect, string new_name, int new_timer, damage)
 {
-	effect.drain+=damage/10;
+	effect.drain += damage/10;
 }
 global func FxLifedrainTimer(object target, effect, int timer)
 {
 	if (effect.drain>0) return -1;
 	target->DoEnergy(+100,1,0,-1);
-	effect.drain+=10;
+	effect.drain += 10;
 }
 global func FxBlessTheKingTimer(object target, effect, int timer)
 {
@@ -209,7 +209,7 @@ global func FxIntFillChestsTimer()
 	
 	var contents;
 	for (var i = 0; i<chest->GetLength(w_list); i++)
-		contents+=chest->ContentsCount(w_list[i]);
+		contents += chest->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
 	if (!FindObject(Find_ID(Clonk),Find_Distance(20,chest->GetX(),chest->GetY())) && chest->ContentsCount()>2)

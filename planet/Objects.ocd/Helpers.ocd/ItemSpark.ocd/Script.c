@@ -172,12 +172,12 @@ func FxSparkleDeathTimer(_, effect, effect_time)
 	effect.from->CreateParticle("ItemSpark", AbsX(effect.x), AbsY(effect.y), 0, 0, 18, ItemSpark_particle, 1); 
 	effect.from->CreateParticle("ItemSpark", AbsX(effect.x), AbsY(effect.y), 0, 0, 10, ItemSpark_particle_additive, 1); 
 	
-	effect.xT+=effect.velX;
-	effect.yT+=effect.velY;
-	effect.velY+=effect.vAcc;
+	effect.xT += effect.velX;
+	effect.yT += effect.velY;
+	effect.velY += effect.vAcc;
 	var f = 0;
-	while (Abs(effect.xT) > 10){if (effect.xT > 0) f = 1; else f=-1; effect.x+=f; effect.xT -= f*10;}
-	while (Abs(effect.yT) > 10){if (effect.yT > 0) f = 1; else f=-1; effect.y+=f; effect.yT -= f*10;}
+	while (Abs(effect.xT) > 10){if (effect.xT > 0) f = 1; else f=-1; effect.x += f; effect.xT -= f*10;}
+	while (Abs(effect.yT) > 10){if (effect.yT > 0) f = 1; else f=-1; effect.y += f; effect.yT -= f*10;}
 	
 	effect.size -= 2;
 }

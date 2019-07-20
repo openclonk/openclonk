@@ -81,7 +81,7 @@ global func FxGeysirExplosionTimer(object target, effect)
 	if (effect.counter>1900 && effect.counter<2030)
 	{
 
-		for (var i = 0; i<(-(1900-effect.counter)); i+=10 )
+		for (var i = 0; i<(-(1900-effect.counter)); i += 10 )
 		{
 			var x = 600 + Random(300);
 			var y = 250 + Random(200);
@@ -190,7 +190,7 @@ global func FxFillBaseChestTimer(object target, effect)
 	
 	var contents;
 	for (var i = 0; i<target->GetLength(w_list); i++)
-		contents+=target->ContentsCount(w_list[i]);
+		contents += target->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
 	for (var i = 0; i<2 ; i++)
@@ -224,7 +224,7 @@ global func FxFillOtherChestTimer(object target)
 	
 	var contents;
 	for (var i = 0; i<target->GetLength(w_list); i++)
-		contents+=target->ContentsCount(w_list[i]);
+		contents += target->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
 	for (var i = 0; i<2 ; i++)

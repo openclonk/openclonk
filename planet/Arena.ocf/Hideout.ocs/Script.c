@@ -175,7 +175,7 @@ global func FxFillBaseChestTimer(object target, effect)
 	
 	var contents;
 	for (var i = 0; i<target->GetLength(w_list); i++)
-		contents+=target->ContentsCount(w_list[i]);
+		contents += target->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
 	for (var i = 0; i<2 ; i++)
@@ -208,7 +208,7 @@ global func FxFillOtherChestTimer(object target)
 	
 	var contents;
 	for (var i = 0; i<target->GetLength(w_list); i++)
-		contents+=target->ContentsCount(w_list[i]);
+		contents += target->ContentsCount(w_list[i]);
 	if (contents > 6) return 1;
 	
 	for (var i = 0; i<2 ; i++)

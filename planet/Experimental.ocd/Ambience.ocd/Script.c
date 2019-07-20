@@ -263,8 +263,8 @@ private func EnvCheck_Mountains(object cursor, int x, int y, bool is_current)
 {
 	// Check for mountains: Rock materials below
 	var num_rock;
-	for (var y2 = 0; y2<=45; y2+=15)
-		for (var x2=-75; x2<=75; x2+=15)
+	for (var y2 = 0; y2<=45; y2 += 15)
+		for (var x2=-75; x2<=75; x2 += 15)
 			num_rock += this.mat_mask[GetMaterial(x + x2,y + y2)+1];
 	// need 15pts on first check; 5 to sustain
 	if (num_rock < 15-is_current*10) return nil;

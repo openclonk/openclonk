@@ -25,7 +25,7 @@ public func ControlUse(object pClonk, int ix, int iy)
 public func FxFrostboltStart(pTarget, effect, iTemp, owner, angle, x, y)
 {
 	if (iTemp) return;
-	x+=Sin(angle, 10)+RandomX(-1, 1);
+	x += Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
 	effect.owner = owner;
 	effect.angle = angle;
@@ -79,8 +79,8 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 	}	
 	else if (iEffectTime < 70)
 	{
-		angle+=Sin(iEffectTime*50,2)*8;
-		x+=Sin(angle, 9);
+		angle += Sin(iEffectTime*50,2)*8;
+		x += Sin(angle, 9);
 		y+=-Cos(angle, 9);
 		effect.x = x;
 		effect.y = y;

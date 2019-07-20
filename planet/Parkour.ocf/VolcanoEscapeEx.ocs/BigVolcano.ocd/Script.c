@@ -98,8 +98,8 @@ func Execute()
 				var x = BoundBy(i*BigVolcano_XRes-BigVolcano_XRes/2, 0, ls_w-BigVolcano_XRes) + Random(BigVolcano_XRes);
 				var y = GetLavaY(x);
 				var speed = mat_advancespeeds[GetMaterial(x,y-5)+1];
-				if (i) if (lava_y[i] > lava_y[i-1]+BigVolcano_XRes*2) speed+=50;
-				if (i<n_lava_y-1) if (lava_y[i] > lava_y[i + 1]+BigVolcano_XRes*2) speed+=50;
+				if (i) if (lava_y[i] > lava_y[i-1]+BigVolcano_XRes*2) speed += 50;
+				if (i<n_lava_y-1) if (lava_y[i] > lava_y[i + 1]+BigVolcano_XRes*2) speed += 50;
 				this_move = (Random(100) < speed);
 				if (this_move)
 					lava_y[i] -= speed_multiplier;
@@ -219,8 +219,8 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 		if (fx.tip_progress)
 		{
 			// Start searching from last pos we went to
-			sx+=fx.tip_progress*(fx.dir_x)/100;
-			sy+=fx.tip_progress*(fx.dir_y)/100;
+			sx += fx.tip_progress*(fx.dir_x)/100;
+			sy += fx.tip_progress*(fx.dir_y)/100;
 		}
 		dx = Sign(fx.dir_x);
 		if (!dx) dx = Random(2)*2-1;
@@ -228,7 +228,7 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 		var n_valid_branches = 0;
 		for (i = 0; i<2; ++i)
 		{
-			for (dy=-10; dy<10; dy+=2)
+			for (dy=-10; dy<10; dy += 2)
 			{
 				var b = mat_behaviours[GetMaterial(sx + dx,sy + dy)+1];
 				if (b != BigVolcanoBehaviour_Stop && b != BigVolcanoBehaviour_AdvanceLava)

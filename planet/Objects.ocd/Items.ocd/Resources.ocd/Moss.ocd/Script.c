@@ -121,7 +121,7 @@ private func FindNearWater()
 {
 	// Take a random hit within the target area
 	var y = RandomX(-MOSS_MAXDIST, MOSS_MAXDIST);
-	for (var i = 0; i < MOSS_MAXDIST; i+=2)
+	for (var i = 0; i < MOSS_MAXDIST; i += 2)
 	{
 		if (GetMaterial(i, y) == Material("Water")) return true;
 		if (GetMaterial(-i,y) == Material("Water")) return true;

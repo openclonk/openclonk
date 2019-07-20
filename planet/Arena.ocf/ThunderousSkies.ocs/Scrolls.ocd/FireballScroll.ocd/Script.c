@@ -20,7 +20,7 @@ public func ControlUse(object pClonk, int ix, int iy)
 public func FxFireballStart(pTarget, effect, iTemp, owner, angle, x, y)
 {
 	if (iTemp) return;
-	x+=Sin(angle, 10)+RandomX(-1, 1);
+	x += Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
 	effect.owner = owner;
 	effect.angle = angle;
@@ -60,7 +60,7 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 	}	
 	else if (iEffectTime < 70)
 	{
-		angle+=Sin(iEffectTime*30,18);
+		angle += Sin(iEffectTime*30,18);
 		var xspeed = Sin(angle, 6);
 		var yspeed = -Cos(angle, 6);
 
