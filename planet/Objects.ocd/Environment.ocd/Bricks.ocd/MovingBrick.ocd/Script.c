@@ -305,7 +305,7 @@ public func SetMoveType(new_movement)
 	else if (movement_type == MovementType.Graph)
 	{
 		var x = BoundBy(GetX(), 30, LandscapeWidth()-30), y = BoundBy(GetY(), 50, LandscapeHeight()-50);
-		MoveOnGraph({ Vertices=[{X = x, Y = y}, {X = x-20, Y = y-40}, {X = x+20, Y = y-40}, {X = x, Y = y+40}], Edges=[{Vertices=[0, 1]}, {Vertices=[0, 2]}, {Vertices=[0, 3]}] });
+		MoveOnGraph({ Vertices=[{X = x, Y = y}, {X = x-20, Y = y-40}, {X = x + 20, Y = y-40}, {X = x, Y = y + 40}], Edges=[{Vertices=[0, 1]}, {Vertices=[0, 2]}, {Vertices=[0, 3]}] });
 	}
 	else
 	{

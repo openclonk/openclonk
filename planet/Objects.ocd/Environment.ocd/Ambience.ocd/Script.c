@@ -344,7 +344,7 @@ private func EnvCheck_Underground(object cursor, int x, int y, bool is_current)
 	if (GetMaterial(x,y)<0) return false;
 	if (GetMaterial(x,y-30)<0) return false;
 	if (GetMaterial(x-10,y-20)<0) return false;
-	if (GetMaterial(x+10,y-20)<0) return false;
+	if (GetMaterial(x + 10,y-20)<0) return false;
 	return true;
 }
 
@@ -354,7 +354,7 @@ private func EnvCheck_Mountains(object cursor, int x, int y, bool is_current)
 	var num_rock;
 	for (var y2 = 0; y2<=45; y2+=15)
 		for (var x2=-75; x2<=75; x2+=15)
-			num_rock += this.mat_mask[GetMaterial(x+x2,y+y2)+1];
+			num_rock += this.mat_mask[GetMaterial(x + x2,y + y2)+1];
 	// need 15pts on first check; 5 to sustain
 	if (num_rock < 15-is_current*10) return false;
 	return true;
@@ -588,8 +588,8 @@ global func InitializeAmbience()
 local active_shaders;
 
 local CommonShaders = {
-	Grayscale = ["Common", "slice(finish+20) { fragColor = vec4(vec3(0.299*fragColor.r + 0.587*fragColor.g + 0.114*fragColor.b), fragColor.a); }"],
-	Psycho = ["Landscape", "slice(color+1) { fragColor = scalerPx.r < 1 ? materialPx : vec4(vec3(0), materialPx.a); }"],
+	Grayscale = ["Common", "slice(finish + 20) { fragColor = vec4(vec3(0.299*fragColor.r + 0.587*fragColor.g + 0.114*fragColor.b), fragColor.a); }"],
+	Psycho = ["Landscape", "slice(color + 1) { fragColor = scalerPx.r < 1 ? materialPx : vec4(vec3(0), materialPx.a); }"],
 };
 
 public func SetShaderStatus(shader_name, bool to_active)

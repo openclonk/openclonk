@@ -1522,7 +1522,7 @@ private func EvalClr_Random(proplist props, proplist context)
 	{
 		var ca = (a>>(i*8)) & 0xff;
 		var cb = (b>>(i*8)) & 0xff;
-		result |= ((Random(Abs(ca-cb+1)) + Min(ca, cb)) << (i*8));
+		result |= ((Random(Abs(ca-cb + 1)) + Min(ca, cb)) << (i*8));
 	}
 	return result;
 }
@@ -1575,7 +1575,7 @@ public func Initialize()
 
 public func InitContext(object action_object, int triggering_player, object triggering_object, proplist props, finish_callback, position)
 {
-	// Determine triggering player+objects
+	// Determine triggering player + objects
 	var triggering_clonk;
 	// Triggering player unknown? Try fallback to the controller of the triggering object
 	if (!GetType(triggering_player) && triggering_object)

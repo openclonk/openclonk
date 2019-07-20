@@ -160,12 +160,12 @@ func Intro_16()
 	var x = this.plane->GetX();
 	var y = this.plane->GetY();
 	this.pilot->Exit();
-	Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), this.pilot);
+	Intro_CreateBoompack(RandomX(x-5,x + 5), RandomX(y-5,y + 5), 160)->Launch(290 + Random(26), this.pilot);
 	var clonk;
 	while (clonk = this.dialogue->Contents())
 	{
 		clonk->Exit();
-		Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), clonk);
+		Intro_CreateBoompack(RandomX(x-5,x + 5), RandomX(y-5,y + 5), 160)->Launch(290 + Random(26), clonk);
 	}
 	return ScheduleNext(100);
 }
@@ -179,7 +179,7 @@ func Intro_17()
 		var crew = GetCrew(plr);
 		if (crew)
 		{
-			crew->SetCommand("MoveTo", nil, 135+Random(25), 860);
+			crew->SetCommand("MoveTo", nil, 135 + Random(25), 860);
 		}
 	}
 	this.timer = 0;
@@ -252,7 +252,7 @@ func Intro_Stop()
 		var crew = GetCrew(plr);
 		if (crew && !Inside(crew->GetX(),125,170))
 		{
-			crew->SetPosition(135+Random(25), 860);
+			crew->SetPosition(135 + Random(25), 860);
 		}
 		crew->Extinguish();
 		crew->DoEnergy(100);

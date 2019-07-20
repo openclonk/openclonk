@@ -111,7 +111,7 @@ func Dlg_Pyrit_15(object clonk)
 	return true;
 }
 
-// called every 10 frames after plane+oil task has been given
+// called every 10 frames after plane + oil task has been given
 func CheckOilAtPlane()
 {
 	for (var plane in FindObjects(Find_ID(Airplane))) 
@@ -199,7 +199,7 @@ func Dlg_Pyrit_Init(object clonk)
 	clonk.ActMap.Walk.Speed /= 3;
 	clonk->SetAction("Walk");
 	// Hammering animation
-	AddEffect("PyritHammering", clonk, 1, Pyrit_Hammer_SwingTime+5, this);
+	AddEffect("PyritHammering", clonk, 1, Pyrit_Hammer_SwingTime + 5, this);
 	return true;
 }
 

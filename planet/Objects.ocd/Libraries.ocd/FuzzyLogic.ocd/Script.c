@@ -136,9 +136,9 @@ public func Defuzzify(string action, string subset, int strength)
 	var centroid_data = [];
 	for (var i = 0; i <= 1; ++i)
 	{
-		var data = DefuzzifyGetCentroidFromGraph(subset_data[i], subset_data[i+1], strength, nil, true, i == 0);
+		var data = DefuzzifyGetCentroidFromGraph(subset_data[i], subset_data[i + 1], strength, nil, true, i == 0);
 		PushBack(centroid_data, data);
-		//Log("     -> %d/%d, %d/%d with Y=%d: cx: %d, weight: %d", subset_data[i][0], subset_data[i][1], subset_data[i+1][0], subset_data[i+1][1], strength, data[0], data[1]);
+		//Log("     -> %d/%d, %d/%d with Y=%d: cx: %d, weight: %d", subset_data[i][0], subset_data[i][1], subset_data[i + 1][0], subset_data[i + 1][1], strength, data[0], data[1]);
 	}
 	
 	// calculate joint weight from array
@@ -300,10 +300,10 @@ public func Fuzzify(string set, int value)
 		// if no result found yet, calculate
 		for (var i = 0; (i <= 1) && (result_value == nil); ++i)
 		{
-			if (subset_data[i][0] <= value && value <= subset_data[i+1][0])
+			if (subset_data[i][0] <= value && value <= subset_data[i + 1][0])
 			{
-				result_value = FuzzyCalcLine(subset_data[i], subset_data[i+1], value);
-				//Log("         -> calc line %d/%d, %d/%d value %d: result %d", subset_data[i][0], subset_data[i][1], subset_data[i+1][0], subset_data[i+1][1], value, result_value);
+				result_value = FuzzyCalcLine(subset_data[i], subset_data[i + 1], value);
+				//Log("         -> calc line %d/%d, %d/%d value %d: result %d", subset_data[i][0], subset_data[i][1], subset_data[i + 1][0], subset_data[i + 1][1], value, result_value);
 				break;
 			}
 		}

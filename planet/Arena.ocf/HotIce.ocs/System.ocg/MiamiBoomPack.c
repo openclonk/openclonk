@@ -23,7 +23,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	if (!ignition)
 	{
 		var angle = GetR()+RandomX(-dirdev,dirdev);
-		SetXDir(3*GetXDir()/4+Sin(angle,24));
+		SetXDir(3*GetXDir()/4 + Sin(angle,24));
 		SetYDir(3*GetYDir()/4-Cos(angle,24));
 		SetR(angle);
 	}

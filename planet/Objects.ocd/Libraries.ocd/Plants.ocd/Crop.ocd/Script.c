@@ -72,7 +72,7 @@ public func Harvest(object clonk)
 /* Watering */
 
 /** This is optional behaviour. Plant will grow faster if there is a little water around. The plant may also shrink if its submerged.
-To activate, use AddTimer("WaterCheck", 70+Random(10)); or similar in Construction.
+To activate, use AddTimer("WaterCheck", 70 + Random(10)); or similar in Construction.
 Plant must have the following properties defined:
 growth: Usual growth factor
 fastgrowth: Growth factor when water was absorbed (until it is check again)
@@ -114,7 +114,7 @@ private func WaterCheck()
 		if (!skip_extract)
 		{
 			// Check for water
-			for (var i = 0; i < my_width+1; i++)
+			for (var i = 0; i < my_width + 1; i++)
 			{
 				var y = 0;
 				var x = i - my_width/2;

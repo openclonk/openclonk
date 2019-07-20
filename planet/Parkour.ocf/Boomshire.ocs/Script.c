@@ -66,14 +66,14 @@ global func FxDynamiteEruptionTimer(object nobject, effect, int timer)
 {
 	if (Random(5))
 	{
-		var dyn = CreateObjectAbove(Firestone,2460+Random(20),670);
+		var dyn = CreateObjectAbove(Firestone,2460 + Random(20),670);
 		dyn->SetYDir(-80);
 		dyn->SetXDir(RandomX(-1,1));
 		dyn->SetRDir(RandomX(-30,30));
 	}
 	else
 	{
-		var dyn = CreateObjectAbove(Dynamite,2460+Random(20),670);
+		var dyn = CreateObjectAbove(Dynamite,2460 + Random(20),670);
 		dyn->SetYDir(-80);
 		dyn->SetXDir(RandomX(-1,1));
 		dyn->SetRDir(RandomX(-30,30));

@@ -118,7 +118,7 @@ func FxLaraWalkingTimer(object c, proplist fx, int time)
 				c->SetXDir();
 				fx.carry_obj->Enter(c);
 				// find a target
-				fx.target_pos = [[220+Random(11), 311], [495+Random(51),358]][fx.carry_obj->GetX() < 350];
+				fx.target_pos = [[220 + Random(11), 311], [495 + Random(51),358]][fx.carry_obj->GetX() < 350];
 			}
 			else 
 			{

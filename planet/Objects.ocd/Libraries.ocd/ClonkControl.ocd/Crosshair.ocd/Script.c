@@ -55,7 +55,7 @@ public func FxMoveTimer()
 	crew->TriggerHoldingControl();
 }
 
-private func AnalogStrength() { return BoundBy(Sqrt(xpos*xpos+ypos*ypos), 0, PLRCON_MaxStrength); }
+private func AnalogStrength() { return BoundBy(Sqrt(xpos*xpos + ypos*ypos), 0, PLRCON_MaxStrength); }
 private func InDeadzone() { return AnalogStrength() < CURSOR_Deadzone(); }
 private func Visible() { return this.Visibility != VIS_None; }
 

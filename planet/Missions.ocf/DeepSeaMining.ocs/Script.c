@@ -16,7 +16,7 @@ static g_is_initialized, g_is_in_intro, g_intro_done, npc_tuesday, g_tuesday_pos
 protected func PostIntroInitialize()
 {
 	// Construction site on goal platform
-	var goal_site = CreateObjectAbove(ConstructionSite, goal_platform_x+10, goal_platform_y+3);
+	var goal_site = CreateObjectAbove(ConstructionSite, goal_platform_x + 10, goal_platform_y + 3);
 	goal_site->Set(CrystalCommunicator);
 	goal_site->MakeUncancellable();
 	if (SCEN_TEST)
@@ -124,7 +124,7 @@ private func InitEnvironment()
 			else if (y0)
 			{
 				// Water section ends 1px above - apply auto-refill texture
-				DrawMaterialQuad("Water", x, y0, x+1, y0, x+1, y, x, y, "Water");
+				DrawMaterialQuad("Water", x, y0, x + 1, y0, x + 1, y, x, y, "Water");
 				y0 = 0;
 			}
 		}
@@ -275,7 +275,7 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 	var x, y;
 	for (var i = 0; i < 100; i++)
 	{
-		x = main_island_x + xpos + Random(sep*2+1)-sep;
+		x = main_island_x + xpos + Random(sep*2 + 1)-sep;
 		y = main_island_y / 2 - 220;
 		
 		while (!GBackSolid(x, y) && y < LandscapeHeight()*3/4)

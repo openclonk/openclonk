@@ -517,7 +517,7 @@ global func FxSmokeTrailTimer(object target, effect e, int fxtime)
 	
 	var str = e.curr_strength;
 	
-	var initial_speed = 100 * (strength+20)/6;
+	var initial_speed = 100 * (strength + 20)/6;
 	var speed = initial_speed * str / strength;
 	var angle = e.angle + RandomX(-20,20);
 	var x_dir = Sin(angle, speed);

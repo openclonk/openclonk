@@ -47,7 +47,7 @@ private func Seed()
 public func GetTreetopPosition(pos)
 {
 	var offset = Sin(mesh_rotation/2, 20);
-	return Shape->Rectangle(-25+offset,-25, 30,5)->GetRandomPoint(pos);
+	return Shape->Rectangle(-25 + offset,-25, 30,5)->GetRandomPoint(pos);
 }
 
 public func LostCoconut()

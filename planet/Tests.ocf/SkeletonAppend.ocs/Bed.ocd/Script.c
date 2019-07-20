@@ -79,7 +79,7 @@ private func OnExit(object pClonk)
 func Zzz()
 {
 	var iTime = GetActTime();
-	CreateParticle("Zzz",8*(1-2*GetDir()),-3,2+(iTime%50)*3/25+RandomX(-1,+1),-5,60,
+	CreateParticle("Zzz",8*(1-2*GetDir()),-3,2+(iTime%50)*3/25 + RandomX(-1,+1),-5,60,
                  RGBa(255,255,255,128));
 }
   

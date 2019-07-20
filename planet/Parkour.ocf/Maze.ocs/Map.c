@@ -51,7 +51,7 @@ func FindCaveConnections()
 	for (i = 0; i<n_caves; ++i)
 	{
 		cave = caves[i];
-		caves2 = caves[i+1:n_caves];
+		caves2 = caves[i + 1:n_caves];
 		for (cave2 in caves2) cave2.d = Distance(cave.X, cave.Y, cave2.X, cave2.Y);
 		SortArrayByProperty(caves2, "d");
 		for (cave2 in caves2)
@@ -101,7 +101,7 @@ func MakeMaze()
 	var open = [start_cave], n_open = 1;
 	while (n_open)
 	{
-		var i_cave = n_open-1-Random(1+Random(n_open)); // Prefer depth-first generation so stray paths are deeper
+		var i_cave = n_open-1-Random(1 + Random(n_open)); // Prefer depth-first generation so stray paths are deeper
 		var cave = open[i_cave];
 		open[i_cave] = open[--n_open]; // SetLength(open, n_open) not nessessery because length is stored in n_open
 		var path_length = GetLength(cave.path);
@@ -130,7 +130,7 @@ func MakeMaze()
 	// Close one connection 2/3rds of the way to the goal
 	var main_path = caves[n_caves-1].path;
 	var main_path_length = GetLength(main_path);
-	if (main_path_length > 5) RemoveCaveLinks(main_path[main_path_length*2/3], main_path[main_path_length*2/3+1]);
+	if (main_path_length > 5) RemoveCaveLinks(main_path[main_path_length*2/3], main_path[main_path_length*2/3 + 1]);
 	// Kill unreachable caves
 	var i;
 	for (i = 0; i<n_caves; ++i) if (caves[i].depth>=0) break;

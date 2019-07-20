@@ -113,7 +113,7 @@ func Inventory_GetCarryTransform()
 func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 {
 	// Create enemy (usually a Clonk)
-	var x = xmin+Random(xrange);
+	var x = xmin + Random(xrange);
 	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY), clonk;
 	if (!obj) return nil;
 	obj->SetController(ENEMY);

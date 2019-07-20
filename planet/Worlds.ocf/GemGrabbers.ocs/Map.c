@@ -61,8 +61,8 @@ public func DrawMainIsland(proplist map, int size)
 	var island = {Algo = MAPALGO_Polygon};
 	var x = map.Wdt / 2;
 	var y = map.Hgt / 2;
-	island.X = [x-size/3, x-size/2, x-size/3, x-size/6, x+size/6, x+size/3, x+size/2, x+size/3];
-	island.Y = [y-size/6, y, y+size/3, y+size/6, y+size/6, y+size/3, y, y-size/6];
+	island.X = [x-size/3, x-size/2, x-size/3, x-size/6, x + size/6, x + size/3, x + size/2, x + size/3];
+	island.Y = [y-size/6, y, y + size/3, y + size/6, y + size/6, y + size/3, y, y-size/6];
 	
 	// Draw the earth patch of the island.
 	island = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = [10, 6], Seed = Random(65536), Op = island};

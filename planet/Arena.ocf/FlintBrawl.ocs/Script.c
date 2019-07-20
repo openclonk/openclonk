@@ -158,15 +158,15 @@ func InitPlayerRound(int plr, object crew)
 func IsStartSpot(int x, int y)
 {
 	// Don't spawn just at the border of an island.
-	if (!GBackSolid(x-3,y+2)) return false;
-	if (!GBackSolid(x+3,y+2)) return false;
+	if (!GBackSolid(x-3,y + 2)) return false;
+	if (!GBackSolid(x + 3,y + 2)) return false;
 	if (GBackSemiSolid(x, y)) return false;
 	// Spawn with some space.
-	return PathFree(x-5, y, x+5, y) && PathFree(x, y-21, x, y-1);
+	return PathFree(x-5, y, x + 5, y) && PathFree(x, y-21, x, y-1);
 }
 
 func IsFirestoneSpot(int x, int y)
 {
 	// Very thorough material surrounding check so they don't explode right away or when the first layer of ice melts
-	return GBackSolid(x,y-1) && GBackSolid(x,y+4) && GBackSolid(x-2,y) && GBackSolid(x+2,y);
+	return GBackSolid(x,y-1) && GBackSolid(x,y + 4) && GBackSolid(x-2,y) && GBackSolid(x + 2,y);
 }

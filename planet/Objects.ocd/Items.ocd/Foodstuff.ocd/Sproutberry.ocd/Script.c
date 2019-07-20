@@ -61,11 +61,11 @@ func FxSproutCheckTimer(target, effect, time)
 	var y = -10;
 	for (;y < 10; ++y)
 	{
-		if (GBackSolid(0, y+1)) break;
+		if (GBackSolid(0, y + 1)) break;
 	}
 	
 	// no fitting ground found :/
-	if ((!GBackSolid(0, y+1)) || GBackSolid(0, y))
+	if ((!GBackSolid(0, y + 1)) || GBackSolid(0, y))
 	{
 		return -1;
 	}

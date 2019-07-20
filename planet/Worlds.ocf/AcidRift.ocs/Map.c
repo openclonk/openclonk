@@ -66,13 +66,13 @@ func InitializeMap(proplist map)
 	var surround_poly = [
 		[-50, top_off],
 		[border_width, top_off],
-		[border_width+bottom_indent, this.Hgt*3/4],
+		[border_width + bottom_indent, this.Hgt*3/4],
 		[this.Wdt/2, this.Hgt-bottom_off],
 		[this.Wdt-border_width-bottom_indent, this.Hgt*3/4],
 		[this.Wdt-border_width, top_off],
-		[this.Wdt+50, top_off],
-		[this.Wdt+50, this.Hgt+50],
-		[-50, this.Hgt+50]
+		[this.Wdt + 50, top_off],
+		[this.Wdt + 50, this.Hgt + 50],
+		[-50, this.Hgt + 50]
 	];
 	surround_poly = TransposeArray(surround_poly);
 	var algo = {Algo = MAPALGO_Polygon, 
@@ -144,11 +144,11 @@ func InitializeMap(proplist map)
 	Blit(basin);
 	
 	// Draw starting area
-	var algo = {Algo = MAPALGO_Ellipse, X = start_x, Y = start_y+5, Wdt = 6, Hgt = 5};
+	var algo = {Algo = MAPALGO_Ellipse, X = start_x, Y = start_y + 5, Wdt = 6, Hgt = 5};
 	algo = {Algo = MAPALGO_Turbulence, Iterations = 1, Amplitude = 5, Scale = 5, Op = algo};
 	Draw("Earth", algo);
 	Draw("Sky", nil, [start_x-4, start_y-6, 8, 8]);
-	algo = {Algo = MAPALGO_Polygon, X=[start_x-4, start_x+4], Y=[start_y+2, start_y+2]};
+	algo = {Algo = MAPALGO_Polygon, X=[start_x-4, start_x + 4], Y=[start_y + 2, start_y + 2]};
 	
 	// Alternations in earth texture
 	var earth_area = Duplicate("Earth");

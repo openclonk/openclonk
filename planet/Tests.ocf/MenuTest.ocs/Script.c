@@ -488,7 +488,7 @@ func StartMixedGridTest()
 		{
 			Right = Format("%dem", w),
 			Bottom = Format("%dem", h),
-			Priority = i+1,
+			Priority = i + 1,
 			BackgroundColor = HSL(seed % 255, 200, 200)
 		};
 		GuiAddSubwindow(item, menu.top);

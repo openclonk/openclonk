@@ -167,7 +167,7 @@ func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	if (!ignition)
 	{
 		var angle = GetR()+RandomX(-dirdev,dirdev);
-		SetXDir(3*GetXDir()/4+Sin(angle,24));
+		SetXDir(3*GetXDir()/4 + Sin(angle,24));
 		SetYDir(3*GetYDir()/4-Cos(angle,24));
 		SetR(angle);
 	}
@@ -230,7 +230,7 @@ public func Launch(int angle, object clonk, object shooter)
 	}
 
 	var level = 16;
-	var i = 0, count = 3+level/8, r = Random(360);
+	var i = 0, count = 3 + level/8, r = Random(360);
 	while (count > 0 && ++i < count*6) {
 		r += RandomX(40,80);
 		var smokex = +Sin(r,RandomX(level/4,level/2));

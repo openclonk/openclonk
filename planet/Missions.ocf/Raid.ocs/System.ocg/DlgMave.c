@@ -60,7 +60,7 @@ func Dlg_Mave_9(object clonk)
 
 func Dlg_Mave_10(object clonk)
 {
-	MessageBox("$Mave10$", clonk, dlg_target); // bucket+barrel
+	MessageBox("$Mave10$", clonk, dlg_target); // bucket + barrel
 	return true;
 }
 

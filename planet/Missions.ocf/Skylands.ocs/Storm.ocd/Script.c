@@ -186,8 +186,8 @@ private func CreateStream(int x0, int y0)
 	var is_blocked = CreateArray(len);
 	for (var i = 0; i<len; ++i)
 	{
-		x[i] = x0+i*StormStream.dir_x;
-		y[i] = y0+i*StormStream.dir_y;
+		x[i] = x0 + i*StormStream.dir_x;
+		y[i] = y0 + i*StormStream.dir_y;
 		is_blocked[i] = (i>0); // initial stream is blocked and will be unblocked on first execution
 	}
 	// Create stream data struct
@@ -215,21 +215,21 @@ private func ExecuteStream(proplist s)
 		if (s.is_blocked[i_segment])
 		{
 			//Log("segment %d", i_segment);
-			if (!s.is_blocked[i_segment+1]) StreamBlockVertex(s, i_segment+1);
+			if (!s.is_blocked[i_segment + 1]) StreamBlockVertex(s, i_segment + 1);
 			if (storm_debug)
 				CreateParticle("SphereSpark", s.x[i_segment], s.y[i_segment], 0, 0, 36, {Size =  12});
 			continue;
 		}
 		// current segment base point
 		var x = s.x[i_segment], y = s.y[i_segment];
-		var tx = s.x[i_segment+1], ty = s.y[i_segment+1];
+		var tx = s.x[i_segment + 1], ty = s.y[i_segment + 1];
 		// determine direction of current segment
 		var vx = tx - x;
 		var vy = ty - y;
 
 		// determine where we want to go
-		var want_vx = s.x0+(i_segment+1)*s.dir_x - x;
-		var want_vy = s.y0+(i_segment+1)*s.dir_y - y;
+		var want_vx = s.x0+(i_segment + 1)*s.dir_x - x;
+		var want_vy = s.y0+(i_segment + 1)*s.dir_y - y;
 
 		var want_stretch = (s.dir_x*want_vy-s.dir_y*want_vx) / s.dir_len;
 		//if (i_segment == 8) Log("%v", want_stretch);
@@ -259,10 +259,10 @@ private func ExecuteStream(proplist s)
 		if (has_found)
 		{
 			// path found
-			if (s.is_blocked[i_segment+1]) StreamUnblockVertex(s, i_segment+1);
+			if (s.is_blocked[i_segment + 1]) StreamUnblockVertex(s, i_segment + 1);
 			var new_tx = x + s.dir_x - search_off * s.dir_y / s.dir_len;
 			var new_ty = y + s.dir_y + search_off * s.dir_x / s.dir_len;
-			if (new_tx != tx || new_ty != ty) StreamMoveVertex(s, i_segment+1, tx, ty, new_tx, new_ty);
+			if (new_tx != tx || new_ty != ty) StreamMoveVertex(s, i_segment + 1, tx, ty, new_tx, new_ty);
 			tx = new_tx; ty = new_ty;
 			// determine storm density at this position
 			var map_idx = MapXYToIdx(tx, ty), local_strength;
@@ -300,8 +300,8 @@ private func ExecuteStream(proplist s)
 						obj->Fling(BoundBy(vx-ovx,-push_strength,push_strength),BoundBy(vy-ovy,-push_strength,push_strength),100,true);
 					else
 					{
-						obj->SetXDir(ovx+BoundBy(vx-ovx,-push_strength,push_strength),100);
-						obj->SetYDir(ovy+BoundBy(vy-ovy,-push_strength,push_strength),100);
+						obj->SetXDir(ovx + BoundBy(vx-ovx,-push_strength,push_strength),100);
+						obj->SetYDir(ovy + BoundBy(vy-ovy,-push_strength,push_strength),100);
 					}
 				}
 			}
@@ -322,7 +322,7 @@ private func ExecuteStream(proplist s)
 		else
 		{
 			// path not found. segment blocked.
-			if (!s.is_blocked[i_segment+1]) StreamBlockVertex(s, i_segment+1);
+			if (!s.is_blocked[i_segment + 1]) StreamBlockVertex(s, i_segment + 1);
 		}
 	}
 	if (s.debug) s.debug->ShowData(s.x, s.y);
@@ -407,6 +407,6 @@ func GetWindEx(int x, int y)
 
 global func GetWind(int x, int y)
 {
-	if (g_storm) return g_storm->GetWindEx(x+GetX(),y+GetY());
+	if (g_storm) return g_storm->GetWindEx(x + GetX(),y + GetY());
 	return _inherited(x,y,...);
 }

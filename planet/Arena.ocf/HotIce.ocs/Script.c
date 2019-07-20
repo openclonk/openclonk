@@ -76,7 +76,7 @@ func InitPlayerRound(int plr, object crew) // called by Goal_MultiRoundMelee
 		{
 			start_pos = g_player_spawn_positions[g_player_spawn_index++];
 			var map_zoom = ls_wdt / g_map_width;
-			start_pos = {x = start_pos[0]*map_zoom+map_zoom/2, y = start_pos[1]*map_zoom};
+			start_pos = {x = start_pos[0]*map_zoom + map_zoom/2, y = start_pos[1]*map_zoom};
 		}
 		else
 		{
@@ -157,16 +157,16 @@ func ReplenishLauncherAmmo()
 func IsStartSpot(int x, int y)
 {
 	// Don't spawn just at the border of an island.
-	if (!GBackSolid(x-3,y+2)) return false;
-	if (!GBackSolid(x+3,y+2)) return false;
+	if (!GBackSolid(x-3,y + 2)) return false;
+	if (!GBackSolid(x + 3,y + 2)) return false;
 	// Spawn with some space.
-	return PathFree(x-5, y, x+5, y) && PathFree(x, y-21, x, y-1);
+	return PathFree(x-5, y, x + 5, y) && PathFree(x, y-21, x, y-1);
 }
 
 func IsFirestoneSpot(int x, int y)
 {
 // Very thorough ice surrounding check so they don't explode right away or when the first layer of ice melts
-	return GBackSolid(x,y-1) && GBackSolid(x,y+4) && GBackSolid(x-2,y) && GBackSolid(x+2,y);
+	return GBackSolid(x,y-1) && GBackSolid(x,y + 4) && GBackSolid(x-2,y) && GBackSolid(x + 2,y);
 }
 
 // ============= Themes =============

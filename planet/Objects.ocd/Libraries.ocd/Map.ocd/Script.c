@@ -148,11 +148,11 @@ func FixLiquidBorders(border_material, lava_border_material)
 func DrawPlatform(string material, int x0, int y0, int wdt, int hgt_up, int hgt_down)
 {
 	var ground_mask = this->Duplicate("~Background");
-	for (var x = x0; x<x0+wdt; ++x)
+	for (var x = x0; x<x0 + wdt; ++x)
 	{
 		// Adjust materials bottom
 		var y, px;
-		for (y = y0+1; y<=y0+hgt_down; ++y)
+		for (y = y0 + 1; y<=y0 + hgt_down; ++y)
 		{
 			px = ground_mask->GetPixel(x,y);
 			if (px) break;
@@ -171,10 +171,10 @@ func FindBottomPeaks(array rect, int min_dx)
 	// Peaks are minimum min_dx apart horizontally
 	var x1,y1,x2,y2;
 	if (rect)
-		{ x1 = rect[0]; y1 = rect[1]; x2 = x1+rect[2]; y2 = y1+rect[3]; }
+		{ x1 = rect[0]; y1 = rect[1]; x2 = x1 + rect[2]; y2 = y1 + rect[3]; }
 	else
 		{ x2 = this.Wdt; y2 = this.Hgt; }
-	var last_y = y2+1, last_dy = 0, num_dy_0 = 0, last_peak_x = -min_dx-1;
+	var last_y = y2 + 1, last_dy = 0, num_dy_0 = 0, last_peak_x = -min_dx-1;
 	var peaks = [];
 	for (var x = x1; x<x2; ++x)
 	{
@@ -212,14 +212,14 @@ func FindBottomPeaks(array rect, int min_dx)
 func FillLiquid(string mat, int x, int y, max_wdt, int max_hgt)
 {
 	// Fill area downwards and sideways of given x and y with mat
-	// Stay within rectangle x-max_wdt and x+max_wdt horizontally and within y and y+max_hgt vertically
+	// Stay within rectangle x-max_wdt and x + max_wdt horizontally and within y and y + max_hgt vertically
 	var background_mask = this->CreateMatTexMask("Background");
 	var open_ranges = [[x,x]], n_open = 1;
 	max_hgt = BoundBy(max_hgt, 0, this.Hgt-y);
 	if (GetType(max_wdt) != C4V_Array) max_wdt = [max_wdt,max_wdt];
 	var min_x1 = Max(x-max_wdt[0]), min_x2 = Max(x-max_wdt[1]);
-	var max_x1 = Min(x+max_wdt[0], this.Wdt-1), max_x2 = Min(x+max_wdt[1], this.Wdt-1);
-	var min_x = (min_x1+min_x2)/2, max_x = (max_x1+max_x2)/2;
+	var max_x1 = Min(x + max_wdt[0], this.Wdt-1), max_x2 = Min(x + max_wdt[1], this.Wdt-1);
+	var min_x = (min_x1 + min_x2)/2, max_x = (max_x1 + max_x2)/2;
 	var n_pix_set = 0;
 	while (n_open && max_hgt)
 	{
@@ -230,12 +230,12 @@ func FillLiquid(string mat, int x, int y, max_wdt, int max_hgt)
 			var x1 = range[0], x2 = range[1];
 			if (x>x1) continue; // two or more paths merged
 			while (x1>min_x && background_mask[this->GetPixel(x1-1,y)]) --x1;
-			while (x2<max_x && background_mask[this->GetPixel(x2+1,y)]) ++x2;
+			while (x2<max_x && background_mask[this->GetPixel(x2 + 1,y)]) ++x2;
 			var below_was_background = false;
 			for (x = x1; x<=x2; ++x)
 			{
 				this->SetPixel(x,y,mat); ++n_pix_set;
-				var below_is_background = background_mask[this->GetPixel(x,y+1)];
+				var below_is_background = background_mask[this->GetPixel(x,y + 1)];
 				if (below_is_background)
 				{
 					if (!below_was_background)
@@ -249,8 +249,8 @@ func FillLiquid(string mat, int x, int y, max_wdt, int max_hgt)
 		open_ranges = next_ranges;
 		n_open = n_next;
 		++y; --max_hgt;
-		min_x = BoundBy(min_x+Random(3)-1, min_x1,min_x2);
-		max_x = BoundBy(max_x+Random(3)-1, max_x1,max_x2);
+		min_x = BoundBy(min_x + Random(3)-1, min_x1,min_x2);
+		max_x = BoundBy(max_x + Random(3)-1, max_x1,max_x2);
 	}
 	return n_pix_set;
 }

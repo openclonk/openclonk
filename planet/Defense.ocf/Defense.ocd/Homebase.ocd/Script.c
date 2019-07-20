@@ -91,7 +91,7 @@ public func AddHomebaseItem(proplist entry)
 	var idx = GetLength(base_material);
 	base_material[idx] = entry;
 	var quickbuy_idx = GetIndexOf(g_quickbuy_items, entry.item);
-	if (quickbuy_idx >= 0) entry.hotkey = GetPlayerControlAssignment(GetOwner(), CON_QuickBuy0+quickbuy_idx, true);
+	if (quickbuy_idx >= 0) entry.hotkey = GetPlayerControlAssignment(GetOwner(), CON_QuickBuy0 + quickbuy_idx, true);
 	UpdateIndexedItem(idx);
 	return entry;
 }
@@ -111,7 +111,7 @@ public func UpdateIndexedItem(int index)
 		if (entry.tiers)
 		{
 			tier = techs[entry.tech];
-			entry.graphic = Format(entry.graphics, tier+1);
+			entry.graphic = Format(entry.graphics, tier + 1);
 			entry.cost = entry.costs[tier];
 		}
 		if (entry.is_caption)
@@ -139,7 +139,7 @@ public func GetEntryInformation(int entry_idx)
 	{
 		if (!entry.base_name) entry.base_name = entry.name;
 		var tier = techs[entry.tech];
-		entry.name = Format("%s ($Tier$ %d/%d)", entry.base_name, tier+1, entry.tiers);
+		entry.name = Format("%s ($Tier$ %d/%d)", entry.base_name, tier + 1, entry.tiers);
 	}
 	// Compose info message
 	// Info message: Requirements

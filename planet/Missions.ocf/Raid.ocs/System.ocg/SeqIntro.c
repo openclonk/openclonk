@@ -21,7 +21,7 @@ func Intro_JoinPlayer(int plr)
 		crew->SetPosition(x,y);
 		crew->SetXDir(10); crew->SetYDir(3);
 		var balloon = crew->CreateContents(Balloon);
-		balloon->ControlUseStart(crew, x+10, y+3);
+		balloon->ControlUseStart(crew, x + 10, y + 3);
 	}
 	return true;
 }

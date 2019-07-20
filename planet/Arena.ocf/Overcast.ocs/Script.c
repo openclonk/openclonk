@@ -186,7 +186,7 @@ global func FxWindChannelTimer(object target, proplist effect)
 			continue;
 		obj->SetYDir(speed - 36, 100);
 	}
-	CreateParticle("Air", 464+Random(40), 344+Random(112), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
+	CreateParticle("Air", 464 + Random(40), 344 + Random(112), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
 	
 	// Divider with random wind.
 	if (!Random(100))
@@ -214,11 +214,11 @@ global func FxWindChannelTimer(object target, proplist effect)
 		}
 	}
 	if (effect.Divider == 1)
-		CreateParticle("Air", 464+Random(40), 280+Random(10), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
+		CreateParticle("Air", 464 + Random(40), 280 + Random(10), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
 	if (effect.Divider == 0)
-		CreateParticle("Air", 464+Random(40), 280+Random(10), RandomX(-20,-10), -20, PV_Random(10, 40), Overcast_air_particles);
+		CreateParticle("Air", 464 + Random(40), 280 + Random(10), RandomX(-20,-10), -20, PV_Random(10, 40), Overcast_air_particles);
 	if (effect.Divider == 2)
-		CreateParticle("Air", 464+Random(40), 280+Random(10), RandomX(10,20), -20, PV_Random(10, 40), Overcast_air_particles);
+		CreateParticle("Air", 464 + Random(40), 280 + Random(10), RandomX(10,20), -20, PV_Random(10, 40), Overcast_air_particles);
 		
 	// Second shaft with upward wind.
 	for (var obj in FindObjects(Find_InRect(464, 96, 40, 144)))
@@ -245,7 +245,7 @@ global func FxWindChannelTimer(object target, proplist effect)
 			continue;
 		obj->SetYDir(speed - 36, 100);
 	}
-	CreateParticle("Air", 464+Random(40), 160+Random(96), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
+	CreateParticle("Air", 464 + Random(40), 160 + Random(96), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
 	
 	return 1;
 }

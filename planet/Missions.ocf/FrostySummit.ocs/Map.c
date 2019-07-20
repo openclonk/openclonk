@@ -13,20 +13,20 @@ func InitializeMap(map)
 	var n_islands = 10, x, y;
 	for (var i = 0; i<n_islands; ++i)
 	{
-		x = 50+Random(10)+Cos(180+i*90/n_islands,190)+190;
-		y = 75+Random(3)-Sin(i*90/n_islands, 65);
-		var wdt = 2+Random(5), hgt = 2+Random(2);
-		if (i>=n_islands/2) wdt = 2+Random(wdt);
+		x = 50 + Random(10)+Cos(180 + i*90/n_islands,190)+190;
+		y = 75 + Random(3)-Sin(i*90/n_islands, 65);
+		var wdt = 2 + Random(5), hgt = 2 + Random(2);
+		if (i>=n_islands/2) wdt = 2 + Random(wdt);
 		sky_islands->DrawVaried("Granite", {Algo = MAPALGO_Turbulence, Op={Algo = MAPALGO_Ellipse, X = x, Y = y, Wdt = wdt, Hgt = hgt}, Amplitude = 10, Scale = 5}, nil, "Rock");
 	}
 	
 	// Final ruby island
-	x = 230+Random(15); y = 15;
+	x = 230 + Random(15); y = 15;
 	sky_islands->Draw("Granite", {Algo = MAPALGO_Ellipse, X = x, Y = y, Wdt = 5, Hgt = 2});
-	sky_islands->Draw("Ruby", {Algo = MAPALGO_Ellipse, X = x, Y = y+3, Wdt = 3, Hgt = 2});
-	sky_islands->Draw("Brick", nil, [x-3,y+2,7,1]);
+	sky_islands->Draw("Ruby", {Algo = MAPALGO_Ellipse, X = x, Y = y + 3, Wdt = 3, Hgt = 2});
+	sky_islands->Draw("Brick", nil, [x-3,y + 2,7,1]);
 	
-	// Blit islands+snow
+	// Blit islands + snow
 	Blit(sky_islands);
 	Draw("Snow", {Algo = MAPALGO_Border, Op = sky_islands, Top=-1});
 	

@@ -44,7 +44,7 @@ public func Hit()
 
 protected func Tumble()
 {
-	SetRDir(-4+Random(8));
+	SetRDir(-4 + Random(8));
 }
 
 func Definition(def) {

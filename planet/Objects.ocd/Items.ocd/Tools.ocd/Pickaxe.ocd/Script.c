@@ -105,7 +105,7 @@ func DoSwing(object clonk, int ix, int iy)
 		for (var da = -StrikeCone/2; da <= StrikeCone/2; da += 2)
 		{
 			if (Abs(da) < 3) continue;
-			var x3 = Sin(angle+da,iDist), y3 = Cos(angle+da, iDist);
+			var x3 = Sin(angle + da,iDist), y3 = Cos(angle + da, iDist);
 			if (x3 != x2 || y3 != y2)
 			{
 				x2 = x3; y2 = y3;

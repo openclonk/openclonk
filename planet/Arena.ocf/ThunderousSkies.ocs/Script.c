@@ -132,7 +132,7 @@ public func ApplyChanneledWindEffects(x, y, w, h, bottom)
 			x_dir = RandomX(-2, 2);
 		obj->SetXDir(obj->GetXDir() + x_dir);
 	}
-	CreateParticle("Air", x+Random(w),bottom,RandomX(-1,1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
+	CreateParticle("Air", x + Random(w),bottom,RandomX(-1,1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
 }
 
 global func FxChanneledWindTimer()

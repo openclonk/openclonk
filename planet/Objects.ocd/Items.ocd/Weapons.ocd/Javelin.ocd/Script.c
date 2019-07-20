@@ -73,7 +73,7 @@ public func HitObject(object obj)
 {
 	var relx = GetXDir() - obj->GetXDir();
 	var rely = GetYDir() - obj->GetYDir();
-	var speed = Sqrt(relx*relx+rely*rely);
+	var speed = Sqrt(relx*relx + rely*rely);
 	
 	var dmg = JavelinStrength() * speed * 1000 / 60;
 

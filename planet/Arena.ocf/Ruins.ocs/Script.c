@@ -43,14 +43,14 @@ global func FxRainTimer(object pTarget, effect, int timer)
 {
 	if (timer<400)
 	{
-		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
+		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100 + Random(100));
 		return 1;
 	} 
-		for (var i = 0; i<(6+Random(3)); i++)
+		for (var i = 0; i<(6 + Random(3)); i++)
 	{
-		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
+		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100 + Random(100));
 	}
-	if (timer>(RUINS_RAIN_PERIOD_TIME+Random(800))) 
+	if (timer>(RUINS_RAIN_PERIOD_TIME + Random(800))) 
 	{
 	AddEffect("DryTime",nil,100,2);
 	return -1;	
@@ -60,11 +60,11 @@ global func FxRainTimer(object pTarget, effect, int timer)
 }
 global func FxDryTimeTimer(object pTarget, effect, int timer)
 {
-	if (timer<(380+Random(300))){
-	InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
+	if (timer<(380 + Random(300))){
+	InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100 + Random(100));
 		return 1;
 	}
-	ExtractLiquidAmount(310+Random(50),430+Random(10),6+Random(4));
+	ExtractLiquidAmount(310 + Random(50),430 + Random(10),6 + Random(4));
 	
 	if (!GBackLiquid(335,430))
 	{

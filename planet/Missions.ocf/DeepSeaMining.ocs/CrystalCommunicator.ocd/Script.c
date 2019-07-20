@@ -69,8 +69,8 @@ private func UpdateGemOverlays(object obj, int max_overlays, bool refresh_existi
 	for (i = 0; i<n_overlays; ++i)
 		if (!obj.gem_overlays[i] || obj.gem_overlays[i]->Contained() != obj)
 		{
-			obj->SetGraphics(nil, nil, gem_overlay_index+i);
-			if (obj.top_face) obj.top_face->SetGraphics(nil, nil, gem_overlay_index+i);
+			obj->SetGraphics(nil, nil, gem_overlay_index + i);
+			if (obj.top_face) obj.top_face->SetGraphics(nil, nil, gem_overlay_index + i);
 			obj.gem_overlays[i] = nil;
 		}
 	// Add new overlays
@@ -92,18 +92,18 @@ private func UpdateGemOverlays(object obj, int max_overlays, bool refresh_existi
 		}
 		// Add overlay
 		var gem_gfx = gem.graphics_index;
-		if (gem_gfx) gem_gfx = Format("%d", gem_gfx+1); else gem_gfx = nil;
+		if (gem_gfx) gem_gfx = Format("%d", gem_gfx + 1); else gem_gfx = nil;
 		var x = CrystalCommunicator_GemsX[i];
 		var y = CrystalCommunicator_GemsY[i];
 		var z = CrystalCommunicator_GemsZ[i];
-		var size = z*100+500;
+		var size = z*100 + 500;
 		var off_y;
 		if (obj == this) off_y = 35000; else off_y = 70000;
 		var gem_target;
 		if (obj.top_face && z>=3) gem_target = obj.top_face; else gem_target = obj;
-		gem_target->SetGraphics(gem_gfx, gem->GetID(), gem_overlay_index+i, GFXOV_MODE_Base);
-		gem_target->SetObjDrawTransform(size,0,x*200-45000, 0,size,y*200-off_y, gem_overlay_index+i);
-		if (z<3) gem_target->SetClrModulation(0xffb0b0b0, gem_overlay_index+i);
+		gem_target->SetGraphics(gem_gfx, gem->GetID(), gem_overlay_index + i, GFXOV_MODE_Base);
+		gem_target->SetObjDrawTransform(size,0,x*200-45000, 0,size,y*200-off_y, gem_overlay_index + i);
+		if (z<3) gem_target->SetClrModulation(0xffb0b0b0, gem_overlay_index + i);
 		// Remember in list
 		obj.gem_overlays[i] = gem;
 		n_overlays = GetLength(obj.gem_overlays);
@@ -219,7 +219,7 @@ private func PreActivity()
 		if (top_face && z>=3) gem_target = top_face; else gem_target = this;
 		if (time < 20 || !Random(3))
 		{
-			if (!(time % 5)) gem_target->CreateParticle("StarFlash", x,y, 0,0, 60+Random(10), small_flash_particle, 1);
+			if (!(time % 5)) gem_target->CreateParticle("StarFlash", x,y, 0,0, 60 + Random(10), small_flash_particle, 1);
 		}
 		else
 			gem_target->CreateParticle("StarFlash", x, y, -x, -y, 10, small_flash_particle, 10);
@@ -292,9 +292,9 @@ private func Activity()
 	// Create ring moving upwards
 	if (Abs(x) > 5) CreateParticle("MagicRing", x, y, 0, -Min(time/20,10), 2000, beam_particles[i], 1);
 	// Create flash at gem
-	gem_target->CreateParticle("StarFlash", x, y, 0, 0, 20+Random(10), gem_particles[i], 1);
+	gem_target->CreateParticle("StarFlash", x, y, 0, 0, 20 + Random(10), gem_particles[i], 1);
 	// Create central flash
-	if (!(time % 5)) CreateParticle("StarFlash", PV_Random(-6, +6), PV_Random(-6, +6), 0,0, 20+Random(10), flash_particle, 1);
+	if (!(time % 5)) CreateParticle("StarFlash", PV_Random(-6, +6), PV_Random(-6, +6), 0,0, 20 + Random(10), flash_particle, 1);
 	++time;
 }
 
@@ -305,7 +305,7 @@ private func CreateCirclingParticle(proplist prototype, int frames_per_cycle, in
 	var particle = {
 		Prototype = prototype,
 		Size =   PV_Sin(PV_Linear( ang0,              360*num_cycles),5,8),
-		ForceX = PV_Sin(PV_Linear( ang0+90,   ang0+90+360*num_cycles), a, 0),
+		ForceX = PV_Sin(PV_Linear( ang0 + 90,   ang0 + 90 + 360*num_cycles), a, 0),
 		ForceY = 0,
 		Attach = ATTACH_Front | ATTACH_MoveRelative,
 	};

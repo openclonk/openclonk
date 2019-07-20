@@ -55,7 +55,7 @@ func AddPart(object part)
 	part->RemoveRestoreMode();
 	part->RemoveObject();
 	Sound("UI::Ding", true);
-	SetProgress(progress+1);
+	SetProgress(progress + 1);
 	return true;
 }
 

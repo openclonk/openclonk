@@ -108,7 +108,7 @@ public func SetStartingCrew(array new_crew)
 
 public func SetStartingMaterial(array new_material)
 {
-	// ID+count conversion (old style)
+	// ID + count conversion (old style)
 	if (new_material && GetLength(new_material) && new_material[0].id && new_material[0].count && !new_material[0]->~GetName())
 	{
 		starting_material = [];

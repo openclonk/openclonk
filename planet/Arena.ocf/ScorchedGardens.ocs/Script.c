@@ -70,7 +70,7 @@ private func PlaceGras()
 		edge->SetCategory(C4D_StaticBack);
 		edge->SetR(r[i]); 
 		edge->Initialize();
-		edge->SetClrModulation(RGB(225+Random(30), Random(30), Random(30)));
+		edge->SetClrModulation(RGB(225 + Random(30), Random(30), Random(30)));
 		
 	}
 	return;

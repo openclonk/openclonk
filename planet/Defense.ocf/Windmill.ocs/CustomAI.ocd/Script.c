@@ -378,7 +378,7 @@ private func ExecuteThrow(effect fx)
 		var throw_speed = fx.Target.ThrowSpeed;
 		var rx = (throw_speed*throw_speed)/(100*GetGravity()); // horizontal range for 45 degree throw if enemy is on same height as we are
 		var ry = throw_speed*7/(GetGravity()*10); // vertical range of 45 degree throw
-		var dx = tx-x, dy = ty-y+15*fx.Target->GetCon()/100; // distance to target. Reduce vertical distance a bit because throwing exit point is not at center
+		var dx = tx-x, dy = ty-y + 15*fx.Target->GetCon()/100; // distance to target. Reduce vertical distance a bit because throwing exit point is not at center
 		// Check range
 		// Could calculate the optimal parabulum here, but that's actually not very reliable on moving targets
 		// It's usually better to throw straight at the target and only throw upwards a bit if the target stands on high ground or is far away
@@ -400,7 +400,7 @@ private func ExecuteThrow(effect fx)
 	if (!fx.Target->GetCommand() || !Random(3))
 	{
 		var tx = fx.target->GetX();
-		fx.Target->SetCommand("MoveTo", nil, BoundBy(fx.Target->GetX(), tx-30, tx+30), fx.target->GetY());
+		fx.Target->SetCommand("MoveTo", nil, BoundBy(fx.Target->GetX(), tx-30, tx + 30), fx.target->GetY());
 	}
 	return true;
 }
@@ -438,8 +438,8 @@ func Inventory_GetCarryTransform()
 func LaunchEnemy(proplist enemy, int xmin, int xrange, int ymin, yrange)
 {
 	// Create enemy (usually a Clonk)
-	var x = xmin+Random(xrange);
-	var y = ymin+Random(yrange);
+	var x = xmin + Random(xrange);
+	var y = ymin + Random(yrange);
 	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY);
 	if (!obj) return nil;
 	obj->SetController(ENEMY);
@@ -486,12 +486,12 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int ymin, yrange)
 		{
 			Balloon->ControlUseStart(obj);
 		} else if (enemy.Vehicle == DefenseBoomAttack) {
-			vehicle = CreateObjectAbove(enemy.Vehicle, x,y+10, ENEMY);
+			vehicle = CreateObjectAbove(enemy.Vehicle, x,y + 10, ENEMY);
 			// Add boomattack to enemy array
 			g_spawned_enemies[GetLength(g_spawned_enemies)] = vehicle;
 			obj->SetAction("Ride", vehicle);
 		} else {
-			vehicle = CreateObjectAbove(enemy.Vehicle, x,y+10, ENEMY);
+			vehicle = CreateObjectAbove(enemy.Vehicle, x,y + 10, ENEMY);
 			obj->SetAction("Push", vehicle);
 			if (vehicle && vehicle->GetID() == Airship)
 				g_last_airship = vehicle;

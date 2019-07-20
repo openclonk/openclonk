@@ -73,7 +73,7 @@ func Dlg_Pyrit_StartHammering(object clonk)
 	clonk.ActMap.Walk.Speed /= 3;
 	clonk->SetAction("Walk");
 	// Hammering animation
-	AddEffect("PyritHammering", clonk, 1, Pyrit_Hammer_SwingTime+5, this);
+	AddEffect("PyritHammering", clonk, 1, Pyrit_Hammer_SwingTime + 5, this);
 	return true;
 }
 

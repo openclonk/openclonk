@@ -1126,7 +1126,7 @@ private func RepositionCrewWarnings(int except_index, int change)
 		if (except_index == i)
 			continue;
 		crew_warnings[i] += change;
-		GuiUpdate({ Top = ToEmString(crew_warnings[i]), Bottom = ToEmString(crew_warnings[i] + 10) }, crew_gui_id, 500+i, this);
+		GuiUpdate({ Top = ToEmString(crew_warnings[i]), Bottom = ToEmString(crew_warnings[i] + 10) }, crew_gui_id, 500 + i, this);
 	}
 }
 
@@ -1185,7 +1185,7 @@ private func OpenCrewInfo()
 		{
 			Target = this,
 			Top = ToEmString(y),
-			Bottom = ToEmString(y+20),
+			Bottom = ToEmString(y + 20),
 			Priority = 12,
 			BackgroundColor = { Std = nil, Hover = RGB(200,200,200) },
 			OnMouseIn = GuiAction_SetTag("Hover"),

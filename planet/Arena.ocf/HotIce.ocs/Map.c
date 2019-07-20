@@ -63,7 +63,7 @@ func DrawBigIslandMap(proplist map)
 	island = { Algo = MAPALGO_Turbulence, Op = island, Amplitude=[0, 8] };
 	map->Draw(g_theme.IceMats[1], island, [w/10,h*13/20,w*8/10,h*3/20]); 
 	// Make sure one row of inner island is drawn because it's used for player spawns
-	map->Draw(g_theme.IceMats[1], nil, [w*3/10,h*13/20,w*4/10+1,1]); 
+	map->Draw(g_theme.IceMats[1], nil, [w*3/10,h*13/20,w*4/10 + 1,1]); 
 	// Smaller floating
 	var n_islands = 12;
 	while (n_islands--)
@@ -96,7 +96,7 @@ func DrawSmallIslandsMap(proplist map)
 		szy = 1;
 		if (y > h/2) szy += Random(2); // lower islands sometimes taller
 		if (Abs(x-w/2) < w/10) szx += Random(3); // central islands sometimes wider
-		map->Draw(g_theme.IceMats[1], nil, [x-szx,y,1+2*szx,szy]);
+		map->Draw(g_theme.IceMats[1], nil, [x-szx,y,1 + 2*szx,szy]);
 	}
 	// Balloon spawn: do nothing further
 	if (SCENPAR_SpawnType == 1)

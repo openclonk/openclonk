@@ -165,7 +165,7 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	// cursor pos info - store in player values
 	if (ctrl == CON_CursorPos)
 	{
-		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(plr+1);
+		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(plr + 1);
 		g_player_cursor_pos[plr] = [x, y];
 		return true;
 	}
@@ -255,8 +255,8 @@ global func GetEntranceObject()
 	var hgt = obj->GetDefCoreVal("Entrance","DefCore",3);
 		
 	// entrance is on the vehicle?
-	if (!Inside(GetX(), x, x+wdt)) return nil;
-	if (!Inside(GetY(), y, y+hgt)) return nil;
+	if (!Inside(GetX(), x, x + wdt)) return nil;
+	if (!Inside(GetY(), y, y + hgt)) return nil;
 	
 	return obj;
 }
@@ -466,7 +466,7 @@ global func GetPlayerConDir(int plr, int con_left, int con_up, int con_right, in
 	// Creating an array here for every keypress/release
 	// Would be so cool to have this static const. Guenther?
 	var dir_coms = [COMD_UpLeft, COMD_Up, COMD_UpRight, COMD_Left, COMD_Stop, COMD_Right, COMD_DownLeft, COMD_Down, COMD_DownRight];
-	return dir_coms[y*3+x+4];
+	return dir_coms[y*3 + x+4];
 }
 
 // Returns coordinate directions associated with a COMD_Constant

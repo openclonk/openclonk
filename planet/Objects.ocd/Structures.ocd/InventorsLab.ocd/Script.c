@@ -75,7 +75,7 @@ protected func FxWorkingTimer()
 private func Smoking()
 {
 	if (!Random(4)) Smoke(16 * GetCalcDir(),-14,16);
-	if (!Random(6)) Smoke(10 * GetCalcDir(),-14,15+Random(3));
+	if (!Random(6)) Smoke(10 * GetCalcDir(),-14,15 + Random(3));
 }
 
 local ActMap = {

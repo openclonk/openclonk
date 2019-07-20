@@ -66,10 +66,10 @@ func Activate(int start_y, int end_y)
 			behaviour = BigVolcanoBehaviour_Stop;
 			speed = 10;
 		}
-		mat_behaviours[mat_idx+1] = behaviour;
-		mat_advancespeeds[mat_idx+1] = speed;
+		mat_behaviours[mat_idx + 1] = behaviour;
+		mat_advancespeeds[mat_idx + 1] = speed;
 	}
-	n_lava_y = (LandscapeWidth()-1)/BigVolcano_XRes+2;
+	n_lava_y = (LandscapeWidth()-1)/BigVolcano_XRes + 2;
 	lava_y = CreateArray(n_lava_y);
 	for (var i = 0; i<n_lava_y; ++i) lava_y[i] = start_y;
 	return true;
@@ -99,7 +99,7 @@ func Execute()
 				var y = GetLavaY(x);
 				var speed = mat_advancespeeds[GetMaterial(x,y-5)+1];
 				if (i) if (lava_y[i] > lava_y[i-1]+BigVolcano_XRes*2) speed+=50;
-				if (i<n_lava_y-1) if (lava_y[i] > lava_y[i+1]+BigVolcano_XRes*2) speed+=50;
+				if (i<n_lava_y-1) if (lava_y[i] > lava_y[i + 1]+BigVolcano_XRes*2) speed+=50;
 				this_move = (Random(100) < speed);
 				if (this_move)
 					lava_y[i] -= speed_multiplier;
@@ -108,7 +108,7 @@ func Execute()
 					if (speed<=10)
 					{
 						// Blast away solid
-						var blast_size = 5+Random(5);
+						var blast_size = 5 + Random(5);
 						BlastFree(x,y-3,blast_size,GetController());
 						// gfx
 						var particle_speed = blast_size * 3;
@@ -124,11 +124,11 @@ func Execute()
 				if (last_move || (this_move && i))
 				{
 					var x1=(i-1)*BigVolcano_XRes, x2 = i*BigVolcano_XRes;
-					var y1 = lava_y[i-1]+speed_multiplier+1, y2 = lava_y[i]+speed_multiplier+1;
+					var y1 = lava_y[i-1]+speed_multiplier + 1, y2 = lava_y[i]+speed_multiplier + 1;
 					var limit = 50;
-					while (GetMaterial(x1,y1+1) != lavamat && --limit) ++y1;
+					while (GetMaterial(x1,y1 + 1) != lavamat && --limit) ++y1;
 					limit = 50;
-					while (GetMaterial(x1,y2+1) != lavamat && --limit) ++y2;
+					while (GetMaterial(x1,y2 + 1) != lavamat && --limit) ++y2;
 					DrawMaterialQuad("DuroLava-lava_red", x1,lava_y[i-1], x2,lava_y[i], x2,y2, x1,y1, BigVolcanoBehaviour_Underground);
 				}
 				last_move = this_move;
@@ -148,7 +148,7 @@ func Execute()
 func GetLavaY(int x)
 {
 	var i = BoundBy(x/BigVolcano_XRes, 0, n_lava_y-2), ix = x%BigVolcano_XRes;
-	return (lava_y[i]*(BigVolcano_XRes-ix) + lava_y[i+1]*ix) / BigVolcano_XRes;
+	return (lava_y[i]*(BigVolcano_XRes-ix) + lava_y[i + 1]*ix) / BigVolcano_XRes;
 }
 
 
@@ -183,7 +183,7 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 	var next_tip_progress = fx.tip_progress + 10;
 	var last_segment = fx.trace_len-1;
 	var sx = fx.trace_x[last_segment], sy = fx.trace_y[last_segment];
-	var nx = sx+next_tip_progress*(fx.dir_x)/100, ny = sy+next_tip_progress*(fx.dir_y)/100;
+	var nx = sx + next_tip_progress*(fx.dir_x)/100, ny = sy + next_tip_progress*(fx.dir_y)/100;
 	//Log("Go %d from %d/%d towards %d/%d", fx.counter,sx,sy,nx-sx,ny-sy);
 	if (nx == sx && ny == sy) { fx.tip_progress = next_tip_progress; return FX_OK; }
 	if (ny<0 || fx.len>20) return FX_Execute_Kill; // End here?
@@ -191,7 +191,7 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 	var i,dx,dy;
 	if (behaviour == BigVolcanoBehaviour_Fill)
 	{
-		CastPXS("DuroLava", 4+Cos(fx.fill_time*40,2), 30+Cos(fx.fill_time*40,25), nx,ny-1, 0,50);
+		CastPXS("DuroLava", 4 + Cos(fx.fill_time*40,2), 30 + Cos(fx.fill_time*40,25), nx,ny-1, 0,50);
 		if (!(fx.fill_time%20) && !GBackSemiSolid(nx,ny-6)) SoundAt("BigVolcano::BigVolcanoBubble*", nx,ny, 10);
 		if (fx.fill_time++ > 31) return FX_Execute_Kill; // Done?
 	}
@@ -204,10 +204,10 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 		// Extend width of old segments
 		for (i = fx.tip_progress*last_segment/100; i<next_tip_progress*last_segment/100; ++i)
 		{
-			var old_half_wdt = (last_segment-i+1)/3+1;
-			var new_half_wdt = (last_segment-i+2)/3+1;
+			var old_half_wdt = (last_segment-i + 1)/3 + 1;
+			var new_half_wdt = (last_segment-i + 2)/3 + 1;
 			if (new_half_wdt != old_half_wdt)
-				ExtendVerticalBranch(fx.trace_x[i],fx.trace_y[i], fx.trace_x[i+1],fx.trace_y[i+1], old_half_wdt, new_half_wdt);
+				ExtendVerticalBranch(fx.trace_x[i],fx.trace_y[i], fx.trace_x[i + 1],fx.trace_y[i + 1], old_half_wdt, new_half_wdt);
 		}
 		fx.tip_progress = next_tip_progress;
 	}
@@ -230,14 +230,14 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 		{
 			for (dy=-10; dy<10; dy+=2)
 			{
-				var b = mat_behaviours[GetMaterial(sx+dx,sy+dy)+1];
+				var b = mat_behaviours[GetMaterial(sx + dx,sy + dy)+1];
 				if (b != BigVolcanoBehaviour_Stop && b != BigVolcanoBehaviour_AdvanceLava)
 				{
 					if (!n_valid_branches++)
 					{
 						// First valid branch: Take over this one
-						nx = sx+dx;
-						ny = sy+dy;
+						nx = sx + dx;
+						ny = sy + dy;
 						// Do not branch too deeply
 						if (fx.level>1) ++i;
 					}
@@ -272,8 +272,8 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 		++fx.trace_len; ++fx.len;
 		// Launch next branch
 		fx.tip_progress = 0;
-		fx.dir_x = BoundBy(fx.dir_x+Random(5)-2,-8,8);
-		fx.dir_y = BoundBy(fx.dir_y+Random(5)-2,-15,-20);
+		fx.dir_x = BoundBy(fx.dir_x + Random(5)-2,-8,8);
+		fx.dir_y = BoundBy(fx.dir_y + Random(5)-2,-15,-20);
 		//Log("%v %v",fx.trace_y, fx.trace_len);
 	}
 	// Remove segments that fell below the main lake (max one at a time)
@@ -301,9 +301,9 @@ func DrawVerticalBranch(int x1, int y1, int x2, int y2, int half_wdt)
 	// Draw branch from x1/y1 to x2/y2 with width half_wdt*2
 	//Log("BRANCH %d,%d,%d,%d, %d",x1,y1,x2,y2,half_wdt);
 	if (Abs(x2-x1)>Abs(y2-y1))
-		return DrawMaterialQuad("DuroLava-lava_red",x1,y1-half_wdt, x1,y1+half_wdt, x2,y2+half_wdt, x2,y2-half_wdt, BigVolcanoBehaviour_Underground);
+		return DrawMaterialQuad("DuroLava-lava_red",x1,y1-half_wdt, x1,y1 + half_wdt, x2,y2 + half_wdt, x2,y2-half_wdt, BigVolcanoBehaviour_Underground);
 	else
-		return DrawMaterialQuad("DuroLava-lava_red",x1-half_wdt,y1, x1+half_wdt,y1, x2+half_wdt,y2, x2-half_wdt,y2, BigVolcanoBehaviour_Underground);
+		return DrawMaterialQuad("DuroLava-lava_red",x1-half_wdt,y1, x1 + half_wdt,y1, x2 + half_wdt,y2, x2-half_wdt,y2, BigVolcanoBehaviour_Underground);
 }
 
 func ExtendVerticalBranch(int x1, int y1, int x2, int y2, int from_half_wdt, int to_half_wdt)
@@ -315,12 +315,12 @@ func ExtendVerticalBranch(int x1, int y1, int x2, int y2, int from_half_wdt, int
 	if (Abs(x2-x1)>Abs(y2-y1))
 	{
 		DrawMaterialQuad("DuroLava-lava_red",x1,y1-to_half_wdt, x1,y1-from_half_wdt, x2,y2-from_half_wdt, x2,y2-to_half_wdt, BigVolcanoBehaviour_Underground);
-		DrawMaterialQuad("DuroLava-lava_red",x1,y1+to_half_wdt, x1,y1+from_half_wdt, x2,y2+from_half_wdt, x2,y2+to_half_wdt, BigVolcanoBehaviour_Underground);
+		DrawMaterialQuad("DuroLava-lava_red",x1,y1 + to_half_wdt, x1,y1 + from_half_wdt, x2,y2 + from_half_wdt, x2,y2 + to_half_wdt, BigVolcanoBehaviour_Underground);
 	}
 	else
 	{
 		DrawMaterialQuad("DuroLava-lava_red",x1-to_half_wdt,y1, x1-from_half_wdt,y1, x2-from_half_wdt,y2, x2-to_half_wdt,y2, BigVolcanoBehaviour_Underground);
-		DrawMaterialQuad("DuroLava-lava_red",x1+to_half_wdt,y1, x1+from_half_wdt,y1, x2+from_half_wdt,y2, x2+to_half_wdt,y2, BigVolcanoBehaviour_Underground);
+		DrawMaterialQuad("DuroLava-lava_red",x1 + to_half_wdt,y1, x1 + from_half_wdt,y1, x2 + from_half_wdt,y2, x2 + to_half_wdt,y2, BigVolcanoBehaviour_Underground);
 	}
 	return true;
 }

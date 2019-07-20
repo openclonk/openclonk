@@ -13,7 +13,7 @@ func Initialize()
 	{
 		var loc = FindLocation(Loc_InRect(0,80*8,40*8,20*8), Loc_Material("Earth"));
 		if (loc)
-			CreateObjectAbove(Rock, loc.x, loc.y+3);
+			CreateObjectAbove(Rock, loc.x, loc.y + 3);
 	}
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	var relaunch_rule = GetRelaunchRule();
@@ -47,15 +47,15 @@ private func InitBase(int owner)
 {
 	// Create standard base owned by player
 	var y = 90 * 8, x = 40 * 8;
-	CreateObjectAbove(Flagpole, x+85,y, owner);
-	var hut = CreateObjectAbove(ToolsWorkshop, x+45,y, owner);
+	CreateObjectAbove(Flagpole, x + 85,y, owner);
+	var hut = CreateObjectAbove(ToolsWorkshop, x + 45,y, owner);
 	if (hut)
 	{
 		hut->CreateContents(Shovel, 1);
 		hut->CreateContents(Loam, 1);
 	}
 	for (var i = 0; i < 3; ++i)
-		CreateObjectAbove(Boompack, x+20+i*5+Random(4),y, owner);
+		CreateObjectAbove(Boompack, x + 20 + i*5 + Random(4),y, owner);
 	return true;
 }
 

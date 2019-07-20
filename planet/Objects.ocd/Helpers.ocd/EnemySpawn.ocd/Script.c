@@ -424,7 +424,7 @@ public func SpawnClonk(array pos, proplist clonk_data, proplist enemy_def, array
 			guard_max_x = Max(guard_max_x, attack_pos.X);
 			guard_max_y = Max(guard_max_y, attack_pos.Y);
 		}
-		guard_range = { x = guard_min_x-300, y = guard_min_y-150, wdt = guard_max_x-guard_min_x+600, hgt = guard_max_y-guard_min_y+300 };
+		guard_range = { x = guard_min_x-300, y = guard_min_y-150, wdt = guard_max_x-guard_min_x + 600, hgt = guard_max_y-guard_min_y + 300 };
 	}
 	AI->SetGuardRange(clonk, guard_range.x,guard_range.y,guard_range.wdt,guard_range.hgt);
 	if (clonk_data.AttackMode)

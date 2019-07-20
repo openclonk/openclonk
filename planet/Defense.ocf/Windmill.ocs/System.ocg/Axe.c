@@ -38,7 +38,7 @@ public func ControlUse(object clonk, int iX, int iY)
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
 	clonk->UpdateAttach();
 
-	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
+	magic_number=((magic_number + 1)%10) + (ObjectNumber()*10);
 	StartWeaponHitCheckEffect(clonk, length, 1);
 
 	return true;

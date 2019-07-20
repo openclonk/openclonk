@@ -436,12 +436,12 @@ public func OnLadderClimb(object clonk, int index)
 	if (index > 2 && index < lib_rope_particle_count - 3)
 	{
 		lib_rope_particles[index-2].x -= dir * Ladder_Precision / 5;
-		lib_rope_particles[index+2].x += dir * Ladder_Precision / 5;
+		lib_rope_particles[index + 2].x += dir * Ladder_Precision / 5;
 	}
 	else if (index > 2 && index < lib_rope_particle_count - 2)
 	{
 		lib_rope_particles[index-2].x -= dir * Ladder_Precision / 5;
-		lib_rope_particles[index+1].x += dir * Ladder_Precision / 5;
+		lib_rope_particles[index + 1].x += dir * Ladder_Precision / 5;
 	}
 	return;
 }

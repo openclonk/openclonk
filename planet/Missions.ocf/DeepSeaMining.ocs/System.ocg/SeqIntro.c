@@ -166,7 +166,7 @@ func Intro_20()
 		plr = GetPlayerByIndex(i, C4PT_User);
 		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
 		{
-			crew->SetCommand("MoveTo", nil, g_tuesday_pos[0]-15+Random(20), g_tuesday_pos[1]);
+			crew->SetCommand("MoveTo", nil, g_tuesday_pos[0]-15 + Random(20), g_tuesday_pos[1]);
 		}
 	}
 	return ScheduleNext(300);
@@ -235,7 +235,7 @@ func Intro_30()
 
 func Intro_31()
 {
-	MessageBoxAll("$Intro31$", npc_tuesday, true); // go east and finish it with metal+gems
+	MessageBoxAll("$Intro31$", npc_tuesday, true); // go east and finish it with metal + gems
 	return ScheduleNext(400);
 }
 

@@ -1,14 +1,14 @@
 /**
 	Buy Menu
 
-	Shows icons to instantly buy+equip weapons
+	Shows icons to instantly buy + equip weapons
 
 	@authors Sven2
 */
 
 local container, container_id; // container window containing menu entries and other stuff
 local menu; // the actual menu (a MenuStyle_Grid)
-local description_box, description_name_id, description_desc_id, description_message_id; // box showing name+desc of currently hovered item
+local description_box, description_name_id, description_desc_id, description_message_id; // box showing name + desc of currently hovered item
 local homebase; // associated base
 local buymenu_toggle_id; // button to toggle menu visibility
 local hovered_entry_index; // keep track of hovered entry to update description box
@@ -137,7 +137,7 @@ public func ClickCaption() { return true; } // nothing to be done here (maybe ex
 public func UpdateBuyEntry(id buy_def, bool available, proplist entry, int callback_idx, bool was_last_selection)
 {
 	if (!menu) return false;
-	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2+entry.extra_width), Symbol = buy_def, GraphicsName = entry.graphic }, fontclr, bgclr, bgclr_hover;
+	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2 + entry.extra_width), Symbol = buy_def, GraphicsName = entry.graphic }, fontclr, bgclr, bgclr_hover;
 	if (available)
 	{
 		fontclr = 0x00ff00;

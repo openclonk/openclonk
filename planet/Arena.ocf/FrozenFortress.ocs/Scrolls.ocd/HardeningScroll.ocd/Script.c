@@ -47,7 +47,7 @@ public func FxHardeningSpellTimer(pTarget, effect, iEffectTime)
 		y = -Cos(r,d) + effect.y;
 		if (GetMaterial(x,y) == Material("Snow"))
 		{
-			DrawMaterialQuad("Ice",x,y,x+1,y,x+1,y+1,x,y+1);
+			DrawMaterialQuad("Ice",x,y,x + 1,y,x + 1,y + 1,x,y + 1);
 			CreateParticle("Air", x , y, xdir/3, ydir/3, PV_Random(20, 40), Particles_Air());
 		}
 	}

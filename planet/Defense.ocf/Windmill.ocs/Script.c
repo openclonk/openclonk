@@ -304,7 +304,7 @@ func LaunchWave(int wave)
 		{
 			CreateArrowForPlayers(arrow.X, arrow.Y);
 		}
-		ScheduleCall(nil, Scenario.LaunchWaveDone, wave_spawn_time+5, 1, wave);
+		ScheduleCall(nil, Scenario.LaunchWaveDone, wave_spawn_time + 5, 1, wave);
 		return true;
 	}
 	return false;

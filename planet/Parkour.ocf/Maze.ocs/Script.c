@@ -74,10 +74,10 @@ func CreateBonus(int x, int y, int value, bool is_cooperative)
 			if (Random(value) > 90) obj->CreateContents(WindBag);
 			if (Random(value) > 90) obj->CreateContents(TeleGlove);
 			if (Random(value) > 90) obj->CreateContents(Club);
-			if (Random(value) > 5) obj->CreateContents(Loam, 1+Random(2));
-			if (Random(value) > 5) obj->CreateContents(Dynamite, 1+Random(2));
-			if (Random(value) > 25) obj->CreateContents(DynamiteBox, 1+Random(2));
-			if (Random(value) > 10) obj->CreateContents(Bread, 1+Random(2));
+			if (Random(value) > 5) obj->CreateContents(Loam, 1 + Random(2));
+			if (Random(value) > 5) obj->CreateContents(Dynamite, 1 + Random(2));
+			if (Random(value) > 25) obj->CreateContents(DynamiteBox, 1 + Random(2));
+			if (Random(value) > 10) obj->CreateContents(Bread, 1 + Random(2));
 		}
 	}
 	return obj;
@@ -111,7 +111,7 @@ protected func Initialize()
 			if (cave.dirs == 8)
 			{
 				// Facing downwards. Hard to reach, but cannot place a chest here :(
-				CreateObjectAbove(Trunk, cave.X, cave.Y)->SetR(160+Random(41));
+				CreateObjectAbove(Trunk, cave.X, cave.Y)->SetR(160 + Random(41));
 			}
 			else
 			{

@@ -145,7 +145,7 @@ func FxSparkleTimer(_, effect)
 		e.y = GetY();
 		e.velX = RandomX(-10,10);
 		e.velY = RandomX(-2,2);;
-		e.size = 40+Random(10);
+		e.size = 40 + Random(10);
 		e.from = this;
 		e.vAcc = 1;
 	}
@@ -201,7 +201,7 @@ func DoSpawn()
 		effect.y = GetY();
 		effect.velX = RandomX(-10,10);
 		effect.velY = RandomX(-50,-30);
-		effect.size = 25+Random(10);
+		effect.size = 25 + Random(10);
 		effect.from = this;
 		effect.vAcc = 5;
 	}

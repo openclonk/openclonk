@@ -20,7 +20,7 @@ public func FxWindScrollStormStart(pTarget, effect, iTemp, angle, x, y)
 	if (iTemp) return;
 	effect.xdir = Sin(angle,32);
 	effect.ydir=-Cos(angle,32);
-	effect.x = x+Sin(angle,43);
+	effect.x = x + Sin(angle,43);
 	effect.y = y-Cos(angle,43);
 
 	effect.particles =

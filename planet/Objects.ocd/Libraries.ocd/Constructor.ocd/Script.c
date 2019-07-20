@@ -147,9 +147,9 @@ public func CreateConstructionSite(object clonk, id structure_id, int x, int y, 
 	// intersection-check with all other construction sites... bah
 	for (var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
-		if (!(other_site->GetLeftEdge()   > GetX()+x+structure_id->GetDefWidth()/2  ||
+		if (!(other_site->GetLeftEdge()   > GetX()+x + structure_id->GetDefWidth()/2  ||
 		     other_site->GetRightEdge()  < GetX()+x-structure_id->GetDefWidth()/2  ||
-		     other_site->GetTopEdge()    > GetY()+y+structure_id->GetDefHeight()/2 ||
+		     other_site->GetTopEdge()    > GetY()+y + structure_id->GetDefHeight()/2 ||
 		     other_site->GetBottomEdge() < GetY()+y-structure_id->GetDefHeight()/2 ))
 		{
 			CustomMessage(Format("$TxtBlocked$", other_site->GetName()), this, clonk->GetOwner(), nil, nil, RGB(255, 0, 0));

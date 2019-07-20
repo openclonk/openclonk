@@ -222,9 +222,9 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 						// This is just object properties. Move them behind dependent object creation
 						var obj_data_new = CreateArray(n);
 						obj_data_new[0:i] = obj_data[0:i];
-						obj_data_new[i:j] = obj_data[i+1:j+1];
+						obj_data_new[i:j] = obj_data[i + 1:j + 1];
 						obj_data_new[j] = obj_data[i];
-						if (j<n-1) obj_data_new[j+1:n] = obj_data[j+1:n];
+						if (j<n-1) obj_data_new[j + 1:n] = obj_data[j + 1:n];
 						obj_data = obj_data_new;
 						if (j <= k) --k;
 						--i; break;
@@ -233,10 +233,10 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 					{
 						// Circular dependency. Detach object property setting from object creation.
 						var obj_data_new = CreateArray(++n);
-						obj_data_new[0:j+1] = obj_data[0:j+1];
-						obj_data_new[j+1] = { o = od.o, co = od.co, dependencies = od.dependencies, n_dependencies = od.n_dependencies, i_dep_resolved = od.i_dep_resolved, props = od.props->TakeProps() };
+						obj_data_new[0:j + 1] = obj_data[0:j + 1];
+						obj_data_new[j + 1] = { o = od.o, co = od.co, dependencies = od.dependencies, n_dependencies = od.n_dependencies, i_dep_resolved = od.i_dep_resolved, props = od.props->TakeProps() };
 						od.n_dependencies = 0; od.props_detached = true;
-						if (j<n-1) obj_data_new[j+2:n] = obj_data[j+1:n];
+						if (j<n-1) obj_data_new[j + 2:n] = obj_data[j + 1:n];
 						obj_data = obj_data_new;
 						++k; break;
 					}
@@ -246,8 +246,8 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 						var obj_data_new = CreateArray(n);
 						if (i) obj_data_new[0:i] = obj_data[0:i];
 						obj_data_new[i] = obj_data[j];
-						obj_data_new[i+1:j+1] = obj_data[i:j];
-						if (j<n-1) obj_data_new[j+1:n] = obj_data[j+1:n];
+						obj_data_new[i + 1:j + 1] = obj_data[i:j];
+						if (j<n-1) obj_data_new[j + 1:n] = obj_data[j + 1:n];
 						obj_data = obj_data_new;
 						++k; --i; break;
 					}
@@ -367,7 +367,7 @@ global func MakeScenarioSaveName()
 			def_indices[idx] = this;
 		}
 	}
-	return Format("%s%03d", base_name, idx+1);
+	return Format("%s%03d", base_name, idx + 1);
 }
 
 global func SaveScenarioObject(props)
@@ -392,7 +392,7 @@ global func SaveScenarioObject(props)
 	{
 		props->Add(SAVEOBJ_Creation, "CreateObjectAbove(%i, %d, %d%s)", GetID(), GetX(), GetDefBottom(), owner_string);
 	}
-	// Contained creation is added alongside regular creation because it is not yet known if CreateObject+Enter or CreateContents can be used due to dependencies.
+	// Contained creation is added alongside regular creation because it is not yet known if CreateObject + Enter or CreateContents can be used due to dependencies.
 	// func SaveScen_SetContainers will take care of removing one of the two creation strings after dependencies have been resolved.
 	if (Contained())
 	{

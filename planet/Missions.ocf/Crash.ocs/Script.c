@@ -17,7 +17,7 @@ public func Initialize()
 func DoInit(int first_player)
 {
 
-	CreateObjectAbove(Windmill, 152, 825+48, 0);
+	CreateObjectAbove(Windmill, 152, 825 + 48, 0);
 
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);

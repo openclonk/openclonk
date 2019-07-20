@@ -29,7 +29,7 @@ public func ControlUse(object clonk, int x, int y)
 			return true;
 		}
 	// Action go!
-	UserAction->EvaluateAction(use_action, this, clonk, nil, nil, action_allow_parallel, nil, [x+GetX(), y+GetY()]);
+	UserAction->EvaluateAction(use_action, this, clonk, nil, nil, action_allow_parallel, nil, [x + GetX(), y + GetY()]);
 	last_use_frame = FrameCounter();
 	return true;
 }

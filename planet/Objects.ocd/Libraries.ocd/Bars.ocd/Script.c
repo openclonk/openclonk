@@ -30,7 +30,7 @@ public func RemoveBarLayers(int la)
 {
 	// remove layers
 	SetGraphics(nil,nil,la);
-	SetGraphics(nil,nil,la+1);
+	SetGraphics(nil,nil,la + 1);
 }
 
 public func SetBarLayers(int la, int num)
@@ -63,7 +63,7 @@ public func SetBarProgress(int promille, int num)
 	// the bar does not start on the left side of the graphics... correct this
 	var graphicscorrect = 100;
 	
-	var baroffset = offsx[num]*1000 - width[num]*w * (1000-promille)/(1000+graphicscorrect);
+	var baroffset = offsx[num]*1000 - width[num]*w * (1000-promille)/(1000 + graphicscorrect);
 
 	SetObjDrawTransform(width[num],0,offsx[num]*1000, 0, height[num], offsy[num]*1000, layer[num]);
 	SetObjDrawTransform((promille * width[num])/1000,0, baroffset, 0, height[num], offsy[num]*1000, layer[num]+1);

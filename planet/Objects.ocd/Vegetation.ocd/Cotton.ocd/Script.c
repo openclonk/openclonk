@@ -39,7 +39,7 @@ private func Construction()
 	capacity = Random(3) + 3;
 
 	StartGrowth(this.growth);
-	AddTimer("WaterCheck", 70+Random(10));
+	AddTimer("WaterCheck", 70 + Random(10));
 
 	// The mesh doesn't have more than 3 bones, beware
 	branches = CreateArray(3);

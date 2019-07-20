@@ -39,7 +39,7 @@ global func SetDialogue(string name, bool attention)
 	dialogue->InitDialogue(name, this, attention);
 	
 	dialogue->SetObjectLayer(nil);
-	dialogue.Plane = this.Plane+1; // for proper placement of the attention symbol
+	dialogue.Plane = this.Plane + 1; // for proper placement of the attention symbol
 
 	return dialogue;
 }
@@ -391,7 +391,7 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 			var option_text, option_command;
 			if (GetType(option) == C4V_Array)
 			{
-				// Text+Command given
+				// Text + Command given
 				option_text = option[0];
 				option_command = option[1];
 				if (GetChar(option_command) == GetChar("#"))

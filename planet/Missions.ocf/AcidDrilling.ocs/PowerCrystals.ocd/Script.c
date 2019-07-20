@@ -9,7 +9,7 @@ protected func Initialize()
 	SetCategory(C4D_StaticBack);
 	SetR(Random(360));
 	SetObjectBlitMode(GFX_BLIT_Additive);
-	SetClrModulation(RGB(127+Random(3)*64,127+Random(3)*64,127+Random(3)*64));
+	SetClrModulation(RGB(127 + Random(3)*64,127 + Random(3)*64,127 + Random(3)*64));
 	return _inherited(...);
 }
 

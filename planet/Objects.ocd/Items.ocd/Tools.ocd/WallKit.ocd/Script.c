@@ -108,13 +108,13 @@ func SetPreview(object clonk, int x, int y)
 	x = clonk->GetX(); y = clonk->GetY();
 	if (!preview)
 	{
-		preview = WallKit_Preview->Create(x+c.x1,y+c.y1,x+c.x2,y+c.y2,clr);
+		preview = WallKit_Preview->Create(x + c.x1,y + c.y1,x + c.x2,y + c.y2,clr);
 		preview->SetOwner(clonk->GetOwner());
 		preview.Visibility = VIS_Owner;
 	}
 	else
 	{
-		preview->Set(x+c.x1,y+c.y1,x+c.x2,y+c.y2,clr);
+		preview->Set(x + c.x1,y + c.y1,x + c.x2,y + c.y2,clr);
 	}
 	return true;
 }

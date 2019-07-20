@@ -77,7 +77,7 @@ protected func Initialize()
 	}
 
 	// Failsafe for stupid grounded clouds
-	if (GetMaterial(xoff, yoff+30) != Material("Sky")) 
+	if (GetMaterial(xoff, yoff + 30) != Material("Sky")) 
 		yoff -= 180;
 
 	SetPosition(GetX()+xoff, GetY()+yoff);

@@ -276,7 +276,7 @@ private func SpinOff(int call)
 
 	SetAnimationPosition(this.SpinAnimation, Anim_Linear(GetAnimationPosition(this.SpinAnimation), 0, GetAnimationLength("work"), spin, ANIM_Loop));
 
-	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call+1);
+	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call + 1);
 }
 
 

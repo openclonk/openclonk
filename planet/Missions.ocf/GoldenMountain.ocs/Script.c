@@ -32,7 +32,7 @@ func InitializePlayer(int plr)
 	var i, crew;
 	for (i = 0; crew = GetCrew(plr,i); ++i)
 	{
-		crew->SetPosition(500+Random(100), 200-10);
+		crew->SetPosition(500 + Random(100), 200-10);
 		crew->CreateContents(Shovel);
 	}
 	return true;

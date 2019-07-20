@@ -97,7 +97,7 @@ func FxWoodyWalkingTimer(object c, proplist fx, int time)
 	if (!Random(2) && GetPlayerCount())
 	{
 		// Move between places (only if players are joined so Woody stays in place for object saving)
-		c->SetCommand("MoveTo", nil, 750+Random(50), 366);
+		c->SetCommand("MoveTo", nil, 750 + Random(50), 366);
 	}
 	return FX_OK;
 }

@@ -471,8 +471,8 @@ global func FxFireTimer(object target, proplist effect, int time)
 		// A few red fire particles popping up in the higher area. Does not affect very small flames.
 		if (effect.fire_width + effect.fire_height > 40)
 		{
-			if (!Random(2)) CreateParticle("FireDense", PV_Random(-effect.fire_width, effect.pspeed), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3,3), effect.pspeed, effect.fire_height/2+6, effect.redfiredense);
-			if (!Random(2)) CreateParticle("FireDense", PV_Random(effect.fire_width/2, effect.fire_width), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3,3), effect.pspeed, effect.fire_height/2+6, effect.redfiredense);
+			if (!Random(2)) CreateParticle("FireDense", PV_Random(-effect.fire_width, effect.pspeed), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3,3), effect.pspeed, effect.fire_height/2 + 6, effect.redfiredense);
+			if (!Random(2)) CreateParticle("FireDense", PV_Random(effect.fire_width/2, effect.fire_width), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3,3), effect.pspeed, effect.fire_height/2 + 6, effect.redfiredense);
 		}
 
 		// Smoke

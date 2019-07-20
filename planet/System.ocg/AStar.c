@@ -145,7 +145,7 @@ static const MinHeap = new Global
 	Heapify = func(array heap, int i)
 	{
 		var min = i, size = GetLength(heap);
-		var left = 2*i+1, right = 2*i+2;
+		var left = 2*i + 1, right = 2*i + 2;
 		if (left < size && heap[left][0] < heap[min][0])
 			min = left;
 		if (right < size && heap[right][0] < heap[min][0])

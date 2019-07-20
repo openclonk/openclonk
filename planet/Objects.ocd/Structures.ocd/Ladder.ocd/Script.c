@@ -54,7 +54,7 @@ func CreateSegments()
 	for (var index = 0; index < nr_segments; index++)
 	{
 		var y = GetTop() + index * SegmentHeight;
-		var segment = CreateObject(MetalLadderSegment, 0, y+4);
+		var segment = CreateObject(MetalLadderSegment, 0, y + 4);
 		segment->SetMaster(this, index);
 		// Store the segments.
 		PushBack(segments, segment);

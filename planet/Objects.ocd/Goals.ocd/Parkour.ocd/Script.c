@@ -140,7 +140,7 @@ public func SetIndexedCP(object cp, int index)
 	if (cp->GetCPMode() & PARKOUR_CP_Finish)
 	{
 		cp_count = index;
-		SetLength(cp_list, cp_count+1);
+		SetLength(cp_list, cp_count + 1);
 	}
 	UpdateScoreboardTitle();
 	return true;

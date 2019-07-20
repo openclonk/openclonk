@@ -29,8 +29,8 @@ local BaseRectangle; // properties x,y,w,h
 // Point contained in rectangle?
 private func BaseRectangle_IsPointContained(int x, int y)
 {
-	//return ((x-this.x+this.wdt)/this.wdt) * ((y-this.y+this.hgt)/this.hgt) == 1 && x>=this.x;
-	return x>=this.x && y>=this.y && x<this.x+this.wdt && y<this.y+this.hgt;
+	//return ((x-this.x + this.wdt)/this.wdt) * ((y-this.y + this.hgt)/this.hgt) == 1 && x>=this.x;
+	return x>=this.x && y>=this.y && x<this.x + this.wdt && y<this.y + this.hgt;
 }
 
 // bounding rectangle is just self
@@ -71,7 +71,7 @@ private func BaseRectangle_IsFullMap()
 	return !this.x && !this.y && this.wdt == LandscapeWidth() && this.hgt == LandscapeHeight();
 }
 
-/** Constructor of rectangle area. (x,y) is included; (x+w,y+h) is excluded.
+/** Constructor of rectangle area. (x,y) is included; (x + w,y + h) is excluded.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
  @par w Rectangle width
@@ -100,7 +100,7 @@ private func BaseCircle_IsPointContained(int x, int y)
 private func BaseCircle_GetBoundingRectangle()
 {
 	var r = this.r;
-	return new Shape.BaseRectangle { x = this.cx-r, y = this.cy-r, wdt = r*2+1, hgt = r*2+1 };
+	return new Shape.BaseRectangle { x = this.cx-r, y = this.cy-r, wdt = r*2 + 1, hgt = r*2 + 1 };
 }
 
 private func BaseCircle_GetRandomPoint(proplist result)
@@ -108,7 +108,7 @@ private func BaseCircle_GetRandomPoint(proplist result)
 	// Make sure radius circles are weighed equally
 	var r2 = this.r * this.r + 1;
 	if (r2>0x7fff) // for large numbers, the random function doesn't work
-		r2 = Random(0x8000) + Random(r2/0x8000+1) * 0x8000;
+		r2 = Random(0x8000) + Random(r2/0x8000 + 1) * 0x8000;
 	else
 		r2 = Random(r2);
 	var r = Sqrt(r2), a = Random(360);
@@ -408,7 +408,7 @@ public func LandscapeRectangle()
 }
 
 
-/** Constructor of rectangle area. (x,y) is included; (x+w,y+h) is excluded. Automatically flips rectangles of negative size in any dimension.
+/** Constructor of rectangle area. (x,y) is included; (x + w,y + h) is excluded. Automatically flips rectangles of negative size in any dimension.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
  @par w Rectangle width

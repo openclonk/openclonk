@@ -40,7 +40,7 @@ public func InitializeMap(proplist map)
 	var i = 0, imod = Random(2);
 	while (i<3 || GetPixelCount("Amethyst")<15)
 	{
-		DrawSecondaryIsland(8, [["Amethyst", 70]], true, [0, this.Wdt-70][(i+imod)%2], 70, this.sea_y+50);
+		DrawSecondaryIsland(8, [["Amethyst", 70]], true, [0, this.Wdt-70][(i + imod)%2], 70, this.sea_y + 50);
 		++i;
 	}
 	
@@ -66,8 +66,8 @@ private func DrawMainIsland(int size)
 	var island_algo = {Algo = MAPALGO_Polygon};
 	var x = this.Wdt / 2;
 	var y = this.sea_y;
-	island_algo.X = [x-size/3, x-size/2, x-size/3, x-size/6, x+size/6, x+size/3, x+size/2, x+size/3];
-	island_algo.Y = [y-size/6, y, y+size/3, y+size/6, y+size/6, y+size/3, y, y-size/6];
+	island_algo.X = [x-size/3, x-size/2, x-size/3, x-size/6, x + size/6, x + size/3, x + size/2, x + size/3];
+	island_algo.Y = [y-size/6, y, y + size/3, y + size/6, y + size/6, y + size/3, y, y-size/6];
 	
 	// Draw the earth patch of the island.
 	island_algo = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = island_algo};
@@ -77,8 +77,8 @@ private func DrawMainIsland(int size)
 	// Draw goal platform shape
 	while (island->GetPixel(x,y)) ++x; // Find right side of island at sea level
 	var platform_algo = {Algo = MAPALGO_Polygon};
-	platform_algo.X = [x-5,x+14,x+14,x+7,x  ,x-5];
-	platform_algo.Y = [y  ,y   ,y+ 1,y+2,y+4,y  ];
+	platform_algo.X = [x-5,x + 14,x + 14,x + 7,x  ,x-5];
+	platform_algo.Y = [y  ,y   ,y+ 1,y + 2,y + 4,y  ];
 	island->Draw("Earth", platform_algo);
 	
 	// Preserve drawn island shape for border algorithms
@@ -110,7 +110,7 @@ private func DrawMainIsland(int size)
 	// Draw goal platform
 	island->Draw("Sky", nil, [x,y-10,14,10]);
 	island->Draw("Brick", nil, [x,y,14,2]);
-	goal_platform_x = (x+7)*this.map_zoom;
+	goal_platform_x = (x + 7)*this.map_zoom;
 	goal_platform_y = y    *this.map_zoom;
 	
 	// Draw island onto main map
@@ -179,9 +179,9 @@ private func DrawSecondaryIsland(int size, array materials, bool has_border, int
 private func DrawGround()
 {
 	// Bottom of the sea
-	var ground_algo = { Algo = MAPALGO_Rect, X=-100, Y = this.ground_y, Wdt = this.Wdt+200, Hgt = this.Hgt-this.ground_y+1000 };
+	var ground_algo = { Algo = MAPALGO_Rect, X=-100, Y = this.ground_y, Wdt = this.Wdt + 200, Hgt = this.Hgt-this.ground_y + 1000 };
 	ground_algo = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = [10,100], Scale = 20, Op = ground_algo };
-	var ground2_algo = { Algo = MAPALGO_Rect, X=-100, Y = this.Hgt-10, Wdt = this.Wdt+200, Hgt = this.Hgt-this.ground_y+1000 };
+	var ground2_algo = { Algo = MAPALGO_Rect, X=-100, Y = this.Hgt-10, Wdt = this.Wdt + 200, Hgt = this.Hgt-this.ground_y + 1000 };
 	ground2_algo = {Algo = MAPALGO_Turbulence, Iterations = 2, Amplitude = 10, Scale = 30, Op = ground2_algo };
 	var ground = CreateLayer();
 	// Ensure lots of earth
@@ -206,17 +206,17 @@ private func DrawGround()
 	{
 		var gem_mat = "Ruby";
 		// Find an earth spot
-		var pos = {X = Random(this.Wdt), Y = this.Hgt/2+Random(this.Hgt/2)};
+		var pos = {X = Random(this.Wdt), Y = this.Hgt/2 + Random(this.Hgt/2)};
 		ground->FindPosition(pos, "Earth");
 		// Find center of this earth area
 		var x = pos.X, y = pos.Y;
-		var x0 = x-1, x1 = x+1, y0 = y-1, y1 = y+1;
+		var x0 = x-1, x1 = x + 1, y0 = y-1, y1 = y + 1;
 		while (earth_mats[ground->GetPixel(x,y0)]) --y0;
 		while (earth_mats[ground->GetPixel(x,y1)]) ++y1;
-		y = Min((y0+y1)/2, this.Hgt-6);
+		y = Min((y0 + y1)/2, this.Hgt-6);
 		while (earth_mats[ground->GetPixel(x0,y)]) --x0;
 		while (earth_mats[ground->GetPixel(x1,y)]) ++x1;
-		x=(x0+x1)/2;
+		x=(x0 + x1)/2;
 		var size = 9;
 		// Lava basin here
 		var lava_algo = {Algo = MAPALGO_Ellipse, X = x, Y = y, Wdt = size, Hgt = size};

@@ -172,7 +172,7 @@ func FxGrowLeafTimer(target, effect, time)
 // we now can produce berries!
 func FullyGrown()
 {
-	AddEffect("LifeTimer", this, 1, 30+Random(10), this);
+	AddEffect("LifeTimer", this, 1, 30 + Random(10), this);
 	if (GetActionTarget())
 		GetActionTarget()->SproutFullyGrown(this);
 }

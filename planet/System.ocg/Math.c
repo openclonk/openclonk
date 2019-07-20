@@ -97,8 +97,8 @@ global func GetTurnDirection(
 	 /*if (to < from)*/dir = to-from;
 	 //else dir = from-to;
 
-	 var dif = 360-from+to;
-	 var dif2 = 360-to+from;
+	 var dif = 360-from + to;
+	 var dif2 = 360-to + from;
 	 if (dif < 180)dir=+dif;
 	 else
 	 if (dif2 < 180)dir=-dif2;

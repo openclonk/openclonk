@@ -55,7 +55,7 @@ func Construction()
 	};
 
 	AddEffect("IntTurn", this, 1, 1, this);
-	AddEffect("IntEyes", this, 1, 35+Random(4), this);
+	AddEffect("IntEyes", this, 1, 35 + Random(4), this);
 	
 	_inherited(...);
 }
@@ -87,7 +87,7 @@ local ActMap;
 
 func SetTurnForced(int dir)
 {
-	lAnim.turnForced = dir+1;
+	lAnim.turnForced = dir + 1;
 }
 
 func FxIntTurnStart(pTarget, effect, fTmp)
@@ -562,7 +562,7 @@ func FxIntWalkTimer(pTarget, effect)
 		if (!effect.idle_animation_time)
 		{
 			effect.idle_time++;
-			if (effect.idle_time > 300+effect.idle_offset)
+			if (effect.idle_time > 300 + effect.idle_offset)
 			{
 				effect.idle_time = 0;
 				effect.idle_offset = Random(300);
@@ -646,11 +646,11 @@ func CheckScaleTop()
 	// That is, the leg vertices are the only ones attached to the wall
 
 	// Check the head vertex
-	if (GBackSolid(-1+2*GetDir(),-7)) return false;
+	if (GBackSolid(-1 + 2*GetDir(),-7)) return false;
 	// Check the shoulder vertices
-	if (GBackSolid(-3+6*GetDir(),-3)) return false;
+	if (GBackSolid(-3 + 6*GetDir(),-3)) return false;
 	// Check the hip vertices
-	if (GBackSolid(-5+10*GetDir(),2)) return false;
+	if (GBackSolid(-5 + 10*GetDir(),2)) return false;
 	return true;
 }
 
@@ -659,7 +659,7 @@ func CheckScaleTopHelper()
 	// Check if the clonk has passed the material with its leg vertices
 	// and if COMD_Up is used to climb in which case corner scale would fail
 
-	if (GBackSolid(-3+6*GetDir(), 6)) return false;
+	if (GBackSolid(-3 + 6*GetDir(), 6)) return false;
 	if (GetComDir() != COMD_Up) return false;
 	return true;
 }
@@ -679,7 +679,7 @@ func FxIntScaleTimer(target, number, time)
 	{
 		// If the animation is not already set
 		var dist = 0;
-		while (!(GBackSolid(-3+6*GetDir(),dist-3) || GBackSolid(-5+10*GetDir(),dist+2)) && dist < 8) dist++;
+		while (!(GBackSolid(-3 + 6*GetDir(),dist-3) || GBackSolid(-5 + 10*GetDir(),dist + 2)) && dist < 8) dist++;
 		dist *= 100;
 		// add the fractional part of the position (dist counts in the opposite direction of y)
 		dist -= GetY(100)-GetY()*100;
@@ -709,7 +709,7 @@ func FxIntScaleTimer(target, number, time)
 		// This will delay everything for 1 frame just for cleanup, hopefully it's not too bad
 		number.corner_scale_helper = false;
 	}
-	else if (!GBackSolid(-10+20*GetDir(), 8))
+	else if (!GBackSolid(-10 + 20*GetDir(), 8))
 	{
 		if (number.animation_mode != 2)
 		{
@@ -740,13 +740,13 @@ func FxIntScaleTimer(target, number, time)
 	{
 		var x, x2;
 		var y = -7, y2 = 8;
-		var dir = -1+2*GetDir();
+		var dir = -1 + 2*GetDir();
 		for (x = 0; x < 10; x++)
 			if (GBackSolid(x*dir, y)) break;
 		for (x2 = 0; x2 < 10; x2++)
 			if (GBackSolid(x2*dir, y2)) break;
 		var angle = Angle(x2, y2, x, y)*dir;
-		var mid = (x+x2)*1000/2 - 5000 - this.Off;
+		var mid = (x + x2)*1000/2 - 5000 - this.Off;
 		this.TestAngle = angle;
 		this.TestMid = mid;
 		SetScaleRotation(angle, mid*dir);
@@ -1042,7 +1042,7 @@ func FxIntHangleTimer(pTarget, effect, iTime)
 		
 					// Change to HangleStand animation
 					var begin = 4000*effect.facing_front;
-					var end = 2000+begin;
+					var end = 2000 + begin;
 					effect.animation_id = PlayAnimation("HangleStand", CLONK_ANIM_SLOT_Movement, Anim_Linear(begin, begin, end, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 					effect.is_moving = 0;
 				}
@@ -1268,7 +1268,7 @@ func GetSwimRotation()
 {
 	var effect = GetEffect("IntSwim", this);
 	if (!effect) return 0;
-	return effect.rot*(-1+2*(GetDirection()==COMD_Right));
+	return effect.rot*(-1 + 2*(GetDirection()==COMD_Right));
 }
 
 func FxIntDiveJumpTimer(pTarget, effect, iTime)

@@ -84,7 +84,7 @@ func Intro_5()
 	// Wait until placed diagonally above cannon
 	var dx = this.plane->GetX() - g_cannon->GetX();
 	var dy = this.plane->GetY() - g_cannon->GetY();
-	var r = Angle(0,0,dx+30,dy,g_cannon.angPrec); // aim a bit ahead
+	var r = Angle(0,0,dx + 30,dy,g_cannon.angPrec); // aim a bit ahead
 	if (dx < dy)
 	{
 		r = g_cannon->ConvertAngle(r);

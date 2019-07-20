@@ -95,7 +95,7 @@ local SingleWeaponAttackMode = {
 			}
 			// Do not save in scenario, because it's automatically created through the attack mode setting
 			AddEffect("IntNoScenarioSave", weapon, 1);
-			// Automatic fadeout+inventory respawn of e.g. firestones
+			// Automatic fadeout + inventory respawn of e.g. firestones
 			if (fx.attack_mode.Respawn)
 			{
 				var respawning_object = ammo ?? weapon;

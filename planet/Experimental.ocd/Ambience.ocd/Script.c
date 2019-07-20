@@ -255,7 +255,7 @@ private func EnvCheck_Underground(object cursor, int x, int y, bool is_current)
 	if (GetMaterial(x,y)<0) return nil;
 	if (GetMaterial(x,y-30)<0) return nil;
 	if (GetMaterial(x-10,y-20)<0) return nil;
-	if (GetMaterial(x+10,y-20)<0) return nil;
+	if (GetMaterial(x + 10,y-20)<0) return nil;
 	return this;
 }
 
@@ -265,7 +265,7 @@ private func EnvCheck_Mountains(object cursor, int x, int y, bool is_current)
 	var num_rock;
 	for (var y2 = 0; y2<=45; y2+=15)
 		for (var x2=-75; x2<=75; x2+=15)
-			num_rock += this.mat_mask[GetMaterial(x+x2,y+y2)+1];
+			num_rock += this.mat_mask[GetMaterial(x + x2,y + y2)+1];
 	// need 15pts on first check; 5 to sustain
 	if (num_rock < 15-is_current*10) return nil;
 	return this;
