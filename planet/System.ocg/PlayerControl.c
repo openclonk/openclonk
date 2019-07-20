@@ -511,7 +511,7 @@ global func MouseHover(int player, object leaving, object entering, object dragg
 
 /* Drag & Drop */
 
-// Engine callback on drag&drop: gives the player, the dragged obect and the object which is being dropped(can be nil).
+// Engine callback on drag & drop: gives the player, the dragged obect and the object which is being dropped(can be nil).
 global func MouseDragDrop(int plr, object source, object target)
 {
 	//Log("MouseDragDrop(%d, %s, %s)", plr, source->GetName(), target->GetName());
