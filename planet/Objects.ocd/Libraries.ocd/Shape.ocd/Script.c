@@ -91,7 +91,7 @@ local BaseCircle; // properties cx,cy,r
 // point contained in circle?
 private func BaseCircle_IsPointContained(int x, int y)
 {
-	x-=this.cx; y-=this.cy;
+	x -= this.cx; y -= this.cy;
 	var r = this.r;
 	return x*x + y*y <= r*r;
 }

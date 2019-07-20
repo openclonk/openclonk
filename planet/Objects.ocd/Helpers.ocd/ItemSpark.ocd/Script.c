@@ -78,7 +78,7 @@ global func FxGlobalItemSparksTimer(_, effect, time)
 	{
 		if (x > LandscapeWidth()/2)
 		{
-			x-=LandscapeWidth()/2;
+			x -= LandscapeWidth()/2;
 			x = LandscapeWidth()/2-x;
 		}
 		count = 2;
@@ -176,10 +176,10 @@ func FxSparkleDeathTimer(_, effect, effect_time)
 	effect.yT+=effect.velY;
 	effect.velY+=effect.vAcc;
 	var f = 0;
-	while (Abs(effect.xT) > 10){if (effect.xT > 0) f = 1; else f=-1; effect.x+=f; effect.xT-=f*10;}
-	while (Abs(effect.yT) > 10){if (effect.yT > 0) f = 1; else f=-1; effect.y+=f; effect.yT-=f*10;}
+	while (Abs(effect.xT) > 10){if (effect.xT > 0) f = 1; else f=-1; effect.x+=f; effect.xT -= f*10;}
+	while (Abs(effect.yT) > 10){if (effect.yT > 0) f = 1; else f=-1; effect.y+=f; effect.yT -= f*10;}
 	
-	effect.size-=2;
+	effect.size -= 2;
 }
 
 func DoSpawn()

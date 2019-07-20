@@ -435,7 +435,7 @@ global func SaveScenarioObject(props)
 	while (command = GetCommand(0, i++)) last_command = command;
 	if (last_command)
 	{
-		i-=2;
+		i -= 2;
 		props->AddCall("Command", this, "SetCommand", Format("%v", last_command),
 				SaveScenarioValue2String(GetCommand(1,i)), // target
 				SaveScenarioValue2String(GetCommand(2,i)), // x

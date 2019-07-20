@@ -81,7 +81,7 @@ public func RelaunchPosition()
 	var x = RandomX(75,500);
 	var y = 100;
 	while (!GBackSolid(x,y)) y+=1;
-	y-=30;
+	y -= 30;
 	
 	return [x, y];
 }
