@@ -26,7 +26,7 @@
 	pushing, to self) it is 'Control'. The item in the inventory only gets
 	the Use*-calls. If the callback is handled, you should return true.
 	Currently, this is explained more in detail here:
-	http://forum.openclonk.org/topic_show.pl?tid=337
+	http://forum.openclonk.org/topic_show.pl?tid = 337
 */
 
 /* ++++++++++++++++++++++++ Callbacks ++++++++++++++++++++++++ */

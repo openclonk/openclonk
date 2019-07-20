@@ -865,7 +865,7 @@ Eat = {
 	StartCall = "ClearActivity",
 	NextAction = "Stand",
 	InLiquidAction = "Swim",
-	Attach=CNAT_Bottom,
+	Attach = CNAT_Bottom,
 },
 Headbutt = {
 	Prototype = Action,

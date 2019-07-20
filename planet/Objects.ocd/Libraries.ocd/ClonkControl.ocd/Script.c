@@ -27,7 +27,7 @@
 	pushing, to self) it is 'Control'. The item in the inventory only gets
 	the Use*-calls. If the callback is handled, you should return true.
 	Currently, this is explained more in detail here:
-	http://forum.openclonk.org/topic_show.pl?tid=337
+	http://forum.openclonk.org/topic_show.pl?tid = 337
 */
 
 // make use of other sub-libraries
@@ -110,7 +110,7 @@ protected func OnActionChanged(string oldaction)
 		Description	= A description of what the interaction does
 		IconID		= ID of the definition that contains the icon (like GetInteractionMetaInfo)
 		IconName	= Name of the graphic for the icon (like GetInteractionMetaInfo)
-		Priority	= Where to sort in in the interaction-list. 0=front, 10=after script, 20=after vehicles, 30=after structures, nil means no preference
+		Priority	= Where to sort in in the interaction-list. 0 = front, 10 = after script, 20 = after vehicles, 30 = after structures, nil means no preference
 */
 public func GetExtraInteractions()
 {
@@ -121,12 +121,12 @@ public func GetExtraInteractions()
 	if (fx)
 	{
 		if (fx.flipable)
-			PushBack(functions, {Fn = "Flip", Description=ConstructionPreviewer->GetFlipDescription(), Object=fx.preview, IconID=ConstructionPreviewer_IconFlip, Priority=0});
+			PushBack(functions, {Fn = "Flip", Description = ConstructionPreviewer->GetFlipDescription(), Object = fx.preview, IconID = ConstructionPreviewer_IconFlip, Priority = 0});
 	}
 	// call elevator cases
 	var elevators = FindObjects(Find_ID(ElevatorCase), Find_InRect(-ELEVATOR_CALL_DISTANCE, AbsY(0), ELEVATOR_CALL_DISTANCE * 2, GetY() + AbsY(LandscapeHeight())), Find_Func("Ready", this));
 	for (var elevator in elevators)
-		PushBack(functions, { Fn = "CallCase", Object=elevator, Description=elevator->GetCallDescription(), Priority=0 });
+		PushBack(functions, { Fn = "CallCase", Object = elevator, Description = elevator->GetCallDescription(), Priority = 0 });
 	return functions;
 }
 

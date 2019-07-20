@@ -22,10 +22,10 @@ local ActMap=
 	{
 		Prototype = Action,
 		Name="Attach",
-		Procedure=DFA_ATTACH,
+		Procedure = DFA_ATTACH,
 		NextAction="Be",
-		Length=1,
-		FacetBase=1,
+		Length = 1,
+		FacetBase = 1,
 		AbortCall = "AttachTargetLost"
 	}
 };
@@ -104,7 +104,7 @@ func Set(to, angle, offset, visibility, size)
 }
 
 func Rotate (int r, int xoff, int yoff, size) {
-  var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+  var fsin = Sin(r, 1000), fcos = Cos(r, 1000);
   size = size ?? 1000;
   // set matrix values
   SetObjDrawTransform (

@@ -52,7 +52,7 @@ public func Definition(def)
 	alt_skin_mesh_material_list = [];
 	for (var alt_skin in skin_names)
 	{
-		Clonk.EditorProps.skin.Options[n++] = { Value=alt_skin[0], Name=alt_skin[0] };
+		Clonk.EditorProps.skin.Options[n++] = { Value = alt_skin[0], Name = alt_skin[0] };
 		alt_skin_mesh_material_list[i++] = Format("Clonk_%s", alt_skin[0]);
 	}
 	Clonk.EditorProps.skin.AsyncGet = "GetAlternativeSkin";

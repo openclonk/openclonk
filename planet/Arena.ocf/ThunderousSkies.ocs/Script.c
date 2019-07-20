@@ -91,7 +91,7 @@ global func FxLifestealDamage(object target, effect, int damage, int cause, int 
 global func FxLifedrainStart(object target, effect, int temporary,damage)
 {
 	if (temporary) return 1;
-	effect.drain=damage/10;
+	effect.drain = damage/10;
 }
 global func FxLifedrainAdd(object target, effect, string new_name, int new_timer, damage)
 {
@@ -108,7 +108,7 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 	if (!FindObject(Find_ID(KingOfTheHill_Location))) return 1;
 	if (FindObject(Find_ID(KingOfTheHill_Location))->GetKing() == nil) return 1;
 	
-	var king=FindObject(Find_ID(KingOfTheHill_Location))->GetKing();
+	var king = FindObject(Find_ID(KingOfTheHill_Location))->GetKing();
 	var particles = ThunderousSkies_air_particles;
 	var duration = 10;
 	if (GetEffect("Lifedrain", king))
@@ -180,7 +180,7 @@ global func PlaceGras()
 	var r=[-91, -93, -93, 89, 93, 93, 88, 89, -92, -92, 88, 93, 93, -88, -87, -93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 43, 46, 44, 48, -43, -48, -48, -45, -43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -48, -44, -45, 48, 46, 48, 45, 0, 0, 0, 0, 0, 0, 0, 44, 0];
 	for (var i = 0; i < GetLength(x); i++)
 	{
-		var edge=CreateObjectAbove(Grass, x[i], y[i] + 5, NO_OWNER);
+		var edge = CreateObjectAbove(Grass, x[i], y[i] + 5, NO_OWNER);
 		edge->SetR(r[i]); 
 		edge->Initialize();
 	}
@@ -195,7 +195,7 @@ global func FxIntFillChestsStart(object target, effect, int temporary)
 	var w_list = [Shield, Javelin, FireballScroll, Bow, Blunderbuss, WindScroll, ThunderScroll];
 	
 	for (var chest in chests)
-		for (var i=0; i<4; ++i)
+		for (var i = 0; i<4; ++i)
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
 }
@@ -208,26 +208,26 @@ global func FxIntFillChestsTimer()
 	var maxcount = [1,1,1,1,2,1,1,2,2,1,1];
 	
 	var contents;
-	for (var i=0; i<chest->GetLength(w_list); i++)
+	for (var i = 0; i<chest->GetLength(w_list); i++)
 		contents+=chest->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
 	if (!FindObject(Find_ID(Clonk),Find_Distance(20,chest->GetX(),chest->GetY())) && chest->ContentsCount()>2)
 	{
-		var r=chest->Random(chest->ContentsCount());
-		var remove=true;
-		for (var i=0; i<GetLength(w_list); i++)
-			if (chest->Contents(r)->GetID() == w_list[i]) remove=false;
+		var r = chest->Random(chest->ContentsCount());
+		var remove = true;
+		for (var i = 0; i<GetLength(w_list); i++)
+			if (chest->Contents(r)->GetID() == w_list[i]) remove = false;
 		if (remove) chest->Contents(r)->RemoveObject();			
 	}
 	
-	for (var i=0; i<2 ; i++)
+	for (var i = 0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (chest->ContentsCount(w_list[r]) < maxcount[r])
 		{
 			chest->CreateChestContents(w_list[r]);
-			i=3;
+			i = 3;
 		}
 	}
 	return 1;

@@ -15,7 +15,7 @@ public func InitializeMap(proplist map)
 	// Map type 0: One big island; more small islands above
 	// Map type 1: Only many small islands
 	var t = SCENPAR_MapType;
-	var w = map.Wdt, h=map.Hgt;
+	var w = map.Wdt, h = map.Hgt;
 	g_map_width = w;
 	
 	if (g_theme.BackgroundMat)
@@ -27,9 +27,9 @@ public func InitializeMap(proplist map)
 	if (t == 1) DrawSmallIslandsMap(map);
 	
 	// Alternate texctures
-	var icealt_tex = { Algo=MAPALGO_RndChecker, Wdt=2, Hgt=3, Ratio=g_theme.AltMatRatio };
-	icealt_tex = { Algo=MAPALGO_Turbulence, Op=icealt_tex };
-	icealt_tex = { Algo=MAPALGO_And, Op=[Duplicate(RegexMatch(g_theme.IceMats[1], "\\w+", Regex_FirstOnly)[0][0]), icealt_tex]};
+	var icealt_tex = { Algo = MAPALGO_RndChecker, Wdt = 2, Hgt = 3, Ratio = g_theme.AltMatRatio };
+	icealt_tex = { Algo = MAPALGO_Turbulence, Op = icealt_tex };
+	icealt_tex = { Algo = MAPALGO_And, Op=[Duplicate(RegexMatch(g_theme.IceMats[1], "\\w+", Regex_FirstOnly)[0][0]), icealt_tex]};
 	map->Draw(g_theme.IceMats[0], icealt_tex);
 	
 	// Return true to tell the engine a map has been successfully created.
@@ -56,11 +56,11 @@ func SpawnPositionCount()
 
 func DrawBigIslandMap(proplist map)
 {
-	var w = map.Wdt, h=map.Hgt;
+	var w = map.Wdt, h = map.Hgt;
 	// Draw one big island as the ground and some smaller islands floating above
 	// Big
-	var island = { Algo=MAPALGO_Polygon, X=[0,w,w*6/8,w*2/8], Y=[h*4/10,h*4/10,h*7/10,h*7/10] };
-	island = { Algo=MAPALGO_Turbulence, Op=island, Amplitude=[0, 8] };
+	var island = { Algo = MAPALGO_Polygon, X=[0,w,w*6/8,w*2/8], Y=[h*4/10,h*4/10,h*7/10,h*7/10] };
+	island = { Algo = MAPALGO_Turbulence, Op = island, Amplitude=[0, 8] };
 	map->Draw(g_theme.IceMats[1], island, [w/10,h*13/20,w*8/10,h*3/20]); 
 	// Make sure one row of inner island is drawn because it's used for player spawns
 	map->Draw(g_theme.IceMats[1], nil, [w*3/10,h*13/20,w*4/10+1,1]); 
@@ -84,7 +84,7 @@ func DrawBigIslandMap(proplist map)
 
 func DrawSmallIslandsMap(proplist map)
 {
-	var w = map.Wdt, h=map.Hgt, x, y, szx, szy;
+	var w = map.Wdt, h = map.Hgt, x, y, szx, szy;
 	// Islands in center of map
 	var n_islands = 35;
 	while (n_islands--)

@@ -16,7 +16,7 @@ func Construction()
 protected func Recruitment(int player)
 {
 	//The clonk's appearance
-	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
+	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData = 1;Skin = iX" (X = chosen skin)
 	var skin_setting = GetCrewExtraData("Skin");
 	if (skin_setting == nil) skin_setting = GetPlrClonkSkin(player);
 	if (skin_setting != nil) SetSkin(skin_setting);
@@ -103,10 +103,10 @@ func Definition(def) {
 
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.skin = { Name="$Skin$", EditorHelp="$SkinHelp$", Type="enum", Set="SetSkin", Options = [
-	{ Value=0, Name="Adventurer"},
-	{ Value=1, Name="Steampunk"},
-	{ Value=2, Name="Alchemist"},
-	{ Value=3, Name="Farmer"}
+	{ Value = 0, Name="Adventurer"},
+	{ Value = 1, Name="Steampunk"},
+	{ Value = 2, Name="Alchemist"},
+	{ Value = 3, Name="Farmer"}
 	]};
 	
 	_inherited(def);

@@ -39,7 +39,7 @@ func Sparkle() {
         R = 200 + Random(55),
         G = 200 + Random(55),
         B = 200 + Random(55),
-        Alpha = PV_Linear(255, 0), //AlphaFade=4
+        Alpha = PV_Linear(255, 0), //AlphaFade = 4
         Size = 16, //40
         Phase = PV_Linear(0, 9),
         Rotation = PV_Random(360),

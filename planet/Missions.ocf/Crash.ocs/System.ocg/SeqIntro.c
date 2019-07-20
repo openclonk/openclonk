@@ -173,7 +173,7 @@ func Intro_16()
 func Intro_17()
 {
 	this.pilot->SetCommand("MoveTo", nil, 120, 860);
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var crew = GetCrew(plr);
@@ -182,7 +182,7 @@ func Intro_17()
 			crew->SetCommand("MoveTo", nil, 135+Random(25), 860);
 		}
 	}
-	this.timer=0;
+	this.timer = 0;
 	return ScheduleNext(100);
 }
 
@@ -246,7 +246,7 @@ func Intro_Stop()
 	var lava = FindObject(Find_ID(BoilingLava));
 	if (lava) lava->SetIntensity(25);
 	// if players got stuck somewhere, unstick them
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var crew = GetCrew(plr);

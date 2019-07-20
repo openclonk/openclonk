@@ -74,7 +74,7 @@ public func SetQuickbuyItems(array list)
 
 public func AddCaption(string title, array requirements)
 {
-	return AddHomebaseItem({is_caption = true, title=title, requirements=requirements});
+	return AddHomebaseItem({is_caption = true, title = title, requirements = requirements});
 }
 
 public func AddHomebaseItem(proplist entry)
@@ -313,7 +313,7 @@ public func OnNoAmmo(object clonk)
 public func QuickBuyItem(id item)
 {
 	// Find item in buy list
-	var entry, i=0;
+	var entry, i = 0;
 	for (entry in base_material)
 		if (entry.item == item)
 			break;
@@ -339,7 +339,7 @@ private func GainTechnology(proplist entry)
 	Call(Format("~Gain%s", entry.tech), entry, tier);
 	// Update any related techs that may become available
 	var n = GetLength(base_material);
-	for (var i=0; i<n; ++i)
+	for (var i = 0; i<n; ++i)
 	{
 		var req = base_material[i].requirements;
 		if (req && GetIndexOf(req, entry.tech) >= 0)

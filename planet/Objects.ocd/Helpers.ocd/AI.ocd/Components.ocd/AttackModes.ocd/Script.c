@@ -154,7 +154,7 @@ private func InitAttackModes()
 			Name="$AttackMode$",
 			EditorHelp="$AttackModeHelp$",
 			Type="enum",
-			Sorted=true,
+			Sorted = true,
 			Options=[],
 			Set="SetAttackMode"
 		};
@@ -169,7 +169,7 @@ public func RegisterAttackMode(string identifier, proplist am, proplist am_defau
 	if (!this.AttackModes) this->InitAttackModes();
 	this.AttackModes[identifier] = am;
 	am.Identifier = identifier;
-	if (!am_default_values) am_default_values = { Identifier=identifier };
+	if (!am_default_values) am_default_values = { Identifier = identifier };
 	// Add to editor option for AI effect
 	var am_option = {
 		Name = am.Name ?? am->GetName(),

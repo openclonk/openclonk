@@ -66,7 +66,7 @@ private func UpdateGemOverlays(object obj, int max_overlays, bool refresh_existi
 	var n_overlays = GetLength(obj.gem_overlays);
 	var i;
 	// Remove overlays of gems that have left
-	for (i=0; i<n_overlays; ++i)
+	for (i = 0; i<n_overlays; ++i)
 		if (!obj.gem_overlays[i] || obj.gem_overlays[i]->Contained() != obj)
 		{
 			obj->SetGraphics(nil, nil, gem_overlay_index+i);
@@ -86,7 +86,7 @@ private func UpdateGemOverlays(object obj, int max_overlays, bool refresh_existi
 		{
 			// Find a spot for this gem
 			i = GetIndexOf(obj.gem_overlays, nil);
-			if (i<0) i=n_overlays;
+			if (i<0) i = n_overlays;
 			// No free space?
 			if (i == max_overlays) if (refresh_existing) continue; else break;
 		}
@@ -153,7 +153,7 @@ public func StartCommunication()
 	gem_particles = CreateArray(CrystalCommunicator_GemCount);
 	ruby_particle = new Particles_MagicRing() { R = 0xff, G = 0x00, B = 0x30 };
 	amethyst_particle = new Particles_MagicRing() { R = 0xa0, G = 0x00, B = 0xff };
-	for (var i=0; i<CrystalCommunicator_GemCount; ++i)
+	for (var i = 0; i<CrystalCommunicator_GemCount; ++i)
 	{
 		var base;
 		if (this.gem_overlays && this.gem_overlays[i])
@@ -210,7 +210,7 @@ private func PreActivity()
 {
 	// Warmup effects
 	var i,x,y,z;
-	for (i=0; i<CrystalCommunicator_GemCount; ++i)
+	for (i = 0; i<CrystalCommunicator_GemCount; ++i)
 	{
 		x = CrystalCommunicator_GemsX[i]/5 - 45;
 		y = CrystalCommunicator_GemsY[i]/5 - 35;

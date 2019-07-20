@@ -4,7 +4,7 @@ global func SetLeagueProgressScore(int new_progress, int new_score)
 {
 	// Progress must be between 0 and 25
 	new_progress = BoundBy(new_progress, 0, 25);
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i);
 		var plrid = GetPlayerID(plr);

@@ -105,7 +105,7 @@ local preview;
 func SetPreview(object clonk, int x, int y)
 {
 	var c = Offset2BridgeCoords(clonk, x, y), clr = 0xffa0a0a0;
-	x=clonk->GetX(); y=clonk->GetY();
+	x = clonk->GetX(); y = clonk->GetY();
 	if (!preview)
 	{
 		preview = WallKit_Preview->Create(x+c.x1,y+c.y1,x+c.x2,y+c.y2,clr);

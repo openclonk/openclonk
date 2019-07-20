@@ -337,7 +337,7 @@ public func FuzzyCalcLineIntersectY(array coords1, array coords2, int Y)
 	return coords1[0] + ((Y - coords1[1]) / m);
 }
 
-// takes "position=left", returns [value=0, usage_count=0] for !no_cache and ["position", "left"] for no_cache
+// takes "position = left", returns [value = 0, usage_count = 0] for !no_cache and ["position", "left"] for no_cache
 public func FuzzyStateStringToArray(state, bool no_cache)
 {
 	// already an array?
@@ -399,8 +399,8 @@ public func FuzzyNot(condA, int nope)
 }
 
 /*
-	/condition/ can be "position=left" or FuzzyAnd(FuzzyOr("position=left", "position=right"), FuzzyNot("position=middle"))
-	/result/ should be "move=left"
+	/condition/ can be "position = left" or FuzzyAnd(FuzzyOr("position = left", "position = right"), FuzzyNot("position = middle"))
+	/result/ should be "move = left"
 */
 public func AddFuzzyRule(condition, string result)
 {

@@ -145,7 +145,7 @@ private func GetSurroundingMessageObjects(clonk)
 private func AddSurroundingObjectMessages(object clonk)
 {
 	var message_objects = GetSurroundingMessageObjects(clonk);
-	var menu_entries = [], i=0;
+	var menu_entries = [], i = 0;
 	for (var obj in message_objects)
 	{
 		var entry = {Symbol = Clonk, Bottom = "2em",
@@ -186,10 +186,10 @@ local ActMap =
 	{
 		Prototype = Action,
 		Name="Attach",
-		Procedure=DFA_ATTACH,
+		Procedure = DFA_ATTACH,
 		NextAction="Hold",
-		Length=1,
-		FacetBase=1,
+		Length = 1,
+		FacetBase = 1,
 		AbortCall = "AttachTargetLost"
 	}
 };

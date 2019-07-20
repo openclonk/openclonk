@@ -147,8 +147,8 @@ protected func RejectEntrance(object container)
 public func Definition(def, ...)
 {
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.animal_reproduction_area_size = { Name="$ReproductionAreaSize$", EditorHelp="$ReproductionAreaSizeHelp$", Type="int", Min=0, AsyncGet="ReproductionAreaSize", Set="SetReproductionAreaSize", Save="Reproduction" };
-	def.EditorProps.animal_reproduction_rate = { Name="$ReproductionRate$", EditorHelp="$ReproductionRateHelp$", Type="int", Min=0, Max=10000, AsyncGet="ReproductionRate", Set="SetReproductionRate", Save="Reproduction" };
-	def.EditorProps.animal_max_count = { Name="$MaxCount$", EditorHelp="$MaxCountHelp$", Type="int", Min=1, AsyncGet="MaxAnimalCount", Set="SetMaxAnimalCount", Save="Reproduction" };
+	def.EditorProps.animal_reproduction_area_size = { Name="$ReproductionAreaSize$", EditorHelp="$ReproductionAreaSizeHelp$", Type="int", Min = 0, AsyncGet="ReproductionAreaSize", Set="SetReproductionAreaSize", Save="Reproduction" };
+	def.EditorProps.animal_reproduction_rate = { Name="$ReproductionRate$", EditorHelp="$ReproductionRateHelp$", Type="int", Min = 0, Max = 10000, AsyncGet="ReproductionRate", Set="SetReproductionRate", Save="Reproduction" };
+	def.EditorProps.animal_max_count = { Name="$MaxCount$", EditorHelp="$MaxCountHelp$", Type="int", Min = 1, AsyncGet="MaxAnimalCount", Set="SetMaxAnimalCount", Save="Reproduction" };
 	return _inherited(def, ...);
 }

@@ -7,7 +7,7 @@
 
 local text;
 
-func SetText(string t) { text=t; }
+func SetText(string t) { text = t; }
 
 public func IsInteractable() { return GetCon() >= 100; }
 

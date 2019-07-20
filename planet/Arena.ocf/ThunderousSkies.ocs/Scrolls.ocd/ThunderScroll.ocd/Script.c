@@ -17,8 +17,8 @@ public func ControlUse(object pClonk)
 global func FxThunderStrikeStart(pTarget, effect, iTemp, owner, x)
 {
 	if (iTemp) return;
-	effect.owner=owner;
-	effect.x=x;
+	effect.owner = owner;
+	effect.x = x;
 	
 	effect.particles_air = 
 	{
@@ -39,7 +39,7 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 			Alpha = PV_Linear(255, 0)
 		};
 		var owner = effect.owner;
-		var x=0;
+		var x = 0;
 		var wdt = 18;
 		var y = [];
 		var targets=[];
@@ -57,21 +57,21 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 			if (Random(2))
 				particles = Particles_ElectroSpark2();
 			if (!(i%5))
-				for (var k=0; k<y[i+wdt]; k+=10+Random(5))
+				for (var k = 0; k<y[i+wdt]; k+=10+Random(5))
 				{	
 					CreateParticle("ElectroSpark", i+move,k, PV_Random(-12, 12), PV_Random(-40, -10), PV_Random(20, 40), Particles_ElectroSpark1(), 3);
 				}
 			
-			for (var l=0; l<3; l++)
+			for (var l = 0; l<3; l++)
 				CreateParticle("ElectroSpark", i+move, y[i+wdt]-l-2, PV_Random(-20, 20), PV_Random(-20, -30), PV_Random(10, 20), particles, 3);
 
 			if (i%3 == 0)
 				CreateParticle("LightningStrike", i+move, y[i+wdt]-32, 0, 0, PV_Random(3, 10), particles_lightning);
 			for (var t in FindObjects(Find_Or(Find_And(Find_ID(Clonk),Find_OCF(OCF_Alive)), Find_ID(TargetBalloon)),Find_OnLine(i+move,-0,i+move,y[i+wdt])))
 			{
-				var add=true;
-				for (var j=0; j<GetLength(targets); j++)
-					if (targets[j] == t) add=false;
+				var add = true;
+				for (var j = 0; j<GetLength(targets); j++)
+					if (targets[j] == t) add = false;
 				if (add) targets[GetLength(targets)] = t;
 			}
 		}
@@ -80,7 +80,7 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 		{
 			if (t->GetID() == TargetBalloon)
 			{
-				var arw=CreateObjectAbove(Arrow,0,0,owner);
+				var arw = CreateObjectAbove(Arrow,0,0,owner);
 				t->OnProjectileHit(arw);
 				arw->RemoveObject();
 			}
@@ -101,7 +101,7 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 		{
 			for (var y = 0; !GBackSolid(move+5,y) && y < LandscapeHeight(); y += Random(4) + 3)
 			{
-				var add=Random((iEffectTime*5))*((Random(2)*2) -1);
+				var add = Random((iEffectTime*5))*((Random(2)*2) -1);
 				CreateParticle("Air", move+5+add, y, PV_Random(-2, 2), PV_Random(-10, -5), PV_Random(5, 20), effect.particles_air);
 			}
 		}

@@ -14,7 +14,7 @@ public func IsProjectileTarget(object projectile, object shooter)
 }
 public func SetGate(object g)
 {
-	gate=g;
+	gate = g;
 }
 
 public func OnProjectileHit()

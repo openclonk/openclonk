@@ -24,7 +24,7 @@ private func DrawMaterialInRange(string mat, int ymin, int ymax, spot_size, int 
 {
 	// Create mask
 	var mask = {Algo = MAPALGO_Rect, X = this.mat_rect.X,  Y = this.mat_rect.Y + ymin * this.mat_rect.Hgt / 100, Wdt = this.mat_rect.Wdt, Hgt = (ymax-ymin) * this.mat_rect.Hgt / 100 };
-	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude=BoundBy(this.mat_rect.Hgt, 10, 50), Op = mask};
+	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = BoundBy(this.mat_rect.Hgt, 10, 50), Op = mask};
 	mask = {Algo = MAPALGO_And, Op = [this.mat_surface, mask]}; 
 	// Draw on it
 	return DrawMaterial(mat, mask, spot_size, ratio);

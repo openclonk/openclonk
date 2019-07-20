@@ -51,11 +51,11 @@ public func Definition(def)
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.extension_point = {
 	  Type="point",
-	  Relative=true,
-	  HorizontalFix=true,
+	  Relative = true,
+	  HorizontalFix = true,
 	  AsyncGet="GetExtensionPoint",
 	  Set="SetExtensionPoint",
-	  Color=0xffff00 };
+	  Color = 0xffff00 };
 }
 
 /*-- Properties --*/

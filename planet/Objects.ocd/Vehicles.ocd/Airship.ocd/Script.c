@@ -372,23 +372,23 @@ func Definition(proplist def)
 	def.PictureTransformation = Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0));
 	if (def == Airship)
 	{
-		var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
+		var spawn_editor_props = { Type="proplist", Name = def->GetName(), EditorProps= {
 			Pilot = new EnemySpawn->GetAICreatureEditorProps(nil, "$NoPilotHelp$")  { Name="$Pilot$", EditorHelp="$PilotHelp$" },
-			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min=5, Max=10000 },
-			Crew = { Name="$Crew$", EditorHelp="$CrewHelp$", Type="array", Elements=EnemySpawn->GetAICreatureEditorProps(EnemySpawn->GetAIClonkDefaultPropValues("Firestone")) },
-			HitPoints = { Name="$HitPoints$", EditorHelp="$HitPointsHelp$", Type="int", Min=1, Max=1000000 },
+			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min = 5, Max = 10000 },
+			Crew = { Name="$Crew$", EditorHelp="$CrewHelp$", Type="array", Elements = EnemySpawn->GetAICreatureEditorProps(EnemySpawn->GetAIClonkDefaultPropValues("Firestone")) },
+			HitPoints = { Name="$HitPoints$", EditorHelp="$HitPointsHelp$", Type="int", Min = 1, Max = 1000000 },
 		} };
 		var spawn_default_values = {
-			Pilot = { Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues() },
+			Pilot = { Type="Clonk", Properties = EnemySpawn->GetAIClonkDefaultPropValues() },
 			FlySpeed = def.FlySpeed,
-			Crew = [ { Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues("BowArrow", true) } ],
+			Crew = [ { Type="Clonk", Properties = EnemySpawn->GetAIClonkDefaultPropValues("BowArrow", true) } ],
 			HitPoints = def.HitPoints,
 		};
 		EnemySpawn->AddEnemyDef("Airship",
-				{ SpawnType=Airship,
-					SpawnFunction=def.SpawnAirship,
-					OffsetAttackPathByPos=true,
-					GetInfoString=def.GetSpawnInfoString },
+				{ SpawnType = Airship,
+					SpawnFunction = def.SpawnAirship,
+					OffsetAttackPathByPos = true,
+					GetInfoString = def.GetSpawnInfoString },
 			spawn_default_values, spawn_editor_props);
 	}
 }
@@ -397,7 +397,7 @@ private func SpawnAirship(array pos, proplist enemy_data, proplist enemy_def, ar
 {
 	// Spawn the boomattack
 	var airship = CreateObjectAbove(Airship, pos[0], pos[1]+15, g_enemyspawn_player);
-	var rval = [airship], n=1;
+	var rval = [airship], n = 1;
 	if (!airship) return;
 	airship->TurnAirship(attack_path[0].X > pos[0], true);
 	// Airship settings

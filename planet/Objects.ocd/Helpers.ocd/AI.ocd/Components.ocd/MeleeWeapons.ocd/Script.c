@@ -78,7 +78,7 @@ private func ExecuteClub(effect fx)
 		return false;
 	}
 	// Are we in range?
-	var x=fx.Target->GetX(), y=fx.Target->GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY();
 	var dx = tx-x, dy = ty-y;
 	if (Abs(dx) <= 10 && PathFree(x,y,tx,ty))
 	{
@@ -117,7 +117,7 @@ private func ExecuteBomber(effect fx)
 	// Still carrying the bomb?
 	if (fx.weapon->Contained() != fx.Target)
 	{
-		fx.weapon=nil;
+		fx.weapon = nil;
 		return false;
 	}
 	// Are we in range?

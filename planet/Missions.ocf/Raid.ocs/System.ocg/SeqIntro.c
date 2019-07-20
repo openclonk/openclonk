@@ -16,7 +16,7 @@ func Intro_JoinPlayer(int plr)
 	{
 		var crew = GetCrew(plr);
 		if (!this.hero) this.hero = crew;
-		var x=300, y=20; // 328
+		var x = 300, y = 20; // 328
 		if (crew != this.hero) x += plr*15 + Random(10);
 		crew->SetPosition(x,y);
 		crew->SetXDir(10); crew->SetYDir(3);

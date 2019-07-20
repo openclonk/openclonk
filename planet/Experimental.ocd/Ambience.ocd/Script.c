@@ -92,7 +92,7 @@ func InitializeEnvironments()
 private func Execute()
 {
 	// Per-player execution every third timer (~.8 seconds)
-	var i=GetPlayerCount(C4PT_User);
+	var i = GetPlayerCount(C4PT_User);
 	while (i--) if (!(++exec_counter % 3))
 	{
 		ExecutePlayer(GetPlayerByIndex(i, C4PT_User));
@@ -185,7 +185,7 @@ private func Env_AddSound(string snd_name, chance)
 
 private func Env_AddAction(afn, par0, par1, par2, par3, par4)
 {
-	return this.actions[GetLength(this.actions)] = { fn=afn, par=[par0, par1, par2, par3, par4] };
+	return this.actions[GetLength(this.actions)] = { fn = afn, par=[par0, par1, par2, par3, par4] };
 }
 
 private func Env_SetMusic(string playlist)
@@ -263,7 +263,7 @@ private func EnvCheck_Mountains(object cursor, int x, int y, bool is_current)
 {
 	// Check for mountains: Rock materials below
 	var num_rock;
-	for (var y2=0; y2<=45; y2+=15)
+	for (var y2 = 0; y2<=45; y2+=15)
 		for (var x2=-75; x2<=75; x2+=15)
 			num_rock += this.mat_mask[GetMaterial(x+x2,y+y2)+1];
 	// need 15pts on first check; 5 to sustain

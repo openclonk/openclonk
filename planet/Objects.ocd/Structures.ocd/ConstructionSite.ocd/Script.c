@@ -326,7 +326,7 @@ private func GetMissingComponents()
 		
 		if (diff > 0)
 		{
-			PushBack(missing_material, {id=component, count=diff});
+			PushBack(missing_material, {id = component, count = diff});
 			full_material = false;
 		}		
 		

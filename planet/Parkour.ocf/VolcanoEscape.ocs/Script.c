@@ -18,7 +18,7 @@ protected func Initialize()
 	goal->SetStartpoint(LandscapeWidth()*2/5, LandscapeHeight()*97/100);
 	// Create check points
 	var checkpoint_locs = [], n_checkpoint_locs = 0, cave_loc;
-	for (var i=0; i<10; ++i)
+	for (var i = 0; i<10; ++i)
 	{
 		// Find a good cave
 		cave_loc = FindLocation(Loc_InRect(50,LandscapeHeight()/6,LandscapeWidth()-100,LandscapeHeight()*17/25), Loc_Material("Tunnel"), Loc_Space(10));
@@ -28,7 +28,7 @@ protected func Initialize()
 			for (var check_loc in checkpoint_locs)
 				if (Distance(cave_loc.x, cave_loc.y, check_loc.x, check_loc.y) < 50)
 				{
-					cave_loc=nil; break;
+					cave_loc = nil; break;
 				}
 			// This spot is OK.
 			if (cave_loc)

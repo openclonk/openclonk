@@ -13,7 +13,7 @@ func InitializeRound() // called by Goal_MultiRoundMelee
 	var chest_area_hgt = ls_hgt/2;
 	// Chests in regular mode. Boom packs in grenade launcher mode.
 	var num_extras = [6,12][SCENPAR_Weapons];
-	for (i=0; i<num_extras; ++i)
+	for (i = 0; i<num_extras; ++i)
 	{
 		var pos = FindLocation(Loc_InRect(0,chest_area_y,ls_wdt,chest_area_hgt-100), Loc_Wall(CNAT_Bottom)); // Loc_Wall adds us 100 pixels...
 		if (pos)
@@ -39,7 +39,7 @@ func InitializeRound() // called by Goal_MultiRoundMelee
 		}
 	}
 	// Materials: Firestones
-	for (i=0; i<30; ++i)
+	for (i = 0; i<30; ++i)
 	{
 		var pos = FindLocation(Loc_InRect(0,chest_area_y,ls_wdt,chest_area_hgt), Loc_Solid());
 		if (pos)
@@ -47,7 +47,7 @@ func InitializeRound() // called by Goal_MultiRoundMelee
 				CreateObjectAbove(Firestone,pos.x,pos.y-1);
 	}
 	// Some firestones and bombs in lower half. For ap type 1, more firestones in lower than upper half.
-	for (i=0; i<30; ++i)
+	for (i = 0; i<30; ++i)
 	{
 		var pos = FindLocation(Loc_InRect(0,ls_hgt/2,ls_wdt,ls_hgt/3), Loc_Solid());
 		if (pos)
@@ -76,14 +76,14 @@ func InitPlayerRound(int plr, object crew) // called by Goal_MultiRoundMelee
 		{
 			start_pos = g_player_spawn_positions[g_player_spawn_index++];
 			var map_zoom = ls_wdt / g_map_width;
-			start_pos = {x=start_pos[0]*map_zoom+map_zoom/2, y=start_pos[1]*map_zoom};
+			start_pos = {x = start_pos[0]*map_zoom+map_zoom/2, y = start_pos[1]*map_zoom};
 		}
 		else
 		{
 			// Start positions not defined or exhausted: Spawn in lower area for both maps becuase starting high is an an advantage.
 			start_pos = FindLocation(Loc_InRect(ls_wdt/5,ls_hgt/2,ls_wdt*3/5,ls_hgt/3), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
 			if (!start_pos) start_pos = FindLocation(Loc_InRect(ls_wdt/10,0,ls_wdt*8/10,ls_hgt*4/5), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
-			if (!start_pos) start_pos = {x=Random(ls_wdt*6/10)+ls_wdt*2/10, y=ls_hgt*58/100};
+			if (!start_pos) start_pos = {x = Random(ls_wdt*6/10)+ls_wdt*2/10, y = ls_hgt*58/100};
 		}
 		crew->SetPosition(start_pos.x, start_pos.y-10);
 	}

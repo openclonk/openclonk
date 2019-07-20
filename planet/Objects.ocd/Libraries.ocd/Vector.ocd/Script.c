@@ -12,7 +12,7 @@
  save mechanism will throw a lot of warnings.
  @par a The first vector.
  @par b The second vector.
- @return array The vector (a_i + b_i), i=1,...,n.
+ @return array The vector (a_i + b_i), i = 1,...,n.
 */
 public func Sum(array a, array b)
 {
@@ -33,7 +33,7 @@ public func Sum(array a, array b)
  Subtraction of two vectors of the same dimension.
  @par a The first vector.
  @par b The second vector.
- @return array The vector (a_i - b_i), i=1,...,n.
+ @return array The vector (a_i - b_i), i = 1,...,n.
 */
 public func Subtract(array a, array b)
 {
@@ -54,7 +54,7 @@ public func Subtract(array a, array b)
  Multiplication of a vector and a number.
  @par a The vector
  @par b The number
- @return array The vector (b * a_i), i=1,...,n.
+ @return array The vector (b * a_i), i = 1,...,n.
 */
 public func Multiply(array a, int b)
 {
@@ -75,7 +75,7 @@ public func Multiply(array a, int b)
  Division of a vector and a number.
  @par a The vector
  @par b The number
- @return array The vector (a_i / b), i=1,...,n.
+ @return array The vector (a_i / b), i = 1,...,n.
 */
 public func Divide(array a, int b)
 {
@@ -135,7 +135,7 @@ public func Product(array a, array b)
 /**
  Euclidean length of a vector.
  @par a The vector.
- @return int Square root of the sum of a_i * a_i, for i=1,...,n.
+ @return int Square root of the sum of a_i * a_i, for i = 1,...,n.
 */
 public func Length(array a)
 {

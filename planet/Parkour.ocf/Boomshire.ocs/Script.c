@@ -66,14 +66,14 @@ global func FxDynamiteEruptionTimer(object nobject, effect, int timer)
 {
 	if (Random(5))
 	{
-		var dyn=CreateObjectAbove(Firestone,2460+Random(20),670);
+		var dyn = CreateObjectAbove(Firestone,2460+Random(20),670);
 		dyn->SetYDir(-80);
 		dyn->SetXDir(RandomX(-1,1));
 		dyn->SetRDir(RandomX(-30,30));
 	}
 	else
 	{
-		var dyn=CreateObjectAbove(Dynamite,2460+Random(20),670);
+		var dyn = CreateObjectAbove(Dynamite,2460+Random(20),670);
 		dyn->SetYDir(-80);
 		dyn->SetXDir(RandomX(-1,1));
 		dyn->SetRDir(RandomX(-30,30));
@@ -142,7 +142,7 @@ global func FxPlaneResetTimer(object target, effect, int time)
 {
 	if (target->GetX() > 3000 || target->Contents())
 	{
-		effect.count=0;
+		effect.count = 0;
 		return FX_OK;
 	}
 	else
@@ -165,7 +165,7 @@ global func FxPlaneResetTimer(object target, effect, int time)
 
 private func Doors()
 {
-	var door=CreateObjectAbove(StoneDoor, 135, 60, NO_OWNER);
+	var door = CreateObjectAbove(StoneDoor, 135, 60, NO_OWNER);
 	door->CloseDoor();
 	AddEffect("AutoOpen",door,1,15);
 

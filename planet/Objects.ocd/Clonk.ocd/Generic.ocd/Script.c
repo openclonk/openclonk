@@ -64,7 +64,7 @@ protected func Destruction(...)
 	// Always kill clonks first. This will ensure relaunch scripts, enemy kill counters, etc. are called
 	// even if clonks die in some weird way that causes direct removal
 	// (To prevent a death callback, you can use SetAlive(false); RemoveObject();)
-	if (GetAlive()) { this.silent_death=true; Kill(); }
+	if (GetAlive()) { this.silent_death = true; Kill(); }
 	return true;
 }
 
@@ -150,11 +150,11 @@ public func CommandFailure(string command, object target)
 public func Redefine(idTo)
 {
 	// save data of activity
-	var phs=GetPhase(),act=GetAction();
+	var phs = GetPhase(),act = GetAction();
 	// Transform
 	ChangeDef(idTo);
 	// restore action
-	var chg=SetAction(act);
+	var chg = SetAction(act);
 	if (!chg) SetAction("Walk");
 	if (chg) SetPhase(phs);
 	// Done

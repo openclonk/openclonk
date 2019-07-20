@@ -87,7 +87,7 @@ public func Reset(clonk)
 	clonk->SetHandAction(false);
 	clonk->UpdateAttach();
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
-	swingtime=0;
+	swingtime = 0;
 	RemoveEffect("IntPickaxe", clonk);
 }
 
@@ -97,9 +97,9 @@ func DoSwing(object clonk, int ix, int iy)
 
 	//Creates an imaginary line which runs for 'MaxReach' distance (units in pixels)
 	//or until it hits a solid wall.
-	var iDist=0;
+	var iDist = 0;
 	var x2, y2;
-	while (!GBackSolid((x2=Sin(angle,iDist)), (y2=Cos(angle,iDist))) && iDist < MaxReach)
+	while (!GBackSolid((x2 = Sin(angle,iDist)), (y2 = Cos(angle,iDist))) && iDist < MaxReach)
 	{
 		// Check some additional surrounding pixels in a cone to make hitting single pixels easier.
 		for (var da = -StrikeCone/2; da <= StrikeCone/2; da += 2)

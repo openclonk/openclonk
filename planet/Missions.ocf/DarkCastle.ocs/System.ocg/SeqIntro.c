@@ -169,11 +169,11 @@ func Intro_PlaneHit()
 	CreateParticle("Smoke", PV_Random(-30,30), PV_Random(-30,30), PV_Random(-60, 60), PV_Random(-20,0), PV_Random(200, 500), particles, 20);
 	particles.Size = PV_Linear(PV_Random(50, 80), PV_Random(100, 200));
 	CreateParticle("Smoke", PV_Random(-30,30), PV_Random(-30,30), PV_Random(-20, 20), PV_Random(-20,0), PV_Random(100, 200), particles, 20);
-	for (var iplr=0,plr; iplr<GetPlayerCount(C4PT_User); ++iplr)
+	for (var iplr = 0,plr; iplr<GetPlayerCount(C4PT_User); ++iplr)
 	{
 		plr = GetPlayerByIndex(iplr, C4PT_User);
-		var icrew=0,crew;
-		while (crew=GetCrew(plr, icrew++))
+		var icrew = 0,crew;
+		while (crew = GetCrew(plr, icrew++))
 		{
 			crew->Exit(0,-5, 0, Random(3)-1, Random(5)-6);
 			crew->SetAction("Tumble");
@@ -182,7 +182,7 @@ func Intro_PlaneHit()
 	npc_pyrit->Exit(0,-5, 0, -1, -2);
 	npc_pyrit->SetAction("Tumble");
 	this.Hit = this.intro_seq.plane_Hit;
-	this.MeshTransformation=Trans_Mul(Trans_Rotate(10,0,2,1), Airplane.MeshTransformation);
+	this.MeshTransformation = Trans_Mul(Trans_Rotate(10,0,2,1), Airplane.MeshTransformation);
 	this.intro_seq->ScheduleNext(50);
 	SetObjectLayer(this); // plane is broken
 	return true;

@@ -80,7 +80,7 @@ private func BaseRectangle_IsFullMap()
 */
 public func Rectangle(int x, int y, int w, int h)
 {
-	return new BaseRectangle { x=x, y=y, wdt=w, hgt=h };
+	return new BaseRectangle { x = x, y = y, wdt = w, hgt = h };
 }
 
 
@@ -92,15 +92,15 @@ local BaseCircle; // properties cx,cy,r
 private func BaseCircle_IsPointContained(int x, int y)
 {
 	x-=this.cx; y-=this.cy;
-	var r=this.r;
+	var r = this.r;
 	return x*x + y*y <= r*r;
 }
 
 // bounding rectangle
 private func BaseCircle_GetBoundingRectangle()
 {
-	var r=this.r;
-	return new Shape.BaseRectangle { x=this.cx-r, y=this.cy-r, wdt=r*2+1, hgt=r*2+1 };
+	var r = this.r;
+	return new Shape.BaseRectangle { x = this.cx-r, y = this.cy-r, wdt = r*2+1, hgt = r*2+1 };
 }
 
 private func BaseCircle_GetRandomPoint(proplist result)
@@ -136,7 +136,7 @@ public func BaseCircle_GetArea()
 */
 public func Circle(int cx, int cy, int r)
 {
-	return new BaseCircle { cx=cx, cy=cy, r=r };
+	return new BaseCircle { cx = cx, cy = cy, r = r };
 }
 
 
@@ -223,7 +223,7 @@ public func Intersect(proplist c1, proplist c2, ...)
 	// Intersection of one area?
 	if (!c2) return c1;
 	// Otherwise, built array
-	var areas = [c1, c2], i=1, area;
+	var areas = [c1, c2], i = 1, area;
 	while (area = Par(++i)) areas[i] = area;
 	return new BaseIntersection { areas = areas };
 }
@@ -295,7 +295,7 @@ public func Combine(proplist c1, proplist c2, ...)
 	// Combination of one area?
 	if (!c2) return c1;
 	// Otherwise, built array
-	var areas = [c1, c2], i=1, area;
+	var areas = [c1, c2], i = 1, area;
 	while (area = Par(++i)) areas[i] = area;
 	return new BaseCombination { areas = areas };
 }

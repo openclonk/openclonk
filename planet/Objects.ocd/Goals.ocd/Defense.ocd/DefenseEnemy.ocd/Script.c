@@ -289,7 +289,7 @@ local Swordsman = new DefaultEnemy
 	Inventory = [Sword, Helmet],
 	Energy = 30,
 	Bounty = 20,
-	Color=0xff0000ff
+	Color = 0xff0000ff
 };
 
 // A clonk with bow and arrow.

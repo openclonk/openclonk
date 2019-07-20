@@ -23,15 +23,15 @@ func DrawVaried(string mat, proplist algo, array rect, vary_mats)
 	this->Blit(main_shape, rect);
 	for (var vary_def in vary_mats)
 	{
-		var sx=3,sy=3;
+		var sx = 3,sy = 3;
 		if (GetType(vary_def) == C4V_Array)
 		{
-			sx=vary_def[1]; sy = vary_def[2];
+			sx = vary_def[1]; sy = vary_def[2];
 			vary_def = vary_def[0];
 		}
-		var rand_algo = {Algo=MAPALGO_RndChecker, Ratio=ratio, Wdt=sx, Hgt=sy};
-		var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=12, Scale=8, Op=rand_algo};
-		this->Draw(vary_def, {Algo=MAPALGO_And, Op=[main_shape, turb_algo]});
+		var rand_algo = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = sx, Hgt = sy};
+		var turb_algo = {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 8, Op = rand_algo};
+		this->Draw(vary_def, {Algo = MAPALGO_And, Op=[main_shape, turb_algo]});
 	}
 	return main_shape;
 }
@@ -42,16 +42,16 @@ func DrawSpots(string mat, int num, sizex, sizey, array rect, inmat, vary_mats)
 	if (!inmat) inmat="Earth";
 	if (!sizex) sizex = [5, 20];
 	if (!sizey) sizey = [5, 7];
-	if (!num) num=Max(this->GetPixelCount(inmat, rect) / (EvalIntParM(sizex)*EvalIntParM(sizey)*10), 1);
+	if (!num) num = Max(this->GetPixelCount(inmat, rect) / (EvalIntParM(sizex)*EvalIntParM(sizey)*10), 1);
 	// Draw num spots
-	var spot = {Algo=MAPALGO_Ellipse};
+	var spot = {Algo = MAPALGO_Ellipse};
 	while (num--)
 	{
 		if (!this->FindPosition(spot, inmat, rect)) break;
 		var mask = this->Duplicate(inmat);
 		spot.Wdt = EvalIntPar(sizex)/2;
 		spot.Hgt = EvalIntPar(sizey)/2;
-		var algo = {Algo=MAPALGO_And, Op=[mask, {Algo=MAPALGO_Turbulence, Amplitude=Max(spot.Wdt, spot.Hgt), Scale=Max(spot.Wdt, spot.Hgt), Op=spot}]};
+		var algo = {Algo = MAPALGO_And, Op=[mask, {Algo = MAPALGO_Turbulence, Amplitude = Max(spot.Wdt, spot.Hgt), Scale = Max(spot.Wdt, spot.Hgt), Op = spot}]};
 		if (vary_mats)
 			DrawVaried(mat, algo, rect, vary_mats);
 		else
@@ -100,10 +100,10 @@ func DrawLiquidVein(string mat, int wdt, int spread, array rect, inmat)
 	var y1 = rect[1]-rect[3]+Random(rect[3]*3);
 	var x2 = rect[0]+Random(rect[2]);
 	var y2 = rect[1]+Random(rect[3]);
-	var water = {Algo=MAPALGO_Polygon, X=[x1,x2], Y=[y1,y2], Wdt=wdt};
-	var water_rand = {Algo=MAPALGO_Turbulence, Amplitude=30, Scale=30, Op=water};
-	var water_rand2 = {Algo=MAPALGO_Turbulence, Amplitude=spread*2, Scale=2, Op=water_rand};
-	this->Draw(mat, {Algo=MAPALGO_And, Op=[mask, water_rand2]});
+	var water = {Algo = MAPALGO_Polygon, X=[x1,x2], Y=[y1,y2], Wdt = wdt};
+	var water_rand = {Algo = MAPALGO_Turbulence, Amplitude = 30, Scale = 30, Op = water};
+	var water_rand2 = {Algo = MAPALGO_Turbulence, Amplitude = spread*2, Scale = 2, Op = water_rand};
+	this->Draw(mat, {Algo = MAPALGO_And, Op=[mask, water_rand2]});
 	return true;
 }
 
@@ -113,13 +113,13 @@ func DrawRegularGround(array rect, yoff, turbulence)
 	if (!rect) rect = [0,0,this.Wdt, this.Hgt];
 	if (GetType(yoff) == C4V_Nil) yoff = rect[3]/4;
 	if (GetType(turbulence) == C4V_Nil) turbulence = 30;
-	var ground_rect = {Algo=MAPALGO_Rect, X=-100, Y=rect[1]+yoff, Wdt=rect[0]+rect[2]+200, Hgt=rect[3]+100};
-	var ground_algo = {Algo=MAPALGO_Turbulence, Amplitude=turbulence, Scale=30, Op=ground_rect};
+	var ground_rect = {Algo = MAPALGO_Rect, X=-100, Y = rect[1]+yoff, Wdt = rect[0]+rect[2]+200, Hgt = rect[3]+100};
+	var ground_algo = {Algo = MAPALGO_Turbulence, Amplitude = turbulence, Scale = 30, Op = ground_rect};
 	var earth_shape = DrawVaried("Earth-earth", ground_algo, rect, [["Earth-earth_root", 3,10], ["Earth-earth_spongy", 6,2]]);
-	var top1 = {Algo=MAPALGO_Border, Top=[-10, 3], Op=earth_shape};
-	var top2 = {Algo=MAPALGO_Border, Top=[-10, 1], Op=earth_shape};
-	this->Draw("Earth-earth", {Algo=MAPALGO_And, Op=[earth_shape, {Algo=MAPALGO_Turbulence, Amplitude=4, Scale=10, Op=top1}]});
-	this->Draw("Earth-earth", {Algo=MAPALGO_And, Op=[earth_shape, {Algo=MAPALGO_Turbulence, Amplitude=4, Scale=10, Op=top2}]});
+	var top1 = {Algo = MAPALGO_Border, Top=[-10, 3], Op = earth_shape};
+	var top2 = {Algo = MAPALGO_Border, Top=[-10, 1], Op = earth_shape};
+	this->Draw("Earth-earth", {Algo = MAPALGO_And, Op=[earth_shape, {Algo = MAPALGO_Turbulence, Amplitude = 4, Scale = 10, Op = top1}]});
+	this->Draw("Earth-earth", {Algo = MAPALGO_And, Op=[earth_shape, {Algo = MAPALGO_Turbulence, Amplitude = 4, Scale = 10, Op = top2}]});
 	return true;
 }
 
@@ -132,27 +132,27 @@ func FixLiquidBorders(border_material, lava_border_material)
 	if (!lava_border_material) lava_border_material = "Rock";
 	// Find liquid-to-background borders
 	var liquids = this->Duplicate("Liquid");
-	var liquid_borders = {Algo=MAPALGO_Border, Op=liquids, Wdt=-1, Top=0 };
+	var liquid_borders = {Algo = MAPALGO_Border, Op = liquids, Wdt=-1, Top = 0 };
 	var background = this->Duplicate("Background");
-	background->Draw("Sky", {Algo=MAPALGO_Not, Op=this});
-	this->Draw(border_material, {Algo=MAPALGO_And, Op=[liquid_borders, background]});
+	background->Draw("Sky", {Algo = MAPALGO_Not, Op = this});
+	this->Draw(border_material, {Algo = MAPALGO_And, Op=[liquid_borders, background]});
 	// Put lava on top of other liquids
-	var lava_borders = {Algo=MAPALGO_Border, Op=this->Duplicate(["Lava", "DuroLava"])};
-	this->Draw(lava_border_material, {Algo=MAPALGO_And, Op=[lava_borders, liquids]});
+	var lava_borders = {Algo = MAPALGO_Border, Op = this->Duplicate(["Lava", "DuroLava"])};
+	this->Draw(lava_border_material, {Algo = MAPALGO_And, Op=[lava_borders, liquids]});
 	// Put acid on top of water
-	var acid_borders = {Algo=MAPALGO_Border, Op=this->Duplicate("Acid")};
-	this->Draw(border_material, {Algo=MAPALGO_And, Op=[acid_borders, liquids]});
+	var acid_borders = {Algo = MAPALGO_Border, Op = this->Duplicate("Acid")};
+	this->Draw(border_material, {Algo = MAPALGO_And, Op=[acid_borders, liquids]});
 	return true;
 }
 
 func DrawPlatform(string material, int x0, int y0, int wdt, int hgt_up, int hgt_down)
 {
 	var ground_mask = this->Duplicate("~Background");
-	for (var x=x0; x<x0+wdt; ++x)
+	for (var x = x0; x<x0+wdt; ++x)
 	{
 		// Adjust materials bottom
 		var y, px;
-		for (y=y0+1; y<=y0+hgt_down; ++y)
+		for (y = y0+1; y<=y0+hgt_down; ++y)
 		{
 			px = ground_mask->GetPixel(x,y);
 			if (px) break;
@@ -171,12 +171,12 @@ func FindBottomPeaks(array rect, int min_dx)
 	// Peaks are minimum min_dx apart horizontally
 	var x1,y1,x2,y2;
 	if (rect)
-		{ x1=rect[0]; y1=rect[1]; x2=x1+rect[2]; y2=y1+rect[3]; }
+		{ x1 = rect[0]; y1 = rect[1]; x2 = x1+rect[2]; y2 = y1+rect[3]; }
 	else
-		{ x2=this.Wdt; y2=this.Hgt; }
+		{ x2 = this.Wdt; y2 = this.Hgt; }
 	var last_y = y2+1, last_dy = 0, num_dy_0 = 0, last_peak_x = -min_dx-1;
 	var peaks = [];
-	for (var x=x1; x<x2; ++x)
+	for (var x = x1; x<x2; ++x)
 	{
 		var y = y2;
 		while (!this->GetPixel(x,y)) if (y1>=--y) break;
@@ -193,11 +193,11 @@ func FindBottomPeaks(array rect, int min_dx)
 				if (num_dy_0%2 && !Random(2)) --peak_x;
 				if (peak_x-last_peak_x < min_dx)
 				{
-					if (!Random(2)) peaks[GetLength(peaks)-1] = {X=peak_x, Y=last_y};
+					if (!Random(2)) peaks[GetLength(peaks)-1] = {X = peak_x, Y = last_y};
 				}
 				else
 				{
-					peaks[GetLength(peaks)] = {X=peak_x, Y=last_y};
+					peaks[GetLength(peaks)] = {X = peak_x, Y = last_y};
 				}
 				last_peak_x = peaks[GetLength(peaks)-1].X;
 			}
@@ -227,12 +227,12 @@ func FillLiquid(string mat, int x, int y, max_wdt, int max_hgt)
 		x = -1;
 		for (var range in open_ranges)
 		{
-			var x1=range[0], x2=range[1];
+			var x1 = range[0], x2 = range[1];
 			if (x>x1) continue; // two or more paths merged
 			while (x1>min_x && background_mask[this->GetPixel(x1-1,y)]) --x1;
 			while (x2<max_x && background_mask[this->GetPixel(x2+1,y)]) ++x2;
 			var below_was_background = false;
-			for (x=x1; x<=x2; ++x)
+			for (x = x1; x<=x2; ++x)
 			{
 				this->SetPixel(x,y,mat); ++n_pix_set;
 				var below_is_background = background_mask[this->GetPixel(x,y+1)];

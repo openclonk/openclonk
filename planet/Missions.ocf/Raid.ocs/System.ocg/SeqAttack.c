@@ -19,7 +19,7 @@ func Attack_1()
 	var plane_x = [1700, 1750, 1800];
 	var plane_y = [90, 110, 80];
 	this.planes = CreateArray(n_planes);
-	for (var i=0; i<n_planes; ++i)
+	for (var i = 0; i<n_planes; ++i)
 	{
 		var plane = CreateObjectAbove(Airplane, plane_x[i], plane_y[i]);
 		var pilot = CreateObjectAbove(Clonk, plane_x[i], plane_y[i]);
@@ -63,7 +63,7 @@ func Attack_5()
 {
 	if (this.planes[0]->GetX() > 880) return ScheduleSame(5);
 	MessageBoxAll("$Attack3$", npc_lara, true); // oh god!
-	for (var i=0; i<3; ++i)
+	for (var i = 0; i<3; ++i)
 	{
 		this.planes[i]->StartInstantFlight(270, 15);
 		this.planes[i]->SetXDir(-15);
@@ -138,7 +138,7 @@ func Attack_DropBomb(int plane_idx, int delay)
 	if (delay) return ScheduleCall(this, this.Attack_DropBomb, delay, 1, plane_idx);
 	var plane = this.planes[plane_idx];
 	if (!plane) return;
-	for (var i=0; i<3; ++i)
+	for (var i = 0; i<3; ++i)
 	{
 		var bomb = plane->CreateObjectAbove(IronBomb, 0, 12);
 		if (!bomb) return;
@@ -151,7 +151,7 @@ func Attack_DropBomb(int plane_idx, int delay)
 
 func Attack_7()
 {
-	for (var i=0; i<3; ++i)
+	for (var i = 0; i<3; ++i)
 	{
 		this.planes[i]->StartInstantFlight(60, 15);
 	}
@@ -223,7 +223,7 @@ func Attack_Stop()
 {
 	g_attack_done = true;
 	// Remove AI planes
-	for (var i=0; i<3; ++i)
+	for (var i = 0; i<3; ++i)
 	{
 		if (this.planes[i]) this.planes[i]->RemoveObject();
 	}

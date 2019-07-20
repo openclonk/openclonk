@@ -11,7 +11,7 @@ static g_caves, g_end_cave_x, g_end_cave_y;
 local caves, n_caves, start_cave, end_cave;
 
 func FindCaves(int n)
-{ //n=6;
+{ //n = 6;
 	var mask = CreateLayer();
 	mask->Draw("Rock");
 	caves = [];
@@ -20,7 +20,7 @@ func FindCaves(int n)
 	{
 		var cave = {};
 		if (!mask->FindPosition(cave, "Rock", [border,border,this.Wdt-border*2,this.Hgt-border*2])) continue;
-		mask->Draw("Tunnel", {Algo=MAPALGO_Ellipse, X=cave.X, Y=cave.Y, Wdt=min_cave_dist, Hgt=min_cave_dist});
+		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = cave.X, Y = cave.Y, Wdt = min_cave_dist, Hgt = min_cave_dist});
 		cave.links = [];
 		cave.dirs = 0;
 		cave.rand = Random(65536);
@@ -39,7 +39,7 @@ func FindCaves(int n)
 func GetCaveLinkDir(c1, c2)
 {
 	// Returns if c2 is left (1), right (2), atop (4) or below (8) c1. Returns only one direction.
-	var dx=c2.X-c1.X, dy=c2.Y-c1.Y, adx=Abs(dx), ady=Abs(dy);
+	var dx = c2.X-c1.X, dy = c2.Y-c1.Y, adx = Abs(dx), ady = Abs(dy);
 	//Log("%d,%d  to   %d,%d  dx=%d  dy=%d", c1.X, c1.Y, c2.X, c2.Y, dx, dy);
 	return (dx<-ady) | (dx>ady)<<1 | (dy<=-adx)<<2 | (dy>=adx)<<3;
 }
@@ -48,7 +48,7 @@ func FindCaveConnections()
 {
 	var i, j, cave, cave2, caves2, dir, dir2, n, check_link, all_links = [];
 	// Connect all caves to neighbours
-	for (i=0; i<n_caves; ++i)
+	for (i = 0; i<n_caves; ++i)
 	{
 		cave = caves[i];
 		caves2 = caves[i+1:n_caves];
@@ -71,7 +71,7 @@ func FindCaveConnections()
 				if (check_link[0] != cave && check_link[1] != cave)
 					if (check_link[0] != cave2 && check_link[1] != cave2)
 						if (IsLineOverlap(cave.X, cave.Y, cave2.X, cave2.Y, check_link[0].X, check_link[0].Y, check_link[1].X, check_link[1].Y))
-							{ has_overlap=true; break; }
+							{ has_overlap = true; break; }
 			if (has_overlap) continue;
 			// Connect these caves
 			cave.links[GetLength(cave.links)] = cave2;
@@ -133,7 +133,7 @@ func MakeMaze()
 	if (main_path_length > 5) RemoveCaveLinks(main_path[main_path_length*2/3], main_path[main_path_length*2/3+1]);
 	// Kill unreachable caves
 	var i;
-	for (i=0; i<n_caves; ++i) if (caves[i].depth>=0) break;
+	for (i = 0; i<n_caves; ++i) if (caves[i].depth>=0) break;
 	caves = caves[i:n_caves];
 	n_caves -= i;
 	end_cave = caves[n_caves-1];
@@ -161,8 +161,8 @@ func RemoveCaveLinks(c1, c2)
 
 func DrawVariations(string mat, int ratio, int sx, int sy)
 {
-	var rand_algo = {Algo=MAPALGO_RndChecker, Ratio=ratio, Wdt=sx, Hgt=sy};
-	var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=12, Scale=8, Op=rand_algo};
+	var rand_algo = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = sx, Hgt = sy};
+	var turb_algo = {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 8, Op = rand_algo};
 	return Draw(mat, turb_algo);
 }
 
@@ -183,8 +183,8 @@ func DrawCaves()
 {
 	for (var cave in caves)
 	{
-		var cave_algo = {Algo=MAPALGO_Ellipse, X=cave.X, Y=cave.Y, Wdt=4, Hgt=4};
-		var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=8, Scale=15, Op=cave_algo};
+		var cave_algo = {Algo = MAPALGO_Ellipse, X = cave.X, Y = cave.Y, Wdt = 4, Hgt = 4};
+		var turb_algo = {Algo = MAPALGO_Turbulence, Amplitude = 8, Scale = 15, Op = cave_algo};
 		Draw("Tunnel", turb_algo);
 		//var src = cave.path;
 		//if (src && GetLength(src)) src = Format("%d,%d", src[GetLength(src)-1].X, src[GetLength(src)-1].Y);
@@ -200,8 +200,8 @@ func DrawTunnels()
 		for (var cave2 in cave.links)
 		{
 			if (cave2.done) continue;
-			var tunnel_algo = {Algo=MAPALGO_Polygon, X=[cave.X, cave2.X], Y=[cave.Y, cave2.Y], Wdt=2, Open=1, Empty=1 };
-			var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=9, Scale=10, Op=tunnel_algo};
+			var tunnel_algo = {Algo = MAPALGO_Polygon, X=[cave.X, cave2.X], Y=[cave.Y, cave2.Y], Wdt = 2, Open = 1, Empty = 1 };
+			var turb_algo = {Algo = MAPALGO_Turbulence, Amplitude = 9, Scale = 10, Op = tunnel_algo};
 			Draw("Tunnel", turb_algo);
 		}
 		cave.done = true;
@@ -218,7 +218,7 @@ func DrawStart()
 
 func DrawEnd()
 {
-	Draw("Ruby", {Algo=MAPALGO_Ellipse, X=end_cave.X, Y=end_cave.Y, Wdt=4, Hgt=4});
+	Draw("Ruby", {Algo = MAPALGO_Ellipse, X = end_cave.X, Y = end_cave.Y, Wdt = 4, Hgt = 4});
 	g_end_cave_x = end_cave.X;
 	g_end_cave_y = end_cave.Y;
 	return true;

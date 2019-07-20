@@ -60,7 +60,7 @@ func ControlUseStop(object clonk, int x, int y)
 	ey = y+clonk->GetY();
 	
 	vis->Set(sx,sy,ex,ey);
-	aimed=true;
+	aimed = true;
 	
 	return true;
 }

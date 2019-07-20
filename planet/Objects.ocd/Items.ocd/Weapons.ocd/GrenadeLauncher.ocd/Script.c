@@ -174,8 +174,8 @@ func FireWeapon(object clonk, int angle)
 {
 	var shot = Contents(0)->~TakeObject() ?? Contents(0);
 
-	var IX=Sin(180-angle,MuzzleFront);
-	var IY=Cos(180-angle,MuzzleUp)+MuzzleOffset;
+	var IX = Sin(180-angle,MuzzleFront);
+	var IY = Cos(180-angle,MuzzleUp)+MuzzleOffset;
 
 	shot->LaunchProjectile(angle, 0, shooting_strength, IX, IY);
 	shot->~Fuse(true);
@@ -189,7 +189,7 @@ func FireWeapon(object clonk, int angle)
 
 	// Muzzle Flash & gun smoke
 	if (Abs(Normalize(angle,-180)) > 90)
-		IY=Cos(180-angle,MuzzleDown)+MuzzleOffset;
+		IY = Cos(180-angle,MuzzleDown)+MuzzleOffset;
 
 	var x = Sin(angle, 20);
 	var y = -Cos(angle, 20);

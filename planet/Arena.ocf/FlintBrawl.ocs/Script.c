@@ -74,7 +74,7 @@ func InitializeRound()
 	var i, pos;
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	// Materials: Firestones
-	for (i=0; i<30; ++i)
+	for (i = 0; i<30; ++i)
 	{
 		var pos = FindLocation(Loc_InRect(0,ls_hgt/2,ls_wdt,ls_hgt/3), Loc_Solid());
 		if (pos && IsFirestoneSpot(pos.x,pos.y))
@@ -83,7 +83,7 @@ func InitializeRound()
 	// Some firestones and bombs in lower half. For ap type 1, more firestones in lower than upper half.
 	var items = [Firestone,IronBomb, Dynamite, Loam, PowderKeg];
 	var item_count = GetLength(items);
-	for (i=0; i<30; ++i)
+	for (i = 0; i<30; ++i)
 	{
 		var pos = FindLocation(Loc_InRect(0,0,ls_wdt,ls_hgt), Loc_Solid());
 		if (pos && IsFirestoneSpot(pos.x,pos.y))
@@ -141,7 +141,7 @@ func InitPlayerRound(int plr, object crew)
 		// Start positions not defined or exhausted: Spawn in lower area for both maps becuase starting high is an an advantage.
 		start_pos = FindLocation(Loc_InRect(ls_wdt/5,ls_hgt/2,ls_wdt*3/5,ls_hgt/3), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
 		if (!start_pos) start_pos = FindLocation(Loc_InRect(ls_wdt/10,0,ls_wdt*8/10,ls_hgt*4/5), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
-		if (!start_pos) start_pos = {x=Random(ls_wdt*6/10)+ls_wdt*2/10, y=ls_hgt*58/100};
+		if (!start_pos) start_pos = {x = Random(ls_wdt*6/10)+ls_wdt*2/10, y = ls_hgt*58/100};
 	}
 
 	crew->SetPosition(start_pos.x, start_pos.y-10);

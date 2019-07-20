@@ -119,7 +119,7 @@ global func FxIntFillChestsStart(object target, effect, int temporary)
 	var w_list = [Bow, Blunderbuss, Shield, Sword, Club, Javelin, Bow, Blunderbuss, Shield, Sword, Club, Javelin, DynamiteBox];
 	
 	for (var chest in chests)
-		for (var i=0; i<4; ++i)
+		for (var i = 0; i<4; ++i)
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
 }

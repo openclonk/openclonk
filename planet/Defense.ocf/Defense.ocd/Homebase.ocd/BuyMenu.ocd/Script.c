@@ -137,7 +137,7 @@ public func ClickCaption() { return true; } // nothing to be done here (maybe ex
 public func UpdateBuyEntry(id buy_def, bool available, proplist entry, int callback_idx, bool was_last_selection)
 {
 	if (!menu) return false;
-	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2+entry.extra_width), Symbol = buy_def, GraphicsName=entry.graphic }, fontclr, bgclr, bgclr_hover;
+	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2+entry.extra_width), Symbol = buy_def, GraphicsName = entry.graphic }, fontclr, bgclr, bgclr_hover;
 	if (available)
 	{
 		fontclr = 0x00ff00;
@@ -250,8 +250,8 @@ private func CreateToggleVisibilityButton()
 			OnClick = GuiAction_Call(this, "ToggleVisibility"),
 			BackgroundColor = {Std = nil, OnHover = 0x50000000 },
 			//GraphicsName = GetGraphicsName(is_open),
-			Symbol = { Std=Icon_Buy, OnHover=Icon_Buy },
-			Text = { Std=Format("$Buy$%s", hotkey_string), OnHover=Format("<c ffff00>$Buy$</c>%s", hotkey_string) },
+			Symbol = { Std = Icon_Buy, OnHover = Icon_Buy },
+			Text = { Std = Format("$Buy$%s", hotkey_string), OnHover = Format("<c ffff00>$Buy$</c>%s", hotkey_string) },
 		}
 	};
 	buymenu_toggle_id = GuiOpen(buymenu_button_menu);

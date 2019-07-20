@@ -24,7 +24,7 @@ func LaunchPlayer(int plr)
 	// Position and materials
 	var starting_cave = g_caves[0];
 	var i, crew;
-	for (i=0; crew=GetCrew(plr,i); ++i)
+	for (i = 0; crew = GetCrew(plr,i); ++i)
 	{
 		crew->SetPosition(starting_cave.X/2, starting_cave.Y-18);
 		for (var tool in [Pickaxe, GrappleBow, SprayCan])
@@ -103,7 +103,7 @@ protected func Initialize()
 	for (cave in g_caves)
 	{
 		if (cave == g_caves[0] || cave == g_caves[n_caves-1]) continue;
-		var x=cave.X, y=cave.Y;
+		var x = cave.X, y = cave.Y;
 		while (!GBackSolid(x,y)) ++y;
 		if (cave.n_links <= 1)
 		{

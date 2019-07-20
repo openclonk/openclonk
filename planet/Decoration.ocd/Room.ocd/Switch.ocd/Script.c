@@ -189,7 +189,7 @@ local Touchable = 2;
 local Plane = 270;
 local MaxHandleAngle = 45;
 local HandleSpeed = 6;
-local Components = { Rock = 3, Metal=1 };
+local Components = { Rock = 3, Metal = 1 };
 local left_action, right_action; // Custom editor-selected actions on switch handling
 
 local EditorActions = {

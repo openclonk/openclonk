@@ -21,7 +21,7 @@ protected func PostIntroInitialize()
 	goal_site->MakeUncancellable();
 	if (SCEN_TEST)
 	{
-		for (var i=0; i<6; ++i)
+		for (var i = 0; i<6; ++i)
 		{
 			goal_site->CreateObjectAbove(Metal,-20);
 			goal_site->CreateObjectAbove(Ruby,0);
@@ -114,7 +114,7 @@ private func InitEnvironment()
 	// Set infinite wate rreflow from sides
 	var water = Material("Water");
 	for (var x in [0, LandscapeWidth()-1])
-		for (var y=1,y0=0; y<=LandscapeHeight(); ++y)
+		for (var y = 1,y0 = 0; y<=LandscapeHeight(); ++y)
 		{
 			if (GetMaterial(x, y) == water)
 			{

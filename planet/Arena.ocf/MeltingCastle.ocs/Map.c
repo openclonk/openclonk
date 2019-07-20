@@ -15,6 +15,6 @@ public func InitializeMap(proplist map)
 	var old_map = Duplicate();
 	Resize(this.Wdt*2, this.Hgt);
 	Blit(old_map);
-	Blit({Algo=MAPALGO_Scale, OffX=old_map.Wdt, X=-100, Op=old_map});
+	Blit({Algo = MAPALGO_Scale, OffX = old_map.Wdt, X=-100, Op = old_map});
 	return true;
 }

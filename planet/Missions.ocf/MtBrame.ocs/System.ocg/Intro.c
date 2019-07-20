@@ -75,7 +75,7 @@ global func FxIntIntroStart(object target, proplist effect)
 	effect.Sister->SetDir(DIR_Right);
 	effect.Sister.ActMap = { Prototype = Clonk.ActMap };
 	effect.Sister.ActMap.Walk = { Prototype = Clonk.ActMap.Walk, Decel = 100 };
-	effect.Sister.ActMap.Jump = { Prototype = Clonk.ActMap.Jump, Speed = 0, Accel=0 };
+	effect.Sister.ActMap.Jump = { Prototype = Clonk.ActMap.Jump, Speed = 0, Accel = 0 };
 	effect.Sister.JumpSpeed = 0;
 
 	effect.Dialog = effect.Sister->SetDialogue("Sister");

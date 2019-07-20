@@ -33,7 +33,7 @@ func Activate(int start_y, int end_y)
 	mat_advancespeeds = CreateArray(20);
 	mat_behaviours[0] = BigVolcanoBehaviour_Fill;
 	mat_advancespeeds[0] = 80;
-	for (var mat_idx=0, mat_name; mat_name=MaterialName(mat_idx); ++mat_idx)
+	for (var mat_idx = 0, mat_name; mat_name = MaterialName(mat_idx); ++mat_idx)
 	{
 		var behaviour, density = GetMaterialVal("Density", "Material", mat_idx), speed;
 		if (WildcardMatch(mat_name, "*Lava")) // pass through lava
@@ -71,7 +71,7 @@ func Activate(int start_y, int end_y)
 	}
 	n_lava_y = (LandscapeWidth()-1)/BigVolcano_XRes+2;
 	lava_y = CreateArray(n_lava_y);
-	for (var i=0; i<n_lava_y; ++i) lava_y[i] = start_y;
+	for (var i = 0; i<n_lava_y; ++i) lava_y[i] = start_y;
 	return true;
 }
 
@@ -79,7 +79,7 @@ func Execute()
 {
 	//Log("tic");
 	// Create branch
-	var ls_w=LandscapeWidth();
+	var ls_w = LandscapeWidth();
 	if (n_branches<20 && !Random(1))
 	{
 		var x = Random(ls_w);
@@ -90,7 +90,7 @@ func Execute()
 	{
 		var lavamat = Material("DuroLava");
 		var any_nonlava, last_move, this_move;
-		for (var i=0; i<n_lava_y; ++i)
+		for (var i = 0; i<n_lava_y; ++i)
 		{
 			if (lava_y[i] > lava_y_endpoint)
 			{
@@ -124,10 +124,10 @@ func Execute()
 				if (last_move || (this_move && i))
 				{
 					var x1=(i-1)*BigVolcano_XRes, x2 = i*BigVolcano_XRes;
-					var y1=lava_y[i-1]+speed_multiplier+1, y2 = lava_y[i]+speed_multiplier+1;
-					var limit=50;
+					var y1 = lava_y[i-1]+speed_multiplier+1, y2 = lava_y[i]+speed_multiplier+1;
+					var limit = 50;
 					while (GetMaterial(x1,y1+1) != lavamat && --limit) ++y1;
-					limit=50;
+					limit = 50;
 					while (GetMaterial(x1,y2+1) != lavamat && --limit) ++y2;
 					DrawMaterialQuad("DuroLava-lava_red", x1,lava_y[i-1], x2,lava_y[i], x2,y2, x1,y1, BigVolcanoBehaviour_Underground);
 				}
@@ -167,9 +167,9 @@ local dbg_counter;
 func LaunchBranch(int x, int y, int dir_x, int dir_y, int parent_level)
 {
 	var fx = AddEffect("VolcanoBranch", this, 1, 3, this);
-	fx.x=x; fx.y=y; fx.dir_x=dir_x; fx.dir_y=dir_y;
-	fx.tip_progress=0;
-	fx.trace_x=[x]; fx.trace_y=[y]; fx.trace_len=fx.len=1;
+	fx.x = x; fx.y = y; fx.dir_x = dir_x; fx.dir_y = dir_y;
+	fx.tip_progress = 0;
+	fx.trace_x=[x]; fx.trace_y=[y]; fx.trace_len = fx.len = 1;
 	fx.counter = ++dbg_counter;
 	fx.level = parent_level + 1;
 	//Log("LaunchBranch %d from %d/%d towards %d/%d", fx.counter,x,y,dir_x,dir_y);
@@ -182,10 +182,10 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 	// Progress tip
 	var next_tip_progress = fx.tip_progress + 10;
 	var last_segment = fx.trace_len-1;
-	var sx=fx.trace_x[last_segment], sy=fx.trace_y[last_segment];
-	var nx=sx+next_tip_progress*(fx.dir_x)/100, ny=sy+next_tip_progress*(fx.dir_y)/100;
+	var sx = fx.trace_x[last_segment], sy = fx.trace_y[last_segment];
+	var nx = sx+next_tip_progress*(fx.dir_x)/100, ny = sy+next_tip_progress*(fx.dir_y)/100;
 	//Log("Go %d from %d/%d towards %d/%d", fx.counter,sx,sy,nx-sx,ny-sy);
-	if (nx == sx && ny == sy) { fx.tip_progress=next_tip_progress; return FX_OK; }
+	if (nx == sx && ny == sy) { fx.tip_progress = next_tip_progress; return FX_OK; }
 	if (ny<0 || fx.len>20) return FX_Execute_Kill; // End here?
 	var behaviour = mat_behaviours[GetMaterial(nx,ny)+1];
 	var i,dx,dy;
@@ -200,9 +200,9 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 		fx.fill_time = 0;
 		//if (behaviour == BigVolcanoBehaviour_AdvanceLava && !Random(5)) return FX_Execute_Kill; // prevent too many overlapping branches
 		DrawVerticalBranch(fx.x,fx.y,nx,ny,1);
-		fx.x=nx; fx.y=ny;
+		fx.x = nx; fx.y = ny;
 		// Extend width of old segments
-		for (i=fx.tip_progress*last_segment/100; i<next_tip_progress*last_segment/100; ++i)
+		for (i = fx.tip_progress*last_segment/100; i<next_tip_progress*last_segment/100; ++i)
 		{
 			var old_half_wdt = (last_segment-i+1)/3+1;
 			var new_half_wdt = (last_segment-i+2)/3+1;
@@ -225,8 +225,8 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 		dx = Sign(fx.dir_x);
 		if (!dx) dx = Random(2)*2-1;
 		dx *= 5;
-		var n_valid_branches=0;
-		for (i=0; i<2; ++i)
+		var n_valid_branches = 0;
+		for (i = 0; i<2; ++i)
 		{
 			for (dy=-10; dy<10; dy+=2)
 			{

@@ -33,7 +33,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	var animation = Format("SwordSlash2.%s", arm);
 
 	// Figure out the kind of animation to use
-	var length=15;
+	var length = 15;
 	if (clonk->IsJumping())
 		animation = Format("SwordJump2.%s",arm);
 

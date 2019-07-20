@@ -5,7 +5,7 @@
 	An arena like last man standing round for up to 12 players.
 --*/
 
-static const RUINS_RAIN_PERIOD_TIME=3200;
+static const RUINS_RAIN_PERIOD_TIME = 3200;
 
 protected func Initialize()
 {
@@ -46,7 +46,7 @@ global func FxRainTimer(object pTarget, effect, int timer)
 		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
 		return 1;
 	} 
-		for (var i=0; i<(6+Random(3)); i++)
+		for (var i = 0; i<(6+Random(3)); i++)
 	{
 		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
 	}
@@ -83,7 +83,7 @@ global func FxIntFillChestsStart(object target, effect, int temporary)
 	var w_list = [Bow, Blunderbuss, Shield, Sword, Club, GrenadeLauncher, Bow, Blunderbuss, Shield, Sword, Club, GrenadeLauncher, DynamiteBox];
 	
 	for (var chest in chests)
-		for (var i=0; i<4; ++i)
+		for (var i = 0; i<4; ++i)
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
 }

@@ -22,17 +22,17 @@ public func FxFireballStart(pTarget, effect, iTemp, owner, angle, x, y)
 	if (iTemp) return;
 	x+=Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
-	effect.owner=owner;
-	effect.angle=angle;
-	effect.x=x;
-	effect.y=y;
+	effect.owner = owner;
+	effect.angle = angle;
+	effect.x = x;
+	effect.y = y;
 }
 
 public func FxFireballTimer(pTarget, effect, iEffectTime)
 {
-	var angle=effect.angle;
-	var x=effect.x;
-	var y=effect.y;
+	var angle = effect.angle;
+	var x = effect.x;
+	var y = effect.y;
 
 	if	(	iEffectTime>67  ||
 	 		GBackSolid(x,y) ||
@@ -45,7 +45,7 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 	 	)
 	{
 		CreateObjectAbove(Dynamite,x,y,-1)->Explode(14);
-		for (var i=0; i<=3;i++) CreateObjectAbove(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),-1)->Explode(6+Random(4));
+		for (var i = 0; i<=3;i++) CreateObjectAbove(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),-1)->Explode(6+Random(4));
 		return -1;
 	}	
 	else if (iEffectTime < 70)

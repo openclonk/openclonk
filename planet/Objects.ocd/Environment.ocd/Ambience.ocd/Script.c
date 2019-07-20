@@ -19,7 +19,7 @@ protected func Initialize()
 	// Initial player data
 	player_environments = [];
 	fixed_player_environments = [];
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 		InitializePlayer(GetPlayerByIndex(i, C4PT_User));
 	// Periodic execution of ambience events
 	AddTimer(this.Execute, 10);
@@ -158,7 +158,7 @@ func InitializeEnvironments()
 private func Execute()
 {
 	// Per-player execution every third timer (~.8 seconds)
-	var i=GetPlayerCount(C4PT_User), plr;
+	var i = GetPlayerCount(C4PT_User), plr;
 	exec_counter += !(i%3);
 	while (i--) if (!(++exec_counter % 3))
 	{
@@ -236,7 +236,7 @@ func InitializePlayer(int plr)
 		// Start with a large change delay to ensure first execution does set a proper environment
 		var n = GetLength(all_environments);
 		var envs = CreateArray(n);
-		for (var i=0; i < n; ++i)
+		for (var i = 0; i < n; ++i)
 			envs[i] = new all_environments[i] { change_delay = 999, is_active = (all_environments[i].Name == fixed_environment) };
 		player_environments[plr] = envs;
 		// Newly joining players should have set playlist immediately (so they don't start playing a random song just to switch it immediately)
@@ -278,7 +278,7 @@ private func Env_AddAction(achance, afn, par0, par1, par2, par3, par4)
 {
 	// Make sure to not write into prototype proplist.
 	if (this.actions == this.Prototype.actions) this.actions = [];
-	var action = { chance=achance, fn=afn, par=[par0, par1, par2, par3, par4] };
+	var action = { chance = achance, fn = afn, par=[par0, par1, par2, par3, par4] };
 	this.actions[GetLength(this.actions)] = action;
 	return action;
 }
@@ -352,7 +352,7 @@ private func EnvCheck_Mountains(object cursor, int x, int y, bool is_current)
 {
 	// Check for mountains: Rock materials below
 	var num_rock;
-	for (var y2=0; y2<=45; y2+=15)
+	for (var y2 = 0; y2<=45; y2+=15)
 		for (var x2=-75; x2<=75; x2+=15)
 			num_rock += this.mat_mask[GetMaterial(x+x2,y+y2)+1];
 	// need 15pts on first check; 5 to sustain
@@ -427,21 +427,21 @@ public func Definition(def)
 	var n = 0;
 	for (var env in all_environments)
 	{
-		EditorProps.fixed_environment.Options[++n] = { Name=env.Name, Value=env.Name };
+		EditorProps.fixed_environment.Options[++n] = { Name = env.Name, Value = env.Name };
 	}
 	// User actions
 	var env_options = [{ Name="$Automatic$", EditorHelp="$AutomaticEnvHelp$", Value="" }];
 	n = 0;
 	for (var env in all_environments)
 	{
-		env_options[++n] = { Name=env.Name, Value=env.Name };
+		env_options[++n] = { Name = env.Name, Value = env.Name };
 	}
 	UserAction->AddEvaluator("Action", "$Ambience$", "$SetEnvironment$", "$SetEnvironmentHelp$", "ambience_environment", [def, def.EvalAct_SetEnvironment], { Players={Function="all_players"}, Environment="" }, { Type="proplist", Display="{{Environment}} ({{Players}})", EditorProps = {
-		Environment = { Name="$Environment$", Type="enum", Editable=true, Options = env_options },
+		Environment = { Name="$Environment$", Type="enum", Editable = true, Options = env_options },
 		Players = UserAction.Evaluator.PlayerList
 		} } );
 	// Shader
-	UserAction->AddEvaluator("Action", "$Ambience$", "$SetShader$", "$SetShaderHelp$", "ambience_shader", [def, def.EvalAct_SetShader], { ShaderName="Grayscale", Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{ShaderName}} ({{Status}})", EditorProps = {
+	UserAction->AddEvaluator("Action", "$Ambience$", "$SetShader$", "$SetShaderHelp$", "ambience_shader", [def, def.EvalAct_SetShader], { ShaderName="Grayscale", Status = { Function="bool_constant", Value = true } }, { Type="proplist", Display="{{ShaderName}} ({{Status}})", EditorProps = {
 		ShaderName = { Name="$Shader$", Type="enum", Options = [
 			{ Name="$None$" },
 			{ Name="$Grayscale$", Value="Grayscale" },

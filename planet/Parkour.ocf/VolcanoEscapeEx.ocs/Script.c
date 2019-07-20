@@ -41,7 +41,7 @@ protected func Initialize()
 		start_chest->CreateContents(DynamiteBox,2);
 	}
 	// Create big volcano
-	g_volcano=CreateObjectAbove(BigVolcano,0,0,NO_OWNER);
+	g_volcano = CreateObjectAbove(BigVolcano,0,0,NO_OWNER);
 	var h0 = h-10;
 	g_volcano->Activate(h0, h*10/100);
 	// Schedule script to update volcano speed multiplier
@@ -66,7 +66,7 @@ func VolcanoTimer()
 	var y_volcano = g_volcano->GetLavaPeak();
 	// Get player progress
 	var y_plr, n_crew;
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		var crew = GetCursor(GetPlayerByIndex(i, C4PT_User));
 		if (crew)

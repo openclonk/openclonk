@@ -213,8 +213,8 @@ func EndUsage(object clonk)
 // Update the glove aim angle
 func UpdateGloveAngle(object clonk, int x, int y)
 {
-	var angle=Normalize(Angle(0,0, x,y),-180);
-	angle=BoundBy(angle,-150,150);
+	var angle = Normalize(Angle(0,0, x,y),-180);
+	angle = BoundBy(angle,-150,150);
 	
 	if (clonk->GetDir() == DIR_Left)
 	{
@@ -225,7 +225,7 @@ func UpdateGloveAngle(object clonk, int x, int y)
 		if (angle < 0) return;
 	}
 
-	iAngle=angle;
+	iAngle = angle;
 
 	clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(iAngle) * 11111/1000));
 	

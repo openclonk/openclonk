@@ -122,7 +122,7 @@ local ActMap = {
 Attach = {
     Prototype = Action,
     Procedure = DFA_ATTACH,
-    Delay=0,
+    Delay = 0,
 },
 };
 

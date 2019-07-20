@@ -149,13 +149,13 @@ global func FxFillBaseChestStart(object target, effect, int temporary, bool supp
 	if (temporary) 
 		return 1;
 		
-	effect.supply_type=supply;
+	effect.supply_type = supply;
 	var w_list;
 	if (effect.supply_type) 
 		w_list = [Firestone, Dynamite, Ropeladder, ShieldGem];
 	else
 		w_list = [Bow, Sword, Javelin, PyreGem];
-	for (var i=0; i<4; i++)
+	for (var i = 0; i<4; i++)
 		target->CreateChestContents(w_list[i]);
 	return 1;
 }
@@ -174,17 +174,17 @@ global func FxFillBaseChestTimer(object target, effect)
 	}
 	
 	var contents;
-	for (var i=0; i<target->GetLength(w_list); i++)
+	for (var i = 0; i<target->GetLength(w_list); i++)
 		contents+=target->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
-	for (var i=0; i<2 ; i++)
+	for (var i = 0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (target->ContentsCount(w_list[r]) < maxcount[r])
 		{
 			target->CreateChestContents(w_list[r]);
-			i=3;
+			i = 3;
 		}
 	}
 	return 1;
@@ -207,17 +207,17 @@ global func FxFillOtherChestTimer(object target)
 
 	
 	var contents;
-	for (var i=0; i<target->GetLength(w_list); i++)
+	for (var i = 0; i<target->GetLength(w_list); i++)
 		contents+=target->ContentsCount(w_list[i]);
 	if (contents > 6) return 1;
 	
-	for (var i=0; i<2 ; i++)
+	for (var i = 0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (target->ContentsCount(w_list[r]) < maxcount[r])
 		{
 			target->CreateChestContents(w_list[r]);
-			i=3;
+			i = 3;
 		}
 	}
 	return 1;
@@ -228,13 +228,13 @@ global func FxFillSpecialChestTimer(object target)
 	if (Random(2)) return 1;
 	
 	var w_list = [PyreGem, ShieldGem, SlowGem];
-	var r=Random(3);
+	var r = Random(3);
 	if (target->ContentsCount() < 4)
 		target->CreateChestContents(w_list[r]);
 	
 	var w_list = [GrappleBow, DynamiteBox, Boompack];
-	var r=Random(3);
-	for (var i=0; i < GetLength(w_list); i++)
+	var r = Random(3);
+	for (var i = 0; i < GetLength(w_list); i++)
 		if (FindObject(Find_ID(w_list[i]))) return 1;
 	target->CreateChestContents(w_list[r]);
 	return 1;
@@ -272,7 +272,7 @@ func OnClonkDeath(object clonk, int killed_by)
 	// create a magic healing gem on Clonk death
 	if (Hostile(clonk->GetOwner(), killed_by))
 	{
-		var gem=clonk->CreateObjectAbove(LifeGem, 0, 0, killed_by);
+		var gem = clonk->CreateObjectAbove(LifeGem, 0, 0, killed_by);
 		if (GetPlayerTeam(killed_by) == 1)
 			gem->SetGraphics("E");
 	}

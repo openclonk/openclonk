@@ -42,7 +42,7 @@ func InitializePlayer(int plr)
 	}
 	// Position and materials
 	var i, crew;
-	for (i=0; crew=GetCrew(plr,i); ++i)
+	for (i = 0; crew = GetCrew(plr,i); ++i)
 	{
 		crew->SetPosition(600+Random(40), 736-10);
 		crew->CreateContents(Shovel);
@@ -53,7 +53,7 @@ func InitializePlayer(int plr)
 private func InitBase(int owner)
 {
 	// Create standard base owned by player
-	var y=736;
+	var y = 736;
 	var flag = CreateObjectAbove(Flagpole, 670,y, owner);
 	var lorry = CreateObjectAbove(Lorry, 650,y-2, owner);
 	if (lorry)

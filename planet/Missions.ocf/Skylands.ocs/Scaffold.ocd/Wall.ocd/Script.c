@@ -106,7 +106,7 @@ local ActMap = {
 			Length = 1,
 			Delay = 0,
 			FacetBase = 0,
-			X = 0, Y = 0, Wdt=4, Hgt = 32,
+			X = 0, Y = 0, Wdt = 4, Hgt = 32,
 			NextAction = "Left",
 		},
 		Right = {
@@ -117,7 +117,7 @@ local ActMap = {
 			Length = 1,
 			Delay = 0,
 			FacetBase = 0,
-			X = 0, Y = 0, Wdt=4, Hgt = 32,
+			X = 0, Y = 0, Wdt = 4, Hgt = 32,
 			NextAction = "Right",
 		},
 		Top = {
@@ -128,7 +128,7 @@ local ActMap = {
 			Length = 1,
 			Delay = 0,
 			FacetBase = 0,
-			X = 0, Y = 0, Wdt=32, Hgt = 4,
+			X = 0, Y = 0, Wdt = 32, Hgt = 4,
 			NextAction = "Top",
 		},
 		Bottom = {
@@ -139,7 +139,7 @@ local ActMap = {
 			Length = 1,
 			Delay = 0,
 			FacetBase = 0,
-			X = 0, Y = 0, Wdt=32, Hgt = 4,
+			X = 0, Y = 0, Wdt = 32, Hgt = 4,
 			NextAction = "Bottom",
 		},
 };

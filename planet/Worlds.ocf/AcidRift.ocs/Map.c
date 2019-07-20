@@ -75,23 +75,23 @@ func InitializeMap(proplist map)
 		[-50, this.Hgt+50]
 	];
 	surround_poly = TransposeArray(surround_poly);
-	var algo = {Algo=MAPALGO_Polygon, 
+	var algo = {Algo = MAPALGO_Polygon, 
 		X = surround_poly[0],
 		Y = surround_poly[1]};
-	algo = { Algo=MAPALGO_Turbulence, Op=algo, Amplitude=10, Scale=30 };
-	algo = { Algo=MAPALGO_Turbulence, Op=algo, Amplitude=20, Scale=5 };
+	algo = { Algo = MAPALGO_Turbulence, Op = algo, Amplitude = 10, Scale = 30 };
+	algo = { Algo = MAPALGO_Turbulence, Op = algo, Amplitude = 20, Scale = 5 };
 	var basin = CreateLayer();
 	basin->Draw("Granite", algo);
 	basin->DrawMaterial("Rock", basin, [10,4], 30);
 	
 	// Bottom acid cave containing gems
-	algo = { Algo=MAPALGO_Ellipse, X=this.Wdt/2, Y=this.Hgt-bottom_off, Wdt=size_gem_cave, Hgt=size_gem_cave };
-	algo = { Algo=MAPALGO_Turbulence, Op=algo, Amplitude=20, Scale=20 };
+	algo = { Algo = MAPALGO_Ellipse, X = this.Wdt/2, Y = this.Hgt-bottom_off, Wdt = size_gem_cave, Hgt = size_gem_cave };
+	algo = { Algo = MAPALGO_Turbulence, Op = algo, Amplitude = 20, Scale = 20 };
 	basin->Draw("Transparent", algo);
 	
 	// Materials areas are in surrounding basin
 	var basin_materials = CreateLayer();
-	basin_materials->Draw("Snow", {Algo=MAPALGO_Border, Wdt=-5, Op=basin});
+	basin_materials->Draw("Snow", {Algo = MAPALGO_Border, Wdt=-5, Op = basin});
 	
 	// Acid caves in lower area
 	acid_area[1] += 20;
@@ -103,7 +103,7 @@ func InitializeMap(proplist map)
 	
 	// Gems in lower area	
 	var gem_area = [0, this.Hgt-bottom_off-size_gem_cave, this.Wdt, this.Hgt];
-	var i=0;
+	var i = 0;
 	while (basin->GetPixelCount("Ruby")+basin->GetPixelCount("Amethyst") < num_gems)
 	{
 		basin->DrawPatch(["Ruby", "Amethyst"][++i%2], basin_materials, size_gems, false, 6, gem_area);
@@ -129,13 +129,13 @@ func InitializeMap(proplist map)
 	// Empty starting area
 	var start_x = this.Wdt/4 + Random(this.Wdt/2);
 	var start_y = this.Hgt/3;
-	var start_algo = {Algo = MAPALGO_Ellipse, X=start_x, Y=start_y, Wdt=10, Hgt=10};
+	var start_algo = {Algo = MAPALGO_Ellipse, X = start_x, Y = start_y, Wdt = 10, Hgt = 10};
 	Draw("Sky", start_algo);
 	g_start_map_x = start_x; g_start_map_y = start_y;
 	
 	// Materials
 	DrawPatches(num_water, "Water", "Earth", size_water, false, 10);
-	Draw("Earth-earth", {Algo=MAPALGO_Border, Op=Duplicate("Water")});
+	Draw("Earth-earth", {Algo = MAPALGO_Border, Op = Duplicate("Water")});
 	DrawPatches(num_firestone, "Firestone", "Earth", size_firestone, false, 10);
 	DrawPatches(num_coal, "Coal", "Earth", size_coal, false, 7);
 	DrawPatches(num_ore, "Ore", "Earth", size_ore, true, 6);	
@@ -144,11 +144,11 @@ func InitializeMap(proplist map)
 	Blit(basin);
 	
 	// Draw starting area
-	var algo = {Algo = MAPALGO_Ellipse, X=start_x, Y=start_y+5, Wdt=6, Hgt=5};
-	algo = {Algo = MAPALGO_Turbulence, Iterations = 1, Amplitude=5, Scale=5, Op = algo};
+	var algo = {Algo = MAPALGO_Ellipse, X = start_x, Y = start_y+5, Wdt = 6, Hgt = 5};
+	algo = {Algo = MAPALGO_Turbulence, Iterations = 1, Amplitude = 5, Scale = 5, Op = algo};
 	Draw("Earth", algo);
 	Draw("Sky", nil, [start_x-4, start_y-6, 8, 8]);
-	algo = {Algo=MAPALGO_Polygon, X=[start_x-4, start_x+4], Y=[start_y+2, start_y+2]};
+	algo = {Algo = MAPALGO_Polygon, X=[start_x-4, start_x+4], Y=[start_y+2, start_y+2]};
 	
 	// Alternations in earth texture
 	var earth_area = Duplicate("Earth");
@@ -168,7 +168,7 @@ func InitializeMap(proplist map)
 // Find places matching mask and draw spots of material on it
 private func DrawPatches(int num, ...)
 {
-	for (var i=0; i<num; ++i) DrawPatch(...);
+	for (var i = 0; i<num; ++i) DrawPatch(...);
 }
 
 private func DrawPatch(string mat, mask, size, bool allow_rotation, int turbulence, array area)
@@ -183,8 +183,8 @@ private func DrawPatch(string mat, mask, size, bool allow_rotation, int turbulen
 		mask = "Snow";
 	}
 	if (!mask_layer->FindPosition(pos, mask, area)) return false;
-	var algo = {Algo = MAPALGO_Ellipse, X=pos.X, Y=pos.Y, Wdt=size[0], Hgt=size[1]};
-	algo = {Algo = MAPALGO_Turbulence, Iterations = 3, Amplitude=turbulence, Scale=5, Op = algo};
-	if (allow_rotation) algo = {Algo= MAPALGO_Rotate, R=Random(360), OffX=pos.X, OffY=pos.Y, Op=algo};
+	var algo = {Algo = MAPALGO_Ellipse, X = pos.X, Y = pos.Y, Wdt = size[0], Hgt = size[1]};
+	algo = {Algo = MAPALGO_Turbulence, Iterations = 3, Amplitude = turbulence, Scale = 5, Op = algo};
+	if (allow_rotation) algo = {Algo= MAPALGO_Rotate, R = Random(360), OffX = pos.X, OffY = pos.Y, Op = algo};
 	return Draw(mat, algo);
 }

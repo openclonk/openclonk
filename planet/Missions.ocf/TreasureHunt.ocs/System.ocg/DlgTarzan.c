@@ -78,7 +78,7 @@ func FxTarzanSwingingTimer(object c, proplist fx, int time)
 	else
 	{
 		// No need to climb? Then swing.
-		if (GetXDir() < 0) grapple_fx.mv_left=1; else grapple_fx.mv_right=1;
+		if (GetXDir() < 0) grapple_fx.mv_left = 1; else grapple_fx.mv_right = 1;
 	}
 	return FX_OK;
 }

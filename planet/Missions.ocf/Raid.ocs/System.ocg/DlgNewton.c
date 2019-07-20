@@ -271,7 +271,7 @@ func Dlg_Newton_Init(object clonk)
 
 func FxNewtonHammeringTimer(object c, proplist fx, int time)
 {
-	if (FrameCounter() < this.anim_continue_frame || c.has_sequence) { fx.phase=false; return FX_OK; }
+	if (FrameCounter() < this.anim_continue_frame || c.has_sequence) { fx.phase = false; return FX_OK; }
 	var len = c->GetAnimationLength("StrikePickaxe");
 	var a = len*70/100;
 	var b = len*94/100;
@@ -300,7 +300,7 @@ func FxNewtonHammeringTimer(object c, proplist fx, int time)
 		c->Sound("Objects::Pickaxe::Clang?");
 		var x = (c->GetDir()*2-1) * 9;
 		var y = -16;
-		c->CreateParticle("Dust", x,y, PV_Random(-10, 10), PV_Random(-10, 20), PV_Random(10, 20), new Particles_Dust() { R=120, G=100, B=80 }, 10);
+		c->CreateParticle("Dust", x,y, PV_Random(-10, 10), PV_Random(-10, 20), PV_Random(10, 20), new Particles_Dust() { R = 120, G = 100, B = 80 }, 10);
 		if (Random(3)) c->CreateParticle("StarSpark", x,y, PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(10, 20), Particles_Glimmer(), Random(10)+3);
 	}
 	return FX_OK;

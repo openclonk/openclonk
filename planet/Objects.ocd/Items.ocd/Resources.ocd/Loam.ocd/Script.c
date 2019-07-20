@@ -99,7 +99,7 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 	var line_len = speed * dt / 100;
 	var last_x = fx.LastX;
 	var last_y = fx.LastY;
-	var dx = x-last_x, dy=y-last_y;
+	var dx = x-last_x, dy = y-last_y;
 	var d = Distance(dx, dy);
 	// Quantize angle as a multiple of 30 degrees.
 	var quant = 30;

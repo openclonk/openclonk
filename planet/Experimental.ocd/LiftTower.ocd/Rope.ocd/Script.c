@@ -73,7 +73,7 @@ func FxIntHangTimer() { TimeStep(); }
 func UpdateLines()
 {
 	var oldangle;
-	for (var i=1; i < lib_rope_particle_count; i++)
+	for (var i = 1; i < lib_rope_particle_count; i++)
 	{
 		// Update the Position of the Segment
 		lib_rope_segments[i]->SetPosition(GetPartX(i), GetPartY(i));
@@ -135,7 +135,7 @@ public func GetHookAngle()
 
 public func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
 	if (!MirrorSegments) MirrorSegments = 1;
-	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+	var fsin = Sin(r, 1000), fcos = Cos(r, 1000);
 	// set matrix values
 	obj->SetObjDrawTransform (
 		+fcos*MirrorSegments, +fsin*length/1000, xoff,

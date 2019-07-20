@@ -47,7 +47,7 @@ func SaveScenarioObject(props)
 // The goal is fulfilled if a ruby is in the goal rectangle
 public func IsFulfilled()
 {
-	var winner=NO_OWNER, winners, winner_teams;
+	var winner = NO_OWNER, winners, winner_teams;
 	if (has_winner) return true;
 	for (var ruby in FindObjects(Find_InRect(goal_rect.x, goal_rect.y, goal_rect.wdt, goal_rect.hgt), Find_ID(Ruby)))
 	{
@@ -60,7 +60,7 @@ public func IsFulfilled()
 	}
 	if (!winners) return false;
 	has_winner = true;
-	var iplr=GetPlayerCount();
+	var iplr = GetPlayerCount();
 	while (iplr--)
 	{
 		var plr = GetPlayerByIndex(iplr);

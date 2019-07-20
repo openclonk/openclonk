@@ -490,7 +490,7 @@ public func AddToQueue(id product_id, int amount, bool infinite, int producing_p
 	// Otherwise create a new entry in the queue.
 	if (!found)
 	{
-		PushBack(queue, { Product = product_id, Amount = amount, Infinite = infinite, ProducingPlayer=producing_player });
+		PushBack(queue, { Product = product_id, Amount = amount, Infinite = infinite, ProducingPlayer = producing_player });
 	}
 	// Notify all production menus open for this producer.
 	UpdateInteractionMenus(this.GetProductionMenuEntries);

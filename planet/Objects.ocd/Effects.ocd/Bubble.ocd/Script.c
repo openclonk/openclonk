@@ -7,7 +7,7 @@ local creator; // The object that has created this bubble. Used to prevent Clonk
 global func Bubble(int amount, int x, int y)
 {
 	if (amount == nil || amount == 0) 
-		amount=3;
+		amount = 3;
 
 	for (var i = 0; i < amount; i++)
 	{

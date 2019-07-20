@@ -184,8 +184,8 @@ func Stick()
 		RemoveEffect("Flight",this);
 		RemoveEffect("HitCheck",this);
 		
-		var x=Sin(GetR(),+16);
-		var y=Cos(GetR(),-16);
+		var x = Sin(GetR(),+16);
+		var y = Cos(GetR(),-16);
 		var mat = GetMaterial(x,y);
 		if (mat != -1)
 		{

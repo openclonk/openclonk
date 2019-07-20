@@ -723,9 +723,9 @@ private func AddEvalData(int plr)
 
 local on_checkpoint_cleared, on_checkpoint_first_cleared, on_respawn;
 
-public func SetOnCheckpointCleared(v) { on_checkpoint_cleared=v; return true; }
-public func SetOnCheckpointFirstCleared(v) { on_checkpoint_first_cleared=v; return true; }
-public func SetOnRespawn(v) { on_respawn=v; return true; }
+public func SetOnCheckpointCleared(v) { on_checkpoint_cleared = v; return true; }
+public func SetOnCheckpointFirstCleared(v) { on_checkpoint_first_cleared = v; return true; }
+public func SetOnRespawn(v) { on_respawn = v; return true; }
 
 public func Definition(def)
 {

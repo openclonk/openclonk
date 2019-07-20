@@ -40,7 +40,7 @@ private func ExecuteBomber(effect fx)
 	// Still carrying the bomb?
 	if (fx.weapon->Contained() != fx.Target)
 	{
-		fx.weapon=nil;
+		fx.weapon = nil;
 		return false;
 	}
 	// Are we in range?

@@ -30,7 +30,7 @@ func InitializePlayer(int plr)
 	}
 	// Position and materials
 	var i, crew;
-	for (i=0; crew=GetCrew(plr,i); ++i)
+	for (i = 0; crew = GetCrew(plr,i); ++i)
 	{
 		crew->SetPosition(500+Random(100), 200-10);
 		crew->CreateContents(Shovel);
@@ -41,7 +41,7 @@ func InitializePlayer(int plr)
 private func InitBase(int owner)
 {
 	// Create standard base owned by player
-	var y=200;
+	var y = 200;
 	var flag = CreateObjectAbove(Flagpole, 590,y, owner);
 	var windgen = CreateObjectAbove(WindGenerator, 500,y, owner);
 	var chemlab = CreateObjectAbove(ChemicalLab, 560,y, owner);

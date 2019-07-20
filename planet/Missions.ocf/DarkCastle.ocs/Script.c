@@ -43,7 +43,7 @@ private func DoInit(int first_player)
 			SetSpecialDeathMessage(enemy);
 		}
 	}
-	g_farmer.portrait = { Source=DialogueCastle };
+	g_farmer.portrait = { Source = DialogueCastle };
 	// Start intro if not yet started
 	StartSequence("Intro", 0, GetCrew(first_player));
 	return true;

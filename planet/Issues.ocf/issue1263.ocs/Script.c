@@ -13,7 +13,7 @@
  * for the above references.
  */
 
-/* Issue #1263: Drawing Line=1 objects without vertices results in array OOB */
+/* Issue #1263: Drawing Line = 1 objects without vertices results in array OOB */
 
 func Initialize()
 {

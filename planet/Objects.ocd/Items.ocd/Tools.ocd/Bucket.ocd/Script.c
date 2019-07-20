@@ -120,7 +120,7 @@ func PlayBucketAnimation(object clonk)
 	}
 	
 	// figure out the kind of animation to use
-	var length=15;
+	var length = 15;
 	var animation;
 	if (clonk->IsJumping())
 		animation = Format("SwordJump2.%s",arm);

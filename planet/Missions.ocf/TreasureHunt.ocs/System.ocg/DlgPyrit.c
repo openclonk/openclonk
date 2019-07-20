@@ -88,7 +88,7 @@ func FxPyritHammeringTimer(object c, proplist fx, int time)
 	{
 		fx.plane->SetMeshMaterial(Airplane->GetMeshMaterial());
 		fx.plane->SetR(90);
-		fx.plane.MeshTransformation=Airplane.MeshTransformation;
+		fx.plane.MeshTransformation = Airplane.MeshTransformation;
 		return FX_Execute_Kill;
 	}
 	if ((!Random(20)) || this.was_walk_interrupted)

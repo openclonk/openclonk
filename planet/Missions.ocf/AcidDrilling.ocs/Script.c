@@ -17,7 +17,7 @@ func InitializePlayer(int plr)
 	if (GetPlayerType(plr) == C4PT_Script)
 	{
 		g_crystal_player = plr;
-		for (i=0; i<GetPlayerCount(C4PT_User); ++i) SetHostility(plr, GetPlayerByIndex(i, C4PT_User), true, true, true);
+		for (i = 0; i<GetPlayerCount(C4PT_User); ++i) SetHostility(plr, GetPlayerByIndex(i, C4PT_User), true, true, true);
 		while (GetCrew(plr)) GetCrew(plr)->RemoveObject();
 		InitPowerCrystals(plr);
 		return true;
@@ -32,7 +32,7 @@ func InitializePlayer(int plr)
 	}
 	// Position and materials
 	var crew;
-	for (i=0; crew=GetCrew(plr,i); ++i)
+	for (i = 0; crew = GetCrew(plr,i); ++i)
 	{
 		crew->SetPosition(2100+Random(40), 233-10);
 		crew->CreateContents(Shovel);
@@ -50,7 +50,7 @@ private func InitPowerCrystals(int owner)
 private func InitBase(int owner)
 {
 	// Create standard base owned by player
-	var y=232;
+	var y = 232;
 	var lorry = CreateObjectAbove(Lorry, 2040,y-2, owner);
 	if (lorry)
 	{

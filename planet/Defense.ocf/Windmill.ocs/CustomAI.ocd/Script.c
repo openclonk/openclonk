@@ -31,7 +31,7 @@ private func FindInventoryWeapon(effect fx)
 		fx.strategy = this.ExecuteRanged;
 		fx.projectile_speed = 100;
 	 	fx.ammo_check = this.HasArrows;
-	 	fx.ranged=true;
+	 	fx.ranged = true;
 	 	return true;
 	}
 	if (inherited(fx, ...))
@@ -253,7 +253,7 @@ private func ExecuteRanged(effect fx)
 {
 	// Still carrying the bow?
 	if (fx.weapon->Contained() != fx.Target)
-	{ fx.weapon=fx.post_aim_weapon=nil; return false; }
+	{ fx.weapon = fx.post_aim_weapon = nil; return false; }
 	// Finish shooting process
 	if (fx.post_aim_weapon)
 	{
@@ -305,7 +305,7 @@ private func ExecuteRanged(effect fx)
 		return this->ExecuteStand(fx);
 	// Calculate offset to target. Take movement into account
 	// Also aim for the head (y-4) so it's harder to evade by jumping
-	var x=fx.Target->GetX(), y=fx.Target->GetY(), tx=fx.target->GetX(), ty=fx.target->GetY()-4;
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY()-4;
 	var d = Distance(x,y,tx,ty);
 	var dt = d * 10 / fx.projectile_speed; // projected travel time of the arrow
 	tx += this->GetTargetXDir(fx.target, dt);
@@ -370,9 +370,9 @@ private func ExecuteRanged(effect fx)
 private func ExecuteThrow(effect fx)
 {
 	// Still carrying the weapon to throw?
-	if (fx.weapon->Contained() != fx.Target) { fx.weapon=nil; return false; }
+	if (fx.weapon->Contained() != fx.Target) { fx.weapon = nil; return false; }
 	// Path to target free?
-	var x=fx.Target->GetX(), y=fx.Target->GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY();
 	if (PathFree(x,y,tx,ty))
 	{
 		var throw_speed = fx.Target.ThrowSpeed;

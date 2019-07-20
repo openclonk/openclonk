@@ -1,10 +1,10 @@
 #appendto Dialogue
 
-/* Sophie1=Teeheehe. Look how it levitates!
-Sophie2=Are you a magician?
-Sophie3=Nope, it's tele gloves. I've found them in the chest beside me.
-Sophie4=There's more of them! Just try them out. Press and hold near a lose item to move it.
-SophieSad=Why did you have to take away my playing items? Sophie sad :(
+/* Sophie1 = Teeheehe. Look how it levitates!
+Sophie2 = Are you a magician?
+Sophie3 = Nope, it's tele gloves. I've found them in the chest beside me.
+Sophie4 = There's more of them! Just try them out. Press and hold near a lose item to move it.
+SophieSad = Why did you have to take away my playing items? Sophie sad :(
 */
 
 /* Sophie dialogue */

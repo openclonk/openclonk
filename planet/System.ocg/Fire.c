@@ -22,7 +22,7 @@ global func OnFire()
 	if (!this)
 		return false;
 	var effect;
-	if (!(effect=GetEffect("Fire", this)))
+	if (!(effect = GetEffect("Fire", this)))
 		return false;
 	return effect.strength;
 }
@@ -229,8 +229,8 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 		R = 255,
 		G = PV_Linear(255,200),
 		B = PV_Random(0, 100),
-		DampingX=950,
-		DampingY=950,
+		DampingX = 950,
+		DampingY = 950,
 		Alpha = PV_Random(40,140),
 		BlitMode = GFX_BLIT_Additive
 	};
@@ -333,7 +333,7 @@ global func FxFireTimer(object target, proplist effect, int time)
 	if (!target) return FX_Execute_Kill;
 	
 	// get cause
-	//if (!GetPlayerName(effect.caused_by)) effect.caused_by=NO_OWNER;;
+	//if (!GetPlayerName(effect.caused_by)) effect.caused_by = NO_OWNER;;
 		
 	// strength changes over time
 	if ((effect.strength < 100) && (time % 8 == 0))

@@ -18,10 +18,10 @@ public func ControlUse(object pClonk, int ix, int iy)
 public func FxHardeningSpellStart(pTarget, effect, iTemp, angle, x, y)
 {
 	if (iTemp) return;
-	effect.xdir=Sin(angle,4);
+	effect.xdir = Sin(angle,4);
 	effect.ydir=-Cos(angle,4);
-	effect.x=x;
-	effect.y=y;
+	effect.x = x;
+	effect.y = y;
 }
 
 public func FxHardeningSpellTimer(pTarget, effect, iEffectTime)
@@ -39,7 +39,7 @@ public func FxHardeningSpellTimer(pTarget, effect, iEffectTime)
 		effect.y+=effect.ydir;
 		return 1;
 	}
-	for (var i=0; i<5; i++)
+	for (var i = 0; i<5; i++)
 	{
 		var r = Random(360);
 		var d = Random(8) + Random(6) + Random(6) + Random(6)+Random(3);

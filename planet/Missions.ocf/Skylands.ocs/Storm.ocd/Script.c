@@ -52,7 +52,7 @@ func Clear()
 	// timer
 	RemoveEffect("IntExecute", this);
 	// helper objects
-	for (var i=0; i<n_streams; ++i)
+	for (var i = 0; i<n_streams; ++i)
 		if (streams[i].debug) streams[i].debug->RemoveObject();
 	streams = nil;
 	n_streams = 0;
@@ -63,7 +63,7 @@ private func InitMap()
 {
 	// init empty wind map according to parameters
 	// determine coordinate borders
-	var wdt=LandscapeWidth()-1, hgt = LandscapeHeight()-1;
+	var wdt = LandscapeWidth()-1, hgt = LandscapeHeight()-1;
 	var w1_min = Min(Min(MapXYToW1(0,0),MapXYToW1(0,hgt)),Min(MapXYToW1(wdt,0),MapXYToW1(wdt,hgt)));
 	var w1_max = Max(Max(MapXYToW1(0,0),MapXYToW1(0,hgt)),Max(MapXYToW1(wdt,0),MapXYToW1(wdt,hgt)));
 	var w2_min = Min(Min(MapXYToW2(0,0),MapXYToW2(0,hgt)),Min(MapXYToW2(wdt,0),MapXYToW2(wdt,hgt)));
@@ -117,7 +117,7 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 	// create streams
 	n_streams = ((Abs(LandscapeWidth()*dir_y) + Abs(LandscapeHeight()*dir_x))/d - 2*stream_border_dist) / stream_density;
 	streams = CreateArray(n_streams);
-	var i_stream = 0, x0, y0, sgn_x=1, sgn_y=1;
+	var i_stream = 0, x0, y0, sgn_x = 1, sgn_y = 1;
 	var wdt = LandscapeWidth()-1, hgt = LandscapeHeight()-1;
 	if (dir_y<0) { y0 = hgt; sgn_y = -1; }
 	if (dir_x<0) { x0 = wdt; sgn_x = -1; }
@@ -128,7 +128,7 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 		var x0,y0;
 		if (dir_y)
 		{
-			var dpos=Abs(pos*d/dir_y);
+			var dpos = Abs(pos*d/dir_y);
 			if (dpos<=wdt)
 			{
 				// streams from horizontal border of landscape
@@ -139,12 +139,12 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 			pos -= Abs(wdt*dir_y/d);
 		}
 		// streams from vertical border of landscape
-		pos=Abs(pos*d/dir_x);
+		pos = Abs(pos*d/dir_x);
 		//Log("@%d", pos);
 		var s = CreateStream(x0, y0 + pos * sgn_y);
 		if (s) streams[i_stream++] = s;
 	}
-	n_streams=i_stream;
+	n_streams = i_stream;
 	//Log("%d total", n_streams);
 	streams = streams[0:n_streams];
 	// create timer for stream execution
@@ -154,7 +154,7 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 
 func FxIntExecuteTimer()
 {
-	for (var i_exec=0; i_exec<n_exec_per_loop; ++i_exec)
+	for (var i_exec = 0; i_exec<n_exec_per_loop; ++i_exec)
 	{
 		// exec current stream
 		//Log("exec %d", execution_index);
@@ -184,7 +184,7 @@ private func CreateStream(int x0, int y0)
 	// Initialize as laminar stream along desired path
 	var x = CreateArray(len), y = CreateArray(len);
 	var is_blocked = CreateArray(len);
-	for (var i=0; i<len; ++i)
+	for (var i = 0; i<len; ++i)
 	{
 		x[i] = x0+i*StormStream.dir_x;
 		y[i] = y0+i*StormStream.dir_y;
@@ -248,12 +248,12 @@ private func ExecuteStream(proplist s)
 			// search up
 			search_off = want_stretch - search_offset;
 			if (search_off >= -s.max_segment_stretch)
-				if (StreamCheckPathFree(s,x,y,search_off)) { has_found=true; break; }
+				if (StreamCheckPathFree(s,x,y,search_off)) { has_found = true; break; }
 			if (!search_offset) continue; // don't check direction -0 and +0 twice
 			// search down
 			search_off = want_stretch + search_offset;
 			if (search_off <= s.max_segment_stretch)
-				if (StreamCheckPathFree(s,x,y,search_off)) { has_found=true; break; }
+				if (StreamCheckPathFree(s,x,y,search_off)) { has_found = true; break; }
 		}
 		// did we find a path?
 		if (has_found)
@@ -266,7 +266,7 @@ private func ExecuteStream(proplist s)
 			tx = new_tx; ty = new_ty;
 			// determine storm density at this position
 			var map_idx = MapXYToIdx(tx, ty), local_strength;
-			if (map_idx>=0) local_strength = map[map_idx]; else local_strength=1;
+			if (map_idx>=0) local_strength = map[map_idx]; else local_strength = 1;
 			// fling objects along path
 			vx = vx * strength / s.dir_len;
 			vy = vy * strength / s.dir_len; // - 20;
@@ -287,7 +287,7 @@ private func ExecuteStream(proplist s)
 				}
 				else
 				{
-					pushfx=AddEffect("StormPush", obj, 1, 5, this);
+					pushfx = AddEffect("StormPush", obj, 1, 5, this);
 					if (pushfx) pushfx.count = 1;
 				}
 				// now push
@@ -379,7 +379,7 @@ private func StreamUnblockVertex(proplist s, int i)
 private func DumpStreamInfo(int i)
 {
 	var s = streams[i], q=[], idcs = [];
-	for (var j=0; j<s.len; ++j)
+	for (var j = 0; j<s.len; ++j)
 	{
 		var idx = MapXYToIdx(s.x[j], s.y[j]);
 		if (idx<0) q[j] = []; else q[j] = map[idx];

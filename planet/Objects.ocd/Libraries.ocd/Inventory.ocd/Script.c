@@ -35,7 +35,7 @@ func Construction()
 	this.inventory.hand_objects = [];
 	this.inventory.force_collection = false;
 
-	for (var i=0; i < HandObjects; i++)
+	for (var i = 0; i < HandObjects; i++)
 		this.inventory.hand_objects[i] = i;
 	return _inherited(...);
 }
@@ -63,7 +63,7 @@ public func GetItems()
 public func GetItemCount()
 {
 	var count = 0;
-	for (var i=0; i < GetLength(this.inventory.objects); i++)
+	for (var i = 0; i < GetLength(this.inventory.objects); i++)
 		if (this.inventory.objects[i])
 			count++;
 	
@@ -199,7 +199,7 @@ public func GetHandItemPos(int i)
 /** Returns in which hand-slot the inventory-slot is */
 private func GetHandPosByItemPos(int o) // sorry for the horribly long name --boni
 {
-	for (var i=0; i < GetLength(this.inventory.hand_objects); i++)
+	for (var i = 0; i < GetLength(this.inventory.hand_objects); i++)
 		if (this.inventory.hand_objects[i] == o)
 			return i;
 
@@ -475,7 +475,7 @@ protected func RejectCollect(id objid, object obj)
 	if (this.inventory.force_collection)
 	{
 		// try to stuff obj into an object with an extra slot
-		for (var i=0; Contents(i); ++i)
+		for (var i = 0; Contents(i); ++i)
 			if (Contents(i)->~HasExtraSlot())
 				if (!(Contents(i)->Contents(0)))
 					if (Contents(i)->Collect(obj,true))
@@ -484,7 +484,7 @@ protected func RejectCollect(id objid, object obj)
 		// try to stuff an object in clonk into obj if it has an extra slot
 		if (obj->~HasExtraSlot())
 			if (!(obj->Contents(0)))
-				for (var i=0; Contents(i); ++i)
+				for (var i = 0; Contents(i); ++i)
 					if (obj->Collect(Contents(i),true))
 						return false;
 	}
@@ -531,7 +531,7 @@ public func SetMaxContentsCount(int new_count)
 	// Make sure hands aren't beyond inventory
 	if (MaxContentsCount)
 	{
-		for (var i=0; i < HandObjects; i++)
+		for (var i = 0; i < HandObjects; i++)
 		{
 			if (GetHandItemPos(i) >= MaxContentsCount)
 			{

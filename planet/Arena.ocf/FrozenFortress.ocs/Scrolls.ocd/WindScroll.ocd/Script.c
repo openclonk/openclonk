@@ -18,10 +18,10 @@ public func ControlUse(object pClonk, int ix, int iy)
 public func FxWindScrollStormStart(pTarget, effect, iTemp, angle, x, y)
 {
 	if (iTemp) return;
-	effect.xdir=Sin(angle,32);
+	effect.xdir = Sin(angle,32);
 	effect.ydir=-Cos(angle,32);
-	effect.x=x+Sin(angle,43);
-	effect.y=y-Cos(angle,43);
+	effect.x = x+Sin(angle,43);
+	effect.y = y-Cos(angle,43);
 
 	effect.particles =
 	{
@@ -32,15 +32,15 @@ public func FxWindScrollStormStart(pTarget, effect, iTemp, angle, x, y)
 
 public func FxWindScrollStormTimer(pTarget, effect, iEffectTime)
 {
-	var xdir=effect.xdir;
-	var ydir=effect.ydir;
-	var x=effect.x;
-	var y=effect.y;
+	var xdir = effect.xdir;
+	var ydir = effect.ydir;
+	var x = effect.x;
+	var y = effect.y;
 	
 	if (iEffectTime<36)
 	{
-		var r=Random(360);
-		var d=Random(40);
+		var r = Random(360);
+		var d = Random(40);
 		CreateParticle("Air", Sin(r,d)+x,-Cos(r,d)+y, xdir/3, ydir/3, PV_Random(10, 30), effect.particles, 1);
 		return 1;
 	}

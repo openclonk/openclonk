@@ -68,7 +68,7 @@ public func CreateObjectInTreetop(id to_create, int tries, bool no_overlap_check
 	if (!IsStanding()) return nil;
 	if (!tries) tries = 20;
 
-	var pos = { x=0, y=0 }, overlap, width, height, area;
+	var pos = { x = 0, y = 0 }, overlap, width, height, area;
 	do {
 		GetTreetopPosition(pos);
 		overlap = false;

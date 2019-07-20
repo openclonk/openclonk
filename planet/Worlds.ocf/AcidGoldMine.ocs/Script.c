@@ -87,7 +87,7 @@ private func InitEnvironment(int difficulty)
 	Meteor->SetChance(16 + 4 * difficulty);
 	// Bottom item killer.
 	var fx = AddEffect("KeepAreaClear", nil, 1, 5);
-	fx.search_criterion=Find_And(Find_AtRect(0, LandscapeHeight() - 10, LandscapeWidth(), 10), Find_Not(Find_Category(C4D_StaticBack)));
+	fx.search_criterion = Find_And(Find_AtRect(0, LandscapeHeight() - 10, LandscapeWidth(), 10), Find_Not(Find_Category(C4D_StaticBack)));
 	return;
 }
 

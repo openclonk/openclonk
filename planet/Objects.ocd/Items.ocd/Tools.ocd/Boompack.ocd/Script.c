@@ -25,8 +25,8 @@ local controllable;
 func Construction()
 {
 	//flight length
-	fuel=100;
-	dirdev=12;
+	fuel = 100;
+	dirdev = 12;
 	controllable = true;
 }
 
@@ -140,7 +140,7 @@ public func ControlUse(object clonk, int x, int y)
 	// forward control to item
 	if (clonk->GetProcedure()=="ATTACH") return false;
 
-	var angle=Angle(0,0,x,y);
+	var angle = Angle(0,0,x,y);
 	Launch(angle,clonk);
 
 	return true;
@@ -225,12 +225,12 @@ public func Launch(int angle, object clonk, object shooter)
 	if (clonk)
 	{
 		clonk->SetAction("Ride",this);
-		rider=clonk;
+		rider = clonk;
 		SetOwner(clonk->GetController());
 	}
 
 	var level = 16;
-	var i=0, count = 3+level/8, r = Random(360);
+	var i = 0, count = 3+level/8, r = Random(360);
 	while (count > 0 && ++i < count*6) {
 		r += RandomX(40,80);
 		var smokex = +Sin(r,RandomX(level/4,level/2));

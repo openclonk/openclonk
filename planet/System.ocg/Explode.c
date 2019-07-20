@@ -24,10 +24,10 @@ global func ExplosionParticles_Init()
 		DampingX = PV_Random(900, 930, 5),
 		ForceY=-1,
 		ForceX = PV_Wind(20, PV_Random(-2, 2)),
-		Rotation=PV_Random(0,360,0),
-		R=PV_KeyFrames(0, 0, 255, 260, 64, 1000, 64),
-		G=PV_KeyFrames(0, 0, 128,  260, 64, 1000, 64),
-		B=PV_KeyFrames(0, 0, 0, 260, 108, 1000, 108),
+		Rotation = PV_Random(0,360,0),
+		R = PV_KeyFrames(0, 0, 255, 260, 64, 1000, 64),
+		G = PV_KeyFrames(0, 0, 128,  260, 64, 1000, 64),
+		B = PV_KeyFrames(0, 0, 0, 260, 108, 1000, 108),
 	    Alpha = PV_KeyFrames(0, 0, 0, 100, 20, 500, 20, 1000, 0)
 	};
 	
@@ -588,9 +588,9 @@ global func Fireworks(int color, int x, int y)
 	var start_angle = Random(360);
 	
 	var num = 25;
-	for (var i=0; i<num; ++i)
+	for (var i = 0; i<num; ++i)
 	{
-		for (var j=0; j<num; ++j)
+		for (var j = 0; j<num; ++j)
 		{
 			var speed = 1000;
 			var angle = start_angle + i*360/num + Random(15) + j*15;

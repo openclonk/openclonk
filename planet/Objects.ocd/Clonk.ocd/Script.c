@@ -489,7 +489,7 @@ Eat = {
 	StartCall = "StartEat",
 	NextAction = "Walk",
 	InLiquidAction = "Swim",
-	Attach=CNAT_Bottom,
+	Attach = CNAT_Bottom,
 },
 };
 

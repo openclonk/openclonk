@@ -66,7 +66,7 @@ private func PlaceGras()
 	for (var i = 0; i < GetLength(x); i++)
 	{
 		while (GBackSolid(x[i],y[i])) y[i]--;
-		var edge=CreateObjectAbove(Grass, x[i], y[i] + 5, NO_OWNER);
+		var edge = CreateObjectAbove(Grass, x[i], y[i] + 5, NO_OWNER);
 		edge->SetCategory(C4D_StaticBack);
 		edge->SetR(r[i]); 
 		edge->Initialize();
@@ -79,7 +79,7 @@ private func PlaceGras()
 public func RelaunchPosition()
 {
 	var x = RandomX(75,500);
-	var y=100;
+	var y = 100;
 	while (!GBackSolid(x,y)) y+=1;
 	y-=30;
 	
