@@ -60,7 +60,7 @@ func FindCaveConnections()
 			dir = GetCaveLinkDir(cave, cave2);
 			//Log("Cave %d to %d direction %d.", GetIndexOf(caves, cave), GetIndexOf(caves, cave2), dir);
 			if (cave.dirs & dir) continue;
-			dir2 = dir >>  1& 5|10 &dir  << 1;
+			dir2 = dir >>  1& 5 | 10 &dir  << 1;
 			//Log("dir %d opposite to %d.", dir2, dir);
 			if (cave2.dirs & dir2) continue;
 			// Make sure the connectors don't cross each other

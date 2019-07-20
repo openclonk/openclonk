@@ -152,7 +152,7 @@ func Reposition(int x, int y)
 				//  __________________________
 				// |       |   Top   |       |
 				// | Left  |----*----| Right |
-				// |_______|_Bottom__|_______|
+				// |_______ | _Bottom__ | _______|
 				//
 				// Whichever part is howered on is checked first for stick direction
 

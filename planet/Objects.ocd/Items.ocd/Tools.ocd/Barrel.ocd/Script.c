@@ -180,7 +180,7 @@ func Check()
 	//Fills Barrel with specified liquid from if submerged
 	FillWithLiquid();
 	
-	//Message("Volume:|%d|Liquid:|%s", iVolume, szLiquid);
+	//Message("Volume:|%d | Liquid:|%s", iVolume, szLiquid);
 }
 
 func FillWithLiquid()

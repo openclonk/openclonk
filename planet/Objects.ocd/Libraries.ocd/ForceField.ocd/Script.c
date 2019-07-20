@@ -8,7 +8,7 @@
 		- Construction
 		
 	This library provides force fields of two types (attractor/repulsor) that can be placed arbitrarily.
-	The force for a X|Y point can then be calculated, taking into account all forces and their specific falloff.
+	The force for a X | Y point can then be calculated, taking into account all forces and their specific falloff.
 */
 
 

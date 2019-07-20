@@ -133,7 +133,7 @@ func InitializeObjects()
 	WindGenerator0170->SetClrModulation(0xff7a6e65);
 
 	var WoodenCabin0155 = CreateObjectAbove(WoodenCabin, 56, 505);
-	WoodenCabin0155->SetCategory(C4D_Structure|C4D_Background);
+	WoodenCabin0155->SetCategory(C4D_Structure | C4D_Background);
 
 	var Elevator0162 = CreateObjectAbove(Elevator, 1170, 544);
 	Elevator0162->SetCon(40);

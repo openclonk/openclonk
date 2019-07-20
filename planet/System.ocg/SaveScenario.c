@@ -569,7 +569,7 @@ global func SaveScenarioValue2String(v, string constant_prefix, bool allow_bitma
 global func GetBitmaskNameByValue(v, prefix)
 {
 	// Compose bitmask of names of individual bits
-	// e.g. GetBitmaskNameByValue(3, "C4D_") == "C4D_StaticBack|C4D_Structure"
+	// e.g. GetBitmaskNameByValue(3, "C4D_") == "C4D_StaticBack | C4D_Structure"
 	var s;
 	for (var i = 0; i<31 && v; ++i)
 	{

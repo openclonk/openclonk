@@ -507,20 +507,20 @@ func InitializeObjects()
 	g_goal = CreateObject(Goal_Parkour);
 
 	g_goal->SetStartpoint(20, 1000);
-	g_goal->AddCheckpoint(760, 950, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(400, 660, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(870, 460, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(1665, 1070, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(1485, 800, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(1735, 1410, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(2110, 1180, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(3350, 1240, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(3040, 720, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(2530, 520, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(2150, 510, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(2000, 200, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	g_goal->AddCheckpoint(3090, 300, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
-	var ParkourCheckpoint001 = g_goal->AddCheckpoint(1000, 100, PARKOUR_CP_Respawn|PARKOUR_CP_Check|PARKOUR_CP_Ordered|PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(760, 950, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(400, 660, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(870, 460, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(1665, 1070, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(1485, 800, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(1735, 1410, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(2110, 1180, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(3350, 1240, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(3040, 720, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(2530, 520, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(2150, 510, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(2000, 200, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	g_goal->AddCheckpoint(3090, 300, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
+	var ParkourCheckpoint001 = g_goal->AddCheckpoint(1000, 100, PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Team);
 	ParkourCheckpoint001->SetCPSize(40);
 	g_goal->SetFinishpoint(100, 150, true);
 

@@ -287,7 +287,7 @@ global func DoShockwave(int x, int y, int level, int cause_plr, object layer, in
 
 	// Hurl objects in explosion radius.
 	var shockwave_objs = FindObjects(Find_Distance(level, l_x, l_y), Find_NoContainer(), Find_Layer(layer),
-		Find_Or(Find_Category(C4D_Object|C4D_Living|C4D_Vehicle), Find_Func("CanBeHitByShockwaves", cause_plr)), Find_Func("DoShockwaveCheck", x, y, cause_plr));
+		Find_Or(Find_Category(C4D_Object | C4D_Living | C4D_Vehicle), Find_Func("CanBeHitByShockwaves", cause_plr)), Find_Func("DoShockwaveCheck", x, y, cause_plr));
 	var cnt = GetLength(shockwave_objs);
 	if (cnt)
 	{
