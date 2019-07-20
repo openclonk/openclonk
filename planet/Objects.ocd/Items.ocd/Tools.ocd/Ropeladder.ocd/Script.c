@@ -318,7 +318,7 @@ public func UpdateLines()
 		var start = GetRopeConnectPosition(i, 0, 0, angle, oldangle);
 		var end   = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
 
-		var diff = Vec_Sub(end,start);
+		var diff = Vec_Sub(end, start);
 		var diffangle = Vec_Angle(diff, [0, 0]);
 		var point = Vec_Add(start, Vec_Div(diff, 2));
 		var length = Vec_Length(diff) * 125 / Ladder_Precision;
@@ -329,7 +329,7 @@ public func UpdateLines()
 		var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
 		var end   = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
 		
-		var diff = Vec_Sub(end,start);
+		var diff = Vec_Sub(end, start);
 		var diffangle = Vec_Angle(diff, [0, 0]);
 		var point = Vec_Add(start, Vec_Div(diff, 2));
 		var length = Vec_Length(diff) * 1000 / Ladder_Precision / 8;

@@ -64,7 +64,7 @@ func FxIntBridgeStart(object clonk, effect fx, int temp, int x, int y)
 		Size = PV_KeyFrames(0, 0, 1, 100, 3, 1000, 2),
 	};
 	// Let the player know the clonk is about to do stuff
-	clonk->PlayAnimation("Dig", CLONK_ANIM_SLOT_Movement, Anim_Linear(0,0, clonk->GetAnimationLength("Dig"), 35, ANIM_Loop), Anim_Const(1000));
+	clonk->PlayAnimation("Dig", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, clonk->GetAnimationLength("Dig"), 35, ANIM_Loop), Anim_Const(1000));
 	return FX_OK;
 }
 

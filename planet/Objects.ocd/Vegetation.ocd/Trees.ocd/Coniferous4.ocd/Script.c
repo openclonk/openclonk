@@ -11,12 +11,12 @@ local lib_tree_burned = Tree_Coniferous4_Burned;
 
 public func GetTreetopPosition(pos)
 {
-	return Shape->Rectangle(-10,-8, 20,10)->GetRandomPoint(pos);
+	return Shape->Rectangle(-10,-8, 20, 10)->GetRandomPoint(pos);
 }
 
 public func Definition(def, ...)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-25000, -8000, 22000), Trans_Rotate(40,0,0,1), Trans_Rotate(-10,1), Trans_Rotate(50,0,1)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-25000, -8000, 22000), Trans_Rotate(40, 0, 0, 1), Trans_Rotate(-10, 1), Trans_Rotate(50, 0, 1)), def);
 	return _inherited(def, ...);
 }
 

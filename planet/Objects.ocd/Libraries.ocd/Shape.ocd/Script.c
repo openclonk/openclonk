@@ -24,7 +24,7 @@ public func GetArea()
 
 /* Rectangle shape */
 
-local BaseRectangle; // properties x,y,w,h
+local BaseRectangle; // properties x, y, w, h
 
 // Point contained in rectangle?
 private func BaseRectangle_IsPointContained(int x, int y)
@@ -71,7 +71,7 @@ private func BaseRectangle_IsFullMap()
 	return !this.x && !this.y && this.wdt == LandscapeWidth() && this.hgt == LandscapeHeight();
 }
 
-/** Constructor of rectangle area. (x,y) is included; (x + w,y + h) is excluded.
+/** Constructor of rectangle area. (x, y) is included; (x + w, y + h) is excluded.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
  @par w Rectangle width
@@ -86,7 +86,7 @@ public func Rectangle(int x, int y, int w, int h)
 
 /* Circle shape */
 
-local BaseCircle; // properties cx,cy,r
+local BaseCircle; // properties cx, cy, r
 
 // point contained in circle?
 private func BaseCircle_IsPointContained(int x, int y)
@@ -408,7 +408,7 @@ public func LandscapeRectangle()
 }
 
 
-/** Constructor of rectangle area. (x,y) is included; (x + w,y + h) is excluded. Automatically flips rectangles of negative size in any dimension.
+/** Constructor of rectangle area. (x, y) is included; (x + w, y + h) is excluded. Automatically flips rectangles of negative size in any dimension.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
  @par w Rectangle width

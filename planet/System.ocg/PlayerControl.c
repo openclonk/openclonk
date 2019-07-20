@@ -7,7 +7,7 @@
 
 static const CON_Gamepad_Deadzone = 60;
 static CON_VC_Players;
-static g_player_cursor_pos; // array of [x,y] pos arrays; indexed by player. last cursor pos as sent by CON_CursorPos
+static g_player_cursor_pos; // array of [x, y] pos arrays; indexed by player. last cursor pos as sent by CON_CursorPos
 
 // PlayerControlRelease
 // Called by engine whenever a control is issued
@@ -17,12 +17,12 @@ static g_player_cursor_pos; // array of [x,y] pos arrays; indexed by player. las
 global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, int status)
 {
 	var release = status == CONS_Up;
-	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, status);
+	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x, y, strength, repeat, status);
 	// Control handled by definition? Forward
 	if (spec_id) return spec_id->ForwardedPlayerControl(plr, ctrl, x, y, strength, repeat, status);
 
 	// Forward control to player
-	if (Control2Player(plr,ctrl, x, y, strength, repeat, status)) return true;
+	if (Control2Player(plr, ctrl, x, y, strength, repeat, status)) return true;
 
 	// Forward control to cursor
 	var cursor = GetCursor(plr);
@@ -62,12 +62,12 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 
 				if (ctrl == CON_GUICursor)
 				{
-					cursor->GetMenu()->~UpdateCursor(dx,dy);
+					cursor->GetMenu()->~UpdateCursor(dx, dy);
 					return true;
 				}
 				else if (release == true)
 				{
-					cursor->GetMenu()->~OnMouseClick(dx,dy,ctrl == CON_GUIClick2);
+					cursor->GetMenu()->~OnMouseClick(dx, dy, ctrl == CON_GUIClick2);
 					return false;
 				}
 			}		
@@ -150,7 +150,7 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	if (hotkey > 0)
 	{
 		// valid crew number?
-		var crew = GetCrew(plr,hotkey-1);
+		var crew = GetCrew(plr, hotkey-1);
 		if (!crew) return false;
 		// stop previously selected crew
 		StopSelected();
@@ -212,7 +212,7 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 	{
 		fx = GetEffect("*Control*", this, i);
 		if (fx)
-			if (EffectCall(this, fx, "Control", ctrl, x,y,strength, repeat, status))
+			if (EffectCall(this, fx, "Control", ctrl, x, y, strength, repeat, status))
 				return true;
 	}
 	// No effect handled the control
@@ -246,7 +246,7 @@ global func GetEntranceObject()
 
 	// object with an entrance on target position
 	var obj = FindObject(Find_OCF(OCF_Entrance), Find_Layer(GetObjectLayer()), 
-	                     Find_AtPoint(0,0), Find_Exclude(this));
+	                     Find_AtPoint(0, 0), Find_Exclude(this));
 	if (!obj) return nil;
 
 	var x = obj->GetDefCoreVal("Entrance","DefCore",0) + obj->GetX();
@@ -321,7 +321,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, int status, b
 		}
 		else if (proc == "HANGLE") // Let go from hangling the ceiling
 		{
-			if (ctrl == CON_Down) return this->ObjectComLetGo(0,0);
+			if (ctrl == CON_Down) return this->ObjectComLetGo(0, 0);
 		}
 		// Direct turnaround if object is standing still. Valid for any procedure in OC
 		if (!GetXDir())
@@ -405,7 +405,7 @@ global func ShiftCursor(int plr, bool back, bool force)
 	var index = 0;
 	while (index < GetCrewCount(plr))
 	{
-		if (GetCursor(plr) == GetCrew(plr,index)) break;
+		if (GetCursor(plr) == GetCrew(plr, index)) break;
 		index++;
 	}
 	
@@ -431,7 +431,7 @@ global func ShiftCursor(int plr, bool back, bool force)
 			if (index >= GetCrewCount(plr)) index = 0;
 		}
 		++cycle;
-	} while (cycle < maxcycle && !(GetCrew(plr,index)->GetCrewEnabled()));
+	} while (cycle < maxcycle && !(GetCrew(plr, index)->GetCrewEnabled()));
 	
 	// Changing the cursor closes all menus that are associated with the old cursor.
 	// However, if a menu is not closable, then it requires the attention of the player and switching the cursor is disabled..
@@ -458,7 +458,7 @@ global func GetPlayerControlName(int ctrl)
 // Return COMD_*-constant corresponding to current state of passed directional controls
 global func GetPlayerConDir(int plr, int con_left, int con_up, int con_right, int con_down)
 {
-	var x,y;
+	var x, y;
 	if (GetPlayerControlState(plr, con_left))	--x;
 	if (GetPlayerControlState(plr, con_up))		--y;
 	if (GetPlayerControlState(plr, con_right)) ++x;
@@ -474,7 +474,7 @@ global func ComDir2XY(int comd)
 {
 	// Creating an array here for every keypress/release
 	// Would be so cool to have this static const. Guenther?
-	return [[0,0,1,1,1,0,-1,-1,-1][comd], [0,-1,-1,0,1,1,1,0,-1][comd]];
+	return [[0, 0, 1, 1, 1, 0,-1,-1,-1][comd], [0,-1,-1, 0, 1, 1, 1, 0,-1][comd]];
 }
 
 global func ObjectCommand(string command, object target, int tx, int ty, object target2, /*any*/ data)
@@ -538,7 +538,7 @@ global func MouseDragDrop(int plr, object source, object target)
 {
 	var r = inherited(plr, ctrl, spec_id, x, y, strength, repeat, release, ...), rs;
 	if (r) rs = ""; else rs = "!";
-	Log("%s%d, %s, %i, %d, %d, %d, %v, %v", rs, plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, release);
+	Log("%s%d, %s, %i, %d, %d, %d, %v, %v", rs, plr, GetPlayerControlName(ctrl), spec_id, x, y, strength, repeat, release);
 	return r;
 }*/
 

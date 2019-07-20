@@ -12,7 +12,7 @@ local lib_tree_burned = Deco_Tree_Deciduous4_Burned;
 
 public func GetTreetopPosition(pos)
 {
-	return Shape->Rectangle(-30,-30, 60,80)->GetRandomPoint(pos);
+	return Shape->Rectangle(-30,-30, 60, 80)->GetRandomPoint(pos);
 }
 
 public func Construction() {

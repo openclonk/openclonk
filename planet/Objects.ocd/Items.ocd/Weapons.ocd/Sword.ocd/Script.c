@@ -362,7 +362,7 @@ public func GetCarryTransform(clonk, sec, back)
 {
 	if (sec) return Trans_Mul(Trans_Rotate(130, 0, 0, 1), Trans_Translate(-3500, 0, 2800));
 
-	if (back) return Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Rotate(-90,1,0,0), Trans_Translate(-7000,0,0));
+	if (back) return Trans_Mul(Trans_Rotate(180, 0, 1, 0), Trans_Rotate(-90, 1, 0, 0), Trans_Translate(-7000, 0, 0));
 	return Trans_Rotate(-90, 1, 0, 0);
 }
 

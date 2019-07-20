@@ -41,7 +41,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	
 	var clr = HSL(Random(255), 255, 100);
 	
-	CreateParticle("SmokeDirty", PV_Random(x - 10,x + 10), PV_Random(y - 10, y + 10), 0, PV_Random(-2, 0), PV_Random(50, 100), {Prototype = Particles_Colored(ExplosionParticles_Smoke, clr), Size = smoke_size}, Max(2, wilderness_level / 10));
+	CreateParticle("SmokeDirty", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), 0, PV_Random(-2, 0), PV_Random(50, 100), {Prototype = Particles_Colored(ExplosionParticles_Smoke, clr), Size = smoke_size}, Max(2, wilderness_level / 10));
 	CreateParticle("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = Particles_Colored(ExplosionParticles_BlastSmoothBackground, clr), Size = blast_smooth_size}, smoothness_level / 5);
 	CreateParticle("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = Particles_Colored(ExplosionParticles_BlastSmooth, clr), Size = blast_smooth_size}, smoothness_level / 5);
 	CreateParticle("Dust", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), 0, 0, PV_Random(18, 25), {Prototype = Particles_Colored(ExplosionParticles_Blast, clr), Size = blast_size}, smoothness_level / 5);
@@ -98,7 +98,7 @@ global func FxSmokeTrailStart(object target, proplist e, int temp, int color)
 		G = c.G,
 		B = c.B,
 		Alpha = PV_KeyFrames(0, 0, alpha/4, 200, alpha, 1000, 0),
-		Rotation = PV_Random(-45,45),
+		Rotation = PV_Random(-45, 45),
 		ForceX = PV_Wind(20),
 		ForceY = PV_Gravity(-10),
 	};

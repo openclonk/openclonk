@@ -8,7 +8,7 @@
 local animWork;
 local meshAttach;
 
-public func LampPosition(id def) { return [GetCalcDir()*-6,30]; }
+public func LampPosition(id def) { return [GetCalcDir()*-6, 30]; }
 
 public func Initialize()
 {
@@ -71,7 +71,7 @@ local workEffect;
 
 public func OnProductionStart(id product)
 {
-	workEffect = AddEffect("IntWorkAnim", this, 1,1,this);
+	workEffect = AddEffect("IntWorkAnim", this, 1, 1, this);
 	return _inherited(product, ...);
 }
 

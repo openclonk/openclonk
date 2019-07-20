@@ -474,9 +474,9 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 		}
 		else
 		{
-			CustomMessage("", nil, for_player, 0,0, nil, nil, nil, MSG_Right);  // clear prev msg
+			CustomMessage("", nil, for_player, 0, 0, nil, nil, nil, MSG_Right);  // clear prev msg
 		}
-		CustomMessage(message, nil, for_player, xoff,150, nil, GUI_MenuDeco, portrait ?? talker, flags);
+		CustomMessage(message, nil, for_player, xoff, 150, nil, GUI_MenuDeco, portrait ?? talker, flags);
 	}
 
 	return;

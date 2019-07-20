@@ -188,7 +188,7 @@ global func SaveScen_Objects(array objs, array ignore_objs, proplist props_proto
 global func SaveScen_ResolveDepends(array objs, array obj_data)
 {
 	// Dependency pointer from obj to obj_data
-	var i,j,k,n = GetLength(objs),od;
+	var i, j, k, n = GetLength(objs),od;
 	for (i = 0; i<n; ++i)
 	{
 		for (j = 0; j<obj_data[i].n_dependencies; ++j)
@@ -404,11 +404,11 @@ global func SaveScenarioObject(props)
 	v = GetAlive();         if (!v && (GetCategory()&C4D_Living)) props->AddCall("Alive",         this, "Kill", this, true);
 	v = GetDir();           if (v)                                props->AddCall("Dir",           this, "SetDir", GetConstantNameByValueSafe(v,"DIR_"));
 	v = GetComDir();        if (v)                                props->AddCall("ComDir",        this, "SetComDir", GetConstantNameByValueSafe(v,"COMD_"));
-	v = GetCon();           if (v != 100)                         props->AddCall("Con",           this, "SetCon", Max(v,1));
+	v = GetCon();           if (v != 100)                         props->AddCall("Con",           this, "SetCon", Max(v, 1));
 	v = GetCategory();      if (v != def->GetCategory())          props->AddCall("Category",      this, "SetCategory", GetBitmaskNameByValue(v, "C4D_"));
 	v = GetR();             if (v && !Contained())                props->AddCall("R",             this, "SetR", v);
 	v = GetXDir();          if (v && !is_static)                  props->AddCall("XDir",          this, "SetXDir", v);
-	v = GetYDir();          if (v && !is_static) if (!Inside(v, 1,12) || !GetContact(-1, CNAT_Bottom))
+	v = GetYDir();          if (v && !is_static) if (!Inside(v, 1, 12) || !GetContact(-1, CNAT_Bottom))
 	                                                              props->AddCall("YDir",          this, "SetYDir", v); // consolidate small YDir for standing objects
 	v = GetRDir();          if (v && !is_static)                  props->AddCall("RDir",          this, "SetRDir", v);
 	var default_color = 0xffffffff;
@@ -437,11 +437,11 @@ global func SaveScenarioObject(props)
 	{
 		i -= 2;
 		props->AddCall("Command", this, "SetCommand", Format("%v", last_command),
-				SaveScenarioValue2String(GetCommand(1,i)), // target
-				SaveScenarioValue2String(GetCommand(2,i)), // x
-				SaveScenarioValue2String(GetCommand(3,i)), // y
-				SaveScenarioValue2String(GetCommand(4,i)), // target2
-				SaveScenarioValue2String(GetCommand(5,i))); // data
+				SaveScenarioValue2String(GetCommand(1, i)), // target
+				SaveScenarioValue2String(GetCommand(2, i)), // x
+				SaveScenarioValue2String(GetCommand(3, i)), // y
+				SaveScenarioValue2String(GetCommand(4, i)), // target2
+				SaveScenarioValue2String(GetCommand(5, i))); // data
 	}
 	// Effects
 	var fx; i = 0;
@@ -601,7 +601,7 @@ global func SaveScenP_Add(string name, string s, ...)
 	// apply format parametrers
 	s = Format(s, ...);
 	// just append to array of strings
-	// could build a string using data = Format("%s%s",data,s); here - however, then we'd be limited to some internal buffer sizes
+	// could build a string using data = Format("%s%s",data, s); here - however, then we'd be limited to some internal buffer sizes
 	var new_data = {name = name, s = s};
 	if (!this.data) this.data=[new_data]; else this.data[GetLength(this.data)] = new_data;
 	return true;

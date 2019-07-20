@@ -12,7 +12,7 @@ local basin_x, basin_y;
 
 public func SetBasinPosition(int x, int y)
 {
-	SetPosition(0,0);
+	SetPosition(0, 0);
 	basin_x = x; basin_y = y;
 	return true;
 }

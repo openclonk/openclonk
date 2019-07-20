@@ -13,7 +13,7 @@ global func SetLeagueProgressScore(int new_progress, int new_score)
 		var progress_string = GetLeagueProgressData(plrid);
 		if (progress_string && GetLength(progress_string)>=2)
 		{
-			var old_progress = GetChar(progress_string,1)-GetChar("A");
+			var old_progress = GetChar(progress_string, 1)-GetChar("A");
 			// If old progress was better than new progress, keep old progress
 			new_progress = Max(old_progress, new_progress);
 		}

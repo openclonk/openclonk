@@ -32,11 +32,11 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 	{
 		iX = AbsX(iXStart + Random(iWidth));
 		iY = AbsY(iYStart + Random(iHeight));
-		if (GetMaterial(iX,iY)==iMaterial &&
-		   GetMaterial(iX + iSize,iY + iSize)==iMaterial &&
-		   GetMaterial(iX + iSize,iY-iSize)==iMaterial &&
-		   GetMaterial(iX-iSize,iY-iSize)==iMaterial &&
-		   GetMaterial(iX-iSize,iY + iSize)==iMaterial
+		if (GetMaterial(iX, iY)==iMaterial &&
+		   GetMaterial(iX + iSize, iY + iSize)==iMaterial &&
+		   GetMaterial(iX + iSize, iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize, iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize, iY + iSize)==iMaterial
 		) {
 			return [iX, iY]; // Location found.
 		}

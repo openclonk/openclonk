@@ -167,7 +167,7 @@ private func GetGroundPos()
 	if (GBackSolid()) return -1;
 
 	var y = 0;
-	while (!GBackSolid(0,y) && y < 21)
+	while (!GBackSolid(0, y) && y < 21)
 		y++;
 	if (y >= 21) return -1;
 	return y;
@@ -181,9 +181,9 @@ private func CheckPlantConditions()
 	// No solid ground
 	if (ground == -1) return false;
 	// No fertile ground
-	if (GetMaterialVal("Soil", "Material", GetMaterial(0,ground)) != 1) return false;
+	if (GetMaterialVal("Soil", "Material", GetMaterial(0, ground)) != 1) return false;
 	// Do not grow underground
-	if (!GBackSky(0, ground-1) && !GBackSky(0,0) && !GBackSky(0,-30)) return false;
+	if (!GBackSky(0, ground-1) && !GBackSky(0, 0) && !GBackSky(0,-30)) return false;
 	// or underwater
 	if (GBackLiquid(0,-15)) return false;
 	// Too many plants around
@@ -251,7 +251,7 @@ private func PlantManually(object clonk)
 	}
 
 	// Soil is needed
-	if (GetMaterialVal("Soil", "Material", GetMaterial(0,ground)) != 1)
+	if (GetMaterialVal("Soil", "Material", GetMaterial(0, ground)) != 1)
 	{
 		return CustomMessage(Format("$TxtBadGround$", GetName()), clonk, clonk->GetController(), 0, 0, 0xff0000);
 	}

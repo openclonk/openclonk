@@ -32,7 +32,7 @@ public func ControlUse(object clonk, int iX, int iY)
 	{
 		rand = 1;
 		if (clonk->GetYDir() < -5) rand = 2;
-		animation = Format("SwordJump%d.%s",rand,arm);
+		animation = Format("SwordJump%d.%s",rand, arm);
 	}
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));

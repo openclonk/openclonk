@@ -37,7 +37,7 @@ global func Unstick(int range)
 	{
 		for (var i = 1; i <= (range ?? 7); ++i)
 		{
-			for (var d in [[0,-i], [0,i], [-i,0], [i,0]])
+			for (var d in [[0,-i], [0, i], [-i, 0], [i, 0]])
 			{
 				if (!Stuck(d[0], d[1]))
 				{

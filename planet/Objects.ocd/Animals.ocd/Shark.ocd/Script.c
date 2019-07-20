@@ -250,7 +250,7 @@ private func StartWalk()
 	var pos = GetAnimationPosition(swim_animation);
 	SetAnimationPosition(swim_animation, Anim_Linear(pos, 0, len, 10, ANIM_Loop));
 	this.MeshTransformation = Trans_Mul(Trans_Rotate(90 + RandomX(-10, 10), 1, 0, 0), base_transform);
-	SetObjDrawTransform(0,0,0,0,0,0);
+	SetObjDrawTransform(0, 0, 0, 0, 0, 0);
 	swim_animation = PlayAnimation("Swim", 5, Anim_Linear(0, 0, len, 100, ANIM_Loop), Anim_Const(500));
 	if (GBackLiquid())
 	{

@@ -3,7 +3,7 @@
 protected func Initialize()
 {
 	this["Visibility"] = VIS_Owner;
-	AddEffect("IntRotate",this,1,1,this);
+	AddEffect("IntRotate",this, 1, 1, this);
 	return;
 }
 

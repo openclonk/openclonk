@@ -36,7 +36,7 @@ private func Construction()
 {
 	_inherited(...);
 
-	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
+	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0, 359),0, 1, 0));
 	if (!GetGrowthValue() && !IsBurnedTree()) 
 		StartGrowth(5, RandomX(900, 1050));
 	if (IsBurnedTree())

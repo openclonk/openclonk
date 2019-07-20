@@ -268,33 +268,33 @@ func InitializeObjects()
 	var light01 = CreateObject(Rock, 520, 1210);
 	light01->SetCategory(C4D_StaticBack);
 	light01->SetLightRange(100, 100);
-	light01->SetLightColor(RGB(255,144,16));
+	light01->SetLightColor(RGB(255, 144, 16));
 	light01.Visibility = VIS_None;
 
 	// candles
 	for (var candle_shine in FindObjects(Find_ID(EnvPack_Candle_Shine)))
 	{
 		candle_shine->SetLightRange(30, 20);
-		candle_shine->SetLightColor(RGB(255,163,58));
+		candle_shine->SetLightColor(RGB(255, 163, 58));
 	}
 	
 	// large cave mushroom
-	LargeCaveMushroom003->SetLightRange(80,50);
-	LargeCaveMushroom003->SetLightColor(RGB(0,100,0));
-	Object(17)->SetLightRange(80,50);
-	Object(17)->SetLightColor(RGB(0,100,0));
+	LargeCaveMushroom003->SetLightRange(80, 50);
+	LargeCaveMushroom003->SetLightColor(RGB(0, 100, 0));
+	Object(17)->SetLightRange(80, 50);
+	Object(17)->SetLightColor(RGB(0, 100, 0));
 	
 	// small cave mushrooms
 	for (var mushroom in FindObjects(Find_ID(Mushroom), Find_InRect(160, 1240, 200, 60)))
 	{
-		mushroom->SetLightColor(RGB(100,0,0));
-		mushroom->SetLightRange(50,30);
+		mushroom->SetLightColor(RGB(100, 0, 0));
+		mushroom->SetLightRange(50, 30);
 	}
 
-	Object(463)->SetLightRange(50,10);
-	Object(463)->SetLightColor(RGB(100,0,200));
-	Object(13)->SetLightRange(50,10);
-    Object(13)->SetLightColor(RGB(100,200,0));
+	Object(463)->SetLightRange(50, 10);
+	Object(463)->SetLightColor(RGB(100, 0, 200));
+	Object(13)->SetLightRange(50, 10);
+    Object(13)->SetLightColor(RGB(100, 200, 0));
 
 	return true;
 }

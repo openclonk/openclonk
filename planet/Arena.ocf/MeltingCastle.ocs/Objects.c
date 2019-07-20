@@ -7,14 +7,14 @@ func InitializeObjects()
 	
 	CreateObject(Goal_Melee, 50, 50);
 
-	ItemSpawn->Create(Firestone,407,389);
-	ItemSpawn->Create(Firestone,423,389);
-	ItemSpawn->Create(PowderKeg,669,261);
-	ItemSpawn->Create(Bread,352,258);
-	ItemSpawn->Create(IronBomb,441,389);
-	ItemSpawn->Create(IceWallKit,990,400);
-	ItemSpawn->Create(Firestone,443,101);
-	ItemSpawn->Create(IceWallKit,372,258);
+	ItemSpawn->Create(Firestone, 407, 389);
+	ItemSpawn->Create(Firestone, 423, 389);
+	ItemSpawn->Create(PowderKeg, 669, 261);
+	ItemSpawn->Create(Bread, 352, 258);
+	ItemSpawn->Create(IronBomb, 441, 389);
+	ItemSpawn->Create(IceWallKit, 990, 400);
+	ItemSpawn->Create(Firestone, 443, 101);
+	ItemSpawn->Create(IceWallKit, 372, 258);
 
 	var Chest001 = CreateObjectAbove(Chest, 1047, 359);
 

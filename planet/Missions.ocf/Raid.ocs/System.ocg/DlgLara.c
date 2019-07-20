@@ -161,6 +161,6 @@ func Lara_FindCarryObj(object c, proplist fx)
 {
 	var last_exclude;
 	if (fx.last_barrel) last_exclude = Find_Exclude(fx.last_barrel);
-	var objs = Global->FindObjects(Global->Find_InRect(200,200,650,180), Find_Func("IsBarrel"), last_exclude);
+	var objs = Global->FindObjects(Global->Find_InRect(200, 200, 650, 180), Find_Func("IsBarrel"), last_exclude);
 	return objs[Random(GetLength(objs))];
 }

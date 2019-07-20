@@ -21,7 +21,7 @@ public func SetConstructionSiteOverlay(object site, int dir, object stick, objec
 	var metal_completion = site->ContentsCount(Metal) * 3 / Max(GetComponent(Metal, nil), 1);
 	site->SetGraphics(["Site0", "Site1", "Site2", nil][metal_completion], CrystalCommunicator, 1, GFXOV_MODE_Base);
 	site->SetGraphics(nil, nil, 2);
-	site->SetObjDrawTransform(1000, 0,0,0, 1000, site->GetObjHeight()/2 * -1000, 1);
+	site->SetObjDrawTransform(1000, 0, 0, 0, 1000, site->GetObjHeight()/2 * -1000, 1);
 	// Add graphics of contained gems
 	UpdateGemOverlays(site, [1, 3, 7, 12][metal_completion]);
 	return true;
@@ -36,7 +36,7 @@ public func DoConstructionEffects(object site)
 	// Site is done immediately
 	SetCon(100);
 	// Create TopFace overlay
-	top_face = CreateObjectAbove(GetID(),0,35,GetOwner());
+	top_face = CreateObjectAbove(GetID(),0, 35, GetOwner());
 	top_face.Plane = this.Plane + 10;
 	top_face->SetGraphics("TopFace");
 	top_face->SetAction("Attach", this);
@@ -53,8 +53,8 @@ public func DoConstructionEffects(object site)
 
 /* Gem overlays */
 
-static const CrystalCommunicator_GemsX = [ 15,440,336,221,121,298,220, 50, 14,333,129, 77],
-             CrystalCommunicator_GemsY = [255, 75,100, 84, 44,107, 15,130,107,153,149,106],
+static const CrystalCommunicator_GemsX = [ 15, 440, 336, 221, 121, 298, 220, 50, 14, 333, 129, 77],
+             CrystalCommunicator_GemsY = [255, 75, 100, 84, 44, 107, 15, 130, 107, 153, 149, 106],
              CrystalCommunicator_GemsZ = [  5,  3,  4,  0,  4,  0,  5,  2,  3,  1,  1,  4],
              CrystalCommunicator_GemCount = 12;
 
@@ -102,7 +102,7 @@ private func UpdateGemOverlays(object obj, int max_overlays, bool refresh_existi
 		var gem_target;
 		if (obj.top_face && z>=3) gem_target = obj.top_face; else gem_target = obj;
 		gem_target->SetGraphics(gem_gfx, gem->GetID(), gem_overlay_index + i, GFXOV_MODE_Base);
-		gem_target->SetObjDrawTransform(size,0,x*200-45000, 0,size,y*200-off_y, gem_overlay_index + i);
+		gem_target->SetObjDrawTransform(size, 0, x*200-45000, 0, size, y*200-off_y, gem_overlay_index + i);
 		if (z<3) gem_target->SetClrModulation(0xffb0b0b0, gem_overlay_index + i);
 		// Remember in list
 		obj.gem_overlays[i] = gem;
@@ -209,7 +209,7 @@ public func StartCommunication()
 private func PreActivity()
 {
 	// Warmup effects
-	var i,x,y,z;
+	var i, x, y, z;
 	for (i = 0; i<CrystalCommunicator_GemCount; ++i)
 	{
 		x = CrystalCommunicator_GemsX[i]/5 - 45;
@@ -219,7 +219,7 @@ private func PreActivity()
 		if (top_face && z>=3) gem_target = top_face; else gem_target = this;
 		if (time < 20 || !Random(3))
 		{
-			if (!(time % 5)) gem_target->CreateParticle("StarFlash", x,y, 0,0, 60 + Random(10), small_flash_particle, 1);
+			if (!(time % 5)) gem_target->CreateParticle("StarFlash", x, y, 0, 0, 60 + Random(10), small_flash_particle, 1);
 		}
 		else
 			gem_target->CreateParticle("StarFlash", x, y, -x, -y, 10, small_flash_particle, 10);
@@ -290,11 +290,11 @@ private func Activity()
 	var gem_target;
 	if (top_face && z>=3) gem_target = top_face; else gem_target = this;
 	// Create ring moving upwards
-	if (Abs(x) > 5) CreateParticle("MagicRing", x, y, 0, -Min(time/20,10), 2000, beam_particles[i], 1);
+	if (Abs(x) > 5) CreateParticle("MagicRing", x, y, 0, -Min(time/20, 10), 2000, beam_particles[i], 1);
 	// Create flash at gem
 	gem_target->CreateParticle("StarFlash", x, y, 0, 0, 20 + Random(10), gem_particles[i], 1);
 	// Create central flash
-	if (!(time % 5)) CreateParticle("StarFlash", PV_Random(-6, +6), PV_Random(-6, +6), 0,0, 20 + Random(10), flash_particle, 1);
+	if (!(time % 5)) CreateParticle("StarFlash", PV_Random(-6, +6), PV_Random(-6, +6), 0, 0, 20 + Random(10), flash_particle, 1);
 	++time;
 }
 
@@ -304,7 +304,7 @@ private func CreateCirclingParticle(proplist prototype, int frames_per_cycle, in
 	var ang0 = (!!start_backmove) * 180;
 	var particle = {
 		Prototype = prototype,
-		Size =   PV_Sin(PV_Linear( ang0,              360*num_cycles),5,8),
+		Size =   PV_Sin(PV_Linear( ang0,              360*num_cycles),5, 8),
 		ForceX = PV_Sin(PV_Linear( ang0 + 90,   ang0 + 90 + 360*num_cycles), a, 0),
 		ForceY = 0,
 		Attach = ATTACH_Front | ATTACH_MoveRelative,

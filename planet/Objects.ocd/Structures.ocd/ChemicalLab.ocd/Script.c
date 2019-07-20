@@ -7,7 +7,7 @@
 
 local hold_production;
 
-public func LampPosition(id def) { return [GetCalcDir()*24,2]; }
+public func LampPosition(id def) { return [GetCalcDir()*24, 2]; }
 
 func Construction(object creator)
 {

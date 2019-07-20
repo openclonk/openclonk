@@ -19,7 +19,7 @@ func FindCaves(int n)
 	while (n--)
 	{
 		var cave = {};
-		if (!mask->FindPosition(cave, "Rock", [border,border,this.Wdt-border*2,this.Hgt-border*2])) continue;
+		if (!mask->FindPosition(cave, "Rock", [border, border, this.Wdt-border*2, this.Hgt-border*2])) continue;
 		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = cave.X, Y = cave.Y, Wdt = min_cave_dist, Hgt = min_cave_dist});
 		cave.links = [];
 		cave.dirs = 0;
@@ -147,14 +147,14 @@ func RemoveCaveLinks(c1, c2)
 	{
 		c1.links[i] = c1.links[n];
 		SetLength(c1.links, n);
-		c1.dirs &= ~GetCaveLinkDir(c1,c2);
+		c1.dirs &= ~GetCaveLinkDir(c1, c2);
 	}
 	i = GetIndexOf(c2.links, c1); n = GetLength(c2.links) - 1;
 	if (i>=0)
 	{
 		c2.links[i] = c2.links[n];
 		SetLength(c2.links, n);
-		c2.dirs &= ~GetCaveLinkDir(c2,c1);
+		c2.dirs &= ~GetCaveLinkDir(c2, c1);
 	}
 	return true;
 }
@@ -169,13 +169,13 @@ func DrawVariations(string mat, int ratio, int sx, int sy)
 func DrawBackground()
 {
 	Draw("Rock");
-	DrawVariations("Rock", 50, 5,15);
-	DrawVariations("Ore", 10, 8,8);
-	DrawVariations("Firestone", 8, 12,3);
-	DrawVariations("Coal", 8, 8,3);
-	DrawVariations("Gold", 5, 4,4);
-	DrawVariations("Granite", 14, 15,5);
-	DrawVariations("Granite", 14, 5,15);
+	DrawVariations("Rock", 50, 5, 15);
+	DrawVariations("Ore", 10, 8, 8);
+	DrawVariations("Firestone", 8, 12, 3);
+	DrawVariations("Coal", 8, 8, 3);
+	DrawVariations("Gold", 5, 4, 4);
+	DrawVariations("Granite", 14, 15, 5);
+	DrawVariations("Granite", 14, 5, 15);
 	return true;
 }
 
@@ -228,8 +228,8 @@ protected func InitializeMap(map)
 {
 	var s = SCENPAR_MapSize-1;
 	//var d = SCENPAR_Difficulty-1;
-	var map_size = [[120,120], [200,200], [330,330]][s];
-	var find_cave_iterations = [100,150,300][s];
+	var map_size = [[120, 120], [200, 200], [330, 330]][s];
+	var find_cave_iterations = [100, 150, 300][s];
 
 	Resize(map_size[0],map_size[1]);
 

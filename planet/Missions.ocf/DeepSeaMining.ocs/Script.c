@@ -24,12 +24,12 @@ protected func PostIntroInitialize()
 		for (var i = 0; i<6; ++i)
 		{
 			goal_site->CreateObjectAbove(Metal,-20);
-			goal_site->CreateObjectAbove(Ruby,0);
-			goal_site->CreateObjectAbove(Amethyst,20);
+			goal_site->CreateObjectAbove(Ruby, 0);
+			goal_site->CreateObjectAbove(Amethyst, 20);
 		}
-		goal_site->CreateContents(Metal,6);
-		goal_site->CreateContents(Ruby,6);
-		goal_site->CreateContents(Amethyst,5);
+		goal_site->CreateContents(Metal, 6);
+		goal_site->CreateContents(Ruby, 6);
+		goal_site->CreateContents(Amethyst, 5);
 	}
 	
 	// Rules
@@ -114,7 +114,7 @@ private func InitEnvironment()
 	// Set infinite wate rreflow from sides
 	var water = Material("Water");
 	for (var x in [0, LandscapeWidth()-1])
-		for (var y = 1,y0 = 0; y<=LandscapeHeight(); ++y)
+		for (var y = 1, y0 = 0; y<=LandscapeHeight(); ++y)
 		{
 			if (GetMaterial(x, y) == water)
 			{
@@ -281,7 +281,7 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 		while (!GBackSolid(x, y) && y < LandscapeHeight()*3/4)
 			y++;
 		
-		if (GetMaterial(x,y) == Material("Brick")) continue; // not on goal platform
+		if (GetMaterial(x, y) == Material("Brick")) continue; // not on goal platform
 			
 		if (!no_struct || !FindObject(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"), Find_ID(WindGenerator)), Find_Distance(60, x, y)))
 			break;

@@ -141,7 +141,7 @@ func Spill(int angle)
 	if (stack_count > 1) material_amount *= stack_count;
 
 	// This will only spray out the material because no solid base to stick it on was found
-	CastPXS(material_name, material_amount, 20, 0,0, angle, 15);
+	CastPXS(material_name, material_amount, 20, 0, 0, angle, 15);
 }
 
 /*-- Production --*/
@@ -164,7 +164,7 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand)
 
 protected func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1100)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500, 400, 0), Trans_Rotate(-10, 1, 0, 0), Trans_Rotate(30, 0, 1, 0), Trans_Rotate(+25, 0, 0, 1), Trans_Scale(1100)),def);
 }
 
 /*-- Properties --*/

@@ -149,7 +149,7 @@ func Dlg_Mave_110(object clonk)
 {
 	// gold bar found?
 	var gold_bar = clonk->FindContents(GoldBar);
-	if (!gold_bar) gold_bar = FindObject(Find_AtRect(-30,-30,60,60), Find_ID(GoldBar));
+	if (!gold_bar) gold_bar = FindObject(Find_AtRect(-30,-30, 60, 60), Find_ID(GoldBar));
 	if (gold_bar) return Dlg_Mave_200(clonk, gold_bar);
 	// not found yet
 	MessageBox("$Mave110$", clonk, clonk); // where is gold?

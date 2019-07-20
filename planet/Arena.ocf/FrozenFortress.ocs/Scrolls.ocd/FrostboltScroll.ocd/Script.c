@@ -13,7 +13,7 @@ func Initialize()
 
 public func ControlUse(object pClonk, int ix, int iy)
 {
-	AddEffect("Frostbolt", nil, 100, 1, nil, GetID(), pClonk->GetOwner(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
+	AddEffect("Frostbolt", nil, 100, 1, nil, GetID(), pClonk->GetOwner(), Angle(0, 0, ix, iy),pClonk->GetX(), pClonk->GetY());
 	Sound("Fire::Fireball");
 	Sound("Fire::Fireball");
 	RemoveObject();
@@ -57,17 +57,17 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 	var y = effect.y;
 
 	if	(	iEffectTime>67  ||
-	 		GBackSolid(x,y) ||
+	 		GBackSolid(x, y) ||
 	 		FindObject(
 	 		Find_Hostile(effect.owner),
 	 		Find_OCF(OCF_Alive),
 	 		Find_NoContainer(),
-	 		Find_Distance(16,x,y)
+	 		Find_Distance(16, x, y)
 	 		)
 	 	)
 	{
-		CreateObjectAbove(Dynamite,x,y,effect.owner)->BlueExplode();
-		var dummy = CreateObjectAbove(Dummy,x,y,-1);
+		CreateObjectAbove(Dynamite, x, y, effect.owner)->BlueExplode();
+		var dummy = CreateObjectAbove(Dummy, x, y,-1);
 		dummy->Sound("Hits::Materials::Glass::GlassShatter");
 		ScheduleCall(dummy, "RemoveObject", 36);
 		for (var i = 0; i<=60;i++)
@@ -79,7 +79,7 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 	}	
 	else if (iEffectTime < 70)
 	{
-		angle += Sin(iEffectTime*50,2)*8;
+		angle += Sin(iEffectTime*50, 2)*8;
 		x += Sin(angle, 9);
 		y+=-Cos(angle, 9);
 		effect.x = x;

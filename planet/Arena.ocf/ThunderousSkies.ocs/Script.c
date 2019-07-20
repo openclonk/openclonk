@@ -15,7 +15,7 @@ protected func Initialize()
 	var goal = CreateObject(Goal_KingOfTheHill, 450, 380, NO_OWNER);
 	goal->SetRadius(90);
 	goal->SetPointLimit(5);
-	AddEffect("BlessTheKing",goal,100,1,nil);
+	AddEffect("BlessTheKing",goal, 100, 1, nil);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
 	GetRelaunchRule()
@@ -23,15 +23,15 @@ protected func Initialize()
 		->SetDefaultRelaunchCount(nil);
 	
 	//Enviroment.
-	//SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
-	SetSkyParallax(1, 20,20, 0,0, nil, nil);
-	Sound("Environment::BirdsLoop",true,100,nil,+1);
+	//SetSkyAdjust(RGBa(250, 250, 255, 128),RGB(200, 200, 220));
+	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
+	Sound("Environment::BirdsLoop",true, 100, nil,+1);
 		
-	CreateObjectAbove(Column,650,375);
-	CreateObjectAbove(Column,350,407);
-	CreateObjectAbove(Column,162,231);
-	CreateObjectAbove(Column,448,271);
-	CreateObjectAbove(Column,810,175);
+	CreateObjectAbove(Column, 650, 375);
+	CreateObjectAbove(Column, 350, 407);
+	CreateObjectAbove(Column, 162, 231);
+	CreateObjectAbove(Column, 448, 271);
+	CreateObjectAbove(Column, 810, 175);
 
 	// Chests with weapons.
 	CreateObjectAbove(Chest, 175, 200, NO_OWNER)->MakeInvincible();
@@ -46,9 +46,9 @@ protected func Initialize()
 	
 	// Moving bricks.
 	var brick;
-	brick = CreateObjectAbove(MovingBrick,370,424);
+	brick = CreateObjectAbove(MovingBrick, 370, 424);
 	brick->MoveHorizontal(344, 544);
-	brick = CreateObjectAbove(MovingBrick,550,250);
+	brick = CreateObjectAbove(MovingBrick, 550, 250);
 	brick->MoveVertical(240, 296);
 
 	// Smooth brick edges.
@@ -85,10 +85,10 @@ global func FxLifestealDamage(object target, effect, int damage, int cause, int 
 	if (damage > 0) return damage;
 	if (target->GetOwner() == from) return damage;
 	if (king->GetOwner() == from)
-		AddEffect("Lifedrain",king,100,1,nil,nil,damage/3);
+		AddEffect("Lifedrain",king, 100, 1, nil, nil, damage/3);
 	return damage;
 }
-global func FxLifedrainStart(object target, effect, int temporary,damage)
+global func FxLifedrainStart(object target, effect, int temporary, damage)
 {
 	if (temporary) return 1;
 	effect.drain = damage/10;
@@ -100,7 +100,7 @@ global func FxLifedrainAdd(object target, effect, string new_name, int new_timer
 global func FxLifedrainTimer(object target, effect, int timer)
 {
 	if (effect.drain>0) return -1;
-	target->DoEnergy(+100,1,0,-1);
+	target->DoEnergy(+100, 1, 0,-1);
 	effect.drain += 10;
 }
 global func FxBlessTheKingTimer(object target, effect, int timer)
@@ -132,7 +132,7 @@ public func ApplyChanneledWindEffects(x, y, w, h, bottom)
 			x_dir = RandomX(-2, 2);
 		obj->SetXDir(obj->GetXDir() + x_dir);
 	}
-	CreateParticle("Air", x + Random(w),bottom,RandomX(-1,1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
+	CreateParticle("Air", x + Random(w),bottom, RandomX(-1, 1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
 }
 
 global func FxChanneledWindTimer()
@@ -162,7 +162,7 @@ global func FxBalloonsTimer()
 	var r = Random(3);
 	if (r == 0) { target = CreateObjectAbove(Boompack, x, y, NO_OWNER); target->SetR(180); }
 	if (r == 1) { target = CreateObjectAbove(DynamiteBox, x, y, NO_OWNER); target->SetR(180); }
-	if (r == 2) { target = CreateObjectAbove(Arrow, x, y, NO_OWNER); target->SetObjDrawTransform(1000,0,0,0,1000,-7500); }
+	if (r == 2) { target = CreateObjectAbove(Arrow, x, y, NO_OWNER); target->SetObjDrawTransform(1000, 0, 0, 0, 1000,-7500); }
 		
 		
 	var balloon = CreateObjectAbove(TargetBalloon, x, y-30, NO_OWNER);
@@ -191,7 +191,7 @@ global func PlaceGras()
 global func FxIntFillChestsStart(object target, effect, int temporary)
 {
 	if (temporary) return 1;
-	var chests = FindObjects(Find_ID(Chest),Find_InRect(0,0,LandscapeWidth(),610));
+	var chests = FindObjects(Find_ID(Chest),Find_InRect(0, 0, LandscapeWidth(),610));
 	var w_list = [Shield, Javelin, FireballScroll, Bow, Blunderbuss, WindScroll, ThunderScroll];
 	
 	for (var chest in chests)
@@ -205,14 +205,14 @@ global func FxIntFillChestsTimer()
 	SetTemperature(100);
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
 	var w_list = [Javelin, Bow, Blunderbuss, Boompack, IronBomb, Shield, WindScroll, FireballScroll, ThunderScroll, Club, Sword];
-	var maxcount = [1,1,1,1,2,1,1,2,2,1,1];
+	var maxcount = [1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1];
 	
 	var contents;
 	for (var i = 0; i<chest->GetLength(w_list); i++)
 		contents += chest->ContentsCount(w_list[i]);
 	if (contents > 5) return 1;
 	
-	if (!FindObject(Find_ID(Clonk),Find_Distance(20,chest->GetX(),chest->GetY())) && chest->ContentsCount()>2)
+	if (!FindObject(Find_ID(Clonk),Find_Distance(20, chest->GetX(),chest->GetY())) && chest->ContentsCount()>2)
 	{
 		var r = chest->Random(chest->ContentsCount());
 		var remove = true;
@@ -254,7 +254,7 @@ protected func InitializePlayer(int plr)
 
 public func RelaunchPosition()
 {
-	return [[180,150],[310,300],[600,290],[650,180],[790,110],[440,190]];
+	return [[180, 150],[310, 300],[600, 290],[650, 180],[790, 110],[440, 190]];
 }
 
 func KillsToRelaunch() { return 0; }

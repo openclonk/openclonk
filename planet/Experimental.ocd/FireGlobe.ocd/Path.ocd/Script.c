@@ -2,12 +2,12 @@
 public func Set(int sx, int sy, int ex, int ey) {
 	//SetObjectBlitMode(GFX_BLIT_Additive);
 	SetAction("Vis");
-	SetPosition(sx,sy);
-	SetClrModulation(RGB(255,0,0));
+	SetPosition(sx, sy);
+	SetClrModulation(RGB(255, 0, 0));
 
-	var cl = 1000*Distance(sx,sy,ex,ey)/256;
+	var cl = 1000*Distance(sx, sy, ex, ey)/256;
 	var w = 650;
-	var r = Angle(sx,sy,ex,ey)-180;
+	var r = Angle(sx, sy, ex, ey)-180;
 
 	var fsin = -Sin(r, 1000), fcos = Cos(r, 1000);
 

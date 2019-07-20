@@ -110,7 +110,7 @@ global func ShuffleArray(array arr)
 	return;
 }
 
-// Takes array of format [[x1,y1], [x2,y2], ...] and returns array [[x1,x2,...],[y1,y2,...]]
+// Takes array of format [[x1, y1], [x2, y2], ...] and returns array [[x1, x2,...],[y1, y2,...]]
 global func TransposeArray(array v)
 {
 	var result = [], i = 0;

@@ -148,7 +148,7 @@ public func CancelUse()
 		return;
 	}
 
-	// use the saved x,y coordinates for canceling
+	// use the saved x, y coordinates for canceling
 	CancelUseControl(this.control.mlastx, this.control.mlasty);
 }
 
@@ -370,7 +370,7 @@ func HoldingUseControl(int ctrl, int x, int y, object obj)
 	var mex = x;
 	var mey = y;
 
-	//Message("%d,%d",this,mex,mey);
+	//Message("%d,%d",this, mex, mey);
 
 	// automatic adjustment of the direction
 	// --------------------

@@ -68,12 +68,12 @@ func Dlg_Sophie_Init(object clonk)
 func Sophie_FindBone()
 {
 	// find bone to fling around with tele glove
-	return FindObject(Find_ID(Bone), Find_InRect(-80,-80,160,160), Find_OCF(OCF_InFree), Find_NoContainer(), Sort_Distance());
+	return FindObject(Find_ID(Bone), Find_InRect(-80,-80, 160, 160), Find_OCF(OCF_InFree), Find_NoContainer(), Sort_Distance());
 }
 
 func FxSophieTeleCheckTimer(object c, proplist fx, int time)
 {
-	if (!FindObject(Find_ID(Clonk), Find_InRect(-150,-50,240,150), Find_Exclude(c))) return FX_OK; // only if people are watching
+	if (!FindObject(Find_ID(Clonk), Find_InRect(-150,-50, 240, 150), Find_Exclude(c))) return FX_OK; // only if people are watching
 	var fc = FrameCounter();
 	if (fc < this.anim_continue_frame) return FX_OK;
 	if (GetEffect("SophieTeleUse", c)) return FX_OK;
@@ -129,6 +129,6 @@ func FxSophieTeleUseTimer(object c, proplist fx, int time)
 
 func FxSophieTeleUseStop(object c, proplist fx, int reason, bool temp)
 {
-	if (c && fx.glove) fx.glove->ControlUseStop(c, fx.x,fx.y);
+	if (c && fx.glove) fx.glove->ControlUseStop(c, fx.x, fx.y);
 	return FX_OK;
 }

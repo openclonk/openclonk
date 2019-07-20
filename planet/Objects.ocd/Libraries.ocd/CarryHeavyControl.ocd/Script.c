@@ -53,7 +53,7 @@ protected func RejectCollect(id objid, object obj)
 		return false;
 	}
 
-	return _inherited(objid,obj,...);
+	return _inherited(objid, obj,...);
 }
 
 // Start visual effect when picking up carry heavy objects
@@ -215,7 +215,7 @@ private func FxIntLiftHeavyStart(object me, proplist effect, bool tmp, object to
 	effect.mesh = AttachMesh(to_lift, "pos_tool1", to_lift->GetCarryBone(), to_lift->~GetCarryTransform(this));
 
 	//Play the animation of the clonk picking up the object
-	effect.anim = PlayAnimation("CarryArmsPickup", CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0, GetAnimationLength("CarryArmsPickup"), lib_carryheavy_lifttime, ANIM_Remove), Anim_Const(1000));
+	effect.anim = PlayAnimation("CarryArmsPickup", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength("CarryArmsPickup"), lib_carryheavy_lifttime, ANIM_Remove), Anim_Const(1000));
 
 	effect.obj = to_lift;
 }
@@ -252,7 +252,7 @@ private func FxIntLiftHeavyStop(object me, proplist effect)
 {
 	// If failed, drop the object
 	if (effect.fail && effect.obj && effect.obj->Contained() == this)
-		effect.obj->Exit(0,9);
+		effect.obj->Exit(0, 9);
 
 	DetachMesh(effect.mesh);
 	StopAnimation(effect.anim);
@@ -300,7 +300,7 @@ private func FxIntDropHeavyStop(object me, proplist effect)
 {
 	// Drop the object
 	if (effect.obj && effect.obj->Contained() == this)
-		effect.obj->Exit(0,9);
+		effect.obj->Exit(0, 9);
 
 	DetachMesh(effect.mesh);
 	StopAnimation(effect.anim);

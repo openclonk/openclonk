@@ -21,7 +21,7 @@ protected func Initialize()
 	for (var i = 0; i<10; ++i)
 	{
 		// Find a good cave
-		cave_loc = FindLocation(Loc_InRect(50,LandscapeHeight()/6,LandscapeWidth()-100,LandscapeHeight()*17/25), Loc_Material("Tunnel"), Loc_Space(10));
+		cave_loc = FindLocation(Loc_InRect(50, LandscapeHeight()/6, LandscapeWidth()-100, LandscapeHeight()*17/25), Loc_Material("Tunnel"), Loc_Space(10));
 		if (cave_loc)
 		{
 			// No other check point nearby?
@@ -59,10 +59,10 @@ protected func Initialize()
 	var start_chest = CreateObjectAbove(Chest, LandscapeWidth()*2/5, LandscapeHeight()*97/100);
 	if (start_chest)
 	{
-		start_chest->CreateContents(Loam,4);
-		start_chest->CreateContents(Bread,3);
-		start_chest->CreateContents(Firestone,3);
-		start_chest->CreateContents(DynamiteBox,2);
+		start_chest->CreateContents(Loam, 4);
+		start_chest->CreateContents(Bread, 3);
+		start_chest->CreateContents(Firestone, 3);
+		start_chest->CreateContents(DynamiteBox, 2);
 	}
 	return;
 }
@@ -73,7 +73,7 @@ func InitializePlayer(int plr)
 	if (GetPlayerType(plr)!=C4PT_User) return;
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,400,250,flag);
+		SetPlayerZoomByViewRange(plr, 400, 250, flag);
 	SetPlayerViewLock(plr, true);
 	return true;
 }

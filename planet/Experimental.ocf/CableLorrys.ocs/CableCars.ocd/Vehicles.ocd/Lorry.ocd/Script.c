@@ -19,7 +19,7 @@ public func Construction()
 
 public func Initialize()
 {
-	drive_anim = PlayAnimation("Drive", 1, Anim_X(0,0, GetAnimationLength("Drive"), 30), Anim_Const(1000));
+	drive_anim = PlayAnimation("Drive", 1, Anim_X(0, 0, GetAnimationLength("Drive"), 30), Anim_Const(1000));
 	empty_anim = PlayAnimation("Empty", 2, Anim_Const(0), Anim_Const(0));
 }
 
@@ -139,7 +139,7 @@ public func DropContents(proplist station)
 {
 	// Drop everything in a few seconds
 	SetAnimationWeight(empty_anim, Anim_Const(1000));
-	SetAnimationPosition(empty_anim, Anim_Linear(0,0, GetAnimationLength("Empty"), 35, ANIM_Hold));
+	SetAnimationPosition(empty_anim, Anim_Linear(0, 0, GetAnimationLength("Empty"), 35, ANIM_Hold));
 
 	ScheduleCall(this, "Empty", 35);
 }
@@ -151,9 +151,9 @@ public func Empty()
 	{
 		var content = Contents();
 		AddEffect("BlockCollectionByLorry", content, 100, 16, this);
-		content->Exit(RandomX(-5,5), RandomX(-2,2), Random(360));
+		content->Exit(RandomX(-5, 5), RandomX(-2, 2), Random(360));
 	}
-	SetAnimationWeight(empty_anim, Anim_Linear(1000,1000, 0, 35, ANIM_Hold));
+	SetAnimationWeight(empty_anim, Anim_Linear(1000, 1000, 0, 35, ANIM_Hold));
 	SetAnimationPosition(empty_anim, Anim_Linear(GetAnimationLength("Empty"), GetAnimationLength("Empty"), 0, 35, ANIM_Hold));
 }
 

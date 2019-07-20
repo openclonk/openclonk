@@ -45,7 +45,7 @@ public func Engaged() {}
 public func Disengaged() {}
 
 // To offset the position on the cable from the object's center
-// position is a 2-value-array [x,y]
+// position is a 2-value-array [x, y]
 // prec is nil or a value to multiply your calculations with
 public func GetCableOffset(array position, int prec) {}
 
@@ -283,7 +283,7 @@ public func EngageRail(object crossing, bool silent)
 	crossing->GetCablePosition(position);
 	GetCableOffset(position);
 	SetPosition(position[0], position[1]);
-	SetSpeed(0,0);
+	SetSpeed(0, 0);
 	SetR(0);
 	SetRDir(0);
 	SetComDir(COMD_None);

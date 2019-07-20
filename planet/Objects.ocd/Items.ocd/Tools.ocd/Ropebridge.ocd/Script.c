@@ -292,7 +292,7 @@ public func UpdateSegmentOverlays()
     	}
 		if (i % 2 == 0)
 		{
-			var color = RGB(200,200,200);
+			var color = RGB(200, 200, 200);
 			segment->SetClrModulation(color, 2);
 			segment->SetClrModulation(color, 3);
 			segment->GetDouble()->SetClrModulation(color, 4);

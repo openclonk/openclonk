@@ -298,7 +298,7 @@ private func EnvCheck_Underwater(object cursor, int x, int y, bool is_current)
 private func EnvCheck_City(object cursor, int x, int y, bool is_current)
 {
 	// There must be buildings around the clonk
-	var building_count = cursor->ObjectCount(cursor->Find_AtRect(-180,-100,360,200), Find_Func("IsStructure"));
+	var building_count = cursor->ObjectCount(cursor->Find_AtRect(-180,-100, 360, 200), Find_Func("IsStructure"));
 	// 3 buildings to start the environment. Just 1 building to sustain it.
 	if (building_count < 3-2*is_current) return false;
 	return true;
@@ -341,10 +341,10 @@ private func EnvCheck_Lava(object cursor, int x, int y, bool is_current)
 private func EnvCheck_Underground(object cursor, int x, int y, bool is_current)
 {
 	// Check for underground: No sky at cursor or above
-	if (GetMaterial(x,y)<0) return false;
-	if (GetMaterial(x,y-30)<0) return false;
-	if (GetMaterial(x-10,y-20)<0) return false;
-	if (GetMaterial(x + 10,y-20)<0) return false;
+	if (GetMaterial(x, y)<0) return false;
+	if (GetMaterial(x, y-30)<0) return false;
+	if (GetMaterial(x-10, y-20)<0) return false;
+	if (GetMaterial(x + 10, y-20)<0) return false;
 	return true;
 }
 
@@ -354,7 +354,7 @@ private func EnvCheck_Mountains(object cursor, int x, int y, bool is_current)
 	var num_rock;
 	for (var y2 = 0; y2<=45; y2 += 15)
 		for (var x2=-75; x2<=75; x2 += 15)
-			num_rock += this.mat_mask[GetMaterial(x + x2,y + y2)+1];
+			num_rock += this.mat_mask[GetMaterial(x + x2, y + y2)+1];
 	// need 15pts on first check; 5 to sustain
 	if (num_rock < 15-is_current*10) return false;
 	return true;

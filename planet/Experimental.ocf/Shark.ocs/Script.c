@@ -15,7 +15,7 @@ private func InitializePlayer(iPlr)
 {
 	SetFoW(0, iPlr);
 	var crew = GetCrew(iPlr);
-	crew->SetPosition(10,300);
+	crew->SetPosition(10, 300);
 	crew->CreateContents(Shovel);
 	crew->CreateContents(Hammer);
 	crew->CreateContents(Rock, 3);
@@ -23,7 +23,7 @@ private func InitializePlayer(iPlr)
 
 func RelaunchPlayer(int iPlr)
 {
-	var pclonk = CreateObject(Clonk, 10,300, iPlr);
+	var pclonk = CreateObject(Clonk, 10, 300, iPlr);
 	pclonk->MakeCrewMember(iPlr);
 	SetCursor(iPlr, pclonk);
 	pclonk->CreateContents(Shovel);

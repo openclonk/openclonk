@@ -320,7 +320,7 @@ global func FxBigEruptionTimer(object target, proplist effect, int time)
 		obj->SetXDir(xdir);
 		obj->SetYDir(Sin(ang, lev) + RandomX(-3, 3));
 		obj->SetRDir(-10 + Random(21));
-		obj->DoCon(RandomX(-20,40));
+		obj->DoCon(RandomX(-20, 40));
 	}
 	// Some lava glow and smoke through particles.
 	return FX_OK;

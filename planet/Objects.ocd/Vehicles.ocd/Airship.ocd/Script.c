@@ -134,9 +134,9 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 	}
 	
 	//Rise in water
-	//if (GBackLiquid(0,25))
+	//if (GBackLiquid(0, 25))
 		//effect.SpeedY = -10;
-	//if (GBackLiquid(0,25) && !GBackLiquid(0,24) && effect.SpeedY > 1)
+	//if (GBackLiquid(0, 25) && !GBackLiquid(0, 24) && effect.SpeedY > 1)
 		//effect.SpeedY = 0;
 
 	// Turn the airship around if needed
@@ -325,7 +325,7 @@ public func OnDestruction(int change, int cause, int by_player)
 private func AirshipDeath()
 {
 	//First let's create the burnt airship
-	var burntairship = CreateObjectAbove(Airship_Burnt,0,27); //27 pixels down to align ruin with original
+	var burntairship = CreateObjectAbove(Airship_Burnt, 0, 27); //27 pixels down to align ruin with original
 
 	//Now let's copy it's animation, and hold it there
 	var animspot;
@@ -339,7 +339,7 @@ private func AirshipDeath()
 	burntairship->Incinerate(100, GetController());
 
 	// Make sure engine sound is gone
-	Sound("Structures::FanLoop",nil,nil,nil,-1);
+	Sound("Structures::FanLoop",nil, nil, nil,-1);
 
 	// This object has served its purpose.
 	Explode(20);
@@ -369,7 +369,7 @@ local ActMap = {
 
 func Definition(proplist def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0));
+	def.PictureTransformation = Trans_Mul(Trans_Rotate(-25, 1, 0, 0),Trans_Rotate(40, 0, 1, 0));
 	if (def == Airship)
 	{
 		var spawn_editor_props = { Type="proplist", Name = def->GetName(), EditorProps= {

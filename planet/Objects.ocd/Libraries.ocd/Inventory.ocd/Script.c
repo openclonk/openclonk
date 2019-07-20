@@ -133,7 +133,7 @@ public func SetHandItemPos(int hand, int inv)
 		var used_slot = GetItemPos(this.control.current_object);
 		if (used_slot != nil)
 			if (used_slot == GetHandItemPos(hand) || used_slot == inv)
-				this->~CancelUseControl(0,0);
+				this->~CancelUseControl(0, 0);
 	}
 	
 	// If the item is already selected, we can't hold it in another one too.
@@ -238,8 +238,8 @@ public func GetItemPos(object item)
 public func Switch2Items(int one, int two)
 {
 	// no valid inventory index: cancel
-	if (!Inside(one,0,MaxContentsCount-1)) return;
-	if (!Inside(two,0,MaxContentsCount-1)) return;
+	if (!Inside(one, 0, MaxContentsCount-1)) return;
+	if (!Inside(two, 0, MaxContentsCount-1)) return;
 
 	// switch them around
 	var temp = this.inventory.objects[one];
@@ -256,14 +256,14 @@ public func Switch2Items(int one, int two)
 	
 	// callbacks: (de)selection
 	if (handone != nil)
-		if (this.inventory.objects[two]) this.inventory.objects[two]->~Deselection(this,one);
+		if (this.inventory.objects[two]) this.inventory.objects[two]->~Deselection(this, one);
 	if (handtwo != nil)
-		if (this.inventory.objects[one]) this.inventory.objects[one]->~Deselection(this,two);
+		if (this.inventory.objects[one]) this.inventory.objects[one]->~Deselection(this, two);
 		
 	if (handone != nil)
-		if (this.inventory.objects[one]) this.inventory.objects[one]->~Selection(this,one);
+		if (this.inventory.objects[one]) this.inventory.objects[one]->~Selection(this, one);
 	if (handtwo != nil)
-		if (this.inventory.objects[two]) this.inventory.objects[two]->~Selection(this,two);
+		if (this.inventory.objects[two]) this.inventory.objects[two]->~Selection(this, two);
 	
 	// callbacks: to self, for HUD
 	if (handone != nil)
@@ -299,7 +299,7 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 	var success = false;
 	if (pos == nil || item->~IsCarryHeavy())
 	{
-		success = _inherited(item,ignoreOCF);
+		success = _inherited(item, ignoreOCF);
 		this.inventory.force_collection = false;
 		return success;
 	}
@@ -478,7 +478,7 @@ protected func RejectCollect(id objid, object obj)
 		for (var i = 0; Contents(i); ++i)
 			if (Contents(i)->~HasExtraSlot())
 				if (!(Contents(i)->Contents(0)))
-					if (Contents(i)->Collect(obj,true))
+					if (Contents(i)->Collect(obj, true))
 						return true;
 						
 		// try to stuff an object in clonk into obj if it has an extra slot
@@ -496,7 +496,7 @@ protected func RejectCollect(id objid, object obj)
 	if (carry_heavy_obj && carry_heavy_obj->Contained() == this) --contents_count;
 	if (contents_count >= MaxContentsCount) return true;
 	
-	return _inherited(objid,obj,...);
+	return _inherited(objid, obj,...);
 }
 
 public func GrabContents(object source, ...)

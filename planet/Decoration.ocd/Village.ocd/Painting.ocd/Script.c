@@ -4,7 +4,7 @@
 
 func Definition(proplist def)
 {
-	def.MeshTransformation = Trans_Mul(Trans_Rotate(10,0,10), Trans_Scale(50));
+	def.MeshTransformation = Trans_Mul(Trans_Rotate(10, 0, 10), Trans_Scale(50));
 }
 
 protected func Construction()

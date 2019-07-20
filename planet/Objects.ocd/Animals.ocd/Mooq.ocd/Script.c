@@ -117,7 +117,7 @@ func SpitPhase()
 			iX = 5;
 			if (!GetDir()) iX = -iX;
 			iY = -4;
-			Smoke(iX,iY,5);
+			Smoke(iX, iY, 5);
 		}
 	}
 	if (GetActTime() == 58)
@@ -134,8 +134,8 @@ func SpitPhase()
 
 		var obj = CreateContents(Mooq_Firebomb);
 		obj->Exit(iX, iY);
-		obj->SetXDir(iXDir,100);
-		obj->SetYDir(iYDir,100);
+		obj->SetXDir(iXDir, 100);
+		obj->SetYDir(iYDir, 100);
 	}
 }
 
@@ -151,7 +151,7 @@ func EatPhase()
 			iX = 5;
 			if (!GetDir()) iX = -iX;
 			iY = 4;
-			Smoke(iX,iY,5);
+			Smoke(iX, iY, 5);
 		}
 	}
 	if (actt == 22)
@@ -170,7 +170,7 @@ func EatPhase()
 			iX = 5;
 			if (!GetDir()) iX = -iX;
 			iY = 1;
-			Smoke(iX,iY,5);
+			Smoke(iX, iY, 5);
 		}
 	}
 }
@@ -600,10 +600,10 @@ func FxIntTurningTimer(object target, effect fx, int time)
 	if (turn_angle < -60 || turn_angle > 180)
 	{
 		turn_angle = BoundBy(turn_angle, -60, 180);
-		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
+		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30, 0, 1, 0);
 		return -1;
 	}
-	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
+	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30, 0, 1, 0);
 	return 1;
 }
 

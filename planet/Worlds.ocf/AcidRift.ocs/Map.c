@@ -41,22 +41,22 @@ func InitializeMap(proplist map)
 	var num_water = [4, 5, 8][s];
 	var num_granite = [80, 100, 120][s];
 	var num_granite_top = [15, 20, 25][s];
-	var num_rock = [35,40,60][s];
+	var num_rock = [35, 40, 60][s];
 	var num_gold = [15, 18, 25][s];
 	var num_gems = 100;
 	var num_acidsurround = [20, 25, 40][s];
-	var size_earth = [[16,12,8][d], 8];
+	var size_earth = [[16, 12, 8][d], 8];
 	var size_coal = [6, 3];
 	var size_ore = [4, 4];
 	var size_water = [4, 4];
 	var size_firestone = [3, 3];
 	var size_granite = [2, 1];
-	var size_granite_top = [[8,4,1][d], 2];
-	var size_rock = [3,3];
-	var size_gold = [5,4,3][d];
-	var size_gems = [5,3,2][d];
+	var size_granite_top = [[8, 4, 1][d], 2];
+	var size_rock = [3, 3];
+	var size_gold = [5, 4, 3][d];
+	var size_gems = [5, 3, 2][d];
 	var size_gem_cave = 10;
-	var size_acidsurround = [[5,4], [6,5], [7,5]][s];
+	var size_acidsurround = [[5, 4], [6, 5], [7, 5]][s];
 	
 	// Draw starting acid filling
 	var acid_area = [0, top_off + (100-acid_level) * (this.Hgt-top_off-bottom_off) / 100, this.Wdt, this.Hgt];
@@ -82,7 +82,7 @@ func InitializeMap(proplist map)
 	algo = { Algo = MAPALGO_Turbulence, Op = algo, Amplitude = 20, Scale = 5 };
 	var basin = CreateLayer();
 	basin->Draw("Granite", algo);
-	basin->DrawMaterial("Rock", basin, [10,4], 30);
+	basin->DrawMaterial("Rock", basin, [10, 4], 30);
 	
 	// Bottom acid cave containing gems
 	algo = { Algo = MAPALGO_Ellipse, X = this.Wdt/2, Y = this.Hgt-bottom_off, Wdt = size_gem_cave, Hgt = size_gem_cave };

@@ -43,7 +43,7 @@ func FxIntEarthquakeControlSaveScen(obj, fx, props)
 	return true;
 }
 
-// Launches an earthquake with epicenter (x,y) in global coordinates.
+// Launches an earthquake with epicenter (x, y) in global coordinates.
 global func LaunchEarthquake(int x, int y, int strength)
 {
 	// Earthquake should start in solid.

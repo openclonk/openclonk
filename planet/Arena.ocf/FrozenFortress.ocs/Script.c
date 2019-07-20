@@ -18,7 +18,7 @@ protected func Initialize()
 	time->SetCycleSpeed();
 	FindObject(Find_ID(Moon))->SetMoonPhase(3);
 	FindObject(Find_ID(Moon))->SetCon(150);
-	FindObject(Find_ID(Moon))->SetPosition(LandscapeWidth()/2,150);
+	FindObject(Find_ID(Moon))->SetPosition(LandscapeWidth()/2, 150);
 
 	// Goal: Capture the flag, with bases in both hideouts.
 	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
@@ -27,26 +27,26 @@ protected func Initialize()
 	CreateObject(Rule_KillLogs);	
 	
 	var gate = CreateObjectAbove(StoneDoor, 345, 272, NO_OWNER);
-	gate->SetClrModulation(RGB(140,185,255));
+	gate->SetClrModulation(RGB(140, 185, 255));
 	gate->SetAutoControl(1);
 	var gate = CreateObjectAbove(StoneDoor, LandscapeWidth()-344, 272, NO_OWNER);
-	gate->SetClrModulation(RGB(140,185,255));
+	gate->SetClrModulation(RGB(140, 185, 255));
 	gate->SetAutoControl(2);
 
 	// Chests with weapons.
 	var chest;
 	chest = CreateObjectAbove(Chest, 60, 220, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 7 * 36, nil, nil, false);
 	chest = CreateObjectAbove(Chest, 150, 370, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
+	AddEffect("FillBaseChest", chest, 100, 7 * 36, nil, nil, true);
 	chest = CreateObjectAbove(Chest, LandscapeWidth() - 60, 220, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 7 * 36, nil, nil, false);
 	chest = CreateObjectAbove(Chest, LandscapeWidth() - 150, 370, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
+	AddEffect("FillBaseChest", chest, 100, 7 * 36, nil, nil, true);
 
 	
 	chest = CreateObjectAbove(Chest, LandscapeWidth()/2, 320, NO_OWNER);
@@ -54,7 +54,7 @@ protected func Initialize()
 	AddEffect("FillOtherChest", chest, 100, 5 * 36);
 	
 	AddEffect("SnowyWinter", nil, 100, 1);
-	Sound("Environment::WindLoop",true,20,nil,+1);
+	Sound("Environment::WindLoop",true, 20, nil,+1);
 	AddEffect("GeysirExplosion", nil, 100, 1);
 	// Brick edges, notice the symmetric landscape.
 	PlaceEdges();
@@ -71,12 +71,12 @@ global func FxGeysirExplosionTimer(object target, effect)
 	{
 		var x = 600 + Random(300);
 		var y = 250 + Random(200);
-		while (GetMaterial(x,y) != Material("Water"))
+		while (GetMaterial(x, y) != Material("Water"))
 		{
 			var x = 600 + Random(300);
 			var y = 250 + Random(200);
 		}
-		Bubble(1,x,y);
+		Bubble(1, x, y);
 	}
 	if (effect.counter>1900 && effect.counter<2030)
 	{
@@ -85,25 +85,25 @@ global func FxGeysirExplosionTimer(object target, effect)
 		{
 			var x = 600 + Random(300);
 			var y = 250 + Random(200);
-			while (GetMaterial(x,y) != Material("Water"))
+			while (GetMaterial(x, y) != Material("Water"))
 			{
 				var x = 600 + Random(300);
 				var y = 250 + Random(200);
 			}
-			Bubble(1,x,y);
+			Bubble(1, x, y);
 		}
 	}
 	if (effect.counter>2000)
 	{
 		var x = LandscapeWidth()/2;
 		var y = 280;
-		while (!GBackLiquid(x,y)) y++;
+		while (!GBackLiquid(x, y)) y++;
 		y -= 3;
-		for (var i = 0; i<(45); i++)InsertMaterial(Material("Water"),x + RandomX(-9,9),y-Random(5),RandomX(-10,10)+RandomX(-5,5)+RandomX(-10,10),-(10 + Random(50)+Random(30)+Random(60)));
-		for (var i = 0; i<(25); i++)InsertMaterial(Material("Water"),x + RandomX(-16,16),y-Random(5),RandomX(-10,10)+RandomX(-15,15)+RandomX(-20,20),-(10 + Random(50)));
+		for (var i = 0; i<(45); i++)InsertMaterial(Material("Water"),x + RandomX(-9, 9),y-Random(5),RandomX(-10, 10)+RandomX(-5, 5)+RandomX(-10, 10),-(10 + Random(50)+Random(30)+Random(60)));
+		for (var i = 0; i<(25); i++)InsertMaterial(Material("Water"),x + RandomX(-16, 16),y-Random(5),RandomX(-10, 10)+RandomX(-15, 15)+RandomX(-20, 20),-(10 + Random(50)));
 		CreateParticle("Air", PV_Random(x-6, x + 6), PV_Random(y-3, y), PV_Random(-15, 15), PV_Random(-90, -5), PV_Random(20, 100), Particles_Air());
 		if (effect.counter>2072) effect.counter = 0;
-		for (var obj in FindObjects(Find_InRect(x-30,y-200,60,210)))
+		for (var obj in FindObjects(Find_InRect(x-30, y-200, 60, 210)))
 		{
 			obj->SetYDir(Max(obj->GetYDir()-15,-50));
 		}
@@ -115,21 +115,21 @@ global func FxSnowyWinterTimer(object target, effect, int time)
 {
 	if (time%1200 == 100 ) 
 	{
-		var add = RandomX(-2,2);
-		effect.snow_count = BoundBy(effect.snow_count + add,1,5);	
+		var add = RandomX(-2, 2);
+		effect.snow_count = BoundBy(effect.snow_count + add, 1, 5);	
 	}
 	for (var i = 0; i<(effect.snow_count); i++)
 	{
-		InsertMaterial(Material("Snow"),RandomX(300,LandscapeWidth()-300),1,RandomX(-10,10),10);
-		ExtractLiquid(LandscapeWidth()/2,295);
+		InsertMaterial(Material("Snow"),RandomX(300, LandscapeWidth()-300),1, RandomX(-10, 10),10);
+		ExtractLiquid(LandscapeWidth()/2, 295);
 	}
-	ExtractLiquid(LandscapeWidth()/2,295);
-	ExtractLiquid(LandscapeWidth()/2,285);
-	ExtractLiquid(340,340);
-	ExtractLiquid(400,340);
-	ExtractLiquid(1100,340);
-	ExtractLiquid(1160,340);
-	if (!Random(3)) for (var obj in FindObjects(Find_Or(Find_InRect(0,-250,300,280),Find_InRect(LandscapeWidth()-300,-250,300,280))))
+	ExtractLiquid(LandscapeWidth()/2, 295);
+	ExtractLiquid(LandscapeWidth()/2, 285);
+	ExtractLiquid(340, 340);
+	ExtractLiquid(400, 340);
+	ExtractLiquid(1100, 340);
+	ExtractLiquid(1160, 340);
+	if (!Random(3)) for (var obj in FindObjects(Find_Or(Find_InRect(0,-250, 300, 280),Find_InRect(LandscapeWidth()-300,-250, 300, 280))))
 	{
 		obj->~DoEnergy(-1); 
 	}
@@ -142,8 +142,8 @@ global func PlaceEdges()
 	var d=[0, 1, 3, 2, 0, 1, 1, 1, 1, 2, 0, 1, 1, 2, 2, 2, 2, 3, 3, 1, 3, 2, 0, 2, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 3, 2, 2, 3, 3, 2, 2, 0, 0, 2, 2, 0, 3, 0, 0, 0, 0, 1, 1, 0, 2, 3, 1, 0, 3, 3, 1, 2, 2, 0, 2, 2, 2, 3, 2, 2, 3, 0, 1, 1, 0, 2, 3, 3, 2, 2, 3, 3, 2, 0, 2, 0, 1, 1, 0, 3, 0, 1, 0, 1, 2, 0, 2, 3, 3, 2, 1, 0, 0, 1, 0, 1, 0, 1, 1, 3, 0, 2, 2, 3, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 2, 2, 2, 3, 3, 2, 0, 3, 1, 3, 0, 1, 1, 0, 0, 2, 0, 0, 2, 2, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 2, 3, 2, 2, 3, 2, 2, 3, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 2, 3, 0, 1];
 	for (var i = 0; i < GetLength(x); i++)
 	{
-		DrawMaterialTriangle("Brick-brick", x[i], y[i], [0,3,1,2][d[i]]);
-		DrawMaterialTriangle("Brick-brick", LandscapeWidth() + 1 - x[i], y[i], [3,0,2,1][d[i]]);
+		DrawMaterialTriangle("Brick-brick", x[i], y[i], [0, 3, 1, 2][d[i]]);
+		DrawMaterialTriangle("Brick-brick", LandscapeWidth() + 1 - x[i], y[i], [3, 0, 2, 1][d[i]]);
 	}
 	return 1;
 }
@@ -180,12 +180,12 @@ global func FxFillBaseChestTimer(object target, effect)
 	if (effect.supply_type) 
 	{
 		w_list = [Firestone, Dynamite, IronBomb, Shovel, Loam, Ropeladder];
-		maxcount = [2,2,1,2,1];
+		maxcount = [2, 2, 1, 2, 1];
 	}
 	else
 	{
 		w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
-		maxcount = [1,2,1,1,1,2];
+		maxcount = [1, 2, 1, 1, 1, 2];
 	}
 	
 	var contents;
@@ -220,7 +220,7 @@ global func FxFillOtherChestTimer(object target)
 {
 
 	var w_list = [Sword, Javelin, Dynamite, IronBomb, WindScroll, FrostboltScroll, Loam, HardeningScroll, PowderKeg];
-	var maxcount = [1,1,3,1,2,1,1,1];
+	var maxcount = [1, 1, 3, 1, 2, 1, 1, 1];
 	
 	var contents;
 	for (var i = 0; i<target->GetLength(w_list); i++)

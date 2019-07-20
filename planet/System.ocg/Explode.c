@@ -24,7 +24,7 @@ global func ExplosionParticles_Init()
 		DampingX = PV_Random(900, 930, 5),
 		ForceY=-1,
 		ForceX = PV_Wind(20, PV_Random(-2, 2)),
-		Rotation = PV_Random(0,360,0),
+		Rotation = PV_Random(0, 360, 0),
 		R = PV_KeyFrames(0, 0, 255, 260, 64, 1000, 64),
 		G = PV_KeyFrames(0, 0, 128,  260, 64, 1000, 64),
 		B = PV_KeyFrames(0, 0, 0, 260, 108, 1000, 108),
@@ -36,8 +36,8 @@ global func ExplosionParticles_Init()
 		Size = PV_KeyFrames(0, 0, 0, 260, 25, 1000, 40),
 		DampingY = PV_Random(890, 920, 0),
 		DampingX = PV_Random(900, 930, 0),
-		ForceY = PV_Random(-8,-2,0),
-		ForceX = PV_Random(-5,5,0),
+		ForceY = PV_Random(-8,-2, 0),
+		ForceX = PV_Random(-5, 5, 0),
 		R = 255,
 		G = PV_Random(64, 120, 0),
 		Rotation = PV_Random(0, 360, 0),
@@ -95,16 +95,16 @@ global func ExplosionParticles_Init()
 	{
 		Size = PV_Linear(2, 0),
 	    ForceY = GetGravity(),
-		DampingY = PV_Linear(1000,700),
-		DampingX = PV_Linear(1000,700),
+		DampingY = PV_Linear(1000, 700),
+		DampingX = PV_Linear(1000, 700),
 		Stretch = PV_Speed(1000, 500),
 		Rotation = PV_Direction(),
 		OnCollision = PC_Die(),
 		CollisionVertex = 500,
 	    R = 255,
-	    G = PV_Linear(128,32),
+	    G = PV_Linear(128, 32),
 	    B = PV_Random(0, 128, 2),
-	    Alpha = PV_Random(255,0,3),
+	    Alpha = PV_Random(255, 0, 3),
 		BlitMode = GFX_BLIT_Additive,
 	};
 }
@@ -432,10 +432,10 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 			// shake strength lowers as a function of the distance
 			var distance = Distance(cursor->GetX(), cursor->GetY(), shaker.x, shaker.y);
 			var maxDistance = shaker.range;
-			var level = shaker.strength * BoundBy(100-100*distance/maxDistance,0,100)/100;
+			var level = shaker.strength * BoundBy(100-100*distance/maxDistance, 0, 100)/100;
 
 			// calculate total shake strength by adding up all shake positions in the player's vicinity
-			totalShakeStrength += level / Max(1,shakerTime*2/3) - shakerTime**2 / 400;
+			totalShakeStrength += level / Max(1, shakerTime*2/3) - shakerTime**2 / 400;
 		}
 		// limit the strength, just to be sure
 		totalShakeStrength = Min(maxShakeStrength, totalShakeStrength);
@@ -447,7 +447,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 	{
 		var shaker = e.shakers[shakerIndex];
 		var shakerTime = time - shaker.time;
-		if (shaker.strength / Max(1,shakerTime*2/3) - shakerTime**2 / 400 <= 0)
+		if (shaker.strength / Max(1, shakerTime*2/3) - shakerTime**2 / 400 <= 0)
 			e.shakers[shakerIndex] = nil;
 	}
 	RemoveHoles(e.shakers);
@@ -493,7 +493,7 @@ global func FxSmokeTrailStart(object target, proplist e, int temp, int color)
 		G = PV_Linear(255, 64),
 		B = PV_Linear(255, 64),
 		Alpha = PV_KeyFrames(0, 0, alpha/4, 200, alpha, 1000, 0),
-		Rotation = PV_Random(-45,45),
+		Rotation = PV_Random(-45, 45),
 		ForceX = PV_Wind(20),
 		ForceY = PV_Gravity(-10),
 	};
@@ -519,7 +519,7 @@ global func FxSmokeTrailTimer(object target, effect e, int fxtime)
 	
 	var initial_speed = 100 * (strength + 20)/6;
 	var speed = initial_speed * str / strength;
-	var angle = e.angle + RandomX(-20,20);
+	var angle = e.angle + RandomX(-20, 20);
 	var x_dir = Sin(angle, speed);
 	var y_dir = -Cos(angle , speed);
 	
@@ -532,7 +532,7 @@ global func FxSmokeTrailTimer(object target, effect e, int fxtime)
 	e.particles_smoke.Size = PV_KeyFrames(0, 0, str / 2, 1000, str);
 	e.particles_blast.Size = PV_KeyFrames(0, 0, 0, 200, str / 3, 1000, 0);
 
-	CreateParticle("SmokeThick", e.x/100, e.y/100, RandomX(-1,1), RandomX(-1,1), 50, e.particles_smoke,1);
+	CreateParticle("SmokeThick", e.x/100, e.y/100, RandomX(-1, 1), RandomX(-1, 1), 50, e.particles_smoke, 1);
 		
 	// then calc next position
 	e.x += x_dir;
@@ -573,15 +573,15 @@ global func Fireworks(int color, int x, int y)
 		R = (color >> 16) & 0xff,
 		G = (color >>  8) & 0xff,
 		B = (color >>  0) & 0xff,
-		DampingY = PV_Linear(950,800),
-		DampingX = PV_Linear(950,800),
+		DampingY = PV_Linear(950, 800),
+		DampingX = PV_Linear(950, 800),
 		Stretch = PV_Speed(3000, 500),
 		Size = PV_Linear(2, 1),
 		ForceY = PV_Gravity(50),
 		Rotation = PV_Direction(),
 		OnCollision = PC_Die(),
 		CollisionVertex = 500,
-		Alpha = PV_Random(255,0,3),
+		Alpha = PV_Random(255, 0, 3),
 		BlitMode = GFX_BLIT_Additive,
 	};
 	
@@ -596,7 +596,7 @@ global func Fireworks(int color, int x, int y)
 			var angle = start_angle + i*360/num + Random(15) + j*15;
 			var speed3d = Cos(j*90/num - Random(15),speed);
 			var xdir = Sin(angle, speed3d/10);
-			var ydir = -Cos(angle,speed3d/10);
+			var ydir = -Cos(angle, speed3d/10);
 		
 			CreateParticle("MagicFire", x, y, xdir, ydir, PV_Random(50, 200), glimmer, 1);
 		}

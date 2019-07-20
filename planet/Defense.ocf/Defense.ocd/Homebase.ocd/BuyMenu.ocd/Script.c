@@ -20,7 +20,7 @@ public func Construction(...)
 	// The menu. Cannot inherit from MenuStyle_Grid, because at the moment the menu host
 	// is the object itself. Therefore, child elements such as the buy menu would become
 	// invisible if the menu closes. So just create an extra object for now.
-	menu = CreateObject(MenuStyle_Grid, 0,0, GetOwner());
+	menu = CreateObject(MenuStyle_Grid, 0, 0, GetOwner());
 	menu->SetPermanent(true);
 	menu->SetMouseOverCallback(this, "OnMenuEntryHover");
 	menu->SetMouseOutCallback(this, "OnMenuEntryHoverExit");

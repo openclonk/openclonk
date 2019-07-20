@@ -74,8 +74,8 @@ func EnsureTrees(proplist area)
 
 global func FxIntWaterfallTimer(object obj, proplist eff)
 {
-	InsertMaterial(Material("Water"), 1560,840);
-	ExtractLiquid(1314,901);
+	InsertMaterial(Material("Water"), 1560, 840);
+	ExtractLiquid(1314, 901);
 }
 
 func InitializePlayer(int plr)

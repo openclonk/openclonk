@@ -48,7 +48,7 @@ func Sparkle() {
         //Attach = ATTACH_MoveRelative
     };
 
-    CreateParticle("Clusterflight", 0, 0, RandomX(-2,2),RandomX(-2,2), 36, clusterflight, 1);
+    CreateParticle("Clusterflight", 0, 0, RandomX(-2, 2),RandomX(-2, 2), 36, clusterflight, 1);
 }
 
 

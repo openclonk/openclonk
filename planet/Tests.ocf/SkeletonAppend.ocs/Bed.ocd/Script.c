@@ -7,7 +7,7 @@ local iAnimation;
 protected func Initialize()
 {
 //  SetEntrance(1);
-  SetProperty("MeshTransformation", Trans_Rotate(20,0,1,0));
+  SetProperty("MeshTransformation", Trans_Rotate(20, 0, 1, 0));
 }
 
 func IsAssassinable() { return 1; }
@@ -79,8 +79,8 @@ private func OnExit(object pClonk)
 func Zzz()
 {
 	var iTime = GetActTime();
-	CreateParticle("Zzz",8*(1-2*GetDir()),-3,2+(iTime%50)*3/25 + RandomX(-1,+1),-5,60,
-                 RGBa(255,255,255,128));
+	CreateParticle("Zzz",8*(1-2*GetDir()),-3, 2+(iTime%50)*3/25 + RandomX(-1,+1),-5, 60,
+                 RGBa(255, 255, 255, 128));
 }
   
 private func CheckChallenge(object pClonk)
@@ -114,7 +114,7 @@ private func CheckChallenge(object pClonk)
   
 private func RefillEnergy()
 {
-  var clonk = FindObject(0, 0,0,0,0, OCF_CrewMember, 0,0, this);
+  var clonk = FindObject(0, 0, 0, 0, 0, OCF_CrewMember, 0, 0, this);
   if (clonk) DoEnergy(1, clonk);
 }
 

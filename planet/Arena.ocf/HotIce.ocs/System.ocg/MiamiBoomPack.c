@@ -7,7 +7,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	// clonk does sense the danger and with great presence of mind jumps of the rocket
 	if (fuel<20 && rider)
 	{
-		JumpOff(rider,30);
+		JumpOff(rider, 30);
 	}
 
 	if (!Random(105)) Sound("Fire::Cracker");
@@ -22,9 +22,9 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	
 	if (!ignition)
 	{
-		var angle = GetR()+RandomX(-dirdev,dirdev);
-		SetXDir(3*GetXDir()/4 + Sin(angle,24));
-		SetYDir(3*GetYDir()/4-Cos(angle,24));
+		var angle = GetR()+RandomX(-dirdev, dirdev);
+		SetXDir(3*GetXDir()/4 + Sin(angle, 24));
+		SetYDir(3*GetYDir()/4-Cos(angle, 24));
 		SetR(angle);
 	}
 	

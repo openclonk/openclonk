@@ -26,7 +26,7 @@ public func Launch(int angle, int str, object shooter, object weapon)
 	SetVertex(1, VTX_Y, 4, 1);
 	SetVertex(2, VTX_Y, -2, 1);
 	SetPosition(GetX(), GetY() - 2);
-	var xdir = Sin(angle,str);
+	var xdir = Sin(angle, str);
 	var ydir = Cos(angle,-str);
 	SetXDir(xdir);
 	SetYDir(ydir);
@@ -35,8 +35,8 @@ public func Launch(int angle, int str, object shooter, object weapon)
 	// Shooter controls the arrow for correct kill tracing.
 	SetController(shooter->GetController());
 	
-	AddEffect("HitCheck", this, 1,1, nil, nil, shooter);
-	AddEffect("InFlight", this, 1,1, this);
+	AddEffect("HitCheck", this, 1, 1, nil, nil, shooter);
+	AddEffect("InFlight", this, 1, 1, this);
 	return;
 }
 

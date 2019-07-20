@@ -12,7 +12,7 @@ local lib_tree_burned = Tree_Deciduous_Burned;
 
 public func GetTreetopPosition(pos)
 {
-	return Shape->Rectangle(-28,-20, 46,40)->GetRandomPoint(pos);
+	return Shape->Rectangle(-28,-20, 46, 40)->GetRandomPoint(pos);
 }
 
 local Name = "$Name$";

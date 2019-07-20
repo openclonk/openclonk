@@ -65,7 +65,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		x_offs = -x_offs;
 	}
 	
-	if (clonk->IsWalking()) for (var tree in FindObjects(Find_AtPoint(x_offs,0), Find_Func("IsTree"), Sort_Distance(x_offs, 0), Find_NoContainer()))
+	if (clonk->IsWalking()) for (var tree in FindObjects(Find_AtPoint(x_offs, 0), Find_Func("IsTree"), Sort_Distance(x_offs, 0), Find_NoContainer()))
 		{
 			//treedist - the x-distance the clonk is from the centre of a tree-trunk
 			var treedist = Abs(clonk->GetX() + x_offs - tree->GetX());
@@ -264,7 +264,7 @@ func FxIntSplitTimer(object clonk, effect, int time)
 	// Tree vanished
 	if (!effect.tree) return -1;
 	// Tree moved away
-	if (ObjectDistance(effect.tree, clonk) > Distance(0,0, effect.tree->GetObjWidth()/2, effect.tree->GetObjHeight()/2)) return -1;
+	if (ObjectDistance(effect.tree, clonk) > Distance(0, 0, effect.tree->GetObjWidth()/2, effect.tree->GetObjHeight()/2)) return -1;
 	// Clonk did something
 	if (!clonk->IsWalking()) return -1;
 

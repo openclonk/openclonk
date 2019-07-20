@@ -211,9 +211,9 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 		CollisionVertex = 1000,
 		OnCollision = PC_Stop(),
 		ForceX = PV_Wind(50),
-		DampingX = PV_Linear(900,999),
+		DampingX = PV_Linear(900, 999),
 		ForceY = -7,
-		DampingY = PV_Linear(1000,PV_Random(650,750)),
+		DampingY = PV_Linear(1000, PV_Random(650, 750)),
 		Rotation = PV_Random(0, 359),
 		Phase = PV_Random(0, 3)
 	};
@@ -227,11 +227,11 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 		CollisionVertex = 0,
 		OnCollision = PC_Die(),
 		R = 255,
-		G = PV_Linear(255,200),
+		G = PV_Linear(255, 200),
 		B = PV_Random(0, 100),
 		DampingX = 950,
 		DampingY = 950,
-		Alpha = PV_Random(40,140),
+		Alpha = PV_Random(40, 140),
 		BlitMode = GFX_BLIT_Additive
 	};
 	effect.redfiredense =
@@ -247,7 +247,7 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 	effect.flameborder =
 	{
 		R = 255,
-		G = PV_Linear(255,0),
+		G = PV_Linear(255, 0),
 		B = 0,
 		Phase = PV_Random(0, 4),
 		OnCollision = PC_Die(),
@@ -375,7 +375,7 @@ global func FxFireTimer(object target, proplist effect, int time)
 				var steam =
 				{
 					Size = PV_Linear(effect.width*2, effect.width*4),
-					Alpha = PV_Linear(87,0),
+					Alpha = PV_Linear(87, 0),
 					R = 255,
 					G = 255,
 					B = 255,
@@ -471,12 +471,12 @@ global func FxFireTimer(object target, proplist effect, int time)
 		// A few red fire particles popping up in the higher area. Does not affect very small flames.
 		if (effect.fire_width + effect.fire_height > 40)
 		{
-			if (!Random(2)) CreateParticle("FireDense", PV_Random(-effect.fire_width, effect.pspeed), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3,3), effect.pspeed, effect.fire_height/2 + 6, effect.redfiredense);
-			if (!Random(2)) CreateParticle("FireDense", PV_Random(effect.fire_width/2, effect.fire_width), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3,3), effect.pspeed, effect.fire_height/2 + 6, effect.redfiredense);
+			if (!Random(2)) CreateParticle("FireDense", PV_Random(-effect.fire_width, effect.pspeed), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3, 3), effect.pspeed, effect.fire_height/2 + 6, effect.redfiredense);
+			if (!Random(2)) CreateParticle("FireDense", PV_Random(effect.fire_width/2, effect.fire_width), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3, 3), effect.pspeed, effect.fire_height/2 + 6, effect.redfiredense);
 		}
 
 		// Smoke
-		CreateParticle("SmokeThick", PV_Random(-effect.fire_width,effect.fire_width), -effect.fire_height, 0, -6, 300, effect.smoke);
+		CreateParticle("SmokeThick", PV_Random(-effect.fire_width, effect.fire_width), -effect.fire_height, 0, -6, 300, effect.smoke);
 
 		// Chaotic particles
 		if (!Random(3) && effect.FreqReduction < 14)

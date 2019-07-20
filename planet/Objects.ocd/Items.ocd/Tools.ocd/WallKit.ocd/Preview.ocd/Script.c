@@ -8,7 +8,7 @@ public func Create(int x1, int y1, int x2, int y2, int clr)
 	return obj;
 }
 
-public func Set(int x1,int y1,int x2,int y2,int clr)
+public func Set(int x1, int y1, int x2, int y2, int clr)
 {
 	SetVertexXY(0, x1, y1);
 	SetVertexXY(1, x2, y2);

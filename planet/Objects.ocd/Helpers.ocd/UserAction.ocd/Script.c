@@ -422,7 +422,7 @@ func Definition(def)
 		} } );
 	// Position evaluators
 	AddEvaluator("Position", nil, ["$ConstantPositionAbsolute$", ""], "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative = false, Color = 0xff2000 });
-	AddEvaluator("Position", nil, ["$ConstantPositionRelative$", "+"], "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative = true, Color = 0xff0050 });
+	AddEvaluator("Position", nil, ["$ConstantPositionRelative$", "+"], "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0, 0] }, { Type="point", Name="$Position$", Relative = true, Color = 0xff0050 });
 	AddEvaluator("Position", nil, "$Coordinates$", "$CoordinatesHelp$", "position_coordinates", [def, def.EvalCoordinates], def.GetDefaultCoordinates, { Type="proplist", HideFullName = true, Display="({{X}},{{Y}})", EditorProps = {
 		X = new Evaluator.Integer { Name="X", EditorHelp="$PosXHelp$" },
 		Y = new Evaluator.Integer { Name="Y", EditorHelp="$PosYHelp$" }
@@ -434,12 +434,12 @@ func Definition(def)
 	AddEvaluator("Position", nil, "$ObjectPosition$", "$ObjectPositionHelp$", "object_position", [def, def.EvalPositionObject], { Object={Function="triggering_object"} }, new Evaluator.Object { EditorHelp="$ObjectPositionObjectHelp$" }, "Object");
 	AddEvaluator("Position", nil, "$LastUsePosition$", "$LastUsePositionHelp$", "use_position", [def, def.EvalPos_LastUse]);
 	AddEvaluator("Position", "$RandomPosition$", "$RandomRectAbs$", "$RandomRectAbsHelp$", "random_pos_rect_abs", [def, def.EvalPos_RandomRect, false], def.GetDefaultRect, { Type="rect", Name="$Rectangle$", Relative = false, Color = 0xffff00 }, "Area");
-	AddEvaluator("Position", "$RandomPosition$", "$RandomRectRel$", "$RandomRectRelHelp$", "random_pos_rect_rel", [def, def.EvalPos_RandomRect, true], { Area=[-30,-30,60,60] }, { Type="rect", Name="$Rectangle$", Relative = true, Color = 0x00ffff }, "Area");
+	AddEvaluator("Position", "$RandomPosition$", "$RandomRectRel$", "$RandomRectRelHelp$", "random_pos_rect_rel", [def, def.EvalPos_RandomRect, true], { Area=[-30,-30, 60, 60] }, { Type="rect", Name="$Rectangle$", Relative = true, Color = 0x00ffff }, "Area");
 	AddEvaluator("Position", "$RandomPosition$", "$RandomCircleAbs$", "$RandomCircleAbsHelp$", "random_pos_circle_abs", [def, def.EvalPos_RandomCircle, false], def.GetDefaultCircle, { Type="circle", Name="$Circle$", Relative = false, CanMoveCenter = true, Color = 0xff00ff }, "Area");
-	AddEvaluator("Position", "$RandomPosition$", "$RandomCircleRel$", "$RandomCircleRelHelp$", "random_pos_circle_rel", [def, def.EvalPos_RandomCircle, true], { Area=[50,0,0] }, { Type="circle", Name="$Circle$", Relative = true, CanMoveCenter = true, Color = 0xa000a0 }, "Area");
+	AddEvaluator("Position", "$RandomPosition$", "$RandomCircleRel$", "$RandomCircleRelHelp$", "random_pos_circle_rel", [def, def.EvalPos_RandomCircle, true], { Area=[50, 0, 0] }, { Type="circle", Name="$Circle$", Relative = true, CanMoveCenter = true, Color = 0xa000a0 }, "Area");
 	// Offset evaluators
-	AddEvaluator("Offset", nil, ["$ConstantOffsetRelative$", ""], "$ConstantOffsetRelativeHelp$", "offset_constant", [def, def.EvalConstant], { Value=[0,0] }, { Type="point", Name="$Position$", Relative = true, Color = 0xff30ff });
-	AddEvaluator("Offset", nil, ["$Coordinates$", ""], "$CoordinatesHelp$", "offset_coordinates", [def, def.EvalCoordinates], { Value={X = 0,Y = 0} }, { Type="proplist", HideFullName = true, Display="({{X}},{{Y}})", EditorProps = {
+	AddEvaluator("Offset", nil, ["$ConstantOffsetRelative$", ""], "$ConstantOffsetRelativeHelp$", "offset_constant", [def, def.EvalConstant], { Value=[0, 0] }, { Type="point", Name="$Position$", Relative = true, Color = 0xff30ff });
+	AddEvaluator("Offset", nil, ["$Coordinates$", ""], "$CoordinatesHelp$", "offset_coordinates", [def, def.EvalCoordinates], { Value={X = 0, Y = 0} }, { Type="proplist", HideFullName = true, Display="({{X}},{{Y}})", EditorProps = {
 		X = new Evaluator.Integer { Name="X", EditorHelp="$OffXHelp$" },
 		Y = new Evaluator.Integer { Name="Y", EditorHelp="$OffYHelp$" },
 		} } );
@@ -451,8 +451,8 @@ func Definition(def)
 		PositionA = new Evaluator.Position { Name="$PositionA$", EditorHelp="$PositionAHelp$" },
 		PositionB = new Evaluator.Position { Name="$PositionB$", EditorHelp="$PositionBHelp$" }
 		} } );
-	AddEvaluator("Offset", nil, "$RandomOffRectRel$", "$RandomRectRelHelp$", "random_off_rect_rel", [def, def.EvalPos_RandomRect, "rect", false], { Area=[-30,-30,60,60] }, { Type="rect", Name="$Rectangle$", Relative = true, Color = 0x00ffff }, "Area");
-	AddEvaluator("Offset", nil, "$RandomOffCircleRel$", "$RandomCircleRelHelp$", "random_off_circle_rel", [def, def.EvalPos_RandomCircle, "circle", false], { Area=[0,0,50] }, { Type="circle", Name="$Circle$", Relative = true, CanMoveCenter = true, Color = 0xa000a0 }, "Area");
+	AddEvaluator("Offset", nil, "$RandomOffRectRel$", "$RandomRectRelHelp$", "random_off_rect_rel", [def, def.EvalPos_RandomRect, "rect", false], { Area=[-30,-30, 60, 60] }, { Type="rect", Name="$Rectangle$", Relative = true, Color = 0x00ffff }, "Area");
+	AddEvaluator("Offset", nil, "$RandomOffCircleRel$", "$RandomCircleRelHelp$", "random_off_circle_rel", [def, def.EvalPos_RandomCircle, "circle", false], { Area=[0, 0, 50] }, { Type="circle", Name="$Circle$", Relative = true, CanMoveCenter = true, Color = 0xa000a0 }, "Area");
 	// Script evaluators
 	var variable_delegate = { Type="proplist", HideFullName = true, Display="{{Context}}::{{VariableName}}", EditorProps = {
 		Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
@@ -663,7 +663,7 @@ private func EvaluatePosition(proplist props, object context)
 	if (!position)
 	{
 		if (context.action_object) position = [context.action_object->GetX(), context.action_object->GetY()];
-		else position = [0,0];
+		else position = [0, 0];
 	}
 	return position;
 }
@@ -671,7 +671,7 @@ private func EvaluatePosition(proplist props, object context)
 private func EvaluateOffset(proplist props, object context)
 {
 	// Execute offset evaluator; fall back to [0, 0]
-	return  EvaluateValue("Offset", props, context) ?? [0,0];
+	return  EvaluateValue("Offset", props, context) ?? [0, 0];
 }
 
 private func EvaluatePlayer(proplist props, object context)
@@ -1342,7 +1342,7 @@ private func GetDefaultPosition(object target_object)
 	if (target_object)
 		value = [target_object->GetX(), target_object->GetY()];
 	else
-		value = [0,0];
+		value = [0, 0];
 	return { Function="position_constant", Value = value };
 }
 
@@ -1362,7 +1362,7 @@ private func GetDefaultRect(object target_object, proplist props)
 {
 	// Default rectangle around target object
 	var r;
-	if (target_object) r = [target_object->GetX()-30, target_object->GetY()-30, 60, 60]; else r = [100,100,100,100];
+	if (target_object) r = [target_object->GetX()-30, target_object->GetY()-30, 60, 60]; else r = [100, 100, 100, 100];
 	return { Function = props.Function, Area = r };
 }
 
@@ -1370,7 +1370,7 @@ private func GetDefaultCircle(object target_object, proplist props)
 {
 	// Default circle around target object
 	var r;
-	if (target_object) r = [50, target_object->GetX(), target_object->GetY()]; else r = [50,100,100];
+	if (target_object) r = [50, target_object->GetX(), target_object->GetY()]; else r = [50, 100, 100];
 	return { Function = props.Function, Area = r };
 }
 
@@ -1378,7 +1378,7 @@ private func GetDefaultSearchRect(object target_object)
 {
 	// Default rectangle around target object
 	var r;
-	if (target_object) r = [target_object->GetX()-30, target_object->GetY()-30, 60, 60]; else r = [100,100,100,100];
+	if (target_object) r = [target_object->GetX()-30, target_object->GetY()-30, 60, 60]; else r = [100, 100, 100, 100];
 	return { Function="Rect", Area = r };
 }
 
@@ -1386,7 +1386,7 @@ private func GetDefaultSearchCircle(object target_object)
 {
 	// Default circle around target object
 	var r;
-	if (target_object) r = [50, target_object->GetX(), target_object->GetY()]; else r = [50,100,100];
+	if (target_object) r = [50, target_object->GetX(), target_object->GetY()]; else r = [50, 100, 100];
 	return { Function="Circle", Area = r };
 }
 
@@ -1395,8 +1395,8 @@ private func EvalIntRandom(proplist props, proplist context)
 	// Random value between min and max. Also allow them to be swapped.
 	var min = EvaluateValue("Integer", props.Min, context);
 	var max = EvaluateValue("Integer", props.Max, context);
-	var rmin = Min(min,max);
-	return Random(Max(max,min)-rmin) + rmin;
+	var rmin = Min(min, max);
+	return Random(Max(max, min)-rmin) + rmin;
 }
 
 private func EvalPositionRelative(proplist props, proplist context)
@@ -1425,7 +1425,7 @@ private func EvalPositionObject(proplist props, proplist context)
 {
 	var obj = EvaluateValue("Object", props.Object, context);
 	if (obj) return [obj->GetX(), obj->GetY()];
-	return [0,0]; // undefined object: Position is 0/0 default
+	return [0, 0]; // undefined object: Position is 0/0 default
 }
 
 private func EvalPos_LastUse(proplist props, proplist context) { return context.position; }

@@ -14,7 +14,7 @@ private func CheckForPlane()
 	var plane = FindObject(Find_ID(Airplane), Find_AtPoint());
 	if (plane)
 	{
-		ScheduleCall(nil, Global.GameCall, 1,1, "OnPlaneLoaded", plane, this);
+		ScheduleCall(nil, Global.GameCall, 1, 1, "OnPlaneLoaded", plane, this);
 		RemoveTimer(this.CheckForPlane);
 	}
 }

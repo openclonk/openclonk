@@ -306,11 +306,11 @@ public func CreateRootMenu(object menu, object center_column_menu, proplist desc
 	}
 
 	// For the description box
-	var background_color = RGBa(25,25,25, 200);
+	var background_color = RGBa(25, 25, 25, 200);
 	if (menu.BackgroundTransparency == 1)
-		background_color = RGBa(25,25,25, 100);
+		background_color = RGBa(25, 25, 25, 100);
 	if (menu.BackgroundTransparency == 2)
-		background_color = RGBa(25,25,25, 255);
+		background_color = RGBa(25, 25, 25, 255);
 
 	// Assemble the menu
 	var root_menu =
@@ -440,11 +440,11 @@ public func CreatePartMenu(object menu, int slot, object target, proplist sideba
 // Parameters are: Interaction Menu Object, Slot of the current main menu (either 0 or 1, left/right), Dummy menu target, Object whose settings are displayed
 public func CreateMainMenu(object menu, int slot, object target, object obj_for)
 {
-	var background_color = RGBa(25,25,25, 200);
+	var background_color = RGBa(25, 25, 25, 200);
 	if (menu.BackgroundTransparency == 1)
-		background_color = RGBa(25,25,25, 100);
+		background_color = RGBa(25, 25, 25, 100);
 	if (menu.BackgroundTransparency == 2)
-		background_color = RGBa(25,25,25, 255);
+		background_color = RGBa(25, 25, 25, 255);
 
 	var big_menu =
 	{

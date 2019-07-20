@@ -89,9 +89,9 @@ global func BlueExplosionEffect(int level, int x, int y)
 	// Blast particle.
 	CreateParticle("SmokeDirty", x, y, PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(20, 40), smoke, 10);
 	CreateParticle("MagicFire", x, y, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 10), fire, 20);
-	if (!GBackLiquid(x,y)) CreateParticle("SphereSpark", x, y, PV_Random(-100, 100), PV_Random(-100, 100), PV_Random(5, 36 * 3), glimmer, level);
+	if (!GBackLiquid(x, y)) CreateParticle("SphereSpark", x, y, PV_Random(-100, 100), PV_Random(-100, 100), PV_Random(5, 36 * 3), glimmer, level);
 
-	if (GBackLiquid(x,y)) CastObjects(Fx_Bubble, level * 4 / 10, level, x, y);
+	if (GBackLiquid(x, y)) CastObjects(Fx_Bubble, level * 4 / 10, level, x, y);
 	return;
 }
 
@@ -119,7 +119,7 @@ global func BlastObjectsBlue(int x, int y, int level, object container, int caus
 	{
 		// Object is outside.
 		// Damage objects at point of explosion.
-		for (var obj in FindObjects(Find_AtRect(l_x - 5, l_y - 5, 10,10), Find_NoContainer(), Find_Layer(layer), Find_Not(Find_ID(StoneDoor))))
+		for (var obj in FindObjects(Find_AtRect(l_x - 5, l_y - 5, 10, 10), Find_NoContainer(), Find_Layer(layer), Find_Not(Find_ID(StoneDoor))))
 			if (obj) obj->BlastObject(level, cause_plr);
 
 		// TODO: -> Shockwave in own global func(?)
@@ -172,7 +172,7 @@ global func BlastObjectsBlue(int x, int y, int level, object container, int caus
 						if (ovy * vy > 0)
 							vy = (Sqrt(vy * vy + ovy * ovy) - Abs(vy)) * Abs(vy) / vy;
 					}
-					//Log("%v v(%v %v)   d(%v %v)  m=%v  l=%v  s=%v", obj, vx,vy, dx,dy, mass_fact, level, shock_speed);
+					//Log("%v v(%v %v)   d(%v %v)  m=%v  l=%v  s=%v", obj, vx, vy, dx, dy, mass_fact, level, shock_speed);
 					obj->Fling(vx, vy, 100, true);
 				}
 		}

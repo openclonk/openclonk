@@ -151,7 +151,7 @@ public func ControlUseStart(object clonk, int x, int y)
 public func ControlUseHolding(object clonk, int x, int y)
 {
 	// Save new angle
-	var angle = Angle(0,0,x,y);
+	var angle = Angle(0, 0, x, y);
 	angle = Normalize(angle,-180);
 
 	if (angle >  160) angle =  160;
@@ -244,7 +244,7 @@ public func OnRelaunchCreation()
 
 func Definition(def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Translate(-4000,-2000,4000),Trans_Rotate(180,0,1,0),Trans_Rotate(-45,0,0,1));
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-4000,-2000, 4000),Trans_Rotate(180, 0, 1, 0),Trans_Rotate(-45, 0, 0, 1));
 	return _inherited(def, ...);
 }
 

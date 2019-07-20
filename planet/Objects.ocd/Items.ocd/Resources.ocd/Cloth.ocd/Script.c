@@ -19,7 +19,7 @@ public func IsLoomProduct() { return true; }
 
 private func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(-45,1), Trans_Rotate(-20,0,0,1)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(-45, 1), Trans_Rotate(-20, 0, 0, 1)), def);
 }
 
 local Name = "$Name$";

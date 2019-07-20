@@ -76,7 +76,7 @@ public func Construction()
 			B = PV_Random(200, 255)
 		};
 	// Initial visibility for all players
-	Visibility = [VIS_Select | VIS_God, false,false,false,false];
+	Visibility = [VIS_Select | VIS_God, false, false, false, false];
 	for (var plr in GetPlayers()) UpdateVisibility(plr);
 	// Timer effect
 	AddEffect("Spawn", this, 1, 2, this);

@@ -44,7 +44,7 @@ func Intro_Start(object flagpole)
 	this.flagpole = flagpole;
 	SetViewTarget(this.flagpole);
 	
-	SetPlayerZoomByViewRange(NO_OWNER, 800,600, PLRZOOM_Set); // zoom out from plane
+	SetPlayerZoomByViewRange(NO_OWNER, 800, 600, PLRZOOM_Set); // zoom out from plane
 	
 	return ScheduleNext(80);
 }
@@ -67,7 +67,7 @@ func Intro_1()
 {
 	// Start plane drop
 	this.plane->SetCategory(this.plane_cat);
-	this.plane->SetPosition(50,840);
+	this.plane->SetPosition(50, 840);
 	this.plane->SetXDir(100);
 	this.plane->SetYDir(200);
 	this.plane->SetR(170);
@@ -91,13 +91,13 @@ func Intro_PlaneHit()
 	SetR(-90);
 	var particles = Particles_Smoke(true);
 	particles.Size = PV_Linear(PV_Random(20, 60), PV_Random(50, 100));
-	CreateParticle("Smoke", PV_Random(-30,30), PV_Random(-30,30), PV_Random(-60, 60), PV_Random(-20,0), PV_Random(200, 500), particles, 20);
+	CreateParticle("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(-60, 60), PV_Random(-20, 0), PV_Random(200, 500), particles, 20);
 	particles.Size = PV_Linear(PV_Random(50, 80), PV_Random(100, 200));
-	CreateParticle("Smoke", PV_Random(-30,30), PV_Random(-30,30), PV_Random(-20, 20), PV_Random(-20,0), PV_Random(100, 200), particles, 20);
-	for (var iplr = 0,plr; iplr<GetPlayerCount(C4PT_User); ++iplr)
+	CreateParticle("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(-20, 20), PV_Random(-20, 0), PV_Random(100, 200), particles, 20);
+	for (var iplr = 0, plr; iplr<GetPlayerCount(C4PT_User); ++iplr)
 	{
 		plr = GetPlayerByIndex(iplr, C4PT_User);
-		var icrew = 0,crew;
+		var icrew = 0, crew;
 		while (crew = GetCrew(plr, icrew++))
 		{
 			crew->Exit(0,-5, 0, Random(1)+1, Random(5)-6);
@@ -105,7 +105,7 @@ func Intro_PlaneHit()
 		}
 	}
 	SetMeshMaterial("CrashedAirplane");
-	this.MeshTransformation = Trans_Mul(Trans_Rotate(10,0,2,1), Airplane.MeshTransformation);
+	this.MeshTransformation = Trans_Mul(Trans_Rotate(10, 0, 2, 1), Airplane.MeshTransformation);
 	this.Hit = this.intro_seq.plane_Hit;
 	this.intro_seq.plane_crashed = true;
 	this.intro_seq->ScheduleNext(50);
@@ -173,7 +173,7 @@ func Intro_Stop()
 	this.dialogue->SetInteraction(true);
 	this.dialogue->AddAttention();
 	this.dialogue->Dlg_Pyrit_StartHammering(npc_pyrit);
-	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set);
+	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set);
 	g_goal = CreateObject(Goal_TreasureHunt, 0, 0);
 	return true;
 }

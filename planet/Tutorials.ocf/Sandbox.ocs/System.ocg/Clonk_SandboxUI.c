@@ -125,7 +125,7 @@ public func ShowSandboxUI()
 			Left = "10em",
 			Right = "20em",
 			Bottom = "3.5em",
-			BackgroundColor = RGBa(96,96,96,96),
+			BackgroundColor = RGBa(96, 96, 96, 96),
 			Tooltip = "$TooltipGodsHand$",
 			
 			icon = 
@@ -312,7 +312,7 @@ public func ShowObjectSpawnUI()
 			Top = "2em",
 			Bottom = "100% - 2em",
 			
-			BackgroundColor = RGBa(32,32,32,224),
+			BackgroundColor = RGBa(32, 32, 32, 224),
 			Style = GUI_VerticalLayout,
 		},
 		
@@ -321,7 +321,7 @@ public func ShowObjectSpawnUI()
 			ID = idGuiHudOS_switchspawndest,
 			Top = "100% - 2em",
 			Right = "25%",
-			BackgroundColor = { Std = RGBa(32,32,128,128), Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = RGBa(32, 32, 128, 128), Hover = RGBa(128, 128, 192, 128) },
 			Tooltip = GetObjectSpawnDestTooltip(),
 			
 			icon = 
@@ -349,14 +349,14 @@ public func ShowObjectSpawnUI()
 			Right = "100%",
 			Top = "2em",
 			Bottom = "100% - 2em",
-			BackgroundColor = RGBa(64,64,64,224),
+			BackgroundColor = RGBa(64, 64, 64, 224),
 		},
 		
 		HintTarget =
 		{
 			Left = "25%",
 			Top = "100% - 2em",
-			BackgroundColor = RGBa(128,128,128,224),
+			BackgroundColor = RGBa(128, 128, 128, 224),
 			
 			icon =
 			{
@@ -387,7 +387,7 @@ public func ShowObjectSpawnUI()
 			Priority = entry.Priority,
 			Bottom = "+2em",
 			Right = "100% - 1em",
-			BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 			
 			icon =
 			{
@@ -459,7 +459,7 @@ public func SwitchObjectSpawnDest()
 			ID = idGuiHudOS_switchspawndest,
 			Top = "100% - 2em",
 			Right = "25%",
-			BackgroundColor = { Std = RGBa(32,32,128,128), Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = RGBa(32, 32, 128, 128), Hover = RGBa(128, 128, 192, 128) },
 			Tooltip = GetObjectSpawnDestTooltip(),
 			
 			icon = 
@@ -494,7 +494,7 @@ public func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, obje
 		Left = "25%",
 		Right = "100%",
 		Top = "2em",
-		BackgroundColor = RGBa(64,64,64,224),
+		BackgroundColor = RGBa(64, 64, 64, 224),
 		
 		Style = GUI_GridLayout,
 	};
@@ -513,7 +513,7 @@ public func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, obje
 			Priority = index,
 			Bottom = "+2em",
 			Right = "+8em",
-			BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 			Tooltip = item.Description,
 			
 			icon =
@@ -637,13 +637,13 @@ local idGuiHudMB_ModeSelect = 303;
 
 public func ShowMaterialBrushUI()
 {
-	var bgBrush = { Std = 0, Hover = RGBa(128,128,192,128) };
+	var bgBrush = { Std = 0, Hover = RGBa(128, 128, 192, 128) };
 	var bgQuad  = bgBrush;
 	var bgErase = bgBrush;
 	
-	if (SelectedBrushMode == 1) bgBrush = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
-	if (SelectedBrushMode == 2) bgQuad  = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
-	if (SelectedBrushMode == 3) bgErase = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
+	if (SelectedBrushMode == 1) bgBrush = { Std = RGBa(128, 192, 128, 128), Hover = RGBa(128, 128, 192, 128) };
+	if (SelectedBrushMode == 2) bgQuad  = { Std = RGBa(128, 192, 128, 128), Hover = RGBa(128, 128, 192, 128) };
+	if (SelectedBrushMode == 3) bgErase = { Std = RGBa(128, 192, 128, 128), Hover = RGBa(128, 128, 192, 128) };
 	
 	var BrushUI = 
 	{
@@ -738,7 +738,7 @@ public func ShowMaterialBrushUI()
 						GraphicsName = "Minus",
 						Text = "10",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -756,7 +756,7 @@ public func ShowMaterialBrushUI()
 						GraphicsName = "Minus",
 						Text = "1",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -784,7 +784,7 @@ public func ShowMaterialBrushUI()
 						GraphicsName = "Plus",
 						Text = "1",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -802,7 +802,7 @@ public func ShowMaterialBrushUI()
 						GraphicsName = "Plus",
 						Text = "10",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -928,13 +928,13 @@ public func ShowMaterialBrushUI()
 		index++;
 		
 		var stdcolor = 0;
-		if (entry.Material == SelectedBrushMaterial) stdcolor = RGBa(128,192,128,128);
+		if (entry.Material == SelectedBrushMaterial) stdcolor = RGBa(128, 192, 128, 128);
 		
 		var matentry = 
 		{
 			ID = 2000 + index,
 			Priority = index,
-			BackgroundColor = { Std = stdcolor, Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = stdcolor, Hover = RGBa(128, 128, 192, 128) },
 			Bottom = "2em",
 			Right = "10em",
 			
@@ -966,13 +966,13 @@ public func ShowMaterialBrushUI()
 		index++;
 		
 		var stdcolor = 0;
-		if (entry.Material == SelectedBrushBgMaterial) stdcolor = RGBa(128,192,128,128);
+		if (entry.Material == SelectedBrushBgMaterial) stdcolor = RGBa(128, 192, 128, 128);
 		
 		var matentry = 
 		{
 			ID = 3000 + index,
 			Priority = index,
-			BackgroundColor = { Std = stdcolor, Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = stdcolor, Hover = RGBa(128, 128, 192, 128) },
 			Bottom = "2em",
 			Right = "10em",
 			
@@ -1041,13 +1041,13 @@ public func SelectBrushMaterial(data)
 		index++;
 		
 		var stdcolor = 0;
-		if (entry.Material == SelectedBrushMaterial) stdcolor = RGBa(128,192,128,128);
+		if (entry.Material == SelectedBrushMaterial) stdcolor = RGBa(128, 192, 128, 128);
 		
 		var matentry = 
 		{
 			ID = 2000 + index,
 			Priority = index,
-			BackgroundColor = { Std = stdcolor, Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = stdcolor, Hover = RGBa(128, 128, 192, 128) },
 			Bottom = "2em",
 			Right = "10em",
 			
@@ -1103,13 +1103,13 @@ public func SelectBrushBackgroundMaterial(data)
 		index++;
 		
 		var stdcolor = 0;
-		if (entry.Material == SelectedBrushBgMaterial) stdcolor = RGBa(128,192,128,128);
+		if (entry.Material == SelectedBrushBgMaterial) stdcolor = RGBa(128, 192, 128, 128);
 		
 		var matentry = 
 		{
 			ID = 2000 + index,
 			Priority = index,
-			BackgroundColor = { Std = stdcolor, Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = stdcolor, Hover = RGBa(128, 128, 192, 128) },
 			Bottom = "2em",
 			Right = "10em",
 			
@@ -1167,13 +1167,13 @@ public func SelectBrushMode(data)
 {
 	SelectedBrushMode = data;
 	
-	var bgBrush = { Std = 0, Hover = RGBa(128,128,192,128) };
+	var bgBrush = { Std = 0, Hover = RGBa(128, 128, 192, 128) };
 	var bgQuad  = bgBrush;
 	var bgErase = bgBrush;
 	
-	if (SelectedBrushMode == 1) bgBrush = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
-	if (SelectedBrushMode == 2) bgQuad  = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
-	if (SelectedBrushMode == 3) bgErase = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
+	if (SelectedBrushMode == 1) bgBrush = { Std = RGBa(128, 192, 128, 128), Hover = RGBa(128, 128, 192, 128) };
+	if (SelectedBrushMode == 2) bgQuad  = { Std = RGBa(128, 192, 128, 128), Hover = RGBa(128, 128, 192, 128) };
+	if (SelectedBrushMode == 3) bgErase = { Std = RGBa(128, 192, 128, 128), Hover = RGBa(128, 128, 192, 128) };
 	
 	var update =
 	{
@@ -1243,7 +1243,7 @@ public func ShowTweaksUI()
 						Priority = 1,
 						Bottom = "2em",
 						Right = "10em",
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						icon =
 						{
@@ -1268,7 +1268,7 @@ public func ShowTweaksUI()
 						Priority = 2,
 						Bottom = "2em",
 						Right = "10em",
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						icon =
 						{
@@ -1313,7 +1313,7 @@ public func ShowTweaksUI()
 						Priority = 1,
 						Bottom = "2em",
 						Right = "10em",
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						icon =
 						{
@@ -1338,7 +1338,7 @@ public func ShowTweaksUI()
 						Priority = 2,
 						Bottom = "2em",
 						Right = "10em",
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						icon =
 						{
@@ -1364,7 +1364,7 @@ public func ShowTweaksUI()
 						Priority = 3,
 						Bottom = "2em",
 						Right = "10em",
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						icon =
 						{
@@ -1390,7 +1390,7 @@ public func ShowTweaksUI()
 						Priority = 4,
 						Bottom = "2em",
 						Right = "10em",
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						icon =
 						{
@@ -1551,7 +1551,7 @@ public func ShowMapGenUI()
 						GraphicsName = "Minus",
 						Text = "50",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -1569,7 +1569,7 @@ public func ShowMapGenUI()
 						GraphicsName = "Minus",
 						Text = "5",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -1597,7 +1597,7 @@ public func ShowMapGenUI()
 						GraphicsName = "Plus",
 						Text = "5",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -1615,7 +1615,7 @@ public func ShowMapGenUI()
 						GraphicsName = "Plus",
 						Text = "50",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -1653,7 +1653,7 @@ public func ShowMapGenUI()
 						GraphicsName = "Minus",
 						Text = "50",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -1671,7 +1671,7 @@ public func ShowMapGenUI()
 						GraphicsName = "Minus",
 						Text = "5",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -1699,7 +1699,7 @@ public func ShowMapGenUI()
 						GraphicsName = "Plus",
 						Text = "5",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -1717,7 +1717,7 @@ public func ShowMapGenUI()
 						GraphicsName = "Plus",
 						Text = "50",
 						Style = GUI_TextBottom | GUI_TextRight,
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						Right = "2em",
 						Bottom = "2em",
@@ -1771,7 +1771,7 @@ public func ShowMapGenUI()
 			Top = "100% - 2em",
 			Text = "$MapGenButtonGenerate$",
 			Style = GUI_TextHCenter | GUI_TextVCenter,
-			BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 			
 			OnClick = GuiAction_Call(this, "MakeNewMap"),
 			OnMouseIn = GuiAction_SetTag("Hover"),
@@ -1828,9 +1828,9 @@ func UpdateMapGenPresetOptionList()
 	{
 		var entry = MapGenTypePresetOpts[property];
 		
-		var bgcolor = { Std = 0, Hover = RGBa(128,128,192,128) };
+		var bgcolor = { Std = 0, Hover = RGBa(128, 128, 192, 128) };
 		if (Settings_MapType == entry.Value)
-			bgcolor = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
+			bgcolor = { Std = RGBa(128, 192, 128, 128), Hover = RGBa(128, 128, 192, 128) };
 		
 		var subentry =
 		{
@@ -1889,9 +1889,9 @@ func UpdateMapGenGoalOptionList()
 	{
 		var entry = MapGenGoalPresetOpts[property];
 		
-		var bgcolor = { Std = 0, Hover = RGBa(128,128,192,128) };
+		var bgcolor = { Std = 0, Hover = RGBa(128, 128, 192, 128) };
 		if (Settings_Goal == entry.Value)
-			bgcolor = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
+			bgcolor = { Std = RGBa(128, 192, 128, 128), Hover = RGBa(128, 128, 192, 128) };
 		
 		var subentry =
 		{
@@ -2047,7 +2047,7 @@ public func ShowMarkerUI()
 			Text = "$PlaceMarker$",
 			Style = GUI_TextHCenter | GUI_TextVCenter,
 			
-			BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+			BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 			
 			OnClick = GuiAction_Call(this, "PlaceNewMarker"),
 			OnMouseIn = GuiAction_SetTag("Hover"),
@@ -2122,7 +2122,7 @@ public func UpdateMarkerList()
 						Priority = 1,
 						Right = "10em",
 						Bottom = "2em",
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						icon =
 						{
@@ -2147,7 +2147,7 @@ public func UpdateMarkerList()
 						Priority = 2,
 						Right = "10em",
 						Bottom = "2em",
-						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
+						BackgroundColor = { Std = 0, Hover = RGBa(128, 128, 192, 128) },
 						
 						icon =
 						{
@@ -2178,7 +2178,7 @@ public func UpdateMarkerList()
 				Priority = i + 1,
 				Style = GUI_FitChildren,
 				Bottom = "2em",
-				BackgroundColor = RGBa(192,0,0,128),
+				BackgroundColor = RGBa(192, 0, 0, 128),
 				
 				Caption =
 				{

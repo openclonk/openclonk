@@ -137,7 +137,7 @@ private func CheckFree(bool by_dig_free)
 			AddEffect("MuchSparkle", this, 1, 1, this);
 			Show();
 			// Also, some sound (delayed for audibility on visibility change)
-			if (by_dig_free) ScheduleCall(this, Global.Sound, 1,1, "Objects::DiamondDigOut");
+			if (by_dig_free) ScheduleCall(this, Global.Sound, 1, 1, "Objects::DiamondDigOut");
 		}
 	}
 	

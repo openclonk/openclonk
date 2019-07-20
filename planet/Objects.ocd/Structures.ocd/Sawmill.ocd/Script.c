@@ -154,7 +154,7 @@ private func FxWoodProductionTimer(object t, proplist effect, int time)
 	}
 
 	if (!(time%20))
-		Smoke(10 * GetCalcDir(),10,10);
+		Smoke(10 * GetCalcDir(),10, 10);
 
 	if (!running)
 	{

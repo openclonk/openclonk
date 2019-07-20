@@ -8,7 +8,7 @@
 local animWork;
 local meshAttach;
 
-public func LampPosition(id def) { return [GetCalcDir()*11,2]; }
+public func LampPosition(id def) { return [GetCalcDir()*11, 2]; }
 
 func Initialize()
 {
@@ -56,7 +56,7 @@ local workEffect;
 
 public func OnProductionStart(id product)
 {
-	workEffect = AddEffect("IntWorkAnim", this, 1,1,this);
+	workEffect = AddEffect("IntWorkAnim", this, 1, 1, this);
 	return _inherited(product, ...);
 }
 
@@ -79,8 +79,8 @@ public func OnProductionFinish(id product)
 }
 
 func Definition(def){
-	SetProperty("MeshTransformation", Trans_Rotate(25, 0,1,0), def);
-	SetProperty("PictureTransformation", Trans_Rotate(65,0,1,0), def);
+	SetProperty("MeshTransformation", Trans_Rotate(25, 0, 1, 0), def);
+	SetProperty("PictureTransformation", Trans_Rotate(65, 0, 1, 0), def);
 	return _inherited(def, ...);
 }
 

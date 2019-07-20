@@ -82,7 +82,7 @@ protected func Hit(int dx, int dy)
 	if (dy > 1)
 	{
 		if (GetEffect("Bouncy", this)) {
-			SetXDir(RandomX(-5,5));
+			SetXDir(RandomX(-5, 5));
 			SetYDir(dy * 3 / -4, 100);
 		} else
 			SetYDir(dy / -2, 100);

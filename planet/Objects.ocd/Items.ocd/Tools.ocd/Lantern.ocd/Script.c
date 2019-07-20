@@ -65,13 +65,13 @@ public func GetCarryMode()
 public func GetCarryTransform(object clonk, bool idle, bool nohand)
 {
 	if (nohand)
-		return Trans_Mul(Trans_Rotate(-120,0,1), Trans_Translate(-2000, 0, -3000));
-	return Trans_Rotate(-90,0,1,0);
+		return Trans_Mul(Trans_Rotate(-120, 0, 1), Trans_Translate(-2000, 0, -3000));
+	return Trans_Rotate(-90, 0, 1, 0);
 }
 
 func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(280,0,1,0), Trans_Rotate(35,0,0,1), Trans_Rotate(10,1,0,0), Trans_Translate(0,0,250)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(280, 0, 1, 0), Trans_Rotate(35, 0, 0, 1), Trans_Rotate(10, 1, 0, 0), Trans_Translate(0, 0, 250)),def);
 }
 
 /*-- Properties --*/

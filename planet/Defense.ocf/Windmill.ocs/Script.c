@@ -54,7 +54,7 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
 	Scoreboard->SetPlayerData(plr, "score", g_scores[plr]);
 
-	CreateObject(Homebase, 0,0, plr);
+	CreateObject(Homebase, 0, 0, plr);
 
 	SetPlayerZoomByViewRange(plr, 1200, 0, PLRZOOM_LimitMax);
 
@@ -86,15 +86,15 @@ private func TransferInventory(object from, object to)
 
 func JoinPlayer(plr, prev_clonk)
 {
-	var x = 991,y = 970;
+	var x = 991, y = 970;
 	var clonk = GetCrew(plr);
 	if (clonk)
 	{
-		clonk->SetPosition(x,y-10);
+		clonk->SetPosition(x, y-10);
 	}
 	else
 	{
-		clonk = CreateObjectAbove(Clonk, x,y, plr);
+		clonk = CreateObjectAbove(Clonk, x, y, plr);
 		clonk->MakeCrewMember(plr);
 	}
 	SetCursor(plr, clonk);
@@ -135,8 +135,8 @@ func FillHomebase(object homebase)
 //	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon { item = Hammer,    cost = 1000, desc = "$HomebaseDescHammer$", extra_width = 1 });
 
 	homebase->AddCaption("$HomebaseTechnology$");
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World,cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseMasterWeapons$", item = Icon_World,cost = 1000, desc = "$HomebaseDescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World, cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseMasterWeapons$", item = Icon_World, cost = 1000, desc = "$HomebaseDescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
 
 	homebase->AddCaption("$HomebaseUpgrades$");
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$HomebaseDescLoadSpeed$", tech = "LoadSpeed", tiers = 3 });
@@ -341,7 +341,7 @@ func ScheduleLaunchEnemy(proplist enemy)
 	ymin = BoundBy(enemy.PosY - 100, 0 + height/2, LandscapeHeight() - height/2);
 	ymax = BoundBy(enemy.PosY + 100, 0 + height/2, LandscapeHeight() - height/2);
 
-	ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, xmin, xmax - xmin, ymin, ymax - ymin);
+	ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval, 1), Max(enemy.Num, 1), enemy, xmin, xmax - xmin, ymin, ymax - ymin);
 	return true;
 }
 

@@ -59,19 +59,19 @@ protected func Initialize()
 	var chest;
 	chest = CreateObjectAbove(Chest, 110, 592, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36, nil, nil, true);
 	chest = CreateObjectAbove(Chest, 25, 464, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36, nil, nil, false);
 	chest = CreateObjectAbove(Chest, 730, 408, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
 	chest = CreateObjectAbove(Chest, lwidth - 110, 592, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36, nil, nil, true);
 	chest = CreateObjectAbove(Chest, lwidth - 25, 464, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36, nil, nil, false);
 	chest = CreateObjectAbove(Chest, lwidth - 730, 408, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
@@ -165,12 +165,12 @@ global func FxFillBaseChestTimer(object target, effect)
 	if (effect.supply_type)
 	{ 
 		w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder, SlowGem, ShieldGem];
-		maxcount = [2,2,1,2,1,2,1];
+		maxcount = [2, 2, 1, 2, 1, 2, 1];
 	}
 	else
 	{
 		w_list = [Sword, Javelin, Blunderbuss, ShieldGem, PyreGem];
-		maxcount = [1,2,1,1,1];
+		maxcount = [1, 2, 1, 1, 1];
 	}
 	
 	var contents;
@@ -203,7 +203,7 @@ global func FxFillOtherChestStart(object target, effect, int temporary)
 global func FxFillOtherChestTimer(object target)
 {
 	var w_list = [Shield ,Sword, Club, Bow, Dynamite, Firestone, SlowGem, ShieldGem, PyreGem];
-	var maxcount = [2,1,1,1,2,2,1,2,2];
+	var maxcount = [2, 1, 1, 1, 2, 2, 1, 2, 2];
 
 	
 	var contents;
@@ -251,7 +251,7 @@ global func CreateChestContents(id obj_id)
 	if (obj_id == Blunderbuss)
 		obj->CreateContents(LeadBullet);
 	if (obj_id == GrappleBow)
-		AddEffect("NotTooLong",obj,100,36);
+		AddEffect("NotTooLong",obj, 100, 36);
 	
 	obj->Enter(this);
 	
@@ -264,7 +264,7 @@ global func FxNotTooLongTimer(object target, effect)
 {	if (!(target->Contained())) return 1;
 	if (target->Contained()->GetID() == Clonk) effect.inClonk_time++;
 	if (effect.inClonk_time > 40) return target->RemoveObject();
-	else if (effect.inClonk_time > 35) target->Message("@<c ff%x%x>%d",(41-effect.inClonk_time)*50,(41-effect.inClonk_time)*50,41-effect.inClonk_time);
+	else if (effect.inClonk_time > 35) target->Message("@<c ff%x%x>%d",(41-effect.inClonk_time)*50,(41-effect.inClonk_time)*50, 41-effect.inClonk_time);
 }
 
 func OnClonkDeath(object clonk, int killed_by)

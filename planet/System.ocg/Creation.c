@@ -100,13 +100,13 @@ global func PlaceObjectBatches(array item_ids, int n_per_batch, int batch_radius
 		{
 			for (var j = 0; j<n_per_batch; ++j)
 			{
-				var loc2 = FindLocation(Loc_InRect(loc.x-batch_radius,loc.y-batch_radius,batch_radius*2,batch_radius*2), Loc_Material(in_material));
+				var loc2 = FindLocation(Loc_InRect(loc.x-batch_radius, loc.y-batch_radius, batch_radius*2, batch_radius*2), Loc_Material(in_material));
 				if (loc2)
 				{
 					var obj = CreateObjectAbove(item_ids[Random(n_item_ids)], loc2.x, loc2.y);
 					if (obj)
 					{
-						obj->SetPosition(loc2.x,loc2.y);
+						obj->SetPosition(loc2.x, loc2.y);
 						++n_created;
 					}
 				}
@@ -218,7 +218,7 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 			count = RandomX(2, 4);
 			for (j = 0; j < count; j++)
 			{
-				spot = (plant_size*2 / count) * j + RandomX(-5,5) - plant_size;
+				spot = (plant_size*2 / count) * j + RandomX(-5, 5) - plant_size;
 				y_pos = y;
 				if (!GBackSolid(x + i + spot, y_pos)) continue;
 				while (!GBackSky(x + i + spot, y_pos) && y_pos > 0) y_pos--;

@@ -96,7 +96,7 @@ func InitializePlayer(int plr)
 {
 	// Everything freely visible (to allow aiming with the cannon)
 	SetFoW(false, plr);
-	SetPlayerZoomByViewRange(plr,LandscapeWidth(),LandscapeHeight(),PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeHeight(),PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, false);
 	// Acquire base
 	var team = GetPlayerTeam(plr);
@@ -131,7 +131,7 @@ func IntroMsg()
 func LaunchPlayer(object clonk, int plr)
 {
 	// Make sure clonk can move
-	DigFreeRect(clonk->GetX()-6,clonk->GetY()-10,13,18,true);
+	DigFreeRect(clonk->GetX()-6, clonk->GetY()-10, 13, 18, true);
 	// Crew setup
 	clonk.MaxEnergy = 100000;
 	clonk->DoEnergy(1000);

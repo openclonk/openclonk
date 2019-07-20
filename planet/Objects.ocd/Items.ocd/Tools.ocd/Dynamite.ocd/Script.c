@@ -108,7 +108,7 @@ public func ControlPlace(object clonk, int x, int y, bool box)
 	// if already activated, nothing (so, throw)
 	if (GetAction() == "Fuse" || box)
 	{
-		if (Place(clonk,x,y,box))
+		if (Place(clonk, x, y, box))
 			return true;
 		// if placed with the box, we are more tolerant where the
 		// user clicks and search for other positions too
@@ -116,7 +116,7 @@ public func ControlPlace(object clonk, int x, int y, bool box)
 		{
 
 			// get rough direction (left, right, up down)
-			var angle = (Angle(0,0,x,y)+45)/90*90;
+			var angle = (Angle(0, 0, x, y)+45)/90*90;
 
 			var plusminus = -1;
 			// first check if it is possible to place the dynamite
@@ -130,7 +130,7 @@ public func ControlPlace(object clonk, int x, int y, bool box)
 				x = Sin(angle, 300);
 				y = -Cos(angle, 300);
 
-				if (Place(clonk,x,y,box))
+				if (Place(clonk, x, y, box))
 					return true;
 
 				plusminus *= -1;
@@ -160,7 +160,7 @@ public func Fuse()
 
 func Place(object clonk, int x, int y, bool box)
 {
-	var angle = Angle(0,0,x,y);
+	var angle = Angle(0, 0, x, y);
 	var pos = GetWall(angle);
 	if (pos)
 	{

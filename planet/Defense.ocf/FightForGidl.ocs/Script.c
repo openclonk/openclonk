@@ -55,8 +55,8 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	Scoreboard->NewPlayerEntry(plr);
 	Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
 	Scoreboard->SetPlayerData(plr, "score", g_scores[plr]);
-	//SetFoW(false,plr); - need FoW for lights
-	CreateObject(Homebase, 0,0, plr);
+	//SetFoW(false, plr); - need FoW for lights
+	CreateObject(Homebase, 0, 0, plr);
 	JoinPlayer(plr);
 	if (!g_wave) StartGame();
 	return;
@@ -88,15 +88,15 @@ func JoinPlayer(plr, prev_clonk)
 {
 	var spawn_idx = Random(2);
 	if (prev_clonk && g_statue) spawn_idx = (prev_clonk->GetX() > g_statue->GetX());
-	var x=[494,763][spawn_idx],y = 360;
+	var x=[494, 763][spawn_idx],y = 360;
 	var clonk = GetCrew(plr);
 	if (clonk)
 	{
-		clonk->SetPosition(x,y-10);
+		clonk->SetPosition(x, y-10);
 	}
 	else
 	{
-		clonk = CreateObjectAbove(Clonk, x,y, plr);
+		clonk = CreateObjectAbove(Clonk, x, y, plr);
 		clonk->MakeCrewMember(plr);
 	}
 	SetCursor(plr, clonk);
@@ -132,7 +132,7 @@ func FillHomebase(object homebase)
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Firestone, cost = 5});
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Blunderbuss,    cost = 50, ammo = LeadBullet, desc = "$HomebaseDescBlunderbuss$",     requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = IronBomb,  cost = 15,                                             requirements = ["AdvancedWeapons"] });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Lantern,cost = 15,                                            requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Lantern, cost = 15,                                            requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = GrenadeLauncher, ammo = IronBomb, desc = "$HomebaseDescGrenadeLauncher$", requirements = ["MasterWeapons"] });
 
 	homebase->AddCaption("$HomebaseItems$");
@@ -140,8 +140,8 @@ func FillHomebase(object homebase)
 	//homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon { item = Hammer,    cost = 1000, desc = "$HomebaseDescHammer$", extra_width = 1 });
 
 	homebase->AddCaption("$HomebaseTechnology$");
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World,cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseMasterWeapons$", item = Icon_World,cost = 1000, desc = "$HomebaseDescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World, cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseMasterWeapons$", item = Icon_World, cost = 1000, desc = "$HomebaseDescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
 
 	homebase->AddCaption("$HomebaseUpgrades$");
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$HomebaseDescLoadSpeed$", tech = "LoadSpeed", tiers = 3 });
@@ -221,8 +221,8 @@ func ScheduleLaunchEnemy(proplist enemy)
 	// Spawn either only enemy or mirrored enemies on both sides
 	var side = enemy.Side;
 	if (!side) side = WAVE_SIDE_LEFT | WAVE_SIDE_RIGHT;
-	if (side & WAVE_SIDE_LEFT)  ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, 10 + xmin, xmax - xmin, y);
-	if (side & WAVE_SIDE_RIGHT) ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, 1190 - xmax, xmax - xmin, y);
+	if (side & WAVE_SIDE_LEFT)  ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval, 1), Max(enemy.Num, 1), enemy, 10 + xmin, xmax - xmin, y);
+	if (side & WAVE_SIDE_RIGHT) ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval, 1), Max(enemy.Num, 1), enemy, 1190 - xmax, xmax - xmin, y);
 	return true;
 }
 
@@ -495,9 +495,9 @@ func InitWaveData()
 	var artillery  = { Name="$EnemyArtillery$", Inventory = Firestone,   Energy= 30, Bounty= 20, Color = 0xffffff00, Skin = CSKIN_Steampunk,             Vehicle = Catapult };
 	var swordman   = { Name="$EnemySwordman$",  Inventory = Sword,       Energy= 30, Bounty= 30, Color = 0xff0000ff,                                  };
 	var bigswordman= { Name="$EnemySwordman2$", Inventory = bigsword,    Energy= 60, Bounty= 60, Color = 0xff00ffff, Skin = CSKIN_Steampunk, Backpack = 0 };
-	var ogre       = { Name="$EnemyOgre$",      Inventory = bigclub,     Energy= 90, Bounty = 100, Color = 0xff00ffff, Skin = CSKIN_Ogre,      Backpack = 0, Scale=[1400,1200,1200], Speed = 50 };
-	var swordogre  = { Name="$EnemyOgre$",      Inventory = ogresword,   Energy= 90, Bounty = 100, Color = 0xff805000, Skin = CSKIN_Ogre,      Backpack = 0, Scale=[1400,1200,1200], Speed = 50 };
-	var nukeogre   = { Name="$EnemyOgre$",      Inventory = nukekeg,     Energy = 120, Bounty = 100, Color = 0xffff0000, Skin = CSKIN_Ogre,      Backpack = 0, Scale=[1400,1200,1200], Speed = 40, Siege = true };
+	var ogre       = { Name="$EnemyOgre$",      Inventory = bigclub,     Energy= 90, Bounty = 100, Color = 0xff00ffff, Skin = CSKIN_Ogre,      Backpack = 0, Scale=[1400, 1200, 1200], Speed = 50 };
+	var swordogre  = { Name="$EnemyOgre$",      Inventory = ogresword,   Energy= 90, Bounty = 100, Color = 0xff805000, Skin = CSKIN_Ogre,      Backpack = 0, Scale=[1400, 1200, 1200], Speed = 50 };
+	var nukeogre   = { Name="$EnemyOgre$",      Inventory = nukekeg,     Energy = 120, Bounty = 100, Color = 0xffff0000, Skin = CSKIN_Ogre,      Backpack = 0, Scale=[1400, 1200, 1200], Speed = 40, Siege = true };
 	var chippie    = { Type = Chippie, Bounty = 30 };
 	var boomattack = { Type = DefenseBoomAttack, Bounty = 10 };
 	var boomattackf= { Type = DefenseBoomAttack, Bounty = 25, Speed = 300 };

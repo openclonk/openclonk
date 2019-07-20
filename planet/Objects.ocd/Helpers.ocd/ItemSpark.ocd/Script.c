@@ -143,8 +143,8 @@ func FxSparkleTimer(_, effect)
 		var e = AddEffect("SparkleDeath", nil, 5, 1, nil, GetID());
 		e.x = GetX();
 		e.y = GetY();
-		e.velX = RandomX(-10,10);
-		e.velY = RandomX(-2,2);;
+		e.velX = RandomX(-10, 10);
+		e.velY = RandomX(-2, 2);;
 		e.size = 40 + Random(10);
 		e.from = this;
 		e.vAcc = 1;
@@ -199,7 +199,7 @@ func DoSpawn()
 		var effect = AddEffect("SparkleDeath", nil, 5, 1, nil, GetID());
 		effect.x = GetX();
 		effect.y = GetY();
-		effect.velX = RandomX(-10,10);
+		effect.velX = RandomX(-10, 10);
 		effect.velY = RandomX(-50,-30);
 		effect.size = 25 + Random(10);
 		effect.from = this;

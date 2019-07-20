@@ -14,7 +14,7 @@ func Definition(proplist def)
 
 func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-15, 15), 0,1,0), GetID().MeshTransformation));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-15, 15), 0, 1, 0), GetID().MeshTransformation));
 }
 
 // Stretch the support beams

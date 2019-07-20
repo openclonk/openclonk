@@ -8,7 +8,7 @@
 
 public func ControlUse(object pClonk, int ix, int iy)
 {
-	AddEffect("Fireball", nil, 100, 1, nil, GetID(), pClonk->GetOwner(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
+	AddEffect("Fireball", nil, 100, 1, nil, GetID(), pClonk->GetOwner(), Angle(0, 0, ix, iy),pClonk->GetX(), pClonk->GetY());
 	Sound("Fire::Fireball");
 	Sound("Fire::Fireball");
 	RemoveObject();
@@ -35,22 +35,22 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 	var y = effect.y;
 
 	if	(	iEffectTime>67  ||
-	 		GBackSolid(x,y) ||
+	 		GBackSolid(x, y) ||
 	 		FindObject(
 	 		Find_Hostile(effect.owner),
 	 		Find_OCF(OCF_Alive),
 	 		Find_NoContainer(),
-	 		Find_Distance(16,x,y)
+	 		Find_Distance(16, x, y)
 	 		)
 	 	)
 	{
-		CreateObjectAbove(Dynamite,x,y,-1)->Explode(14);
-		for (var i = 0; i<=3;i++) CreateObjectAbove(Dynamite,x + Sin(i*120 +x,13),y-Cos(i*120 +x,13),-1)->Explode(6 + Random(4));
+		CreateObjectAbove(Dynamite, x, y,-1)->Explode(14);
+		for (var i = 0; i<=3;i++) CreateObjectAbove(Dynamite, x + Sin(i*120 +x, 13),y-Cos(i*120 +x, 13),-1)->Explode(6 + Random(4));
 		return -1;
 	}	
 	else if (iEffectTime < 70)
 	{
-		angle += Sin(iEffectTime*30,18);
+		angle += Sin(iEffectTime*30, 18);
 		var xspeed = Sin(angle, 6);
 		var yspeed = -Cos(angle, 6);
 

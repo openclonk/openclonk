@@ -251,7 +251,7 @@ public func GetCarryTransform(object clonk, int sec, bool nohand)
 
 private func GetParticleOffset()
 {
-	if (state != TRCH_InHand || !Contained() || !(Contained() && Contained()->~IsClonk())) return [0,0];
+	if (state != TRCH_InHand || !Contained() || !(Contained() && Contained()->~IsClonk())) return [0, 0];
 	
 	// Special handling for clonks
 	var off = [-4, -6];

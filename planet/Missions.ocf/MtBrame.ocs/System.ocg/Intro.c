@@ -101,7 +101,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 			crew = crew->Contained();
 
 			crew->SetCommand("Exit", crew);
-			crew->AppendCommand("MoveTo", crew, effect.Cabin->GetX() + RandomX(10,40) - crew->GetX(), effect.Cabin->GetY() - crew->GetY());
+			crew->AppendCommand("MoveTo", crew, effect.Cabin->GetX() + RandomX(10, 40) - crew->GetX(), effect.Cabin->GetY() - crew->GetY());
 		}
 	}
 

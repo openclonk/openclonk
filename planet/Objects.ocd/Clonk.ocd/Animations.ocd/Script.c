@@ -399,8 +399,8 @@ func GetCurrentWalkAnimation()
 		}
 		return;
 	}
-	else SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), this);
-	var velocity = Distance(0,0,GetXDir(),GetYDir());
+	else SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0, 1000, 5000), Trans_Rotate(70, 0, 1, 0)), this);
+	var velocity = Distance(0, 0, GetXDir(),GetYDir());
 	if (velocity < 1) return Clonk_WalkStand;
 	if (velocity < 10) return Clonk_WalkWalk;
 	return Clonk_WalkRun;
@@ -408,7 +408,7 @@ func GetCurrentWalkAnimation()
 
 func Footstep()
 {
-	var material = GetMaterial(0,10);
+	var material = GetMaterial(0, 10);
 	if (GetMaterialVal("DigFree", "Material", ) == 0)
 		this->~PlaySoundStepHard(material);
 	else
@@ -421,7 +421,7 @@ func Footstep()
 func FootstepDust()
 {
 	var dir = Sign(GetXDir());
-	var clr = GetAverageTextureColor(GetTexture(0,10));
+	var clr = GetAverageTextureColor(GetTexture(0, 10));
 	var particles =
 	{
 		Prototype = Particles_Dust(),
@@ -760,7 +760,7 @@ func FxIntScaleRotTimer(target, eff, time)
 	eff.oldY += BoundBy(eff.yoff-eff.oldY, -500, 500);
 	var turnx = -1000;
 	var turny = 10000;
-	SetMeshTransformation(Trans_Mul(Trans_Translate(eff.oldX-turnx, eff.oldY-turny), Trans_Rotate(eff.oldR,0,0,1), Trans_Translate(turnx, turny)), CLONK_MESH_TRANSFORM_SLOT_Rotation_Scaling);
+	SetMeshTransformation(Trans_Mul(Trans_Translate(eff.oldX-turnx, eff.oldY-turny), Trans_Rotate(eff.oldR, 0, 0, 1), Trans_Translate(turnx, turny)), CLONK_MESH_TRANSFORM_SLOT_Rotation_Scaling);
 }
 
 func SetScaleRotation (int r, int xoff, int yoff, int rotZ, int turny, bool instant) {
@@ -772,7 +772,7 @@ func SetScaleRotation (int r, int xoff, int yoff, int rotZ, int turny, bool inst
 	if (instant)
 	{
 		RemoveEffect("IntScaleRot", this);
-		SetMeshTransformation(Trans_Mul(Trans_Translate(xoff-turnx, yoff-turny), Trans_Rotate(r,0,0,1), Trans_Translate(turnx, turny), Trans_Rotate(rotZ, 0, 1, 0)), CLONK_MESH_TRANSFORM_SLOT_Rotation_Scaling);
+		SetMeshTransformation(Trans_Mul(Trans_Translate(xoff-turnx, yoff-turny), Trans_Rotate(r, 0, 0, 1), Trans_Translate(turnx, turny), Trans_Rotate(rotZ, 0, 1, 0)), CLONK_MESH_TRANSFORM_SLOT_Rotation_Scaling);
 	}
 	else
 	{
@@ -848,7 +848,7 @@ func StartJump()
 	}
 
 	if (!GetEffect("Fall", this))
-		AddEffect("Fall",this,1,1,this);
+		AddEffect("Fall",this, 1, 1, this);
 	RemoveEffect("WallKick",this);
 }
 
@@ -1097,9 +1097,9 @@ func SetSwimmingVertices(bool is_swimming)
 	while (GetEffect("IntDelayedVertex", this))
 		RemoveEffect("IntDelayedVertex", this);
 	
-	var vtx_list = [[0,2,0,300], [0,-7,4,300], [0,9,11,300], [-2,-3,1,300], [2,-3,2,300], [-4,2,1,300], [4,2,2,300], [-2,6,1,300], [2,6,2,300]];
+	var vtx_list = [[0, 2, 0, 300], [0,-7, 4, 300], [0, 9, 11, 300], [-2,-3, 1, 300], [2,-3, 2, 300], [-4, 2, 1, 300], [4, 2, 2, 300], [-2, 6, 1, 300], [2, 6, 2, 300]];
 	if (is_swimming)
-		vtx_list = [[0,2,0,50], [0,-2,4,50], [0,7,11,50], [-4,-1,1,50], [4,-1,2,50], [-4,2,1,50], [4,2,2,50], [-4,4,1,50], [4,4,2,50]];
+		vtx_list = [[0, 2, 0, 50], [0,-2, 4, 50], [0, 7, 11, 50], [-4,-1, 1, 50], [4,-1, 2, 50], [-4, 2, 1, 50], [4, 2, 2, 50], [-4, 4, 1, 50], [4, 4, 2, 50]];
 	for (var i = 0; i < GetVertexNum(); i++)
 	{
 		var x = GetVertex(i, VTX_X);
@@ -1155,7 +1155,7 @@ func FxIntSwimStart(pTarget, effect, fTmp)
 
 func FxIntSwimTimer(pTarget, effect, iTime)
 {
-	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
+	var iSpeed = Distance(0, 0, GetXDir(),GetYDir());
 	SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Translation_Dive);
 	
 	var is_at_surface = !GBackSemiSolid(0, -5);
@@ -1356,9 +1356,9 @@ func DoKneel(bool create_dust)
 	
 	if (create_dust)
 	{
-		if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
+		if (GetMaterialVal("DigFree", "Material", GetMaterial(0, 10)))
 		{
-			var clr = GetAverageTextureColor(GetTexture(0,10));
+			var clr = GetAverageTextureColor(GetTexture(0, 10));
 			var particles =
 			{
 				Prototype = Particles_Dust(),
@@ -1449,9 +1449,9 @@ func FxRollingTimer(object target, effect effect, int timer)
 		return -1;
 	}
 
-	if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
+	if (GetMaterialVal("DigFree", "Material", GetMaterial(0, 10)))
 	{
-		var clr = GetAverageTextureColor(GetTexture(0,10));
+		var clr = GetAverageTextureColor(GetTexture(0, 10));
 		var dir = GetDir()*2-1;
 		
 		var particles =
@@ -1559,7 +1559,7 @@ public func ControlThrow(object target, int x, int y)
 	if (!x && !y) return false;
 	if (!target) return false;
 
-	var throwAngle = Angle(0,0,x,y);
+	var throwAngle = Angle(0, 0, x, y);
 
 	// walking (later with animation: flight, scale, hangle?) and hands free
 	if ( (GetProcedure() == "WALK" || GetAction() == "Jump" ||  GetAction() == "WallJump" || GetAction() == "Dive")
@@ -1576,7 +1576,7 @@ public func ControlThrow(object target, int x, int y)
 	if (GetProcedure() == "ATTACH")
 	{
 		//SetAction("RideThrow");
-		return DoThrow(target,throwAngle);
+		return DoThrow(target, throwAngle);
 	}
 	return false;
 }
@@ -1761,7 +1761,7 @@ protected func AbortHangOnto()
 func StartEat()
 {
 	// Nom nom
-	PlayAnimation("Eat", CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0, GetAnimationLength("Eat"), 45, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	PlayAnimation("Eat", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength("Eat"), 45, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
 }

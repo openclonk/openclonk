@@ -100,7 +100,7 @@ private func Sleep()
 			coordinates.y = GetHorizonHeight(coordinates.x);
 		}
 		SetCommand("MoveTo", nil, coordinates.x, coordinates.y, nil, true);
-		AppendCommand("Call", this, nil,nil,nil,nil, "SleepComplete");
+		AppendCommand("Call", this, nil, nil, nil, nil, "SleepComplete");
 	}
 }
 
@@ -289,7 +289,7 @@ private func Flee(object from)
 	if (!from) return;
 	if (IsSleeping()) WakeUp();
 	// Find a point that's somewhere up and away from the object
-	var x,y;
+	var x, y;
 	y = GetY() - 50 + Random(20);
 	if (GetX() < from->GetX())
 		x = GetX() + 50 - Random(20);

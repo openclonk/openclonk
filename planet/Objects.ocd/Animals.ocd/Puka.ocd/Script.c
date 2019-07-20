@@ -740,10 +740,10 @@ private func FxIntTurningTimer(object target, effect fx, int time)
 	if (turn_angle < 0 || turn_angle > 180)
 	{
 		turn_angle = BoundBy(turn_angle, 0, 180);
-		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
+		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30, 0, 1, 0);
 		return -1;
 	}
-	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
+	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30, 0, 1, 0);
 	return 1;
 }
 

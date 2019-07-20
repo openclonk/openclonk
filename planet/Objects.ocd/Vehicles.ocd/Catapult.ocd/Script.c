@@ -119,7 +119,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 public func ControlUseStop(object clonk, int x, int y)
 {
-	DoFire(clonk, DefinePower(x,y));
+	DoFire(clonk, DefinePower(x, y));
 	return true;
 }
 

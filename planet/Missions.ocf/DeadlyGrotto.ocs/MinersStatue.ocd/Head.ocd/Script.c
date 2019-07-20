@@ -7,7 +7,7 @@
 
 protected func Hit(x, y)
 {
-	StonyObjectHit(x,y);
+	StonyObjectHit(x, y);
 	return true;
 }
 

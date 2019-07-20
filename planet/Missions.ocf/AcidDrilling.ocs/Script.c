@@ -6,7 +6,7 @@ func Initialize()
 {
 	g_crystal_player = NO_OWNER;
 	// Environment
-	SetSkyParallax(1, 20,20, 0,0, nil, nil);
+	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
 	return true;
 }
 
@@ -32,7 +32,7 @@ func InitializePlayer(int plr)
 	}
 	// Position and materials
 	var crew;
-	for (i = 0; crew = GetCrew(plr,i); ++i)
+	for (i = 0; crew = GetCrew(plr, i); ++i)
 	{
 		crew->SetPosition(2100 + Random(40), 233-10);
 		crew->CreateContents(Shovel);
@@ -51,7 +51,7 @@ private func InitBase(int owner)
 {
 	// Create standard base owned by player
 	var y = 232;
-	var lorry = CreateObjectAbove(Lorry, 2040,y-2, owner);
+	var lorry = CreateObjectAbove(Lorry, 2040, y-2, owner);
 	if (lorry)
 	{
 		lorry->CreateContents(Loam, 6);
@@ -64,8 +64,8 @@ private func InitBase(int owner)
 		lorry->CreateContents(Dynamite, 2);
 		lorry->CreateContents(Pipe, 2);
 	}
-	CreateObjectAbove(Pump, 2062,y, owner);
-	CreateObjectAbove(Flagpole, 2085,y, owner);
+	CreateObjectAbove(Pump, 2062, y, owner);
+	CreateObjectAbove(Flagpole, 2085, y, owner);
 	CreateObjectAbove(WindGenerator, 2110, y, owner);
 	CreateObjectAbove(ToolsWorkshop, 2150, y, owner);
 	CreateObjectAbove(WindGenerator, 2200, y, owner);

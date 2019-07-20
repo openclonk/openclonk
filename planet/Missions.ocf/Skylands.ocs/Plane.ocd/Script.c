@@ -42,7 +42,7 @@ func SetProgress(int new_progress)
 func Timer()
 {
 	if (next_part)
-		for (var part in FindObjects(Find_ID(next_part), Find_InRect(-30,-15,60,30), Find_Layer(GetObjectLayer())))
+		for (var part in FindObjects(Find_ID(next_part), Find_InRect(-30,-15, 60, 30), Find_Layer(GetObjectLayer())))
 			if (part->GetCon() >= 100)
 			{
 				AddPart(part);

@@ -16,7 +16,7 @@ protected func Initialize()
 	SetClrModulation(RGBa(255, 255, 255, alpha));
 	SetObjectBlitMode(GFX_BLIT_Additive);
 	
-	var parallax = RandomX(8,12);
+	var parallax = RandomX(8, 12);
 	this.Parallaxity = [parallax, parallax];
 	return;
 }

@@ -19,7 +19,7 @@ func HitEffect()
 		R = 100, G = 100, B = 100,
 		Phase = PV_Random(0, 15)
 	};
-	CreateParticle("Smoke", 0, 0, PV_Random(-5,5), PV_Random(-5,5), 20, smoke, 25);
+	CreateParticle("Smoke", 0, 0, PV_Random(-5, 5), PV_Random(-5, 5), 20, smoke, 25);
 }
 
 local FusedEffect = new Effect

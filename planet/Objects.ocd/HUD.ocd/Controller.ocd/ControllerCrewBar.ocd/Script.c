@@ -1187,7 +1187,7 @@ private func OpenCrewInfo()
 			Top = ToEmString(y),
 			Bottom = ToEmString(y + 20),
 			Priority = 12,
-			BackgroundColor = { Std = nil, Hover = RGB(200,200,200) },
+			BackgroundColor = { Std = nil, Hover = RGB(200, 200, 200) },
 			OnMouseIn = GuiAction_SetTag("Hover"),
 			OnMouseOut = GuiAction_SetTag("Std"),
 			OnClick = GuiAction_Call(this, "SelectClonk", i),

@@ -10,7 +10,7 @@ func Construction()
 	_inherited(...);
 
 	this.hand_display = {};
-	this.hand_display.hand_mesh = [0,0];
+	this.hand_display.hand_mesh = [0, 0];
 	this.hand_display.hand_action = 0;
 	this.hand_display.both_handed = false;
 	this.hand_display.on_back = false;
@@ -234,9 +234,9 @@ func DoUpdateAttach(int sec)
 	{
 		// Do some extra transforms for this kind of carrying
 		if (trans)
-			trans = Trans_Mul(trans, Trans_Rotate(160,0,0,1), Trans_Rotate(5,0,1), Trans_Rotate(30,1), Trans_Translate(-2500,0,700), Trans_Scale(700));
+			trans = Trans_Mul(trans, Trans_Rotate(160, 0, 0, 1), Trans_Rotate(5, 0, 1), Trans_Rotate(30, 1), Trans_Translate(-2500, 0, 700), Trans_Scale(700));
 		else
-			trans = Trans_Mul(Trans_Rotate(160,0,0,1), Trans_Rotate(5,0,1), Trans_Rotate(30,1), Trans_Translate(-2500,0,800), Trans_Scale(700));
+			trans = Trans_Mul(Trans_Rotate(160, 0, 0, 1), Trans_Rotate(5, 0, 1), Trans_Rotate(30, 1), Trans_Translate(-2500, 0, 800), Trans_Scale(700));
 		this.hand_display.hand_mesh[sec] = AttachMesh(obj, pos_belt, bone, trans);
 	}
 	else if (attach_mode == CARRY_Sword)

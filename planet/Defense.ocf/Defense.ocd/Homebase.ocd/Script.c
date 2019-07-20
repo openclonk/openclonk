@@ -51,7 +51,7 @@ public func Construction(...)
 	requirement_names = {};
 	last_buy_idx = -1;
 	// Buy menu
-	buy_menu = CreateObject(GUI_BuyMenu, 0,0, GetOwner());
+	buy_menu = CreateObject(GUI_BuyMenu, 0, 0, GetOwner());
 	buy_menu->SetHomebase(this);
 	// Get available items
 	GameCall("FillHomebase", this);
