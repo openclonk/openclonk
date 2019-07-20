@@ -363,7 +363,7 @@ private func FindNextPickupObject(object start_from, int x_dir)
 	if (index != -1)
 	{
 		// Previous item was found in the list.
-		// Cycle through list to the right (x_dir==1) or left (x_dir==-1)
+		// Cycle through list to the right (x_dir == 1) or left (x_dir==-1)
 		index = (index + x_dir) % len;
 	}
 	else

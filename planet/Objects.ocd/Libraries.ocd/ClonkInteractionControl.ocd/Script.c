@@ -219,7 +219,7 @@ private func FindNextInteraction(proplist start_from, int x_dir)
 	{
 		var previous_interaction = interactions[index];
 		// Cycle interactions of same object (dir == 0).
-		// Or cycle through objects to the right (x_dir==1) or left (x_dir==-1).
+		// Or cycle through objects to the right (x_dir == 1) or left (x_dir==-1).
 		var cycle_dir = x_dir;
 		var do_cycle_object = x_dir == 0;
 		if (do_cycle_object) cycle_dir = 1;

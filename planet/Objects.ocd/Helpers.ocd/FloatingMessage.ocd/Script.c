@@ -36,7 +36,7 @@ func SetMessage(m)
 
 func FadeOut(int speed, step)
 {
-	if (step==nil)step=1;
+	if (step == nil)step=1;
 	var e=AddEffect("FadeOut", this, 1, speed, this);
 	e.step=step;
 }

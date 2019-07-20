@@ -232,7 +232,7 @@ private func ExecuteStream(proplist s)
 		var want_vy = s.y0+(i_segment+1)*s.dir_y - y;
 
 		var want_stretch = (s.dir_x*want_vy-s.dir_y*want_vx) / s.dir_len;
-		//if (i_segment==8) Log("%v", want_stretch);
+		//if (i_segment == 8) Log("%v", want_stretch);
 		// can turn?
 		if (Abs(want_stretch) > s.max_segment_stretch_want)
 		{

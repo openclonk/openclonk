@@ -52,8 +52,8 @@ public func IsFulfilled()
 	for (var ruby in FindObjects(Find_InRect(goal_rect.x, goal_rect.y, goal_rect.wdt, goal_rect.hgt), Find_ID(Ruby)))
 	{
 		if (ruby->Contained()) winner = ruby->Contained()->GetOwner();
-		if (winner==NO_OWNER) winner = ruby->GetController();
-		if (winner==NO_OWNER) continue;
+		if (winner == NO_OWNER) winner = ruby->GetController();
+		if (winner == NO_OWNER) continue;
 		if (!winners) winners = [winner]; else winners[GetLength(winners)] = winner;
 		var team = GetPlayerTeam(winner);
 		if (team) if (!winner_teams) winner_teams = [team]; else winner_teams[GetLength(winner_teams)] = team;

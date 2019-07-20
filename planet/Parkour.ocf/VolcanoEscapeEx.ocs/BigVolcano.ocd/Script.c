@@ -185,7 +185,7 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 	var sx=fx.trace_x[last_segment], sy=fx.trace_y[last_segment];
 	var nx=sx+next_tip_progress*(fx.dir_x)/100, ny=sy+next_tip_progress*(fx.dir_y)/100;
 	//Log("Go %d from %d/%d towards %d/%d", fx.counter,sx,sy,nx-sx,ny-sy);
-	if (nx==sx && ny==sy) { fx.tip_progress=next_tip_progress; return FX_OK; }
+	if (nx == sx && ny == sy) { fx.tip_progress=next_tip_progress; return FX_OK; }
 	if (ny<0 || fx.len>20) return FX_Execute_Kill; // End here?
 	var behaviour = mat_behaviours[GetMaterial(nx,ny)+1];
 	var i,dx,dy;
@@ -265,7 +265,7 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 		fx.dir_y = ny-fx.trace_y[last_segment];
 	}
 	// End pos reached?
-	if (fx.tip_progress==100)
+	if (fx.tip_progress == 100)
 	{
 		// Add new tip
 		fx.trace_x[fx.trace_len] = nx; fx.trace_y[fx.trace_len] = ny;

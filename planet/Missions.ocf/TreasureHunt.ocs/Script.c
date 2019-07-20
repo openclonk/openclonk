@@ -127,17 +127,17 @@ func OnGoldBarCollected(object collector)
 {
 	++g_num_goldbars;
 	var sAchievement = "";
-	if (g_num_goldbars==MAX_GOLD_BARS/4)
+	if (g_num_goldbars == MAX_GOLD_BARS/4)
 	{
 		sAchievement = "|$Achieve5$";
 		GainScenarioAchievement("Bars", 1);
 	}
-	else if (g_num_goldbars==MAX_GOLD_BARS/2)
+	else if (g_num_goldbars == MAX_GOLD_BARS/2)
 	{
 		sAchievement = "|$Achieve10$";
 		GainScenarioAchievement("Bars", 2);
 	}
-	else if (g_num_goldbars==MAX_GOLD_BARS)
+	else if (g_num_goldbars == MAX_GOLD_BARS)
 	{
 		sAchievement = "|$Achieve20$";
 		GainScenarioAchievement("Bars", 3);

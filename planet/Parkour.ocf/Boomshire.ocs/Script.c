@@ -243,12 +243,12 @@ public func OnChestOpened(object collector)
 		sAchievement = "|$Achieve4$";
 		GainScenarioAchievement("Chests", 1);
 	}
-	else if (g_num_chests==MAX_CHESTS/2)
+	else if (g_num_chests == MAX_CHESTS/2)
 	{
 		sAchievement = "|$Achieve7$";
 		GainScenarioAchievement("Chests", 2);
 	}
-	else if (g_num_chests==MAX_CHESTS)
+	else if (g_num_chests == MAX_CHESTS)
 	{
 		sAchievement = "|$Achieve14$";
 		GainScenarioAchievement("Chests", 3);
