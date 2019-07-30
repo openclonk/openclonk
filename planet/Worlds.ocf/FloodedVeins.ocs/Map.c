@@ -254,7 +254,7 @@ public func FindNodeConnections(array nodes, int max_length)
 		{
 			var to_node = nodes[j];
 			// Check for the maximum connections per cave.
-			if (from_node.conn_count >= RandomX(3,4) || to_node.conn_count >= RandomX(3,4))
+			if (from_node.conn_count >= RandomX(3, 4) || to_node.conn_count >= RandomX(3, 4))
 				continue;
 			// Check for two gem nodes which may not connect.
 			if (from_node.is_gem && to_node.is_gem)

@@ -72,7 +72,7 @@ global func FxHitCheckDoCheck(object target, proplist effect)
 
 			// Unlike in hazard, there is no NOFF rule (yet)
 			// CheckEnemy
-			//if (!CheckEnemy(obj,target)) continue;
+			//if (!CheckEnemy(obj, target)) continue;
 
 			// IsProjectileTarget will be hit (defaults to true for OCF_Alive).
 			if (obj->~IsProjectileTarget(target, shooter))

@@ -24,10 +24,10 @@ local ActMap=
 	{
 		Prototype = Action,
 		Name="Attach",
-		Procedure=DFA_ATTACH,
+		Procedure = DFA_ATTACH,
 		NextAction="Be",
-		Length=1,
-		FacetBase=1,
+		Length = 1,
+		FacetBase = 1,
 		AbortCall = "AttachTargetLost"
 	}
 };
@@ -36,7 +36,7 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 {
 	data.image = data.image ?? GUI_RingProgressBar;
 	data.back_image = data.back_image ?? data.image;
-	data.color = data.color ?? RGBa(255, 255, 255,200);
+	data.color = data.color ?? RGBa(255, 255, 255, 200);
 	data.back_color = data.back_color ?? RGBa(50, 50, 50, 50);
 	
 	image = data.image;

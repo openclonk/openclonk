@@ -74,23 +74,23 @@ func InitializeRound()
 	var i, pos;
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	// Materials: Firestones
-	for (i=0; i<30; ++i)
+	for (i = 0; i<30; ++i)
 	{
-		var pos = FindLocation(Loc_InRect(0,ls_hgt/2,ls_wdt,ls_hgt/3), Loc_Solid());
-		if (pos && IsFirestoneSpot(pos.x,pos.y))
-			CreateObjectAbove(Firestone,pos.x,pos.y-1);
+		var pos = FindLocation(Loc_InRect(0, ls_hgt/2, ls_wdt, ls_hgt/3), Loc_Solid());
+		if (pos && IsFirestoneSpot(pos.x, pos.y))
+			CreateObjectAbove(Firestone, pos.x, pos.y-1);
 	}
 	// Some firestones and bombs in lower half. For ap type 1, more firestones in lower than upper half.
-	var items = [Firestone,IronBomb, Dynamite, Loam, PowderKeg];
+	var items = [Firestone, IronBomb, Dynamite, Loam, PowderKeg];
 	var item_count = GetLength(items);
-	for (i=0; i<30; ++i)
+	for (i = 0; i<30; ++i)
 	{
-		var pos = FindLocation(Loc_InRect(0,0,ls_wdt,ls_hgt), Loc_Solid());
-		if (pos && IsFirestoneSpot(pos.x,pos.y))
+		var pos = FindLocation(Loc_InRect(0, 0, ls_wdt, ls_hgt), Loc_Solid());
+		if (pos && IsFirestoneSpot(pos.x, pos.y))
 		{
 			var item_idx = Random(item_count);
 			if (Random(3)) item_idx = Random(item_idx);
-			CreateObjectAbove(items[item_idx],pos.x,pos.y-1);
+			CreateObjectAbove(items[item_idx],pos.x, pos.y-1);
 		}
 	}
 
@@ -139,9 +139,9 @@ func InitPlayerRound(int plr, object crew)
 	if (start_pos == nil)
 	{
 		// Start positions not defined or exhausted: Spawn in lower area for both maps becuase starting high is an an advantage.
-		start_pos = FindLocation(Loc_InRect(ls_wdt/5,ls_hgt/2,ls_wdt*3/5,ls_hgt/3), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
-		if (!start_pos) start_pos = FindLocation(Loc_InRect(ls_wdt/10,0,ls_wdt*8/10,ls_hgt*4/5), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
-		if (!start_pos) start_pos = {x=Random(ls_wdt*6/10)+ls_wdt*2/10, y=ls_hgt*58/100};
+		start_pos = FindLocation(Loc_InRect(ls_wdt/5, ls_hgt/2, ls_wdt*3/5, ls_hgt/3), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
+		if (!start_pos) start_pos = FindLocation(Loc_InRect(ls_wdt/10, 0, ls_wdt*8/10, ls_hgt*4/5), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
+		if (!start_pos) start_pos = {x = Random(ls_wdt*6/10)+ls_wdt*2/10, y = ls_hgt*58/100};
 	}
 
 	crew->SetPosition(start_pos.x, start_pos.y-10);
@@ -158,15 +158,15 @@ func InitPlayerRound(int plr, object crew)
 func IsStartSpot(int x, int y)
 {
 	// Don't spawn just at the border of an island.
-	if (!GBackSolid(x-3,y+2)) return false;
-	if (!GBackSolid(x+3,y+2)) return false;
+	if (!GBackSolid(x-3, y + 2)) return false;
+	if (!GBackSolid(x + 3, y + 2)) return false;
 	if (GBackSemiSolid(x, y)) return false;
 	// Spawn with some space.
-	return PathFree(x-5, y, x+5, y) && PathFree(x, y-21, x, y-1);
+	return PathFree(x-5, y, x + 5, y) && PathFree(x, y-21, x, y-1);
 }
 
 func IsFirestoneSpot(int x, int y)
 {
 	// Very thorough material surrounding check so they don't explode right away or when the first layer of ice melts
-	return GBackSolid(x,y-1) && GBackSolid(x,y+4) && GBackSolid(x-2,y) && GBackSolid(x+2,y);
+	return GBackSolid(x, y-1) && GBackSolid(x, y + 4) && GBackSolid(x-2, y) && GBackSolid(x + 2, y);
 }

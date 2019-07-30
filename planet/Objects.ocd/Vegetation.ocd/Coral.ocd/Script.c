@@ -63,7 +63,7 @@ func Construction()
 		
 	SetAction("Exist");
 	
-	AddTimer("Seed", 60+Random(60));
+	AddTimer("Seed", 60 + Random(60));
 }
 
 public func MakeAttachment(object parent)

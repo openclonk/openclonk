@@ -1,14 +1,14 @@
 /**
 	Buy Menu
 
-	Shows icons to instantly buy+equip weapons
+	Shows icons to instantly buy + equip weapons
 
 	@authors Sven2
 */
 
 local container, container_id; // container window containing menu entries and other stuff
 local menu; // the actual menu (a MenuStyle_Grid)
-local description_box, description_name_id, description_desc_id, description_message_id; // box showing name+desc of currently hovered item
+local description_box, description_name_id, description_desc_id, description_message_id; // box showing name + desc of currently hovered item
 local homebase; // associated base
 local buymenu_toggle_id; // button to toggle menu visibility
 local hovered_entry_index; // keep track of hovered entry to update description box
@@ -20,7 +20,7 @@ public func Construction(...)
 	// The menu. Cannot inherit from MenuStyle_Grid, because at the moment the menu host
 	// is the object itself. Therefore, child elements such as the buy menu would become
 	// invisible if the menu closes. So just create an extra object for now.
-	menu = CreateObject(MenuStyle_Grid, 0,0, GetOwner());
+	menu = CreateObject(MenuStyle_Grid, 0, 0, GetOwner());
 	menu->SetPermanent(true);
 	menu->SetMouseOverCallback(this, "OnMenuEntryHover");
 	menu->SetMouseOutCallback(this, "OnMenuEntryHoverExit");
@@ -137,7 +137,7 @@ public func ClickCaption() { return true; } // nothing to be done here (maybe ex
 public func UpdateBuyEntry(id buy_def, bool available, proplist entry, int callback_idx, bool was_last_selection)
 {
 	if (!menu) return false;
-	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2+entry.extra_width), Symbol = buy_def, GraphicsName=entry.graphic }, fontclr, bgclr, bgclr_hover;
+	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2 + entry.extra_width), Symbol = buy_def, GraphicsName = entry.graphic }, fontclr, bgclr, bgclr_hover;
 	if (available)
 	{
 		fontclr = 0x00ff00;
@@ -250,8 +250,8 @@ private func CreateToggleVisibilityButton()
 			OnClick = GuiAction_Call(this, "ToggleVisibility"),
 			BackgroundColor = {Std = nil, OnHover = 0x50000000 },
 			//GraphicsName = GetGraphicsName(is_open),
-			Symbol = { Std=Icon_Buy, OnHover=Icon_Buy },
-			Text = { Std=Format("$Buy$%s", hotkey_string), OnHover=Format("<c ffff00>$Buy$</c>%s", hotkey_string) },
+			Symbol = { Std = Icon_Buy, OnHover = Icon_Buy },
+			Text = { Std = Format("$Buy$%s", hotkey_string), OnHover = Format("<c ffff00>$Buy$</c>%s", hotkey_string) },
 		}
 	};
 	buymenu_toggle_id = GuiOpen(buymenu_button_menu);

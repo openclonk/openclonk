@@ -230,7 +230,7 @@ public func DrawConnections(connections)
 
 public func DrawVariations(string mat, int ratio, int sx, int sy)
 {
-	var rand_algo = {Algo=MAPALGO_RndChecker, Ratio = ratio, Wdt = sx, Hgt = sy};
-	var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude = 12, Scale = 8, Op = rand_algo};
+	var rand_algo = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = sx, Hgt = sy};
+	var turb_algo = {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 8, Op = rand_algo};
 	return Draw(mat, turb_algo);
 }

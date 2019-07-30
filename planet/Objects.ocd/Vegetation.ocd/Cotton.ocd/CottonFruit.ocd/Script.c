@@ -23,7 +23,7 @@ local fly_time = 700;
 
 private func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Rotate(180, 0,0,1));
+	SetProperty("MeshTransformation", Trans_Rotate(180, 0, 0, 1));
 }
 
 /* Growing & filling with gas */
@@ -33,7 +33,7 @@ public func Grow(int branch, bool fullgrown)
 	attach_branch = branch;
 	if (!fullgrown)
 	{
-		grow_anim = PlayAnimation("grow", 1, Anim_Linear(0,0, first_animation_stage, grow_time, ANIM_Hold), Anim_Const(1000));
+		grow_anim = PlayAnimation("grow", 1, Anim_Linear(0, 0, first_animation_stage, grow_time, ANIM_Hold), Anim_Const(1000));
 		AddTimer("Growing", 35);
 		ScheduleCall(this, "Fill", grow_time);
 	}
@@ -164,7 +164,7 @@ private func FxIntFlightTimer(object target, proplist effect, int time)
 	}
 
 	SetSpeed(xdir, ydir);
-	SetProperty("MeshTransformation", Trans_Rotate(180 + BoundBy(xdir, -50, 50), 0,0,1));
+	SetProperty("MeshTransformation", Trans_Rotate(180 + BoundBy(xdir, -50, 50), 0, 0, 1));
 	return FX_OK;
 }
 
@@ -226,7 +226,7 @@ public func TryPop()
 
 public func Pop(bool no_seed)
 {
-	CreateParticle("CottonBalloon", 0,0, PV_Random(-30,30), PV_Random(-30,30), PV_Random(40, 60), Particles_CottonBalloon(), 50);
+	CreateParticle("CottonBalloon", 0, 0, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(40, 60), Particles_CottonBalloon(), 50);
 	if (!no_seed)
 	{
 		var seed = CreateObject(CottonSeed);

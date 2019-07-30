@@ -56,14 +56,14 @@ public func Definition(def)
 {
 	// Properties
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.Description = { Name="$PropDescription$", EditorHelp="$PropDescriptionHelp$", Type="string", Save="Description", Translatable=true };
+	def.EditorProps.Description = { Name="$PropDescription$", EditorHelp="$PropDescriptionHelp$", Type="string", Save="Description", Translatable = true };
 	def.EditorProps.overlay_picture = { Name="$Picture$", EditorHelp="$PictureHelp$", Type="def", Set="SetOverlayPicture", Save="Picture" };
 	// User actions
 	UserAction->AddEvaluator("Action", "Game", "$SetScriptGoalData$", "$SetScriptGoalDataDesc$", "set_script_goal_data", [def, def.EvalAct_SetData],
-			{ Target = { Function="action_object" }, Description = { Function="string_constant", Value="$Description$" }, Fulfilled = { Function="bool_constant", Value=false } },
+			{ Target = { Function="action_object" }, Description = { Function="string_constant", Value="$Description$" }, Fulfilled = { Function="bool_constant", Value = false } },
 			{ Type="proplist", Display="{{Description}}, {{OverlayPicture}}, {{Fulfilled}}",
 		EditorProps = {
-			Target = new UserAction->GetObjectEvaluator("IsScriptGoal", "$Goal$") { Priority=50 },
+			Target = new UserAction->GetObjectEvaluator("IsScriptGoal", "$Goal$") { Priority = 50 },
 			Description = new UserAction.Evaluator.String { Name="$PropDescription$", EditorHelp="$PropDescriptionHelp$" },
 			OverlayPicture = new UserAction.Evaluator.Definition { Name="$Picture$", EditorHelp="$PictureHelp$" },
 			Fulfilled = new UserAction.Evaluator.Boolean { Name="$Fulfilled$", EditorHelp="$FulfilledHelp$" }

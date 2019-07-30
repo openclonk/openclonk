@@ -35,13 +35,13 @@ protected func Initialize()
 	var start_chest = CreateObjectAbove(Chest, w*2/5, h*94/100);
 	if (start_chest)
 	{
-		start_chest->CreateContents(Loam,4);
-		start_chest->CreateContents(Bread,3);
-		start_chest->CreateContents(Firestone,3);
-		start_chest->CreateContents(DynamiteBox,2);
+		start_chest->CreateContents(Loam, 4);
+		start_chest->CreateContents(Bread, 3);
+		start_chest->CreateContents(Firestone, 3);
+		start_chest->CreateContents(DynamiteBox, 2);
 	}
 	// Create big volcano
-	g_volcano=CreateObjectAbove(BigVolcano,0,0,NO_OWNER);
+	g_volcano = CreateObjectAbove(BigVolcano, 0, 0, NO_OWNER);
 	var h0 = h-10;
 	g_volcano->Activate(h0, h*10/100);
 	// Schedule script to update volcano speed multiplier
@@ -53,7 +53,7 @@ protected func Initialize()
 	
 	CreateEffect(fx_volcano, 1, 40);
 	// Bottom is open, so put some stable lava here to prevent remaining lava from just flowing out of the map
-	DrawMaterialQuad("StableLava",0,h0,w,h0,w,h,0,h);
+	DrawMaterialQuad("StableLava",0, h0, w, h0, w, h, 0, h);
 	return;
 }
 
@@ -66,7 +66,7 @@ func VolcanoTimer()
 	var y_volcano = g_volcano->GetLavaPeak();
 	// Get player progress
 	var y_plr, n_crew;
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		var crew = GetCursor(GetPlayerByIndex(i, C4PT_User));
 		if (crew)
@@ -94,7 +94,7 @@ func InitializePlayer(int plr)
 	if (GetPlayerType(plr)!=C4PT_User) return;
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,400,250,flag);
+		SetPlayerZoomByViewRange(plr, 400, 250, flag);
 	SetPlayerViewLock(plr, false); // no view lock so you can see the volcano!
 	return true;
 }

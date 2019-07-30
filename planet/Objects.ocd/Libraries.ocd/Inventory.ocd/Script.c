@@ -35,7 +35,7 @@ func Construction()
 	this.inventory.hand_objects = [];
 	this.inventory.force_collection = false;
 
-	for (var i=0; i < HandObjects; i++)
+	for (var i = 0; i < HandObjects; i++)
 		this.inventory.hand_objects[i] = i;
 	return _inherited(...);
 }
@@ -63,7 +63,7 @@ public func GetItems()
 public func GetItemCount()
 {
 	var count = 0;
-	for (var i=0; i < GetLength(this.inventory.objects); i++)
+	for (var i = 0; i < GetLength(this.inventory.objects); i++)
 		if (this.inventory.objects[i])
 			count++;
 	
@@ -133,7 +133,7 @@ public func SetHandItemPos(int hand, int inv)
 		var used_slot = GetItemPos(this.control.current_object);
 		if (used_slot != nil)
 			if (used_slot == GetHandItemPos(hand) || used_slot == inv)
-				this->~CancelUseControl(0,0);
+				this->~CancelUseControl(0, 0);
 	}
 	
 	// If the item is already selected, we can't hold it in another one too.
@@ -199,7 +199,7 @@ public func GetHandItemPos(int i)
 /** Returns in which hand-slot the inventory-slot is */
 private func GetHandPosByItemPos(int o) // sorry for the horribly long name --boni
 {
-	for (var i=0; i < GetLength(this.inventory.hand_objects); i++)
+	for (var i = 0; i < GetLength(this.inventory.hand_objects); i++)
 		if (this.inventory.hand_objects[i] == o)
 			return i;
 
@@ -238,8 +238,8 @@ public func GetItemPos(object item)
 public func Switch2Items(int one, int two)
 {
 	// no valid inventory index: cancel
-	if (!Inside(one,0,MaxContentsCount-1)) return;
-	if (!Inside(two,0,MaxContentsCount-1)) return;
+	if (!Inside(one, 0, MaxContentsCount-1)) return;
+	if (!Inside(two, 0, MaxContentsCount-1)) return;
 
 	// switch them around
 	var temp = this.inventory.objects[one];
@@ -256,14 +256,14 @@ public func Switch2Items(int one, int two)
 	
 	// callbacks: (de)selection
 	if (handone != nil)
-		if (this.inventory.objects[two]) this.inventory.objects[two]->~Deselection(this,one);
+		if (this.inventory.objects[two]) this.inventory.objects[two]->~Deselection(this, one);
 	if (handtwo != nil)
-		if (this.inventory.objects[one]) this.inventory.objects[one]->~Deselection(this,two);
+		if (this.inventory.objects[one]) this.inventory.objects[one]->~Deselection(this, two);
 		
 	if (handone != nil)
-		if (this.inventory.objects[one]) this.inventory.objects[one]->~Selection(this,one);
+		if (this.inventory.objects[one]) this.inventory.objects[one]->~Selection(this, one);
 	if (handtwo != nil)
-		if (this.inventory.objects[two]) this.inventory.objects[two]->~Selection(this,two);
+		if (this.inventory.objects[two]) this.inventory.objects[two]->~Selection(this, two);
 	
 	// callbacks: to self, for HUD
 	if (handone != nil)
@@ -299,7 +299,7 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 	var success = false;
 	if (pos == nil || item->~IsCarryHeavy())
 	{
-		success = _inherited(item,ignoreOCF);
+		success = _inherited(item, ignoreOCF);
 		this.inventory.force_collection = false;
 		return success;
 	}
@@ -475,16 +475,16 @@ protected func RejectCollect(id objid, object obj)
 	if (this.inventory.force_collection)
 	{
 		// try to stuff obj into an object with an extra slot
-		for (var i=0; Contents(i); ++i)
+		for (var i = 0; Contents(i); ++i)
 			if (Contents(i)->~HasExtraSlot())
 				if (!(Contents(i)->Contents(0)))
-					if (Contents(i)->Collect(obj,true))
+					if (Contents(i)->Collect(obj, true))
 						return true;
 						
 		// try to stuff an object in clonk into obj if it has an extra slot
 		if (obj->~HasExtraSlot())
 			if (!(obj->Contents(0)))
-				for (var i=0; Contents(i); ++i)
+				for (var i = 0; Contents(i); ++i)
 					if (obj->Collect(Contents(i),true))
 						return false;
 	}
@@ -496,7 +496,7 @@ protected func RejectCollect(id objid, object obj)
 	if (carry_heavy_obj && carry_heavy_obj->Contained() == this) --contents_count;
 	if (contents_count >= MaxContentsCount) return true;
 	
-	return _inherited(objid,obj,...);
+	return _inherited(objid, obj,...);
 }
 
 public func GrabContents(object source, ...)
@@ -531,7 +531,7 @@ public func SetMaxContentsCount(int new_count)
 	// Make sure hands aren't beyond inventory
 	if (MaxContentsCount)
 	{
-		for (var i=0; i < HandObjects; i++)
+		for (var i = 0; i < HandObjects; i++)
 		{
 			if (GetHandItemPos(i) >= MaxContentsCount)
 			{

@@ -9,5 +9,5 @@ func Definition(proplist def)
 
 protected func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30,-80),1,10), GetID().MeshTransformation));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30,-80),1, 10), GetID().MeshTransformation));
 }

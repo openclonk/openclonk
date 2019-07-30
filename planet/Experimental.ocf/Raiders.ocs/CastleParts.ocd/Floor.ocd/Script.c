@@ -16,10 +16,10 @@ private func CheckBurden()
 	if (!breakiness) return RemoveTimer("CheckBurden");
 
 	if (breakiness >= 2)
-		if (FindObject(Find_InRect(10,-18, 18,10), Find_ID(Clonk)))
+		if (FindObject(Find_InRect(10,-18, 18, 10), Find_ID(Clonk)))
 			BreakRight();
 	if (breakiness == 1 || breakiness == 3)
-		if (FindObject(Find_InRect(-28,-18, 18,10), Find_ID(Clonk)))
+		if (FindObject(Find_InRect(-28,-18, 18, 10), Find_ID(Clonk)))
 			BreakLeft();
 }
 
@@ -30,12 +30,12 @@ private func BreakRight()
 	if (GetPhase() == 1)
 	{
 		SetPhase(3);
-		SetSolidMask(261,14,87,6,0,0);
+		SetSolidMask(261, 14, 87, 6, 0, 0);
 	}
 	else
 	{
 		SetPhase(2);
-		SetSolidMask(174,14,87,6,0,0);
+		SetSolidMask(174, 14, 87, 6, 0, 0);
 	}
 	breakiness -= 2;
 }
@@ -47,12 +47,12 @@ private func BreakLeft()
 	if (GetPhase() == 2)
 	{
 		SetPhase(3);
-		SetSolidMask(261,14,87,6,0,0);
+		SetSolidMask(261, 14, 87, 6, 0, 0);
 	}
 	else
 	{
 		SetPhase(1);
-		SetSolidMask(87,14,87,6,0,0);
+		SetSolidMask(87, 14, 87, 6, 0, 0);
 	}
 	breakiness -= 1;
 }

@@ -73,7 +73,7 @@ func FxIntHangTimer() { TimeStep(); }
 func UpdateLines()
 {
 	var oldangle;
-	for (var i=1; i < lib_rope_particle_count; i++)
+	for (var i = 1; i < lib_rope_particle_count; i++)
 	{
 		// Update the Position of the Segment
 		lib_rope_segments[i]->SetPosition(GetPartX(i), GetPartY(i));
@@ -103,24 +103,24 @@ func UpdateLines()
 			lib_rope_segments[i]->SetGraphics("Short");
 		}
 		
-		var diff = Vec_Sub(end,start);
+		var diff = Vec_Sub(end, start);
 		var point = Vec_Add(start, Vec_Div(diff, 2));
-		var diffangle = Vec_Angle(diff, [0,0]);
+		var diffangle = Vec_Angle(diff, [0, 0]);
 		var length = Vec_Length(diff)*1000/LIB_ROPE_Precision/10;
 	
 		if (i ==  lib_rope_particle_count-1)
 		{
 			var old = [lib_rope_particles[i-2].x, lib_rope_particles[i-2].y];
-			var old_diff = Vec_Sub(start,old);
+			var old_diff = Vec_Sub(start, old);
 			var o_length = Vec_Length(old_diff)*1000/LIB_ROPE_Precision/10;
 			if (!o_length) diff = old_diff;
 			else diff = Vec_Div(Vec_Mul(old_diff, length),o_length);
-			diffangle = Vec_Angle(diff, [0,0]);
+			diffangle = Vec_Angle(diff, [0, 0]);
 			point = Vec_Add(start, Vec_Div(diff, 2));
 		}
 
 		lib_rope_segments[i]->SetGraphics(nil);
-		SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length );
+		SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-GetPartX(i)*1000, point[1]*10-GetPartY(i)*1000, length );
 
 		// Remember the angle
 		oldangle = angle;
@@ -135,11 +135,11 @@ public func GetHookAngle()
 
 public func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
 	if (!MirrorSegments) MirrorSegments = 1;
-	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+	var fsin = Sin(r, 1000), fcos = Cos(r, 1000);
 	// set matrix values
 	obj->SetObjDrawTransform (
 		+fcos*MirrorSegments, +fsin*length/1000, xoff,
-		-fsin*MirrorSegments, +fcos*length/1000, yoff,layer
+		-fsin*MirrorSegments, +fcos*length/1000, yoff, layer
 	);
 }
 
@@ -244,7 +244,7 @@ public func DoLength(int dolength)
 
 func Definition(def)
 {
-	def.LineColors = [RGB(66,33,00), RGB(66,33,00)];
+	def.LineColors = [RGB(66, 33, 00), RGB(66, 33, 00)];
 }
 local ActMap = {
 		Hide = {

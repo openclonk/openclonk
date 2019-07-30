@@ -47,8 +47,8 @@ public func OnDefineAI(proplist def)
 	{
 		attack_path = { Name = "$AttackPath$", EditorHelp = "$AttackPathHelp$", Type = "enum", Set = "SetAttackPath", Options = [
 			{ Name="$None$" },
-			{ Name="$AttackPath$", Type=C4V_Array, Value = [{X = 0, Y = 0}], Delegate =
-				{ Name="$AttackPath$", EditorHelp="$AttackPathHelp$", Type="polyline", StartFromObject=true, DrawArrows=true, Color=0xdf0000, Relative=false }
+			{ Name="$AttackPath$", Type = C4V_Array, Value = [{X = 0, Y = 0}], Delegate =
+				{ Name="$AttackPath$", EditorHelp="$AttackPathHelp$", Type="polyline", StartFromObject = true, DrawArrows = true, Color = 0xdf0000, Relative = false }
 			}
 		] },
 	};

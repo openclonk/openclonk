@@ -95,7 +95,7 @@ func DigOutObject(object obj)
 	}
 	// Collect fragile objects when dug out
 	if (obj->GetDefFragile())
-		return Collect(obj,nil,nil,true);
+		return Collect(obj, nil, nil, true);
 	return false;
 }
 
@@ -131,7 +131,7 @@ func AttachBackpack()
 {
 	//Places a backpack onto the clonk
 	backpack = AttachMesh(BackpackGraphic, "skeleton_body", "main",       
-	                      Trans_Mul(Trans_Rotate(180,1,0,0), Trans_Scale(700,400,700), Trans_Translate(4000,-1000,0)));
+	                      Trans_Mul(Trans_Rotate(180, 1, 0, 0), Trans_Scale(700, 400, 700), Trans_Translate(4000,-1000, 0)));
 }
 
 func RemoveBackpack()
@@ -489,7 +489,7 @@ Eat = {
 	StartCall = "StartEat",
 	NextAction = "Walk",
 	InLiquidAction = "Swim",
-	Attach=CNAT_Bottom,
+	Attach = CNAT_Bottom,
 },
 };
 
@@ -504,7 +504,7 @@ local ContactIncinerate = 10;
 
 func Definition(def) {
 	// Set perspective
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0, 1000, 5000), Trans_Rotate(70, 0, 1, 0)), def);
 	
 	_inherited(def);
 }

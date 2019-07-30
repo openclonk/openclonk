@@ -1,7 +1,7 @@
 /**
 	LineDummy
 	
-	A dummy object with Line=1
+	A dummy object with Line = 1
 */
 
 

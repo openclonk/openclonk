@@ -95,7 +95,7 @@ local SingleWeaponAttackMode = {
 			}
 			// Do not save in scenario, because it's automatically created through the attack mode setting
 			AddEffect("IntNoScenarioSave", weapon, 1);
-			// Automatic fadeout+inventory respawn of e.g. firestones
+			// Automatic fadeout + inventory respawn of e.g. firestones
 			if (fx.attack_mode.Respawn)
 			{
 				var respawning_object = ammo ?? weapon;
@@ -154,7 +154,7 @@ private func InitAttackModes()
 			Name="$AttackMode$",
 			EditorHelp="$AttackModeHelp$",
 			Type="enum",
-			Sorted=true,
+			Sorted = true,
 			Options=[],
 			Set="SetAttackMode"
 		};
@@ -169,7 +169,7 @@ public func RegisterAttackMode(string identifier, proplist am, proplist am_defau
 	if (!this.AttackModes) this->InitAttackModes();
 	this.AttackModes[identifier] = am;
 	am.Identifier = identifier;
-	if (!am_default_values) am_default_values = { Identifier=identifier };
+	if (!am_default_values) am_default_values = { Identifier = identifier };
 	// Add to editor option for AI effect
 	var am_option = {
 		Name = am.Name ?? am->GetName(),

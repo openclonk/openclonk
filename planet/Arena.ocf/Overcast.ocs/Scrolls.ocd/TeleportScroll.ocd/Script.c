@@ -11,7 +11,7 @@ public func ControlUse(object clonk, int x, int y)
 	var pos = GetRandomSpawn();
 	x = pos[0];
 	y = pos[1];	
-	DrawParticleLine("Flash", 0,0,-GetX()+x,-GetY()+y, 3, 0, 0, 8, {Prototype = Particles_Flash(), Size = 20, R = 50, G = 50, B = 255});
+	DrawParticleLine("Flash", 0, 0,-GetX()+x,-GetY()+y, 3, 0, 0, 8, {Prototype = Particles_Flash(), Size = 20, R = 50, G = 50, B = 255});
 
 	// Make sure the clonk loses the attach procedure.
 	var action = clonk->GetAction();

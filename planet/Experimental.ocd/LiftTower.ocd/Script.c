@@ -10,7 +10,7 @@ static const LIFTTOWER_HOOK_LOOSEDIST = 50;
 
 public func Construction()
 {
-	SetProperty("MeshTransformation",Trans_Rotate(RandomX(-20,20),0,1,0));
+	SetProperty("MeshTransformation",Trans_Rotate(RandomX(-20, 20),0, 1, 0));
 	return _inherited(...);
 }
 
@@ -28,7 +28,7 @@ protected func Initialize()
 func OnRopeBreak()
 {
 	if (!hook)
-		hook = CreateObjectAbove(LiftTower_Hook, 0,0, NO_OWNER);
+		hook = CreateObjectAbove(LiftTower_Hook, 0, 0, NO_OWNER);
 	hook->Enter(this);
 }
 
@@ -55,7 +55,7 @@ func Interact(object clonk)
 
 	if (hook->Contained() == this)
 	{
-		if (clonk->Collect(hook,nil,nil,true))
+		if (clonk->Collect(hook, nil, nil, true))
 			hook->SetRope();
 	}
 	else
@@ -161,7 +161,7 @@ private func StopWheel()
 }
 
 func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000, 0, 7000),Trans_Rotate(-20, 1, 0, 0),Trans_Rotate(30, 0, 1, 0)), def);
 }
 
 local Name = "$Name$";

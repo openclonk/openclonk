@@ -340,7 +340,7 @@ global func StonyObjectHit(int x, int y)
 	if (y) y = y / Abs(y);
 	// Check for solid in hit direction
 	var i = 0;
-	var average_obj_size = Distance(0,0, GetObjWidth(), GetObjHeight()) / 2 + 2;
+	var average_obj_size = Distance(0, 0, GetObjWidth(), GetObjHeight()) / 2 + 2;
 	while (!GBackSolid(x * i, y * i) && i < average_obj_size)
 		i++;
 	// To catch some high speed cases: if no solid found, check directly beneath
@@ -351,7 +351,7 @@ global func StonyObjectHit(int x, int y)
 	if (!GetMaterialVal("DigFree", "Material", GetMaterial(x*i, y*i)) && GBackSolid(x*i, y*i))
 		return Sound("Hits::Materials::Rock::RockHit?");
 	// Else play standard sound
-	if (Distance(0,0,xdir,ydir) > 10)
+	if (Distance(0, 0, xdir, ydir) > 10)
 			return Sound("Hits::SoftTouch?");
 		else
 			return Sound("Hits::SoftHit?");

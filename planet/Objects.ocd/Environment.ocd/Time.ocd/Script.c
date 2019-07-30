@@ -421,8 +421,8 @@ public func SaveScenarioObject(props)
 public func Definition(def)
 {
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.Time = { Name="$Time$", EditorHelp="$TimeHelp$", Type="int", Min=0, Max=24*60 - 1, AsyncGet="GetTime", Set="SetTime" };
-	def.EditorProps.CycleSpeed = { Name="$CycleSpeed$", EditorHelp="$CycleSpeedHelp$", Type="int", Min=0, AsyncGet="GetCycleSpeed", Set="SetCycleSpeed" };
+	def.EditorProps.Time = { Name="$Time$", EditorHelp="$TimeHelp$", Type="int", Min = 0, Max = 24*60 - 1, AsyncGet="GetTime", Set="SetTime" };
+	def.EditorProps.CycleSpeed = { Name="$CycleSpeed$", EditorHelp="$CycleSpeedHelp$", Type="int", Min = 0, AsyncGet="GetCycleSpeed", Set="SetCycleSpeed" };
 }
 
 

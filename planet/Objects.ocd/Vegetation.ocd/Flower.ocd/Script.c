@@ -19,7 +19,7 @@ public func Construction()
 	StartGrowth(1);
 	SetSkin(Random(4));
 	is_explicit_skin = false;
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(RandomX(850,1200)), Trans_Rotate(RandomX(0,359),0,1,0)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(RandomX(850, 1200)), Trans_Rotate(RandomX(0, 359),0, 1, 0)));
 	
 	inherited(...);
 }

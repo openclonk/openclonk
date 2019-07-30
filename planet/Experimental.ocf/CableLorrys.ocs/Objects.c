@@ -3,9 +3,9 @@
 func InitializeObjects()
 {
 	var CableCrossing001 = CreateObjectAbove(CableCrossing, 347, 389);
-	CableCrossing001->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing001->SetCategory(C4D_StaticBack | C4D_Structure);
 	var CableCrossing002 = CreateObjectAbove(CableCrossing, 554, 391);
-	CableCrossing002->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing002->SetCategory(C4D_StaticBack | C4D_Structure);
 	CableCrossing002->SetMeshMaterial("CableCarStation_SignStation", 1);
 	CableCrossing002->ToggleStation(true);
 
@@ -16,7 +16,7 @@ func InitializeObjects()
 	CableLine001->SetConnectedObjects(CableCrossing001, CableCrossing002);
 
 	var CableCrossing003 = CreateObjectAbove(CableCrossing, 209, 390);
-	CableCrossing003->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing003->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine002 = CreateObject(CableLine, 206, 747);
 	CableLine002.LineColors = [-15461326,-15461326];
@@ -25,7 +25,7 @@ func InitializeObjects()
 	CableLine002->SetConnectedObjects(CableCrossing001, CableCrossing003);
 
 	var CableCrossing004 = CreateObjectAbove(CableCrossing, 652, 491);
-	CableCrossing004->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing004->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine003 = CreateObjectAbove(CableLine, 551, 1789);
 	CableLine003.LineColors = [-15461326,-15461326];
@@ -33,7 +33,7 @@ func InitializeObjects()
 	CableLine003->SetConnectedObjects(CableCrossing004, CableCrossing002);
 
 	var CableCrossing005 = CreateObjectAbove(CableCrossing, 694, 419);
-	CableCrossing005->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing005->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine004 = CreateObjectAbove(CableLine, 651, 1889);
 	CableLine004.LineColors = [-15461326,-15461326];
@@ -41,7 +41,7 @@ func InitializeObjects()
 	CableLine004->SetConnectedObjects(CableCrossing005, CableCrossing004);
 
 	var CableCrossing006 = CreateObjectAbove(CableCrossing, 770, 360);
-	CableCrossing006->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing006->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine005 = CreateObjectAbove(CableLine, 693, 1602);
 	CableLine005.LineColors = [-15461326,-15461326];
@@ -49,7 +49,7 @@ func InitializeObjects()
 	CableLine005->SetConnectedObjects(CableCrossing006, CableCrossing005);
 
 	var CableCrossing007 = CreateObjectAbove(CableCrossing, 810, 351);
-	CableCrossing007->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing007->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine006 = CreateObjectAbove(CableLine, 771, 1365);
 	CableLine006.LineColors = [-15461326,-15461326];
@@ -57,7 +57,7 @@ func InitializeObjects()
 	CableLine006->SetConnectedObjects(CableCrossing007, CableCrossing006);
 
 	var CableCrossing008 = CreateObjectAbove(CableCrossing, 939, 360);
-	CableCrossing008->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing008->SetCategory(C4D_StaticBack | C4D_Structure);
 	CableCrossing008->SetMeshMaterial("CableCarStation_SignStation", 1);
 
 	var CableLine007 = CreateObject(CableLine, 815, 679);
@@ -67,7 +67,7 @@ func InitializeObjects()
 	CableLine007->SetConnectedObjects(CableCrossing008, CableCrossing007);
 
 	var CableCrossing009 = CreateObjectAbove(CableCrossing, 599, 257);
-	CableCrossing009->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing009->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine008 = CreateObject(CableLine, 808, 669);
 	CableLine008.LineColors = [-15461326,-15461326];
@@ -76,7 +76,7 @@ func InitializeObjects()
 	CableLine008->SetConnectedObjects(CableCrossing009, CableCrossing007);
 
 	var CableCrossing010 = CreateObjectAbove(CableCrossing, 519, 259);
-	CableCrossing010->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing010->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine009 = CreateObject(CableLine, 599, 722);
 	CableLine009.LineColors = [-15461326,-15461326];
@@ -85,7 +85,7 @@ func InitializeObjects()
 	CableLine009->SetConnectedObjects(CableCrossing010, CableCrossing009);
 
 	var CableCrossing011 = CreateObjectAbove(CableCrossing, 465, 289);
-	CableCrossing011->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing011->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine010 = CreateObject(CableLine, 517, 516);
 	CableLine010.LineColors = [-15461326,-15461326];
@@ -99,7 +99,7 @@ func InitializeObjects()
 	CableLine011->SetConnectedObjects(CableCrossing003, CableCrossing011);
 
 	var CableCrossing012 = CreateObjectAbove(CableCrossing, 744, 589);
-	CableCrossing012->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing012->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine012 = CreateObjectAbove(CableLine, 652, 2191);
 	CableLine012.LineColors = [-15461326,-15461326];
@@ -107,7 +107,7 @@ func InitializeObjects()
 	CableLine012->SetConnectedObjects(CableCrossing012, CableCrossing004);
 
 	var CableCrossing013 = CreateObjectAbove(CableCrossing, 680, 619);
-	CableCrossing013->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing013->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine013 = CreateObjectAbove(CableLine, 743, 2370);
 	CableLine013.LineColors = [-15461326,-15461326];
@@ -115,7 +115,7 @@ func InitializeObjects()
 	CableLine013->SetConnectedObjects(CableCrossing013, CableCrossing012);
 
 	var CableCrossing014 = CreateObjectAbove(CableCrossing, 568, 690);
-	CableCrossing014->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing014->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine014 = CreateObjectAbove(CableLine, 678, 2616);
 	CableLine014.LineColors = [-15461326,-15461326];
@@ -123,7 +123,7 @@ func InitializeObjects()
 	CableLine014->SetConnectedObjects(CableCrossing014, CableCrossing013);
 
 	var CableCrossing015 = CreateObjectAbove(CableCrossing, 456, 711);
-	CableCrossing015->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing015->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine015 = CreateObjectAbove(CableLine, 570, 2749);
 	CableLine015.LineColors = [-15461326,-15461326];
@@ -131,7 +131,7 @@ func InitializeObjects()
 	CableLine015->SetConnectedObjects(CableCrossing015, CableCrossing014);
 
 	var CableCrossing016 = CreateObjectAbove(CableCrossing, 372, 650);
-	CableCrossing016->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing016->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine016 = CreateObjectAbove(CableLine, 454, 2770);
 	CableLine016.LineColors = [-15461326,-15461326];
@@ -139,7 +139,7 @@ func InitializeObjects()
 	CableLine016->SetConnectedObjects(CableCrossing016, CableCrossing015);
 
 	var CableCrossing017 = CreateObjectAbove(CableCrossing, 231, 590);
-	CableCrossing017->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing017->SetCategory(C4D_StaticBack | C4D_Structure);
 
 	var CableLine017 = CreateObjectAbove(CableLine, 374, 2524);
 	CableLine017.LineColors = [-15461326,-15461326];
@@ -147,7 +147,7 @@ func InitializeObjects()
 	CableLine017->SetConnectedObjects(CableCrossing017, CableCrossing016);
 
 	var CableCrossing018 = CreateObjectAbove(CableCrossing, 131, 528);
-	CableCrossing018->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing018->SetCategory(C4D_StaticBack | C4D_Structure);
 	CableCrossing018->SetMeshMaterial("CableCarStation_SignStation", 1);
 
 	var CableLine018 = CreateObjectAbove(CableLine, 231, 2286);
@@ -158,7 +158,7 @@ func InitializeObjects()
 	var ToolsWorkshop001 = CreateObjectAbove(ToolsWorkshop, 76, 388);
 
 	var CableCrossing019 = CreateObjectAbove(CableCrossing, 113, 387);
-	CableCrossing019->SetCategory(C4D_StaticBack|C4D_Structure);
+	CableCrossing019->SetCategory(C4D_StaticBack | C4D_Structure);
 	CableCrossing019->SetMeshMaterial("CableCarStation_SignStation", 1);
 	CableCrossing019->CombineWith(ToolsWorkshop001);
 

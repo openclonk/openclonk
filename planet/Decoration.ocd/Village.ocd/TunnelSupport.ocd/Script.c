@@ -14,7 +14,7 @@ func Definition(proplist def)
 
 func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-15, 15), 0,1,0), GetID().MeshTransformation));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-15, 15), 0, 1, 0), GetID().MeshTransformation));
 }
 
 // Stretch the support beams
@@ -51,11 +51,11 @@ public func Definition(def)
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.extension_point = {
 	  Type="point",
-	  Relative=true,
-	  HorizontalFix=true,
+	  Relative = true,
+	  HorizontalFix = true,
 	  AsyncGet="GetExtensionPoint",
 	  Set="SetExtensionPoint",
-	  Color=0xffff00 };
+	  Color = 0xffff00 };
 }
 
 /*-- Properties --*/

@@ -4,9 +4,9 @@
 */
 
 local rider;
-local cargo, has_cargo=false, old_cargo_action;
+local cargo, has_cargo = false, old_cargo_action;
 local parent;
-local deployment_yoffset=50;
+local deployment_yoffset = 50;
 
 protected func Initialize()
 {

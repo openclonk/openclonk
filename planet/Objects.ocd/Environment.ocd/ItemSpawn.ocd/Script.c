@@ -76,7 +76,7 @@ public func Construction()
 			B = PV_Random(200, 255)
 		};
 	// Initial visibility for all players
-	Visibility = [VIS_Select | VIS_God, false,false,false,false];
+	Visibility = [VIS_Select | VIS_God, false, false, false, false];
 	for (var plr in GetPlayers()) UpdateVisibility(plr);
 	// Timer effect
 	AddEffect("Spawn", this, 1, 2, this);
@@ -87,7 +87,7 @@ private func UpdateVisibility(int plr)
 {
 	// Spawn is visible if the item is currently not collected by the player
 	// In case a team is set, it also needs to match
-	Visibility[plr+1] = !spawn_list[plr] && (!team || team == GetPlayerTeam(plr));
+	Visibility[plr + 1] = !spawn_list[plr] && (!team || team == GetPlayerTeam(plr));
 	return true;
 }
 
@@ -105,7 +105,7 @@ private func FxSpawnTimer(object target, proplist effect, int time)
 	for (var crew in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20)))
 	{
 		var plr = crew->GetOwner();
-		if (!spawn_list[plr] && Visibility[plr+1] && spawn_id)
+		if (!spawn_list[plr] && Visibility[plr + 1] && spawn_id)
 		{
 			if ((!spawn_id->~IsCarryHeavy() && crew->ContentsCount() < crew.MaxContentsCount) || (spawn_id->~IsCarryHeavy() && !crew->IsCarryingHeavy()))
 			{

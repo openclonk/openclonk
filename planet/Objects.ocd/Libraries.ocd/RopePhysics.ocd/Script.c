@@ -631,7 +631,7 @@ private func LogArray()
 		for (var x = 0; x < 20; x++)
 			for (var y = 0; y < 20; y++)
 				if (Distance(0, 0, x, y) == dist)
-					PushBack(test_array, [x,y]);
+					PushBack(test_array, [x, y]);
 	return Log("%v", test_array);
 }
 

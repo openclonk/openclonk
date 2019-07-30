@@ -22,4 +22,4 @@ local ActMap = {
 local Name = "$Name$";
 local Description = "$Description$";
 local Plane = 269;
-local Components = { Metal=1 };
+local Components = { Metal = 1 };

@@ -48,7 +48,7 @@ global func SaveScenarioObjects(f, duplicate_objects)
 	var obj_type, any_written, do_write_file = false;
 	save_scenario_def_indices = nil;
 	// In reverse order (background to foreground)
-	for (i=0; i<n/2; ++i) { obj = objs[i]; objs[i] = objs[n-i-1]; objs[n-i-1] = obj; }
+	for (i = 0; i<n/2; ++i) { obj = objs[i]; objs[i] = objs[n-i-1]; objs[n-i-1] = obj; }
 	// ...Except player crew
 	var ignore_objs = [];
 	if (!save_scenario_dup_objects)
@@ -124,10 +124,10 @@ global func SaveScenarioObjects(f, duplicate_objects)
 	if (!save_scenario_dup_objects)
 	{
 		any_written = false;
-		var fx; i=0;
+		var fx; i = 0;
 		while (fx = GetEffect("*", nil, i++))
 		{
-			var fx_buffer = {Prototype=props_prototype};
+			var fx_buffer = {Prototype = props_prototype};
 			EffectCall(nil, fx, "SaveScen", fx_buffer);
 			if (fx_buffer->HasData())
 			{
@@ -150,13 +150,13 @@ global func SaveScen_Objects(array objs, array ignore_objs, proplist props_proto
 	// Write all object data into buffers
 	var n = GetLength(objs);
 	var obj_data = CreateArray(n), obj;
-	for (var i=0; i<n; ++i)
+	for (var i = 0; i<n; ++i)
 	{
 		obj = objs[i];
-		obj_data[i] = { o=obj, props={Prototype=props_prototype} };
+		obj_data[i] = { o = obj, props={Prototype = props_prototype} };
 		obj._save_scen_objdata = obj_data[i];
 	}
-	for (var i=0; i<n; ++i)
+	for (var i = 0; i<n; ++i)
 	{
 		obj = objs[i];
 		// Skip objects on ignore list (check for all objects up the containment chain)
@@ -188,10 +188,10 @@ global func SaveScen_Objects(array objs, array ignore_objs, proplist props_proto
 global func SaveScen_ResolveDepends(array objs, array obj_data)
 {
 	// Dependency pointer from obj to obj_data
-	var i,j,k,n=GetLength(objs),od;
-	for (i=0; i<n; ++i)
+	var i, j, k, n = GetLength(objs),od;
+	for (i = 0; i<n; ++i)
 	{
-		for (j=0; j<obj_data[i].n_dependencies; ++j)
+		for (j = 0; j<obj_data[i].n_dependencies; ++j)
 		{
 			k = GetIndexOf(objs, obj_data[i].dependencies[j]);
 			if (k < 0 || obj_data[i].dependencies[j] == obj_data[i].o) obj_data[i].dependencies[j] = nil; else obj_data[i].dependencies[j] = obj_data[k];
@@ -204,7 +204,7 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 	}
 	// Resolve dependencies
 	k = 0;
-	for (i=0; i<n; ++i)
+	for (i = 0; i<n; ++i)
 	{
 		k = Max(k, i);
 		od = obj_data[i];
@@ -222,9 +222,9 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 						// This is just object properties. Move them behind dependent object creation
 						var obj_data_new = CreateArray(n);
 						obj_data_new[0:i] = obj_data[0:i];
-						obj_data_new[i:j] = obj_data[i+1:j+1];
+						obj_data_new[i:j] = obj_data[i + 1:j + 1];
 						obj_data_new[j] = obj_data[i];
-						if (j<n-1) obj_data_new[j+1:n] = obj_data[j+1:n];
+						if (j<n-1) obj_data_new[j + 1:n] = obj_data[j + 1:n];
 						obj_data = obj_data_new;
 						if (j <= k) --k;
 						--i; break;
@@ -233,10 +233,10 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 					{
 						// Circular dependency. Detach object property setting from object creation.
 						var obj_data_new = CreateArray(++n);
-						obj_data_new[0:j+1] = obj_data[0:j+1];
-						obj_data_new[j+1] = { o=od.o, co=od.co, dependencies=od.dependencies, n_dependencies=od.n_dependencies, i_dep_resolved=od.i_dep_resolved, props=od.props->TakeProps() };
+						obj_data_new[0:j + 1] = obj_data[0:j + 1];
+						obj_data_new[j + 1] = { o = od.o, co = od.co, dependencies = od.dependencies, n_dependencies = od.n_dependencies, i_dep_resolved = od.i_dep_resolved, props = od.props->TakeProps() };
 						od.n_dependencies = 0; od.props_detached = true;
-						if (j<n-1) obj_data_new[j+2:n] = obj_data[j+1:n];
+						if (j<n-1) obj_data_new[j + 2:n] = obj_data[j + 1:n];
 						obj_data = obj_data_new;
 						++k; break;
 					}
@@ -246,8 +246,8 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 						var obj_data_new = CreateArray(n);
 						if (i) obj_data_new[0:i] = obj_data[0:i];
 						obj_data_new[i] = obj_data[j];
-						obj_data_new[i+1:j+1] = obj_data[i:j];
-						if (j<n-1) obj_data_new[j+1:n] = obj_data[j+1:n];
+						obj_data_new[i + 1:j + 1] = obj_data[i:j];
+						if (j<n-1) obj_data_new[j + 1:n] = obj_data[j + 1:n];
 						obj_data = obj_data_new;
 						++k; --i; break;
 					}
@@ -367,7 +367,7 @@ global func MakeScenarioSaveName()
 			def_indices[idx] = this;
 		}
 	}
-	return Format("%s%03d", base_name, idx+1);
+	return Format("%s%03d", base_name, idx + 1);
 }
 
 global func SaveScenarioObject(props)
@@ -392,7 +392,7 @@ global func SaveScenarioObject(props)
 	{
 		props->Add(SAVEOBJ_Creation, "CreateObjectAbove(%i, %d, %d%s)", GetID(), GetX(), GetDefBottom(), owner_string);
 	}
-	// Contained creation is added alongside regular creation because it is not yet known if CreateObject+Enter or CreateContents can be used due to dependencies.
+	// Contained creation is added alongside regular creation because it is not yet known if CreateObject + Enter or CreateContents can be used due to dependencies.
 	// func SaveScen_SetContainers will take care of removing one of the two creation strings after dependencies have been resolved.
 	if (Contained())
 	{
@@ -404,11 +404,11 @@ global func SaveScenarioObject(props)
 	v = GetAlive();         if (!v && (GetCategory()&C4D_Living)) props->AddCall("Alive",         this, "Kill", this, true);
 	v = GetDir();           if (v)                                props->AddCall("Dir",           this, "SetDir", GetConstantNameByValueSafe(v,"DIR_"));
 	v = GetComDir();        if (v)                                props->AddCall("ComDir",        this, "SetComDir", GetConstantNameByValueSafe(v,"COMD_"));
-	v = GetCon();           if (v != 100)                         props->AddCall("Con",           this, "SetCon", Max(v,1));
+	v = GetCon();           if (v != 100)                         props->AddCall("Con",           this, "SetCon", Max(v, 1));
 	v = GetCategory();      if (v != def->GetCategory())          props->AddCall("Category",      this, "SetCategory", GetBitmaskNameByValue(v, "C4D_"));
 	v = GetR();             if (v && !Contained())                props->AddCall("R",             this, "SetR", v);
 	v = GetXDir();          if (v && !is_static)                  props->AddCall("XDir",          this, "SetXDir", v);
-	v = GetYDir();          if (v && !is_static) if (!Inside(v, 1,12) || !GetContact(-1, CNAT_Bottom))
+	v = GetYDir();          if (v && !is_static) if (!Inside(v, 1, 12) || !GetContact(-1, CNAT_Bottom))
 	                                                              props->AddCall("YDir",          this, "SetYDir", v); // consolidate small YDir for standing objects
 	v = GetRDir();          if (v && !is_static)                  props->AddCall("RDir",          this, "SetRDir", v);
 	var default_color = 0xffffffff;
@@ -416,14 +416,14 @@ global func SaveScenarioObject(props)
 	v = GetColor();         if (v && v != default_color)          props->AddCall("Color",         this, "SetColor", Format("0x%x", v));
 	v = GetClrModulation(); if (v && v != 0xffffffff)             props->AddCall("ClrModulation", this, "SetClrModulation", Format("0x%08x", v));
 	v = GetObjectBlitMode();if (v)                                props->AddCall("BlitMode",      this, "SetObjectBlitMode", GetBitmaskNameByValue(v & ~GFX_BLIT_Custom, "GFX_BLIT_"));
-	for (i=0; v=def->GetMeshMaterial(i); ++i)
+	for (i = 0; v = def->GetMeshMaterial(i); ++i)
 	                        if (GetMeshMaterial(i) != v)          props->AddCall("MeshMaterial",  this, "SetMeshMaterial", Format("%v", GetMeshMaterial(i)), i);
 	v = this.Name;          if (v != def.Name)                    props->AddCall("Name",          this, "SetName", SaveScenarioValue2String(v));
 	v = this.MaxEnergy;     if (v != def.MaxEnergy)               props->AddSet ("MaxEnergy",     this, "MaxEnergy", this.MaxEnergy);
 	v = GetEnergy();        if (v != def.MaxEnergy/1000)          props->AddCall("Energy",        this, "DoEnergy", v-def.MaxEnergy/1000);
 	v = this.Visibility;    if (v != def.Visibility)              props->AddSet ("Visibility",    this, "Visibility", SaveScenarioValue2String(v, "VIS_", true));
 	v = this.Plane;         if (v != def.Plane)                   props->AddSet ("Plane",         this, "Plane", v);
-	v = GetObjectLayer(); var def_layer=nil; if (Contained()) def_layer = Contained()->GetObjectLayer();
+	v = GetObjectLayer(); var def_layer = nil; if (Contained()) def_layer = Contained()->GetObjectLayer();
 	                        if (v != def_layer)                   props->AddCall("Layer",         this, "SetObjectLayer", v);
 	v = this.LineColors;    if (v != def.LineColors)              props->AddSet ("LineColors",    this, "LineColors", v);
 	v = this.StaticSaveVar; if (v && !save_scenario_dup_objects)  props->AddSet ("StaticSaveVar", this, "StaticSaveVar", Format("%v", v)); // do not duplicate StaticSaveVar because it needs to be unique
@@ -431,20 +431,20 @@ global func SaveScenarioObject(props)
 	// However, usually there is one base command and the rest is derived
 	// (e.g.: A Get command may lead to multiple MoveTo commands to the
 	// target object). So just store the topmost command.
-	var command, last_command; i=0;
+	var command, last_command; i = 0;
 	while (command = GetCommand(0, i++)) last_command = command;
 	if (last_command)
 	{
-		i-=2;
+		i -= 2;
 		props->AddCall("Command", this, "SetCommand", Format("%v", last_command),
-				SaveScenarioValue2String(GetCommand(1,i)), // target
-				SaveScenarioValue2String(GetCommand(2,i)), // x
-				SaveScenarioValue2String(GetCommand(3,i)), // y
-				SaveScenarioValue2String(GetCommand(4,i)), // target2
-				SaveScenarioValue2String(GetCommand(5,i))); // data
+				SaveScenarioValue2String(GetCommand(1, i)), // target
+				SaveScenarioValue2String(GetCommand(2, i)), // x
+				SaveScenarioValue2String(GetCommand(3, i)), // y
+				SaveScenarioValue2String(GetCommand(4, i)), // target2
+				SaveScenarioValue2String(GetCommand(5, i))); // data
 	}
 	// Effects
-	var fx; i=0;
+	var fx; i = 0;
 	while (fx = GetEffect("*", this, i++)) EffectCall(this, fx, "SaveScen", props);
 	// EditorProps
 	if (this.EditorProps)
@@ -569,9 +569,9 @@ global func SaveScenarioValue2String(v, string constant_prefix, bool allow_bitma
 global func GetBitmaskNameByValue(v, prefix)
 {
 	// Compose bitmask of names of individual bits
-	// e.g. GetBitmaskNameByValue(3, "C4D_") == "C4D_StaticBack|C4D_Structure"
+	// e.g. GetBitmaskNameByValue(3, "C4D_") == "C4D_StaticBack | C4D_Structure"
 	var s;
-	for (var i=0; i<31 && v; ++i)
+	for (var i = 0; i<31 && v; ++i)
 	{
 		var v2 = 1<<i;
 		if (v & v2)
@@ -601,8 +601,8 @@ global func SaveScenP_Add(string name, string s, ...)
 	// apply format parametrers
 	s = Format(s, ...);
 	// just append to array of strings
-	// could build a string using data=Format("%s%s",data,s); here - however, then we'd be limited to some internal buffer sizes
-	var new_data = {name=name, s=s};
+	// could build a string using data = Format("%s%s",data, s); here - however, then we'd be limited to some internal buffer sizes
+	var new_data = {name = name, s = s};
 	if (!this.data) this.data=[new_data]; else this.data[GetLength(this.data)] = new_data;
 	return true;
 }
@@ -610,7 +610,7 @@ global func SaveScenP_Add(string name, string s, ...)
 global func SaveScenP_Remove(string name)
 {
 	// return all lines identified by name. return number of lines removed
-	var idx, n=0, n_data;
+	var idx, n = 0, n_data;
 	if (this.data)
 	{
 		n_data = GetLength(this.data);
@@ -620,7 +620,7 @@ global func SaveScenP_Remove(string name)
 			while (++idx<n_data) if (this.data[idx].name == name) break;
 			if (idx == n_data) break;
 			++n;
-			if (!--n_data) { this.data=nil; break; }
+			if (!--n_data) { this.data = nil; break; }
 			if (idx < n_data) this.data[idx] = this.data[n_data];
 			SetLength(this.data, n_data);
 		}
@@ -647,7 +647,7 @@ global func SaveScenP_AddCall(string name, proplist obj, string set_fn, ...)
 	// string parameters will not be quoted, so the caller can do some parameter formatting
 	// compose parameter string
 	var max_pars = 10, last_written = 2, set_pars = "", n_pars = 0;
-	for (var i=3; i<max_pars; ++i)
+	for (var i = 3; i<max_pars; ++i)
 	{
 		var par = Par(i);
 		var par_type = GetType(par);
@@ -681,7 +681,7 @@ global func SaveScenP_Buffer2File(f)
 {
 	// buffer.data is an array of strings to be written to file f
 	if (!this.data) return false;
-	var i=0, indent = "";
+	var i = 0, indent = "";
 	for (var creation in [true, false])
 	{
 		for (var v in this.data)

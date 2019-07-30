@@ -11,8 +11,8 @@ func InitializePlayer(int plr)
 {
 	// Harsher zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,240,160,flag);
-		//SetPlayerZoomByViewRange(plr,LandscapeWidth(),LandscapeHeight(),flag);
+		SetPlayerZoomByViewRange(plr, 240, 160, flag);
+		//SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeHeight(),flag);
 	SetPlayerViewLock(plr, true);
 	// Position and materials
 	LaunchPlayer(plr);
@@ -24,7 +24,7 @@ func LaunchPlayer(int plr)
 	// Position and materials
 	var starting_cave = g_caves[0];
 	var i, crew;
-	for (i=0; crew=GetCrew(plr,i); ++i)
+	for (i = 0; crew = GetCrew(plr, i); ++i)
 	{
 		crew->SetPosition(starting_cave.X/2, starting_cave.Y-18);
 		for (var tool in [Pickaxe, GrappleBow, SprayCan])
@@ -33,14 +33,14 @@ func LaunchPlayer(int plr)
 			if (obj) obj->RemoveObject();
 			crew->CreateContents(tool);
 		}
-		crew->CreateContents(Dynamite,2);
+		crew->CreateContents(Dynamite, 2);
 	}
 	return true;
 }
 
 func RelaunchPlayer(int plr)
 {
-	var clonk = CreateObjectAbove(Clonk,0,0,plr);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	if (!clonk) return false;
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
@@ -52,7 +52,7 @@ func CreateBonus(int x, int y, int value, bool is_cooperative)
 	var obj;
 	if (Random(value) > 50)
 	{
-		obj = CreateObjectAbove(Signpost, x,y);
+		obj = CreateObjectAbove(Signpost, x, y);
 		if (obj)
 		{
 			if (Random(value) > 5)
@@ -67,17 +67,17 @@ func CreateBonus(int x, int y, int value, bool is_cooperative)
 	}
 	else
 	{
-		obj = CreateObjectAbove(Chest, x,y);
+		obj = CreateObjectAbove(Chest, x, y);
 		if (obj)
 		{
 			if (Random(value) > 90) obj->CreateContents(Shovel);
 			if (Random(value) > 90) obj->CreateContents(WindBag);
 			if (Random(value) > 90) obj->CreateContents(TeleGlove);
 			if (Random(value) > 90) obj->CreateContents(Club);
-			if (Random(value) > 5) obj->CreateContents(Loam, 1+Random(2));
-			if (Random(value) > 5) obj->CreateContents(Dynamite, 1+Random(2));
-			if (Random(value) > 25) obj->CreateContents(DynamiteBox, 1+Random(2));
-			if (Random(value) > 10) obj->CreateContents(Bread, 1+Random(2));
+			if (Random(value) > 5) obj->CreateContents(Loam, 1 + Random(2));
+			if (Random(value) > 5) obj->CreateContents(Dynamite, 1 + Random(2));
+			if (Random(value) > 25) obj->CreateContents(DynamiteBox, 1 + Random(2));
+			if (Random(value) > 10) obj->CreateContents(Bread, 1 + Random(2));
 		}
 	}
 	return obj;
@@ -103,15 +103,15 @@ protected func Initialize()
 	for (cave in g_caves)
 	{
 		if (cave == g_caves[0] || cave == g_caves[n_caves-1]) continue;
-		var x=cave.X, y=cave.Y;
-		while (!GBackSolid(x,y)) ++y;
+		var x = cave.X, y = cave.Y;
+		while (!GBackSolid(x, y)) ++y;
 		if (cave.n_links <= 1)
 		{
 			// This is a dead end.
 			if (cave.dirs == 8)
 			{
 				// Facing downwards. Hard to reach, but cannot place a chest here :(
-				CreateObjectAbove(Trunk, cave.X, cave.Y)->SetR(160+Random(41));
+				CreateObjectAbove(Trunk, cave.X, cave.Y)->SetR(160 + Random(41));
 			}
 			else
 			{

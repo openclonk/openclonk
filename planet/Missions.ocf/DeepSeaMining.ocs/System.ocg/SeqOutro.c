@@ -105,5 +105,5 @@ func Outro_Fade2Darkness(proplist v)
 {
 	v.t += 8;
 	var fade_val = Max(0xff-v.t);
-	SetSkyAdjust(RGB(fade_val,fade_val,fade_val));
+	SetSkyAdjust(RGB(fade_val, fade_val, fade_val));
 }

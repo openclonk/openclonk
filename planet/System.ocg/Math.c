@@ -94,11 +94,11 @@ global func GetTurnDirection(
 	SetSpeed(Sin(GetR(), 10), -Cos(GetR(), 10));
 */
 	 var dir;
-	 /*if (to < from)*/dir=to-from;
-	 //else dir=from-to;
+	 /*if (to < from)*/dir = to-from;
+	 //else dir = from-to;
 
-	 var dif=360-from+to;
-	 var dif2=360-to+from;
+	 var dif = 360-from + to;
+	 var dif2 = 360-to + from;
 	 if (dif < 180)dir=+dif;
 	 else
 	 if (dif2 < 180)dir=-dif2;
@@ -138,8 +138,8 @@ global func MoveTowards(int a, int b, int max)
 {
 	if (b == nil) return false;
 	if (max == nil) max = 1;
-	if (a < b) return BoundBy(a + max,a,b);
-	if (a > b) return BoundBy(a - max,b,a);
+	if (a < b) return BoundBy(a + max, a, b);
+	if (a > b) return BoundBy(a - max, b, a);
 }
 
 global func FindHeight(int x)

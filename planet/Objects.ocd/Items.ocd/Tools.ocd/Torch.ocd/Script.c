@@ -191,7 +191,7 @@ func FxIntBurningTimer (object target, effect fx, int time)
 		// Smoke effects.
 		CreateParticle("Smoke", PV_Random(-1 + pos[0], 2 + pos[0]), PV_Random(-7, -9), PV_Random(-2, 2), PV_Random(-2, 2), 24 + Random(12), fx.smoke, 4);
 		// Interval jitter
-		if (!Random(10)) fx.Interval = 3+Random(3);
+		if (!Random(10)) fx.Interval = 3 + Random(3);
 	}
 	return 1;
 }
@@ -251,7 +251,7 @@ public func GetCarryTransform(object clonk, int sec, bool nohand)
 
 private func GetParticleOffset()
 {
-	if (state != TRCH_InHand || !Contained() || !(Contained() && Contained()->~IsClonk())) return [0,0];
+	if (state != TRCH_InHand || !Contained() || !(Contained() && Contained()->~IsClonk())) return [0, 0];
 	
 	// Special handling for clonks
 	var off = [-4, -6];

@@ -39,7 +39,7 @@ private func Construction()
 	capacity = Random(3) + 3;
 
 	StartGrowth(this.growth);
-	AddTimer("WaterCheck", 70+Random(10));
+	AddTimer("WaterCheck", 70 + Random(10));
 
 	// The mesh doesn't have more than 3 bones, beware
 	branches = CreateArray(3);
@@ -49,7 +49,7 @@ private func Construction()
 
 	// Make half of the plants switch direction for more variety
 	if (!Random(2)) direction = -1;
-	SetProperty("MeshTransformation", Trans_Rotate(RandomX(70,110) * direction, 0,1,0));
+	SetProperty("MeshTransformation", Trans_Rotate(RandomX(70, 110) * direction, 0, 1, 0));
 }
 
 private func Initialize()
@@ -107,7 +107,7 @@ public func GrowBranch(bool fullgrown, int branch)
 		return true;
 	}
 	branches[next_to_grow].attach_slot = AttachMesh(Cotton_Branch, Format("Stem%d", next_to_grow + 1), "main", GetBranchAttachTransform(next_to_grow, 1));
-	branches[next_to_grow].grow_animation = PlayAnimation("grow", next_to_grow + 1, Anim_Linear(0,0, branches[next_to_grow].first_animation_stage, branches[next_to_grow].grow_time, ANIM_Hold), Anim_Const(1000), nil, branches[next_to_grow].attach_slot);
+	branches[next_to_grow].grow_animation = PlayAnimation("grow", next_to_grow + 1, Anim_Linear(0, 0, branches[next_to_grow].first_animation_stage, branches[next_to_grow].grow_time, ANIM_Hold), Anim_Const(1000), nil, branches[next_to_grow].attach_slot);
 	branches[next_to_grow].grow_effect = AddEffect("IntBranchGrowth", this, 1, 35, this);
 	branches[next_to_grow].grow_effect.branch = next_to_grow;
 	if (fullgrown) FinishBranchGrowth(next_to_grow);
@@ -152,9 +152,9 @@ private func UpdateBranchAttachTransform(int branch, int scale)
 private func GetBranchAttachTransform(int branch, int scale)
 {
 	// These transforms have been determined by careful testing
-	if (branch == 0) return Trans_Mul(Trans_Rotate(-30,0,1), Trans_Rotate(-100,0,0,1), Trans_Rotate(-90,0,1), Trans_Translate(1000), Trans_Scale(scale));
-	if (branch == 1) return Trans_Mul(Trans_Rotate(30,0,1), Trans_Rotate(-100,0,0,1), Trans_Rotate(90,0,1), Trans_Translate(1000), Trans_Scale(scale));
-	if (branch == 2) return Trans_Mul(Trans_Rotate(-100,0,0,1), Trans_Rotate(-90,0,1), Trans_Scale(scale));
+	if (branch == 0) return Trans_Mul(Trans_Rotate(-30, 0, 1), Trans_Rotate(-100, 0, 0, 1), Trans_Rotate(-90, 0, 1), Trans_Translate(1000), Trans_Scale(scale));
+	if (branch == 1) return Trans_Mul(Trans_Rotate(30, 0, 1), Trans_Rotate(-100, 0, 0, 1), Trans_Rotate(90, 0, 1), Trans_Translate(1000), Trans_Scale(scale));
+	if (branch == 2) return Trans_Mul(Trans_Rotate(-100, 0, 0, 1), Trans_Rotate(-90, 0, 1), Trans_Scale(scale));
 }
 
 /* Fruit growth */
@@ -207,7 +207,7 @@ public func UpdateFruitAttachTransform(int branch, int scale)
 
 private func GetFruitAttachTransform(int scale, int extra_r)
 {
-	return Trans_Mul(Trans_Rotate(180, 0,1,0), Trans_Rotate(extra_r, 0,0,1), Trans_Scale(scale));
+	return Trans_Mul(Trans_Rotate(180, 0, 1, 0), Trans_Rotate(extra_r, 0, 0, 1), Trans_Scale(scale));
 }
 
 // Called by the fruit when the first growing animation is done

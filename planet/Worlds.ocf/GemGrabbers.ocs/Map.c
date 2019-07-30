@@ -61,8 +61,8 @@ public func DrawMainIsland(proplist map, int size)
 	var island = {Algo = MAPALGO_Polygon};
 	var x = map.Wdt / 2;
 	var y = map.Hgt / 2;
-	island.X = [x-size/3, x-size/2, x-size/3, x-size/6, x+size/6, x+size/3, x+size/2, x+size/3];
-	island.Y = [y-size/6, y, y+size/3, y+size/6, y+size/6, y+size/3, y, y-size/6];
+	island.X = [x-size/3, x-size/2, x-size/3, x-size/6, x + size/6, x + size/3, x + size/2, x + size/3];
+	island.Y = [y-size/6, y, y + size/3, y + size/6, y + size/6, y + size/3, y, y-size/6];
 	
 	// Draw the earth patch of the island.
 	island = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = [10, 6], Seed = Random(65536), Op = island};
@@ -124,13 +124,13 @@ public func DrawIsland(proplist map, int x, int y, int wdt, int hgt, array mats)
 	}
 		
 	// Draw a top border out of sand and top soil.
-	var sand_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1,2]}, {Algo = MAPALGO_RndChecker, Ratio = 50, Wdt = 4, Hgt = 3}]};
- 	var topsoil_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1,3]}, {Algo = MAPALGO_RndChecker, Ratio = 40, Wdt = 4, Hgt = 2}]};
+	var sand_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1, 2]}, {Algo = MAPALGO_RndChecker, Ratio = 50, Wdt = 4, Hgt = 3}]};
+ 	var topsoil_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1, 3]}, {Algo = MAPALGO_RndChecker, Ratio = 40, Wdt = 4, Hgt = 2}]};
 	Draw("Sand", sand_border);
 	Draw("Earth-earth", topsoil_border);	
 	
 	// Draw a bottom border out of granite and rock (or everrock on insane).
-	var granite_border = {Algo = MAPALGO_Border, Op = island, Bottom = [-2,3]};
+	var granite_border = {Algo = MAPALGO_Border, Op = island, Bottom = [-2, 3]};
 	Draw(["Rock", "Granite", "Everrock"][SCENPAR_Difficulty - 1], granite_border);
 	var rock_border = {Algo = MAPALGO_RndChecker, Ratio = 20, Wdt = 2, Hgt = 2};
 	Draw(["Granite", "Rock", "Granite"][SCENPAR_Difficulty - 1], {Algo = MAPALGO_And, Op = [granite_border, rock_border]});

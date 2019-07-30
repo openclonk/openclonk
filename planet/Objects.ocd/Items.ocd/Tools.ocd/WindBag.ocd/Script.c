@@ -70,7 +70,7 @@ func FxIntReloadTimer(object target, proplist effect, int time)
 	if (fill_amount > MaxIntake)
 		return FX_Execute_Kill;
 		
-	if (GBackSolid(0,0) || GBackLiquid(0,0))
+	if (GBackSolid(0, 0) || GBackLiquid(0, 0))
 	{
 		if (effect.sound)
 		{
@@ -240,7 +240,7 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_
 			return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(3000,-3000), Trans_Rotate(-30, 0, 1));
 	}
 	if (nohand)
-		return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(0,3000));
+		return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(0, 3000));
 
 	return Trans_Mul(Trans_Rotate(220, 0, 1, 0), Trans_Rotate(30, 0, 0, 1), Trans_Rotate(-26, 1, 0, 0));
 }

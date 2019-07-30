@@ -43,9 +43,9 @@ public func SetSpeedMultiplier(int new_multiplier)
 {
 	// Updates the weapon speed
 	if (GetType(DefaultLoadTime2)) animation_set.LoadTime2 = Max(1, DefaultLoadTime2 * 100 / new_multiplier);
-	if (GetType(DefaultLoadTime)) animation_set.LoadTime = Max(1+animation_set.LoadTime2, DefaultLoadTime * 100 / new_multiplier);
+	if (GetType(DefaultLoadTime)) animation_set.LoadTime = Max(1 + animation_set.LoadTime2, DefaultLoadTime * 100 / new_multiplier);
 	if (GetType(DefaultShootTime2)) animation_set.ShootTime2 = Max(1, DefaultShootTime2 * 100 / new_multiplier);
-	if (GetType(DefaultShootTime)) animation_set.ShootTime = Max(1+animation_set.ShootTime2, DefaultShootTime * 100 / new_multiplier);
+	if (GetType(DefaultShootTime)) animation_set.ShootTime = Max(1 + animation_set.ShootTime2, DefaultShootTime * 100 / new_multiplier);
 	// Remember setting
 	this.speed_multiplier = new_multiplier;
 }

@@ -16,7 +16,7 @@ func Initialize()
 {
 	AddEffect("Sparkle", this, 1, 30 + RandomX(-3, 3), this);
 	graphics_index = Random(4);
-	if (graphics_index) SetGraphics(Format("%d", graphics_index+1));
+	if (graphics_index) SetGraphics(Format("%d", graphics_index + 1));
 	return true;
 }
 

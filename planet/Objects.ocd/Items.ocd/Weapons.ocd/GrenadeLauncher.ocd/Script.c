@@ -136,7 +136,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 public func ControlUseHolding(object clonk, ix, iy)
 {
-	var angle = Angle(0,0,ix,iy-MuzzleOffset);
+	var angle = Angle(0, 0, ix, iy-MuzzleOffset);
 	angle = Normalize(angle,-180);
 
 	clonk->SetAimPosition(angle);
@@ -174,8 +174,8 @@ func FireWeapon(object clonk, int angle)
 {
 	var shot = Contents(0)->~TakeObject() ?? Contents(0);
 
-	var IX=Sin(180-angle,MuzzleFront);
-	var IY=Cos(180-angle,MuzzleUp)+MuzzleOffset;
+	var IX = Sin(180-angle, MuzzleFront);
+	var IY = Cos(180-angle, MuzzleUp)+MuzzleOffset;
 
 	shot->LaunchProjectile(angle, 0, shooting_strength, IX, IY);
 	shot->~Fuse(true);
@@ -189,7 +189,7 @@ func FireWeapon(object clonk, int angle)
 
 	// Muzzle Flash & gun smoke
 	if (Abs(Normalize(angle,-180)) > 90)
-		IY=Cos(180-angle,MuzzleDown)+MuzzleOffset;
+		IY = Cos(180-angle, MuzzleDown)+MuzzleOffset;
 
 	var x = Sin(angle, 20);
 	var y = -Cos(angle, 20);
@@ -203,7 +203,7 @@ public func SetLoaded()
 {
 	loaded = true;
 	// Change picture to indicate being loaded.
-	this.PictureTransformation = Trans_Mul(Trans_Translate(-3000, 3000, 4000),Trans_Rotate(-45,0,0,1),Trans_Rotate(130,0,1,0));
+	this.PictureTransformation = Trans_Mul(Trans_Translate(-3000, 3000, 4000),Trans_Rotate(-45, 0, 0, 1),Trans_Rotate(130, 0, 1, 0));
 	return;
 }
 
@@ -232,7 +232,7 @@ public func GetCarrySpecial()
 public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_on_back)
 {
 	if (is_aiming)
-		return Trans_Mul(Trans_Rotate(90,1,0,0), Trans_Rotate(-10,0,0,1));
+		return Trans_Mul(Trans_Rotate(90, 1, 0, 0), Trans_Rotate(-10, 0, 0, 1));
 
 	if (idle)
 	{
@@ -244,7 +244,7 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_
 	if (nohand)
 		return Trans_Translate(0, -3000);
 
-	return Trans_Mul(Trans_Rotate(90,1,0,0), Trans_Rotate(-10,0,0,1));
+	return Trans_Mul(Trans_Rotate(90, 1, 0, 0), Trans_Rotate(-10, 0, 0, 1));
 }
 
 
@@ -260,7 +260,7 @@ public func IsExplosive()
 
 func Definition(def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Translate(-3000, 1000, 1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1));
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-3000, 1000, 1500),Trans_Rotate(170, 0, 1, 0),Trans_Rotate(30, 0, 0, 1));
 	return _inherited(def, ...);
 }
 

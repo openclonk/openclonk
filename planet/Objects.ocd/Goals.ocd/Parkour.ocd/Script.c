@@ -140,7 +140,7 @@ public func SetIndexedCP(object cp, int index)
 	if (cp->GetCPMode() & PARKOUR_CP_Finish)
 	{
 		cp_count = index;
-		SetLength(cp_list, cp_count+1);
+		SetLength(cp_list, cp_count + 1);
 	}
 	UpdateScoreboardTitle();
 	return true;
@@ -723,9 +723,9 @@ private func AddEvalData(int plr)
 
 local on_checkpoint_cleared, on_checkpoint_first_cleared, on_respawn;
 
-public func SetOnCheckpointCleared(v) { on_checkpoint_cleared=v; return true; }
-public func SetOnCheckpointFirstCleared(v) { on_checkpoint_first_cleared=v; return true; }
-public func SetOnRespawn(v) { on_respawn=v; return true; }
+public func SetOnCheckpointCleared(v) { on_checkpoint_cleared = v; return true; }
+public func SetOnCheckpointFirstCleared(v) { on_checkpoint_first_cleared = v; return true; }
+public func SetOnRespawn(v) { on_respawn = v; return true; }
 
 public func Definition(def)
 {

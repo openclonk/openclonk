@@ -317,13 +317,13 @@ global func FindLocationConditionCheckIsValid(flag, x, y)
 	{
 		var dist = flag[1], dirs = flag[2];
 		// if only one direction is given in one dimension, the other dimension is tested from a center point halfway off in that dimension
-		var cy = y + dist * ((dirs&CNAT_Bottom)/CNAT_Bottom - (dirs&CNAT_Top)/CNAT_Top) / 2;
-		var cx = x + dist * ((dirs&CNAT_Right)/CNAT_Right - (dirs&CNAT_Left)/CNAT_Left) / 2;
+		var cy = y + dist * ((dirs & CNAT_Bottom)/CNAT_Bottom - (dirs & CNAT_Top)/CNAT_Top) / 2;
+		var cx = x + dist * ((dirs & CNAT_Right)/CNAT_Right - (dirs & CNAT_Left)/CNAT_Left) / 2;
 		// check all desired directions
-		if (dirs & CNAT_Top) if (!PathFree(cx,y,cx,y-dist)) return false;
-		if (dirs & CNAT_Bottom) if (!PathFree(cx,y,cx,y+dist)) return false;
-		if (dirs & CNAT_Left) if (!PathFree(x,cy,x-dist,cy)) return false;
-		if (dirs & CNAT_Right) if (!PathFree(x,cy,x+dist,cy)) return false;
+		if (dirs & CNAT_Top) if (!PathFree(cx, y, cx, y-dist)) return false;
+		if (dirs & CNAT_Bottom) if (!PathFree(cx, y, cx, y + dist)) return false;
+		if (dirs & CNAT_Left) if (!PathFree(x, cy, x-dist, cy)) return false;
+		if (dirs & CNAT_Right) if (!PathFree(x, cy, x + dist, cy)) return false;
 		return true;
 	}
 	

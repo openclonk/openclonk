@@ -29,7 +29,7 @@ public func ControlUse(object clonk, int x, int y)
 			return true;
 		}
 	// Action go!
-	UserAction->EvaluateAction(use_action, this, clonk, nil, nil, action_allow_parallel, nil, [x+GetX(), y+GetY()]);
+	UserAction->EvaluateAction(use_action, this, clonk, nil, nil, action_allow_parallel, nil, [x + GetX(), y + GetY()]);
 	last_use_frame = FrameCounter();
 	return true;
 }
@@ -63,8 +63,8 @@ func Definition(def)
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2500, -1500, 0), Trans_Rotate(-30, 0, 0, 1)), def);
 	// Actions
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.use_action = new UserAction.Prop { Name="$MagicAction$", Priority=100, Set="SetUseAction", Save="Action", Priority=100 };
-	def.EditorProps.cooldown = { Name="$Cooldown$", Type="int", EditorHelp="$CooldownHelp$", Set="SetCooldown", Save="Cooldown", Min=0 };
+	def.EditorProps.use_action = new UserAction.Prop { Name="$MagicAction$", Priority = 100, Set="SetUseAction", Save="Action", Priority = 100 };
+	def.EditorProps.cooldown = { Name="$Cooldown$", Type="int", EditorHelp="$CooldownHelp$", Set="SetCooldown", Save="Cooldown", Min = 0 };
 	def.EditorProps.action_allow_parallel = UserAction.PropParallel;
 }
 

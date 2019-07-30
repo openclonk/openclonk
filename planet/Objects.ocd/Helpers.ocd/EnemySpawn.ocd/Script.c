@@ -7,7 +7,7 @@
 
 local Name="$Name$";
 local Description="$Description$";
-local Visibility=VIS_Editor;
+local Visibility = VIS_Editor;
 
 local SPAWNCOUNT_INFINITE = 0x7fffffff; // magic value for spawn_count: Infinite enemy count. (must be a big value)
 
@@ -53,7 +53,7 @@ public func SetMaxConcurrentEnemies(int new_max_concurrent_enemies) { max_concur
 public func Initialize()
 {
 	// Default attack path
-	var tx=0, ty=0;
+	var tx = 0, ty = 0;
 	if (GetY() < 100 && LandscapeHeight() > 400)
 	{
 		ty = 100;
@@ -62,7 +62,7 @@ public func Initialize()
 	{
 		if (GetX() < LandscapeWidth()/2) tx = Min(100, LandscapeWidth()-GetX()-8); else tx = Max(-100, -GetX()+8);
 	}
-	attack_path = [{X=tx, Y=ty}];
+	attack_path = [{X = tx, Y = ty}];
 	spawned_enemies = [];
 	// Make sure there's an enemy script player
 	if (!GetType(g_enemyspawn_player))
@@ -424,9 +424,9 @@ public func SpawnClonk(array pos, proplist clonk_data, proplist enemy_def, array
 			guard_max_x = Max(guard_max_x, attack_pos.X);
 			guard_max_y = Max(guard_max_y, attack_pos.Y);
 		}
-		guard_range = { x=guard_min_x-300, y=guard_min_y-150, wdt=guard_max_x-guard_min_x+600, hgt=guard_max_y-guard_min_y+300 };
+		guard_range = { x = guard_min_x-300, y = guard_min_y-150, wdt = guard_max_x-guard_min_x + 600, hgt = guard_max_y-guard_min_y + 300 };
 	}
-	AI->SetGuardRange(clonk, guard_range.x,guard_range.y,guard_range.wdt,guard_range.hgt);
+	AI->SetGuardRange(clonk, guard_range.x, guard_range.y, guard_range.wdt, guard_range.hgt);
 	if (clonk_data.AttackMode)
 	{
 		AI->SetAttackMode(clonk, clonk_data.AttackMode.Identifier);
@@ -527,30 +527,30 @@ public func Definition(def)
 		{ Name="$ThisSeqeunceSpawners$", EditorHelp="$ThisSequenceSpawnersHelp$", OptionKey="Function", Value={ Function="this_context" } },
 		{ Name="$SpecificSpawner$", EditorHelp="$SpecificSpawnerHelp$",
 			OptionKey="Function", Value={ Function="specified" }, ValueKey="Object",
-			Delegate=UserAction->GetObjectEvaluator("IsEnemySpawn", "$SpecificSpawner$", "$SpecificSpawnerHelp$")
+			Delegate = UserAction->GetObjectEvaluator("IsEnemySpawn", "$SpecificSpawner$", "$SpecificSpawnerHelp$")
 		} ] };
 	UserAction->AddEvaluator("Boolean", nil, "$AllEnemiesKilled$", "$AllEnemiesKilledHelp$", "spawned_enemies_killed", [def, def.EvalBool_SpawnedEnemiesKilled], { }, kill_check_options, "Spawner");
 	// EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
   def.EditorProps.spawn_position = { Name="$SpawnPosition$", Type="enum", OptionKey="Mode", Set="SetSpawnPosition", Save="SpawnPosition", Options = [
 		{ Name="$Here$" },
-		{ Name="$InRange$", EditorHelp="$SpawnInRangeHelp$", Value={ Mode="range", Radius=25 }, ValueKey="Radius", Delegate={ Type="circle", Color=0xff8000, Relative=true } },
-		{ Name="$InRect$", EditorHelp="$SpawnInRectHelp$", Value={ Mode="rectangle", Area=[-20, -20, 40, 40] }, ValueKey="Area", Delegate={ Type="rect", Color=0xff8000, Relative=true } }
+		{ Name="$InRange$", EditorHelp="$SpawnInRangeHelp$", Value={ Mode="range", Radius = 25 }, ValueKey="Radius", Delegate={ Type="circle", Color = 0xff8000, Relative = true } },
+		{ Name="$InRect$", EditorHelp="$SpawnInRectHelp$", Value={ Mode="rectangle", Area=[-20, -20, 40, 40] }, ValueKey="Area", Delegate={ Type="rect", Color = 0xff8000, Relative = true } }
 		] };
 	def.EditorProps.spawn_count = { Name="$SpawnCount$", EditorHelp="$SpawnCountHelp$", Type="enum", Set="SetSpawnCount", Save="SpawnCount", Options = [
-	  { Name="$Infinite$", Value=SPAWNCOUNT_INFINITE },
-	  { Name="$FixedNumber$", Value=1, Type=C4V_Int, Delegate={ Type="int", Min=1, Set="SetSpawnCount", SetRoot=true } }
+	  { Name="$Infinite$", Value = SPAWNCOUNT_INFINITE },
+	  { Name="$FixedNumber$", Value = 1, Type = C4V_Int, Delegate={ Type="int", Min = 1, Set="SetSpawnCount", SetRoot = true } }
 	  ] };
-	def.EditorProps.spawn_delay = { Name="$SpawnDelay$", EditorHelp="$SpawnDelayHelp$", Type="int", Min=0, Set="SetSpawnDelay", Save="SpawnDelay" };
-	def.EditorProps.spawn_interval = { Name="$SpawnInterval$", EditorHelp="$SpawnIntervalHelp$", Type="int", Min=0, Set="SetSpawnInterval", Save="SpawnInterval" };
-	def.EditorProps.attack_path = { Name="$AttackPath$", EditorHelp="$AttackPathHelp$", Type="polyline", StartFromObject=true, DrawArrows=true, Color=0xdf0000, Relative=true, Save="AttackPath" }; // always saved
+	def.EditorProps.spawn_delay = { Name="$SpawnDelay$", EditorHelp="$SpawnDelayHelp$", Type="int", Min = 0, Set="SetSpawnDelay", Save="SpawnDelay" };
+	def.EditorProps.spawn_interval = { Name="$SpawnInterval$", EditorHelp="$SpawnIntervalHelp$", Type="int", Min = 0, Set="SetSpawnInterval", Save="SpawnInterval" };
+	def.EditorProps.attack_path = { Name="$AttackPath$", EditorHelp="$AttackPathHelp$", Type="polyline", StartFromObject = true, DrawArrows = true, Color = 0xdf0000, Relative = true, Save="AttackPath" }; // always saved
 	def.EditorProps.auto_activate = { Name="$AutoActivate$", EditorHelp="$AutoActivateHelp$", Type="bool", Set="SetAutoActivate", Save="AutoActivate" };
 	def.EditorProps.max_concurrent_enemies = { Name="$MaxConcurrent$", EditorHelp="$MaxConcurrentHelp$", Type="enum", Set="SetMaxConcurrentEnemies", Save="MaxConcurrentEnemies", Options = [
-	  { Name="$Unlimited$", Value=SPAWNCOUNT_INFINITE },
-	  { Name="$FixedNumber$", Value=1, Type=C4V_Int, Delegate={ Type="int", Min=1, Set="SetMaxConcurrentEnemies", SetRoot=true } }
+	  { Name="$Unlimited$", Value = SPAWNCOUNT_INFINITE },
+	  { Name="$FixedNumber$", Value = 1, Type = C4V_Int, Delegate={ Type="int", Min = 1, Set="SetMaxConcurrentEnemies", SetRoot = true } }
 	  ] };
 	def.EditorProps.spawn_action = new UserAction.Prop { Name="$SpawnAction$", EditorHelp="$SpawnActionHelp$", Save="SpawnAction" };
-	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk, GetInfoString=GetAIClonkInfoString }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps());
+	AddEnemyDef("Clonk", { SpawnType = Clonk, SpawnFunction = def.SpawnClonk, GetInfoString = GetAIClonkInfoString }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps());
 }
 
 public func GetAIClonkEditorProps()
@@ -559,21 +559,21 @@ public func GetAIClonkEditorProps()
 	if (!this.AIClonkEditorProps)
 	{
 		var props = {};
-		props.AttackMode = new AI->GetControlEffect().EditorProps.attack_mode { Set=nil, Priority=100 };
+		props.AttackMode = new AI->GetControlEffect().EditorProps.attack_mode { Set = nil, Priority = 100 };
 		props.GuardRange = { Name="$AttackRange$", EditorHelp="$AttackRangeHelp$", Type="enum", Options = [
 			{ Name="$Automatic$", EditorHelp="$AutomaticGuardRangeHelp$"},
-			{ Name="$Custom$", Type=C4V_PropList, Value={}, DefaultValueFunction=this.GetDefaultAIRect, Delegate=AI->GetControlEffect().EditorProps.guard_range }
+			{ Name="$Custom$", Type = C4V_PropList, Value={}, DefaultValueFunction = this.GetDefaultAIRect, Delegate = AI->GetControlEffect().EditorProps.guard_range }
 			] };
 		props.Color = { Name="$Color$", Type="color" };
-		props.Bounty = { Name="$Bounty$", EditorHelp="$BountyHelp$", Type="int", Min=0, Max=100000 };
-		props.ScaleX = { Name="$ScaleX$", EditorHelp="$ScaleXHelp$", Type="int", Min=50, Max=1000 };
-		props.ScaleY = { Name="$ScaleY$", EditorHelp="$ScaleYHelp$", Type="int", Min=50, Max=1000 };
-		props.Speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min=5 };
-		props.Energy = { Name="$Energy$", EditorHelp="$EnergyHelp$", Type="int", Min=1, Max=100000 };
+		props.Bounty = { Name="$Bounty$", EditorHelp="$BountyHelp$", Type="int", Min = 0, Max = 100000 };
+		props.ScaleX = { Name="$ScaleX$", EditorHelp="$ScaleXHelp$", Type="int", Min = 50, Max = 1000 };
+		props.ScaleY = { Name="$ScaleY$", EditorHelp="$ScaleYHelp$", Type="int", Min = 50, Max = 1000 };
+		props.Speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min = 5 };
+		props.Energy = { Name="$Energy$", EditorHelp="$EnergyHelp$", Type="int", Min = 1, Max = 100000 };
 		props.Backpack = { Name="$Backpack$", EditorHelp="$BackpackHelp$", Type="bool" };
 		props.Shield = { Name="$Shield$", EditorHelp="$ShieldHelp$", Type="bool" };
 		props.AttackSpeed = { Name="$AttackSpeed$", EditorHelp="$AttackSpeedHelp$", Type="int", Min = 1, Max = 20000 };
-		this.AIClonkEditorProps = { Type="proplist", Name=Clonk->GetName(), EditorProps=props, Priority=100 };
+		this.AIClonkEditorProps = { Type="proplist", Name = Clonk->GetName(), EditorProps = props, Priority = 100 };
 	}
 	return this.AIClonkEditorProps;
 }
@@ -582,7 +582,7 @@ public func GetAIClonkDefaultPropValues(string attack_mode)
 {
 	// Default settings for AI enemy clonks
 	return {
-		AttackMode = { Identifier=attack_mode ?? "Sword" },
+		AttackMode = { Identifier = attack_mode ?? "Sword" },
 		Color = 0xff0000,
 		Bounty = 0,
 		ScaleX = 100,
@@ -600,12 +600,12 @@ public func GetAICreatureEditorProps(proplist default_clonk_properties, string n
 	// TODO: Allow registration of more creature types
 	var props = {
 		Type="enum", ValueKey="Properties", OptionKey="Type", Options=[
-				{ Name="$None$", EditorHelp=none_help },
-				{ Name=Clonk->GetName(), Value={
+				{ Name="$None$", EditorHelp = none_help },
+				{ Name = Clonk->GetName(), Value={
 						Type="Clonk",
-						Properties=default_clonk_properties ?? EnemySpawn->GetAIClonkDefaultPropValues()
+						Properties = default_clonk_properties ?? EnemySpawn->GetAIClonkDefaultPropValues()
 						},
-					Delegate=EnemySpawn->GetAIClonkEditorProps() }
+					Delegate = EnemySpawn->GetAIClonkEditorProps() }
 				] };
 	return props;
 }
@@ -662,7 +662,7 @@ public func AddEnemyDef(identifier, enemy_def, default_value, parameter_delegate
 		Save = "Enemy",
 		Sorted = true,
 		Priority = 100,
-		Options = [ { Name="$None$", Priority=100 } ] };
+		Options = [ { Name="$None$", Priority = 100 } ] };
 	if (!this.EnemyDefs) this.EnemyDefs = {};
 	// Remember definition
 	this.EnemyDefs[identifier] = enemy_def;
@@ -670,10 +670,10 @@ public func AddEnemyDef(identifier, enemy_def, default_value, parameter_delegate
 	if (!default_value) default_value = {};
 	default_value.Type = identifier;
 	var enemy_opt = {
-		Name=enemy_def.Name ?? enemy_def.SpawnType->GetName(),
-		EditorHelp=enemy_def.EditorHelp,
-		Delegate=parameter_delegate,
-		Value=default_value
+		Name = enemy_def.Name ?? enemy_def.SpawnType->GetName(),
+		EditorHelp = enemy_def.EditorHelp,
+		Delegate = parameter_delegate,
+		Value = default_value
 		};
 	var opts = this.EditorProps.enemy.Options;
 	opts[GetLength(opts)] = enemy_opt;

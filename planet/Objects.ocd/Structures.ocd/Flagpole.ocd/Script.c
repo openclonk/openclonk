@@ -28,7 +28,7 @@ protected func Initialize()
 
 protected func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Translate(0,4000,0));
+	SetProperty("MeshTransformation", Trans_Translate(0, 4000, 0));
 	return _inherited(...);
 }
 
@@ -87,7 +87,7 @@ func SetNeutral(bool to_val)
 		SetMeshMaterial("NeutralFlagBanner",0);
 		//SetMeshMaterial("NeutralFlagPole",1);
 		SetFlagRadius(0);
-		this.MeshTransformation = Trans_Mul(Trans_Scale(700,700,700), Trans_Translate(0,6000,0));
+		this.MeshTransformation = Trans_Mul(Trans_Scale(700, 700, 700), Trans_Translate(0, 6000, 0));
 		this.Name = "$NameNeutral$";
 	}
 	else
@@ -95,7 +95,7 @@ func SetNeutral(bool to_val)
 		SetMeshMaterial("FlagBanner",0);
 		//SetMeshMaterial("SettlementFlagPole",1);
 		SetFlagRadius(this.DefaultFlagRadius);
-		this.MeshTransformation = Trans_Translate(0,4000,0);
+		this.MeshTransformation = Trans_Translate(0, 4000, 0);
 		this.Name = this.Prototype.Name;
 	}
 	return true;

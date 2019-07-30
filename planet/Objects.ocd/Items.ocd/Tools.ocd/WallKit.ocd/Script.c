@@ -9,7 +9,7 @@ func MaxStackCount() { return 4; }
 func ControlUseStart(object clonk, int x, int y)
 {
 	clonk->Sound("Objects::WallKit::Click");
-	SetPreview(clonk,x,y);
+	SetPreview(clonk, x, y);
 	return true;
 }
 
@@ -105,16 +105,16 @@ local preview;
 func SetPreview(object clonk, int x, int y)
 {
 	var c = Offset2BridgeCoords(clonk, x, y), clr = 0xffa0a0a0;
-	x=clonk->GetX(); y=clonk->GetY();
+	x = clonk->GetX(); y = clonk->GetY();
 	if (!preview)
 	{
-		preview = WallKit_Preview->Create(x+c.x1,y+c.y1,x+c.x2,y+c.y2,clr);
+		preview = WallKit_Preview->Create(x + c.x1, y + c.y1, x + c.x2, y + c.y2, clr);
 		preview->SetOwner(clonk->GetOwner());
 		preview.Visibility = VIS_Owner;
 	}
 	else
 	{
-		preview->Set(x+c.x1,y+c.y1,x+c.x2,y+c.y2,clr);
+		preview->Set(x + c.x1, y + c.y1, x + c.x2, y + c.y2, clr);
 	}
 	return true;
 }

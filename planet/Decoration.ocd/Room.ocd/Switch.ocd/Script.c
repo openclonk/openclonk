@@ -46,14 +46,14 @@ public func ControlDown(object clonk)
 
 public func ControlLeft(object clonk)
 {
-	var dir = Rot2Dir(-1,0);
+	var dir = Rot2Dir(-1, 0);
 	if (!dir) return false;
 	return ControlSwitchDir(clonk, dir);
 }
 
 public func ControlRight(object clonk)
 {
-	var dir = Rot2Dir(+1,0);
+	var dir = Rot2Dir(+1, 0);
 	if (!dir) return false;
 	return ControlSwitchDir(clonk, dir);
 }
@@ -88,7 +88,7 @@ private func ControlSwitchDir(object clonk, int dir)
 
 private func Rot2Dir(int dx, int dy)
 {
-	// Convert direction dx,dy in world coordinates to horizontal direction in local coordinates
+	// Convert direction dx, dy in world coordinates to horizontal direction in local coordinates
 	var r = GetR();
 	return BoundBy(dx*Cos(r, 3) + dy*Sin(r, 3), -1,+1);
 }
@@ -189,7 +189,7 @@ local Touchable = 2;
 local Plane = 270;
 local MaxHandleAngle = 45;
 local HandleSpeed = 6;
-local Components = { Rock = 3, Metal=1 };
+local Components = { Rock = 3, Metal = 1 };
 local left_action, right_action; // Custom editor-selected actions on switch handling
 
 local EditorActions = {
@@ -198,8 +198,8 @@ local EditorActions = {
 func Definition(def)
 {
 	// Graphics
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(800), Trans_Translate(0,0,0),Trans_Rotate(-20,1,0,0),Trans_Rotate(-30,0,1,0)), def);
-	SetProperty("MeshTransformation", Trans_Rotate(-13,0,1,0), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(800), Trans_Translate(0, 0, 0),Trans_Rotate(-20, 1, 0, 0),Trans_Rotate(-30, 0, 1, 0)), def);
+	SetProperty("MeshTransformation", Trans_Rotate(-13, 0, 1, 0), def);
 	// Editor properties
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.left_action = new UserAction.Prop { Name="$LeftAction$" };

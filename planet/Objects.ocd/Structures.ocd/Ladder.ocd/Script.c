@@ -54,7 +54,7 @@ func CreateSegments()
 	for (var index = 0; index < nr_segments; index++)
 	{
 		var y = GetTop() + index * SegmentHeight;
-		var segment = CreateObject(MetalLadderSegment, 0, y+4);
+		var segment = CreateObject(MetalLadderSegment, 0, y + 4);
 		segment->SetMaster(this, index);
 		// Store the segments.
 		PushBack(segments, segment);
@@ -111,20 +111,20 @@ public func Definition(def)
 	def.EditorProps.top_handle = {
 	  Name="$TopHandle$",
 	  Type="point",
-	  Relative=true,
-	  HorizontalFix=true,
+	  Relative = true,
+	  HorizontalFix = true,
 	  AsyncGet="GetTopHandle",
 	  Set="SetTopHandle",
-	  Priority=1,
-	  Color=0x80ff00 };
+	  Priority = 1,
+	  Color = 0x80ff00 };
 	def.EditorProps.bottom_handle = {
 	  Name="$BottomHandle$",
 	  Type="point",
-	  Relative=true,
-	  HorizontalFix=true,
+	  Relative = true,
+	  HorizontalFix = true,
 	  AsyncGet="GetBottomHandle",
 	  Set="SetBottomHandle",
-	  Color=0xff8000 };
+	  Color = 0xff8000 };
 }
 
 

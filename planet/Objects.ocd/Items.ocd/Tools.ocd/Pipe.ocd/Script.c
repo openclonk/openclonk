@@ -121,7 +121,7 @@ public func HasAperture() { return true; }
 public func CycleApertureOffset()
 {
 	// Cycle in three steps of three px each through X and Y
-	// covering a 3x3 grid on points -3,0,+3
+	// covering a 3x3 grid on points -3, 0,+3
 	ApertureOffsetX = (ApertureOffsetX + 6) % 9 - 3;
 	if (!ApertureOffsetX) ApertureOffsetY = (ApertureOffsetY + 6) % 9 - 3;
 	return true;

@@ -31,7 +31,7 @@ private func FindInventoryWeapon(effect fx)
 		fx.strategy = this.ExecuteRanged;
 		fx.projectile_speed = 100;
 	 	fx.ammo_check = this.HasArrows;
-	 	fx.ranged=true;
+	 	fx.ranged = true;
 	 	return true;
 	}
 	if (inherited(fx, ...))
@@ -115,7 +115,7 @@ private func ExecutePilot(effect fx)
 		if (fx.stuck_time > 20)
 			fx.vehicle->SetYDir(10);
 		if (fx.stuck_time > 40)
-			fx.vehicle->SetXDir(RandomX(-10,10));
+			fx.vehicle->SetXDir(RandomX(-10, 10));
 		if (fx.stuck_time > 60)
 		{
 			if (InsideIslandRectangle(fx.vehicle))
@@ -253,7 +253,7 @@ private func ExecuteRanged(effect fx)
 {
 	// Still carrying the bow?
 	if (fx.weapon->Contained() != fx.Target)
-	{ fx.weapon=fx.post_aim_weapon=nil; return false; }
+	{ fx.weapon = fx.post_aim_weapon = nil; return false; }
 	// Finish shooting process
 	if (fx.post_aim_weapon)
 	{
@@ -305,8 +305,8 @@ private func ExecuteRanged(effect fx)
 		return this->ExecuteStand(fx);
 	// Calculate offset to target. Take movement into account
 	// Also aim for the head (y-4) so it's harder to evade by jumping
-	var x=fx.Target->GetX(), y=fx.Target->GetY(), tx=fx.target->GetX(), ty=fx.target->GetY()-4;
-	var d = Distance(x,y,tx,ty);
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY()-4;
+	var d = Distance(x, y, tx, ty);
 	var dt = d * 10 / fx.projectile_speed; // projected travel time of the arrow
 	tx += this->GetTargetXDir(fx.target, dt);
 	ty += this->GetTargetYDir(fx.target, dt);
@@ -329,7 +329,7 @@ private func ExecuteRanged(effect fx)
 		// No ally on path? Also search for allied animals, just in case.
 		var ally;
 		if (!fx.ignore_allies || FindObject(Find_ID(Rule_NoFriendlyFire)))
-			ally = fx.Target->FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(fx.Target), Find_OCF(OCF_Alive), Find_Owner(fx.Target->GetOwner()));
+			ally = fx.Target->FindObject(Find_OnLine(0, 0, tx-x, ty-y), Find_Exclude(fx.Target), Find_OCF(OCF_Alive), Find_Owner(fx.Target->GetOwner()));
 		if (ally)
 		{
 			if (this->ExecuteJump(fx)) return true;
@@ -341,11 +341,11 @@ private func ExecuteRanged(effect fx)
 			// Aim/Shoot there
 			x = Sin(shooting_angle, 1000, 10);
 			y = -Cos(shooting_angle, 1000, 10);
-			fx.aim_weapon->ControlUseHolding(fx.Target, x,y);
+			fx.aim_weapon->ControlUseHolding(fx.Target, x, y);
 			if (fx.Target->IsAiming() && fx.time >= fx.aim_time + fx.aim_weapon->GetReloadTime())
 			{
 				//Log("Throw angle %v speed %v to reach %d %d", shooting_angle, fx.projectile_speed, tx-GetX(), ty-GetY());
-				fx.aim_weapon->ControlUseStop(fx.Target, x,y);
+				fx.aim_weapon->ControlUseStop(fx.Target, x, y);
 				fx.post_aim_weapon = fx.aim_weapon; // assign post-aim status to allow slower shoot animations to pass
 				fx.post_aim_weapon_time = FrameCounter();
 				fx.aim_weapon = nil;
@@ -355,7 +355,7 @@ private func ExecuteRanged(effect fx)
 	}
 
 	// Path not free or out of range. Just wait for enemy to come...
-	fx.aim_weapon->ControlUseHolding(fx.Target,tx-x,ty-y);
+	fx.aim_weapon->ControlUseHolding(fx.Target, tx-x, ty-y);
 	// Might also change target if current is unreachable
 	if (!Random(3))
 	{
@@ -370,15 +370,15 @@ private func ExecuteRanged(effect fx)
 private func ExecuteThrow(effect fx)
 {
 	// Still carrying the weapon to throw?
-	if (fx.weapon->Contained() != fx.Target) { fx.weapon=nil; return false; }
+	if (fx.weapon->Contained() != fx.Target) { fx.weapon = nil; return false; }
 	// Path to target free?
-	var x=fx.Target->GetX(), y=fx.Target->GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
-	if (PathFree(x,y,tx,ty))
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY();
+	if (PathFree(x, y, tx, ty))
 	{
 		var throw_speed = fx.Target.ThrowSpeed;
 		var rx = (throw_speed*throw_speed)/(100*GetGravity()); // horizontal range for 45 degree throw if enemy is on same height as we are
 		var ry = throw_speed*7/(GetGravity()*10); // vertical range of 45 degree throw
-		var dx = tx-x, dy = ty-y+15*fx.Target->GetCon()/100; // distance to target. Reduce vertical distance a bit because throwing exit point is not at center
+		var dx = tx-x, dy = ty-y + 15*fx.Target->GetCon()/100; // distance to target. Reduce vertical distance a bit because throwing exit point is not at center
 		// Check range
 		// Could calculate the optimal parabulum here, but that's actually not very reliable on moving targets
 		// It's usually better to throw straight at the target and only throw upwards a bit if the target stands on high ground or is far away
@@ -400,7 +400,7 @@ private func ExecuteThrow(effect fx)
 	if (!fx.Target->GetCommand() || !Random(3))
 	{
 		var tx = fx.target->GetX();
-		fx.Target->SetCommand("MoveTo", nil, BoundBy(fx.Target->GetX(), tx-30, tx+30), fx.target->GetY());
+		fx.Target->SetCommand("MoveTo", nil, BoundBy(fx.Target->GetX(), tx-30, tx + 30), fx.target->GetY());
 	}
 	return true;
 }
@@ -438,9 +438,9 @@ func Inventory_GetCarryTransform()
 func LaunchEnemy(proplist enemy, int xmin, int xrange, int ymin, yrange)
 {
 	// Create enemy (usually a Clonk)
-	var x = xmin+Random(xrange);
-	var y = ymin+Random(yrange);
-	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY);
+	var x = xmin + Random(xrange);
+	var y = ymin + Random(yrange);
+	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x, y, ENEMY);
 	if (!obj) return nil;
 	obj->SetController(ENEMY);
 	obj->MakeCrewMember(ENEMY);
@@ -486,12 +486,12 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int ymin, yrange)
 		{
 			Balloon->ControlUseStart(obj);
 		} else if (enemy.Vehicle == DefenseBoomAttack) {
-			vehicle = CreateObjectAbove(enemy.Vehicle, x,y+10, ENEMY);
+			vehicle = CreateObjectAbove(enemy.Vehicle, x, y + 10, ENEMY);
 			// Add boomattack to enemy array
 			g_spawned_enemies[GetLength(g_spawned_enemies)] = vehicle;
 			obj->SetAction("Ride", vehicle);
 		} else {
-			vehicle = CreateObjectAbove(enemy.Vehicle, x,y+10, ENEMY);
+			vehicle = CreateObjectAbove(enemy.Vehicle, x, y + 10, ENEMY);
 			obj->SetAction("Push", vehicle);
 			if (vehicle && vehicle->GetID() == Airship)
 				g_last_airship = vehicle;
@@ -531,13 +531,13 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int ymin, yrange)
 		// Init AI: Run towards statue
 		CustomAI->AddAI(obj);
 		CustomAI->SetMaxAggroDistance(obj, LandscapeWidth());
-		CustomAI->SetGuardRange(obj, 0,0,LandscapeWidth(),LandscapeHeight()); // nowhere to run!
+		CustomAI->SetGuardRange(obj, 0, 0, LandscapeWidth(),LandscapeHeight()); // nowhere to run!
 		var fx = obj.ai;
 		if (fx) fx.vehicle = vehicle;
 		if (enemy.IsCrew) // is airship crew member, spawn on last created airship
 			if (g_last_airship)
 			{
-				obj->SetPosition(g_last_airship->GetX() + RandomX(-15,15), g_last_airship->GetY()+12);
+				obj->SetPosition(g_last_airship->GetX() + RandomX(-15, 15), g_last_airship->GetY()+12);
 				if (fx)
 					fx.carrier = g_last_airship;
 			}

@@ -61,12 +61,12 @@ private func InitFuzzyRules()
 	brain->AddSet("hunger", "high", [[25, 0], [100, 1], [100, 1]]);
 	
 	// RULES
-	brain->AddRule(brain->Or(brain->And("hunger=high", "food=right"), brain->And("food_range=far", "friend=right")), "swim=right");
-	brain->AddRule(brain->Or(brain->And("hunger=high", "food=left"), brain->And("food_range=far", "friend=left")), "swim=left");
-	brain->AddRule(brain->Not("food_range=far"), "speed=fast");
-	brain->AddRule(brain->Or("wall_range=close", "hunger=low"), "speed=slow");
-	brain->AddRule(brain->And("left_wall=close", brain->Not("right_wall=close")), "swim=sharp_right");
-	brain->AddRule("right_wall=close", "swim=sharp_left");
+	brain->AddRule(brain->Or(brain->And("hunger = high", "food = right"), brain->And("food_range = far", "friend = right")), "swim = right");
+	brain->AddRule(brain->Or(brain->And("hunger = high", "food = left"), brain->And("food_range = far", "friend = left")), "swim = left");
+	brain->AddRule(brain->Not("food_range = far"), "speed = fast");
+	brain->AddRule(brain->Or("wall_range = close", "hunger = low"), "speed = slow");
+	brain->AddRule(brain->And("left_wall = close", brain->Not("right_wall = close")), "swim = sharp_right");
+	brain->AddRule("right_wall = close", "swim = sharp_left");
 }
 
 

@@ -141,15 +141,15 @@ public func CreateConstructionSite(object clonk, id structure_id, int x, int y, 
 		return false;
 	if (blocked)
 	{
-		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); 
+		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil, nil, RGB(255, 0, 0)); 
 		return false;
 	}
 	// intersection-check with all other construction sites... bah
 	for (var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
-		if (!(other_site->GetLeftEdge()   > GetX()+x+structure_id->GetDefWidth()/2  ||
+		if (!(other_site->GetLeftEdge()   > GetX()+x + structure_id->GetDefWidth()/2  ||
 		     other_site->GetRightEdge()  < GetX()+x-structure_id->GetDefWidth()/2  ||
-		     other_site->GetTopEdge()    > GetY()+y+structure_id->GetDefHeight()/2 ||
+		     other_site->GetTopEdge()    > GetY()+y + structure_id->GetDefHeight()/2 ||
 		     other_site->GetBottomEdge() < GetY()+y-structure_id->GetDefHeight()/2 ))
 		{
 			CustomMessage(Format("$TxtBlocked$", other_site->GetName()), this, clonk->GetOwner(), nil, nil, RGB(255, 0, 0));
@@ -162,13 +162,13 @@ public func CreateConstructionSite(object clonk, id structure_id, int x, int y, 
 	// Create construction site
 	var site;
 	site = CreateObjectAbove(ConstructionSite, x, y, Contained()->GetOwner());
-	/* note: this is necessary to have the site at the exact position x,y. Otherwise, for reasons I don't know, the
+	/* note: this is necessary to have the site at the exact position x, y. Otherwise, for reasons I don't know, the
 	   ConstructionSite seems to move 2 pixels downwards (on ConstructionSite::Construction() it is still the
 	   original position) which leads to that the CheckConstructionSite function gets different parameters later
 	   when the real construction should be created which of course could mean that it returns something else. (#1012)
 	   - Newton
 	*/
-	site->SetPosition(GetX()+x,GetY()+y);
+	site->SetPosition(GetX()+x, GetY()+y);
 	
 	// Randomize sign rotation
 	site->SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 0, 1, 0), Trans_Rotate(RandomX(-10, 10), 1, 0, 0)));

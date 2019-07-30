@@ -111,16 +111,16 @@ func Dlg_Pyrit_15(object clonk)
 	return true;
 }
 
-// called every 10 frames after plane+oil task has been given
+// called every 10 frames after plane + oil task has been given
 func CheckOilAtPlane()
 {
 	for (var plane in FindObjects(Find_ID(Airplane))) 
 	{
-		var barrel = plane->FindObject(plane->Find_AtRect(-30,-10,60,20), Find_ID(MetalBarrel));
+		var barrel = plane->FindObject(plane->Find_AtRect(-30,-10, 60, 20), Find_ID(MetalBarrel));
 		if (barrel)
 		{
 			RemoveTimer(Scenario.CheckOilAtPlane);
-			ScheduleCall(nil, Global.GameCall, 1,1, "OnPlaneLoaded", plane, barrel);
+			ScheduleCall(nil, Global.GameCall, 1, 1, "OnPlaneLoaded", plane, barrel);
 		}
 	}
 	return true;
@@ -199,7 +199,7 @@ func Dlg_Pyrit_Init(object clonk)
 	clonk.ActMap.Walk.Speed /= 3;
 	clonk->SetAction("Walk");
 	// Hammering animation
-	AddEffect("PyritHammering", clonk, 1, Pyrit_Hammer_SwingTime+5, this);
+	AddEffect("PyritHammering", clonk, 1, Pyrit_Hammer_SwingTime + 5, this);
 	return true;
 }
 
@@ -229,9 +229,9 @@ func FxPyritHammeringTimer(object c, proplist fx, int time)
 		var anim_idx = Random(2);
 		var anim_name = ["SwordSlash1.R", "SwordSlash2.R"][anim_idx];
 		var anim_len = c->GetAnimationLength(anim_name);
-		this.anim = c->PlayAnimation(anim_name, CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0,anim_len, Pyrit_Hammer_SwingTime, ANIM_Remove));
+		this.anim = c->PlayAnimation(anim_name, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, anim_len, Pyrit_Hammer_SwingTime, ANIM_Remove));
 		// Schedule effect when hammer hits object
-		var hit_delay = [50,50,30,30][anim_idx] * Pyrit_Hammer_SwingTime / 100;
+		var hit_delay = [50, 50, 30, 30][anim_idx] * Pyrit_Hammer_SwingTime / 100;
 		ScheduleCall(c, Dialogue.Pyrit_HitFx, hit_delay, 1);
 	}
 	return FX_OK;
@@ -241,7 +241,7 @@ func Pyrit_HitFx()
 {
 	var x = (GetDir()*2-1) * 14;
 	var y = 4;
-	CreateParticle("StarSpark", x*9/10,y*9/10, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 10);
+	CreateParticle("StarSpark", x*9/10, y*9/10, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 10);
 	Sound("Objects::Pickaxe::Clang?");
 	return true;
 }

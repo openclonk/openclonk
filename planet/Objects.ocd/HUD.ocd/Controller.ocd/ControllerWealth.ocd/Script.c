@@ -28,7 +28,7 @@ public func ShowWealth()
 	if (GetType(this) == C4V_Def)
 	{
 		GUI_Controller_Wealth_shown = true; // for players joining later
-		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+		for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);
 			var controller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
@@ -48,7 +48,7 @@ public func HideWealth()
 	if (GetType(this) == C4V_Def)
 	{
 		GUI_Controller_Wealth_shown = false; // for players joining later
-		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+		for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);
 			var controller = FindObject(Find_ID(Library_HUDController->GetGUIControllerID()), Find_Owner(plr));

@@ -79,7 +79,7 @@ private func InitEnvironment(int difficulty)
 	Cloud->Place(8 + 2 * difficulty);
 	Cloud->SetPrecipitation("Acid", 100);
 	// Sky.
-	SetSkyParallax(1, 20, 20, 0,0, nil, nil);
+	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
 	// Some natural disasters.
 	Earthquake->SetChance(100);
 	Volcano->SetChance(1 + difficulty);
@@ -87,7 +87,7 @@ private func InitEnvironment(int difficulty)
 	Meteor->SetChance(16 + 4 * difficulty);
 	// Bottom item killer.
 	var fx = AddEffect("KeepAreaClear", nil, 1, 5);
-	fx.search_criterion=Find_And(Find_AtRect(0, LandscapeHeight() - 10, LandscapeWidth(), 10), Find_Not(Find_Category(C4D_StaticBack)));
+	fx.search_criterion = Find_And(Find_AtRect(0, LandscapeHeight() - 10, LandscapeWidth(), 10), Find_Not(Find_Category(C4D_StaticBack)));
 	return;
 }
 
@@ -129,7 +129,7 @@ private func InitMaterial(int amount)
 			lorry->SetPosition(lorry->GetX(), lorry->GetY()-1);
 	}
 	// Create some chests in caves.
-	var chest_sets = [[[DynamiteBox,2], [Dynamite,5], [Bread,5]], [[Loam,5], [WallKit,3], [Wood,8]], [[Bread,10],[Firestone,5],[Wood,8]]];
+	var chest_sets = [[[DynamiteBox, 2], [Dynamite, 5], [Bread, 5]], [[Loam, 5], [WallKit, 3], [Wood, 8]], [[Bread, 10],[Firestone, 5],[Wood, 8]]];
 	for (var i = 0; i < 3; ++i)
 	{
 		var chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom));

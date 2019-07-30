@@ -9,7 +9,7 @@ local is_broken;
 
 protected func Hit(x, y)
 {
-	StonyObjectHit(x,y);
+	StonyObjectHit(x, y);
 	return true;
 }
 
@@ -31,7 +31,7 @@ func SetIntact()
 
 func Check4Head()
 {
-	var head = FindObject(Find_InRect(-23,-40,46,80), Find_ID(MinersStatue_Head));
+	var head = FindObject(Find_InRect(-23,-40, 46, 80), Find_ID(MinersStatue_Head));
 	if (head)
 	{
 		SetIntact();

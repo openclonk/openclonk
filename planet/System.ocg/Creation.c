@@ -92,21 +92,21 @@ global func PlaceObjectBatches(array item_ids, int n_per_batch, int batch_radius
 	// place a number (n_batches) of batches of objects of types item_ids. Each batch has n_per_batch objects.
 	// fewer batches and/or objects may be placed if no space is found
 	in_material = in_material ?? "Earth";
-	var n_item_ids=GetLength(item_ids), n_created=0;
-	for (var i=0; i<n_batches; ++i)
+	var n_item_ids = GetLength(item_ids), n_created = 0;
+	for (var i = 0; i<n_batches; ++i)
 	{
 		var loc = FindLocation(Loc_Material(in_material));
 		if (loc)
 		{
-			for (var j=0; j<n_per_batch; ++j)
+			for (var j = 0; j<n_per_batch; ++j)
 			{
-				var loc2 = FindLocation(Loc_InRect(loc.x-batch_radius,loc.y-batch_radius,batch_radius*2,batch_radius*2), Loc_Material(in_material));
+				var loc2 = FindLocation(Loc_InRect(loc.x-batch_radius, loc.y-batch_radius, batch_radius*2, batch_radius*2), Loc_Material(in_material));
 				if (loc2)
 				{
 					var obj = CreateObjectAbove(item_ids[Random(n_item_ids)], loc2.x, loc2.y);
 					if (obj)
 					{
-						obj->SetPosition(loc2.x,loc2.y);
+						obj->SetPosition(loc2.x, loc2.y);
 						++n_created;
 					}
 				}
@@ -218,12 +218,12 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 			count = RandomX(2, 4);
 			for (j = 0; j < count; j++)
 			{
-				spot = (plant_size*2 / count) * j + RandomX(-5,5) - plant_size;
+				spot = (plant_size*2 / count) * j + RandomX(-5, 5) - plant_size;
 				y_pos = y;
 				if (!GBackSolid(x + i + spot, y_pos)) continue;
 				while (!GBackSky(x + i + spot, y_pos) && y_pos > 0) y_pos--;
 				if (y_pos == 0) continue;
-				plant = CreateObjectAbove(plants[variance], x + i + spot, y_pos+5, NO_OWNER);
+				plant = CreateObjectAbove(plants[variance], x + i + spot, y_pos + 5, NO_OWNER);
 			}
 			continue;
 		}
@@ -233,7 +233,7 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 		while (!GBackSky(x + i + x_variance, y_pos) && y_pos > 0) y_pos--;
 		if (y_pos == 0) continue;
 
-		plant = CreateObjectAbove(plants[0], x + i + x_variance, y_pos+5, NO_OWNER);
+		plant = CreateObjectAbove(plants[0], x + i + x_variance, y_pos + 5, NO_OWNER);
 		plant->SetCon(growth);
 		if (foreground && !Random(3)) plant.Plane = 510;
 		// Every ~7th plant: double plant!
@@ -243,7 +243,7 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 			if (!GBackSolid(x + i - x_variance, y_pos)) continue;
 			while (!GBackSky(x + i - x_variance, y_pos) && y_pos > 0) y_pos--;
 			if (y_pos == 0) continue;
-			plant = CreateObjectAbove(plants[0], x + i - x_variance, y_pos+5, NO_OWNER);
+			plant = CreateObjectAbove(plants[0], x + i - x_variance, y_pos + 5, NO_OWNER);
 			plant->SetCon(growth);
 			if (foreground && !Random(3)) plant.Plane = 510;
 		}

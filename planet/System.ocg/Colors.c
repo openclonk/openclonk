@@ -94,7 +94,7 @@ global func RGB2HSL(int rgb)
 	var lightness = (max_val + min_val) / 2;
 	var hue, sat, diff_red, diff_green, diff_blue;
 	
-	if (diff_val==0)
+	if (diff_val == 0)
 	{
 		hue = 0;
 		sat = 0;

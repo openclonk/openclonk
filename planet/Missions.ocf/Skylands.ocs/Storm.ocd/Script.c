@@ -44,7 +44,7 @@ func Initialize()
 		search_steps_mult = 200,  // multiplyer, in percent, by which search steps get larger with each iteration
 	};
 	find_mask = Find_And(Find_Category(C4D_Vehicle | C4D_Living | C4D_Object), Find_Not(Find_Func("IsEnvironment")));
-	SetStorm(20,0, 2000);
+	SetStorm(20, 0, 2000);
 }
 
 func Clear()
@@ -52,7 +52,7 @@ func Clear()
 	// timer
 	RemoveEffect("IntExecute", this);
 	// helper objects
-	for (var i=0; i<n_streams; ++i)
+	for (var i = 0; i<n_streams; ++i)
 		if (streams[i].debug) streams[i].debug->RemoveObject();
 	streams = nil;
 	n_streams = 0;
@@ -63,11 +63,11 @@ private func InitMap()
 {
 	// init empty wind map according to parameters
 	// determine coordinate borders
-	var wdt=LandscapeWidth()-1, hgt = LandscapeHeight()-1;
-	var w1_min = Min(Min(MapXYToW1(0,0),MapXYToW1(0,hgt)),Min(MapXYToW1(wdt,0),MapXYToW1(wdt,hgt)));
-	var w1_max = Max(Max(MapXYToW1(0,0),MapXYToW1(0,hgt)),Max(MapXYToW1(wdt,0),MapXYToW1(wdt,hgt)));
-	var w2_min = Min(Min(MapXYToW2(0,0),MapXYToW2(0,hgt)),Min(MapXYToW2(wdt,0),MapXYToW2(wdt,hgt)));
-	var w2_max = Max(Max(MapXYToW2(0,0),MapXYToW2(0,hgt)),Max(MapXYToW2(wdt,0),MapXYToW2(wdt,hgt)));
+	var wdt = LandscapeWidth()-1, hgt = LandscapeHeight()-1;
+	var w1_min = Min(Min(MapXYToW1(0, 0),MapXYToW1(0, hgt)),Min(MapXYToW1(wdt, 0),MapXYToW1(wdt, hgt)));
+	var w1_max = Max(Max(MapXYToW1(0, 0),MapXYToW1(0, hgt)),Max(MapXYToW1(wdt, 0),MapXYToW1(wdt, hgt)));
+	var w2_min = Min(Min(MapXYToW2(0, 0),MapXYToW2(0, hgt)),Min(MapXYToW2(wdt, 0),MapXYToW2(wdt, hgt)));
+	var w2_max = Max(Max(MapXYToW2(0, 0),MapXYToW2(0, hgt)),Max(MapXYToW2(wdt, 0),MapXYToW2(wdt, hgt)));
 	// implement to cover complete border range
 	map_res1 = StormStream.dir_len;
 	map_res2 = stream_density;
@@ -117,7 +117,7 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 	// create streams
 	n_streams = ((Abs(LandscapeWidth()*dir_y) + Abs(LandscapeHeight()*dir_x))/d - 2*stream_border_dist) / stream_density;
 	streams = CreateArray(n_streams);
-	var i_stream = 0, x0, y0, sgn_x=1, sgn_y=1;
+	var i_stream = 0, x0, y0, sgn_x = 1, sgn_y = 1;
 	var wdt = LandscapeWidth()-1, hgt = LandscapeHeight()-1;
 	if (dir_y<0) { y0 = hgt; sgn_y = -1; }
 	if (dir_x<0) { x0 = wdt; sgn_x = -1; }
@@ -125,10 +125,10 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 	for (var i = 0; i<n_streams; ++i)
 	{
 		var pos = stream_border_dist + i * stream_density;
-		var x0,y0;
+		var x0, y0;
 		if (dir_y)
 		{
-			var dpos=Abs(pos*d/dir_y);
+			var dpos = Abs(pos*d/dir_y);
 			if (dpos<=wdt)
 			{
 				// streams from horizontal border of landscape
@@ -139,12 +139,12 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 			pos -= Abs(wdt*dir_y/d);
 		}
 		// streams from vertical border of landscape
-		pos=Abs(pos*d/dir_x);
+		pos = Abs(pos*d/dir_x);
 		//Log("@%d", pos);
 		var s = CreateStream(x0, y0 + pos * sgn_y);
 		if (s) streams[i_stream++] = s;
 	}
-	n_streams=i_stream;
+	n_streams = i_stream;
 	//Log("%d total", n_streams);
 	streams = streams[0:n_streams];
 	// create timer for stream execution
@@ -154,7 +154,7 @@ func SetStorm(int dir_x, int dir_y, int astrength)
 
 func FxIntExecuteTimer()
 {
-	for (var i_exec=0; i_exec<n_exec_per_loop; ++i_exec)
+	for (var i_exec = 0; i_exec<n_exec_per_loop; ++i_exec)
 	{
 		// exec current stream
 		//Log("exec %d", execution_index);
@@ -167,7 +167,7 @@ func FxIntExecuteTimer()
 
 private func CreateStream(int x0, int y0)
 {
-	//Log("stream at %d/%d", x0,y0);
+	//Log("stream at %d/%d", x0, y0);
 	// Not in earth
 	if (GBackSolid(x0, y0)) return nil;
 	// Determine length
@@ -184,15 +184,15 @@ private func CreateStream(int x0, int y0)
 	// Initialize as laminar stream along desired path
 	var x = CreateArray(len), y = CreateArray(len);
 	var is_blocked = CreateArray(len);
-	for (var i=0; i<len; ++i)
+	for (var i = 0; i<len; ++i)
 	{
-		x[i] = x0+i*StormStream.dir_x;
-		y[i] = y0+i*StormStream.dir_y;
+		x[i] = x0 + i*StormStream.dir_x;
+		y[i] = y0 + i*StormStream.dir_y;
 		is_blocked[i] = (i>0); // initial stream is blocked and will be unblocked on first execution
 	}
 	// Create stream data struct
 	var stream_debug;
-	if (storm_debug) stream_debug = CreateObjectAbove(Storm_DebugDisplay,0,0,NO_OWNER);
+	if (storm_debug) stream_debug = CreateObjectAbove(Storm_DebugDisplay, 0, 0, NO_OWNER);
 	var new_stream = {
 		Prototype = StormStream,
 		"x0" = x0, "y0" = y0, // "a"=a because Guenther said so
@@ -215,24 +215,24 @@ private func ExecuteStream(proplist s)
 		if (s.is_blocked[i_segment])
 		{
 			//Log("segment %d", i_segment);
-			if (!s.is_blocked[i_segment+1]) StreamBlockVertex(s, i_segment+1);
+			if (!s.is_blocked[i_segment + 1]) StreamBlockVertex(s, i_segment + 1);
 			if (storm_debug)
 				CreateParticle("SphereSpark", s.x[i_segment], s.y[i_segment], 0, 0, 36, {Size =  12});
 			continue;
 		}
 		// current segment base point
 		var x = s.x[i_segment], y = s.y[i_segment];
-		var tx = s.x[i_segment+1], ty = s.y[i_segment+1];
+		var tx = s.x[i_segment + 1], ty = s.y[i_segment + 1];
 		// determine direction of current segment
 		var vx = tx - x;
 		var vy = ty - y;
 
 		// determine where we want to go
-		var want_vx = s.x0+(i_segment+1)*s.dir_x - x;
-		var want_vy = s.y0+(i_segment+1)*s.dir_y - y;
+		var want_vx = s.x0+(i_segment + 1)*s.dir_x - x;
+		var want_vy = s.y0+(i_segment + 1)*s.dir_y - y;
 
 		var want_stretch = (s.dir_x*want_vy-s.dir_y*want_vx) / s.dir_len;
-		//if (i_segment==8) Log("%v", want_stretch);
+		//if (i_segment == 8) Log("%v", want_stretch);
 		// can turn?
 		if (Abs(want_stretch) > s.max_segment_stretch_want)
 		{
@@ -248,35 +248,35 @@ private func ExecuteStream(proplist s)
 			// search up
 			search_off = want_stretch - search_offset;
 			if (search_off >= -s.max_segment_stretch)
-				if (StreamCheckPathFree(s,x,y,search_off)) { has_found=true; break; }
+				if (StreamCheckPathFree(s, x, y, search_off)) { has_found = true; break; }
 			if (!search_offset) continue; // don't check direction -0 and +0 twice
 			// search down
 			search_off = want_stretch + search_offset;
 			if (search_off <= s.max_segment_stretch)
-				if (StreamCheckPathFree(s,x,y,search_off)) { has_found=true; break; }
+				if (StreamCheckPathFree(s, x, y, search_off)) { has_found = true; break; }
 		}
 		// did we find a path?
 		if (has_found)
 		{
 			// path found
-			if (s.is_blocked[i_segment+1]) StreamUnblockVertex(s, i_segment+1);
+			if (s.is_blocked[i_segment + 1]) StreamUnblockVertex(s, i_segment + 1);
 			var new_tx = x + s.dir_x - search_off * s.dir_y / s.dir_len;
 			var new_ty = y + s.dir_y + search_off * s.dir_x / s.dir_len;
-			if (new_tx != tx || new_ty != ty) StreamMoveVertex(s, i_segment+1, tx, ty, new_tx, new_ty);
+			if (new_tx != tx || new_ty != ty) StreamMoveVertex(s, i_segment + 1, tx, ty, new_tx, new_ty);
 			tx = new_tx; ty = new_ty;
 			// determine storm density at this position
 			var map_idx = MapXYToIdx(tx, ty), local_strength;
-			if (map_idx>=0) local_strength = map[map_idx]; else local_strength=1;
+			if (map_idx>=0) local_strength = map[map_idx]; else local_strength = 1;
 			// fling objects along path
 			vx = vx * strength / s.dir_len;
 			vy = vy * strength / s.dir_len; // - 20;
-			var fling_objs = FindObjects(find_mask, Find_OnLine(x,y,new_tx,new_ty)), obj;
+			var fling_objs = FindObjects(find_mask, Find_OnLine(x, y, new_tx, new_ty)), obj;
 			for (obj in fling_objs) if (obj->GetID()==ElevatorCase) { fling_objs = []; break; } // do not fling stuff in elevator case
 			for (obj in fling_objs)
 			{
 				// check if object can be pushed
 				if (obj->Stuck()) continue;
-				if (!PathFree(x,y,obj->GetX(),obj->GetY())) continue; // don't push through solid
+				if (!PathFree(x, y, obj->GetX(),obj->GetY())) continue; // don't push through solid
 				// determine push strength. subsequent pushes of overlapping storm pathes stack diminishingly
 				var push_strength = strength/20;
 				var pushfx = GetEffect("StormPush",obj);
@@ -287,21 +287,21 @@ private func ExecuteStream(proplist s)
 				}
 				else
 				{
-					pushfx=AddEffect("StormPush", obj, 1, 5, this);
+					pushfx = AddEffect("StormPush", obj, 1, 5, this);
 					if (pushfx) pushfx.count = 1;
 				}
 				// now push
 				var ovx = obj->GetXDir(100);
 				var ovy = obj->GetYDir(100);
 				// check max speed
-				if (Distance(ovx,ovy,vx,vy) > push_strength*6)
+				if (Distance(ovx, ovy, vx, vy) > push_strength*6)
 				{
-					if (Distance(ovx,ovy) > 500)
-						obj->Fling(BoundBy(vx-ovx,-push_strength,push_strength),BoundBy(vy-ovy,-push_strength,push_strength),100,true);
+					if (Distance(ovx, ovy) > 500)
+						obj->Fling(BoundBy(vx-ovx,-push_strength, push_strength),BoundBy(vy-ovy,-push_strength, push_strength),100, true);
 					else
 					{
-						obj->SetXDir(ovx+BoundBy(vx-ovx,-push_strength,push_strength),100);
-						obj->SetYDir(ovy+BoundBy(vy-ovy,-push_strength,push_strength),100);
+						obj->SetXDir(ovx + BoundBy(vx-ovx,-push_strength, push_strength),100);
+						obj->SetYDir(ovy + BoundBy(vy-ovy,-push_strength, push_strength),100);
 					}
 				}
 			}
@@ -312,17 +312,17 @@ private func ExecuteStream(proplist s)
 				{
 					// Two streams coincide here. Gfx!
 					vx = tx-x; vy = ty-y;
-					var v = Distance(vx,vy);
+					var v = Distance(vx, vy);
 					vx = vx * s.dir_len / v;
 					vy = vy * s.dir_len / v / 2;
-					CreateParticle("Dust", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), PV_Random(vx * 80 / 100, vx * 120 / 100), PV_Random(vy, vy * 140 / 100), PV_Random(20, 40), storm_particles,local_strength); 
+					CreateParticle("Dust", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), PV_Random(vx * 80 / 100, vx * 120 / 100), PV_Random(vy, vy * 140 / 100), PV_Random(20, 40), storm_particles, local_strength); 
 				}
 			}
 		}
 		else
 		{
 			// path not found. segment blocked.
-			if (!s.is_blocked[i_segment+1]) StreamBlockVertex(s, i_segment+1);
+			if (!s.is_blocked[i_segment + 1]) StreamBlockVertex(s, i_segment + 1);
 		}
 	}
 	if (s.debug) s.debug->ShowData(s.x, s.y);
@@ -334,7 +334,7 @@ private func StreamCheckPathFree(proplist s, int x, int y, int offset)
 	var tx = x + s.dir_x - offset * s.dir_y / s.dir_len;
 	var ty = y + s.dir_y + offset * s.dir_x / s.dir_len;
 	// check path
-	return PathFree(x,y,tx,ty);
+	return PathFree(x, y, tx, ty);
 }
 
 private func StreamMoveVertex(proplist s, int i, int old_x, int old_y, int new_x, int new_y)
@@ -379,7 +379,7 @@ private func StreamUnblockVertex(proplist s, int i)
 private func DumpStreamInfo(int i)
 {
 	var s = streams[i], q=[], idcs = [];
-	for (var j=0; j<s.len; ++j)
+	for (var j = 0; j<s.len; ++j)
 	{
 		var idx = MapXYToIdx(s.x[j], s.y[j]);
 		if (idx<0) q[j] = []; else q[j] = map[idx];
@@ -402,11 +402,11 @@ func GetWindEx(int x, int y)
 	var idx = MapXYToIdx(x, y);
 	if (idx<0) return 0; // outside landscape
 	// check storm density map
-	return -BoundBy(map[idx]*strength/10, 0,100);
+	return -BoundBy(map[idx]*strength/10, 0, 100);
 }
 
 global func GetWind(int x, int y)
 {
-	if (g_storm) return g_storm->GetWindEx(x+GetX(),y+GetY());
-	return _inherited(x,y,...);
+	if (g_storm) return g_storm->GetWindEx(x + GetX(),y + GetY());
+	return _inherited(x, y,...);
 }

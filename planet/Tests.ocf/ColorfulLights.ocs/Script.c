@@ -16,8 +16,8 @@ func DoInit(int first_player)
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
 	// Scorching village
 	g_ruin1->AddScorch(-20,-10, -45, 50, 1500);
-	g_ruin2->AddScorch(-15,42, 90, 50, 1200);
-	g_ruin3->AddScorch(-12,18, 130, 80, 1300);
+	g_ruin2->AddScorch(-15, 42, 90, 50, 1200);
+	g_ruin3->AddScorch(-12, 18, 130, 80, 1300);
 	// Update AI stuff
 	var fx;
 	for (var enemy in FindObjects(Find_ID(Clonk), Find_Owner(NO_OWNER)))
@@ -44,7 +44,7 @@ func InitializePlayer(int plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,400,250,flag);
+		SetPlayerZoomByViewRange(plr, 400, 250, flag);
 	SetPlayerViewLock(plr, true);
 	// Initial join
 	var crew = GetCrew(plr);
@@ -54,7 +54,7 @@ func InitializePlayer(int plr)
 	crew->CreateContents(Hammer);
 	crew->CreateContents(Axe);
 	crew->SetLightRange(100, 80);
-	crew->SetLightColor(RGB(0,0,200));
+	crew->SetLightColor(RGB(0, 0, 200));
 	return true;
 }
 
@@ -63,7 +63,7 @@ func InitializePlayer(int plr)
 
 func ShroomCaveCheck()
 {
-	var intruder = FindObject(Find_InRect(1252,1342,320,138), Find_OCF(OCF_CrewMember));
+	var intruder = FindObject(Find_InRect(1252, 1342, 320, 138), Find_OCF(OCF_CrewMember));
 	if (!intruder) return true;
 	ClearScheduleCall(nil, Scenario.ShroomCaveCheck);
 	return true;

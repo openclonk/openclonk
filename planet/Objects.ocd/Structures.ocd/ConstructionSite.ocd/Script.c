@@ -326,7 +326,7 @@ private func GetMissingComponents()
 		
 		if (diff > 0)
 		{
-			PushBack(missing_material, {id=component, count=diff});
+			PushBack(missing_material, {id = component, count = diff});
 			full_material = false;
 		}		
 		
@@ -372,7 +372,7 @@ private func CreateConstructionSite()
 		// message on one of the contents.
 		if (Contents(0))
 		{
-			CustomMessage("$TxtNoConstructionHere$", Contents(0), GetOwner(), nil,nil, RGB(255, 0, 0));
+			CustomMessage("$TxtNoConstructionHere$", Contents(0), GetOwner(), nil, nil, RGB(255, 0, 0));
 		}
 		Deconstruct();
 		return nil;
@@ -423,10 +423,10 @@ private func TakeConstructionMaterials(object from_clonk)
 		// 1. Look for stuff in the clonk
 		materials[0] = FindObjects(Find_ID(component), Find_Container(from_clonk));
 		// 2. Look for stuff lying around
-		materials[1] = from_clonk->FindObjects(Find_ID(component), Find_NoContainer(), Find_InRect(-w/2, -h/2, w,h));
+		materials[1] = from_clonk->FindObjects(Find_ID(component), Find_NoContainer(), Find_InRect(-w/2, -h/2, w, h));
 		// 3. Look for stuff in nearby lorries/containers
 		var i = 2;
-		for (var container in from_clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h)))
+		for (var container in from_clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w, h)))
 			materials[i] = FindObjects(Find_ID(component), Find_Container(container));
 		// Move it
 		for (var material_list in materials)

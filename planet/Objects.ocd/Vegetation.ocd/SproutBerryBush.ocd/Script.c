@@ -63,7 +63,7 @@ private func Initialize()
 	ScheduleCall(this, "PostInit", 1);
 	
 	// no instant berries!
-	AddEffect("DontFlower", this, 1, 35 * SproutBerryBush_average_flower_time + RandomX(-400,400), this);
+	AddEffect("DontFlower", this, 1, 35 * SproutBerryBush_average_flower_time + RandomX(-400, 400), this);
 	AddTimer("Sprout", 40);
 }
 
@@ -166,7 +166,7 @@ func StartSeason(int time)
 	AddEffect("Flower", this, 1, time, this);
 	
 	// no new season now!
-	AddEffect("DontFlower", this, 1, 35 * SproutBerryBush_average_flower_time + RandomX(-200,200), this);
+	AddEffect("DontFlower", this, 1, 35 * SproutBerryBush_average_flower_time + RandomX(-200, 200), this);
 }
 
 func SproutFullyGrown(object which)

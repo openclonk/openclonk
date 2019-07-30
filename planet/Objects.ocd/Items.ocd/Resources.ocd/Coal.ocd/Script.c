@@ -11,7 +11,7 @@ func Construction()
 
 func Hit(x, y)
 {
-	StonyObjectHit(x,y);
+	StonyObjectHit(x, y);
 }
 
 func OnBurnDown()

@@ -13,7 +13,7 @@ public func FinishedAiming(object clonk, int angle)
 		if (Contents(0)->~IsArrow())
 		{
 			var arrow = Contents(0)->TakeObject();
-			arrow->Launch(angle,shooting_strength,clonk);
+			arrow->Launch(angle, shooting_strength, clonk);
 			Sound("Objects::Weapons::Bow::Shoot?");
 		}
 	}

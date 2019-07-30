@@ -50,7 +50,7 @@ public func Interact(object clonk)
 public func Definition(def)
 {
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.grave_inscription = { Name="$Inscription$", Type="string", EditorHelp="$InscriptionHelp$", Set="SetInscriptionMessage", Save="Inscription", Translatable=true };
+	def.EditorProps.grave_inscription = { Name="$Inscription$", Type="string", EditorHelp="$InscriptionHelp$", Set="SetInscriptionMessage", Save="Inscription", Translatable = true };
 }
 
 

@@ -25,7 +25,7 @@ func Entrance(container)
 func DoSellEffect(container)
 {
 	var value = 0;
-	var fm = CreateObjectAbove(FloatingMessage, 0,0, NO_OWNER);
+	var fm = CreateObjectAbove(FloatingMessage, 0, 0, NO_OWNER);
 	fm->SetColor(250, 200, 50);
 	fm->FadeOut(2, 10);
 	fm->SetSpeed(0, -5);
@@ -48,6 +48,6 @@ func DoSellEffect(container)
 		Size = 20
 	};
 	
-	CreateParticle("Flash", 0,0, 0, 0, 8, flash_particles);
-	CreateParticle("Dust", 0,0, PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(18, 36), dust_particles, 10);
+	CreateParticle("Flash", 0, 0, 0, 0, 8, flash_particles);
+	CreateParticle("Dust", 0, 0, PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(18, 36), dust_particles, 10);
 }

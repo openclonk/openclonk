@@ -56,8 +56,8 @@ protected func FxWorkingTimer()
 
 private func Smoking()
 {
-	if (!Random(4)) Smoke(16 * GetCalcDir(),-14,16);
-	if (!Random(6)) Smoke(10 * GetCalcDir(),-14,15+Random(3));
+	if (!Random(4)) Smoke(16 * GetCalcDir(),-14, 16);
+	if (!Random(6)) Smoke(10 * GetCalcDir(),-14, 15 + Random(3));
 	
 	//Fire
 	CreateParticle("Fire", 13 * GetCalcDir(), 16, PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(18, 36), Particles_Fire(), 2);
@@ -72,7 +72,7 @@ local ActMap = {
 		FlipDir = 1,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		NextAction = "Default",
 	},
 };

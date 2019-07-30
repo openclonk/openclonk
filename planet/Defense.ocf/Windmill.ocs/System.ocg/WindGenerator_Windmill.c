@@ -12,7 +12,7 @@ func Death()
 		ruin->MakeInvincible();
 		RemoveObject();
 	} else {
-		CreateParticle("Planks", PV_Random(-10,10), PV_Random(-30,30), PV_Random(-30,30), PV_Random(-100,-50), 500, Particles_Planks(), 15);
+		CreateParticle("Planks", PV_Random(-10, 10), PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(-100,-50), 500, Particles_Planks(), 15);
 		RemoveObject();
 	}
 

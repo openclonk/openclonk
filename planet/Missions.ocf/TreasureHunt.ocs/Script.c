@@ -24,16 +24,16 @@ func DoInit(int first_player)
 	relaunch_rule->SetAllowPlayerRestart(true);
 	relaunch_rule->SetLastClonkRespawn(true);
 	relaunch_rule->SetInitialRelaunch(false);
-	ClearFreeRect(530,1135, 50,2);
+	ClearFreeRect(530, 1135, 50, 2);
 	if (g_last_stone_door) g_last_stone_door->DoDamage(170 - g_last_stone_door->GetDamage());
 	if (g_golden_idol)
 	{
-		g_golden_idol->SetLightRange(150,15);
+		g_golden_idol->SetLightRange(150, 15);
 		g_golden_idol->SetLightColor(0xffc000);
 	}
 	if (g_golden_shovel)
 	{
-		g_golden_shovel->SetLightRange(25,15);
+		g_golden_shovel->SetLightRange(25, 15);
 		g_golden_shovel->SetLightColor(0xffc000);
 	}
 	npc_dagobert->SetAlternativeSkin("Beggar");
@@ -50,7 +50,7 @@ func InitializePlayer(int plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,400,250,flag);
+		SetPlayerZoomByViewRange(plr, 400, 250, flag);
 	SetPlayerViewLock(plr, true);
 	// Create per-player-counted tools
 	if (g_max_player_num < GetPlayerCount(C4PT_User))
@@ -127,17 +127,17 @@ func OnGoldBarCollected(object collector)
 {
 	++g_num_goldbars;
 	var sAchievement = "";
-	if (g_num_goldbars==MAX_GOLD_BARS/4)
+	if (g_num_goldbars == MAX_GOLD_BARS/4)
 	{
 		sAchievement = "|$Achieve5$";
 		GainScenarioAchievement("Bars", 1);
 	}
-	else if (g_num_goldbars==MAX_GOLD_BARS/2)
+	else if (g_num_goldbars == MAX_GOLD_BARS/2)
 	{
 		sAchievement = "|$Achieve10$";
 		GainScenarioAchievement("Bars", 2);
 	}
-	else if (g_num_goldbars==MAX_GOLD_BARS)
+	else if (g_num_goldbars == MAX_GOLD_BARS)
 	{
 		sAchievement = "|$Achieve20$";
 		GainScenarioAchievement("Bars", 3);

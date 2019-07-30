@@ -9,7 +9,7 @@ public func IsBurnedTree()
 }
 
 public func Incineration() {
-	SetClrModulation(RGB(100,100,100));
+	SetClrModulation(RGB(100, 100, 100));
 }
 
 local Name = "$Name$";

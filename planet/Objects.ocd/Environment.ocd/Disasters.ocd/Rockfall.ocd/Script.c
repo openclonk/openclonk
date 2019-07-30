@@ -106,7 +106,7 @@ public func FxIntRockfallControlSaveScen(obj, fx, props)
 	return true;
 }
 
-// Launches an earthquake with epicenter (x,y).
+// Launches an earthquake with epicenter (x, y).
 global func LaunchRockfall(int x, int y, int size, int xdir, int ydir, bool explosive)
 {
 	// The rockfall size is constrained between 40 and 120%.
@@ -283,10 +283,10 @@ private func SplitRock()
 		DampingX = PV_Random(900, 930, 5),
 		ForceY=-1,
 		ForceX = PV_Wind(20, PV_Random(-2, 2)),
-		Rotation=PV_Random(0,360,0),
-		R=PV_KeyFrames(0, 0, 255, 260, 64, 1000, 64),
-		G=PV_KeyFrames(0, 0, 128,  260, 64, 1000, 64),
-		B=PV_KeyFrames(0, 0, 0, 260, 108, 1000, 108),
+		Rotation = PV_Random(0, 360, 0),
+		R = PV_KeyFrames(0, 0, 255, 260, 64, 1000, 64),
+		G = PV_KeyFrames(0, 0, 128,  260, 64, 1000, 64),
+		B = PV_KeyFrames(0, 0, 0, 260, 108, 1000, 108),
 	    Alpha = PV_KeyFrames(0, 0, 0, 100, 20, 500, 20, 1000, 0)
 	};
 	CreateParticle("SmokeDirty", PV_Random(-5, 5), PV_Random(-5, 5), 0, PV_Random(-2, 0), PV_Random(50, 100), rock_explode, 8);

@@ -128,7 +128,7 @@ public func OnClonkEnteredRelaunch(object clonk)
 public func OnClonkLeftRelaunch(object clonk)
 {
 	clonk->SetPosition(RandomX(120, 160), -20);
-	clonk->Fling(0,5);
+	clonk->Fling(0, 5);
 	return;
 }
 

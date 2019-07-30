@@ -86,8 +86,8 @@ protected func FxFlagCarriedStart(object target, effect, int temp)
 	ReducePhysicals(target, effect);
 	if (temp) return;
 	
-	effect.x=target->GetX();
-	effect.y=target->GetY();
+	effect.x = target->GetX();
+	effect.y = target->GetY();
 	var trans = Trans_Mul(Trans_Translate(-17000, 0, 0), Trans_Rotate(90, 1, 0, 0));
 	effect.mesh_id = target->AttachMesh(this, "pos_back1", "main", trans);
 	this.Visibility = VIS_None;
@@ -119,8 +119,8 @@ protected func FxFlagCarriedTimer(object target, effect)
 	if (Distance(x, y, newx, newy) > 5)
 	{
 		target->CreateParticle("SphereSpark", 0, 0, 0, 0, PV_Random(36 * 3, 36 * 3 + 10), effect.tracer_particles);
-		effect.x=newx;
-		effect.y=newy;
+		effect.x = newx;
+		effect.y = newy;
 	}
 	// Search for nearby base to drop flag and score a point.
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(20));

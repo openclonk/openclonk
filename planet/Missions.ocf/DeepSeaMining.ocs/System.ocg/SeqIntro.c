@@ -121,7 +121,7 @@ func Intro_10()
 	this.plane.rdir = 0;
 	this.plane->StartInstantFlight(this.plane->GetR(), 15);
 	MessageBoxAll("$Intro10$", GetHero(), true); // aaaah
-	for (var i=0,plr; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0, plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
 		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
@@ -143,7 +143,7 @@ func Intro_11()
 	SetWind(0);
 	SetSkyParallax(0, 20, 20, 0, 0);
 	GameCall("PostIntroInitialize");
-	for (var i=0,plr; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0, plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
 		GameCall("InitializePlayer", plr);
@@ -161,12 +161,12 @@ func Intro_11()
 func Intro_20()
 {
 	MessageBoxAll("$Intro20$", GetHero(), true); // ouch
-	for (var i=0,plr; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0, plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
 		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
 		{
-			crew->SetCommand("MoveTo", nil, g_tuesday_pos[0]-15+Random(20), g_tuesday_pos[1]);
+			crew->SetCommand("MoveTo", nil, g_tuesday_pos[0]-15 + Random(20), g_tuesday_pos[1]);
 		}
 	}
 	return ScheduleNext(300);
@@ -235,7 +235,7 @@ func Intro_30()
 
 func Intro_31()
 {
-	MessageBoxAll("$Intro31$", npc_tuesday, true); // go east and finish it with metal+gems
+	MessageBoxAll("$Intro31$", npc_tuesday, true); // go east and finish it with metal + gems
 	return ScheduleNext(400);
 }
 

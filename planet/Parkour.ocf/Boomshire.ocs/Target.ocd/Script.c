@@ -14,7 +14,7 @@ public func IsProjectileTarget(object projectile, object shooter)
 }
 public func SetGate(object g)
 {
-	gate=g;
+	gate = g;
 }
 
 public func OnProjectileHit()
@@ -22,7 +22,7 @@ public func OnProjectileHit()
 	//Makes balloon fly away
 	if (GetActionTarget()!=nil)
 	{
-	GetActionTarget()->AddEffect("FlyOff",GetActionTarget(),1,1,GetActionTarget());
+	GetActionTarget()->AddEffect("FlyOff",GetActionTarget(),1, 1, GetActionTarget());
 	}
 
 	Burst();
@@ -32,7 +32,7 @@ public func OnProjectileHit()
 public func Burst()
 {
 	DrawParticleLine("Straw", 0, 0, AbsX(gate->GetX()), AbsY(gate->GetY()), 6, PV_Random(-5, 5), PV_Random(-5, 0), PV_Random(30, 60), Particles_Straw());
-	CreateParticle("Straw", 0, 0, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Straw(), 200);
+	CreateParticle("Straw", 0, 0, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(30, 120), Particles_Straw(), 200);
 	gate->OpenDoor();
 	RemoveObject();
 }
@@ -44,7 +44,7 @@ public func Hit()
 
 protected func Tumble()
 {
-	SetRDir(-4+Random(8));
+	SetRDir(-4 + Random(8));
 }
 
 func Definition(def) {

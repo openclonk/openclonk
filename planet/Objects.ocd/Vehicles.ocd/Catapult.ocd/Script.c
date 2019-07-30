@@ -119,7 +119,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 public func ControlUseStop(object clonk, int x, int y)
 {
-	DoFire(clonk, DefinePower(x,y));
+	DoFire(clonk, DefinePower(x, y));
 	return true;
 }
 
@@ -321,17 +321,17 @@ public func CatapultDismount(object clonk)
 func Definition(proplist def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(-1000, -4000, 0), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(35, 0, 1, 0));
-	var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
+	var spawn_editor_props = { Type="proplist", Name = def->GetName(), EditorProps= {
 		Gunner = new EnemySpawn->GetAICreatureEditorProps(EnemySpawn->GetAIClonkDefaultPropValues("Firestone"), "$NoGunnerHelp$") { Name="$Gunner$", EditorHelp="$GunnerHelp$" },
 	} };
 	var spawn_default_values = {
-		Gunner = { Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues("Firestone") },
+		Gunner = { Type="Clonk", Properties = EnemySpawn->GetAIClonkDefaultPropValues("Firestone") },
 	};
 	EnemySpawn->AddEnemyDef("Catapult",
-			{ SpawnType=Catapult,
-				SpawnFunction=def.SpawnCatapult,
-				OffsetAttackPathByPos=false,
-				GetInfoString=def.GetSpawnInfoString },
+			{ SpawnType = Catapult,
+				SpawnFunction = def.SpawnCatapult,
+				OffsetAttackPathByPos = false,
+				GetInfoString = def.GetSpawnInfoString },
 		spawn_default_values,
 		spawn_editor_props);
 }

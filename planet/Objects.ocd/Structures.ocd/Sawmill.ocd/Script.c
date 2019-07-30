@@ -154,7 +154,7 @@ private func FxWoodProductionTimer(object t, proplist effect, int time)
 	}
 
 	if (!(time%20))
-		Smoke(10 * GetCalcDir(),10,10);
+		Smoke(10 * GetCalcDir(),10, 10);
 
 	if (!running)
 	{
@@ -276,7 +276,7 @@ private func SpinOff(int call)
 
 	SetAnimationPosition(this.SpinAnimation, Anim_Linear(GetAnimationPosition(this.SpinAnimation), 0, GetAnimationLength("work"), spin, ANIM_Loop));
 
-	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call+1);
+	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call + 1);
 }
 
 

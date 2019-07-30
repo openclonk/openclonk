@@ -24,8 +24,8 @@ private func DoInit(int first_player)
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
 	// Scorching village
 	g_ruin1->AddScorch(-20,-10, -45, 50, 1500);
-	g_ruin2->AddScorch(-15,42, 90, 50, 1200);
-	g_ruin3->AddScorch(-12,18, 130, 80, 1300);
+	g_ruin2->AddScorch(-15, 42, 90, 50, 1200);
+	g_ruin3->AddScorch(-12, 18, 130, 80, 1300);
 	// Horax
 	g_king.JumpSpeed = 200;
 	// Update AI stuff
@@ -43,7 +43,7 @@ private func DoInit(int first_player)
 			SetSpecialDeathMessage(enemy);
 		}
 	}
-	g_farmer.portrait = { Source=DialogueCastle };
+	g_farmer.portrait = { Source = DialogueCastle };
 	// Start intro if not yet started
 	StartSequence("Intro", 0, GetCrew(first_player));
 	return true;
@@ -75,7 +75,7 @@ private func InitializePlayer(int plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,400,250,flag);
+		SetPlayerZoomByViewRange(plr, 400, 250, flag);
 	SetPlayerViewLock(plr, true);
 	// Initial join
 	var crew = GetCrew(plr);
@@ -114,7 +114,7 @@ public func EncounterKing(object enemy, object player)
 
 public func ShroomCaveCheck()
 {
-	var intruder = FindObject(Find_InRect(1252,1342,320,138), Find_OCF(OCF_CrewMember));
+	var intruder = FindObject(Find_InRect(1252, 1342, 320, 138), Find_OCF(OCF_CrewMember));
 	if (!intruder) return true;
 	Dialogue->MessageBoxAll("$MsgEncounterShrooms$", intruder, true);
 	ClearScheduleCall(nil, Scenario.ShroomCaveCheck);

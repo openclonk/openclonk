@@ -18,7 +18,7 @@ protected func Initialize()
 	
 	//Enviroment.
 	Cloud->Place(25);
-	SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
+	SetSkyAdjust(RGBa(250, 250, 255, 128),RGB(200, 200, 220));
 	Sound("Environment::BirdsLoop", true, 100, nil, 1);
 	
 	// Brick edges at horizontal moving bricks.
@@ -138,7 +138,7 @@ protected func Initialize()
 	
 	// Blue chest with wind bag
 	var chest_blue = CreateObjectAbove(Chest, 850, 648, NO_OWNER);
-	chest_blue->SetClrModulation(RGB(100,180,255));
+	chest_blue->SetClrModulation(RGB(100, 180, 255));
 	AddEffect("FillBlueChest", chest_blue, 100, 72);
 	
 	// Red chest with club.
@@ -186,7 +186,7 @@ global func FxWindChannelTimer(object target, proplist effect)
 			continue;
 		obj->SetYDir(speed - 36, 100);
 	}
-	CreateParticle("Air", 464+Random(40), 344+Random(112), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
+	CreateParticle("Air", 464 + Random(40), 344 + Random(112), RandomX(-1, 1), -30, PV_Random(10, 40), Overcast_air_particles);
 	
 	// Divider with random wind.
 	if (!Random(100))
@@ -214,11 +214,11 @@ global func FxWindChannelTimer(object target, proplist effect)
 		}
 	}
 	if (effect.Divider == 1)
-		CreateParticle("Air", 464+Random(40), 280+Random(10), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
+		CreateParticle("Air", 464 + Random(40), 280 + Random(10), RandomX(-1, 1), -30, PV_Random(10, 40), Overcast_air_particles);
 	if (effect.Divider == 0)
-		CreateParticle("Air", 464+Random(40), 280+Random(10), RandomX(-20,-10), -20, PV_Random(10, 40), Overcast_air_particles);
+		CreateParticle("Air", 464 + Random(40), 280 + Random(10), RandomX(-20,-10), -20, PV_Random(10, 40), Overcast_air_particles);
 	if (effect.Divider == 2)
-		CreateParticle("Air", 464+Random(40), 280+Random(10), RandomX(10,20), -20, PV_Random(10, 40), Overcast_air_particles);
+		CreateParticle("Air", 464 + Random(40), 280 + Random(10), RandomX(10, 20), -20, PV_Random(10, 40), Overcast_air_particles);
 		
 	// Second shaft with upward wind.
 	for (var obj in FindObjects(Find_InRect(464, 96, 40, 144)))
@@ -245,7 +245,7 @@ global func FxWindChannelTimer(object target, proplist effect)
 			continue;
 		obj->SetYDir(speed - 36, 100);
 	}
-	CreateParticle("Air", 464+Random(40), 160+Random(96), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
+	CreateParticle("Air", 464 + Random(40), 160 + Random(96), RandomX(-1, 1), -30, PV_Random(10, 40), Overcast_air_particles);
 	
 	return 1;
 }
@@ -346,7 +346,7 @@ func OnClonkLeftRelaunch(object clonk)
 
 public func RelaunchPosition()
 {
-	return [[432,270],[136,382],[200,134],[864,190],[856,382],[840,518],[408,86],[536,470]];
+	return [[432, 270],[136, 382],[200, 134],[864, 190],[856, 382],[840, 518],[408, 86],[536, 470]];
 	
 }
 

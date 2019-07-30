@@ -18,7 +18,7 @@ protected func Construction()
 	PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 1, ANIM_Hold));
 	is_open = true;
 	
-	SetProperty("MeshTransformation",Trans_Rotate(RandomX(20,80),0,1,0));
+	SetProperty("MeshTransformation",Trans_Rotate(RandomX(20, 80),0, 1, 0));
 	return _inherited(...);
 }
 
@@ -99,7 +99,7 @@ public func NoConstructionFlip() { return true; }
 
 protected func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,-3000,-5000), Trans_Rotate(-30,1,0,0), Trans_Rotate(30,0,1,0), Trans_Translate(1000,1,0)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,-3000,-5000), Trans_Rotate(-30, 1, 0, 0), Trans_Rotate(30, 0, 1, 0), Trans_Translate(1000, 1, 0)),def);
 	return _inherited(def, ...);
 }
 

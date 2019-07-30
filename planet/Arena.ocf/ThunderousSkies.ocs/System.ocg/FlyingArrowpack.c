@@ -6,10 +6,10 @@
 func Fall(int from) 
 { 
 	Sound("Objects::Weapons::Bow::Shoot?");
-	for (var i=0; i < 10; i++ ) 
+	for (var i = 0; i < 10; i++ ) 
 	{
 			var arrow = TakeObject();
-			arrow->Launch(Random(200)+80,Random(20)+10,GetCrew(from));
+			arrow->Launch(Random(200)+80, Random(20)+10, GetCrew(from));
 	}
 	if (this) RemoveObject();
 }

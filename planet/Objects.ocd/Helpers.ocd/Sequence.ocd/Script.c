@@ -228,7 +228,7 @@ private func UpdateViewTarget(object view_target)
 	// Force view of all players on target.
 	if (!view_target) 
 		return;
-	for (var i=0; i < GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		SetPlrView(plr, view_target);
@@ -353,10 +353,10 @@ global func GetActiveSequence()
 local Name="$Name$";
 local Description="$Description$";
 local trigger, condition, action, action_progress_mode, action_allow_parallel;
-local active=true;
-local check_interval=12;
+local active = true;
+local check_interval = 12;
 local deactivate_after_action; // If true, finished is set to true after the first execution and the trigger deactivated
-local Visibility=VIS_Editor;
+local Visibility = VIS_Editor;
 local trigger_started;
 local trigger_offset; // Timer offset of trigger to allow non-synced triggers
 public func IsSequence() { return true; }
@@ -378,15 +378,15 @@ public func Definition(def)
 	if (!def.EditorActions) def.EditorActions = {};
 	def.EditorActions.Test = { Name="$Test$", EditorHelp = "$TestHelp$", Command="OnTrigger(nil, %player%, true)" };
 	// UserActions
-	UserAction->AddEvaluator("Action", "$Name$", "$SetActive$", "$SetActiveDesc$", "sequence_set_active", [def, def.EvalAct_SetActive], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
+	UserAction->AddEvaluator("Action", "$Name$", "$SetActive$", "$SetActiveDesc$", "sequence_set_active", [def, def.EvalAct_SetActive], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value = true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
 		Target = UserAction->GetObjectEvaluator("IsSequence", "$Name$"),
 		Status = new UserAction.Evaluator.Boolean { Name="$Status$", EditorHelp="$SetActiveStatusHelp$" }
 		} } );
 	UserAction->AddEvaluator("Action", "$Name$", "$ActTrigger$", "$ActTriggerDesc$", "sequence_trigger", [def, def.EvalAct_Trigger], { Target = { Function="action_object" }, TriggeringObject = { Function="triggering_object" } }, { Type="proplist", Display="{{Target}}({{TriggeringObject}})", EditorProps = {
-		Target = new UserAction->GetObjectEvaluator("IsSequence", "$Name$") { Priority=60 },
+		Target = new UserAction->GetObjectEvaluator("IsSequence", "$Name$") { Priority = 60 },
 		TriggeringObject = new UserAction.Evaluator.Object { Name="$TriggeringObject$", EditorHelp="$TriggeringObjectHelp$" }
 		} } );
-	UserAction->AddEvaluator("Action", "$Name$", "$DisablePlayerControls$", "$DisablePlayerControlsHelp$", "sequence_disable_player_controls", [def, def.EvalAct_DisablePlayerControls], { Players = { Function="all_players" }, MakeInvincible = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Players}}", EditorProps = {
+	UserAction->AddEvaluator("Action", "$Name$", "$DisablePlayerControls$", "$DisablePlayerControlsHelp$", "sequence_disable_player_controls", [def, def.EvalAct_DisablePlayerControls], { Players = { Function="all_players" }, MakeInvincible = { Function="bool_constant", Value = true } }, { Type="proplist", Display="{{Players}}", EditorProps = {
 		Players = new UserAction.Evaluator.PlayerList { Name="$Players$", EditorHelp="$PlayerControlsPlayersHelp$" },
 		MakeInvincible = new UserAction.Evaluator.Boolean { Name="$MakeInvincible$", EditorHelp="$MakeInvincibleHelp$" }
 		} } );
@@ -395,28 +395,28 @@ public func Definition(def)
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.active = { Name="$Active$", Type="bool", Set="SetActive" };
 	def.EditorProps.finished = { Name="$Finished$", Type="bool", Set="SetFinished" };
-	def.EditorProps.trigger = { Name="$Trigger$", Type="enum", OptionKey="Trigger", Set="SetTrigger", Priority=110, Options = [
+	def.EditorProps.trigger = { Name="$Trigger$", Type="enum", OptionKey="Trigger", Set="SetTrigger", Priority = 110, Options = [
 		{ Name="$None$" },
-		{ Name="$PlayerEnterRegionRect$", EditorHelp="$PlayerEnterRegionHelp$", Value={ Trigger="player_enter_region_rect", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Color=0xff8000, Relative=true, Set="SetTriggerRect", SetRoot=true } },
-		{ Name="$PlayerEnterRegionCircle$", EditorHelp="$PlayerEnterRegionHelp$", Value={ Trigger="player_enter_region_circle", Radius=25 }, ValueKey="Radius", Delegate={ Type="circle", Color=0xff8000, Relative=true, Set="SetTriggerRadius", SetRoot=true } },
+		{ Name="$PlayerEnterRegionRect$", EditorHelp="$PlayerEnterRegionHelp$", Value={ Trigger="player_enter_region_rect", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Color = 0xff8000, Relative = true, Set="SetTriggerRect", SetRoot = true } },
+		{ Name="$PlayerEnterRegionCircle$", EditorHelp="$PlayerEnterRegionHelp$", Value={ Trigger="player_enter_region_circle", Radius = 25 }, ValueKey="Radius", Delegate={ Type="circle", Color = 0xff8000, Relative = true, Set="SetTriggerRadius", SetRoot = true } },
 		{ Name="$ObjectEnterRegionRect$", EditorHelp="$ObjectEnterRegionHelp$", Value={ Trigger="object_enter_region_rect", Rect=[-20, -20, 40, 40] }, Delegate={ Name="$ObjectEnterRegionRect$", EditorHelp="$ObjectEnterRegionHelp$", Type="proplist", EditorProps = {
-			ID = { Name="$ID$", EditorHelp="$IDHelp$", Type="def", Set="SetTriggerID", SetRoot=true },
-			Rect = { Type="rect", Color=0xff8000, Relative=true, Set="SetTriggerRect", SetRoot=true }
+			ID = { Name="$ID$", EditorHelp="$IDHelp$", Type="def", Set="SetTriggerID", SetRoot = true },
+			Rect = { Type="rect", Color = 0xff8000, Relative = true, Set="SetTriggerRect", SetRoot = true }
 			} } },
-		{ Name="$ObjectEnterRegionCircle$", EditorHelp="$ObjectEnterRegionHelp$", Value={ Trigger="object_enter_region_circle", Radius=25 }, Delegate={ Name="$ObjectEnterRegionCircle$", EditorHelp="$ObjectEnterRegionHelp$", Type="proplist", EditorProps = {
-			ID = { Name="$ID$", EditorHelp="$IDHelp$", Type="def", Set="SetTriggerID", SetRoot=true },
-			Radius = { Type="circle", Color=0xff8000, Relative=true, Set="SetTriggerRadius", SetRoot=true }
+		{ Name="$ObjectEnterRegionCircle$", EditorHelp="$ObjectEnterRegionHelp$", Value={ Trigger="object_enter_region_circle", Radius = 25 }, Delegate={ Name="$ObjectEnterRegionCircle$", EditorHelp="$ObjectEnterRegionHelp$", Type="proplist", EditorProps = {
+			ID = { Name="$ID$", EditorHelp="$IDHelp$", Type="def", Set="SetTriggerID", SetRoot = true },
+			Radius = { Type="circle", Color = 0xff8000, Relative = true, Set="SetTriggerRadius", SetRoot = true }
 			} } },
-		{ Name="$ObjectCountInContainer$", EditorHelp="$ObjectCountInContainerHelp$", Value={ Trigger="contained_object_count", Count=1 }, Delegate={ Name="$ObjectCountInContainer$", EditorHelp="$ObjectCountInContainerHelp$", Type="proplist", EditorProps = {
+		{ Name="$ObjectCountInContainer$", EditorHelp="$ObjectCountInContainerHelp$", Value={ Trigger="contained_object_count", Count = 1 }, Delegate={ Name="$ObjectCountInContainer$", EditorHelp="$ObjectCountInContainerHelp$", Type="proplist", EditorProps = {
 			Container = { Name="$Container$", EditorHelp="$CountContainerHelp$", Type="object" },
 			ID = { Name="$ID$", EditorHelp="$CountIDHelp$", Type="def", EmptyName="$AnyID$" },
-			Count = { Name="$Count$", Type="int", Min=1 },
+			Count = { Name="$Count$", Type="int", Min = 1 },
 			Operation = { Name="$Operation$", EditorHelp="$CountOperationHelp$", Type="enum", Options = [
 				{ Name="$GreaterEqual$", EditorHelp="$GreaterEqualHelp$" },
 				{ Name="$LessThan$", EditorHelp="$LessThanHelp$", Value="lt" }
 				] }
 			} } },
-		{ Name="$Interval$", EditorHelp="$IntervalHelp$", Value={ Trigger="interval", Interval=60 }, ValueKey="Interval", Delegate={ Name="$IntervalTime$", Type="int", Min=1, Set="SetIntervalTimer", SetRoot=true } },
+		{ Name="$Interval$", EditorHelp="$IntervalHelp$", Value={ Trigger="interval", Interval = 60 }, ValueKey="Interval", Delegate={ Name="$IntervalTime$", Type="int", Min = 1, Set="SetIntervalTimer", SetRoot = true } },
 		{ Name="$GameStart$", Value={ Trigger="game_start" } },
 		{ Name="$PlayerJoin$", Value={ Trigger="player_join" } },
 		{ Name="$PlayerRemove$", Value={ Trigger="player_remove" } },
@@ -429,7 +429,7 @@ public func Definition(def)
 		{ Name="$Production$", Value={ Trigger="production" }, ValueKey="ID", Delegate={ Type="def", EmptyName="$Anything$" } },
 		] };
 	def.EditorProps.condition = new UserAction.Evaluator.Boolean { Name="$Condition$" };
-	def.EditorProps.action = new UserAction.Prop { Priority=105 };
+	def.EditorProps.action = new UserAction.Prop { Priority = 105 };
 	def.EditorProps.action_progress_mode = UserAction.PropProgressMode;
 	def.EditorProps.action_allow_parallel = UserAction.PropParallel;
 	def.EditorProps.deactivate_after_action = { Name="$DeactivateAfterAction$", Type="bool" };

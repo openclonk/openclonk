@@ -17,7 +17,7 @@ Attach = {
 	Directions = 1,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 }
 };
 local BlastIncinerate = 1;
@@ -65,9 +65,9 @@ func Initialize()
 func InitGrown(object bush)
 {
 	SetR(RandomX(-45, 45));
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(2000), Trans_Rotate(RandomX(0,359),0,1,0)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(2000), Trans_Rotate(RandomX(0, 359),0, 1, 0)));
 	
-	PlayRandomGrowAnimation(9,10);
+	PlayRandomGrowAnimation(9, 10);
 	
 	AddLeaves(true);
 	// the object wants to know when it's fully grown
@@ -109,7 +109,7 @@ func Init(object bush)
 	
 	// random rotation
 	SetR(RandomX(-45, 45));
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(2000), Trans_Rotate(RandomX(0,359),0,1,0)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(2000), Trans_Rotate(RandomX(0, 359),0, 1, 0)));
 
 	PlayRandomGrowAnimation(0, max_grow_time);
 	
@@ -172,7 +172,7 @@ func FxGrowLeafTimer(target, effect, time)
 // we now can produce berries!
 func FullyGrown()
 {
-	AddEffect("LifeTimer", this, 1, 30+Random(10), this);
+	AddEffect("LifeTimer", this, 1, 30 + Random(10), this);
 	if (GetActionTarget())
 		GetActionTarget()->SproutFullyGrown(this);
 }
@@ -284,7 +284,7 @@ func Drip(int tick)
 	while (GBackSolid(0, y) && (y > -5)) --y;
 	var water = Material("Water");
 	while (tick-- > 0)
-		InsertMaterial(water, 0, y, RandomX(-4, 4), RandomX(-4,4));
+		InsertMaterial(water, 0, y, RandomX(-4, 4), RandomX(-4, 4));
 }
 
 func IsFullyGrown()

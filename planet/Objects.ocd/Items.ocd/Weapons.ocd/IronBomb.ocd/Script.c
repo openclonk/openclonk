@@ -94,7 +94,7 @@ protected func Hit(int x, int y)
 {
 	if (armed) 
 		return DoExplode();
-	return StonyObjectHit(x,y);
+	return StonyObjectHit(x, y);
 }
 
 protected func Incineration(int caused_by)

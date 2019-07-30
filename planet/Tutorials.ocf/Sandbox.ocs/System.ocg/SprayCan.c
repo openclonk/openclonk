@@ -46,7 +46,7 @@ public func ControlUseHolding(object clonk, int new_x, int new_y)
 	
 	if (brush_mode == 1)
 	{
-		DrawMaterialQuad(paint_col, last_x - last_ldx, last_y - last_ldy, last_x + last_ldx, last_y + last_ldy, new_x + ldx,new_y + ldy, new_x - ldx, new_y - ldy, paint_bg);
+		DrawMaterialQuad(paint_col, last_x - last_ldx, last_y - last_ldy, last_x + last_ldx, last_y + last_ldy, new_x + ldx, new_y + ldy, new_x - ldx, new_y - ldy, paint_bg);
 	}
 	
 	else if (brush_mode == 2)

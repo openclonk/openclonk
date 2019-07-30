@@ -65,7 +65,7 @@ func Dlg_Rocky_Init(object clonk)
 	if (!pickaxe) pickaxe = clonk->CreateContents(Pickaxe);
 	pickaxe.GetCarryTransform = Dialogue.Inventory_GetCarryTransform; // defined in Newton's dialogue
 	var h_scale = 2000;
-	pickaxe.ExtraTransform = Trans_Scale(h_scale,h_scale,h_scale);
+	pickaxe.ExtraTransform = Trans_Scale(h_scale, h_scale, h_scale);
 	clonk.pickaxe_particle = new Particles_Glimmer() { Size = PV_Linear(5, 0) };
 	// Pickaxeing animation
 	AddEffect("RockyPickaxeing", clonk, 1, Rocky_Pickaxe_SwingTime, this);
@@ -74,13 +74,13 @@ func Dlg_Rocky_Init(object clonk)
 
 func FxRockyPickaxeingTimer(object c, proplist fx, int time)
 {
-	if (FrameCounter() < this.anim_continue_frame) { fx.phase=false; return FX_OK; }
+	if (FrameCounter() < this.anim_continue_frame) { fx.phase = false; return FX_OK; }
 	c->SetDir(DIR_Right);
 	var len = c->GetAnimationLength("StrikePickaxe");
-	this.anim = c->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0,len, Rocky_Pickaxe_SwingTime, ANIM_Remove));
+	this.anim = c->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, len, Rocky_Pickaxe_SwingTime, ANIM_Remove));
 	c->Sound("Objects::Pickaxe::Clang?");
 	var x = (c->GetDir()*2-1) * 9;
 	var y = 9;
-	c->CreateParticle("StarSpark", x,y, PV_Random(-20, 20), PV_Random(-20, 20), 20, c.pickaxe_particle, Random(10)+3);
+	c->CreateParticle("StarSpark", x, y, PV_Random(-20, 20), PV_Random(-20, 20), 20, c.pickaxe_particle, Random(10)+3);
 	return FX_OK;
 }

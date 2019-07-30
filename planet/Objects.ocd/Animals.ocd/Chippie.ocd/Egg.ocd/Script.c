@@ -32,7 +32,7 @@ public func Place(int amount, proplist area)
 		}
 		
 		// small circle
-		for (var r = 0; (r < 360) && (amount > 0); r += 40+Random(40))
+		for (var r = 0; (r < 360) && (amount > 0); r += 40 + Random(40))
 		{
 			var o = CreateObject(Chippie_Egg, p.x + Sin(r, 10 + RandomX(-2, 2)), p.y - Cos(r, 10 + RandomX(-2, 2)), NO_OWNER);
 			o->SetCon(RandomX(90, 100));
@@ -119,7 +119,7 @@ private func FxWiggleTimer(target, effect, time)
 	var magnitude = Abs(Sin(6 * time, 1000)); 
 	var x = Sin(effect.start + 4 * time, magnitude);
 	var y = -Cos(effect.start + 5 * time, magnitude);
-	this.MeshTransformation = Trans_Mul(transform, Trans_Scale(1000 + x/4, 1000+y/4, 1000 + Max(x, y)/4));
+	this.MeshTransformation = Trans_Mul(transform, Trans_Scale(1000 + x/4, 1000 + y/4, 1000 + Max(x, y)/4));
 	
 	if (magnitude <= 1 && Random(2))
 		return -1;

@@ -27,7 +27,7 @@
 	pushing, to self) it is 'Control'. The item in the inventory only gets
 	the Use*-calls. If the callback is handled, you should return true.
 	Currently, this is explained more in detail here:
-	http://forum.openclonk.org/topic_show.pl?tid=337
+	http://forum.openclonk.org/topic_show.pl?tid = 337
 */
 
 // make use of other sub-libraries
@@ -110,7 +110,7 @@ protected func OnActionChanged(string oldaction)
 		Description	= A description of what the interaction does
 		IconID		= ID of the definition that contains the icon (like GetInteractionMetaInfo)
 		IconName	= Name of the graphic for the icon (like GetInteractionMetaInfo)
-		Priority	= Where to sort in in the interaction-list. 0=front, 10=after script, 20=after vehicles, 30=after structures, nil means no preference
+		Priority	= Where to sort in in the interaction-list. 0 = front, 10 = after script, 20 = after vehicles, 30 = after structures, nil means no preference
 */
 public func GetExtraInteractions()
 {
@@ -121,12 +121,12 @@ public func GetExtraInteractions()
 	if (fx)
 	{
 		if (fx.flipable)
-			PushBack(functions, {Fn = "Flip", Description=ConstructionPreviewer->GetFlipDescription(), Object=fx.preview, IconID=ConstructionPreviewer_IconFlip, Priority=0});
+			PushBack(functions, {Fn = "Flip", Description = ConstructionPreviewer->GetFlipDescription(), Object = fx.preview, IconID = ConstructionPreviewer_IconFlip, Priority = 0});
 	}
 	// call elevator cases
 	var elevators = FindObjects(Find_ID(ElevatorCase), Find_InRect(-ELEVATOR_CALL_DISTANCE, AbsY(0), ELEVATOR_CALL_DISTANCE * 2, GetY() + AbsY(LandscapeHeight())), Find_Func("Ready", this));
 	for (var elevator in elevators)
-		PushBack(functions, { Fn = "CallCase", Object=elevator, Description=elevator->GetCallDescription(), Priority=0 });
+		PushBack(functions, { Fn = "CallCase", Object = elevator, Description = elevator->GetCallDescription(), Priority = 0 });
 	return functions;
 }
 
@@ -163,11 +163,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	/* aiming with mouse:
 	   The CON_Aim control is transformed into a use command. Con_Use if
-	   repeated does not bear the updated x,y coordinates, that's why this
+	   repeated does not bear the updated x, y coordinates, that's why this
 	   other control needs to be issued and transformed. CON_Aim is a
 	   control which is issued on mouse move but disabled when not aiming
 	   or when HoldingEnabled() of the used item does not return true.
-	   For the rest of the control code, it looks like the x,y coordinates
+	   For the rest of the control code, it looks like the x, y coordinates
 	   came from CON_Use.
 	  */
 	if (GetUsedObject() && ctrl == CON_Aim)
@@ -196,7 +196,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	*/
 	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight)
 	{
-		var success = VirtualCursor()->Aim(ctrl,this,strength,repeat,status);
+		var success = VirtualCursor()->Aim(ctrl, this, strength, repeat, status);
 		// in any case, CON_Aim* is called but it is only successful if the virtual cursor is aiming
 		return success && VirtualCursor()->IsAiming();
 	}
@@ -209,8 +209,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 		
 	// save last mouse position:
-	// if the using has to be canceled, no information about the current x,y
-	// is available. Thus, the last x,y position needs to be saved
+	// if the using has to be canceled, no information about the current x, y
+	// is available. Thus, the last x, y position needs to be saved
 	else if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
 		this.control.mlastx = x;
@@ -231,7 +231,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// menu
 	if (this.control.menu)
 	{
-		return Control2Menu(ctrl, x,y,strength, repeat, status);
+		return Control2Menu(ctrl, x, y, strength, repeat, status);
 	}
 	
 	var contents = this->GetHandItem(0);
@@ -545,9 +545,9 @@ func DoThrow(object obj, int angle)
 	iX = 4; if (!GetDir()) iX = -iX;
 	iY = Cos(angle,-4);
 	iR = Random(360);
-	iRDir = RandomX(-10,10);
+	iRDir = RandomX(-10, 10);
 
-	iXDir = Sin(angle,this.ThrowSpeed);
+	iXDir = Sin(angle, this.ThrowSpeed);
 	iYDir = Cos(angle,-this.ThrowSpeed);
 	// throw boost (throws stronger upwards than downwards)
 	if (iYDir < 0) iYDir = iYDir * 13/10;
@@ -559,8 +559,8 @@ func DoThrow(object obj, int angle)
 
 	// throw
 	obj->Exit(iX, iY, iR, 0, 0, iRDir);
-	obj->SetXDir(iXDir,100);
-	obj->SetYDir(iYDir,100);
+	obj->SetXDir(iXDir, 100);
+	obj->SetYDir(iYDir, 100);
 	
 	// Prevent hitting the thrower.
 	var block_blow = AddEffect("BlockBlowControl", this, 100, 3, this);

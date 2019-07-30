@@ -56,7 +56,7 @@ func PostInitialize()
 
 func Init()
 {
-	location=CreateObjectAbove(KingOfTheHill_Location, 0, 5, NO_OWNER);
+	location = CreateObjectAbove(KingOfTheHill_Location, 0, 5, NO_OWNER);
 	location->SetKotH(this);
 }
 
@@ -67,7 +67,7 @@ func Destruction()
 
 func SearchPosition()
 {
-	var a=0, b=LandscapeHeight();
+	var a = 0, b = LandscapeHeight();
 
 	var lastX;
 	var lastY;
@@ -76,17 +76,17 @@ func SearchPosition()
 	{
 		var m=(a + b) / 2;
 		
-		var block=PathFree2(0, m, LandscapeWidth(), m);
+		var block = PathFree2(0, m, LandscapeWidth(), m);
 		
 		if (!block)
 		{
-			a=m;
+			a = m;
 		}
 		else
 		{
-			b=m;
-			lastX=block[0];
-			lastY=block[1];
+			b = m;
+			lastX = block[0];
+			lastY = block[1];
 		}
 	}
 	
@@ -101,7 +101,7 @@ public func GetPointLimit()
 
 public func SetPointLimit(int x)
 {
-	point_limit=x;
+	point_limit = x;
 }
 
 public func GetRadius()
@@ -111,7 +111,7 @@ public func GetRadius()
 
 public func SetRadius(int to)
 {
-	radius=to;
+	radius = to;
 }
 
 func DoPoint(int player, int count)
@@ -216,33 +216,33 @@ private func CheckForWinner()
 
 public func GetDescription(int plr)
 {
-	var teams=GetTeamPoints();
+	var teams = GetTeamPoints();
 	var lines=[];
 	
-	for (var i=0;i<GetLength(teams);++i)
+	for (var i = 0;i<GetLength(teams);++i)
 	{
 		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
 	}
 	
-	var msg=Format("$MsgGoalDesc$", GetPointLimit());
-	for (var i=0;i<GetLength(lines);++i)
-		msg=Format("%s|%s", msg, lines[i]);
+	var msg = Format("$MsgGoalDesc$", GetPointLimit());
+	for (var i = 0;i<GetLength(lines);++i)
+		msg = Format("%s|%s", msg, lines[i]);
 	return msg;
 }
 
 public func Activate(int byplr)
 {
-	var teams=GetTeamPoints();
+	var teams = GetTeamPoints();
 	var lines=[];
 	
-	for (var i=0;i<GetLength(teams);++i)
+	for (var i = 0;i<GetLength(teams);++i)
 	{
 		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
 	}
 	
-	var msg=Format("$MsgGoalDesc$", GetPointLimit());
-	for (var i=0;i<GetLength(lines);++i)
-		msg=Format("%s|%s", msg, lines[i]);
+	var msg = Format("$MsgGoalDesc$", GetPointLimit());
+	for (var i = 0;i<GetLength(lines);++i)
+		msg = Format("%s|%s", msg, lines[i]);
 	return MessageWindow(msg, byplr);
 }
 
@@ -252,11 +252,11 @@ private func GetTeamList()
 	var teams=[];
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		var p=GetPlayerByIndex(i);
-		var t=GetPlayerTeam(p);
+		var p = GetPlayerByIndex(i);
+		var t = GetPlayerTeam(p);
 		
 		var found = false;
-		for (var x=0;x<GetLength(teams);++x)
+		for (var x = 0;x<GetLength(teams);++x)
 			if (teams[x] == t) {found = true; break;}
 		if (found) continue;
 		teams[GetLength(teams)]=t;
@@ -267,17 +267,17 @@ private func GetTeamList()
 private func GetTeamPoints()
 {
 	
-	var teams=GetTeamList();
+	var teams = GetTeamList();
 	var ret=[];
 	
-	for (var i=0;i<GetLength(teams);++i)
+	for (var i = 0;i<GetLength(teams);++i)
 	{
 		var t = teams[i];
 		var p = 0;
 		var names = "";
-		for (var d=0;d<GetPlayerCount();++d)
+		for (var d = 0;d<GetPlayerCount();++d)
 		{
-			var p=GetPlayerByIndex(d);
+			var p = GetPlayerByIndex(d);
 			if (GetPlayerTeam(p) != t) continue;
 			
 			p += player_points[p];
@@ -288,7 +288,7 @@ private func GetTeamPoints()
 		}
 		
 
-		ret[GetLength(ret)]={nr=t, points=p, player_names=names};
+		ret[GetLength(ret)]={nr = t, points = p, player_names = names};
 	}
 	return ret;
 }

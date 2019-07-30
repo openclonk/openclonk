@@ -175,7 +175,7 @@ func BaseMats(int plr)
 			[BombArrow,   2,   2],
 			[Blunderbuss, 2,   2],
 			[LeadBullet,  2,   2],
-			[GrenadeLauncher,2,2],
+			[GrenadeLauncher, 2, 2],
 			[IronBomb,    5,   2],
 			[Dynamite,   10,   2],
 			[DynamiteBox, 2,   2],
@@ -203,9 +203,9 @@ func BaseMats(int plr)
 		[
 			[Bread,      10,   2],
 			//[Mushroom,   20,   2], // Take out mushrooms because they have a value of 0. They can be bought for nothing.
-			//[CookedMushroom,20,2],
+			//[CookedMushroom, 20, 2],
 			[Flour,      10,   2],
-			[Sproutberry,10,   2]
+			[Sproutberry, 10,   2]
 		];
 		
 		for (var mat in materials)

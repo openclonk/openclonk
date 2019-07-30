@@ -213,7 +213,7 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 				ID = 1,
 				Target = scenoptions_dummies[0],
 				// this is also a test for updating children by name
-				icon = {Left="50%-4em", Right="50%+4em", Bottom="5em", Top="1em", Symbol=Clonk},
+				icon = {Left="50%-4em", Right="50%+4em", Bottom="5em", Top="1em", Symbol = Clonk},
 				textwindow =
 				{
 					Top = "6em",
@@ -478,7 +478,7 @@ func StartMixedGridTest()
 	GuiAddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	var seed = 1;
-	for (var i=0; i < 50; ++i)
+	for (var i = 0; i < 50; ++i)
 	{
 		seed = ((seed * 17) + 7) % 1357;
 		var w = (seed % 4) + 1;
@@ -488,7 +488,7 @@ func StartMixedGridTest()
 		{
 			Right = Format("%dem", w),
 			Bottom = Format("%dem", h),
-			Priority = i+1,
+			Priority = i + 1,
 			BackgroundColor = HSL(seed % 255, 200, 200)
 		};
 		GuiAddSubwindow(item, menu.top);

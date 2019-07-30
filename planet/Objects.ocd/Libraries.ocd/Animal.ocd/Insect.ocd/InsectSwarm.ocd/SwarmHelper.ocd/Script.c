@@ -1,5 +1,5 @@
 /*
-	For every swarm one of these will be created @0,0 to help manage the swarm.
+	For every swarm one of these will be created @0, 0 to help manage the swarm.
 	Keeps track of the swarm master (aka swarm center).
 
 	@author Clonkonaut
@@ -11,7 +11,7 @@ local swarm;
 
 private func Initialize()
 {
-	SetPosition(0,0);
+	SetPosition(0, 0);
 }
 
 public func SwarmCall(string func, par1, par2, par3, par4, par5, par6, par7, par8, par9)

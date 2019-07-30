@@ -31,7 +31,7 @@ protected func OnClonkDeath(object clonk, int killer)
 	_inherited(clonk, killer, ...);
 	// Show scoreboard for a while
 	DoScoreboardShow(1, plr + 1);
-	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
+	Schedule(this, Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
 	NotifyHUD();
 	return;
 }
@@ -90,7 +90,7 @@ public func Activate(int byplr)
 	{
 		var score = GetRelativeScore(byplr);
 		if (score.kills > 0)		 MessageWindow(Format("$MsgAhead$",	 score.kills,  GetPlayerName(score.best)), byplr);
-		else if (score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills,GetPlayerName(score.best)), byplr);
+		else if (score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills, GetPlayerName(score.best)), byplr);
 		else if (score.best == byplr) MessageWindow(Format("$MsgYouAreBest$", score.kills), byplr);
 		else MessageWindow(Format("$MsgEqual$", GetPlayerName(score.best)), byplr);
 	}

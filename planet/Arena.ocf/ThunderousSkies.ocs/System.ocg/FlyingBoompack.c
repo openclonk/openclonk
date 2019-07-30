@@ -7,7 +7,7 @@ func Fall(int from_plr)
 {
  	SetOwner(from_plr);
  	SetController(from_plr);
- 	Launch(RandomX(-10,10)+180);
+ 	Launch(RandomX(-10, 10)+180);
 }
 
 func HasNoFadeOut()

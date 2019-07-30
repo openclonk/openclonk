@@ -31,7 +31,7 @@ local last_vx, last_vy, target_pos_x, target_pos_y;
 protected func Initialize()
 {
 	// No movement by default
-	movement = { Type=MovementType.None };
+	movement = { Type = MovementType.None };
 	// Size defaults to four.
 	SetSize(4);
 	
@@ -53,9 +53,9 @@ public func SetSize(int to_size)
 	// Update graphics.
 	var graph = Format("Size%dN%d", size, 1 + Random(1));
 	SetGraphics(graph);
-	SetShape(-20,-4,size*10,8);
+	SetShape(-20,-4, size*10, 8);
 	// Update solid
-	SetSolidMask(0,size*8-8,10*size,8);
+	SetSolidMask(0, size*8-8, 10*size, 8);
 	return;
 }
 
@@ -70,7 +70,7 @@ public func ClearMovement()
 	RemoveEffect("MoveHorizontal", this);
 	RemoveEffect("MoveVertical", this);
 	RemoveEffect("MoveOnGraph", this);
-	movement = { Type=MovementType.None };
+	movement = { Type = MovementType.None };
 	current_edge_index = current_vertex_index = -1;
 	SetComDir(COMD_None);
 	SetXDir(); SetYDir();
@@ -89,7 +89,7 @@ public func MoveHorizontal(int left, int right, int speed)
 		SetMoveSpeed(10 * speed);
 	if (GetComDir() != COMD_Right) SetComDir(COMD_Left);
 	// Props for editor display of movement range
-	movement = { Type = MovementType.Horizontal, Graph = [{X=left, Y=GetY()}, {X=right, Y=GetY()}] };
+	movement = { Type = MovementType.Horizontal, Graph = [{X = left, Y = GetY()}, {X = right, Y = GetY()}] };
 	return;
 }
 
@@ -118,7 +118,7 @@ public func MoveVertical(int top, int bottom, int speed)
 		SetMoveSpeed(10 * speed);
 	if (GetComDir() != COMD_Down) SetComDir(COMD_Up);
 	// Props for editor display of movement range
-	movement = { Type=MovementType.Vertical, Graph = [{X=GetX(), Y=top}, {X=GetX(), Y=bottom}] };
+	movement = { Type = MovementType.Vertical, Graph = [{X = GetX(), Y = top}, {X = GetX(), Y = bottom}] };
 	return;
 }
 
@@ -305,7 +305,7 @@ public func SetMoveType(new_movement)
 	else if (movement_type == MovementType.Graph)
 	{
 		var x = BoundBy(GetX(), 30, LandscapeWidth()-30), y = BoundBy(GetY(), 50, LandscapeHeight()-50);
-		MoveOnGraph({ Vertices=[{X=x, Y=y}, {X=x-20, Y=y-40}, {X=x+20, Y=y-40}, {X=x, Y=y+40}], Edges=[{Vertices=[0, 1]}, {Vertices=[0, 2]}, {Vertices=[0, 3]}] });
+		MoveOnGraph({ Vertices=[{X = x, Y = y}, {X = x-20, Y = y-40}, {X = x + 20, Y = y-40}, {X = x, Y = y + 40}], Edges=[{Vertices=[0, 1]}, {Vertices=[0, 2]}, {Vertices=[0, 3]}] });
 	}
 	else
 	{
@@ -317,26 +317,26 @@ public func SetMoveType(new_movement)
 public func Definition(def)
 {
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.movement_speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min=5, Set="SetMoveSpeed" };
+	def.EditorProps.movement_speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min = 5, Set="SetMoveSpeed" };
 	def.EditorProps.movement = { Name="$Movement$", EditorHelp="$MovementHelp$", Type="enum", Set="SetMoveType", OptionKey="Type", ValueKey="Graph", Options=[
-		{ Name="$NoMovement$", EditorHelp="$NoMovementHelp$", Value={Type=MovementType.None} },
-		{ Name="$Horizontal$", EditorHelp="$HorizontalHelp$", Value={Type=MovementType.Horizontal}, Delegate={ Type="polyline", VerticalFix=true, StructureFix=true, OnUpdate="OnHorizontalGraphUpdate", Relative=false, Color=0xff2010 } },
-		{ Name="$Vertical$", EditorHelp="$VerticalHelp$", Value={Type=MovementType.Vertical}, Delegate={ Type="polyline", HorizontalFix=true, StructureFix=true, OnUpdate="OnVerticalGraphUpdate", Relative=false, Color=0x20ff10 } },
-		{ Name="$Graph$", EditorHelp="$GraphHelp$", Value={Type=MovementType.Graph}, Delegate={ Type="graph", OnUpdate="OnGraphUpdate", Relative=false, Color=0xef8000,
+		{ Name="$NoMovement$", EditorHelp="$NoMovementHelp$", Value={Type = MovementType.None} },
+		{ Name="$Horizontal$", EditorHelp="$HorizontalHelp$", Value={Type = MovementType.Horizontal}, Delegate={ Type="polyline", VerticalFix = true, StructureFix = true, OnUpdate="OnHorizontalGraphUpdate", Relative = false, Color = 0xff2010 } },
+		{ Name="$Vertical$", EditorHelp="$VerticalHelp$", Value={Type = MovementType.Vertical}, Delegate={ Type="polyline", HorizontalFix = true, StructureFix = true, OnUpdate="OnVerticalGraphUpdate", Relative = false, Color = 0x20ff10 } },
+		{ Name="$Graph$", EditorHelp="$GraphHelp$", Value={Type = MovementType.Graph}, Delegate={ Type="graph", OnUpdate="OnGraphUpdate", Relative = false, Color = 0xef8000,
 			EdgeDelegate = { Name="$Edge$", EditorHelp="$EdgeHelp$", EditorProps={
 				Speed = { Name="$Speed$", EditorHelp="$EdgeSpeedHelp$", Type="enum", Options=[
 					{Name="$Default$", EditorHelp="$DefaultHelp$"},
-					{Name="$Instant$", EditorHelp="$InstantSpeedHelp$", Value=EdgeSpeed_Infinite },
-					{Name="$CustomSpeed$", EditorHelp="$CustomSpeedHelp$", Type=C4V_Int, Delegate={Type="int", Min=5} }
+					{Name="$Instant$", EditorHelp="$InstantSpeedHelp$", Value = EdgeSpeed_Infinite },
+					{Name="$CustomSpeed$", EditorHelp="$CustomSpeedHelp$", Type = C4V_Int, Delegate={Type="int", Min = 5} }
 					] },
 				} },
 			VertexDelegate = { Name="$Vertex$", EditorHelp="$VertexHelp$", EditorProps={
 				ArrivalAction = new UserAction.Prop { Name="$ArrivalAction$", EditorHelp="$ArrivalActionHelp$" },
-				WaitTime = {Name="$VertexWaitTime$", EditorHelp="$VertexWaitTimeHelp$", Type="int", Min=0},
+				WaitTime = {Name="$VertexWaitTime$", EditorHelp="$VertexWaitTimeHelp$", Type="int", Min = 0},
 				Advancement = { Name="$Advancement$", EditorHelp="$AdvancementHelp$", Type="enum", Options=[
-					{ Name="$Random$", EditorHelp="$RandomAdvancementHelp$", Value=EdgeAdvancement.Random },
-					{ Name="$Clockwise$", EditorHelp="$CWAdvancementHelp$", Value=EdgeAdvancement.Clockwise },
-					{ Name="$Counterclockwise$", EditorHelp="$CCWAdvancementHelp$", Value=EdgeAdvancement.Counterclockwise }
+					{ Name="$Random$", EditorHelp="$RandomAdvancementHelp$", Value = EdgeAdvancement.Random },
+					{ Name="$Clockwise$", EditorHelp="$CWAdvancementHelp$", Value = EdgeAdvancement.Clockwise },
+					{ Name="$Counterclockwise$", EditorHelp="$CCWAdvancementHelp$", Value = EdgeAdvancement.Counterclockwise }
 					] }
 				} },
 		 } },
@@ -349,11 +349,11 @@ public func EditCursorMoved(int old_x, int old_y, bool movement_finished)
 	// Move horizontal/vertical graph elements
 	if (movement.Type == MovementType.Horizontal)
 	{
-		movement.Graph = [{X=movement.Graph[0].X, Y=GetY()}, {X=movement.Graph[1].X, Y=GetY()}];
+		movement.Graph = [{X = movement.Graph[0].X, Y = GetY()}, {X = movement.Graph[1].X, Y = GetY()}];
 	}
 	else if (movement.Type == MovementType.Vertical)
 	{
-		movement.Graph = [{Y=movement.Graph[0].Y, X=GetX()}, {Y=movement.Graph[1].Y, X=GetX()}];
+		movement.Graph = [{Y = movement.Graph[0].Y, X = GetX()}, {Y = movement.Graph[1].Y, X = GetX()}];
 	}
 	else if (movement.Type == MovementType.Graph)
 	{
@@ -461,7 +461,7 @@ private func SetPositionToNearestEdge()
 		var da = dx0 * dx1 + dy0 * dy1;
 		// Total distance (multiplied by d1 length)
 		var distance = dp + Max(-da) + Max(da - d);
-		//Log("%d (%v, %v) dist = %d", edge_index, {X=v0.X, Y=v0.Y, idx=v0._index}, {X=v1.X, Y=v1.Y, idx=v1._index}, distance);
+		//Log("%d (%v, %v) dist = %d", edge_index, {X = v0.X, Y = v0.Y, idx = v0._index}, {X = v1.X, Y = v1.Y, idx = v1._index}, distance);
 		//Log("dx0=%d, dx1=%d, dy0=%d, dy1=%d, d=%d, dp=%d, da=%d, distance=%d", dx0, dx1, dy0, dy1, d, dp, da, distance);
 		if (!edge_index || distance < best_distance)
 		{

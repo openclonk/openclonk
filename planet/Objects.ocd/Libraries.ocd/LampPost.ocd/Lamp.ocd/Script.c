@@ -36,7 +36,7 @@ public func LampOffset() {}
 /*-- Convenient calls --*/
 
 /** Standard turning on procedure. Overload as needed.
-	Default behaviour: lib_lamp_lit to true, light range 80,60, inherited
+	Default behaviour: lib_lamp_lit to true, light range 80, 60, inherited
 */
 public func TurnOn()
 {
@@ -54,7 +54,7 @@ func TurnLightOn()
 }
 
 /** Standard turning off procedure. Overload as needed.
-	Default behaviour: lib_lamp_lit to false, light range 0,0, inherited
+	Default behaviour: lib_lamp_lit to false, light range 0, 0, inherited
 */
 public func TurnOff()
 {

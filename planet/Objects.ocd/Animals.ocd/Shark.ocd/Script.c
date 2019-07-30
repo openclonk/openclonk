@@ -36,7 +36,7 @@ private func Attack(object target, int x, int y)
 	var dis = Distance(GetX(), GetY(), target->GetX(), target->GetY());
 	if (dis > 30)
 	{
-		var current_angle=Angle(GetX(), GetY(), target->GetX(), target->GetY());
+		var current_angle = Angle(GetX(), GetY(), target->GetX(), target->GetY());
 		if (current_angle < 0) current_angle = 360 + current_angle;
 		var t = current_angle - 270;
 		var t2 = Cos(t, 90) - 90; // Expand the areas around 0deg and 180deg a bit so you see fish from the side more
@@ -250,7 +250,7 @@ private func StartWalk()
 	var pos = GetAnimationPosition(swim_animation);
 	SetAnimationPosition(swim_animation, Anim_Linear(pos, 0, len, 10, ANIM_Loop));
 	this.MeshTransformation = Trans_Mul(Trans_Rotate(90 + RandomX(-10, 10), 1, 0, 0), base_transform);
-	SetObjDrawTransform(0,0,0,0,0,0);
+	SetObjDrawTransform(0, 0, 0, 0, 0, 0);
 	swim_animation = PlayAnimation("Swim", 5, Anim_Linear(0, 0, len, 100, ANIM_Loop), Anim_Const(500));
 	if (GBackLiquid())
 	{
@@ -373,7 +373,7 @@ Walk = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Walk",
@@ -389,7 +389,7 @@ Jump = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Jump",
@@ -403,7 +403,7 @@ Dead = {
 	Speed = 10,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Hold",

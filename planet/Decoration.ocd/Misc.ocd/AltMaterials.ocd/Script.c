@@ -28,7 +28,7 @@ public func AddMaterial(proplist target_def, string new_material_name, string ed
 			Type = "enum",
 			AsyncGet = get_fn,
 			Set = set_fn,
-			Options = [ { Name="$Default$", Value=target_def->GetMeshMaterial() } ]
+			Options = [ { Name="$Default$", Value = target_def->GetMeshMaterial() } ]
 		};
 	}
 	var opts = target_def.EditorProps.alternative_material.Options;
@@ -68,7 +68,7 @@ public func Definition(proplist def)
 	AddMaterial(Sword, "OgreSword", "$OgreSword$");
 	AddMaterial(PowderKeg, "NukePowderKeg", "$NukePowderKeg$");
 	// Add custom attack modes for swords and keg (currently only affecting visuals, but should really add some extra differences)
-	AI->RegisterAttackMode("LaserSword", new AI.SingleWeaponAttackMode { Weapon=Sword, Strategy=AI.ExecuteMelee, Skin="LaserSword", SkinName="$LaserSword$" });
-	AI->RegisterAttackMode("OgreSword", new AI.SingleWeaponAttackMode { Weapon=Sword, Strategy=AI.ExecuteMelee, Skin="OgreSword", SkinName="$OgreSword$" });
-	AI->RegisterAttackMode("NukePowderKeg", new AI.SingleWeaponAttackMode { Weapon=PowderKeg, Strategy=AI.ExecuteBomber, Skin="NukePowderKeg", SkinName="$NukePowderKeg$" });
+	AI->RegisterAttackMode("LaserSword", new AI.SingleWeaponAttackMode { Weapon = Sword, Strategy = AI.ExecuteMelee, Skin="LaserSword", SkinName="$LaserSword$" });
+	AI->RegisterAttackMode("OgreSword", new AI.SingleWeaponAttackMode { Weapon = Sword, Strategy = AI.ExecuteMelee, Skin="OgreSword", SkinName="$OgreSword$" });
+	AI->RegisterAttackMode("NukePowderKeg", new AI.SingleWeaponAttackMode { Weapon = PowderKeg, Strategy = AI.ExecuteBomber, Skin="NukePowderKeg", SkinName="$NukePowderKeg$" });
 }

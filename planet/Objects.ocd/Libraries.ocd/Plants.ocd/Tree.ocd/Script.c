@@ -36,7 +36,7 @@ private func Construction()
 {
 	_inherited(...);
 
-	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
+	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0, 359),0, 1, 0));
 	if (!GetGrowthValue() && !IsBurnedTree()) 
 		StartGrowth(5, RandomX(900, 1050));
 	if (IsBurnedTree())
@@ -68,7 +68,7 @@ public func CreateObjectInTreetop(id to_create, int tries, bool no_overlap_check
 	if (!IsStanding()) return nil;
 	if (!tries) tries = 20;
 
-	var pos = { x=0, y=0 }, overlap, width, height, area;
+	var pos = { x = 0, y = 0 }, overlap, width, height, area;
 	do {
 		GetTreetopPosition(pos);
 		overlap = false;

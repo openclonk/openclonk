@@ -262,7 +262,7 @@ public func GetCarryMode(object clonk, bool idle)
 public func GetCarryTransform(object clonk, bool idle, bool nohand)
 {
 	if (idle || nohand)
-		return Trans_Translate(0,3000);
+		return Trans_Translate(0, 3000);
 }
 
 public func GetCarrySpecial(object clonk)
@@ -275,7 +275,7 @@ public func GetCarryBone2(object clonk) { return "main2"; }
 
 func Definition(proplist def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Translate(-2500, 1000),Trans_Scale(1800),Trans_Rotate(-60,1,-1,1), Trans_Rotate(180, 0, 1, 0));
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-2500, 1000),Trans_Scale(1800),Trans_Rotate(-60, 1,-1, 1), Trans_Rotate(180, 0, 1, 0));
 }
 
 /*-- Properties --*/

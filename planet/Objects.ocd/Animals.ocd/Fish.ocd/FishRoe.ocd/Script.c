@@ -15,7 +15,7 @@ Swim = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	NextAction = "Swim"
 }
 };
@@ -30,7 +30,7 @@ func Initialize()
 	
 	var particles = 
 	{
-		Size = PV_Sin(PV_Step(PV_Random(1, 2)), PV_Random(0, 1), PV_Random(1,2)),
+		Size = PV_Sin(PV_Step(PV_Random(1, 2)), PV_Random(0, 1), PV_Random(1, 2)),
 		Attach = ATTACH_MoveRelative,
 		Alpha = 100
 	};

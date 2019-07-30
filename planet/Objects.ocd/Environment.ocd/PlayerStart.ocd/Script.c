@@ -34,41 +34,41 @@ public func Definition(def)
 	def.EditorProps.starting_knowledge = { Name="$Knowledge$", Type="enum", OptionKey="Option", Options = [
 		{ Name="$None$" },
 		{ Name="$All$", Value={ Option="all" } },
-		{ Name="$AllExcept$", Value={ Option="allexcept", Data=[] }, ValueKey="Data", Delegate=EditorBase.IDSet },
-		{ Name="$Specific$", Value={ Option="idlist", Data=[] }, ValueKey="Data", Delegate=EditorBase.IDSet },
+		{ Name="$AllExcept$", Value={ Option="allexcept", Data=[] }, ValueKey="Data", Delegate = EditorBase.IDSet },
+		{ Name="$Specific$", Value={ Option="idlist", Data=[] }, ValueKey="Data", Delegate = EditorBase.IDSet },
 		] };
 	def.EditorProps.starting_crew = EditorBase->GetConditionalIDList("IsClonk", "$Crew$", Clonk);
 	def.EditorProps.starting_material = new EditorBase.ItemPlusParameterList { Name="$StartingMaterial$", EditorHelp="$StartingMaterialHelp$" };
-	def.EditorProps.starting_wealth = { Name="$Wealth$", Type="int", Min=0 };
+	def.EditorProps.starting_wealth = { Name="$Wealth$", Type="int", Min = 0 };
 	def.EditorProps.starting_base_material = new EditorBase.IDList { Name="$BaseMaterial$", EditorHelp="$BaseMaterialHelp$" };
 	def.EditorProps.clonk_max_contents_count = { Name="$ClonkMaxContentsCount$", EditorHelp="$ClonkMaxContentsCountHelp$", Type="enum", Options = [
-		{ Name=Format("$Default$ (%d)", Clonk.MaxContentsCount) }, { Name="$Custom$", Value=Clonk.MaxContentsCount, Delegate={ Type="int", Min=0, Max=10 } } ] };
+		{ Name = Format("$Default$ (%d)", Clonk.MaxContentsCount) }, { Name="$Custom$", Value = Clonk.MaxContentsCount, Delegate={ Type="int", Min = 0, Max = 10 } } ] };
 	def.EditorProps.clonk_max_energy = { Name="$ClonkMaxEnergy$", EditorHelp="$ClonkMaxEnergyHelp$", Type="enum", Options = [
-		{ Name=Format("$Default$ (%d)", Clonk.MaxEnergy/1000) }, { Name="$Custom$", Value=Clonk.MaxEnergy/1000, Delegate={ Type="int", Min=1, Max=100000 } } ] };
+		{ Name = Format("$Default$ (%d)", Clonk.MaxEnergy/1000) }, { Name="$Custom$", Value = Clonk.MaxEnergy/1000, Delegate={ Type="int", Min = 1, Max = 100000 } } ] };
 	def.EditorProps.respawn_material = { Name="$RespawnMaterial$", Type="enum", Set="SetRespawnMaterial", Save="RespawnMaterial", Options = [
 		{ Name="$None$" },
 		{ Name="$SameAsStartingMaterial$", Value="starting_material" },
-		{ Name="$Custom$", Value=[], Type=C4V_Array, Delegate=new EditorBase.ItemPlusParameterList { Name="$RespawnMaterial$", EditorHelp="$RespawnMaterialHelp$" } },
+		{ Name="$Custom$", Value=[], Type = C4V_Array, Delegate = new EditorBase.ItemPlusParameterList { Name="$RespawnMaterial$", EditorHelp="$RespawnMaterialHelp$" } },
 		] };
 	def.EditorProps.view_lock = { Name="$ViewLock$", Priority = -100, Type="bool" };
 	def.EditorProps.zoom_min = { Name="$ZoomMin$", Set="SetZoomMin", Priority = -101, Type="enum", OptionKey="Option", Options = [
 		{ Name="$Default$" },
-		{ Name="$Custom$", Value=150, Delegate={ Type="int", Min=50, Max=750, Step=50 } }
+		{ Name="$Custom$", Value = 150, Delegate={ Type="int", Min = 50, Max = 750, Step = 50 } }
 	] };
 	def.EditorProps.zoom_max = { Name="$ZoomMax$", Set="SetZoomMax", Priority = -102, Type="enum", OptionKey="Option", Options = [
 		{ Name="$Default$" },
-		{ Name="$Custom$", Value=750, Delegate={ Type="int", Min=150, Max=100000, Step=50 } }
+		{ Name="$Custom$", Value = 750, Delegate={ Type="int", Min = 150, Max = 100000, Step = 50 } }
 	] };
 	def.EditorProps.zoom_set = { Name="$ZoomSet$", Set="SetZoomSet", Priority = -103, Type="enum", OptionKey="Option", Options = [
 		{ Name="$Default$" },
-		{ Name="$Custom$", Value=300, Delegate={ Type="int", Min=150, Max=750, Step=50 } }
+		{ Name="$Custom$", Value = 300, Delegate={ Type="int", Min = 150, Max = 750, Step = 50 } }
 	] };
 	return true;
 }
 
-public func GetDefaultCrew() { return [{id=Clonk, count=1}]; }
+public func GetDefaultCrew() { return [{id = Clonk, count = 1}]; }
 public func GetDefaultMaterial() { return [Shovel, Hammer, Axe]; }
-public func GetDefaultBaseMaterial() { return [{id=Clonk, count=999999}]; }
+public func GetDefaultBaseMaterial() { return [{id = Clonk, count = 999999}]; }
 
 public func Initialize()
 {
@@ -85,7 +85,7 @@ public func Initialize()
 public func SetStartingPlayers(string setting, param)
 {
 	if (setting)
-		starting_players = { Option=setting, Data=param };
+		starting_players = { Option = setting, Data = param };
 	else
 		starting_players = nil; // None
 	return true;
@@ -94,7 +94,7 @@ public func SetStartingPlayers(string setting, param)
 public func SetStartingKnowledge(string setting, param)
 {
 	if (setting)
-		starting_knowledge = { Option=setting, Data=param };
+		starting_knowledge = { Option = setting, Data = param };
 	else
 		starting_knowledge = nil; // None
 	return true;
@@ -108,7 +108,7 @@ public func SetStartingCrew(array new_crew)
 
 public func SetStartingMaterial(array new_material)
 {
-	// ID+count conversion (old style)
+	// ID + count conversion (old style)
 	if (new_material && GetLength(new_material) && new_material[0].id && new_material[0].count && !new_material[0]->~GetName())
 	{
 		starting_material = [];
@@ -295,7 +295,7 @@ private func ApplyCrewSettings(object crew)
 private func InitializeCrew(int plr)
 {
 	// Collect IDs of crew to create
-	var requested_crew = [], n=0;
+	var requested_crew = [], n = 0;
 	for (var idlist_entry in starting_crew)
 		for (var i = 0; i < idlist_entry.count; ++i)
 			requested_crew[n++] = idlist_entry.id;
@@ -360,7 +360,7 @@ private func InitializeMaterial(int plr)
 		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(), GetY() + GetDefHeight() / 2, plr);
 		if (!obj || !obj.Collectible) continue;
 		var id = idlist_entry.id;
-		for (var j=0; j < GetCrewCount(plr); ++j)
+		for (var j = 0; j < GetCrewCount(plr); ++j)
 		{
 			var clonk = GetCrew(plr, j);
 			if (clonk)
@@ -388,7 +388,7 @@ private func InitializeKnowledge(int plr)
 	if (!starting_knowledge) return true; // No knowledge
 	if (starting_knowledge.Option == "all" || starting_knowledge.Option == "allexcept")
 	{
-		var i=0, exceptlist = [];
+		var i = 0, exceptlist = [];
 		if (starting_knowledge.Option == "allexcept") exceptlist = starting_knowledge.Data;
 		while (def = GetDefinition(i++))
 			if (!(def->GetCategory() & (C4D_Rule | C4D_Goal | C4D_Environment)))

@@ -81,10 +81,10 @@ public func DrawCave(int x, int y, int wdt, int hgt)
 	
 	cave_layer = {Algo = MAPALGO_Filter, Op = cave_layer, Filter="~Gold"};
 	cave_layer = {Algo = MAPALGO_Scale, X = 200, Y = 150, Op = cave_layer, OffX = cave_layer.Wdt/2, OffY = cave_layer.Hgt/2};
-	cave_layer = {Algo = MAPALGO_Offset, Op=cave_layer, OffX = x, OffY = y};
+	cave_layer = {Algo = MAPALGO_Offset, Op = cave_layer, OffX = x, OffY = y};
 	
 	Blit(cave_layer);
-	//cave_layer = {Algo = MAPALGO_Border, Op = cave_layer, Left=2, Right=2, Top=2, Bottom=2};
+	//cave_layer = {Algo = MAPALGO_Border, Op = cave_layer, Left = 2, Right = 2, Top = 2, Bottom = 2};
 	//Draw("Tunnel", cave_layer);
 	return dug_out;
 }

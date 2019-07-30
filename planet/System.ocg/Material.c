@@ -12,7 +12,7 @@ global func MaterialDepthCheck(int x, int y, string mat, int depth)
 	var travelled = 0;
 	var matnum = Material(mat);
 
-	while (y+GetY() < LandscapeHeight() && GetMaterial(x, y) == matnum)
+	while (y + GetY() < LandscapeHeight() && GetMaterial(x, y) == matnum)
 	{
 		travelled++;
 		y++;
@@ -30,13 +30,13 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 	var iMaterial = Material(sMat);
 	for (var i = 0; i < 500; i++)
 	{
-		iX = AbsX(iXStart+Random(iWidth));
-		iY = AbsY(iYStart+Random(iHeight));
-		if (GetMaterial(iX,iY)==iMaterial &&
-		   GetMaterial(iX+iSize,iY+iSize)==iMaterial &&
-		   GetMaterial(iX+iSize,iY-iSize)==iMaterial &&
-		   GetMaterial(iX-iSize,iY-iSize)==iMaterial &&
-		   GetMaterial(iX-iSize,iY+iSize)==iMaterial
+		iX = AbsX(iXStart + Random(iWidth));
+		iY = AbsY(iYStart + Random(iHeight));
+		if (GetMaterial(iX, iY)==iMaterial &&
+		   GetMaterial(iX + iSize, iY + iSize)==iMaterial &&
+		   GetMaterial(iX + iSize, iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize, iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize, iY + iSize)==iMaterial
 		) {
 			return [iX, iY]; // Location found.
 		}

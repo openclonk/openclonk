@@ -152,7 +152,7 @@ public func GetGraniteShape(proplist map, int ground_bottom)
 	var hgt = map.Hgt;
 	var granite_layer = {Algo = MAPALGO_Rect, X = 0, Y = ground_bottom, Wdt = wdt, Hgt = 5};
 	var granite_x = [  0,   4,   8,  24,  24, wdt-24, wdt-24, wdt-8, wdt-4, wdt,    wdt,      0];
-	var granite_y = [128, 128, 170, 229, hgt,    hgt,    229,   170,   128, 128, hgt+20, hgt+20];
+	var granite_y = [128, 128, 170, 229, hgt,    hgt,    229,   170,   128, 128, hgt + 20, hgt + 20];
 	var granite_side = {Algo = MAPALGO_Polygon, X = granite_x, Y = granite_y};
 	var granite = {Algo = MAPALGO_Or, Op = [granite_side, granite_layer]};
 	var granite_rnd = {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 8, Iterations = 4, Seed = Random(65536), Op = granite};

@@ -4,7 +4,7 @@
 
 func Dlg_Dagobert_1(object clonk)
 {
-	var gem = FindObject(Find_ID(GemOfPower), Find_AtRect(-20,-20,20,20));
+	var gem = FindObject(Find_ID(GemOfPower), Find_AtRect(-20,-20, 20, 20));
 	if (g_got_oil)
 	{
 		MessageBox("$Dagobert1B$", clonk, dlg_target); // beautiful gem

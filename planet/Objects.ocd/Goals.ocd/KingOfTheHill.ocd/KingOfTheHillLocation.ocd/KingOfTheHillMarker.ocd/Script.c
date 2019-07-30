@@ -28,13 +28,13 @@ func FxTimerTimer()
 	var x, y;
 	if (origin->GetKing())
 	{
-		x=origin->GetKing()->GetX();
-		y=origin->GetKing()->GetY() - 20;
+		x = origin->GetKing()->GetX();
+		y = origin->GetKing()->GetY() - 20;
 	}
 	else
 	{
-		x=origin->GetX();
-		y=origin->GetY();
+		x = origin->GetX();
+		y = origin->GetY();
 	}
 	
 	if (Distance(this->GetX(), this->GetY(), x, y) <= 15)
@@ -43,8 +43,8 @@ func FxTimerTimer()
 	}
 	else
 	{
-		var x_dir=BoundBy((x - this->GetX()) / 10, -4, 4);
-		var y_dir=BoundBy((y - this->GetY()) / 10, -4, 4);
+		var x_dir = BoundBy((x - this->GetX()) / 10, -4, 4);
+		var y_dir = BoundBy((y - this->GetY()) / 10, -4, 4);
 		this->SetPosition(this->GetX() + x_dir, this->GetY() + y_dir);
 	}
 	

@@ -55,8 +55,8 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	Scoreboard->NewPlayerEntry(plr);
 	Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
 	Scoreboard->SetPlayerData(plr, "score", g_scores[plr]);
-	//SetFoW(false,plr); - need FoW for lights
-	CreateObject(Homebase, 0,0, plr);
+	//SetFoW(false, plr); - need FoW for lights
+	CreateObject(Homebase, 0, 0, plr);
 	JoinPlayer(plr);
 	if (!g_wave) StartGame();
 	return;
@@ -88,15 +88,15 @@ func JoinPlayer(plr, prev_clonk)
 {
 	var spawn_idx = Random(2);
 	if (prev_clonk && g_statue) spawn_idx = (prev_clonk->GetX() > g_statue->GetX());
-	var x=[494,763][spawn_idx],y = 360;
+	var x=[494, 763][spawn_idx],y = 360;
 	var clonk = GetCrew(plr);
 	if (clonk)
 	{
-		clonk->SetPosition(x,y-10);
+		clonk->SetPosition(x, y-10);
 	}
 	else
 	{
-		clonk = CreateObjectAbove(Clonk, x,y, plr);
+		clonk = CreateObjectAbove(Clonk, x, y, plr);
 		clonk->MakeCrewMember(plr);
 	}
 	SetCursor(plr, clonk);
@@ -132,7 +132,7 @@ func FillHomebase(object homebase)
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Firestone, cost = 5});
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Blunderbuss,    cost = 50, ammo = LeadBullet, desc = "$HomebaseDescBlunderbuss$",     requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = IronBomb,  cost = 15,                                             requirements = ["AdvancedWeapons"] });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Lantern,cost = 15,                                            requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Lantern, cost = 15,                                            requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = GrenadeLauncher, ammo = IronBomb, desc = "$HomebaseDescGrenadeLauncher$", requirements = ["MasterWeapons"] });
 
 	homebase->AddCaption("$HomebaseItems$");
@@ -140,12 +140,12 @@ func FillHomebase(object homebase)
 	//homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon { item = Hammer,    cost = 1000, desc = "$HomebaseDescHammer$", extra_width = 1 });
 
 	homebase->AddCaption("$HomebaseTechnology$");
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World,cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseMasterWeapons$", item = Icon_World,cost = 1000, desc = "$HomebaseDescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World, cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseMasterWeapons$", item = Icon_World, cost = 1000, desc = "$HomebaseDescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
 
 	homebase->AddCaption("$HomebaseUpgrades$");
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$HomebaseDescLoadSpeed$", tech = "LoadSpeed", tiers=3 });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLife$", item = Homebase_Icon, graphics="Life%d", costs = [10, 50, 100], desc = "$HomebaseDescLife$", tech = "Life", tiers=3 });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$HomebaseDescLoadSpeed$", tech = "LoadSpeed", tiers = 3 });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLife$", item = Homebase_Icon, graphics="Life%d", costs = [10, 50, 100], desc = "$HomebaseDescLife$", tech = "Life", tiers = 3 });
 	homebase->AddCaption("$HomebaseArtifacts$");
 }
 
@@ -195,7 +195,7 @@ func LaunchWave(int wave)
 				ScheduleLaunchEnemy(enemy);
 			wave_spawn_time = Max(wave_spawn_time, enemy.Delay + enemy.Interval * enemy.Num);
 		}
-		ScheduleCall(nil, Scenario.LaunchWaveDone, wave_spawn_time+5, 1, wave);
+		ScheduleCall(nil, Scenario.LaunchWaveDone, wave_spawn_time + 5, 1, wave);
 		return true;
 	}
 	return false;
@@ -221,8 +221,8 @@ func ScheduleLaunchEnemy(proplist enemy)
 	// Spawn either only enemy or mirrored enemies on both sides
 	var side = enemy.Side;
 	if (!side) side = WAVE_SIDE_LEFT | WAVE_SIDE_RIGHT;
-	if (side & WAVE_SIDE_LEFT)  ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, 10 + xmin, xmax - xmin, y);
-	if (side & WAVE_SIDE_RIGHT) ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, 1190 - xmax, xmax - xmin, y);
+	if (side & WAVE_SIDE_LEFT)  ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval, 1), Max(enemy.Num, 1), enemy, 10 + xmin, xmax - xmin, y);
+	if (side & WAVE_SIDE_RIGHT) ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval, 1), Max(enemy.Num, 1), enemy, 1190 - xmax, xmax - xmin, y);
 	return true;
 }
 
@@ -238,7 +238,7 @@ func CheckWaveCleared(int wave)
 	// Check timer to determine if enemy wave has been cleared.
 	// Enemies nil themselves when they're dead. So clear out nils and we're done when the list is empty
 	var nil_idx;
-	while ( (nil_idx=GetIndexOf(g_spawned_enemies))>=0 )
+	while ( (nil_idx = GetIndexOf(g_spawned_enemies))>=0 )
 	{
 		var l = GetLength(g_spawned_enemies) - 1;
 		if (nil_idx<l) g_spawned_enemies[nil_idx] = g_spawned_enemies[l];
@@ -377,7 +377,7 @@ func Statue_Death()
 {
 	// Fail :(
 	// Elminiate all players
-	var i=GetPlayerCount(C4PT_User);
+	var i = GetPlayerCount(C4PT_User);
 	while (i--) EliminatePlayer(GetPlayerByIndex(i, C4PT_User));
 	// Statue down :(
 	CastObjects(Nugget, 5, 10);
@@ -437,7 +437,7 @@ public func SetNextWave(string wave_name, bool wait)
 			if (enemy) enemy->RemoveObject();
 	// Give gold for skipped waves
 	var total_reward = 0, total_bonus = 0;
-	for (var i=g_wave; i<i_wave; ++i)
+	for (var i = g_wave; i<i_wave; ++i)
 	{
 		var wave = ENEMY_WAVE_DATA[i];
 		total_reward += wave.Bounty ?? 0;
@@ -481,70 +481,70 @@ static const g_respawning_weapons = [Firestone, Rock];
 func InitWaveData()
 {
 	// Define weapon types
-	var bigsword   = { InvType=Sword,     Scale=2000, Material="LaserSword"};
-	var ogresword  = { InvType=Sword,     Scale=1800, Material="OgreSword"};
-	var bigclub    = { InvType=Club,      Scale=2000};
-	var nukekeg    = { InvType=PowderKeg, Scale=1400, Material="NukePowderKeg", Strength=80};
+	var bigsword   = { InvType = Sword,     Scale = 2000, Material="LaserSword"};
+	var ogresword  = { InvType = Sword,     Scale = 1800, Material="OgreSword"};
+	var bigclub    = { InvType = Club,      Scale = 2000};
+	var nukekeg    = { InvType = PowderKeg, Scale = 1400, Material="NukePowderKeg", Strength = 80};
 	// Define different enemy types
-	var newbie     = { Name="$EnemyNewbie$",    Inventory=Rock,        Energy=  1, Bounty=  1, Color=0xff8000ff,                                  };
-	var flintstone = { Name="$EnemyFlintstone$",Inventory=Firestone,   Energy= 10, Bounty=  3, Color=0xff8080ff,                                  };
-	var bowman     = { Name="$EnemyBow$",       Inventory=[Bow, Arrow],Energy= 10, Bounty=  5, Color=0xff00ff00, Skin=CSKIN_Farmer                };
-	var amazon     = { Name="$EnemyAmazon$",    Inventory=Javelin,     Energy= 10, Bounty=  5,                   Skin=CSKIN_Amazon,    Backpack=0 };
-	var suicide    = { Name="$EnemySuicide$",   Inventory=PowderKeg,   Energy= 20, Bounty= 15, Color=0xffff0000, Skin=CSKIN_Alchemist, Backpack=0,                         Speed=80, Siege=true };
-	var runner     = { Name="$EnemyRunner$",    Inventory=Rock,        Energy=  1, Bounty= 10, Color=0xffff0000,                       Backpack=0,                         Speed=250           };
-	var artillery  = { Name="$EnemyArtillery$", Inventory=Firestone,   Energy= 30, Bounty= 20, Color=0xffffff00, Skin=CSKIN_Steampunk,             Vehicle=Catapult };
-	var swordman   = { Name="$EnemySwordman$",  Inventory=Sword,       Energy= 30, Bounty= 30, Color=0xff0000ff,                                  };
-	var bigswordman= { Name="$EnemySwordman2$", Inventory=bigsword,    Energy= 60, Bounty= 60, Color=0xff00ffff, Skin=CSKIN_Steampunk, Backpack=0 };
-	var ogre       = { Name="$EnemyOgre$",      Inventory=bigclub,     Energy= 90, Bounty=100, Color=0xff00ffff, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=50 };
-	var swordogre  = { Name="$EnemyOgre$",      Inventory=ogresword,   Energy= 90, Bounty=100, Color=0xff805000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=50 };
-	var nukeogre   = { Name="$EnemyOgre$",      Inventory=nukekeg,     Energy=120, Bounty=100, Color=0xffff0000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=40, Siege=true };
-	var chippie    = { Type=Chippie, Bounty=30 };
-	var boomattack = { Type=DefenseBoomAttack, Bounty=10 };
-	var boomattackf= { Type=DefenseBoomAttack, Bounty=25, Speed=300 };
+	var newbie     = { Name="$EnemyNewbie$",    Inventory = Rock,        Energy=  1, Bounty=  1, Color = 0xff8000ff,                                  };
+	var flintstone = { Name="$EnemyFlintstone$",Inventory = Firestone,   Energy= 10, Bounty=  3, Color = 0xff8080ff,                                  };
+	var bowman     = { Name="$EnemyBow$",       Inventory=[Bow, Arrow],Energy= 10, Bounty=  5, Color = 0xff00ff00, Skin = CSKIN_Farmer                };
+	var amazon     = { Name="$EnemyAmazon$",    Inventory = Javelin,     Energy= 10, Bounty=  5,                   Skin = CSKIN_Amazon,    Backpack = 0 };
+	var suicide    = { Name="$EnemySuicide$",   Inventory = PowderKeg,   Energy= 20, Bounty= 15, Color = 0xffff0000, Skin = CSKIN_Alchemist, Backpack = 0,                         Speed = 80, Siege = true };
+	var runner     = { Name="$EnemyRunner$",    Inventory = Rock,        Energy=  1, Bounty= 10, Color = 0xffff0000,                       Backpack = 0,                         Speed = 250           };
+	var artillery  = { Name="$EnemyArtillery$", Inventory = Firestone,   Energy= 30, Bounty= 20, Color = 0xffffff00, Skin = CSKIN_Steampunk,             Vehicle = Catapult };
+	var swordman   = { Name="$EnemySwordman$",  Inventory = Sword,       Energy= 30, Bounty= 30, Color = 0xff0000ff,                                  };
+	var bigswordman= { Name="$EnemySwordman2$", Inventory = bigsword,    Energy= 60, Bounty= 60, Color = 0xff00ffff, Skin = CSKIN_Steampunk, Backpack = 0 };
+	var ogre       = { Name="$EnemyOgre$",      Inventory = bigclub,     Energy= 90, Bounty = 100, Color = 0xff00ffff, Skin = CSKIN_Ogre,      Backpack = 0, Scale=[1400, 1200, 1200], Speed = 50 };
+	var swordogre  = { Name="$EnemyOgre$",      Inventory = ogresword,   Energy= 90, Bounty = 100, Color = 0xff805000, Skin = CSKIN_Ogre,      Backpack = 0, Scale=[1400, 1200, 1200], Speed = 50 };
+	var nukeogre   = { Name="$EnemyOgre$",      Inventory = nukekeg,     Energy = 120, Bounty = 100, Color = 0xffff0000, Skin = CSKIN_Ogre,      Backpack = 0, Scale=[1400, 1200, 1200], Speed = 40, Siege = true };
+	var chippie    = { Type = Chippie, Bounty = 30 };
+	var boomattack = { Type = DefenseBoomAttack, Bounty = 10 };
+	var boomattackf= { Type = DefenseBoomAttack, Bounty = 25, Speed = 300 };
 	//newbie = runner;
 	//newbie = runner;
 
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
 			{ Name = "$WaveNewbies$", Bounty = 10, Enemies = [
-			new newbie   {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
+			new newbie   {            Num= 1, Interval = 10, Side = WAVE_SIDE_LEFT }
 	]}, { Name = "$WaveBows$", Bounty = 15, Enemies = [
-			new newbie      {            Num= 2, Interval=10 },
-			new bowman      { Delay= 30, Num= 3, Interval=10, Side = WAVE_SIDE_RIGHT },
-			new amazon      { Delay= 30, Num= 3, Interval=10, Side = WAVE_SIDE_LEFT }
+			new newbie      {            Num= 2, Interval = 10 },
+			new bowman      { Delay= 30, Num= 3, Interval = 10, Side = WAVE_SIDE_RIGHT },
+			new amazon      { Delay= 30, Num= 3, Interval = 10, Side = WAVE_SIDE_LEFT }
 	]}, { Name = "Explosive", Bounty = 20, Enemies = [
-			new flintstone  {            Num=10, Interval=20 }
+			new flintstone  {            Num = 10, Interval = 20 }
 	]}, { Name = "Boomattack", Bounty = 20, Enemies = [
-			new boomattack  {            Num=10, Interval=70 }
+			new boomattack  {            Num = 10, Interval = 70 }
 	]}, { Name = "Suicidal", Bounty = 20, Enemies = [
 			new suicide     {            Num= 2, Interval= 5 },
 			new flintstone  { Delay= 15, Num= 5, Interval= 5 },
 			new suicide     { Delay= 50, Num= 1 }
 	]}, { Name = "Swordsmen", Bounty = 30, Enemies = [
-			new swordman    {            Num=10, Interval=20 },
-			new bigswordman { Delay=210, Num= 1, Interval=10 }
+			new swordman    {            Num = 10, Interval = 20 },
+			new bigswordman { Delay = 210, Num= 1, Interval = 10 }
 	]}, { Name = "Oh Shrek!", Bounty = 50, Enemies = [
-			new ogre        {            Num= 2, Interval=20 },
-			new swordogre   { Delay= 40, Num= 1, Interval=20 },
+			new ogre        {            Num= 2, Interval = 20 },
+			new swordogre   { Delay= 40, Num= 1, Interval = 20 },
 			new bowman      { Delay= 60, Num= 3, Interval= 5 }
 	]}, { Name = "Heavy artillery incoming", Bounty = 50, Enemies = [
 			new artillery   {            Num= 1              },
-			new ogre        {            Num= 2, Interval=20 },
+			new ogre        {            Num= 2, Interval = 20 },
 			new flintstone  { Delay= 15, Num= 5, Interval= 5 },
-			new swordogre   { Delay= 60, Num= 1, Interval=20 }
+			new swordogre   { Delay= 60, Num= 1, Interval = 20 }
 	]}, { Name = "Fast rockets", Bounty = 50, Enemies = [
-			new boomattackf {            Num=6, Interval=30 }
+			new boomattackf {            Num = 6, Interval = 30 }
 	]}, { Name = "Stop the big ones", Bounty = 75, Enemies = [
-			new flintstone  {            Num=20, Interval=15 },
-			new nukeogre    {            Num= 2, Interval=99 },
-			new amazon      { Delay= 50, Num= 6, Interval=10 }
+			new flintstone  {            Num = 20, Interval = 15 },
+			new nukeogre    {            Num= 2, Interval = 99 },
+			new amazon      { Delay= 50, Num= 6, Interval = 10 }
 	]}, { Name = "Supreme Boomattack", Bounty = 100, Enemies = [
-			new boomattack  {            Num=30, Interval=10 },
-			new boomattackf {            Num=5, Interval=40 }
+			new boomattack  {            Num = 30, Interval = 10 },
+			new boomattackf {            Num = 5, Interval = 40 }
 	]}, { Name = "Alien invasion", Bounty = 100, Enemies = [
-			new bowman      { Delay=260, Num= 3, Interval= 5 },
-			new chippie     {            Num=10, Interval=10 },
-			new amazon      { Delay=250, Num= 6, Interval=10 }
+			new bowman      { Delay = 260, Num= 3, Interval= 5 },
+			new chippie     {            Num = 10, Interval = 10 },
+			new amazon      { Delay = 250, Num= 6, Interval = 10 }
 	]}, { Name = "Two of each kind", Bounty = 250, Enemies = [
 			new newbie      { Delay=  0                      },
 			new ogre        { Delay=  0                      },
@@ -561,17 +561,17 @@ func InitWaveData()
 			new boomattackf { Delay= 50                      }
 	]}, { Name = "Finale!", Bounty = 1000, Enemies = [
 			new artillery   {            Num= 2, Interval= 5 },
-			new newbie      {            Num=10, Interval=15 },
-			new swordman    { Delay=  3, Num= 5, Interval=30 },
-			new nukeogre    { Delay= 60, Num= 2, Interval=50 },
-			new bigswordman { Delay=103, Num= 3, Interval=30 },
-			new amazon      { Delay= 10, Num= 5, Interval=10 },
-			new boomattack  { Delay= 40, Num=20, Interval=20 },
-			new flintstone  {            Num=20, Interval=10 },
-			new bowman      { Delay=  8, Num= 5, Interval=40 },
-			new suicide     { Delay= 25, Num=10, Interval=20 },
-			new ogre        { Delay= 30, Num= 3, Interval=20 },
-			new swordogre   { Delay=  4, Num= 4, Interval=99 }
+			new newbie      {            Num = 10, Interval = 15 },
+			new swordman    { Delay=  3, Num= 5, Interval = 30 },
+			new nukeogre    { Delay= 60, Num= 2, Interval = 50 },
+			new bigswordman { Delay = 103, Num= 3, Interval = 30 },
+			new amazon      { Delay= 10, Num= 5, Interval = 10 },
+			new boomattack  { Delay= 40, Num = 20, Interval = 20 },
+			new flintstone  {            Num = 20, Interval = 10 },
+			new bowman      { Delay=  8, Num= 5, Interval = 40 },
+			new suicide     { Delay= 25, Num = 10, Interval = 20 },
+			new ogre        { Delay= 30, Num= 3, Interval = 20 },
+			new swordogre   { Delay=  4, Num= 4, Interval = 99 }
 	]} ];
 	return true;
 }

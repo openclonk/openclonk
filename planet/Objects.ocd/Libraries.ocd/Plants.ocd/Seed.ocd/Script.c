@@ -167,7 +167,7 @@ private func GetGroundPos()
 	if (GBackSolid()) return -1;
 
 	var y = 0;
-	while (!GBackSolid(0,y) && y < 21)
+	while (!GBackSolid(0, y) && y < 21)
 		y++;
 	if (y >= 21) return -1;
 	return y;
@@ -181,9 +181,9 @@ private func CheckPlantConditions()
 	// No solid ground
 	if (ground == -1) return false;
 	// No fertile ground
-	if (GetMaterialVal("Soil", "Material", GetMaterial(0,ground)) != 1) return false;
+	if (GetMaterialVal("Soil", "Material", GetMaterial(0, ground)) != 1) return false;
 	// Do not grow underground
-	if (!GBackSky(0, ground-1) && !GBackSky(0,0) && !GBackSky(0,-30)) return false;
+	if (!GBackSky(0, ground-1) && !GBackSky(0, 0) && !GBackSky(0,-30)) return false;
 	// or underwater
 	if (GBackLiquid(0,-15)) return false;
 	// Too many plants around
@@ -251,7 +251,7 @@ private func PlantManually(object clonk)
 	}
 
 	// Soil is needed
-	if (GetMaterialVal("Soil", "Material", GetMaterial(0,ground)) != 1)
+	if (GetMaterialVal("Soil", "Material", GetMaterial(0, ground)) != 1)
 	{
 		return CustomMessage(Format("$TxtBadGround$", GetName()), clonk, clonk->GetController(), 0, 0, 0xff0000);
 	}
@@ -279,9 +279,9 @@ private func GetDefaultConfinement(plant, def_val)
 	{
 		// Doesn't matter.
 		// This point is only reached if the plant got deleted between value change in editor and execution in network
-		x=LandscapeWidth()/2;
-		y=LandscapeHeight()/2;
-		size=200;
+		x = LandscapeWidth()/2;
+		y = LandscapeHeight()/2;
+		size = 200;
 	}
 	return Shape->Rectangle(x - size / 2, y - size / 2, size, size);
 }
@@ -298,13 +298,13 @@ public func AddSeedEditorProps(def)
 {
 	// Seed props used by seed and plant
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.plant_seed_chance = { Name="$SeedChance$", EditorHelp="$SeedChanceHelp$", Type="int", Min=0, Max=10000, Asyncget="SeedChance", Set="SetSeedChance", Save="Seed" };
-	def.EditorProps.plant_seed_area = { Name="$SeedArea$", EditorHelp="$SeedAreaHelp$", Type="int", Min=0, Asyncget="SeedArea", Set="SetSeedArea", Save="Seed" };
-	def.EditorProps.plant_seed_amount = { Name="$SeedAmount$", EditorHelp="$SeedAmountHelp$", Type="int", Min=0, Asyncget="SeedAmount", Set="SetSeedAmount", Save="Seed" };
-	def.EditorProps.plant_seed_offset = { Name="$SeedOffset$", EditorHelp="$SeedOffsetHelp$", Type="int", Min=0, Asyncget="SeedOffset", Set="SetSeedOffset", Save="Seed" };
+	def.EditorProps.plant_seed_chance = { Name="$SeedChance$", EditorHelp="$SeedChanceHelp$", Type="int", Min = 0, Max = 10000, Asyncget="SeedChance", Set="SetSeedChance", Save="Seed" };
+	def.EditorProps.plant_seed_area = { Name="$SeedArea$", EditorHelp="$SeedAreaHelp$", Type="int", Min = 0, Asyncget="SeedArea", Set="SetSeedArea", Save="Seed" };
+	def.EditorProps.plant_seed_amount = { Name="$SeedAmount$", EditorHelp="$SeedAmountHelp$", Type="int", Min = 0, Asyncget="SeedAmount", Set="SetSeedAmount", Save="Seed" };
+	def.EditorProps.plant_seed_offset = { Name="$SeedOffset$", EditorHelp="$SeedOffsetHelp$", Type="int", Min = 0, Asyncget="SeedOffset", Set="SetSeedOffset", Save="Seed" };
 	def.EditorProps.Confinement = { Name="$Confinement$", EditorHelp="$ConfinementHelp$", Type="enum", Set="SetConfinementRect", Save="Seed", Options = [
 		{ Name="$NoConfinmenet$" },
-		{ Name="$Rect$", OptionKey="Type", DefaultValueFunction=Library_Seed.GetDefaultConfinement, Value={ Type="rect" }, Delegate={ Type="rect", Relative=false, Storage="proplist", Color=0x30ff30, Set="SetConfinementRect" } }
+		{ Name="$Rect$", OptionKey="Type", DefaultValueFunction = Library_Seed.GetDefaultConfinement, Value={ Type="rect" }, Delegate={ Type="rect", Relative = false, Storage="proplist", Color = 0x30ff30, Set="SetConfinementRect" } }
 		// other shapes not supported for now
 		] };
 	def.SetConfinementRect = Library_Seed.SetConfinementRect;
