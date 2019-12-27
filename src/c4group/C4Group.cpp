@@ -450,25 +450,25 @@ struct C4Group::P
 C4GroupEntry::~C4GroupEntry()
 {
 	if (HoldBuffer)
-		if (bpMemBuf)
+		if (MemoryBuffer)
 		{
 			if (BufferIsStdbuf)
-				StdBuf::DeletePointer(bpMemBuf);
+				StdBuf::DeletePointer(MemoryBuffer);
 			else
-				delete [] bpMemBuf;
+				delete [] MemoryBuffer;
 		}
 }
 
-void C4GroupEntry::Set(const DirectoryIterator &iter, const char * path)
+void C4GroupEntry::Set(const DirectoryIterator &directories, const char * path)
 {
 	InplaceReconstruct(this);
 
-	SCopy(GetFilename(*iter),FileName,_MAX_FNAME);
-	SCopy(*iter, DiskPath, _MAX_PATH-1);
-	Size = iter.GetFileSize();
-	Status=C4GRES_OnDisk;
-	Packed=false;
-	ChildGroup=false;
+	SCopy(GetFilename(*directories),FileName,_MAX_FNAME);
+	SCopy(*directories, DiskPath, _MAX_PATH-1);
+	Size = directories.GetFileSize();
+	Status = C4GRES_OnDisk;
+	Packed = false;
+	ChildGroup = false;
 	// Notice folder entries are not checked for ChildGroup status.
 	// This would cause extreme performance loss and be good for
 	// use in entry list display only.
@@ -613,8 +613,8 @@ bool C4Group::OpenRealGrpFile()
 	p->EntryOffset+=sizeof(C4GroupHeader);
 
 	// Check Header
-	if (!SEqual(Head.id,C4GroupFileID)
-	    || (Head.VersionMajor!=C4GroupFileVer1) || (Head.VersionMinor>C4GroupFileVer2))
+	if (!SEqual(Head.Id,C4GroupFileID)
+	    || (Head.Ver1!=C4GroupFileVer1) || (Head.Ver2>C4GroupFileVer2))
 		return Error("OpenRealGrpFile: Invalid header");
 
 	// Read Entries
@@ -727,7 +727,7 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 	// Init list entry data
 	SCopy(fname,nentry->DiskPath,_MAX_FNAME);
 	nentry->Status=status;
-	nentry->bpMemBuf=membuf;
+	nentry->MemoryBuffer=membuf;
 	nentry->Next=nullptr;
 	nentry->NoSort = p->NoSort;
 
@@ -776,8 +776,8 @@ bool C4Group::Close()
 	if (p->StdOutput) printf("Writing group file...\n");
 
 	// Set new version
-	Head.VersionMajor=C4GroupFileVer1;
-	Head.VersionMinor=C4GroupFileVer2;
+	Head.Ver1=C4GroupFileVer1;
+	Head.Ver2=C4GroupFileVer2;
 
 	// Automatic sort
 	SortByList(C4Group_SortList);
@@ -995,8 +995,8 @@ bool C4Group::AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &hTarget)
 	}
 
 	case C4GroupEntry::C4GRES_InMemory: // Copy from mem to std file
-		if (!centry->bpMemBuf) return Error("AE2S: no buffer");
-		if (!hTarget.Write(centry->bpMemBuf,centry->Size)) return Error("AE2S: writing error");
+		if (!centry->MemoryBuffer) return Error("AE2S: no buffer");
+		if (!hTarget.Write(centry->MemoryBuffer,centry->Size)) return Error("AE2S: writing error");
 		break;
 
 	case C4GroupEntry::C4GRES_Deleted: // Don't save
@@ -1660,8 +1660,8 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 	p->EntryOffset+=sizeof(C4GroupHeader);
 
 	// Check Header
-	if (!SEqual(Head.id,C4GroupFileID)
-	    || (Head.VersionMajor!=C4GroupFileVer1) || (Head.VersionMinor>C4GroupFileVer2))
+	if (!SEqual(Head.Id,C4GroupFileID)
+	    || (Head.Ver1!=C4GroupFileVer1) || (Head.Ver2>C4GroupFileVer2))
 		{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Invalid Header"); }
 
 	// Read Entries
@@ -1738,9 +1738,9 @@ bool C4Group::SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup)
 {
 	C4GroupEntry *centry = GetEntry(szName);
 	// Read cached entries directly from memory (except child groups. that is not supported.)
-	if (centry && centry->bpMemBuf && !NeedsToBeAGroup)
+	if (centry && centry->MemoryBuffer && !NeedsToBeAGroup)
 	{
-		p->pInMemEntry = centry->bpMemBuf;
+		p->pInMemEntry = centry->MemoryBuffer;
 		p->iInMemEntrySize = centry->Size;
 		return true;
 	}
@@ -2140,7 +2140,7 @@ uint32_t C4Group::CalcCRC32(C4GroupEntry *pEntry)
 			break;
 		case C4GroupEntry::C4GRES_InMemory:
 			// set
-			pData = pEntry->bpMemBuf; fOwnData = false;
+			pData = pEntry->MemoryBuffer; fOwnData = false;
 			break;
 		default:
 			return false;
@@ -2248,12 +2248,12 @@ const C4GroupEntry *C4Group::GetFirstEntry() const { return p->FirstEntry; }
 void C4Group::PreCacheEntry(C4GroupEntry * e)
 {
 	// skip some stuff that can not be cached or has already been cached
-	if (e->ChildGroup || e->bpMemBuf || !e->Size) return;
+	if (e->ChildGroup || e->MemoryBuffer || !e->Size) return;
 	// now load it!
 	StdBuf buf;
 	if (!this->LoadEntry(e->FileName, &buf)) return;
 	e->HoldBuffer = true;
 	e->BufferIsStdbuf = true;
 	e->Size = buf.getSize(); // update size in case group changed on disk between calls
-	e->bpMemBuf = static_cast<BYTE *>(buf.GrabPointer());
+	e->MemoryBuffer = static_cast<BYTE *>(buf.GrabPointer());
 }

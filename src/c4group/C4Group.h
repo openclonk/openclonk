@@ -82,23 +82,26 @@ extern const char *C4CFN_FLS[];
 
 struct C4GroupHeader
 {
-	char id[24+4] = C4GroupFileID;
-	int VersionMajor = C4GroupFileVer1;
-	int VersionMinor = C4GroupFileVer2;
+	char Id[24+4] = C4GroupFileID;
+	int Ver1 = C4GroupFileVer1;
+	int Ver2 = C4GroupFileVer2;
 	int Entries = 0;
-	char reserved[164] = { 0 };
+	char Reserved[164] = { 0 };
 };
 
 struct C4GroupEntryCore
 {
 	char FileName[260] = { 0 };
-	int32_t Packed = 0, ChildGroup = 0;
-	int32_t Size = 0, reserved1 = 0, Offset = 0;
-	int32_t reserved2 = 0;
-	char reserved3 = '\0';
-	unsigned int reserved4 = 0;
+	int32_t Packed = 0;
+	int32_t ChildGroup = 0;
+	int32_t Size = 0;
+	int32_t Offset = 0;
+	int32_t Reserved1 = 0;
+	int32_t Reserved2 = 0;
+	char Reserved3 = '\0';
+	unsigned int Reserved4 = 0;
 	char Executable = '\0';
-	BYTE fbuf[26] = { 0 };
+	BYTE Buffer[26] = { 0 };
 };
 
 #pragma pack (pop)
@@ -123,10 +126,10 @@ public:
 	bool HoldBuffer = false;
 	bool BufferIsStdbuf = false;
 	bool NoSort = false;
-	BYTE *bpMemBuf = nullptr;
+	BYTE *MemoryBuffer = nullptr;
 	C4GroupEntry *Next = nullptr;
 public:
-	void Set(const DirectoryIterator & iter, const char * path);
+	void Set(const DirectoryIterator & directories, const char * path);
 };
 
 class C4Group : public CStdStream
