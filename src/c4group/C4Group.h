@@ -62,19 +62,19 @@ const int32_t C4GroupSwapThreshold = 10 * 1024 * 1024;
 #define C4GroupFileID "RedWolf Design GrpFolder"
 
 bool C4Group_TestIgnore(const char *filename);
-void C4Group_SetTempPath(const char *szPath);
+void C4Group_SetTempPath(const char *path);
 const char* C4Group_GetTempPath();
-void C4Group_SetSortList(const char **ppSortList);
-void C4Group_SetProcessCallback(bool (*fnCallback)(const char *, int));
+void C4Group_SetSortList(const char **sort_list);
+void C4Group_SetProcessCallback(bool (*callback)(const char *, int));
 bool C4Group_IsGroup(const char *filename);
-bool C4Group_CopyItem(const char *szSource, const char *szTarget, bool fNoSort=false, bool fResetAttributes=false);
-bool C4Group_MoveItem(const char *szSource, const char *szTarget, bool fNoSort=false);
-bool C4Group_DeleteItem(const char *szItem, bool fRecycle=false);
-bool C4Group_PackDirectoryTo(const char *filename, const char *szFilenameTo);
+bool C4Group_CopyItem(const char *source, const char *target, bool no_sorting = false, bool reset_attributes = false);
+bool C4Group_MoveItem(const char *source, const char *target, bool no_sorting = false);
+bool C4Group_DeleteItem(const char *item_name, bool do_recycle = false);
+bool C4Group_PackDirectoryTo(const char *filename, const char *to_filename);
 bool C4Group_PackDirectory(const char *filename);
 bool C4Group_UnpackDirectory(const char *filename);
 bool C4Group_ExplodeDirectory(const char *filename);
-bool C4Group_ReadFile(const char *filename, char **pData, size_t *iSize);
+bool C4Group_ReadFile(const char *filename, char **data, size_t *size);
 
 extern const char *C4CFN_FLS[];
 
@@ -126,7 +126,7 @@ public:
 	BYTE *bpMemBuf = nullptr;
 	C4GroupEntry *Next = nullptr;
 public:
-	void Set(const DirectoryIterator & iter, const char * szPath);
+	void Set(const DirectoryIterator & iter, const char * path);
 };
 
 class C4Group : public CStdStream
@@ -161,7 +161,7 @@ public:
 	bool Extract(const char *szFiles, const char *szExtractTo=nullptr, const char *szExclude=nullptr);
 	bool ExtractEntry(const char *filename, const char *szExtractTo=nullptr);
 	bool Delete(const char *szFiles, bool fRecursive = false);
-	bool DeleteEntry(const char *filename, bool fRecycle=false);
+	bool DeleteEntry(const char *filename, bool do_recycle=false);
 	bool Rename(const char *szFile, const char *szNewName);
 	bool Sort(const char *szSortList);
 	bool SortByList(const char **ppSortList, const char *filename=nullptr);

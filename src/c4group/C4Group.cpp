@@ -61,20 +61,20 @@ char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db;.orig;.svn";
 const char **C4Group_SortList = nullptr;
 bool (*C4Group_ProcessCallback)(const char *, int)=nullptr;
 
-void C4Group_SetProcessCallback(bool (*fnCallback)(const char *, int))
+void C4Group_SetProcessCallback(bool (*callback)(const char *, int))
 {
-	C4Group_ProcessCallback = fnCallback;
+	C4Group_ProcessCallback = callback;
 }
 
-void C4Group_SetSortList(const char **ppSortList)
+void C4Group_SetSortList(const char **sort_list)
 {
-	C4Group_SortList = ppSortList;
+	C4Group_SortList = sort_list;
 }
 
-void C4Group_SetTempPath(const char *szPath)
+void C4Group_SetTempPath(const char *path)
 {
-	if (!szPath || !szPath[0]) C4Group_TempPath[0]=0;
-	else { SCopy(szPath,C4Group_TempPath,_MAX_PATH); AppendBackslash(C4Group_TempPath); }
+	if (!path || !path[0]) C4Group_TempPath[0]=0;
+	else { SCopy(path,C4Group_TempPath,_MAX_PATH); AppendBackslash(C4Group_TempPath); }
 }
 
 const char *C4Group_GetTempPath()
@@ -97,21 +97,21 @@ bool C4Group_IsGroup(const char *filename)
 	return false;
 }
 
-bool C4Group_CopyItem(const char *szSource, const char *szTarget1, bool fNoSort, bool fResetAttributes)
+bool C4Group_CopyItem(const char *source, const char *szTarget1, bool fNoSort, bool fResetAttributes)
 {
 	// Parameter check
-	if (!szSource || !szTarget1 || !szSource[0] || !szTarget1[0]) return false;
-	char szTarget[_MAX_PATH+1]; SCopy(szTarget1,szTarget,_MAX_PATH);
+	if (!source || !szTarget1 || !source[0] || !szTarget1[0]) return false;
+	char target[_MAX_PATH+1]; SCopy(szTarget1,target,_MAX_PATH);
 
 	// Backslash terminator indicates target is a path only (append filename)
-	if (szTarget[SLen(szTarget)-1]==DirectorySeparator) SAppend(GetFilename(szSource),szTarget);
+	if (target[SLen(target)-1]==DirectorySeparator) SAppend(GetFilename(source),target);
 
 	// Check for identical source and target
 	// Note that attributes aren't reset here
-	if (ItemIdentical(szSource,szTarget)) return true;
+	if (ItemIdentical(source,target)) return true;
 
 	// Source and target are simple items
-	if (ItemExists(szSource) && CreateItem(szTarget)) return CopyItem(szSource,szTarget, fResetAttributes);
+	if (ItemExists(source) && CreateItem(target)) return CopyItem(source,target, fResetAttributes);
 
 	// For items within groups, attribute resetting isn't needed, because packing/unpacking will kill all
 	// attributes anyway
@@ -119,111 +119,111 @@ bool C4Group_CopyItem(const char *szSource, const char *szTarget1, bool fNoSort,
 	// Source & target
 	C4Group hSourceParent, hTargetParent;
 	char szSourceParentPath[_MAX_PATH+1],szTargetParentPath[_MAX_PATH+1];
-	GetParentPath(szSource,szSourceParentPath); GetParentPath(szTarget,szTargetParentPath);
+	GetParentPath(source,szSourceParentPath); GetParentPath(target,szTargetParentPath);
 
 	// Temp filename
 	char szTempFilename[_MAX_PATH+1];
 	SCopy(C4Group_TempPath,szTempFilename,_MAX_PATH);
-	SAppend(GetFilename(szSource),szTempFilename);
+	SAppend(GetFilename(source),szTempFilename);
 	MakeTempFilename(szTempFilename);
 
 	// Extract source to temp file
 	if ( !hSourceParent.Open(szSourceParentPath)
-	     || !hSourceParent.Extract(GetFilename(szSource),szTempFilename)
+	     || !hSourceParent.Extract(GetFilename(source),szTempFilename)
 	     || !hSourceParent.Close() ) return false;
 
 	// Move temp file to target
 	if ( !hTargetParent.Open(szTargetParentPath)
 	     || !hTargetParent.SetNoSort(fNoSort)
-	     || !hTargetParent.Move(szTempFilename, GetFilename(szTarget))
+	     || !hTargetParent.Move(szTempFilename, GetFilename(target))
 	     || !hTargetParent.Close() ) { EraseItem(szTempFilename); return false; }
 
 	return true;
 }
 
-bool C4Group_MoveItem(const char *szSource, const char *szTarget1, bool fNoSort)
+bool C4Group_MoveItem(const char *source, const char *szTarget1, bool fNoSort)
 {
 	// Parameter check
-	if (!szSource || !szTarget1 || !szSource[0] || !szTarget1[0]) return false;
-	char szTarget[_MAX_PATH+1]; SCopy(szTarget1,szTarget,_MAX_PATH);
+	if (!source || !szTarget1 || !source[0] || !szTarget1[0]) return false;
+	char target[_MAX_PATH+1]; SCopy(szTarget1,target,_MAX_PATH);
 
 	// Backslash terminator indicates target is a path only (append filename)
-	if (szTarget[SLen(szTarget)-1]==DirectorySeparator) SAppend(GetFilename(szSource),szTarget);
+	if (target[SLen(target)-1]==DirectorySeparator) SAppend(GetFilename(source),target);
 
 	// Check for identical source and target
-	if (ItemIdentical(szSource,szTarget)) return true;
+	if (ItemIdentical(source,target)) return true;
 
 	// Source and target are simple items
-	if (ItemExists(szSource) && CreateItem(szTarget))
+	if (ItemExists(source) && CreateItem(target))
 	{
 		// erase test file, because it may block moving a directory
-		EraseItem(szTarget);
-		return MoveItem(szSource,szTarget);
+		EraseItem(target);
+		return MoveItem(source,target);
 	}
 
 	// Source & target
 	C4Group hSourceParent, hTargetParent;
 	char szSourceParentPath[_MAX_PATH+1],szTargetParentPath[_MAX_PATH+1];
-	GetParentPath(szSource,szSourceParentPath); GetParentPath(szTarget,szTargetParentPath);
+	GetParentPath(source,szSourceParentPath); GetParentPath(target,szTargetParentPath);
 
 	// Temp filename
 	char szTempFilename[_MAX_PATH+1];
 	SCopy(C4Group_TempPath,szTempFilename,_MAX_PATH);
-	SAppend(GetFilename(szSource),szTempFilename);
+	SAppend(GetFilename(source),szTempFilename);
 	MakeTempFilename(szTempFilename);
 
 	// Extract source to temp file
 	if ( !hSourceParent.Open(szSourceParentPath)
-	     || !hSourceParent.Extract(GetFilename(szSource),szTempFilename)
+	     || !hSourceParent.Extract(GetFilename(source),szTempFilename)
 	     || !hSourceParent.Close() ) return false;
 
 	// Move temp file to target
 	if ( !hTargetParent.Open(szTargetParentPath)
 	     || !hTargetParent.SetNoSort(fNoSort)
-	     || !hTargetParent.Move(szTempFilename, GetFilename(szTarget))
+	     || !hTargetParent.Move(szTempFilename, GetFilename(target))
 	     || !hTargetParent.Close() ) { EraseItem(szTempFilename); return false; }
 
 	// Delete original file
 	if ( !hSourceParent.Open(szSourceParentPath)
-	     || !hSourceParent.DeleteEntry(GetFilename(szSource))
+	     || !hSourceParent.DeleteEntry(GetFilename(source))
 	     || !hSourceParent.Close() ) return false;
 
 	return true;
 }
 
-bool C4Group_DeleteItem(const char *szItem, bool fRecycle)
+bool C4Group_DeleteItem(const char *item_name, bool do_recycle)
 {
 	// Parameter check
-	if (!szItem || !szItem[0]) return false;
+	if (!item_name || !item_name[0]) return false;
 
 	// simple item?
-	if (ItemExists(szItem))
+	if (ItemExists(item_name))
 	{
-		if (fRecycle)
-			return EraseItemSafe(szItem);
+		if (do_recycle)
+			return EraseItemSafe(item_name);
 		else
-			return EraseItem(szItem);
+			return EraseItem(item_name);
 	}
 
 	// delete from parent
 	C4Group hParent;
 	char szParentPath[_MAX_PATH+1];
-	GetParentPath(szItem,szParentPath);
+	GetParentPath(item_name,szParentPath);
 
 	// Delete original file
 	if ( !hParent.Open(szParentPath)
-	     || !hParent.DeleteEntry(GetFilename(szItem), fRecycle)
+	     || !hParent.DeleteEntry(GetFilename(item_name), do_recycle)
 	     || !hParent.Close() ) return false;
 
 	return true;
 }
 
-bool C4Group_PackDirectoryTo(const char *filename, const char *szFilenameTo)
+bool C4Group_PackDirectoryTo(const char *filename, const char *to_filename)
 {
 	// Check file type
 	if (!DirectoryExists(filename)) return false;
 	// Target mustn't exist
-	if (FileExists(szFilenameTo)) return false;
+	if (FileExists(to_filename)) return false;
 	// Ignore
 	if (C4Group_TestIgnore(filename))
 		return true;
@@ -232,7 +232,7 @@ bool C4Group_PackDirectoryTo(const char *filename, const char *szFilenameTo)
 		C4Group_ProcessCallback(filename,0);
 	// Create group file
 	C4Group hGroup;
-	if (!hGroup.Open(szFilenameTo,true))
+	if (!hGroup.Open(to_filename,true))
 		return false;
 	// Add folder contents to group
 	DirectoryIterator i(filename);
@@ -268,7 +268,7 @@ bool C4Group_PackDirectoryTo(const char *filename, const char *szFilenameTo)
 	{
 		// Close group and remove temporary file
 		hGroup.Close();
-		EraseItem(szFilenameTo);
+		EraseItem(to_filename);
 		return false;
 	}
 	// Reset iterator
@@ -363,27 +363,27 @@ bool C4Group_ExplodeDirectory(const char *filename)
 	return true;
 }
 
-bool C4Group_ReadFile(const char *szFile, char **pData, size_t *iSize)
+bool C4Group_ReadFile(const char *filename, char **data, size_t *size)
 {
 	// security
-	if (!szFile || !pData) return false;
+	if (!filename || !data) return false;
 	// get mother path & file name
-	char szPath[_MAX_PATH + 1];
-	GetParentPath(szFile, szPath);
-	const char *pFileName = GetFilename(szFile);
+	char path[_MAX_PATH + 1];
+	GetParentPath(filename, path);
+	const char *pFileName = GetFilename(filename);
 	// open mother group
 	C4Group MotherGroup;
-	if (!MotherGroup.Open(szPath)) return false;
+	if (!MotherGroup.Open(path)) return false;
 	// access the file
 	size_t iFileSize;
 	if (!MotherGroup.AccessEntry(pFileName, &iFileSize)) return false;
 	// create buffer
-	*pData = new char [iFileSize];
+	*data = new char [iFileSize];
 	// read it
-	if (!MotherGroup.Read(*pData, iFileSize)) { delete [] *pData; *pData = nullptr; return false; }
+	if (!MotherGroup.Read(*data, iFileSize)) { delete [] *data; *data = nullptr; return false; }
 	// ok
 	MotherGroup.Close();
-	if (iSize) *iSize = iFileSize;
+	if (size) *size = iFileSize;
 	return true;
 }
 
@@ -1381,7 +1381,7 @@ bool C4Group::Delete(const char *szFiles, bool fRecursive)
 	return true; // Would be nicer to return the file count and add up all counts from recursive actions...
 }
 
-bool C4Group::DeleteEntry(const char *filename, bool fRecycle)
+bool C4Group::DeleteEntry(const char *filename, bool do_recycle)
 {
 	switch (p->SourceType)
 	{
@@ -1402,16 +1402,16 @@ bool C4Group::DeleteEntry(const char *filename, bool fRecycle)
 		break;
 	case P::ST_Unpacked:
 		p->StdFile.Close();
-		char szPath[_MAX_FNAME+1];
-		sprintf(szPath,"%s%c%s", GetName(),DirectorySeparator,filename);
+		char path[_MAX_FNAME+1];
+		sprintf(path,"%s%c%s", GetName(),DirectorySeparator,filename);
 
-		if (fRecycle)
+		if (do_recycle)
 		{
-			if (!EraseItemSafe(szPath)) return false;
+			if (!EraseItemSafe(path)) return false;
 		}
 		else
 		{
-			if (!EraseItem(szPath)) return false;
+			if (!EraseItem(path)) return false;
 		}
 		break;
 		// refresh file list
@@ -1571,12 +1571,11 @@ bool C4Group::ExtractEntry(const char *filename, const char *szExtractTo)
 			return Error("Extract: Cannot rename temporary file");
 		break;
 	case P::ST_Unpacked: // Copy item from folder to target
-		char szPath[_MAX_FNAME+1];
-		sprintf(szPath,"%s%c%s", GetName(),DirectorySeparator,filename);
-		if (!CopyItem(szPath,szTargetFName))
+		char path[_MAX_FNAME+1];
+		sprintf(path,"%s%c%s", GetName(),DirectorySeparator,filename);
+		if (!CopyItem(path,szTargetFName))
 			return Error("ExtractEntry: Cannot copy item");
 		break;
-	default: break; // InGrp & Deleted ignored
 	}
 	return true;
 }
