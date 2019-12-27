@@ -151,14 +151,14 @@ protected:
 public:
 	bool Open(const char *group_name, bool do_create = false);
 	bool Close();
-	bool Save(bool fReOpen);
-	bool OpenAsChild(C4Group *parent, const char *entry_name, bool is_exclusive = false, bool do_create = false);
+	bool Save(bool reopen);
+	bool OpenAsChild(C4Group *mother, const char *entry_name, bool is_exclusive = false, bool do_create = false);
 	bool OpenChild(const char* entry_name);
 	bool OpenMother();
 	bool Add(const char *filename, const char *entry_name);
-	bool Add(const char *szName, void *pBuffer, int iSize, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
-	bool Add(const char *szName, StdBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
-	bool Add(const char *szName, StdStrBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
+	bool Add(const char *szName, void *pBuffer, int iSize, bool fChild = false, bool hold_buffer = false, bool is_executable = false);
+	bool Add(const char *szName, StdBuf &pBuffer, bool fChild = false, bool hold_buffer = false, bool is_executable = false);
+	bool Add(const char *szName, StdStrBuf &pBuffer, bool fChild = false, bool hold_buffer = false, bool is_executable = false);
 	bool Merge(const char *folders);
 	bool Move(const char *filename, const char *entry_name);
 	bool Extract(const char *szFiles, const char *szExtractTo=nullptr, const char *szExclude=nullptr);
@@ -206,7 +206,7 @@ public:
 		return r;
 	}
 	bool Read(void *pBuffer, size_t iSize) override;
-	bool Advance(int iOffset) override;
+	bool Advance(int offset) override;
 	void SetStdOutput(bool fStatus);
 	void ResetSearch(bool reload_contents=false); // reset search pointer so calls to FindNextEntry find first entry again. if reload_contents is set, the file list for directories is also refreshed.
 	const char *GetError();
@@ -233,26 +233,26 @@ private:
 	bool Error(const char *szStatus);
 	bool OpenReal(const char *group_name);
 	bool OpenRealGrpFile();
-	bool SetFilePtr(int iOffset);
+	bool SetFilePtr(int offset);
 	bool RewindFilePtr();
-	bool AdvanceFilePtr(int iOffset);
+	bool AdvanceFilePtr(int offset);
 	bool AddEntry(C4GroupEntry::EntryStatus status,
 	              bool childgroup,
 	              const char *fname,
 	              long size,
 	              const char *entryname = nullptr,
 	              BYTE *membuf = nullptr,
-	              bool fDeleteOnDisk = false,
-	              bool fHoldBuffer = false,
-	              bool fExecutable = false,
-	              bool fBufferIsStdbuf = false);
-	bool AddEntryOnDisk(const char *filename, const char *szAddAs=nullptr, bool move=false);
-	bool SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup = false);
-	bool AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &stdfile);
-	C4GroupEntry *SearchNextEntry(const char *szName);
+	              bool delete_on_disk = false,
+	              bool hold_buffer = false,
+	              bool is_executable = false,
+	              bool buffer_is_stdbuf = false);
+	bool AddEntryOnDisk(const char *filename, const char *entry_name = nullptr, bool move = false);
+	bool SetFilePtr2Entry(const char *entry_name, bool needs_to_be_a_group = false);
+	bool AppendEntry2StdFile(C4GroupEntry *entry, CStdFile &target);
+	C4GroupEntry *SearchNextEntry(const char *entry_name);
 	C4GroupEntry *GetNextFolderEntry();
-	uint32_t CalcCRC32(C4GroupEntry *pEntry);
-	void PreCacheEntry(C4GroupEntry * p);
+	uint32_t CalcCRC32(C4GroupEntry *entry);
+	void PreCacheEntry(C4GroupEntry *entry);
 };
 
 #endif
