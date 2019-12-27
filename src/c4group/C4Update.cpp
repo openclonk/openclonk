@@ -115,7 +115,7 @@ bool C4Group_ApplyUpdate(C4Group &hGroup, unsigned long ParentProcessID)
 		if (hGroup.EntryCount() - hGroup.EntryCount(C4CFN_UpdateCore) - hGroup.EntryCount("*.ocu") > 0)
 		{
 			// Notice: AutoUpdate.txt is currently not processed...
-			char strEntry[_MAX_FNAME + 1] = "";
+			char strEntry[_MAX_FNAME_LEN] = "";
 			StdStrBuf strList;
 			printf("Updating binaries...\n");
 			hGroup.ResetSearch();
@@ -141,7 +141,7 @@ bool C4Group_ApplyUpdate(C4Group &hGroup, unsigned long ParentProcessID)
 	if (hGroup.FindEntry("*.ocu"))
 	{
 		// Process all children
-		char strEntry[_MAX_FNAME + 1] = "";
+		char strEntry[_MAX_FNAME_LEN] = "";
 		C4Group hChild;
 		hGroup.ResetSearch();
 		while (hGroup.FindNextEntry("*.ocu", strEntry))
@@ -477,7 +477,7 @@ bool C4UpdatePackage::DoUpdate(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 	{
 		// try to open target group
 		C4GroupEx ItemGroupTo;
-		char strTempGroup[_MAX_PATH+1]; strTempGroup[0] = 0;
+		char strTempGroup[_MAX_PATH_LEN]; strTempGroup[0] = 0;
 		if (!ItemGroupTo.OpenAsChild(pGrpTo, strFileName, false, true))
 			return false;
 		// update children
@@ -531,7 +531,7 @@ bool C4UpdatePackage::DoGrpUpdate(C4Group *pUpdateData, C4GroupEx *pGrpTo)
 	if (pUpdateData->LoadEntry(C4CFN_UpdateEntries, &pData, nullptr, 1))
 	{
 		// delete all entries that do not appear in the entries list
-		char strItemName[_MAX_FNAME+1], strItemName2[_MAX_FNAME+1];
+		char strItemName[_MAX_FNAME_LEN], strItemName2[_MAX_FNAME_LEN];
 		pGrpTo->ResetSearch();
 		while (pGrpTo->FindNextEntry("*", strItemName))
 		{
@@ -689,7 +689,7 @@ bool C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 	return true;
 }
 
-extern char C4Group_TempPath[_MAX_PATH+1];
+extern char C4Group_TempPath[_MAX_PATH_LEN];
 
 bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bool *fModified)
 {
@@ -731,7 +731,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 			if (!pGrp1 || !pChildGrp1->OpenAsChild(pGrp1, strItemName))
 				{ delete pChildGrp1; pChildGrp1 = nullptr; }
 			// open group for update data
-			C4GroupEx UpdGroup; char strTempGroupName[_MAX_FNAME + 1];
+			C4GroupEx UpdGroup; char strTempGroupName[_MAX_FNAME_LEN];
 			strTempGroupName[0] = 0;
 			if (!UpdGroup.OpenAsChild(pUpGrp, strItemName))
 			{

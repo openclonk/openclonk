@@ -1701,7 +1701,7 @@ bool C4Landscape::Save(C4Group &hGroup) const
 bool C4Landscape::P::SaveInternal(const C4Landscape *d, C4Group &hGroup) const
 {
 	// Save landscape surface
-	char szTempLandscape[_MAX_PATH + 1];
+	char szTempLandscape[_MAX_PATH_LEN];
 	SCopy(Config.AtTempPath(C4CFN_TempLandscape), szTempLandscape);
 	MakeTempFilename(szTempLandscape);
 	if (!Surface8->Save(szTempLandscape))

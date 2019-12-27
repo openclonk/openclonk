@@ -165,8 +165,8 @@ int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, const char *namespace_prefix
 		return LoadEffects(g, namespace_prefix, false);
 	}
 	int32_t iNum=0;
-	char szFilename[_MAX_FNAME+1];
-	char szFileType[_MAX_FNAME+1];
+	char szFilename[_MAX_FNAME_LEN];
+	char szFileType[_MAX_FNAME_LEN];
 	C4SoundEffect *nsfx;
 	// Process segmented list of file types
 	for (int32_t i = 0; SCopySegment(C4CFN_SoundFiles, i, szFileType, '|', _MAX_FNAME); i++)

@@ -3860,7 +3860,7 @@ void C4NetIOUDP::DoCheck() // (mt-safe)
 void C4NetIOUDP::OpenDebugLog()
 {
 	const char *szFileBase = "NetIOUDP%d.log";
-	char szFilePath[_MAX_PATH + 1];
+	char szFilePath[_MAX_PATH_LEN];
 	for (int i = 0; i < 1000; i++)
 	{
 		sprintf(szFilePath, szFileBase, i);

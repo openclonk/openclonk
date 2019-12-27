@@ -77,7 +77,7 @@ public:
 	C4Player();
 	~C4Player();
 public:
-	char Filename[_MAX_PATH+1];
+	char Filename[_MAX_PATH_LEN];
 	StdStrBuf Name;
 	int32_t Status;
 	int32_t Eliminated;

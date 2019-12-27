@@ -34,7 +34,7 @@ extern bool fQuiet;
 bool fRecursive = false;
 bool fRegisterShell = false;
 bool fUnregisterShell = false;
-char strExecuteAtEnd[_MAX_PATH + 1] = "";
+char strExecuteAtEnd[_MAX_PATH_LEN] = "";
 
 int iResult = 0;
 

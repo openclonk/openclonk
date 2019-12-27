@@ -97,7 +97,7 @@ public:
 
 public:
 	char Name[C4MaxName + 1];
-	char Script[_MAX_FNAME+30+1];
+	char Script[_MAX_FNAME_LEN+30];
 
 	C4MessageBoardCommand *Next;
 };

@@ -230,7 +230,7 @@ bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 	if (SEqualNoCase(szPath, GetFilePath()) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
 	{
 		// try reload
-		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
+		char szParentPath[_MAX_PATH_LEN]; C4Group ParentGrp;
 		if (GetParentPath(szPath, szParentPath))
 			if (ParentGrp.Open(szParentPath))
 				if (Load(ParentGrp, nullptr, szLanguage, stringTable))

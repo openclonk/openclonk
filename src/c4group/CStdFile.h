@@ -41,7 +41,7 @@ public:
 	CStdFile();
 	~CStdFile() override;
 	bool Status;
-	char Name[_MAX_PATH+1];
+	char Name[_MAX_PATH_LEN];
 protected:
 	FILE *hFile;
 	gzFile hgzFile;

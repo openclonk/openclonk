@@ -45,7 +45,7 @@ bool C4Extra::Init()
 	// load from all definitions that are activated
 	// add first definition first, so the priority will be lowest
 	// (according to definition load/overload order)
-	char szSegment[_MAX_PATH+1];
+	char szSegment[_MAX_PATH_LEN];
 	for (int cseg=0; SCopySegment(Game.DefinitionFilenames,cseg,szSegment,';',_MAX_PATH); cseg++)
 	{
 		for(auto & ExtraGroup : ExtraGroups)

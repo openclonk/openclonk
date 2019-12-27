@@ -436,7 +436,7 @@ bool C4PlayerList::FileInUse(const char *szFilename) const
 	// Compare to any network path player files with prefix (hack)
 	if (::Network.isEnabled())
 	{
-		char szWithPrefix[_MAX_PATH+1];
+		char szWithPrefix[_MAX_PATH_LEN];
 		SCopy(GetFilename(szFilename),szWithPrefix);
 		SetClientPrefix(szWithPrefix, Game.Clients.getLocalName());
 		for (cPlr=First; cPlr; cPlr=cPlr->Next)

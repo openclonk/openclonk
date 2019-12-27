@@ -376,7 +376,7 @@ bool C4StartupPlrSelDlg::CrewListItem::SetName(const char *szNewName)
 	if (!szNewName || !*szNewName) return false;
 	if (SEqual(szNewName, Core.Name)) return true;
 	// generate filename from new name
-	char fn[_MAX_PATH+1];
+	char fn[_MAX_PATH_LEN];
 	SCopy(szNewName, fn, _MAX_PATH);
 	MakeFilenameFromTitle(fn);
 	if (!*fn) return false;
@@ -655,7 +655,7 @@ void C4StartupPlrSelDlg::UpdatePlayerList()
 	{
 		SetTitle(FormatString("%s %s", LoadResStrNoAmp("IDS_CTL_CREW"), CurrPlayer.Core.PrefName).getData());
 		// crew mode: Insert complete crew of player (2do: sort)
-		bool fSucc; char szFn[_MAX_PATH+1];
+		bool fSucc; char szFn[_MAX_PATH_LEN];
 		for (fSucc=CurrPlayer.Grp.FindEntry(C4CFN_ObjectInfoFiles, szFn); fSucc; fSucc=CurrPlayer.Grp.FindNextEntry(C4CFN_ObjectInfoFiles, szFn, nullptr, true))
 		{
 			CrewListItem *pCrewItem = new CrewListItem(this, pPlrListBox, CurrPlayer.Core.PrefColorDw);

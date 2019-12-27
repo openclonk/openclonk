@@ -203,7 +203,7 @@ void C4MusicSystem::Load(const char *szFile)
 
 void C4MusicSystem::LoadDir(const char *szPath)
 {
-	char Path[_MAX_FNAME + 1], File[_MAX_FNAME + 1];
+	char Path[_MAX_FNAME_LEN], File[_MAX_FNAME_LEN];
 	C4Group *pDirGroup = nullptr;
 	// split path
 	SCopy(szPath, Path, _MAX_FNAME);
@@ -250,11 +250,11 @@ void C4MusicSystem::LoadDir(const char *szPath)
 		}
 	}
 	// search file(s)
-	char szFile[_MAX_FNAME + 1];
+	char szFile[_MAX_FNAME_LEN];
 	pDirGroup->ResetSearch();
 	while (pDirGroup->FindNextEntry(File, szFile))
 	{
-		char strFullPath[_MAX_FNAME + 1];
+		char strFullPath[_MAX_FNAME_LEN];
 		sprintf(strFullPath, "%s%c%s", Path, DirectorySeparator, szFile);
 		Load(strFullPath);
 	}
@@ -411,7 +411,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 		// Search in list
 		for (NewFile = Songs; NewFile; NewFile = NewFile->pNext)
 		{
-			char songname[_MAX_FNAME + 1];
+			char songname[_MAX_FNAME_LEN];
 			SCopy(szSongname, songname); DefaultExtension(songname, "mid");
 			if (SEqual(GetFilename(NewFile->FileName), songname))
 				break;
@@ -691,7 +691,7 @@ int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fa
 	if (szPlayList && *szPlayList)
 	{
 		// match
-		char szFileName[_MAX_FNAME + 1];
+		char szFileName[_MAX_FNAME_LEN];
 		for (int cnt = 0; SGetModule(szPlayList, cnt, szFileName, _MAX_FNAME); cnt++)
 			for (pFile = Songs; pFile; pFile = pFile->pNext) if (pFile->NoPlay)
 				if (WildcardMatch(szFileName, GetFilename(pFile->FileName)) || pFile->HasCategory(szFileName))

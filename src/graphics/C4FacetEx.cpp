@@ -85,7 +85,7 @@ bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHg
 {
 	Clear();
 	// Entry name
-	char szFilename[_MAX_FNAME+1];
+	char szFilename[_MAX_FNAME_LEN];
 	SCopy(szName,szFilename,_MAX_FNAME);
 	char *szExt = GetExtension(szFilename);
 	if (!*szExt)
