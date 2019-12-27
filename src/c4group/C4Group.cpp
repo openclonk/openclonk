@@ -495,9 +495,9 @@ C4Group::~C4Group()
 	Clear();
 }
 
-bool C4Group::Error(const char *szStatus)
+bool C4Group::Error(const char *status_message)
 {
-	p->ErrorString = szStatus;
+	p->ErrorString = status_message;
 	return false;
 }
 
@@ -506,9 +506,9 @@ const char *C4Group::GetError()
 	return p->ErrorString.c_str();
 }
 
-void C4Group::SetStdOutput(bool fStatus)
+void C4Group::SetStdOutput(bool log_status)
 {
-	p->StdOutput=fStatus;
+	p->StdOutput=log_status;
 }
 
 bool C4Group::Open(const char *group_name, bool do_create)
@@ -641,11 +641,11 @@ bool C4Group::OpenRealGrpFile()
 }
 
 bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
-                       bool childgroup,
+                       bool add_as_child,
                        const char *filename,
                        long size,
                        const char *entry_name,
-                       BYTE *membuf,
+                       BYTE *buffer,
                        bool delete_on_disk,
                        bool hold_buffer,
                        bool is_executable,
@@ -681,12 +681,12 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 		case C4GroupEntry::C4GRES_InMemory: { // Save buffer to file in folder
 			CStdFile hFile;
 			bool fOkay = false;
-			if (hFile.Create(tfname, !!childgroup))
-				fOkay = !!hFile.Write(membuf,size);
+			if (hFile.Create(tfname, !!add_as_child))
+				fOkay = !!hFile.Write(buffer,size);
 			hFile.Close();
 			ResetSearch(true);
 
-			if (hold_buffer) { if (buffer_is_stdbuf) StdBuf::DeletePointer(membuf); else delete [] membuf; }
+			if (hold_buffer) { if (buffer_is_stdbuf) StdBuf::DeletePointer(buffer); else delete [] buffer; }
 
 			return fOkay;
 		}
@@ -716,7 +716,7 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 	if (entry_name) SCopy(entry_name,nentry->FileName,_MAX_FNAME);
 	else SCopy(GetFilename(filename),nentry->FileName,_MAX_FNAME);
 	nentry->Size=size;
-	nentry->ChildGroup=childgroup;
+	nentry->ChildGroup = add_as_child;
 	nentry->Offset=0;
 	nentry->Executable=is_executable;
 	nentry->DeleteOnDisk=delete_on_disk;
@@ -727,7 +727,7 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 	// Init list entry data
 	SCopy(filename,nentry->DiskPath,_MAX_FNAME);
 	nentry->Status=status;
-	nentry->MemoryBuffer=membuf;
+	nentry->MemoryBuffer=buffer;
 	nentry->Next=nullptr;
 	nentry->NoSort = p->NoSort;
 
@@ -2051,30 +2051,30 @@ bool C4Group::SortByList(const char **list, const char *filename)
 	return true;
 }
 
-bool C4Group::EnsureChildFilePtr(C4Group *pChild)
+bool C4Group::EnsureChildFilePtr(C4Group *child)
 {
 
 	// group file
 	if (p->SourceType == P::ST_Packed)
 	{
 		// check if FilePtr has to be moved
-		if (p->FilePtr != pChild->p->MotherOffset + pChild->p->EntryOffset +  pChild->p->FilePtr)
+		if (p->FilePtr != child->p->MotherOffset + child->p->EntryOffset +  child->p->FilePtr)
 			// move it to the position the child thinks it is
-			if (!SetFilePtr(pChild->p->MotherOffset + pChild->p->EntryOffset +  pChild->p->FilePtr))
+			if (!SetFilePtr(child->p->MotherOffset + child->p->EntryOffset +  child->p->FilePtr))
 				return false;
 		// ok
 		return true;
 	}
 
-	// Open standard file is not the child file     ...or StdFile ptr does not match pChild->FilePtr
-	char szChildPath[_MAX_PATH+1]; sprintf(szChildPath,"%s%c%s", GetName(),DirectorySeparator,GetFilename(pChild->GetName()));
+	// Open standard file is not the child file     ...or StdFile ptr does not match child->FilePtr
+	char szChildPath[_MAX_PATH+1]; sprintf(szChildPath,"%s%c%s", GetName(),DirectorySeparator,GetFilename(child->GetName()));
 	if ( !ItemIdentical(p->StdFile.Name, szChildPath))
 	{
 		// Reopen correct child stdfile
-		if ( !SetFilePtr2Entry( GetFilename(pChild->GetName()), true ) )
+		if ( !SetFilePtr2Entry( GetFilename(child->GetName()), true ) )
 			return false;
 		// Advance to child's old file ptr
-		if ( !AdvanceFilePtr( pChild->p->EntryOffset + pChild->p->FilePtr ) )
+		if ( !AdvanceFilePtr( child->p->EntryOffset + child->p->FilePtr ) )
 			return false;
 	}
 

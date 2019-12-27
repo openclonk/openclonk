@@ -216,7 +216,7 @@ public:
 	}
 	bool Read(void *buffer, size_t size) override;
 	bool Advance(int offset) override;
-	void SetStdOutput(bool fStatus);
+	void SetStdOutput(bool log_status);
 	void ResetSearch(bool reload_contents = false); // reset search pointer so calls to FindNextEntry find first entry again. if reload_contents is set, the file list for directories is also refreshed.
 	const char *GetError();
 	const char *GetName() const;
@@ -230,27 +230,27 @@ public:
 	bool IsPacked() const;
 	bool HasPackedMother() const;
 	bool SetNoSort(bool no_sorting);
-	int PreCacheEntries(const char *search_pattern, bool cache_previous=false); // pre-load entries to memory. return number of loaded entries.
+	int PreCacheEntries(const char *search_pattern, bool cache_previous = false); // pre-load entries to memory. return number of loaded entries.
 
 	const C4GroupHeader &GetHeader() const;
 	const C4GroupEntry *GetFirstEntry() const;
 
 private:
 	void Init();
-	bool EnsureChildFilePtr(C4Group *pChild);
+	bool EnsureChildFilePtr(C4Group *child);
 	bool CloseExclusiveMother();
-	bool Error(const char *szStatus);
+	bool Error(const char *status_message);
 	bool OpenReal(const char *group_name);
 	bool OpenRealGrpFile();
 	bool SetFilePtr(int offset);
 	bool RewindFilePtr();
 	bool AdvanceFilePtr(int offset);
 	bool AddEntry(C4GroupEntry::EntryStatus status,
-	              bool childgroup,
+	              bool add_as_child,
 	              const char *fname,
 	              long size,
-	              const char *entryname = nullptr,
-	              BYTE *membuf = nullptr,
+	              const char *entry_name = nullptr,
+	              BYTE *buffer = nullptr,
 	              bool delete_on_disk = false,
 	              bool hold_buffer = false,
 	              bool is_executable = false,
