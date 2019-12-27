@@ -82,18 +82,18 @@ const char *C4Group_GetTempPath()
 	return C4Group_TempPath;
 }
 
-bool C4Group_TestIgnore(const char *szFilename)
+bool C4Group_TestIgnore(const char *filename)
 {
-	if(!*szFilename) return true; //poke out empty strings
-	const char* name = GetFilename(szFilename);
+	if(!*filename) return true; //poke out empty strings
+	const char* name = GetFilename(filename);
 	return *name == '.' //no hidden files and the directory itself
 		|| name[strlen(name) - 1] == '~' //no temp files
 		|| SIsModule(C4Group_Ignore,name); //not on Blacklist
 }
 
-bool C4Group_IsGroup(const char *szFilename)
+bool C4Group_IsGroup(const char *filename)
 {
-	C4Group hGroup; if (hGroup.Open(szFilename))  { hGroup.Close(); return true; }
+	C4Group hGroup; if (hGroup.Open(filename))  { hGroup.Close(); return true; }
 	return false;
 }
 
@@ -218,24 +218,24 @@ bool C4Group_DeleteItem(const char *szItem, bool fRecycle)
 	return true;
 }
 
-bool C4Group_PackDirectoryTo(const char *szFilename, const char *szFilenameTo)
+bool C4Group_PackDirectoryTo(const char *filename, const char *szFilenameTo)
 {
 	// Check file type
-	if (!DirectoryExists(szFilename)) return false;
+	if (!DirectoryExists(filename)) return false;
 	// Target mustn't exist
 	if (FileExists(szFilenameTo)) return false;
 	// Ignore
-	if (C4Group_TestIgnore(szFilename))
+	if (C4Group_TestIgnore(filename))
 		return true;
 	// Process message
 	if (C4Group_ProcessCallback)
-		C4Group_ProcessCallback(szFilename,0);
+		C4Group_ProcessCallback(filename,0);
 	// Create group file
 	C4Group hGroup;
 	if (!hGroup.Open(szFilenameTo,true))
 		return false;
 	// Add folder contents to group
-	DirectoryIterator i(szFilename);
+	DirectoryIterator i(filename);
 	for (; *i; i++)
 	{
 		// Ignore
@@ -274,58 +274,58 @@ bool C4Group_PackDirectoryTo(const char *szFilename, const char *szFilenameTo)
 	// Reset iterator
 	i.Reset();
 	// Close group
-	hGroup.SortByList(C4Group_SortList,szFilename);
+	hGroup.SortByList(C4Group_SortList,filename);
 	if (!hGroup.Close())
 		return false;
 	// Done
 	return true;
 }
 
-bool C4Group_PackDirectory(const char *szFilename)
+bool C4Group_PackDirectory(const char *filename)
 {
 	// Make temporary filename
 	char szTempFilename[_MAX_PATH+1];
-	SCopy(szFilename, szTempFilename, _MAX_PATH);
+	SCopy(filename, szTempFilename, _MAX_PATH);
 	MakeTempFilename(szTempFilename);
 	// Pack directory
-	if (!C4Group_PackDirectoryTo(szFilename, szTempFilename))
+	if (!C4Group_PackDirectoryTo(filename, szTempFilename))
 		return false;
 	// Rename folder
 	char szTempFilename2[_MAX_PATH+1];
-	SCopy(szFilename, szTempFilename2, _MAX_PATH);
+	SCopy(filename, szTempFilename2, _MAX_PATH);
 	MakeTempFilename(szTempFilename2);
-	if (!RenameFile(szFilename, szTempFilename2))
+	if (!RenameFile(filename, szTempFilename2))
 		return false;
 	// Name group file
-	if (!RenameFile(szTempFilename,szFilename))
+	if (!RenameFile(szTempFilename,filename))
 		return false;
 	// Last: Delete folder
 	return EraseDirectory(szTempFilename2);
 }
 
-bool C4Group_UnpackDirectory(const char *szFilename)
+bool C4Group_UnpackDirectory(const char *filename)
 {
 	// Already unpacked: success
-	if (DirectoryExists(szFilename)) return true;
+	if (DirectoryExists(filename)) return true;
 
 	// Not a real file: unpack parent directory first
 	char szParentFilename[_MAX_PATH+1];
-	if (!FileExists(szFilename))
-		if (GetParentPath(szFilename,szParentFilename))
+	if (!FileExists(filename))
+		if (GetParentPath(filename,szParentFilename))
 			if (!C4Group_UnpackDirectory(szParentFilename))
 				return false;
 
 	// Open group
 	C4Group hGroup;
-	if (!hGroup.Open(szFilename)) return false;
+	if (!hGroup.Open(filename)) return false;
 
 	// Process message
 	if (C4Group_ProcessCallback)
-		C4Group_ProcessCallback(szFilename,0);
+		C4Group_ProcessCallback(filename,0);
 
 	// Create target directory
 	char szFoldername[_MAX_PATH+1];
-	SCopy(szFilename,szFoldername,_MAX_PATH);
+	SCopy(filename,szFoldername,_MAX_PATH);
 	MakeTempFilename(szFoldername);
 	if (!CreatePath(szFoldername)) { hGroup.Close(); return false; }
 
@@ -337,27 +337,27 @@ bool C4Group_UnpackDirectory(const char *szFilename)
 
 	// Rename group file
 	char szTempFilename[_MAX_PATH+1];
-	SCopy(szFilename,szTempFilename,_MAX_PATH);
+	SCopy(filename,szTempFilename,_MAX_PATH);
 	MakeTempFilename(szTempFilename);
-	if (!RenameFile(szFilename, szTempFilename)) return false;
+	if (!RenameFile(filename, szTempFilename)) return false;
 
 	// Rename target directory
-	if (!RenameFile(szFoldername,szFilename)) return false;
+	if (!RenameFile(szFoldername,filename)) return false;
 
 	// Delete renamed group file
 	return EraseItem(szTempFilename);
 }
 
-bool C4Group_ExplodeDirectory(const char *szFilename)
+bool C4Group_ExplodeDirectory(const char *filename)
 {
 	// Ignore
-	if (C4Group_TestIgnore(szFilename)) return true;
+	if (C4Group_TestIgnore(filename)) return true;
 
 	// Unpack this directory
-	if (!C4Group_UnpackDirectory(szFilename)) return false;
+	if (!C4Group_UnpackDirectory(filename)) return false;
 
 	// Explode all children
-	ForEachFile(szFilename,C4Group_ExplodeDirectory);
+	ForEachFile(filename,C4Group_ExplodeDirectory);
 
 	// Success
 	return true;
@@ -567,18 +567,18 @@ bool C4Group::Open(const char *szGroupName, bool fCreate)
 
 }
 
-bool C4Group::OpenReal(const char *szFilename)
+bool C4Group::OpenReal(const char *filename)
 {
 	// Get original filename
-	if (!szFilename) return false;
-	p->FileName = szFilename;
+	if (!filename) return false;
+	p->FileName = filename;
 
 	// Folder
 	if (DirectoryExists(GetName()))
 	{
 		// Ignore
-		if (C4Group_TestIgnore(szFilename))
-			return Error(FormatString("OpenReal: filename '%s' ignored", szFilename).getData());
+		if (C4Group_TestIgnore(filename))
+			return Error(FormatString("OpenReal: filename '%s' ignored", filename).getData());
 		// OpenReal: Simply set status and return
 		p->SourceType=P::ST_Unpacked;
 		ResetSearch();
@@ -1261,49 +1261,49 @@ bool C4Group::Merge(const char *szFolders)
 	return true;
 }
 
-bool C4Group::AddEntryOnDisk(const char *szFilename,
+bool C4Group::AddEntryOnDisk(const char *filename,
                              const char *szAddAs,
                              bool fMove)
 {
 
 	// Do not process yourself
-	if (ItemIdentical(szFilename, GetName())) return true;
+	if (ItemIdentical(filename, GetName())) return true;
 
 	// File is a directory: copy to temp path, pack, and add packed file
-	if (DirectoryExists(szFilename))
+	if (DirectoryExists(filename))
 	{
 		// Ignore
-		if (C4Group_TestIgnore(szFilename)) return true;
+		if (C4Group_TestIgnore(filename)) return true;
 		// Temp filename
 		char szTempFilename[_MAX_PATH+1];
-		if (C4Group_TempPath[0]) { SCopy(C4Group_TempPath,szTempFilename,_MAX_PATH); SAppend(GetFilename(szFilename),szTempFilename,_MAX_PATH); }
-		else SCopy(szFilename,szTempFilename,_MAX_PATH);
+		if (C4Group_TempPath[0]) { SCopy(C4Group_TempPath,szTempFilename,_MAX_PATH); SAppend(GetFilename(filename),szTempFilename,_MAX_PATH); }
+		else SCopy(filename,szTempFilename,_MAX_PATH);
 		MakeTempFilename(szTempFilename);
 		// Copy or move item to temp file (moved items might be killed if later process fails)
-		if (fMove) { if (!MoveItem(szFilename,szTempFilename)) return Error("AddEntryOnDisk: Move failure"); }
-		else { if (!CopyItem(szFilename,szTempFilename)) return Error("AddEntryOnDisk: Copy failure"); }
+		if (fMove) { if (!MoveItem(filename,szTempFilename)) return Error("AddEntryOnDisk: Move failure"); }
+		else { if (!CopyItem(filename,szTempFilename)) return Error("AddEntryOnDisk: Copy failure"); }
 		// Pack temp file
 		if (!C4Group_PackDirectory(szTempFilename)) return Error("AddEntryOnDisk: Pack directory failure");
 		// Add temp file
-		if (!szAddAs) szAddAs = GetFilename(szFilename);
-		szFilename = szTempFilename;
+		if (!szAddAs) szAddAs = GetFilename(filename);
+		filename = szTempFilename;
 		fMove = true;
 	}
 
 	// Determine size
-	bool fIsGroup = !!C4Group_IsGroup(szFilename);
-	int iSize = fIsGroup ? UncompressedFileSize(szFilename) : FileSize(szFilename);
+	bool fIsGroup = !!C4Group_IsGroup(filename);
+	int iSize = fIsGroup ? UncompressedFileSize(filename) : FileSize(filename);
 
 	// Determine executable bit (linux only)
 	bool fExecutable = false;
 #ifdef __linux__
-	fExecutable = (access(szFilename, X_OK) == 0);
+	fExecutable = (access(filename, X_OK) == 0);
 #endif
 
 	// AddEntry
 	return AddEntry(C4GroupEntry::C4GRES_OnDisk,
 	                fIsGroup,
-	                szFilename,
+	                filename,
 	                iSize,
 	                szAddAs,
 	                nullptr,
@@ -1381,14 +1381,14 @@ bool C4Group::Delete(const char *szFiles, bool fRecursive)
 	return true; // Would be nicer to return the file count and add up all counts from recursive actions...
 }
 
-bool C4Group::DeleteEntry(const char *szFilename, bool fRecycle)
+bool C4Group::DeleteEntry(const char *filename, bool fRecycle)
 {
 	switch (p->SourceType)
 	{
 	case P::ST_Packed:
 		// Get entry
 		C4GroupEntry *pEntry;
-		if (!(pEntry=GetEntry(szFilename))) return false;
+		if (!(pEntry=GetEntry(filename))) return false;
 		// Delete moved source files
 		if (pEntry->Status == C4GroupEntry::C4GRES_OnDisk)
 			if (pEntry->DeleteOnDisk)
@@ -1403,7 +1403,7 @@ bool C4Group::DeleteEntry(const char *szFilename, bool fRecycle)
 	case P::ST_Unpacked:
 		p->StdFile.Close();
 		char szPath[_MAX_FNAME+1];
-		sprintf(szPath,"%s%c%s", GetName(),DirectorySeparator,szFilename);
+		sprintf(szPath,"%s%c%s", GetName(),DirectorySeparator,filename);
 
 		if (fRecycle)
 		{
@@ -1515,7 +1515,7 @@ bool C4Group::Extract(const char *szFiles, const char *szExtractTo, const char *
 	return true;
 }
 
-bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
+bool C4Group::ExtractEntry(const char *filename, const char *szExtractTo)
 {
 	CStdFile tfile;
 	CStdFile hDummy;
@@ -1528,11 +1528,11 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 		if (DirectoryExists(szTargetFName))
 		{
 			AppendBackslash(szTargetFName);
-			SAppend(szFilename,szTargetFName,_MAX_FNAME);
+			SAppend(filename,szTargetFName,_MAX_FNAME);
 		}
 	}
 	else
-		SCopy(szFilename,szTargetFName,_MAX_FNAME);
+		SCopy(filename,szTargetFName,_MAX_FNAME);
 
 	// Extract
 	switch (p->SourceType)
@@ -1540,7 +1540,7 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 	case P::ST_Packed: // Copy entry to target
 		// Get entry
 		C4GroupEntry *pEntry;
-		if (!(pEntry=GetEntry(szFilename))) return Error("Extract: Entry not found");
+		if (!(pEntry=GetEntry(filename))) return Error("Extract: Entry not found");
 		// Create dummy file to reserve target file name
 		hDummy.Create(szTargetFName,false);
 		hDummy.Write("Dummy",5);
@@ -1572,7 +1572,7 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 		break;
 	case P::ST_Unpacked: // Copy item from folder to target
 		char szPath[_MAX_FNAME+1];
-		sprintf(szPath,"%s%c%s", GetName(),DirectorySeparator,szFilename);
+		sprintf(szPath,"%s%c%s", GetName(),DirectorySeparator,filename);
 		if (!CopyItem(szPath,szTargetFName))
 			return Error("ExtractEntry: Cannot copy item");
 		break;
@@ -2024,17 +2024,17 @@ bool C4Group::CloseExclusiveMother()
 	return false;
 }
 
-bool C4Group::SortByList(const char **ppSortList, const char *szFilename)
+bool C4Group::SortByList(const char **ppSortList, const char *filename)
 {
 	// No sort list specified
 	if (!ppSortList) return false;
 	// No group name specified, use own
-	if (!szFilename) szFilename = GetName();
-	szFilename = GetFilename(szFilename);
+	if (!filename) filename = GetName();
+	filename = GetFilename(filename);
 	// Find matching filename entry in sort list
 	const char **ppListEntry;
 	for (ppListEntry = ppSortList; *ppListEntry; ppListEntry+=2)
-		if (WildcardMatch( *ppListEntry, szFilename ))
+		if (WildcardMatch( *ppListEntry, filename ))
 			break;
 	// Sort by sort list entry
 	if (*ppListEntry && *(ppListEntry+1))

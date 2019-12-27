@@ -52,7 +52,8 @@ extern int iC4GroupRewindFilePtrNoWarn;
 #define C4GRP_ENABLE_REWINDWARN ;
 #endif
 
-const int C4GroupFileVer1=1, C4GroupFileVer2=2;
+const int C4GroupFileVer1 = 1;
+const int C4GroupFileVer2 = 2;
 
 const int C4GroupMaxError = 100;
 
@@ -60,20 +61,20 @@ const int32_t C4GroupSwapThreshold = 10 * 1024 * 1024;
 
 #define C4GroupFileID "RedWolf Design GrpFolder"
 
-bool C4Group_TestIgnore(const char *szFilename);
+bool C4Group_TestIgnore(const char *filename);
 void C4Group_SetTempPath(const char *szPath);
 const char* C4Group_GetTempPath();
 void C4Group_SetSortList(const char **ppSortList);
 void C4Group_SetProcessCallback(bool (*fnCallback)(const char *, int));
-bool C4Group_IsGroup(const char *szFilename);
+bool C4Group_IsGroup(const char *filename);
 bool C4Group_CopyItem(const char *szSource, const char *szTarget, bool fNoSort=false, bool fResetAttributes=false);
 bool C4Group_MoveItem(const char *szSource, const char *szTarget, bool fNoSort=false);
 bool C4Group_DeleteItem(const char *szItem, bool fRecycle=false);
-bool C4Group_PackDirectoryTo(const char *szFilename, const char *szFilenameTo);
-bool C4Group_PackDirectory(const char *szFilename);
-bool C4Group_UnpackDirectory(const char *szFilename);
-bool C4Group_ExplodeDirectory(const char *szFilename);
-bool C4Group_ReadFile(const char *szFilename, char **pData, size_t *iSize);
+bool C4Group_PackDirectoryTo(const char *filename, const char *szFilenameTo);
+bool C4Group_PackDirectory(const char *filename);
+bool C4Group_UnpackDirectory(const char *filename);
+bool C4Group_ExplodeDirectory(const char *filename);
+bool C4Group_ReadFile(const char *filename, char **pData, size_t *iSize);
 
 extern const char *C4CFN_FLS[];
 
@@ -158,12 +159,12 @@ public:
 	bool Merge(const char *szFolders);
 	bool Move(const char *szFile, const char *szAddAs);
 	bool Extract(const char *szFiles, const char *szExtractTo=nullptr, const char *szExclude=nullptr);
-	bool ExtractEntry(const char *szFilename, const char *szExtractTo=nullptr);
+	bool ExtractEntry(const char *filename, const char *szExtractTo=nullptr);
 	bool Delete(const char *szFiles, bool fRecursive = false);
-	bool DeleteEntry(const char *szFilename, bool fRecycle=false);
+	bool DeleteEntry(const char *filename, bool fRecycle=false);
 	bool Rename(const char *szFile, const char *szNewName);
 	bool Sort(const char *szSortList);
-	bool SortByList(const char **ppSortList, const char *szFilename=nullptr);
+	bool SortByList(const char **ppSortList, const char *filename=nullptr);
 	bool AccessEntry(const char *szWildCard,
 	                 size_t *iSize=nullptr, char *sFileName=nullptr,
 	                 bool NeedsToBeAGroup = false);
@@ -242,7 +243,7 @@ private:
 	              bool fHoldBuffer = false,
 	              bool fExecutable = false,
 	              bool fBufferIsStdbuf = false);
-	bool AddEntryOnDisk(const char *szFilename, const char *szAddAs=nullptr, bool fMove=false);
+	bool AddEntryOnDisk(const char *filename, const char *szAddAs=nullptr, bool fMove=false);
 	bool SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup = false);
 	bool AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &stdfile);
 	C4GroupEntry *SearchNextEntry(const char *szName);
