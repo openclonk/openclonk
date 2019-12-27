@@ -440,8 +440,8 @@ struct C4Group::P
 	C4GroupEntry FolderSearchEntry;
 	C4GroupEntry LastFolderSearchEntry;
 
-	bool StdOutput = false;
-	bool(*fnProcessCallback)(const char *, int) = nullptr;
+	bool LogToStdOutput = false;
+	bool(*ProcessCallback)(const char *, int) = nullptr;
 	std::string ErrorString;
 
 	bool NoSort = false; // If this flag is set, all entries will be marked NoSort in AddEntry
@@ -482,9 +482,9 @@ void C4Group::Init()
 {
 	auto new_p = std::make_unique<P>();
 	// Copy persistent variables
-	new_p->fnProcessCallback = p->fnProcessCallback;
+	new_p->ProcessCallback = p->ProcessCallback;
 	new_p->NoSort = p->NoSort;
-	new_p->StdOutput = p->StdOutput;
+	new_p->LogToStdOutput = p->LogToStdOutput;
 
 	InplaceReconstruct(&Head);
 	p = std::move(new_p);
@@ -508,7 +508,7 @@ const char *C4Group::GetError()
 
 void C4Group::SetStdOutput(bool log_status)
 {
-	p->StdOutput=log_status;
+	p->LogToStdOutput=log_status;
 }
 
 bool C4Group::Open(const char *group_name, bool do_create)
@@ -556,7 +556,7 @@ bool C4Group::Open(const char *group_name, bool do_create)
 
 	// Open mother and child in exclusive mode
 	C4Group *mother = new C4Group;
-	mother->SetStdOutput(p->StdOutput);
+	mother->SetStdOutput(p->LogToStdOutput);
 	if (!mother->Open(szRealGroup))
 		{ Clear(); Error(mother->GetError()); delete mother; return false; }
 	if (!OpenAsChild(mother,szGroupNameN+SLen(szRealGroup)+1,true))
@@ -773,7 +773,7 @@ bool C4Group::Close()
 	if (!fRewrite)
 		{ CloseExclusiveMother(); Clear(); return true; }
 
-	if (p->StdOutput) printf("Writing group file...\n");
+	if (p->LogToStdOutput) printf("Writing group file...\n");
 
 	// Set new version
 	Head.Ver1=C4GroupFileVer1;
@@ -851,7 +851,7 @@ bool C4Group::Save(bool reopen)
 	for (centry=p->FirstEntry; centry; centry=centry->Next) iTotalSize+=centry->Size;
 	for (centry=p->FirstEntry; centry; centry=centry->Next)
 		if (AppendEntry2StdFile(centry,tfile))
-			{ iSizeDone+=centry->Size; if (iTotalSize && p->fnProcessCallback) p->fnProcessCallback(centry->FileName,100*iSizeDone/iTotalSize); }
+			{ iSizeDone+=centry->Size; if (iTotalSize && p->ProcessCallback) p->ProcessCallback(centry->FileName,100*iSizeDone/iTotalSize); }
 		else
 		{
 			tfile.Close(); return false;
@@ -1232,7 +1232,7 @@ bool C4Group::Merge(const char *folders)
 {
 	bool move = true;
 
-	if (p->StdOutput) printf("%s...\n",move ? "Moving" : "Adding");
+	if (p->LogToStdOutput) printf("%s...\n",move ? "Moving" : "Adding");
 
 	// Add files & directories
 	char szFileName[_MAX_FNAME+1];
@@ -1249,16 +1249,16 @@ bool C4Group::Merge(const char *folders)
 			// File count
 			iFileCount++;
 			// Process output & callback
-			if (p->StdOutput) printf("%s\n",GetFilename(*i));
-			if (p->fnProcessCallback)
-				p->fnProcessCallback(GetFilename(*i),0); // cbytes/tbytes
+			if (p->LogToStdOutput) printf("%s\n",GetFilename(*i));
+			if (p->ProcessCallback)
+				p->ProcessCallback(GetFilename(*i),0); // cbytes/tbytes
 			// AddEntryOnDisk
 			AddEntryOnDisk(*i, nullptr, move);
 			++i;
 		}
 	}
 
-	if (p->StdOutput) printf("%d file(s) %s.\n",iFileCount,move ? "moved" : "added");
+	if (p->LogToStdOutput) printf("%d file(s) %s.\n",iFileCount,move ? "moved" : "added");
 
 	return true;
 }
@@ -1319,7 +1319,7 @@ bool C4Group::Add(const char *filename, const char *entry_name)
 {
 	bool move = false;
 
-	if (p->StdOutput)
+	if (p->LogToStdOutput)
 	{
 		printf("%s %s as %s...\n", move ? "Moving" : "Adding", GetFilename(filename), entry_name);
 	}
@@ -1331,7 +1331,7 @@ bool C4Group::Move(const char *filename, const char *entry_name)
 {
 	bool move = true;
 
-	if (p->StdOutput)
+	if (p->LogToStdOutput)
 	{
 		printf("%s %s as %s...\n", move ? "Moving" : "Adding", GetFilename(filename), entry_name);
 	}
@@ -1361,7 +1361,7 @@ bool C4Group::Delete(const char *files, bool recursive)
 	while ((tentry = SearchNextEntry(files)))
 	{
 		// StdOutput
-		if (p->StdOutput) printf("%s\n",tentry->FileName);
+		if (p->LogToStdOutput) printf("%s\n",tentry->FileName);
 		if (!DeleteEntry(tentry->FileName))
 			return Error("Delete: Could not delete entry");
 		fcount++;
@@ -1376,14 +1376,14 @@ bool C4Group::Delete(const char *files, bool recursive)
 			if (tentry->ChildGroup)
 				if (hChild.OpenAsChild(this, tentry->FileName))
 				{
-					hChild.SetStdOutput(p->StdOutput);
+					hChild.SetStdOutput(p->LogToStdOutput);
 					hChild.Delete(files, recursive);
 					hChild.Close();
 				}
 	}
 
 	// StdOutput
-	if (p->StdOutput)
+	if (p->LogToStdOutput)
 		printf("%d file(s) deleted.\n",fcount);
 
 	return true; // Would be nicer to return the file count and add up all counts from recursive actions...
@@ -1432,7 +1432,7 @@ bool C4Group::DeleteEntry(const char *filename, bool do_recycle)
 bool C4Group::Rename(const char *filename, const char *new_name)
 {
 
-	if (p->StdOutput) printf("Renaming %s to %s...\n",filename,new_name);
+	if (p->LogToStdOutput) printf("Renaming %s to %s...\n",filename,new_name);
 
 	switch (p->SourceType)
 	{
@@ -1479,7 +1479,7 @@ bool C4Group_IsExcluded(const char *szFile, const char *szExcludeList)
 bool C4Group::Extract(const char *files, const char *destination, const char *exclude)
 {
 	// StdOutput
-	if (p->StdOutput)
+	if (p->LogToStdOutput)
 	{
 		printf("Extracting");
 		if (destination) printf(" to %s",destination);
@@ -1504,10 +1504,10 @@ bool C4Group::Extract(const char *files, const char *destination, const char *ex
 			// skip?
 			if (C4Group_IsExcluded(tentry->FileName, exclude)) continue;
 			// Process data & output
-			if (p->StdOutput) printf("%s\n",tentry->FileName);
+			if (p->LogToStdOutput) printf("%s\n",tentry->FileName);
 			cbytes+=tentry->Size;
-			if (p->fnProcessCallback)
-				p->fnProcessCallback(tentry->FileName,100*cbytes/std::max(tbytes,1));
+			if (p->ProcessCallback)
+				p->ProcessCallback(tentry->FileName,100*cbytes/std::max(tbytes,1));
 
 			// Extract
 			if (!ExtractEntry(tentry->FileName,destination))
@@ -1517,7 +1517,7 @@ bool C4Group::Extract(const char *files, const char *destination, const char *ex
 		}
 	}
 
-	if (p->StdOutput) printf("%d file(s) extracted.\n",fcount);
+	if (p->LogToStdOutput) printf("%d file(s) extracted.\n",fcount);
 
 	return true;
 }
@@ -1607,7 +1607,7 @@ bool C4Group::OpenAsChild(C4Group *mother,
 
 		C4Group *pMother2;
 		pMother2 = new C4Group;
-		pMother2->SetStdOutput(p->StdOutput);
+		pMother2->SetStdOutput(p->LogToStdOutput);
 		if (!pMother2->OpenAsChild(mother, mothername, is_exclusive))
 		{
 			delete pMother2;
@@ -1975,7 +1975,7 @@ bool C4Group::Sort(const char *list)
 
 	if (!list || !list[0]) return false;
 
-	if (p->StdOutput) printf("Sorting...\n");
+	if (p->LogToStdOutput) printf("Sorting...\n");
 
 	do
 	{
