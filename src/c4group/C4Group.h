@@ -83,8 +83,8 @@ extern const char *C4CFN_FLS[];
 struct C4GroupHeader
 {
 	char id[24+4] = C4GroupFileID;
-	int Ver1 = C4GroupFileVer1;
-	int Ver2 = C4GroupFileVer2;
+	int VersionMajor = C4GroupFileVer1;
+	int VersionMinor = C4GroupFileVer2;
 	int Entries = 0;
 	char reserved[164] = { 0 };
 };

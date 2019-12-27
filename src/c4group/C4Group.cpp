@@ -614,7 +614,7 @@ bool C4Group::OpenRealGrpFile()
 
 	// Check Header
 	if (!SEqual(Head.id,C4GroupFileID)
-	    || (Head.Ver1!=C4GroupFileVer1) || (Head.Ver2>C4GroupFileVer2))
+	    || (Head.VersionMajor!=C4GroupFileVer1) || (Head.VersionMinor>C4GroupFileVer2))
 		return Error("OpenRealGrpFile: Invalid header");
 
 	// Read Entries
@@ -776,8 +776,8 @@ bool C4Group::Close()
 	if (p->StdOutput) printf("Writing group file...\n");
 
 	// Set new version
-	Head.Ver1=C4GroupFileVer1;
-	Head.Ver2=C4GroupFileVer2;
+	Head.VersionMajor=C4GroupFileVer1;
+	Head.VersionMinor=C4GroupFileVer2;
 
 	// Automatic sort
 	SortByList(C4Group_SortList);
@@ -1661,7 +1661,7 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 
 	// Check Header
 	if (!SEqual(Head.id,C4GroupFileID)
-	    || (Head.Ver1!=C4GroupFileVer1) || (Head.Ver2>C4GroupFileVer2))
+	    || (Head.VersionMajor!=C4GroupFileVer1) || (Head.VersionMinor>C4GroupFileVer2))
 		{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Invalid Header"); }
 
 	// Read Entries
