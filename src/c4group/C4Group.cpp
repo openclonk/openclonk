@@ -73,8 +73,15 @@ void C4Group_SetSortList(const char **sort_list)
 
 void C4Group_SetTempPath(const char *path)
 {
-	if (!path || !path[0]) C4Group_TempPath[0]=0;
-	else { SCopy(path,C4Group_TempPath,_MAX_PATH); AppendBackslash(C4Group_TempPath); }
+	if (!path || !path[0])
+	{
+		C4Group_TempPath[0]=0;
+	}
+	else
+	{
+		SCopy(path,C4Group_TempPath,_MAX_PATH);
+		AppendBackslash(C4Group_TempPath);
+	}
 }
 
 const char *C4Group_GetTempPath()
@@ -84,59 +91,90 @@ const char *C4Group_GetTempPath()
 
 bool C4Group_TestIgnore(const char *filename)
 {
-	if(!*filename) return true; //poke out empty strings
+	if (!*filename)
+	{
+		return true; //poke out empty strings
+	}
 	const char* name = GetFilename(filename);
 	return *name == '.' //no hidden files and the directory itself
-		|| name[strlen(name) - 1] == '~' //no temp files
-		|| SIsModule(C4Group_Ignore,name); //not on Blacklist
+		 || name[strlen(name) - 1] == '~' //no temp files
+		 || SIsModule(C4Group_Ignore, name); //not on Blacklist
 }
 
 bool C4Group_IsGroup(const char *filename)
 {
-	C4Group hGroup; if (hGroup.Open(filename))  { hGroup.Close(); return true; }
+	C4Group group;
+	if (group.Open(filename))
+	{
+		group.Close();
+		return true;
+	}
 	return false;
 }
 
-bool C4Group_CopyItem(const char *source, const char *szTarget1, bool fNoSort, bool fResetAttributes)
+bool C4Group_CopyItem(const char *source, const char *target, bool no_sorting, bool reset_attributes)
 {
 	// Parameter check
-	if (!source || !szTarget1 || !source[0] || !szTarget1[0]) return false;
-	char target[_MAX_PATH+1]; SCopy(szTarget1,target,_MAX_PATH);
+	if (!source || !target || !source[0] || !target[0])
+	{
+		return false;
+	}
+	char target_path[_MAX_PATH + 1];
+	SCopy(target, target_path, _MAX_PATH);
 
 	// Backslash terminator indicates target is a path only (append filename)
-	if (target[SLen(target)-1]==DirectorySeparator) SAppend(GetFilename(source),target);
+	if (target_path[SLen(target_path) - 1] == DirectorySeparator)
+	{
+		SAppend(GetFilename(source), target_path);
+	}
 
 	// Check for identical source and target
 	// Note that attributes aren't reset here
-	if (ItemIdentical(source,target)) return true;
+	if (ItemIdentical(source, target_path))
+	{
+		return true;
+	}
 
 	// Source and target are simple items
-	if (ItemExists(source) && CreateItem(target)) return CopyItem(source,target, fResetAttributes);
+	if (ItemExists(source) && CreateItem(target_path))
+	{
+		return CopyItem(source, target_path, reset_attributes);
+	}
 
 	// For items within groups, attribute resetting isn't needed, because packing/unpacking will kill all
 	// attributes anyway
 
 	// Source & target
-	C4Group hSourceParent, hTargetParent;
-	char szSourceParentPath[_MAX_PATH+1],szTargetParentPath[_MAX_PATH+1];
-	GetParentPath(source,szSourceParentPath); GetParentPath(target,szTargetParentPath);
+	C4Group source_parent;
+	C4Group target_parent;
+	char source_parent_path[_MAX_PATH + 1];
+	char target_parent_path[_MAX_PATH + 1];
+	GetParentPath(source, source_parent_path);
+	GetParentPath(target_path, target_parent_path);
 
 	// Temp filename
-	char szTempFilename[_MAX_PATH+1];
-	SCopy(C4Group_TempPath,szTempFilename,_MAX_PATH);
-	SAppend(GetFilename(source),szTempFilename);
-	MakeTempFilename(szTempFilename);
+	char temp_filename[_MAX_PATH + 1];
+	SCopy(C4Group_TempPath, temp_filename, _MAX_PATH);
+	SAppend(GetFilename(source), temp_filename);
+	MakeTempFilename(temp_filename);
 
 	// Extract source to temp file
-	if ( !hSourceParent.Open(szSourceParentPath)
-	     || !hSourceParent.Extract(GetFilename(source),szTempFilename)
-	     || !hSourceParent.Close() ) return false;
+	if ( !source_parent.Open(source_parent_path)
+	  || !source_parent.Extract(GetFilename(source), temp_filename)
+	  || !source_parent.Close())
+	{
+		return false;
+	}
 
 	// Move temp file to target
-	if ( !hTargetParent.Open(szTargetParentPath)
-	     || !hTargetParent.SetNoSort(fNoSort)
-	     || !hTargetParent.Move(szTempFilename, GetFilename(target))
-	     || !hTargetParent.Close() ) { EraseItem(szTempFilename); return false; }
+	if ( !target_parent.Open(target_parent_path)
+	  || !target_parent.SetNoSort(no_sorting)
+	  || !target_parent.Move(temp_filename, GetFilename(target_path))
+	  || !target_parent.Close())
+	{
+		EraseItem(temp_filename);
+		return false;
+	}
 
 	return true;
 }
@@ -144,8 +182,12 @@ bool C4Group_CopyItem(const char *source, const char *szTarget1, bool fNoSort, b
 bool C4Group_MoveItem(const char *source, const char *szTarget1, bool fNoSort)
 {
 	// Parameter check
-	if (!source || !szTarget1 || !source[0] || !szTarget1[0]) return false;
-	char target[_MAX_PATH+1]; SCopy(szTarget1,target,_MAX_PATH);
+	if (!source || !szTarget1 || !source[0] || !szTarget1[0])
+	{
+		return false;
+	}
+	char target[_MAX_PATH+1];
+	SCopy(szTarget1,target,_MAX_PATH);
 
 	// Backslash terminator indicates target is a path only (append filename)
 	if (target[SLen(target)-1]==DirectorySeparator) SAppend(GetFilename(source),target);
@@ -231,8 +273,8 @@ bool C4Group_PackDirectoryTo(const char *filename, const char *to_filename)
 	if (C4Group_ProcessCallback)
 		C4Group_ProcessCallback(filename,0);
 	// Create group file
-	C4Group hGroup;
-	if (!hGroup.Open(to_filename,true))
+	C4Group group;
+	if (!group.Open(to_filename,true))
 		return false;
 	// Add folder contents to group
 	DirectoryIterator i(filename);
@@ -253,29 +295,29 @@ bool C4Group_PackDirectoryTo(const char *filename, const char *to_filename)
 			MakeTempFilename(szTempFilename);
 			// Pack and move into group
 			if ( !C4Group_PackDirectoryTo(*i, szTempFilename)) break;
-			if (!hGroup.Move(szTempFilename, GetFilename(*i)))
+			if (!group.Move(szTempFilename, GetFilename(*i)))
 			{
 				EraseFile(szTempFilename);
 				break;
 			}
 		}
 		// Add normally otherwise
-		else if (!hGroup.Add(*i, nullptr))
+		else if (!group.Add(*i, nullptr))
 			break;
 	}
 	// Something went wrong?
 	if (*i)
 	{
 		// Close group and remove temporary file
-		hGroup.Close();
+		group.Close();
 		EraseItem(to_filename);
 		return false;
 	}
 	// Reset iterator
 	i.Reset();
 	// Close group
-	hGroup.SortByList(C4Group_SortList,filename);
-	if (!hGroup.Close())
+	group.SortByList(C4Group_SortList,filename);
+	if (!group.Close())
 		return false;
 	// Done
 	return true;
@@ -316,8 +358,8 @@ bool C4Group_UnpackDirectory(const char *filename)
 				return false;
 
 	// Open group
-	C4Group hGroup;
-	if (!hGroup.Open(filename)) return false;
+	C4Group group;
+	if (!group.Open(filename)) return false;
 
 	// Process message
 	if (C4Group_ProcessCallback)
@@ -327,13 +369,13 @@ bool C4Group_UnpackDirectory(const char *filename)
 	char szFoldername[_MAX_PATH+1];
 	SCopy(filename,szFoldername,_MAX_PATH);
 	MakeTempFilename(szFoldername);
-	if (!CreatePath(szFoldername)) { hGroup.Close(); return false; }
+	if (!CreatePath(szFoldername)) { group.Close(); return false; }
 
 	// Extract files to folder
-	if (!hGroup.Extract("*",szFoldername)) { hGroup.Close(); return false; }
+	if (!group.Extract("*",szFoldername)) { group.Close(); return false; }
 
 	// Close group
-	hGroup.Close();
+	group.Close();
 
 	// Rename group file
 	char szTempFilename[_MAX_PATH+1];
