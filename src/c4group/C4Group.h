@@ -116,7 +116,7 @@ public:
 	};
 
 public:
-	char DiskPath[_MAX_PATH + 1] = { 0 };
+	char DiskPath[_MAX_PATH_LEN] = { 0 };
 	EntryStatus Status = C4GRES_InGroup;
 	bool DeleteOnDisk = false;
 	bool HoldBuffer = false;

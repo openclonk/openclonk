@@ -56,8 +56,8 @@ int iC4GroupRewindFilePtrNoWarn=0;
 
 //---------------------------- Global C4Group_Functions -------------------------------------------
 
-char C4Group_TempPath[_MAX_PATH+1]="";
-char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db;.orig;.svn";
+char C4Group_TempPath[_MAX_PATH_LEN]="";
+char C4Group_Ignore[_MAX_PATH_LEN]="cvs;CVS;Thumbs.db;.orig;.svn";
 const char **C4Group_SortList = nullptr;
 bool (*C4Group_ProcessCallback)(const char *, int)=nullptr;
 
@@ -101,7 +101,7 @@ bool C4Group_CopyItem(const char *szSource, const char *szTarget1, bool fNoSort,
 {
 	// Parameter check
 	if (!szSource || !szTarget1 || !szSource[0] || !szTarget1[0]) return false;
-	char szTarget[_MAX_PATH+1]; SCopy(szTarget1,szTarget,_MAX_PATH);
+	char szTarget[_MAX_PATH_LEN]; SCopy(szTarget1,szTarget,_MAX_PATH);
 
 	// Backslash terminator indicates target is a path only (append filename)
 	if (szTarget[SLen(szTarget)-1]==DirectorySeparator) SAppend(GetFilename(szSource),szTarget);
@@ -118,11 +118,11 @@ bool C4Group_CopyItem(const char *szSource, const char *szTarget1, bool fNoSort,
 
 	// Source & target
 	C4Group hSourceParent, hTargetParent;
-	char szSourceParentPath[_MAX_PATH+1],szTargetParentPath[_MAX_PATH+1];
+	char szSourceParentPath[_MAX_PATH_LEN],szTargetParentPath[_MAX_PATH_LEN];
 	GetParentPath(szSource,szSourceParentPath); GetParentPath(szTarget,szTargetParentPath);
 
 	// Temp filename
-	char szTempFilename[_MAX_PATH+1];
+	char szTempFilename[_MAX_PATH_LEN];
 	SCopy(C4Group_TempPath,szTempFilename,_MAX_PATH);
 	SAppend(GetFilename(szSource),szTempFilename);
 	MakeTempFilename(szTempFilename);
@@ -145,7 +145,7 @@ bool C4Group_MoveItem(const char *szSource, const char *szTarget1, bool fNoSort)
 {
 	// Parameter check
 	if (!szSource || !szTarget1 || !szSource[0] || !szTarget1[0]) return false;
-	char szTarget[_MAX_PATH+1]; SCopy(szTarget1,szTarget,_MAX_PATH);
+	char szTarget[_MAX_PATH_LEN]; SCopy(szTarget1,szTarget,_MAX_PATH);
 
 	// Backslash terminator indicates target is a path only (append filename)
 	if (szTarget[SLen(szTarget)-1]==DirectorySeparator) SAppend(GetFilename(szSource),szTarget);
@@ -163,11 +163,11 @@ bool C4Group_MoveItem(const char *szSource, const char *szTarget1, bool fNoSort)
 
 	// Source & target
 	C4Group hSourceParent, hTargetParent;
-	char szSourceParentPath[_MAX_PATH+1],szTargetParentPath[_MAX_PATH+1];
+	char szSourceParentPath[_MAX_PATH_LEN],szTargetParentPath[_MAX_PATH_LEN];
 	GetParentPath(szSource,szSourceParentPath); GetParentPath(szTarget,szTargetParentPath);
 
 	// Temp filename
-	char szTempFilename[_MAX_PATH+1];
+	char szTempFilename[_MAX_PATH_LEN];
 	SCopy(C4Group_TempPath,szTempFilename,_MAX_PATH);
 	SAppend(GetFilename(szSource),szTempFilename);
 	MakeTempFilename(szTempFilename);
@@ -207,7 +207,7 @@ bool C4Group_DeleteItem(const char *szItem, bool fRecycle)
 
 	// delete from parent
 	C4Group hParent;
-	char szParentPath[_MAX_PATH+1];
+	char szParentPath[_MAX_PATH_LEN];
 	GetParentPath(szItem,szParentPath);
 
 	// Delete original file
@@ -245,7 +245,7 @@ bool C4Group_PackDirectoryTo(const char *szFilename, const char *szFilenameTo)
 		if (DirectoryExists(*i))
 		{
 			// Find temporary filename
-			char szTempFilename[_MAX_PATH+1];
+			char szTempFilename[_MAX_PATH_LEN];
 			// At C4Group temp path
 			SCopy(C4Group_TempPath, szTempFilename, _MAX_PATH);
 			SAppend(GetFilename(*i), szTempFilename, _MAX_PATH);
@@ -284,14 +284,14 @@ bool C4Group_PackDirectoryTo(const char *szFilename, const char *szFilenameTo)
 bool C4Group_PackDirectory(const char *szFilename)
 {
 	// Make temporary filename
-	char szTempFilename[_MAX_PATH+1];
+	char szTempFilename[_MAX_PATH_LEN];
 	SCopy(szFilename, szTempFilename, _MAX_PATH);
 	MakeTempFilename(szTempFilename);
 	// Pack directory
 	if (!C4Group_PackDirectoryTo(szFilename, szTempFilename))
 		return false;
 	// Rename folder
-	char szTempFilename2[_MAX_PATH+1];
+	char szTempFilename2[_MAX_PATH_LEN];
 	SCopy(szFilename, szTempFilename2, _MAX_PATH);
 	MakeTempFilename(szTempFilename2);
 	if (!RenameFile(szFilename, szTempFilename2))
@@ -309,7 +309,7 @@ bool C4Group_UnpackDirectory(const char *szFilename)
 	if (DirectoryExists(szFilename)) return true;
 
 	// Not a real file: unpack parent directory first
-	char szParentFilename[_MAX_PATH+1];
+	char szParentFilename[_MAX_PATH_LEN];
 	if (!FileExists(szFilename))
 		if (GetParentPath(szFilename,szParentFilename))
 			if (!C4Group_UnpackDirectory(szParentFilename))
@@ -324,7 +324,7 @@ bool C4Group_UnpackDirectory(const char *szFilename)
 		C4Group_ProcessCallback(szFilename,0);
 
 	// Create target directory
-	char szFoldername[_MAX_PATH+1];
+	char szFoldername[_MAX_PATH_LEN];
 	SCopy(szFilename,szFoldername,_MAX_PATH);
 	MakeTempFilename(szFoldername);
 	if (!CreatePath(szFoldername)) { hGroup.Close(); return false; }
@@ -336,7 +336,7 @@ bool C4Group_UnpackDirectory(const char *szFilename)
 	hGroup.Close();
 
 	// Rename group file
-	char szTempFilename[_MAX_PATH+1];
+	char szTempFilename[_MAX_PATH_LEN];
 	SCopy(szFilename,szTempFilename,_MAX_PATH);
 	MakeTempFilename(szTempFilename);
 	if (!RenameFile(szFilename, szTempFilename)) return false;
@@ -368,7 +368,7 @@ bool C4Group_ReadFile(const char *szFile, char **pData, size_t *iSize)
 	// security
 	if (!szFile || !pData) return false;
 	// get mother path & file name
-	char szPath[_MAX_PATH + 1];
+	char szPath[_MAX_PATH_LEN];
 	GetParentPath(szFile, szPath);
 	const char *pFileName = GetFilename(szFile);
 	// open mother group
@@ -800,7 +800,7 @@ bool C4Group::Save(bool fReOpen)
 	int cscore;
 	C4GroupEntryCore *save_core;
 	C4GroupEntry *centry;
-	char szTempFileName[_MAX_FNAME+1],szGrpFileName[_MAX_FNAME+1];
+	char szTempFileName[_MAX_FNAME_LEN],szGrpFileName[_MAX_FNAME_LEN];
 
 	// Create temporary core list with new actual offsets to be saved
 	int32_t iContentsSize = 0;
@@ -943,7 +943,7 @@ bool C4Group::AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &hTarget)
 
 	case C4GroupEntry::C4GRES_OnDisk: // Copy/move from disk item to std file
 	{
-		char szFileSource[_MAX_FNAME+1];
+		char szFileSource[_MAX_FNAME_LEN];
 		SCopy(centry->DiskPath,szFileSource,_MAX_FNAME);
 
 		// Disk item is a directory
@@ -1233,7 +1233,7 @@ bool C4Group::Merge(const char *szFolders)
 	if (p->StdOutput) printf("%s...\n",fMove ? "Moving" : "Adding");
 
 	// Add files & directories
-	char szFileName[_MAX_FNAME+1];
+	char szFileName[_MAX_FNAME_LEN];
 	int iFileCount = 0;
 	DirectoryIterator i;
 
@@ -1275,7 +1275,7 @@ bool C4Group::AddEntryOnDisk(const char *szFilename,
 		// Ignore
 		if (C4Group_TestIgnore(szFilename)) return true;
 		// Temp filename
-		char szTempFilename[_MAX_PATH+1];
+		char szTempFilename[_MAX_PATH_LEN];
 		if (C4Group_TempPath[0]) { SCopy(C4Group_TempPath,szTempFilename,_MAX_PATH); SAppend(GetFilename(szFilename),szTempFilename,_MAX_PATH); }
 		else SCopy(szFilename,szTempFilename,_MAX_PATH);
 		MakeTempFilename(szTempFilename);
@@ -1341,7 +1341,7 @@ bool C4Group::Delete(const char *szFiles, bool fRecursive)
 	{
 		char cSeparator = (SCharCount(';', szFiles) ? ';' : '|');
 		bool success = true;
-		char filespec[_MAX_FNAME+1];
+		char filespec[_MAX_FNAME_LEN];
 		for (int cseg = 0; SCopySegment(szFiles, cseg, filespec, cSeparator, _MAX_FNAME); cseg++)
 			if (!Delete(filespec, fRecursive))
 				success=false;
@@ -1402,7 +1402,7 @@ bool C4Group::DeleteEntry(const char *szFilename, bool fRecycle)
 		break;
 	case P::ST_Unpacked:
 		p->StdFile.Close();
-		char szPath[_MAX_FNAME+1];
+		char szPath[_MAX_FNAME_LEN];
 		sprintf(szPath,"%s%c%s", GetName(),DirectorySeparator,szFilename);
 
 		if (fRecycle)
@@ -1440,9 +1440,9 @@ bool C4Group::Rename(const char *szFile, const char *szNewName)
 		break;
 	case P::ST_Unpacked:
 		p->StdFile.Close();
-		char path[_MAX_FNAME+1]; SCopy(GetName(),path,_MAX_PATH-1);
+		char path[_MAX_FNAME_LEN]; SCopy(GetName(),path,_MAX_PATH-1);
 		AppendBackslash(path); SAppend(szFile,path,_MAX_PATH);
-		char path2[_MAX_FNAME+1]; SCopy(GetName(),path2,_MAX_PATH-1);
+		char path2[_MAX_FNAME_LEN]; SCopy(GetName(),path2,_MAX_PATH-1);
 		AppendBackslash(path2); SAppend(szNewName,path2,_MAX_PATH);
 		if (!RenameFile(path,path2)) return Error("Rename: Failure");
 		// refresh file list
@@ -1460,7 +1460,7 @@ bool C4Group_IsExcluded(const char *szFile, const char *szExcludeList)
 	if (!szFile || !szFile[0] || !szExcludeList || !szExcludeList[0]) return false;
 	// Process segmented exclude list
 	char cSeparator = (SCharCount(';', szExcludeList) ? ';' : '|');
-	char szSegment[_MAX_PATH + 1];
+	char szSegment[_MAX_PATH_LEN];
 	for (int i = 0; SCopySegment(szExcludeList, i, szSegment, cSeparator); i++)
 		if (WildcardMatch(szSegment, GetFilename(szFile)))
 			return true;
@@ -1487,7 +1487,7 @@ bool C4Group::Extract(const char *szFiles, const char *szExtractTo, const char *
 
 	// Process segmented list
 	char cSeparator = (SCharCount(';', szFiles) ? ';' : '|');
-	char szFileName[_MAX_PATH + 1];
+	char szFileName[_MAX_PATH_LEN];
 	for (int cseg=0; SCopySegment(szFiles, cseg, szFileName, cSeparator); cseg++)
 	{
 		// Search all entries
@@ -1519,7 +1519,7 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 {
 	CStdFile tfile;
 	CStdFile hDummy;
-	char szTempFName[_MAX_FNAME+1],szTargetFName[_MAX_FNAME+1];
+	char szTempFName[_MAX_FNAME_LEN],szTargetFName[_MAX_FNAME_LEN];
 
 	// Target file name
 	if (szExtractTo)
@@ -1571,7 +1571,7 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 			return Error("Extract: Cannot rename temporary file");
 		break;
 	case P::ST_Unpacked: // Copy item from folder to target
-		char szPath[_MAX_FNAME+1];
+		char szPath[_MAX_FNAME_LEN];
 		sprintf(szPath,"%s%c%s", GetName(),DirectorySeparator,szFilename);
 		if (!CopyItem(szPath,szTargetFName))
 			return Error("ExtractEntry: Cannot copy item");
@@ -1596,7 +1596,7 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 
 	if (SCharCount(DirectorySeparator,szEntryName))
 	{
-		char mothername[_MAX_FNAME+1];
+		char mothername[_MAX_FNAME_LEN];
 		SCopyUntil(szEntryName,mothername,DirectorySeparator,_MAX_FNAME);
 
 		C4Group *pMother2;
@@ -1617,7 +1617,7 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 	p->ExclusiveChild=fExclusive;
 
 	// Folder: Simply set status and return
-	char path[_MAX_FNAME+1];
+	char path[_MAX_FNAME_LEN];
 	SCopy( GetFullName().getData(), path, _MAX_FNAME);
 	if (DirectoryExists(path))
 	{
@@ -1720,7 +1720,7 @@ bool C4Group::AccessNextEntry(const char *szWildCard,
                               size_t *iSize, char *sFileName,
                               bool fStartAtFilename)
 {
-	char fname[_MAX_FNAME+1];
+	char fname[_MAX_FNAME_LEN];
 	if (!FindNextEntry(szWildCard,fname,&p->iCurrFileSize,fStartAtFilename)) return false;
 #ifdef _DEBUG
 	szCurrAccessedEntry = fname;
@@ -1760,7 +1760,7 @@ bool C4Group::SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup)
 
 	case P::ST_Unpacked: {
 		p->StdFile.Close();
-		char path[_MAX_FNAME+1]; SCopy(GetName(),path,_MAX_FNAME);
+		char path[_MAX_FNAME_LEN]; SCopy(GetName(),path,_MAX_FNAME);
 		AppendBackslash(path); SAppend(szName,path);
 		bool fSuccess = p->StdFile.Open(path, NeedsToBeAGroup);
 		return fSuccess;
@@ -1951,7 +1951,7 @@ bool C4Group::LoadEntryString(const char *szEntryName, StdStrBuf *Buf)
 int SortRank(const char *szElement, const char *szSortList)
 {
 	int cnt;
-	char csegment[_MAX_FNAME+1];
+	char csegment[_MAX_FNAME_LEN];
 
 	for (cnt=0; SCopySegment(szSortList,cnt,csegment,'|',_MAX_FNAME); cnt++)
 		if (WildcardMatch(csegment,szElement))
@@ -2059,7 +2059,7 @@ bool C4Group::EnsureChildFilePtr(C4Group *pChild)
 	}
 
 	// Open standard file is not the child file     ...or StdFile ptr does not match pChild->FilePtr
-	char szChildPath[_MAX_PATH+1]; sprintf(szChildPath,"%s%c%s", GetName(),DirectorySeparator,GetFilename(pChild->GetName()));
+	char szChildPath[_MAX_PATH_LEN]; sprintf(szChildPath,"%s%c%s", GetName(),DirectorySeparator,GetFilename(pChild->GetName()));
 	if ( !ItemIdentical(p->StdFile.Name, szChildPath))
 	{
 		// Reopen correct child stdfile
@@ -2077,7 +2077,7 @@ bool C4Group::EnsureChildFilePtr(C4Group *pChild)
 
 StdStrBuf C4Group::GetFullName() const
 {
-	char str[_MAX_PATH+1]; *str='\0';
+	char str[_MAX_PATH_LEN]; *str='\0';
 	char sep[] = "/"; sep[0] = DirectorySeparator;
 	for (const C4Group *pGroup=this; pGroup; pGroup=pGroup->p->Mother)
 	{

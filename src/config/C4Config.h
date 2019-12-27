@@ -61,7 +61,7 @@ public:
 	// if defined, the external file is used for debugrec writing. Otherwise read/check
 	int32_t DebugRecWrite;
 	// if defined, an external file is used for debugrec writing (replays only)
-	char DebugRecExternalFile[_MAX_PATH+1];
+	char DebugRecExternalFile[_MAX_PATH_LEN];
 
 public:
 	static int GetLanguageSequence(const char *strSource, char *strTarget);

@@ -69,8 +69,8 @@ public:
 	~C4MenuItem() override;
 protected:
 	char Caption[C4MaxTitle+1];
-	char Command[_MAX_FNAME+30+1];
-	char Command2[_MAX_FNAME+30+1];
+	char Command[_MAX_FNAME_LEN+30];
+	char Command2[_MAX_FNAME_LEN+30];
 	char InfoCaption[2*C4MaxTitle+1];
 	int32_t Count;
 	C4ID id;

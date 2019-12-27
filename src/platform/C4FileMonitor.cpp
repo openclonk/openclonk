@@ -64,7 +64,7 @@ bool C4FileMonitor::Execute(int iTimeout, pollfd * pfd) // some other thread
 {
 	if ((pfd->revents & pfd->events) != POLLIN || pfd->fd != fd)
 	  LogF("C4FileMonitor::Execute unexpectedly called %d %d %hd %hd", fd, pfd->fd, pfd->events, pfd->revents);
-	char buf[sizeof(inotify_event) + _MAX_FNAME + 1];
+	char buf[sizeof(inotify_event) + _MAX_FNAME_LEN];
 	inotify_event* event = new (buf) inotify_event;
 	if (read(fd, buf, sizeof(buf)) > 0)
 	{

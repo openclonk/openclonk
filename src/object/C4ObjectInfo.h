@@ -37,7 +37,7 @@ public:
 	bool HasDied;
 	int32_t ControlCount;
 	class C4Def *pDef; // definition to ID - only resolved if defs were loaded at object info loading time
-	char Filename[_MAX_PATH+1];
+	char Filename[_MAX_PATH_LEN];
 	C4ObjectInfo *Next;
 public:
 	void Default();

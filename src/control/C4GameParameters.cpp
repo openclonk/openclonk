@@ -216,7 +216,7 @@ void C4GameResList::LoadFoldersWithLocalDefs(const char *szPath)
 {
 	// Scan path for folder names
 	int32_t iBackslash;
-	char szFoldername[_MAX_PATH+1];
+	char szFoldername[_MAX_PATH_LEN];
 	C4Group hGroup;
 #ifdef _WIN32
 	// Allow both backward and forward slashes when searching because the path
@@ -265,7 +265,7 @@ bool C4GameResList::Load(C4Group &hGroup, C4Scenario *pScenario, const char * sz
 	if (szDefinitionFilenames && *szDefinitionFilenames)
 	{
 		// add them
-		char szSegment[_MAX_PATH+1];
+		char szSegment[_MAX_PATH_LEN];
 		for (int32_t cseg=0; SCopySegment(szDefinitionFilenames,cseg,szSegment,';',_MAX_PATH); ++cseg)
 			if (*szSegment)
 				CreateByFile(NRT_Definitions, szSegment);

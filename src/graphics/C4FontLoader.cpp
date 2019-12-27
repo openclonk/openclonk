@@ -96,7 +96,7 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 	}
 	// check if one of the internally listed fonts should be used
 	const char * const extensions[] = { "ttf", "otf", "ttc", "fon", "fnt", "fot", nullptr };
-	char FileName[_MAX_PATH+1];
+	char FileName[_MAX_PATH_LEN];
 	int32_t ID;
 	C4Group * pGrp = pGfxGroups->FindSuitableFile(FontFaceName, extensions, FileName, &ID);
 	if (pGrp)

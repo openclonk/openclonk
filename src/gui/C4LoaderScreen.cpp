@@ -103,7 +103,7 @@ void C4LoaderScreen::SetBlackScreen(bool fIsBlack)
 void C4LoaderScreen::SeekLoaderScreens(C4Group &rFromGrp, const std::string &wildcard)
 {
 	// seek for png, jpg, jpeg, bmp
-	char filename[_MAX_PATH + 1];
+	char filename[_MAX_PATH_LEN];
 	for (bool found = rFromGrp.FindEntry(wildcard.c_str(), filename); found; found = rFromGrp.FindNextEntry(wildcard.c_str(), filename))
 	{
 		// potential candidate - check file extension

@@ -295,7 +295,7 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 {
 	// the scenario filename may be a scenario or directly a group folder
 	C4Group *pParentGroup=nullptr; bool fParentC4F;
-	char szParentfolder[_MAX_PATH+1];
+	char szParentfolder[_MAX_PATH_LEN];
 	if (SEqualNoCase(GetExtension(szScenFilename), "ocf"))
 	{
 		fParentC4F = true;

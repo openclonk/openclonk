@@ -30,7 +30,7 @@ bool C4ComponentHost::Load(C4Group &hGroup,
 	if (fname)
 		Filename.Copy(fname);
 	// Load component - try all segmented filenames
-	char strEntry[_MAX_FNAME+1];
+	char strEntry[_MAX_FNAME_LEN];
 	StdStrBuf strEntryWithLanguage;
 	for (int iFilename = 0; SCopySegment(Filename.getData(), iFilename, strEntry, '|'); iFilename++)
 	{
@@ -67,7 +67,7 @@ bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
 	if (fname)
 		Filename.Copy(fname);
 	// Load component - try all segmented filenames
-	char strEntry[_MAX_FNAME+1];
+	char strEntry[_MAX_FNAME_LEN];
 	StdStrBuf strEntryWithLanguage;
 	for (int iFilename = 0; SCopySegment(Filename.getData(), iFilename, strEntry, '|'); iFilename++)
 	{

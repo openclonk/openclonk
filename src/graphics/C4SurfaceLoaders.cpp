@@ -28,7 +28,7 @@
 bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool fNoErrIfNotFound, int iFlags)
 {
 	// Entry name
-	char szFilename[_MAX_FNAME+1];
+	char szFilename[_MAX_FNAME_LEN];
 	SCopy(szName,szFilename,_MAX_FNAME);
 	char *szExt = GetExtension(szFilename);
 	if (!*szExt)
@@ -50,7 +50,7 @@ bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool 
 bool C4Surface::LoadAny(C4GroupSet &hGroupset, const char *szName, bool fOwnPal, bool fNoErrIfNotFound, int iFlags)
 {
 	// Entry name
-	char szFilename[_MAX_FNAME+1];
+	char szFilename[_MAX_FNAME_LEN];
 	SCopy(szName,szFilename,_MAX_FNAME);
 	char *szExt = GetExtension(szFilename);
 	C4Group * pGroup;
@@ -78,7 +78,7 @@ bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool, bool fNoErrI
 	int ScaleToSet = 1;
 	// Image is scaled?
 	StdStrBuf strFilename;
-	char strBasename[_MAX_FNAME + 1]; SCopy(szFilename, strBasename, _MAX_FNAME); RemoveExtension(strBasename);
+	char strBasename[_MAX_FNAME_LEN]; SCopy(szFilename, strBasename, _MAX_FNAME); RemoveExtension(strBasename);
 	int32_t extpos; int scale;
 	if (((extpos = SCharLastPos('.', strBasename)) > -1) && (sscanf(strBasename+extpos+1, "%d", &scale) == 1))
 	{
@@ -93,7 +93,7 @@ bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool, bool fNoErrI
 		char strExtension[128 + 1]; SCopy(GetExtension(szFilename), strExtension, 128);
 		if (strExtension[0])
 		{
-			char scaled_name[_MAX_PATH+1];
+			char scaled_name[_MAX_PATH_LEN];
 			std::string wildcard(strBasename);
 			wildcard += ".*.";
 			wildcard += strExtension;
@@ -213,7 +213,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup, int iFlags)
 bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha, bool fSaveOverlayOnly)
 {
 	// Using temporary file at C4Group temp path
-	char szTemp[_MAX_PATH+1];
+	char szTemp[_MAX_PATH_LEN];
 	SCopy(C4Group_GetTempPath(),szTemp);
 	SAppend(GetFilename(szFilename),szTemp);
 	MakeTempFilename(szTemp);
