@@ -145,22 +145,22 @@ public:
 protected:
 	// C4Update requires these to be available by a subclass (C4GroupEx)
 	C4GroupHeader Head;
-	C4GroupEntry *GetEntry(const char *szName);
+	C4GroupEntry *GetEntry(const char *entry_name);
 	void Clear();
 
 public:
-	bool Open(const char *szGroupName, bool fCreate=false);
+	bool Open(const char *group_name, bool do_create = false);
 	bool Close();
 	bool Save(bool fReOpen);
-	bool OpenAsChild(C4Group *pMother, const char *szEntryName, bool fExclusive=false, bool fCreate=false);
-	bool OpenChild(const char* strEntry);
+	bool OpenAsChild(C4Group *parent, const char *entry_name, bool is_exclusive = false, bool do_create = false);
+	bool OpenChild(const char* entry_name);
 	bool OpenMother();
-	bool Add(const char *szFile, const char *szAddAs);
+	bool Add(const char *filename, const char *entry_name);
 	bool Add(const char *szName, void *pBuffer, int iSize, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
 	bool Add(const char *szName, StdBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
 	bool Add(const char *szName, StdStrBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
-	bool Merge(const char *szFolders);
-	bool Move(const char *szFile, const char *szAddAs);
+	bool Merge(const char *folders);
+	bool Move(const char *filename, const char *entry_name);
 	bool Extract(const char *szFiles, const char *szExtractTo=nullptr, const char *szExclude=nullptr);
 	bool ExtractEntry(const char *filename, const char *szExtractTo=nullptr);
 	bool Delete(const char *szFiles, bool fRecursive = false);
@@ -174,11 +174,11 @@ public:
 	bool AccessNextEntry(const char *szWildCard,
 	                     size_t *iSize=nullptr, char *sFileName=nullptr,
 	                     bool fStartAtFilename=false);
-	bool LoadEntry(const char *szEntryName, char **lpbpBuf,
+	bool LoadEntry(const char *entry_name, char **lpbpBuf,
 	               size_t *ipSize=nullptr, int iAppendZeros=0);
-	bool LoadEntry(const char *szEntryName, StdBuf * Buf);
+	bool LoadEntry(const char *entry_name, StdBuf * Buf);
 	bool LoadEntry(const StdStrBuf & name, StdBuf * Buf) { return LoadEntry(name.getData(), Buf); }
-	bool LoadEntryString(const char *szEntryName, StdStrBuf * Buf);
+	bool LoadEntryString(const char *entry_name, StdStrBuf * Buf);
 	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * Buf) { return LoadEntryString(name.getData(), Buf); }
 	bool FindEntry(const char *szWildCard,
 	               StdStrBuf *sFileName=nullptr,
@@ -231,7 +231,7 @@ private:
 	bool EnsureChildFilePtr(C4Group *pChild);
 	bool CloseExclusiveMother();
 	bool Error(const char *szStatus);
-	bool OpenReal(const char *szGroupName);
+	bool OpenReal(const char *group_name);
 	bool OpenRealGrpFile();
 	bool SetFilePtr(int iOffset);
 	bool RewindFilePtr();
@@ -246,7 +246,7 @@ private:
 	              bool fHoldBuffer = false,
 	              bool fExecutable = false,
 	              bool fBufferIsStdbuf = false);
-	bool AddEntryOnDisk(const char *filename, const char *szAddAs=nullptr, bool fMove=false);
+	bool AddEntryOnDisk(const char *filename, const char *szAddAs=nullptr, bool move=false);
 	bool SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup = false);
 	bool AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &stdfile);
 	C4GroupEntry *SearchNextEntry(const char *szName);
