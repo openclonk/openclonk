@@ -156,72 +156,81 @@ public:
 	bool OpenChild(const char* entry_name);
 	bool OpenMother();
 	bool Add(const char *filename, const char *entry_name);
-	bool Add(const char *szName, void *pBuffer, int iSize, bool fChild = false, bool hold_buffer = false, bool is_executable = false);
-	bool Add(const char *szName, StdBuf &pBuffer, bool fChild = false, bool hold_buffer = false, bool is_executable = false);
-	bool Add(const char *szName, StdStrBuf &pBuffer, bool fChild = false, bool hold_buffer = false, bool is_executable = false);
+	bool Add(const char *entry_name, void *buffer, int size, bool add_as_child = false, bool hold_buffer = false, bool is_executable = false);
+	bool Add(const char *entry_name, StdBuf &buffer, bool add_as_child = false, bool hold_buffer = false, bool is_executable = false);
+	bool Add(const char *entry_name, StdStrBuf &buffer, bool add_as_child = false, bool hold_buffer = false, bool is_executable = false);
 	bool Merge(const char *folders);
 	bool Move(const char *filename, const char *entry_name);
-	bool Extract(const char *szFiles, const char *szExtractTo=nullptr, const char *szExclude=nullptr);
-	bool ExtractEntry(const char *filename, const char *szExtractTo=nullptr);
-	bool Delete(const char *szFiles, bool fRecursive = false);
-	bool DeleteEntry(const char *filename, bool do_recycle=false);
-	bool Rename(const char *szFile, const char *szNewName);
-	bool Sort(const char *szSortList);
-	bool SortByList(const char **ppSortList, const char *filename=nullptr);
-	bool AccessEntry(const char *szWildCard,
-	                 size_t *iSize=nullptr, char *sFileName=nullptr,
-	                 bool NeedsToBeAGroup = false);
-	bool AccessNextEntry(const char *szWildCard,
-	                     size_t *iSize=nullptr, char *sFileName=nullptr,
-	                     bool fStartAtFilename=false);
-	bool LoadEntry(const char *entry_name, char **lpbpBuf,
-	               size_t *ipSize=nullptr, int iAppendZeros=0);
-	bool LoadEntry(const char *entry_name, StdBuf * Buf);
-	bool LoadEntry(const StdStrBuf & name, StdBuf * Buf) { return LoadEntry(name.getData(), Buf); }
-	bool LoadEntryString(const char *entry_name, StdStrBuf * Buf);
-	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * Buf) { return LoadEntryString(name.getData(), Buf); }
-	bool FindEntry(const char *szWildCard,
-	               StdStrBuf *sFileName=nullptr,
-	               size_t *iSize=nullptr);
-	bool FindEntry(const char *szWildCard,
-	               char *sFileName)
+	bool Extract(const char *files, const char *destination = nullptr, const char *exclude = nullptr);
+	bool ExtractEntry(const char *filename, const char *destination = nullptr);
+	bool Delete(const char *files, bool recursive = false);
+	bool DeleteEntry(const char *filename, bool do_recycle = false);
+	bool Rename(const char *filename, const char *new_name);
+	bool Sort(const char *list);
+	bool SortByList(const char **list, const char *filename = nullptr);
+	bool AccessEntry(const char *wildcard,
+	                 size_t *size = nullptr,
+					 char *filename = nullptr,
+	                 bool needs_to_be_a_group = false);
+	bool AccessNextEntry(const char *wildcard,
+	                     size_t *size = nullptr,
+						 char *filename = nullptr,
+	                     bool start_at_filename = false);
+	bool LoadEntry(const char *entry_name,
+			       char **buffer,
+	               size_t *size_info = nullptr,
+				   int zeros_to_append = 0);
+	bool LoadEntry(const char *entry_name, StdBuf * buffer);
+	bool LoadEntry(const StdStrBuf & name, StdBuf * buffer) { return LoadEntry(name.getData(), buffer); }
+	bool LoadEntryString(const char *entry_name, StdStrBuf * buffer);
+	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * buffer) { return LoadEntryString(name.getData(), buffer); }
+	bool FindEntry(const char *wildcard,
+	               StdStrBuf *filename = nullptr,
+	               size_t *size = nullptr);
+	bool FindEntry(const char *wildcard, char *filename)
 	{
 		StdStrBuf name;
-		bool r = FindEntry(szWildCard, &name);
-		if(sFileName) SCopy(name.getData(),sFileName);
-		return r;
+		bool found_entry = FindEntry(wildcard, &name);
+		if (filename)
+		{
+			SCopy(name.getData(), filename);
+		}
+		return found_entry;
 	}
-	bool FindNextEntry(const char *szWildCard,
-	                   StdStrBuf *sFileName=nullptr,
-	                   size_t *iSize=nullptr,
-	                   bool fStartAtFilename=false);
-	bool FindNextEntry(const char *szWildCard,
-	                   char *sFileName,
-	                   size_t *iSize=nullptr,
-	                   bool fStartAtFilename=false)
+	bool FindNextEntry(const char *wildcard,
+	                   StdStrBuf *filename = nullptr,
+	                   size_t *size = nullptr,
+	                   bool start_at_filename = false);
+	bool FindNextEntry(const char *wildcard,
+	                   char *filename,
+	                   size_t *size = nullptr,
+	                   bool start_at_filename = false)
 	{
-		StdStrBuf name(fStartAtFilename ? sFileName : "");
-		bool r = FindNextEntry(szWildCard, &name, iSize, fStartAtFilename);
-		if (r && sFileName) SCopy(name.getData(),sFileName);
-		return r;
+		StdStrBuf name(start_at_filename ? filename : "");
+		bool found_entry = FindNextEntry(wildcard, &name, size, start_at_filename);
+		if (found_entry && filename)
+		{
+			SCopy(name.getData(),filename);
+		}
+		return found_entry;
 	}
-	bool Read(void *pBuffer, size_t iSize) override;
+	bool Read(void *buffer, size_t size) override;
 	bool Advance(int offset) override;
 	void SetStdOutput(bool fStatus);
-	void ResetSearch(bool reload_contents=false); // reset search pointer so calls to FindNextEntry find first entry again. if reload_contents is set, the file list for directories is also refreshed.
+	void ResetSearch(bool reload_contents = false); // reset search pointer so calls to FindNextEntry find first entry again. if reload_contents is set, the file list for directories is also refreshed.
 	const char *GetError();
 	const char *GetName() const;
 	StdStrBuf GetFullName() const;
-	int EntryCount(const char *szWildCard=nullptr);
-	size_t EntrySize(const char *szWildCard=nullptr);
+	int EntryCount(const char *wildcard = nullptr);
+	size_t EntrySize(const char *wildcard = nullptr);
 	size_t AccessedEntrySize() const override; // retrieve size of last accessed entry
-	unsigned int EntryCRC32(const char *szWildCard=nullptr);
+	unsigned int EntryCRC32(const char *wildcard = nullptr);
 	bool IsOpen() const;
 	C4Group *GetMother();
 	bool IsPacked() const;
 	bool HasPackedMother() const;
-	bool SetNoSort(bool fNoSort);
-	int PreCacheEntries(const char *szSearchPattern, bool cache_previous=false); // pre-load entries to memory. return number of loaded entries.
+	bool SetNoSort(bool no_sorting);
+	int PreCacheEntries(const char *search_pattern, bool cache_previous=false); // pre-load entries to memory. return number of loaded entries.
 
 	const C4GroupHeader &GetHeader() const;
 	const C4GroupEntry *GetFirstEntry() const;

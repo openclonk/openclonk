@@ -387,14 +387,14 @@ bool C4Group_ReadFile(const char *filename, char **data, size_t *size)
 	return true;
 }
 
-void MemScramble(BYTE *bypBuffer, int iSize)
+void MemScramble(BYTE *bypBuffer, int size)
 {
 	int cnt; BYTE temp;
 	// XOR deface
-	for (cnt=0; cnt<iSize; cnt++)
+	for (cnt=0; cnt<size; cnt++)
 		bypBuffer[cnt] ^= 237;
 	// BYTE swap
-	for (cnt=0; cnt+2<iSize; cnt+=3)
+	for (cnt=0; cnt+2<size; cnt+=3)
 	{
 		temp = bypBuffer[cnt];
 		bypBuffer[cnt] = bypBuffer[cnt+2];
@@ -642,9 +642,9 @@ bool C4Group::OpenRealGrpFile()
 
 bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
                        bool childgroup,
-                       const char *fname,
+                       const char *filename,
                        long size,
-                       const char *entryname,
+                       const char *entry_name,
                        BYTE *membuf,
                        bool delete_on_disk,
                        bool hold_buffer,
@@ -663,18 +663,18 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 		char tfname[_MAX_FNAME];
 		SCopy(GetName(),tfname,_MAX_FNAME);
 		AppendBackslash(tfname);
-		if (entryname) SAppend(entryname,tfname);
-		else SAppend(GetFilename(fname),tfname);
+		if (entry_name) SAppend(entry_name,tfname);
+		else SAppend(GetFilename(filename),tfname);
 
 		switch (status)
 		{
 
 		case C4GroupEntry::C4GRES_OnDisk: // Copy/move file to folder
-			if (!CopyItem(fname, tfname))
+			if (!CopyItem(filename, tfname))
 				return false;
 			// Reset directory iterator to reflect new file
 			ResetSearch(true);
-			if (delete_on_disk && !EraseItem(fname))
+			if (delete_on_disk && !EraseItem(filename))
 				return false;
 			return true;
 
@@ -703,7 +703,7 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 	C4GroupEntry *nentry,*lentry,*centry;
 
 	// Delete existing entries of same name
-	centry=GetEntry(GetFilename(entryname ? entryname : fname));
+	centry=GetEntry(GetFilename(entry_name ? entry_name : filename));
 	if (centry) { centry->Status = C4GroupEntry::C4GRES_Deleted; Head.Entries--; }
 
 	// Allocate memory for new entry
@@ -713,8 +713,8 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 	for (lentry=p->FirstEntry; lentry && lentry->Next; lentry=lentry->Next) {}
 
 	// Init entry core data
-	if (entryname) SCopy(entryname,nentry->FileName,_MAX_FNAME);
-	else SCopy(GetFilename(fname),nentry->FileName,_MAX_FNAME);
+	if (entry_name) SCopy(entry_name,nentry->FileName,_MAX_FNAME);
+	else SCopy(GetFilename(filename),nentry->FileName,_MAX_FNAME);
 	nentry->Size=size;
 	nentry->ChildGroup=childgroup;
 	nentry->Offset=0;
@@ -725,7 +725,7 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 	if (lentry) nentry->Offset=lentry->Offset+lentry->Size;
 
 	// Init list entry data
-	SCopy(fname,nentry->DiskPath,_MAX_FNAME);
+	SCopy(filename,nentry->DiskPath,_MAX_FNAME);
 	nentry->Status=status;
 	nentry->MemoryBuffer=membuf;
 	nentry->Next=nullptr;
@@ -1124,15 +1124,15 @@ bool C4Group::Advance(int offset)
 	return true;
 }
 
-bool C4Group::Read(void *pBuffer, size_t iSize)
+bool C4Group::Read(void *buffer, size_t size)
 {
 	// Access cached entry from memory?
 	if (p->pInMemEntry)
 	{
-		if (p->iInMemEntrySize < iSize) return Error("ReadCached:");
-		memcpy(pBuffer, p->pInMemEntry, iSize);
-		p->iInMemEntrySize -= iSize;
-		p->pInMemEntry += iSize;
+		if (p->iInMemEntrySize < size) return Error("ReadCached:");
+		memcpy(buffer, p->pInMemEntry, size);
+		p->iInMemEntrySize -= size;
+		p->pInMemEntry += size;
 		return true;
 	}
 	// Not cached. Read from file.
@@ -1142,19 +1142,19 @@ bool C4Group::Read(void *pBuffer, size_t iSize)
 		// Child group: read from mother group
 		if (p->Mother)
 		{
-			if (!p->Mother->Read(pBuffer,iSize))
+			if (!p->Mother->Read(buffer,size))
 				{ RewindFilePtr(); return Error("Read:"); }
 		}
 		// Regular group: read from standard file
 		else
 		{
-			if (!p->StdFile.Read(pBuffer,iSize))
+			if (!p->StdFile.Read(buffer,size))
 				{ RewindFilePtr(); return Error("Read:"); }
 		}
-		p->FilePtr+=iSize;
+		p->FilePtr+=size;
 		break;
 	case P::ST_Unpacked:
-		if (!p->StdFile.Read(pBuffer,iSize)) return Error("Read: Error reading from folder contents");
+		if (!p->StdFile.Read(buffer,size)) return Error("Read: Error reading from folder contents");
 		break;
 	default: break; // InGrp & Deleted ignored
 	}
@@ -1294,7 +1294,7 @@ bool C4Group::AddEntryOnDisk(const char *filename,
 
 	// Determine size
 	bool fIsGroup = !!C4Group_IsGroup(filename);
-	int iSize = fIsGroup ? UncompressedFileSize(filename) : FileSize(filename);
+	int size = fIsGroup ? UncompressedFileSize(filename) : FileSize(filename);
 
 	// Determine executable bit (linux only)
 	bool is_executable = false;
@@ -1306,7 +1306,7 @@ bool C4Group::AddEntryOnDisk(const char *filename,
 	return AddEntry(C4GroupEntry::C4GRES_OnDisk,
 	                fIsGroup,
 	                filename,
-	                iSize,
+	                size,
 					entry_name,
 	                nullptr,
 	                move,
@@ -1339,26 +1339,26 @@ bool C4Group::Move(const char *filename, const char *entry_name)
 	return AddEntryOnDisk(filename, entry_name, move);
 }
 
-bool C4Group::Delete(const char *szFiles, bool fRecursive)
+bool C4Group::Delete(const char *files, bool recursive)
 {
 	int fcount = 0;
 	C4GroupEntry *tentry;
 
 	// Segmented file specs
-	if (SCharCount(';', szFiles) || SCharCount('|', szFiles))
+	if (SCharCount(';', files) || SCharCount('|', files))
 	{
-		char cSeparator = (SCharCount(';', szFiles) ? ';' : '|');
+		char cSeparator = (SCharCount(';', files) ? ';' : '|');
 		bool success = true;
 		char filespec[_MAX_FNAME+1];
-		for (int cseg = 0; SCopySegment(szFiles, cseg, filespec, cSeparator, _MAX_FNAME); cseg++)
-			if (!Delete(filespec, fRecursive))
+		for (int cseg = 0; SCopySegment(files, cseg, filespec, cSeparator, _MAX_FNAME); cseg++)
+			if (!Delete(filespec, recursive))
 				success=false;
 		return success; // Would be nicer to return the file count and add up all counts from recursive actions...
 	}
 
 	// Delete all matching Entries
 	ResetSearch();
-	while ((tentry = SearchNextEntry(szFiles)))
+	while ((tentry = SearchNextEntry(files)))
 	{
 		// StdOutput
 		if (p->StdOutput) printf("%s\n",tentry->FileName);
@@ -1368,7 +1368,7 @@ bool C4Group::Delete(const char *szFiles, bool fRecursive)
 	}
 
 	// Recursive: process sub groups
-	if (fRecursive)
+	if (recursive)
 	{
 		C4Group hChild;
 		ResetSearch();
@@ -1377,7 +1377,7 @@ bool C4Group::Delete(const char *szFiles, bool fRecursive)
 				if (hChild.OpenAsChild(this, tentry->FileName))
 				{
 					hChild.SetStdOutput(p->StdOutput);
-					hChild.Delete(szFiles, fRecursive);
+					hChild.Delete(files, recursive);
 					hChild.Close();
 				}
 	}
@@ -1429,29 +1429,29 @@ bool C4Group::DeleteEntry(const char *filename, bool do_recycle)
 	return true;
 }
 
-bool C4Group::Rename(const char *szFile, const char *szNewName)
+bool C4Group::Rename(const char *filename, const char *new_name)
 {
 
-	if (p->StdOutput) printf("Renaming %s to %s...\n",szFile,szNewName);
+	if (p->StdOutput) printf("Renaming %s to %s...\n",filename,new_name);
 
 	switch (p->SourceType)
 	{
 	case P::ST_Packed:
 		// Get entry
 		C4GroupEntry *pEntry;
-		if (!(pEntry=GetEntry(szFile))) return Error("Rename: File not found");
+		if (!(pEntry=GetEntry(filename))) return Error("Rename: File not found");
 		// Check double name
-		if (GetEntry(szNewName) && !SEqualNoCase(szNewName, szFile)) return Error("Rename: File exists already");
+		if (GetEntry(new_name) && !SEqualNoCase(new_name, filename)) return Error("Rename: File exists already");
 		// Rename
-		SCopy(szNewName,pEntry->FileName,_MAX_FNAME);
+		SCopy(new_name,pEntry->FileName,_MAX_FNAME);
 		p->Modified=true;
 		break;
 	case P::ST_Unpacked:
 		p->StdFile.Close();
 		char path[_MAX_FNAME+1]; SCopy(GetName(),path,_MAX_PATH-1);
-		AppendBackslash(path); SAppend(szFile,path,_MAX_PATH);
+		AppendBackslash(path); SAppend(filename,path,_MAX_PATH);
 		char path2[_MAX_FNAME+1]; SCopy(GetName(),path2,_MAX_PATH-1);
-		AppendBackslash(path2); SAppend(szNewName,path2,_MAX_PATH);
+		AppendBackslash(path2); SAppend(new_name,path2,_MAX_PATH);
 		if (!RenameFile(path,path2)) return Error("Rename: Failure");
 		// refresh file list
 		ResetSearch(true);
@@ -1476,14 +1476,13 @@ bool C4Group_IsExcluded(const char *szFile, const char *szExcludeList)
 	return false;
 }
 
-bool C4Group::Extract(const char *szFiles, const char *szExtractTo, const char *szExclude)
+bool C4Group::Extract(const char *files, const char *destination, const char *exclude)
 {
-
 	// StdOutput
 	if (p->StdOutput)
 	{
 		printf("Extracting");
-		if (szExtractTo) printf(" to %s",szExtractTo);
+		if (destination) printf(" to %s",destination);
 		printf("...\n");
 	}
 
@@ -1494,16 +1493,16 @@ bool C4Group::Extract(const char *szFiles, const char *szExtractTo, const char *
 	cbytes=0; tbytes=EntrySize();
 
 	// Process segmented list
-	char cSeparator = (SCharCount(';', szFiles) ? ';' : '|');
+	char cSeparator = (SCharCount(';', files) ? ';' : '|');
 	char szFileName[_MAX_PATH + 1];
-	for (int cseg=0; SCopySegment(szFiles, cseg, szFileName, cSeparator); cseg++)
+	for (int cseg=0; SCopySegment(files, cseg, szFileName, cSeparator); cseg++)
 	{
 		// Search all entries
 		ResetSearch();
 		while ((tentry = SearchNextEntry(szFileName)))
 		{
 			// skip?
-			if (C4Group_IsExcluded(tentry->FileName, szExclude)) continue;
+			if (C4Group_IsExcluded(tentry->FileName, exclude)) continue;
 			// Process data & output
 			if (p->StdOutput) printf("%s\n",tentry->FileName);
 			cbytes+=tentry->Size;
@@ -1511,7 +1510,7 @@ bool C4Group::Extract(const char *szFiles, const char *szExtractTo, const char *
 				p->fnProcessCallback(tentry->FileName,100*cbytes/std::max(tbytes,1));
 
 			// Extract
-			if (!ExtractEntry(tentry->FileName,szExtractTo))
+			if (!ExtractEntry(tentry->FileName,destination))
 				return Error("Extract: Could not extract entry");
 
 			fcount++;
@@ -1523,16 +1522,16 @@ bool C4Group::Extract(const char *szFiles, const char *szExtractTo, const char *
 	return true;
 }
 
-bool C4Group::ExtractEntry(const char *filename, const char *szExtractTo)
+bool C4Group::ExtractEntry(const char *filename, const char *destination)
 {
 	CStdFile tfile;
 	CStdFile hDummy;
 	char szTempFName[_MAX_FNAME+1],szTargetFName[_MAX_FNAME+1];
 
 	// Target file name
-	if (szExtractTo)
+	if (destination)
 	{
-		SCopy(szExtractTo,szTargetFName,_MAX_FNAME-1);
+		SCopy(destination,szTargetFName,_MAX_FNAME-1);
 		if (DirectoryExists(szTargetFName))
 		{
 			AppendBackslash(szTargetFName);
@@ -1640,8 +1639,8 @@ bool C4Group::OpenAsChild(C4Group *mother,
 		p->FileName = centry->FileName;
 
 	// Access entry in mother group
-	size_t iSize;
-	if ((!p->Mother->AccessEntry(GetName(), &iSize, nullptr, true)))
+	size_t size;
+	if ((!p->Mother->AccessEntry(GetName(), &size, nullptr, true)))
 	{
 		if (!do_create)
 			{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Entry not in mother group"); }
@@ -1660,7 +1659,7 @@ bool C4Group::OpenAsChild(C4Group *mother,
 	// Read header
 	// Do not do size checks for packed subgroups of unpacked groups (there will be no entry),
 	//  because that would be the PACKED size which can actually be smaller than sizeof(C4GroupHeader)!
-	if (iSize < sizeof(C4GroupHeader) && centry)
+	if (size < sizeof(C4GroupHeader) && centry)
 		{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Entry too small"); }
 	if (!p->Mother->Read(&Head,sizeof(C4GroupHeader)))
 		{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Entry reading error"); }
@@ -1699,36 +1698,38 @@ bool C4Group::OpenAsChild(C4Group *mother,
 	return true;
 }
 
-bool C4Group::AccessEntry(const char *szWildCard,
-                          size_t *iSize, char *sFileName,
-                          bool NeedsToBeAGroup)
+bool C4Group::AccessEntry(const char *wildcard,
+                          size_t *size,
+						  char *filename,
+                          bool needs_to_be_a_group)
 {
 #ifdef C4GROUP_DUMP_ACCESS
-	LogF("Group access in %s: %s", GetFullName().getData(), szWildCard);
+	LogF("Group access in %s: %s", GetFullName().getData(), wildcard);
 #endif
 	StdStrBuf fname;
-	if (!FindEntry(szWildCard,&fname,&p->iCurrFileSize))
+	if (!FindEntry(wildcard,&fname,&p->iCurrFileSize))
 		return false;
 #ifdef _DEBUG
 	szCurrAccessedEntry = fname.getMData();
 #endif
-	bool fResult = SetFilePtr2Entry(fname.getData(), NeedsToBeAGroup);
+	bool fResult = SetFilePtr2Entry(fname.getData(), needs_to_be_a_group);
 #ifdef _DEBUG
 	p->sPrevAccessedEntry.Copy(szCurrAccessedEntry);
 	szCurrAccessedEntry = nullptr;
 #endif
 	if (!fResult) return false;
-	if (sFileName) SCopy(fname.getData(),sFileName);
-	if (iSize) *iSize=p->iCurrFileSize;
+	if (filename) SCopy(fname.getData(),filename);
+	if (size) *size=p->iCurrFileSize;
 	return true;
 }
 
-bool C4Group::AccessNextEntry(const char *szWildCard,
-                              size_t *iSize, char *sFileName,
-                              bool fStartAtFilename)
+bool C4Group::AccessNextEntry(const char *wildcard,
+                              size_t *size,
+							  char *filename,
+                              bool start_at_filename)
 {
 	char fname[_MAX_FNAME+1];
-	if (!FindNextEntry(szWildCard,fname,&p->iCurrFileSize,fStartAtFilename)) return false;
+	if (!FindNextEntry(wildcard,fname,&p->iCurrFileSize,start_at_filename)) return false;
 #ifdef _DEBUG
 	szCurrAccessedEntry = fname;
 #endif
@@ -1737,8 +1738,8 @@ bool C4Group::AccessNextEntry(const char *szWildCard,
 	szCurrAccessedEntry = nullptr;
 #endif
 	if (!fResult) return false;
-	if (sFileName) SCopy(fname,sFileName);
-	if (iSize) *iSize=p->iCurrFileSize;
+	if (filename) SCopy(fname,filename);
+	if (size) *size=p->iCurrFileSize;
 	return true;
 }
 
@@ -1778,73 +1779,73 @@ bool C4Group::SetFilePtr2Entry(const char *entry_name, bool needs_to_be_a_group)
 	return false;
 }
 
-bool C4Group::FindEntry(const char *szWildCard, StdStrBuf *sFileName, size_t *iSize)
+bool C4Group::FindEntry(const char *wildcard, StdStrBuf *filename, size_t *size)
 {
 	ResetSearch();
-	return FindNextEntry(szWildCard,sFileName,iSize);
+	return FindNextEntry(wildcard,filename,size);
 }
 
-bool C4Group::FindNextEntry(const char *szWildCard,
-                            StdStrBuf *sFileName,
-                            size_t *iSize,
-                            bool fStartAtFilename)
+bool C4Group::FindNextEntry(const char *wildcard,
+                            StdStrBuf *filename,
+                            size_t *size,
+                            bool start_at_filename)
 {
 	C4GroupEntry *centry;
-	if (!szWildCard) return false;
+	if (!wildcard) return false;
 
 	// Reset search to specified position
-	if (fStartAtFilename) FindEntry(sFileName->getData());
+	if (start_at_filename) FindEntry(filename->getData());
 
-	if (!(centry=SearchNextEntry(szWildCard))) return false;
-	if (sFileName) sFileName->Copy(centry->FileName);
-	if (iSize) *iSize=centry->Size;
+	if (!(centry=SearchNextEntry(wildcard))) return false;
+	if (filename) filename->Copy(centry->FileName);
+	if (size) *size=centry->Size;
 	return true;
 }
 
-bool C4Group::Add(const char *szName, void *pBuffer, int iSize, bool fChild, bool hold_buffer, bool is_executable)
+bool C4Group::Add(const char *entry_name, void *buffer, int size, bool add_as_child, bool hold_buffer, bool is_executable)
 {
 	return AddEntry(C4GroupEntry::C4GRES_InMemory,
-	                fChild,
-	                szName,
-	                iSize,
-	                szName,
-	                (BYTE*) pBuffer,
+	                add_as_child,
+	                entry_name,
+	                size,
+	                entry_name,
+	                (BYTE*) buffer,
 	                false,
 	                hold_buffer,
 	                is_executable);
 }
 
-bool C4Group::Add(const char *szName, StdBuf &pBuffer, bool fChild, bool hold_buffer, bool is_executable)
+bool C4Group::Add(const char *entry_name, StdBuf &buffer, bool add_as_child, bool hold_buffer, bool is_executable)
 {
 	if (!AddEntry(C4GroupEntry::C4GRES_InMemory,
-	              fChild,
-	              szName,
-	              pBuffer.getSize(),
-	              szName,
-	              (BYTE*) pBuffer.getMData(),
+	              add_as_child,
+	              entry_name,
+	              buffer.getSize(),
+	              entry_name,
+	              (BYTE*) buffer.getMData(),
 	              false,
 	              hold_buffer,
 	              is_executable,
 	              true)) return false;
 	// Pointer is now owned and released by C4Group!
-	if (hold_buffer) pBuffer.GrabPointer();
+	if (hold_buffer) buffer.GrabPointer();
 	return true;
 }
 
-bool C4Group::Add(const char *szName, StdStrBuf &pBuffer, bool fChild, bool hold_buffer, bool is_executable)
+bool C4Group::Add(const char *entry_name, StdStrBuf &buffer, bool add_as_child, bool hold_buffer, bool is_executable)
 {
 	if (!AddEntry(C4GroupEntry::C4GRES_InMemory,
-	              fChild,
-	              szName,
-	              pBuffer.getLength(),
-	              szName,
-	              (BYTE*) pBuffer.getMData(),
+	              add_as_child,
+	              entry_name,
+	              buffer.getLength(),
+	              entry_name,
+	              (BYTE*) buffer.getMData(),
 	              false,
 	              hold_buffer,
 	              is_executable,
 	              true)) return false;
 	// Pointer is now owned and released by C4Group!
-	if (hold_buffer) pBuffer.GrabPointer();
+	if (hold_buffer) buffer.GrabPointer();
 	return true;
 }
 
@@ -1854,40 +1855,40 @@ const char* C4Group::GetName() const
 	return p->FileName.c_str();
 }
 
-int C4Group::EntryCount(const char *szWildCard)
+int C4Group::EntryCount(const char *wildcard)
 {
 	int fcount;
 	C4GroupEntry *tentry;
 	// All files if no wildcard
-	if (!szWildCard) szWildCard="*";
+	if (!wildcard) wildcard="*";
 	// Match wildcard
 	ResetSearch(); fcount=0;
-	while ((tentry=SearchNextEntry(szWildCard))) fcount++;
+	while ((tentry=SearchNextEntry(wildcard))) fcount++;
 	return fcount;
 }
 
-size_t C4Group::EntrySize(const char *szWildCard)
+size_t C4Group::EntrySize(const char *wildcard)
 {
 	int fsize;
 	C4GroupEntry *tentry;
 	// All files if no wildcard
-	if (!szWildCard) szWildCard="*";
+	if (!wildcard) wildcard="*";
 	// Match wildcard
 	ResetSearch(); fsize=0;
-	while ((tentry=SearchNextEntry(szWildCard)))
+	while ((tentry=SearchNextEntry(wildcard)))
 		fsize+=tentry->Size;
 	return fsize;
 }
 
 size_t C4Group::AccessedEntrySize() const { return p->iCurrFileSize; }
 
-unsigned int C4Group::EntryCRC32(const char *szWildCard)
+unsigned int C4Group::EntryCRC32(const char *wildcard)
 {
-	if (!szWildCard) szWildCard="*";
+	if (!wildcard) wildcard="*";
 	// iterate thorugh child
 	C4GroupEntry *pEntry; unsigned int iCRC = 0;
 	ResetSearch();
-	while ((pEntry = SearchNextEntry(szWildCard)))
+	while ((pEntry = SearchNextEntry(wildcard)))
 	{
 		iCRC ^= CalcCRC32(pEntry);
 	}
@@ -1897,58 +1898,58 @@ unsigned int C4Group::EntryCRC32(const char *szWildCard)
 
 bool C4Group::IsOpen() const { return p->SourceType != P::ST_None; }
 
-bool C4Group::LoadEntry(const char *entry_name, char **lpbpBuf, size_t *ipSize, int iAppendZeros)
+bool C4Group::LoadEntry(const char *entry_name, char **buffer, size_t *size_info, int zeros_to_append)
 {
 	size_t size;
 
 	// Access entry, allocate buffer, read data
-	(*lpbpBuf)=nullptr; if (ipSize) *ipSize=0;
+	(*buffer)=nullptr; if (size_info) *size_info=0;
 	if (!AccessEntry(entry_name,&size)) return Error("LoadEntry: Not found");
-	*lpbpBuf = new char[size+iAppendZeros];
-	if (!Read(*lpbpBuf,size))
+	*buffer = new char[size+zeros_to_append];
+	if (!Read(*buffer,size))
 	{
-		delete [] (*lpbpBuf); *lpbpBuf = nullptr;
+		delete [] (*buffer); *buffer = nullptr;
 		return Error("LoadEntry: Reading error");
 	}
 
-	if (ipSize) *ipSize=size;
+	if (size_info) *size_info=size;
 
-	if (iAppendZeros)
-		ZeroMem( (*lpbpBuf)+size, iAppendZeros );
+	if (zeros_to_append)
+		ZeroMem( (*buffer)+size, zeros_to_append );
 
 	return true;
 }
 
-bool C4Group::LoadEntry(const char *entry_name, StdBuf * Buf)
+bool C4Group::LoadEntry(const char *entry_name, StdBuf * buffer)
 {
 	size_t size;
 	// Access entry, allocate buffer, read data
 	if (!AccessEntry(entry_name,&size)) return Error("LoadEntry: Not found");
 	// Allocate memory
-	Buf->New(size);
+	buffer->New(size);
 	// Load data
-	if (!Read(Buf->getMData(),size))
+	if (!Read(buffer->getMData(),size))
 	{
-		Buf->Clear();
+		buffer->Clear();
 		return Error("LoadEntry: Reading error");
 	}
 	// ok
 	return true;
 }
 
-bool C4Group::LoadEntryString(const char *entry_name, StdStrBuf *Buf)
+bool C4Group::LoadEntryString(const char *entry_name, StdStrBuf *buffer)
 {
 	size_t size;
 	// Access entry, allocate buffer, read data
 	if (!AccessEntry(entry_name,&size)) return Error("LoadEntry: Not found");
 	// Allocate memory
-	Buf->SetLength(size);
+	buffer->SetLength(size);
 	// other parts crash when they get a zero length buffer, so fail here
 	if (!size) return false;
 	// Load data
-	if (!Read(Buf->getMData(),size))
+	if (!Read(buffer->getMData(),size))
 	{
-		Buf->Clear();
+		buffer->Clear();
 		return Error("LoadEntry: Reading error");
 	}
 	// ok
@@ -1967,12 +1968,12 @@ int SortRank(const char *szElement, const char *szSortList)
 	return 0;
 }
 
-bool C4Group::Sort(const char *szSortList)
+bool C4Group::Sort(const char *list)
 {
 	bool fBubble;
 	C4GroupEntry *centry,*prev,*next,*nextnext;
 
-	if (!szSortList || !szSortList[0]) return false;
+	if (!list || !list[0]) return false;
 
 	if (p->StdOutput) printf("Sorting...\n");
 
@@ -1984,8 +1985,8 @@ bool C4Group::Sort(const char *szSortList)
 			if ((next=centry->Next))
 			{
 				// primary sort by file list
-				int iS1 = SortRank(centry->FileName,szSortList);
-				int iS2 = SortRank(next->FileName,szSortList);
+				int iS1 = SortRank(centry->FileName,list);
+				int iS2 = SortRank(next->FileName,list);
 				if (iS1 > iS2) continue;
 				// secondary sort by filename
 				if (iS1 == iS2)
@@ -2017,7 +2018,7 @@ bool C4Group::IsPacked() const { return p->SourceType == P::ST_Packed; }
 
 bool C4Group::HasPackedMother() const { if (!p->Mother) return false; return p->Mother->IsPacked(); }
 
-bool C4Group::SetNoSort(bool fNoSort) { p->NoSort = fNoSort; return true; }
+bool C4Group::SetNoSort(bool no_sorting) { p->NoSort = no_sorting; return true; }
 
 bool C4Group::CloseExclusiveMother()
 {
@@ -2031,16 +2032,16 @@ bool C4Group::CloseExclusiveMother()
 	return false;
 }
 
-bool C4Group::SortByList(const char **ppSortList, const char *filename)
+bool C4Group::SortByList(const char **list, const char *filename)
 {
 	// No sort list specified
-	if (!ppSortList) return false;
+	if (!list) return false;
 	// No group name specified, use own
 	if (!filename) filename = GetName();
 	filename = GetFilename(filename);
 	// Find matching filename entry in sort list
 	const char **ppListEntry;
-	for (ppListEntry = ppSortList; *ppListEntry; ppListEntry+=2)
+	for (ppListEntry = list; *ppListEntry; ppListEntry+=2)
 		if (WildcardMatch( *ppListEntry, filename ))
 			break;
 	// Sort by sort list entry
@@ -2226,15 +2227,15 @@ bool C4Group::OpenMother()
 	return true;
 }
 
-int C4Group::PreCacheEntries(const char *szSearchPattern, bool cache_previous)
+int C4Group::PreCacheEntries(const char *search_pattern, bool cache_previous)
 {
-	assert(szSearchPattern);
+	assert(search_pattern);
 	int result = 0;
 	// pre-load entries to memory. return number of loaded entries.
 	for (C4GroupEntry * e = p->FirstEntry; e; e = e->Next)
 	{
 		// is this to be cached?
-		if (!WildcardListMatch(szSearchPattern, e->FileName)) continue;
+		if (!WildcardListMatch(search_pattern, e->FileName)) continue;
 		// if desired, cache all entries up to that one to allow rewind in unpacked memory
 		// (only makes sense for groups)
 		if (cache_previous && p->SourceType == P::ST_Packed)
