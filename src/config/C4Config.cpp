@@ -135,7 +135,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *compiler)
 	compiler->Value(mkNamingAdapt(Windowed,              "Windowed",             0             ,false, true));
 	compiler->Value(mkNamingAdapt(PXSGfx,                "PXSGfx"  ,             1             ));
 	compiler->Value(mkNamingAdapt(Gamma,                 "Gamma"  ,              100           ));
-	compiler->Value(mkNamingAdapt(Currency,              "Currency"  ,           0             ));
 	compiler->Value(mkNamingAdapt(Monitor,               "Monitor",              0             )); // 0 = D3DADAPTER_DEFAULT
 	compiler->Value(mkNamingAdapt(MaxRefreshDelay,       "MaxRefreshDelay",      30            ));
 	compiler->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
