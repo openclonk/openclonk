@@ -617,7 +617,7 @@ void C4Application::Quit()
 	// Participants should not be cleared for usual startup dialog
 
 	// Save config if there was no loading error
-	if (Config.fConfigLoaded) Config.Save();
+	if (Config.ConfigLoaded) Config.Save();
 	// make sure startup data is unloaded
 	C4Startup::Unload();
 	// fonts are loaded at start and never unloaded

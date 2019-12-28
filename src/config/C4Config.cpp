@@ -87,21 +87,32 @@ void C4ConfigDeveloper::CompileFunc(StdCompiler *compiler)
 	compiler->Value(mkNamingAdapt(DebugShapeTextures,  "DebugShapeTextures", 0                    , false, true));
 	compiler->Value(mkNamingAdapt(ShowHelp,            "ShowHelp",           true                 , false, false));
 	for (int32_t i = 0; i < CFG_MaxEditorMRU; ++i)
+	{
 		compiler->Value(mkNamingAdapt(s(RecentlyEditedSzenarios[i]), FormatString("EditorMRU%02d", (int)i).getData(), "", false, false));
+	}
 }
 
 void C4ConfigDeveloper::AddRecentlyEditedScenario(const char *filename)
 {
-	if (!filename || !*filename) return;
+	if (!filename || !*filename)
+	{
+		return;
+	}
 	// Put given scenario first in list by moving all other scenarios down
 	// Check how many scenarios to move down the list. Stop moving down when the given scenario is in the list
 	int32_t move_down_num;
 	for (move_down_num = 0; move_down_num < CFG_MaxEditorMRU - 1; ++move_down_num)
+	{
 		if (!strncmp(filename, RecentlyEditedSzenarios[move_down_num], CFG_MaxString))
+		{
 			break;
+		}
+	}
 	// Move them down
 	for (int32_t i = move_down_num; i > 0; --i)
+	{
 		strcpy(RecentlyEditedSzenarios[i], RecentlyEditedSzenarios[i - 1]);
+	}
 	// Put current scenario in
 	strncpy(RecentlyEditedSzenarios[0], filename, CFG_MaxString);
 }
@@ -276,14 +287,14 @@ C4Config::C4Config()
 
 C4Config::~C4Config()
 {
-	fConfigLoaded = false;
+	ConfigLoaded = false;
 }
 
 void C4Config::Default()
 {
 	// force default values
 	StdCompilerNull Comp; Comp.Compile(*this);
-	fConfigLoaded=false;
+	ConfigLoaded = false;
 }
 
 void C4Config::GetConfigFileName(StdStrBuf &filename, const char *config_file)
@@ -297,7 +308,10 @@ void C4Config::GetConfigFileName(StdStrBuf &filename, const char *config_file)
 	{
 		// Config filename from home
 		StdStrBuf home(getenv("HOME"));
-		if (home) { home += "/"; }
+		if (home)
+		{
+			home += "/";
+		}
 		filename.Copy(home);
 #ifdef __APPLE__
 		filename += "Library/Preferences/" C4ENGINEID ".config";
@@ -336,7 +350,10 @@ bool C4Config::Load(const char *config_file)
 				if (!config_file)
 				{
 					StdStrBuf filename(getenv("HOME"));
-					if (filename) { filename += "/"; }
+					if (filename)
+					{
+						filename += "/";
+					}
 					filename += ".clonk/" C4ENGINENICK;
 					CreatePath(filename.getData());
 				}
@@ -368,31 +385,51 @@ bool C4Config::Load(const char *config_file)
 #endif
 	if (SEqual(Network.Nick.getData(), "Unknown"))
 	{
-		char LocalName[25+1]; *LocalName = 0;
+		char LocalName[25+1];
+		*LocalName = 0;
 		gethostname(LocalName, 25);
-		if (*LocalName) Network.Nick.Copy(LocalName);
+		if (*LocalName)
+		{
+			Network.Nick.Copy(LocalName);
+		}
 	}
 #ifdef HAVE_WINSOCK
-	if (fWinSock) WSACleanup();
+	if (fWinSock)
+	{
+		WSACleanup();
+	}
 #endif
 	General.DefaultLanguage();
 	// Warning against invalid ports
-	if (Config.Network.PortTCP>0 && Config.Network.PortTCP == Config.Network.PortRefServer)
+	if (Config.Network.PortTCP > 0 && Config.Network.PortTCP == Config.Network.PortRefServer)
 	{
 		Log("Warning: Network TCP port and reference server port both set to same value - increasing reference server port!");
 		++Config.Network.PortRefServer;
-		if (Config.Network.PortRefServer>=65536) Config.Network.PortRefServer = C4NetStdPortRefServer;
+		if (Config.Network.PortRefServer >= 65536)
+		{
+			Config.Network.PortRefServer = C4NetStdPortRefServer;
+		}
 	}
-	if (Config.Network.PortUDP>0 && Config.Network.PortUDP == Config.Network.PortDiscovery)
+	if (Config.Network.PortUDP > 0 && Config.Network.PortUDP == Config.Network.PortDiscovery)
 	{
 		Log("Warning: Network UDP port and LAN game discovery port both set to same value - increasing discovery port!");
 		++Config.Network.PortDiscovery;
-		if (Config.Network.PortDiscovery>=65536) Config.Network.PortDiscovery = C4NetStdPortDiscovery;
+		if (Config.Network.PortDiscovery >= 65536)
+		{
+			Config.Network.PortDiscovery = C4NetStdPortDiscovery;
+		}
 	}
 	// Empty nick already defaults to GetRegistrationData("Nick") or
 	// Network.LocalName at relevant places.
-	fConfigLoaded = true;
-	if (config_file) ConfigFilename.Copy(config_file); else ConfigFilename.Clear();
+	ConfigLoaded = true;
+	if (config_file)
+	{
+		ConfigFilename.Copy(config_file);
+	}
+	else
+	{
+		ConfigFilename.Clear();
+	}
 	return true;
 }
 
@@ -417,10 +454,10 @@ bool C4Config::Save()
 			IniWrite.getOutput().SaveToFile(filename.getData());
 		}
 	}
-	catch (StdCompiler::Exception *pExc)
+	catch (StdCompiler::Exception *exception)
 	{
-		LogF(LoadResStr("IDS_ERR_CONFSAVE"), pExc->Msg.getData());
-		delete pExc;
+		LogF(LoadResStr("IDS_ERR_CONFSAVE"), exception->Msg.getData());
+		delete exception;
 		return false;
 	}
 	return true;
@@ -431,17 +468,21 @@ void C4ConfigGeneral::DeterminePaths()
 #ifdef _WIN32
 	// Exe path
 	wchar_t apath[CFG_MaxString];
-	if (GetModuleFileNameW(nullptr,apath,CFG_MaxString))
+	if (GetModuleFileNameW(nullptr, apath, CFG_MaxString))
 	{
 		ExePath = StdStrBuf(apath);
 		TruncatePath(ExePath.getMData());
 		ExePath.SetLength(SLen(ExePath.getMData()));
 		ExePath.AppendBackslash();
 	}
+
 	// Temp path
 	GetTempPathW(CFG_MaxString,apath);
 	TempPath = StdStrBuf(apath);
-	if (TempPath[0]) TempPath.AppendBackslash();
+	if (TempPath[0])
+	{
+		TempPath.AppendBackslash();
+	}
 #elif defined(PROC_SELF_EXE)
 	ExePath.SetLength(1024);
 	ssize_t l = readlink(PROC_SELF_EXE, ExePath.getMData(), 1024);
@@ -462,7 +503,9 @@ void C4ConfigGeneral::DeterminePaths()
 		TempPath.AppendBackslash();
 	}
 	else
+	{
 		TempPath = "/tmp/";
+	}
 #else
 	// Mac: Just use the working directory as ExePath.
 	ExePath = GetWorkingDirectory();
@@ -475,7 +518,7 @@ void C4ConfigGeneral::DeterminePaths()
 	// Use ExePath: on windows, everything is installed to one directory
 	SCopy(ExePath.getMData(),SystemDataPath);
 #elif defined(__APPLE__)
-	SCopy(::Application.GetGameDataPath().c_str(),SystemDataPath);
+	SCopy(::Application.GetGameDataPath().c_str(), SystemDataPath);
 #elif defined(WITH_APPDIR_INSTALLATION)
 	// AppDir: layout like normal unix installation, but relative to executable.
 	auto str = FormatString("%s%s", ExePath.getMData(), OC_SYSTEM_DATA_DIR);
@@ -494,8 +537,11 @@ void C4ConfigGeneral::DeterminePaths()
 
 	// Find user-specific data path
 	if (ConfigUserPath[0])
+	{
 		SCopy(ConfigUserPath, UserDataPath);
+	}
 	else
+	{
 #if defined(_WIN32)
 		SCopy(R"(%APPDATA%\)" C4ENGINENAME, UserDataPath);
 #elif defined(__APPLE__)
@@ -503,12 +549,13 @@ void C4ConfigGeneral::DeterminePaths()
 #else
 		SCopy("$HOME/.clonk/" C4ENGINENICK, UserDataPath);
 #endif
+	}
 	C4Config::ExpandEnvironmentVariables(UserDataPath, CFG_MaxString);
 	AppendBackslash(UserDataPath);
 
 	// Screenshot path
-	SCopy(UserDataPath, ScreenshotPath, CFG_MaxString-1);
-	if (ScreenshotFolder.getLength()+std::strlen(ScreenshotPath)+1<=CFG_MaxString)
+	SCopy(UserDataPath, ScreenshotPath, CFG_MaxString - 1);
+	if (ScreenshotFolder.getLength() + std::strlen(ScreenshotPath) + 1 <= CFG_MaxString)
 	{
 		SAppend(ScreenshotFolder.getData(), ScreenshotPath);
 		AppendBackslash(ScreenshotPath);
@@ -521,8 +568,8 @@ static char AtPathFilename[_MAX_PATH_LEN];
 
 const char* C4Config::AtExePath(const char *filename)
 {
-	SCopy(General.ExePath.getData(),AtPathFilename,_MAX_PATH);
-	SAppend(filename,AtPathFilename,_MAX_PATH);
+	SCopy(General.ExePath.getData(), AtPathFilename, _MAX_PATH);
+	SAppend(filename, AtPathFilename, _MAX_PATH);
 	return AtPathFilename;
 }
 
@@ -549,25 +596,29 @@ const char* C4Config::AtTempPath(const char *filename)
 
 const char* C4Config::AtNetworkPath(const char *filename)
 {
-	SCopy(General.UserDataPath,AtPathFilename,_MAX_PATH);
-	SAppend(Network.WorkPath,AtPathFilename,_MAX_PATH);
-	SAppend(filename,AtPathFilename,_MAX_PATH);
+	SCopy(General.UserDataPath, AtPathFilename, _MAX_PATH);
+	SAppend(Network.WorkPath, AtPathFilename, _MAX_PATH);
+	SAppend(filename, AtPathFilename, _MAX_PATH);
 	return AtPathFilename;
 }
 
 const char *C4Config::AtScreenshotPath(const char *filename)
 {
 	int len;
-	SCopy(General.ScreenshotPath,AtPathFilename,_MAX_PATH);
+	SCopy(General.ScreenshotPath, AtPathFilename, _MAX_PATH);
 	if ((len = SLen(AtPathFilename)))
+	{
 		if (AtPathFilename[len-1] == DirectorySeparator)
+		{
 			AtPathFilename[len-1] = '\0';
+		}
+	}
 	if (!CreatePath(AtPathFilename))
 	{
 		SCopy(General.UserDataPath,AtPathFilename,_MAX_PATH);
 	}
 	AppendBackslash(AtPathFilename);
-	SAppend(filename,AtPathFilename,_MAX_PATH);
+	SAppend(filename, AtPathFilename, _MAX_PATH);
 	return AtPathFilename;
 }
 
@@ -576,15 +627,22 @@ bool C4ConfigGeneral::CreateSaveFolder(const char *directory, const char *langua
 {
 	// Create directory if needed
 	if (!CreatePath(directory))
+	{
 		return false;
+	}
 	// Create title component if needed
-	char lang[3]; SCopy(Config.General.Language, lang, 2);
-	StdStrBuf strTitleFile; strTitleFile.Format("%s%c%s", directory, DirectorySeparator, C4CFN_WriteTitle);
-	StdStrBuf strTitleData; strTitleData.Format("%s:%s", lang, language_title);
-	CStdFile hFile;
-	if (!FileExists(strTitleFile.getData()))
-		if (!hFile.Create(strTitleFile.getData()) || !hFile.WriteString(strTitleData.getData()) || !hFile.Close())
+	char language[3]; SCopy(Config.General.Language, language, 2);
+	StdStrBuf title_file; title_file.Format("%s%c%s", directory, DirectorySeparator, C4CFN_WriteTitle);
+	StdStrBuf title_data; title_data.Format("%s:%s", language, language_title);
+
+	CStdFile file;
+	if (!FileExists(title_file.getData()))
+	{
+		if (!file.Create(title_file.getData()) || !file.WriteString(title_data.getData()) || !file.Close())
+		{
 			return false;
+		}
+	}
 	// Save folder seems okay
 	return true;
 }
@@ -594,10 +652,14 @@ const char* C4ConfigNetwork::GetLeagueServerAddress()
 {
 	// Alternate (configurable) league server
 	if (UseAlternateServer)
+	{
 		return AlternateServerAddress;
+	}
 	// Standard (hardcoded) official league server
 	else
+	{
 		return "league.openclonk.org:80/league.php";
+	}
 }
 
 void C4ConfigNetwork::CheckPortsForCollisions()
@@ -660,7 +722,9 @@ const char* C4Config::AtRelativePath(const char *filename)
 {
 	const char *path = GetRelativePathS(filename, General.UserDataPath);
 	if (path == filename)
+	{
 		return GetRelativePathS(filename, General.SystemDataPath);
+	}
 	return path;
 }
 
@@ -668,12 +732,12 @@ void C4Config::ForceRelativePath(StdStrBuf *filename)
 {
 	assert(filename);
 	// Specified file is located in SystemDataPath?
-	const char *szRelative = GetRelativePathS(filename->getData(), General.SystemDataPath);
-	if (szRelative != filename->getData())
+	const char *relative = GetRelativePathS(filename->getData(), General.SystemDataPath);
+	if (relative != filename->getData())
 	{
 		// return relative path
-		StdStrBuf sTemp; sTemp.Copy(szRelative);
-		filename->Take(std::move(sTemp));
+		StdStrBuf temp; temp.Copy(relative);
+		filename->Take(std::move(temp));
 	}
 	else
 	{
@@ -681,8 +745,8 @@ void C4Config::ForceRelativePath(StdStrBuf *filename)
 		if (IsGlobalPath(filename->getData()))
 		{
 			// then shorten it (e.g. C:\Temp\Missions.ocf\Goldmine.ocs to Missions.ocf\Goldmine.ocs)
-			StdStrBuf sTemp; sTemp.Copy(GetC4Filename(filename->getData()));
-			filename->Take(std::move(sTemp));
+			StdStrBuf temp; temp.Copy(GetC4Filename(filename->getData()));
+			filename->Take(std::move(temp));
 		}
 	}
 }
@@ -693,13 +757,19 @@ void C4ConfigGeneral::DefaultLanguage()
 	if (!Language[0])
 	{
 		if (IsGermanSystem())
+		{
 			SCopy("DE - Deutsch", Language);
+		}
 		else
+		{
 			SCopy("US - English", Language);
+		}
 	}
 	// No fallback sequence defined: use primary language list
 	if (!LanguageEx[0])
+	{
 		GetLanguageSequence(Language, LanguageEx);
+	}
 }
 
 bool C4Config::Registered()
@@ -729,16 +799,18 @@ int C4ConfigGeneral::GetLanguageSequence(const char *source, char *target)
 	// Copy a condensed list of language codes from the source list to the target string,
 	// skipping any whitespace or long language descriptions. Language sequences are
 	// comma separated.
-	int iCount = 0;
-	char strLang[2 + 1];
-	for (int i = 0; SCopySegment(source, i, strLang, ',', 2, true); i++)
-		if (strLang[0])
+	int count = 0;
+	char language[2 + 1];
+	for (int i = 0; SCopySegment(source, i, language, ',', 2, true); i++)
+	{
+		if (language[0])
 		{
 			if (target[0]) SAppendChar(',', target);
-			SAppend(strLang, target);
-			iCount++;
+			SAppend(language, target);
+			count++;
 		}
-	return iCount;
+	}
+	return count;
 }
 
 void C4ConfigStartup::CompileFunc(StdCompiler *compiler)
@@ -760,7 +832,9 @@ void C4Config::CompileFunc(StdCompiler *compiler)
 	compiler->Value(mkNamingAdapt(General,     "General"     ));
 	compiler->Value(mkNamingAdapt(Controls,    "Controls"    ));
 	for (int i=0; i<C4ConfigMaxGamepads; ++i)
+	{
 		compiler->Value(mkNamingAdapt(Gamepads[i],     FormatString("Gamepad%d", i).getData()));
+	}
 	compiler->Value(mkNamingAdapt(Graphics,    "Graphics"    ));
 	compiler->Value(mkNamingAdapt(Sound,       "Sound"       ));
 	compiler->Value(mkNamingAdapt(Network,     "Network"     ));
@@ -817,10 +891,10 @@ void C4Config::CleanupTempUpdateFolder()
 const char *C4Config::MakeTempUpdateFolder()
 {
 	// just pick a temp name
-	StdStrBuf sTempName;
-	sTempName.Copy(AtTempPath("update"));
-	MakeTempFilename(&sTempName);
-	SCopy(sTempName.getData(), General.TempUpdatePath);
+	StdStrBuf temp_name;
+	temp_name.Copy(AtTempPath("update"));
+	MakeTempFilename(&temp_name);
+	SCopy(temp_name.getData(), General.TempUpdatePath);
 	CreatePath(General.TempUpdatePath);
 	return General.TempUpdatePath;
 }

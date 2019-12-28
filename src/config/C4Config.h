@@ -258,7 +258,7 @@ public:
 	C4ConfigControls  Controls;
 	C4ConfigStartup   Startup;
 	C4ConfigSecurity  Security;
-	bool fConfigLoaded; // true if config has been successfully loaded
+	bool ConfigLoaded; // true if config has been successfully loaded
 	StdStrBuf ConfigFilename; // set for configs loaded from a nondefault config file
 public:
 	const char* GetSubkeyPath(const char *subkey);
