@@ -27,18 +27,19 @@
 #define C4DEFAULT_FONT_NAME "Endeavour"
 enum { CFG_MaxString  = 1024, CFG_MaxEditorMRU = 8 };
 
+
 class C4ConfigGeneral
 {
 public:
 	enum { ConfigResetSafetyVal = 42 };
 
-	char Name[CFG_MaxString+1];
-	char Language[CFG_MaxString+1]; // entered by user in frontend options (may contain comma separated list or long language descriptions)
-	char LanguageEx[CFG_MaxString+1]; // full fallback list composed by frontend options (condensed comma separated list)
-	char Participants[CFG_MaxString+1];
+	char Name[CFG_MaxString + 1];
+	char Language[CFG_MaxString + 1]; // entered by user in frontend options (may contain comma separated list or long language descriptions)
+	char LanguageEx[CFG_MaxString + 1]; // full fallback list composed by frontend options (condensed comma separated list)
+	char Participants[CFG_MaxString + 1];
 	int32_t  AlwaysDebug; // if set: turns on debugmode whenever engine is started
 	int32_t  OpenScenarioInGameMode; // When the program arguments include a scenario path, open the game regularly
-	char RXFontName[CFG_MaxString+1];
+	char RXFontName[CFG_MaxString + 1];
 	int32_t  RXFontSize;
 	char ConfigUserPath[CFG_MaxString + 1];
 	StdStrBuf ScreenshotFolder;
@@ -51,29 +52,27 @@ public:
 	// Determined at run-time
 	StdCopyStrBuf ExePath;
 	StdCopyStrBuf TempPath;
-	char UserDataPath[CFG_MaxString+1];
-	char SystemDataPath[CFG_MaxString+1];
-	char ScreenshotPath[CFG_MaxString+1];
-	char TempUpdatePath[CFG_MaxString+1];
+	char UserDataPath[CFG_MaxString + 1];
+	char SystemDataPath[CFG_MaxString + 1];
+	char ScreenshotPath[CFG_MaxString + 1];
+	char TempUpdatePath[CFG_MaxString + 1];
 	bool GamepadEnabled;
 	bool FirstStart;
-	int32_t DebugRec;
-	// if defined, the external file is used for debugrec writing. Otherwise read/check
-	int32_t DebugRecWrite;
-	// if defined, an external file is used for debugrec writing (replays only)
+	int32_t DebugRec;      // if defined, the external file is used for debugrec writing. Otherwise read/check
+	int32_t DebugRecWrite; // if defined, an external file is used for debugrec writing (replays only)
 	char DebugRecExternalFile[_MAX_PATH_LEN];
 
 public:
-	static int GetLanguageSequence(const char *strSource, char *strTarget);
+	static int GetLanguageSequence(const char *source, char *target);
 	void DefaultLanguage();
-	bool CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle);
+	bool CreateSaveFolder(const char *directory, const char *language_title);
 	void DeterminePaths();
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *compiler);
 
 private:
 	struct
 	{
-		char PlayerPath[CFG_MaxString+1];
+		char PlayerPath[CFG_MaxString + 1];
 	} Adopt;
 };
 
@@ -87,8 +86,8 @@ public:
 	int32_t DebugShapeTextures; // if nonzero, show messages about loaded shape textures
 	bool ShowHelp; // show help buttons and descriptions in editor
 	char RecentlyEditedSzenarios[CFG_MaxEditorMRU][CFG_MaxString + 1];
-	void CompileFunc(StdCompiler *pComp);
-	void AddRecentlyEditedScenario(const char *fn);
+	void CompileFunc(StdCompiler *compiler);
+	void AddRecentlyEditedScenario(const char *filename);
 };
 
 class C4ConfigGraphics
@@ -117,7 +116,7 @@ public:
 	int32_t DebugOpenGL; // if true, enables OpenGL debugging
 	int32_t MouseCursorSize; // size in pixels
 
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *compiler);
 };
 
 class C4ConfigSound
@@ -130,7 +129,7 @@ public:
 	int32_t Verbose;  // show music files names
 	int32_t MusicVolume;
 	int32_t SoundVolume;
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *compiler);
 };
 
 class C4ConfigNetwork
@@ -167,11 +166,11 @@ public:
 	int32_t AsyncMaxWait;
 	int32_t PacketLogging;
 public:
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *compiler);
 	const char *GetLeagueServerAddress();
 	void CheckPortsForCollisions();
-	void SetLeagueLoginData(const char *szServer, const char *szPlayerName, const char *szAccount, const char *szLoginToken);
-	bool GetLeagueLoginData(const char *szServer, const char *szPlayerName, StdStrBuf *pAccount, StdStrBuf *pLoginToken) const;
+	void SetLeagueLoginData(const char *server_name, const char *player_name, const char *account, const char *login_token);
+	bool GetLeagueLoginData(const char *server_name, const char *player_name, StdStrBuf *account, StdStrBuf *login_token) const;
 };
 
 class C4ConfigStartup
@@ -188,7 +187,7 @@ public:
 	int32_t HideMsgIRCDangerous;
 	int32_t AlphabeticalSorting; // if set, Folder.txt-sorting is ignored in scenario selection
 	int32_t LastPortraitFolderIdx;
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *compiler);
 };
 
 class C4ConfigLobby
@@ -196,17 +195,17 @@ class C4ConfigLobby
 public:
 	int32_t CountdownTime;
 	int32_t AllowPlayerSave; // whether save-to-disk function is enabled for player resources
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *compiler);
 };
 
 class C4ConfigIRC
 {
 public:
-	char Server[CFG_MaxString+1];
-	char Nick[CFG_MaxString+1];
-	char RealName[CFG_MaxString+1];
-	char Channel[CFG_MaxString+1];
-	void CompileFunc(StdCompiler *pComp);
+	char Server[CFG_MaxString + 1];
+	char Nick[CFG_MaxString + 1];
+	char RealName[CFG_MaxString + 1];
+	char Channel[CFG_MaxString + 1];
+	void CompileFunc(StdCompiler *compiler);
 	int32_t AllowAllChannels;
 };
 
@@ -218,7 +217,7 @@ public:
 	int32_t Button[C4MaxKey];
 	uint32_t AxisMin[6], AxisMax[6];
 	bool AxisCalibrated[6];
-	void CompileFunc(StdCompiler *pComp, bool fButtonsOnly=false);
+	void CompileFunc(StdCompiler *compiler, bool buttons_only = false);
 	void ResetButtons(); // reset all buttons to default
 	void Reset(); // reset all buttons and axis calibration to default
 };
@@ -230,7 +229,7 @@ public:
 	int32_t MouseAutoScroll; // auto scroll strength
 	C4PlayerControlAssignmentSets UserSets;
 
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *compiler);
 	void ResetKeys(); // reset all keys to default
 };
 
@@ -239,7 +238,7 @@ class C4ConfigSecurity
 public:
 	char KeyPath[CFG_MaxString + 1]; // absolute path; environment variables are stored and only expanded upon evaluation
 	int32_t WasRegistered;
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *compiler);
 };
 
 class C4Config
@@ -259,37 +258,37 @@ public:
 	C4ConfigControls  Controls;
 	C4ConfigStartup   Startup;
 	C4ConfigSecurity  Security;
-	bool fConfigLoaded; // true if config has been successfully loaded
+	bool ConfigLoaded; // true if config has been successfully loaded
 	StdStrBuf ConfigFilename; // set for configs loaded from a nondefault config file
 public:
-	const char* GetSubkeyPath(const char *strSubkey);
+	const char* GetSubkeyPath(const char *subkey);
 	void Default();
 	bool Save();
-	bool Load(const char *szConfigFile = nullptr);
+	bool Load(const char *config_file = nullptr);
 	bool Init();
 	bool Registered();
-	const char *AtExePath(const char *szFilename);
-	const char *AtTempPath(const char *szFilename);
-	const char *AtTempUpdatePath(const char *szFilename);
-	const char *AtNetworkPath(const char *szFilename);
-	const char *AtScreenshotPath(const char *szFilename);
-	const char *AtUserDataPath(const char *szFilename);
-	const char *AtUserDataRelativePath(const char *szFilename);
-	const char *AtSystemDataPath(const char *szFilename);
-	const char *AtSystemDataRelativePath(const char *szFilename);
-	const char *AtRelativePath(const char *szFilename); // Returns ASDRP or AUDRP depending on location
-	const char *GetRegistrationData(const char* strField) { return ""; }
-	void ForceRelativePath(StdStrBuf *sFilename); // try AtRelativePath; force GetC4Filename if not possible
-	void CompileFunc(StdCompiler *pComp);
+	const char *AtExePath(const char *filename);
+	const char *AtTempPath(const char *filename);
+	const char *AtTempUpdatePath(const char *filename);
+	const char *AtNetworkPath(const char *filename);
+	const char *AtScreenshotPath(const char *filename);
+	const char *AtUserDataPath(const char *filename);
+	const char *AtUserDataRelativePath(const char *filename);
+	const char *AtSystemDataPath(const char *filename);
+	const char *AtSystemDataRelativePath(const char *filename);
+	const char *AtRelativePath(const char *filename); // Returns ASDRP or AUDRP depending on location
+	const char *GetRegistrationData(const char* field) { return ""; }
+	void ForceRelativePath(StdStrBuf *filename); // try AtRelativePath; force GetC4Filename if not possible
+	void CompileFunc(StdCompiler *compiler);
 	bool IsCorrupted() { return (General.ConfigResetSafety != C4ConfigGeneral::ConfigResetSafetyVal) || !Graphics.ResX; }
-	bool RemoveModule(const char *szPath, char *szModules);
-	bool IsModule(const char *szPath, char *szModules);
-	bool AddModule(const char *szPath, char *szModules);
-	void GetConfigFileName(StdStrBuf &filename, const char *szConfigFile);
+	bool RemoveModule(const char *path, char *modules);
+	bool IsModule(const char *path, char *modules);
+	bool AddModule(const char *path, char *modules);
+	void GetConfigFileName(StdStrBuf &filename, const char *config_file);
 	void CleanupTempUpdateFolder();
 	const char *MakeTempUpdateFolder();
 
-	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
+	static void ExpandEnvironmentVariables(char *path, size_t max_length);
 };
 
 extern C4Config Config;
