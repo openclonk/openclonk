@@ -44,7 +44,7 @@ public:
 	iterator begin() const;
 	iterator end() const;
 
-	bool Open(C4Group& hGroup, const char* filename) const;
+	bool Open(C4Group& group, const char* filename) const;
 	bool LocateItem(const char* filename, StdStrBuf& str) const;
 private:
 	PathList Paths;

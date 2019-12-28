@@ -225,7 +225,7 @@ bool C4DefGraphics::LoadSkeleton(C4Group &hGroup, const char* szFileName, StdMes
 
 bool C4DefGraphics::Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fColorByOwner)
 {
-	char Filename[_MAX_PATH+1]; *Filename=0;
+	char Filename[_MAX_PATH_LEN]; *Filename=0;
 
 	// load skeletons
 	hGroup.ResetSearch();
@@ -255,7 +255,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fC
 			// skip scaled def graphics
 			if (WildcardMatch(C4CFN_DefGraphicsScaled, Filename)) continue;
 			// get name
-			char GrpName[_MAX_PATH+1];
+			char GrpName[_MAX_PATH_LEN];
 			const int32_t iWildcardPos = SCharPos('*', *szWildcard);
 			SCopy(Filename + iWildcardPos, GrpName, _MAX_PATH);
 			RemoveExtension(GrpName);
@@ -272,7 +272,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fC
 			if(*szWildcard == AdditionalGraphics[0])
 			{
 				// create overlay-filename
-				char OverlayFn[_MAX_PATH+1];
+				char OverlayFn[_MAX_PATH_LEN];
 				if(fColorByOwner)
 				{
 					// GraphicsX.png -> OverlayX.png
@@ -283,7 +283,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fC
 				}
 
 				// create normal filename
-				char NormalFn[_MAX_PATH+1];
+				char NormalFn[_MAX_PATH_LEN];
 				SCopy(C4CFN_NormalMapEx, NormalFn, _MAX_PATH);
 				NormalFn[iOverlayWildcardPos]=0;
 				SAppend(Filename + iWildcardPos, NormalFn);

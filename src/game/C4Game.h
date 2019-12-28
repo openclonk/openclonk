@@ -99,12 +99,12 @@ public:
 	C4Value            &GlobalSoundModifier; // contains proplist for sound modifier to be applied to all new sounds played
 
 	char CurrentScenarioSection[C4MaxName+1];
-	char ScenarioFilename[_MAX_PATH+1];
+	char ScenarioFilename[_MAX_PATH_LEN];
 	StdCopyStrBuf ScenarioTitle;
-	char PlayerFilenames[20*_MAX_PATH+1];
-	char DefinitionFilenames[20*_MAX_PATH+1];
-	char DirectJoinAddress[_MAX_PATH+1];
-	char DirectJoinTempFilename[_MAX_PATH + 1];
+	char PlayerFilenames[20*_MAX_PATH_LEN];
+	char DefinitionFilenames[20*_MAX_PATH_LEN];
+	char DirectJoinAddress[_MAX_PATH_LEN];
+	char DirectJoinTempFilename[_MAX_PATH_LEN];
 	std::unique_ptr<C4Network2Reference> pJoinReference;
 	int32_t StartupPlayerCount;
 	int32_t StartupTeamCount;

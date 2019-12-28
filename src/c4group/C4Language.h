@@ -47,7 +47,7 @@ private:
 	C4GroupSet Packs;
 	C4GroupSet PackGroups;
 	class C4LanguageInfo* Infos;
-	char PackGroupLocation[_MAX_FNAME + 1];
+	char PackGroupLocation[_MAX_FNAME_LEN];
 public:
 	bool CloseGroup(const char *strPath);
 	void ClearLanguage();

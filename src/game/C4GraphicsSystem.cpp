@@ -198,7 +198,7 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll, float fSaveAllZoom)
 {
 	// Find a unique screenshot filename by iterating over all possible names
 	// Keep static counter so multiple screenshots in succession do not use same filename even if the background thread hasn't started writing the file yet
-	char szFilename[_MAX_PATH+1];
+	char szFilename[_MAX_PATH_LEN];
 	static int32_t iScreenshotIndex=1;
 	const char *strFilePath = nullptr;
 	do

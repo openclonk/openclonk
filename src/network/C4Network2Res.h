@@ -212,7 +212,7 @@ protected:
 
 	// local file data
 	CStdCSec FileCSec;
-	char szFile[_MAX_PATH + 1], szStandalone[_MAX_PATH + 1];
+	char szFile[_MAX_PATH_LEN], szStandalone[_MAX_PATH_LEN];
 	bool fTempFile, fStandaloneFailed;
 
 	// references
