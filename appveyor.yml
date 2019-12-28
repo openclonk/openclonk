@@ -15,7 +15,7 @@ install:
 before_build:
   - ps: "& $env:APPVEYOR_BUILD_FOLDER\\tools\\ci\\appv-BeforeBuild.ps1"
 build:
-  project: ../openclonk-build/openclonk.sln
+  project: ../openclonk-dynamitebox-build/openclonk.sln
   parallel: true
   verbosity: minimal
 
