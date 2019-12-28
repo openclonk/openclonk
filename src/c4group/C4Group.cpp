@@ -2148,7 +2148,7 @@ bool C4Group::AccessNextEntry(const char *wildcard,
 		return false;
 	}
 #ifdef _DEBUG
-	szCurrAccessedEntry = fname;
+	szCurrAccessedEntry = filename;
 #endif
 	bool okay = SetFilePtr2Entry(entry_name);
 #ifdef _DEBUG
