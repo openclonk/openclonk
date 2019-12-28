@@ -42,202 +42,202 @@
 
 #include "game/C4Application.h"
 
-void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
+void C4ConfigGeneral::CompileFunc(StdCompiler *compiler)
 {
 	// For those without the ability to intuitively guess what the falses and trues mean:
 	// its mkNamingAdapt(field, name, default, fPrefillDefault, fStoreDefault)
 	// where fStoreDefault writes out the value to the config even if it's the same as the default.
 #define s mkStringAdaptM
-	pComp->Value(mkNamingAdapt(s(Name),             "Name",               ""             ));
-	pComp->Value(mkNamingAdapt(s(Language),         "Language",           "", false, true));
-	pComp->Value(mkNamingAdapt(s(LanguageEx),       "LanguageEx",         "", false, true));
-	pComp->Value(mkNamingAdapt(s(Participants),     "Participants",       ""             ));
+	compiler->Value(mkNamingAdapt(s(Name),             "Name",               ""             ));
+	compiler->Value(mkNamingAdapt(s(Language),         "Language",           "", false, true));
+	compiler->Value(mkNamingAdapt(s(LanguageEx),       "LanguageEx",         "", false, true));
+	compiler->Value(mkNamingAdapt(s(Participants),     "Participants",       ""             ));
 
 	// deliberately not grandfathering UserPath setting, since it was written to config by default
-	pComp->Value(mkNamingAdapt(s(ConfigUserPath),   "UserDataPath",       "", false, true));
+	compiler->Value(mkNamingAdapt(s(ConfigUserPath),   "UserDataPath",       "", false, true));
 	// assimilate old data
-	pComp->Value(mkNamingAdapt(s(Adopt.PlayerPath), "PlayerPath",       ""));
+	compiler->Value(mkNamingAdapt(s(Adopt.PlayerPath), "PlayerPath",       ""));
 
 	// temporary path only set during updates
-	pComp->Value(mkNamingAdapt(s(TempUpdatePath),   "TempUpdatePath",     ""));
+	compiler->Value(mkNamingAdapt(s(TempUpdatePath),   "TempUpdatePath",     ""));
 
-	pComp->Value(mkNamingAdapt(s(MissionAccess),    "MissionAccess",      "", false, true));
-	pComp->Value(mkNamingAdapt(FPS,                 "FPS",                0              ));
-	pComp->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));
-	pComp->Value(mkNamingAdapt(ScreenshotFolder,    "ScreenshotFolder",   "Screenshots",  false, true));
-	pComp->Value(mkNamingAdapt(ScrollSmooth,        "ScrollSmooth",       4              ));
-	pComp->Value(mkNamingAdapt(AlwaysDebug,         "DebugMode",          0              ));
-	pComp->Value(mkNamingAdapt(OpenScenarioInGameMode, "OpenScenarioInGameMode", 0   )); 
+	compiler->Value(mkNamingAdapt(s(MissionAccess),    "MissionAccess",      "", false, true));
+	compiler->Value(mkNamingAdapt(FPS,                 "FPS",                0              ));
+	compiler->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));
+	compiler->Value(mkNamingAdapt(ScreenshotFolder,    "ScreenshotFolder",   "Screenshots",  false, true));
+	compiler->Value(mkNamingAdapt(ScrollSmooth,        "ScrollSmooth",       4              ));
+	compiler->Value(mkNamingAdapt(AlwaysDebug,         "DebugMode",          0              ));
+	compiler->Value(mkNamingAdapt(OpenScenarioInGameMode, "OpenScenarioInGameMode", 0   )); 
 #ifdef _WIN32
-	pComp->Value(mkNamingAdapt(MMTimer,             "MMTimer",            1              ));
+	compiler->Value(mkNamingAdapt(MMTimer,             "MMTimer",            1              ));
 #endif
-	pComp->Value(mkNamingAdapt(s(RXFontName),       "FontName",           C4DEFAULT_FONT_NAME,   false, true));
-	pComp->Value(mkNamingAdapt(RXFontSize,          "FontSize",           14,            false, true));
-	pComp->Value(mkNamingAdapt(GamepadEnabled,      "GamepadEnabled",     true           ));
-	pComp->Value(mkNamingAdapt(FirstStart,          "FirstStart",         true           ));
-	pComp->Value(mkNamingAdapt(ConfigResetSafety,   "ConfigResetSafety",  static_cast<int32_t>(ConfigResetSafetyVal) ));
+	compiler->Value(mkNamingAdapt(s(RXFontName),       "FontName",           C4DEFAULT_FONT_NAME,   false, true));
+	compiler->Value(mkNamingAdapt(RXFontSize,          "FontSize",           14,            false, true));
+	compiler->Value(mkNamingAdapt(GamepadEnabled,      "GamepadEnabled",     true           ));
+	compiler->Value(mkNamingAdapt(FirstStart,          "FirstStart",         true           ));
+	compiler->Value(mkNamingAdapt(ConfigResetSafety,   "ConfigResetSafety",  static_cast<int32_t>(ConfigResetSafetyVal) ));
 }
 
-void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
+void C4ConfigDeveloper::CompileFunc(StdCompiler *compiler)
 {
-	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1                    , false, true));
-	pComp->Value(mkNamingAdapt(s(TodoFilename),     "TodoFilename",       "{SCENARIO}/TODO.txt", false, true));
-	pComp->Value(mkNamingAdapt(s(AltTodoFilename),  "AltTodoFilename2",   "{USERPATH}/TODO.txt", false, true));
-	pComp->Value(mkNamingAdapt(MaxScriptMRU,        "MaxScriptMRU",       30                   , false, false));
-	pComp->Value(mkNamingAdapt(DebugShapeTextures,  "DebugShapeTextures", 0                    , false, true));
-	pComp->Value(mkNamingAdapt(ShowHelp,            "ShowHelp",           true                 , false, false));
+	compiler->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1                    , false, true));
+	compiler->Value(mkNamingAdapt(s(TodoFilename),     "TodoFilename",       "{SCENARIO}/TODO.txt", false, true));
+	compiler->Value(mkNamingAdapt(s(AltTodoFilename),  "AltTodoFilename2",   "{USERPATH}/TODO.txt", false, true));
+	compiler->Value(mkNamingAdapt(MaxScriptMRU,        "MaxScriptMRU",       30                   , false, false));
+	compiler->Value(mkNamingAdapt(DebugShapeTextures,  "DebugShapeTextures", 0                    , false, true));
+	compiler->Value(mkNamingAdapt(ShowHelp,            "ShowHelp",           true                 , false, false));
 	for (int32_t i = 0; i < CFG_MaxEditorMRU; ++i)
-		pComp->Value(mkNamingAdapt(s(RecentlyEditedSzenarios[i]), FormatString("EditorMRU%02d", (int)i).getData(), "", false, false));
+		compiler->Value(mkNamingAdapt(s(RecentlyEditedSzenarios[i]), FormatString("EditorMRU%02d", (int)i).getData(), "", false, false));
 }
 
-void C4ConfigDeveloper::AddRecentlyEditedScenario(const char *fn)
+void C4ConfigDeveloper::AddRecentlyEditedScenario(const char *filename)
 {
-	if (!fn || !*fn) return;
+	if (!filename || !*filename) return;
 	// Put given scenario first in list by moving all other scenarios down
 	// Check how many scenarios to move down the list. Stop moving down when the given scenario is in the list
 	int32_t move_down_num;
 	for (move_down_num = 0; move_down_num < CFG_MaxEditorMRU - 1; ++move_down_num)
-		if (!strncmp(fn, RecentlyEditedSzenarios[move_down_num], CFG_MaxString))
+		if (!strncmp(filename, RecentlyEditedSzenarios[move_down_num], CFG_MaxString))
 			break;
 	// Move them down
 	for (int32_t i = move_down_num; i > 0; --i)
 		strcpy(RecentlyEditedSzenarios[i], RecentlyEditedSzenarios[i - 1]);
 	// Put current scenario in
-	strncpy(RecentlyEditedSzenarios[0], fn, CFG_MaxString);
+	strncpy(RecentlyEditedSzenarios[0], filename, CFG_MaxString);
 }
 
-void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
+void C4ConfigGraphics::CompileFunc(StdCompiler *compiler)
 {
-	pComp->Value(mkNamingAdapt(ResX,                  "ResolutionX",         -1             ,false, true));
-	pComp->Value(mkNamingAdapt(ResY,                  "ResolutionY",         -1             ,false, true));
-	pComp->Value(mkNamingAdapt(WindowX,               "WindowX",              800           ,false, true));
-	pComp->Value(mkNamingAdapt(WindowY,               "WindowY",              600           ,false, true));
-	pComp->Value(mkNamingAdapt(RefreshRate,           "RefreshRate",          0             ));
-	pComp->Value(mkNamingAdapt(SplitscreenDividers,   "SplitscreenDividers",  1             ));
-	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
-	pComp->Value(mkNamingAdapt(VerboseObjectLoading,  "VerboseObjectLoading", 0             ));
-	pComp->Value(mkNamingAdapt(MenuTransparency,      "MenuTransparency",     1             ,false, true));
-	pComp->Value(mkNamingAdapt(UpperBoard,            "UpperBoard",           1             ,false, true));
-	pComp->Value(mkNamingAdapt(ShowClock,             "ShowClock",            0             ,false, true));
-	pComp->Value(mkNamingAdapt(ShowCrewNames,         "ShowCrewNames",        1             ,false, true));
-	pComp->Value(mkNamingAdapt(ShowCrewCNames,        "ShowCrewCNames",       0             ,false, true));
-	pComp->Value(mkNamingAdapt(Windowed,              "Windowed",             0             ,false, true));
-	pComp->Value(mkNamingAdapt(PXSGfx,                "PXSGfx"  ,             1             ));
-	pComp->Value(mkNamingAdapt(Gamma,                 "Gamma"  ,              100           ));
-	pComp->Value(mkNamingAdapt(Currency,              "Currency"  ,           0             ));
-	pComp->Value(mkNamingAdapt(Monitor,               "Monitor",              0             )); // 0 = D3DADAPTER_DEFAULT
-	pComp->Value(mkNamingAdapt(MaxRefreshDelay,       "MaxRefreshDelay",      30            ));
-	pComp->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
-	pComp->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
-	pComp->Value(mkNamingAdapt(AutoFrameSkip,         "AutoFrameSkip",        1          ));
-	pComp->Value(mkNamingAdapt(MouseCursorSize,       "MouseCursorSize",      50            ));
+	compiler->Value(mkNamingAdapt(ResX,                  "ResolutionX",         -1             ,false, true));
+	compiler->Value(mkNamingAdapt(ResY,                  "ResolutionY",         -1             ,false, true));
+	compiler->Value(mkNamingAdapt(WindowX,               "WindowX",              800           ,false, true));
+	compiler->Value(mkNamingAdapt(WindowY,               "WindowY",              600           ,false, true));
+	compiler->Value(mkNamingAdapt(RefreshRate,           "RefreshRate",          0             ));
+	compiler->Value(mkNamingAdapt(SplitscreenDividers,   "SplitscreenDividers",  1             ));
+	compiler->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
+	compiler->Value(mkNamingAdapt(VerboseObjectLoading,  "VerboseObjectLoading", 0             ));
+	compiler->Value(mkNamingAdapt(MenuTransparency,      "MenuTransparency",     1             ,false, true));
+	compiler->Value(mkNamingAdapt(UpperBoard,            "UpperBoard",           1             ,false, true));
+	compiler->Value(mkNamingAdapt(ShowClock,             "ShowClock",            0             ,false, true));
+	compiler->Value(mkNamingAdapt(ShowCrewNames,         "ShowCrewNames",        1             ,false, true));
+	compiler->Value(mkNamingAdapt(ShowCrewCNames,        "ShowCrewCNames",       0             ,false, true));
+	compiler->Value(mkNamingAdapt(Windowed,              "Windowed",             0             ,false, true));
+	compiler->Value(mkNamingAdapt(PXSGfx,                "PXSGfx"  ,             1             ));
+	compiler->Value(mkNamingAdapt(Gamma,                 "Gamma"  ,              100           ));
+	compiler->Value(mkNamingAdapt(Currency,              "Currency"  ,           0             ));
+	compiler->Value(mkNamingAdapt(Monitor,               "Monitor",              0             )); // 0 = D3DADAPTER_DEFAULT
+	compiler->Value(mkNamingAdapt(MaxRefreshDelay,       "MaxRefreshDelay",      30            ));
+	compiler->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
+	compiler->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
+	compiler->Value(mkNamingAdapt(AutoFrameSkip,         "AutoFrameSkip",        1          ));
+	compiler->Value(mkNamingAdapt(MouseCursorSize,       "MouseCursorSize",      50            ));
 }
 
-void C4ConfigSound::CompileFunc(StdCompiler *pComp)
+void C4ConfigSound::CompileFunc(StdCompiler *compiler)
 {
-	pComp->Value(mkNamingAdapt(RXSound,               "Sound",                DONCOFF       ,false, true));
-	pComp->Value(mkNamingAdapt(RXMusic,               "Music",                DONCOFF       ,false, true));
-	pComp->Value(mkNamingAdapt(FEMusic,               "MenuMusic",            DONCOFF       ,false, true));
-	pComp->Value(mkNamingAdapt(FESamples,             "MenuSound",            DONCOFF       ,false, true));
-	pComp->Value(mkNamingAdapt(Verbose,               "Verbose",              0             ));
-	pComp->Value(mkNamingAdapt(MusicVolume,           "MusicVolume2",         40            ,false, true));
-	pComp->Value(mkNamingAdapt(SoundVolume,           "SoundVolume",          100           ,false, true));
+	compiler->Value(mkNamingAdapt(RXSound,               "Sound",                DONCOFF       ,false, true));
+	compiler->Value(mkNamingAdapt(RXMusic,               "Music",                DONCOFF       ,false, true));
+	compiler->Value(mkNamingAdapt(FEMusic,               "MenuMusic",            DONCOFF       ,false, true));
+	compiler->Value(mkNamingAdapt(FESamples,             "MenuSound",            DONCOFF       ,false, true));
+	compiler->Value(mkNamingAdapt(Verbose,               "Verbose",              0             ));
+	compiler->Value(mkNamingAdapt(MusicVolume,           "MusicVolume2",         40            ,false, true));
+	compiler->Value(mkNamingAdapt(SoundVolume,           "SoundVolume",          100           ,false, true));
 }
 
-void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
+void C4ConfigNetwork::CompileFunc(StdCompiler *compiler)
 {
-	pComp->Value(mkNamingAdapt(ControlRate,             "ControlRate",          3            ,false, true));
-	pComp->Value(mkNamingAdapt(ControlPreSend,          "ControlPreSend",       -1            ));
-	pComp->Value(mkNamingAdapt(s(WorkPath),             "WorkPath",             "Network"     ,false, true));
-	pComp->Value(mkNamingAdapt(Lobby,                   "Lobby",                0             ));
-	pComp->Value(mkNamingAdapt(NoRuntimeJoin,           "NoRuntimeJoin",        1             ,false, true));
-	pComp->Value(mkNamingAdapt(NoReferenceRequest,      "NoReferenceRequest",   0             ));
-	pComp->Value(mkNamingAdapt(MaxResSearchRecursion,   "MaxResSearchRecursion",1             ,false, true));
-	pComp->Value(mkNamingAdapt(Comment,                 "Comment",              ""            ,false, true));
-	pComp->Value(mkNamingAdapt(PortTCP,                 "PortTCP",              C4NetStdPortTCP       ,false, true));
-	pComp->Value(mkNamingAdapt(PortUDP,                 "PortUDP",              C4NetStdPortUDP       ,false, true));
-	pComp->Value(mkNamingAdapt(EnableUPnP,              "EnableUPnP",           1             , false, true));
-	pComp->Value(mkNamingAdapt(PortDiscovery,           "PortDiscovery",        C4NetStdPortDiscovery ,false, true));
-	pComp->Value(mkNamingAdapt(PortRefServer,           "PortRefServer",        C4NetStdPortRefServer ,false, true));
-	pComp->Value(mkNamingAdapt(ControlMode,             "ControlMode",          0             ));
-	pComp->Value(mkNamingAdapt(Nick,                    "Nick",                 ""            ,false, true));
-	pComp->Value(mkNamingAdapt(MaxLoadFileSize,         "MaxLoadFileSize",      5*1024*1024   ,false, true));
+	compiler->Value(mkNamingAdapt(ControlRate,             "ControlRate",          3            ,false, true));
+	compiler->Value(mkNamingAdapt(ControlPreSend,          "ControlPreSend",       -1            ));
+	compiler->Value(mkNamingAdapt(s(WorkPath),             "WorkPath",             "Network"     ,false, true));
+	compiler->Value(mkNamingAdapt(Lobby,                   "Lobby",                0             ));
+	compiler->Value(mkNamingAdapt(NoRuntimeJoin,           "NoRuntimeJoin",        1             ,false, true));
+	compiler->Value(mkNamingAdapt(NoReferenceRequest,      "NoReferenceRequest",   0             ));
+	compiler->Value(mkNamingAdapt(MaxResSearchRecursion,   "MaxResSearchRecursion",1             ,false, true));
+	compiler->Value(mkNamingAdapt(Comment,                 "Comment",              ""            ,false, true));
+	compiler->Value(mkNamingAdapt(PortTCP,                 "PortTCP",              C4NetStdPortTCP       ,false, true));
+	compiler->Value(mkNamingAdapt(PortUDP,                 "PortUDP",              C4NetStdPortUDP       ,false, true));
+	compiler->Value(mkNamingAdapt(EnableUPnP,              "EnableUPnP",           1             , false, true));
+	compiler->Value(mkNamingAdapt(PortDiscovery,           "PortDiscovery",        C4NetStdPortDiscovery ,false, true));
+	compiler->Value(mkNamingAdapt(PortRefServer,           "PortRefServer",        C4NetStdPortRefServer ,false, true));
+	compiler->Value(mkNamingAdapt(ControlMode,             "ControlMode",          0             ));
+	compiler->Value(mkNamingAdapt(Nick,                    "Nick",                 ""            ,false, true));
+	compiler->Value(mkNamingAdapt(MaxLoadFileSize,         "MaxLoadFileSize",      5*1024*1024   ,false, true));
 
-	pComp->Value(mkNamingAdapt(MasterServerSignUp,      "MasterServerSignUp",   1             ));
-	pComp->Value(mkNamingAdapt(MasterServerActive,      "MasterServerActive",   0             ));
-	pComp->Value(mkNamingAdapt(MasterKeepPeriod,        "MasterKeepPeriod",     60            ));
-	pComp->Value(mkNamingAdapt(MasterReferencePeriod,   "MasterReferencePeriod",120           ));
-	pComp->Value(mkNamingAdapt(LeagueServerSignUp,      "LeagueServerSignUp",   0             ));
-	pComp->Value(mkNamingAdapt(UseAlternateServer,      "UseAlternateServer",   0             ));
-	pComp->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "league.openclonk.org:80/league.php"));
-	pComp->Value(mkNamingAdapt(s(LastPassword),         "LastPassword",         "Wipf"        ));
+	compiler->Value(mkNamingAdapt(MasterServerSignUp,      "MasterServerSignUp",   1             ));
+	compiler->Value(mkNamingAdapt(MasterServerActive,      "MasterServerActive",   0             ));
+	compiler->Value(mkNamingAdapt(MasterKeepPeriod,        "MasterKeepPeriod",     60            ));
+	compiler->Value(mkNamingAdapt(MasterReferencePeriod,   "MasterReferencePeriod",120           ));
+	compiler->Value(mkNamingAdapt(LeagueServerSignUp,      "LeagueServerSignUp",   0             ));
+	compiler->Value(mkNamingAdapt(UseAlternateServer,      "UseAlternateServer",   0             ));
+	compiler->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "league.openclonk.org:80/league.php"));
+	compiler->Value(mkNamingAdapt(s(LastPassword),         "LastPassword",         "Wipf"        ));
 #ifdef WITH_AUTOMATIC_UPDATE
-	pComp->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "www.openclonk.org:80/update/"));
-	pComp->Value(mkNamingAdapt(AutomaticUpdate,         "AutomaticUpdate",      0             ,false, true));
-	pComp->Value(mkNamingAdapt(LastUpdateTime,          "LastUpdateTime",       0             ));
+	compiler->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "www.openclonk.org:80/update/"));
+	compiler->Value(mkNamingAdapt(AutomaticUpdate,         "AutomaticUpdate",      0             ,false, true));
+	compiler->Value(mkNamingAdapt(LastUpdateTime,          "LastUpdateTime",       0             ));
 #endif
-	pComp->Value(mkNamingAdapt(AsyncMaxWait,            "AsyncMaxWait",         2             ));
-	pComp->Value(mkNamingAdapt(PacketLogging,           "PacketLogging",        0             ));
+	compiler->Value(mkNamingAdapt(AsyncMaxWait,            "AsyncMaxWait",         2             ));
+	compiler->Value(mkNamingAdapt(PacketLogging,           "PacketLogging",        0             ));
 	
 
-	pComp->Value(mkNamingAdapt(s(PuncherAddress),       "PuncherAddress",       "netpuncher.openclonk.org:11115"));
-	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueServer, StdCompiler::RCT_All),     "LastLeagueServer",     ""            ));
-	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeaguePlayerName, StdCompiler::RCT_All), "LastLeaguePlayerName", ""            ));
-	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueAccount, StdCompiler::RCT_All),    "LastLeagueAccount",    ""            ));
-	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueLoginToken, StdCompiler::RCT_All), "LastLeagueLoginToken", ""            ));
+	compiler->Value(mkNamingAdapt(s(PuncherAddress),       "PuncherAddress",       "netpuncher.openclonk.org:11115"));
+	compiler->Value(mkNamingAdapt(mkParAdapt(LastLeagueServer, StdCompiler::RCT_All),     "LastLeagueServer",     ""            ));
+	compiler->Value(mkNamingAdapt(mkParAdapt(LastLeaguePlayerName, StdCompiler::RCT_All), "LastLeaguePlayerName", ""            ));
+	compiler->Value(mkNamingAdapt(mkParAdapt(LastLeagueAccount, StdCompiler::RCT_All),    "LastLeagueAccount",    ""            ));
+	compiler->Value(mkNamingAdapt(mkParAdapt(LastLeagueLoginToken, StdCompiler::RCT_All), "LastLeagueLoginToken", ""            ));
 }
 
-void C4ConfigLobby::CompileFunc(StdCompiler *pComp)
+void C4ConfigLobby::CompileFunc(StdCompiler *compiler)
 {
-	pComp->Value(mkNamingAdapt(AllowPlayerSave,         "AllowPlayerSave",      0             ,false, false));
-	pComp->Value(mkNamingAdapt(CountdownTime,           "CountdownTime",        5             ,false, false));
+	compiler->Value(mkNamingAdapt(AllowPlayerSave,         "AllowPlayerSave",      0             ,false, false));
+	compiler->Value(mkNamingAdapt(CountdownTime,           "CountdownTime",        5             ,false, false));
 }
 
-void C4ConfigIRC::CompileFunc(StdCompiler *pComp)
+void C4ConfigIRC::CompileFunc(StdCompiler *compiler)
 {
-	pComp->Value(mkNamingAdapt(s(Server),               "Server",               "irc.euirc.net", false, true));
-	pComp->Value(mkNamingAdapt(s(Nick),                 "Nick",                 ""                    , false, true));
-	pComp->Value(mkNamingAdapt(s(RealName),             "RealName",             ""                    , false, true));
-	pComp->Value(mkNamingAdapt(s(Channel),              "Channel",              "#openclonk"    , false, true));
-	pComp->Value(mkNamingAdapt(AllowAllChannels,        "AllowAllChannels",     0                     , false, true));
+	compiler->Value(mkNamingAdapt(s(Server),               "Server",               "irc.euirc.net", false, true));
+	compiler->Value(mkNamingAdapt(s(Nick),                 "Nick",                 ""                    , false, true));
+	compiler->Value(mkNamingAdapt(s(RealName),             "RealName",             ""                    , false, true));
+	compiler->Value(mkNamingAdapt(s(Channel),              "Channel",              "#openclonk"    , false, true));
+	compiler->Value(mkNamingAdapt(AllowAllChannels,        "AllowAllChannels",     0                     , false, true));
 }
 
-void C4ConfigSecurity::CompileFunc(StdCompiler *pComp)
+void C4ConfigSecurity::CompileFunc(StdCompiler *compiler)
 {
-	pComp->Value(mkNamingAdapt(WasRegistered,           "WasRegistered",        0                   ));
+	compiler->Value(mkNamingAdapt(WasRegistered,           "WasRegistered",        0                   ));
 #ifdef _WIN32
-	pComp->Value(mkNamingAdapt(s(KeyPath),              "KeyPath",              R"(%APPDATA%\)" C4ENGINENAME, false, true));
+	compiler->Value(mkNamingAdapt(s(KeyPath),              "KeyPath",              R"(%APPDATA%\)" C4ENGINENAME, false, true));
 #elif defined(__linux__)
-	pComp->Value(mkNamingAdapt(s(KeyPath),              "KeyPath",              "$HOME/.clonk/" C4ENGINENICK, false, true));
+	compiler->Value(mkNamingAdapt(s(KeyPath),              "KeyPath",              "$HOME/.clonk/" C4ENGINENICK, false, true));
 #elif defined(__APPLE__)
-	pComp->Value(mkNamingAdapt(s(KeyPath),              "KeyPath",              "$HOME/Library/Application Support/" C4ENGINENAME, false, true));
+	compiler->Value(mkNamingAdapt(s(KeyPath),              "KeyPath",              "$HOME/Library/Application Support/" C4ENGINENAME, false, true));
 #endif
 }
 
-void C4ConfigGamepad::CompileFunc(StdCompiler *pComp, bool fButtonsOnly)
+void C4ConfigGamepad::CompileFunc(StdCompiler *compiler, bool buttons_only)
 {
 	/* The defaults here are for a Logitech Dual Action under Linux-SDL. Better than nothing, I guess. */
-	if (!fButtonsOnly)
+	if (!buttons_only)
 	{
-		for (int i=0; i<6; ++i)
+		for (int i = 0; i < 6; ++i)
 		{
-			pComp->Value(mkNamingAdapt(AxisMin[i],          FormatString("Axis%dMin", i).getData(),     0u));
-			pComp->Value(mkNamingAdapt(AxisMax[i],          FormatString("Axis%dMax", i).getData(),     0u));
-			pComp->Value(mkNamingAdapt(AxisCalibrated[i],   FormatString("Axis%dCalibrated", i).getData(), false));
+			compiler->Value(mkNamingAdapt(AxisMin[i],          FormatString("Axis%dMin", i).getData(),     0u));
+			compiler->Value(mkNamingAdapt(AxisMax[i],          FormatString("Axis%dMax", i).getData(),     0u));
+			compiler->Value(mkNamingAdapt(AxisCalibrated[i],   FormatString("Axis%dCalibrated", i).getData(), false));
 		}
 	}
-	pComp->Value(mkNamingAdapt(Button[0],               "Button1",              -1          ));
-	pComp->Value(mkNamingAdapt(Button[1],               "Button2",              -1          ));
-	pComp->Value(mkNamingAdapt(Button[2],               "Button3",              -1          ));
-	pComp->Value(mkNamingAdapt(Button[3],               "Button4",              -1          ));
-	pComp->Value(mkNamingAdapt(Button[4],               "Button5",              -1          ));
-	pComp->Value(mkNamingAdapt(Button[5],               "Button6",              -1          ));
-	pComp->Value(mkNamingAdapt(Button[6],               "Button7",              -1          ));
-	pComp->Value(mkNamingAdapt(Button[7],               "Button8",              -1          ));
-	pComp->Value(mkNamingAdapt(Button[8],               "Button9",              -1          ));
-	pComp->Value(mkNamingAdapt(Button[9],               "Button10",             -1          ));
-	pComp->Value(mkNamingAdapt(Button[10],              "Button11",             -1          ));
-	pComp->Value(mkNamingAdapt(Button[11],              "Button12",             -1          ));
+	compiler->Value(mkNamingAdapt(Button[0],               "Button1",              -1          ));
+	compiler->Value(mkNamingAdapt(Button[1],               "Button2",              -1          ));
+	compiler->Value(mkNamingAdapt(Button[2],               "Button3",              -1          ));
+	compiler->Value(mkNamingAdapt(Button[3],               "Button4",              -1          ));
+	compiler->Value(mkNamingAdapt(Button[4],               "Button5",              -1          ));
+	compiler->Value(mkNamingAdapt(Button[5],               "Button6",              -1          ));
+	compiler->Value(mkNamingAdapt(Button[6],               "Button7",              -1          ));
+	compiler->Value(mkNamingAdapt(Button[7],               "Button8",              -1          ));
+	compiler->Value(mkNamingAdapt(Button[8],               "Button9",              -1          ));
+	compiler->Value(mkNamingAdapt(Button[9],               "Button10",             -1          ));
+	compiler->Value(mkNamingAdapt(Button[10],              "Button11",             -1          ));
+	compiler->Value(mkNamingAdapt(Button[11],              "Button12",             -1          ));
 }
 
 void C4ConfigGamepad::ResetButtons()
@@ -252,18 +252,18 @@ void C4ConfigGamepad::Reset()
 	StdCompilerNull Comp; Comp.Compile(mkParAdapt(*this, false));
 }
 
-void C4ConfigControls::CompileFunc(StdCompiler *pComp)
+void C4ConfigControls::CompileFunc(StdCompiler *compiler)
 {
 #ifndef USE_CONSOLE
-	if (pComp->isSerializer())
+	if (compiler->isSerializer())
 	{
 		// The registry compiler is broken with arrays. It doesn't delete extra items if the config got shorter
 		// Solve it by defaulting the array before writing to it.
-		pComp->Default("UserSets");
+		compiler->Default("UserSets");
 	}
-	pComp->Value(mkNamingAdapt(UserSets, "UserSets",    C4PlayerControlAssignmentSets()));
-	pComp->Value(mkNamingAdapt(MouseAutoScroll,      "MouseAutoScroll",      0 /* change default 33 to enable */ ));
-	pComp->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,     false, true));
+	compiler->Value(mkNamingAdapt(UserSets, "UserSets",    C4PlayerControlAssignmentSets()));
+	compiler->Value(mkNamingAdapt(MouseAutoScroll,      "MouseAutoScroll",      0 /* change default 33 to enable */ ));
+	compiler->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,     false, true));
 #endif
 }
 
@@ -286,12 +286,12 @@ void C4Config::Default()
 	fConfigLoaded=false;
 }
 
-void C4Config::GetConfigFileName(StdStrBuf &filename, const char *szConfigFile)
+void C4Config::GetConfigFileName(StdStrBuf &filename, const char *config_file)
 {
-	if (szConfigFile)
+	if (config_file)
 	{
 		// Config filename is specified
-		filename.Ref(szConfigFile);
+		filename.Ref(config_file);
 	}
 	else
 	{
@@ -307,13 +307,13 @@ void C4Config::GetConfigFileName(StdStrBuf &filename, const char *szConfigFile)
 	}
 }
 
-bool C4Config::Load(const char *szConfigFile)
+bool C4Config::Load(const char *config_file)
 {
 	try
 	{
 #ifdef _WIN32
 		// Windows: Default load from registry, if no explicit config file is specified
-		if (!szConfigFile)
+		if (!config_file)
 		{
 			StdCompilerConfigRead CfgRead(HKEY_CURRENT_USER, "Software\\" C4CFG_Company "\\" C4ENGINENAME);
 			CfgRead.Compile(*this);
@@ -323,7 +323,7 @@ bool C4Config::Load(const char *szConfigFile)
 		{
 			// Nonwindows or explicit config file: Determine filename to load config from
 			StdStrBuf filename;
-			GetConfigFileName(filename, szConfigFile);
+			GetConfigFileName(filename, config_file);
 
 			// Load config file into buf
 			StdStrBuf buf;
@@ -333,7 +333,7 @@ bool C4Config::Load(const char *szConfigFile)
 			{
 				// Config file not present?
 #ifdef __linux__
-				if (!szConfigFile)
+				if (!config_file)
 				{
 					StdStrBuf filename(getenv("HOME"));
 					if (filename) { filename += "/"; }
@@ -392,7 +392,7 @@ bool C4Config::Load(const char *szConfigFile)
 	// Empty nick already defaults to GetRegistrationData("Nick") or
 	// Network.LocalName at relevant places.
 	fConfigLoaded = true;
-	if (szConfigFile) ConfigFilename.Copy(szConfigFile); else ConfigFilename.Clear();
+	if (config_file) ConfigFilename.Copy(config_file); else ConfigFilename.Clear();
 	return true;
 }
 
@@ -519,43 +519,43 @@ void C4ConfigGeneral::DeterminePaths()
 
 static char AtPathFilename[_MAX_PATH_LEN];
 
-const char* C4Config::AtExePath(const char *szFilename)
+const char* C4Config::AtExePath(const char *filename)
 {
 	SCopy(General.ExePath.getData(),AtPathFilename,_MAX_PATH);
-	SAppend(szFilename,AtPathFilename,_MAX_PATH);
+	SAppend(filename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
 
-const char* C4Config::AtUserDataPath(const char *szFilename)
+const char* C4Config::AtUserDataPath(const char *filename)
 {
 	SCopy(General.UserDataPath, AtPathFilename, _MAX_PATH);
-	SAppend(szFilename, AtPathFilename, _MAX_PATH);
+	SAppend(filename, AtPathFilename, _MAX_PATH);
 	return AtPathFilename;
 }
 
-const char* C4Config::AtSystemDataPath(const char *szFilename)
+const char* C4Config::AtSystemDataPath(const char *filename)
 {
 	SCopy(General.SystemDataPath, AtPathFilename, _MAX_PATH);
-	SAppend(szFilename, AtPathFilename, _MAX_PATH);
+	SAppend(filename, AtPathFilename, _MAX_PATH);
 	return AtPathFilename;
 }
 
-const char* C4Config::AtTempPath(const char *szFilename)
+const char* C4Config::AtTempPath(const char *filename)
 {
 	SCopy(General.TempPath.getData(),AtPathFilename,_MAX_PATH);
-	SAppend(szFilename,AtPathFilename,_MAX_PATH);
+	SAppend(filename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
 
-const char* C4Config::AtNetworkPath(const char *szFilename)
+const char* C4Config::AtNetworkPath(const char *filename)
 {
 	SCopy(General.UserDataPath,AtPathFilename,_MAX_PATH);
 	SAppend(Network.WorkPath,AtPathFilename,_MAX_PATH);
-	SAppend(szFilename,AtPathFilename,_MAX_PATH);
+	SAppend(filename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
 
-const char *C4Config::AtScreenshotPath(const char *szFilename)
+const char *C4Config::AtScreenshotPath(const char *filename)
 {
 	int len;
 	SCopy(General.ScreenshotPath,AtPathFilename,_MAX_PATH);
@@ -567,20 +567,20 @@ const char *C4Config::AtScreenshotPath(const char *szFilename)
 		SCopy(General.UserDataPath,AtPathFilename,_MAX_PATH);
 	}
 	AppendBackslash(AtPathFilename);
-	SAppend(szFilename,AtPathFilename,_MAX_PATH);
+	SAppend(filename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
 
 
-bool C4ConfigGeneral::CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle)
+bool C4ConfigGeneral::CreateSaveFolder(const char *directory, const char *language_title)
 {
 	// Create directory if needed
-	if (!CreatePath(strDirectory))
+	if (!CreatePath(directory))
 		return false;
 	// Create title component if needed
 	char lang[3]; SCopy(Config.General.Language, lang, 2);
-	StdStrBuf strTitleFile; strTitleFile.Format("%s%c%s", strDirectory, DirectorySeparator, C4CFN_WriteTitle);
-	StdStrBuf strTitleData; strTitleData.Format("%s:%s", lang, strLanguageTitle);
+	StdStrBuf strTitleFile; strTitleFile.Format("%s%c%s", directory, DirectorySeparator, C4CFN_WriteTitle);
+	StdStrBuf strTitleData; strTitleData.Format("%s:%s", lang, language_title);
 	CStdFile hFile;
 	if (!FileExists(strTitleFile.getData()))
 		if (!hFile.Create(strTitleFile.getData()) || !hFile.WriteString(strTitleData.getData()) || !hFile.Close())
@@ -617,23 +617,23 @@ void C4ConfigNetwork::CheckPortsForCollisions()
 	}
 }
 
-void C4ConfigNetwork::SetLeagueLoginData(const char *szServer, const char *szPlayerName, const char *szAccount, const char *szLoginToken)
+void C4ConfigNetwork::SetLeagueLoginData(const char *server_name, const char *player_name, const char *account, const char *login_token)
 {
 	// ideally, there would be a list to store multiple logins
 	// however, we don't really support multiplayer at one computer at the moment anyway
-	LastLeagueServer.Copy(szServer);
-	LastLeaguePlayerName.Copy(szPlayerName);
-	LastLeagueAccount.Copy(szAccount);
-	LastLeagueLoginToken.Copy(szLoginToken);
+	LastLeagueServer.Copy(server_name);
+	LastLeaguePlayerName.Copy(player_name);
+	LastLeagueAccount.Copy(account);
+	LastLeagueLoginToken.Copy(login_token);
 }
 
-bool C4ConfigNetwork::GetLeagueLoginData(const char *szServer, const char *szPlayerName, StdStrBuf *pAccount, StdStrBuf *pLoginToken) const
+bool C4ConfigNetwork::GetLeagueLoginData(const char *server_name, const char *player_name, StdStrBuf *account, StdStrBuf *login_token) const
 {
 	// check if last login matches and store if desired
-	if (LastLeagueServer == szServer && LastLeaguePlayerName == szPlayerName)
+	if (LastLeagueServer == server_name && LastLeaguePlayerName == player_name)
 	{
-		pAccount->Copy(LastLeagueAccount);
-		pLoginToken->Copy(LastLeagueLoginToken);
+		account->Copy(LastLeagueAccount);
+		login_token->Copy(LastLeagueLoginToken);
 		return true;
 	}
 	return false;
@@ -644,45 +644,45 @@ void C4ConfigControls::ResetKeys()
 	UserSets.Clear();
 }
 
-const char* C4Config::AtUserDataRelativePath(const char *szFilename)
+const char* C4Config::AtUserDataRelativePath(const char *filename)
 {
 	// Specified file is located in UserDataPath: return relative path
-	return GetRelativePathS(szFilename, General.UserDataPath);
+	return GetRelativePathS(filename, General.UserDataPath);
 }
 
-const char* C4Config::AtSystemDataRelativePath(const char *szFilename)
+const char* C4Config::AtSystemDataRelativePath(const char *filename)
 {
 	// Specified file is located in SystemDataPath: return relative path
-	return GetRelativePathS(szFilename, General.SystemDataPath);
+	return GetRelativePathS(filename, General.SystemDataPath);
 }
 
-const char* C4Config::AtRelativePath(const char *szFilename)
+const char* C4Config::AtRelativePath(const char *filename)
 {
-	const char *szPath = GetRelativePathS(szFilename, General.UserDataPath);
-	if (szPath == szFilename)
-		return GetRelativePathS(szFilename, General.SystemDataPath);
-	return szPath;
+	const char *path = GetRelativePathS(filename, General.UserDataPath);
+	if (path == filename)
+		return GetRelativePathS(filename, General.SystemDataPath);
+	return path;
 }
 
-void C4Config::ForceRelativePath(StdStrBuf *sFilename)
+void C4Config::ForceRelativePath(StdStrBuf *filename)
 {
-	assert(sFilename);
+	assert(filename);
 	// Specified file is located in SystemDataPath?
-	const char *szRelative = GetRelativePathS(sFilename->getData(), General.SystemDataPath);
-	if (szRelative != sFilename->getData())
+	const char *szRelative = GetRelativePathS(filename->getData(), General.SystemDataPath);
+	if (szRelative != filename->getData())
 	{
 		// return relative path
 		StdStrBuf sTemp; sTemp.Copy(szRelative);
-		sFilename->Take(std::move(sTemp));
+		filename->Take(std::move(sTemp));
 	}
 	else
 	{
 		// not in ExePath: Is it a global path?
-		if (IsGlobalPath(sFilename->getData()))
+		if (IsGlobalPath(filename->getData()))
 		{
 			// then shorten it (e.g. C:\Temp\Missions.ocf\Goldmine.ocs to Missions.ocf\Goldmine.ocs)
-			StdStrBuf sTemp; sTemp.Copy(GetC4Filename(sFilename->getData()));
-			sFilename->Take(std::move(sTemp));
+			StdStrBuf sTemp; sTemp.Copy(GetC4Filename(filename->getData()));
+			filename->Take(std::move(sTemp));
 		}
 	}
 }
@@ -713,89 +713,89 @@ bool C4Config::Init()
 	return true;
 }
 
-const char* C4Config::GetSubkeyPath(const char *strSubkey)
+const char* C4Config::GetSubkeyPath(const char *subkey)
 {
 	static char key[1024 + 1];
 #ifdef _WIN32
-	sprintf(key, R"(Software\%s\%s\%s)", C4CFG_Company, C4ENGINENAME, strSubkey);
+	sprintf(key, R"(Software\%s\%s\%s)", C4CFG_Company, C4ENGINENAME, subkey);
 #else
-	sprintf(key, "%s", strSubkey);
+	sprintf(key, "%s", subkey);
 #endif
 	return key;
 }
 
-int C4ConfigGeneral::GetLanguageSequence(const char *strSource, char *strTarget)
+int C4ConfigGeneral::GetLanguageSequence(const char *source, char *target)
 {
 	// Copy a condensed list of language codes from the source list to the target string,
 	// skipping any whitespace or long language descriptions. Language sequences are
 	// comma separated.
 	int iCount = 0;
 	char strLang[2 + 1];
-	for (int i = 0; SCopySegment(strSource, i, strLang, ',', 2, true); i++)
+	for (int i = 0; SCopySegment(source, i, strLang, ',', 2, true); i++)
 		if (strLang[0])
 		{
-			if (strTarget[0]) SAppendChar(',', strTarget);
-			SAppend(strLang, strTarget);
+			if (target[0]) SAppendChar(',', target);
+			SAppend(strLang, target);
 			iCount++;
 		}
 	return iCount;
 }
 
-void C4ConfigStartup::CompileFunc(StdCompiler *pComp)
+void C4ConfigStartup::CompileFunc(StdCompiler *compiler)
 {
-	pComp->Value(mkNamingAdapt(HideMsgGfxEngineChange,      "HideMsgGfxEngineChange",     0));
-	pComp->Value(mkNamingAdapt(HideMsgGfxBitDepthChange,    "HideMsgGfxBitDepthChange",   0));
-	pComp->Value(mkNamingAdapt(HideMsgMMTimerChange,        "HideMsgMMTimerChange",       0));
-	pComp->Value(mkNamingAdapt(HideMsgStartDedicated,       "HideMsgStartDedicated",      0));
-	pComp->Value(mkNamingAdapt(HideMsgPlrTakeOver,          "HideMsgPlrTakeOver",         0));
-	pComp->Value(mkNamingAdapt(HideMsgPlrNoTakeOver,        "HideMsgPlrNoTakeOver",       0));
-	pComp->Value(mkNamingAdapt(HideMsgNoOfficialLeague,     "HideMsgNoOfficialLeague",    0));
-	pComp->Value(mkNamingAdapt(HideMsgIRCDangerous,         "HideMsgIRCDangerous",        0));
-	pComp->Value(mkNamingAdapt(AlphabeticalSorting,         "AlphabeticalSorting",        0));
-	pComp->Value(mkNamingAdapt(LastPortraitFolderIdx,       "LastPortraitFolderIdx",      0));
+	compiler->Value(mkNamingAdapt(HideMsgGfxEngineChange,      "HideMsgGfxEngineChange",     0));
+	compiler->Value(mkNamingAdapt(HideMsgGfxBitDepthChange,    "HideMsgGfxBitDepthChange",   0));
+	compiler->Value(mkNamingAdapt(HideMsgMMTimerChange,        "HideMsgMMTimerChange",       0));
+	compiler->Value(mkNamingAdapt(HideMsgStartDedicated,       "HideMsgStartDedicated",      0));
+	compiler->Value(mkNamingAdapt(HideMsgPlrTakeOver,          "HideMsgPlrTakeOver",         0));
+	compiler->Value(mkNamingAdapt(HideMsgPlrNoTakeOver,        "HideMsgPlrNoTakeOver",       0));
+	compiler->Value(mkNamingAdapt(HideMsgNoOfficialLeague,     "HideMsgNoOfficialLeague",    0));
+	compiler->Value(mkNamingAdapt(HideMsgIRCDangerous,         "HideMsgIRCDangerous",        0));
+	compiler->Value(mkNamingAdapt(AlphabeticalSorting,         "AlphabeticalSorting",        0));
+	compiler->Value(mkNamingAdapt(LastPortraitFolderIdx,       "LastPortraitFolderIdx",      0));
 }
 
-void C4Config::CompileFunc(StdCompiler *pComp)
+void C4Config::CompileFunc(StdCompiler *compiler)
 {
-	pComp->Value(mkNamingAdapt(General,     "General"     ));
-	pComp->Value(mkNamingAdapt(Controls,    "Controls"    ));
+	compiler->Value(mkNamingAdapt(General,     "General"     ));
+	compiler->Value(mkNamingAdapt(Controls,    "Controls"    ));
 	for (int i=0; i<C4ConfigMaxGamepads; ++i)
-		pComp->Value(mkNamingAdapt(Gamepads[i],     FormatString("Gamepad%d", i).getData()));
-	pComp->Value(mkNamingAdapt(Graphics,    "Graphics"    ));
-	pComp->Value(mkNamingAdapt(Sound,       "Sound"       ));
-	pComp->Value(mkNamingAdapt(Network,     "Network"     ));
-	pComp->Value(mkNamingAdapt(Lobby,       "Lobby"       ));
-	pComp->Value(mkNamingAdapt(IRC,         "IRC"         ));
-	pComp->Value(mkNamingAdapt(Developer,   "Developer"   ));
-	pComp->Value(mkNamingAdapt(Startup,     "Startup"     ));
-	pComp->Value(mkNamingAdapt(Security,    "Security"    ));
+		compiler->Value(mkNamingAdapt(Gamepads[i],     FormatString("Gamepad%d", i).getData()));
+	compiler->Value(mkNamingAdapt(Graphics,    "Graphics"    ));
+	compiler->Value(mkNamingAdapt(Sound,       "Sound"       ));
+	compiler->Value(mkNamingAdapt(Network,     "Network"     ));
+	compiler->Value(mkNamingAdapt(Lobby,       "Lobby"       ));
+	compiler->Value(mkNamingAdapt(IRC,         "IRC"         ));
+	compiler->Value(mkNamingAdapt(Developer,   "Developer"   ));
+	compiler->Value(mkNamingAdapt(Startup,     "Startup"     ));
+	compiler->Value(mkNamingAdapt(Security,    "Security"    ));
 }
 
-bool C4Config::AddModule(const char *szPath, char *szModules)
+bool C4Config::AddModule(const char *path, char *modules)
 {
-	return SAddModule(szModules,szPath);
+	return SAddModule(modules,path);
 }
 
-bool C4Config::IsModule(const char *szPath, char *szModules)
+bool C4Config::IsModule(const char *path, char *modules)
 {
-	return SIsModule(szModules,szPath);
+	return SIsModule(modules,path);
 }
 
-bool C4Config::RemoveModule(const char *szPath, char *szModules)
+bool C4Config::RemoveModule(const char *path, char *modules)
 {
-	return SRemoveModule(szModules,szPath);
+	return SRemoveModule(modules,path);
 }
 
-void C4Config::ExpandEnvironmentVariables(char *strPath, size_t iMaxLen)
+void C4Config::ExpandEnvironmentVariables(char *path, size_t max_length)
 {
 #ifdef _WIN32
 	wchar_t buf[_MAX_PATH_LEN];
-	ExpandEnvironmentStringsW(GetWideChar(strPath), buf, _MAX_PATH);
-	SCopy(StdStrBuf(buf).getData(), strPath, iMaxLen);
+	ExpandEnvironmentStringsW(GetWideChar(path), buf, _MAX_PATH);
+	SCopy(StdStrBuf(buf).getData(), path, max_length);
 #else // __linux__ or __APPLE___
 	StdStrBuf home(getenv("HOME"));
 	char* rest;
-	if (home && (rest = const_cast<char *>(SSearch(strPath, "$HOME"))) && (std::strlen(strPath) - 5 + home.getLength() <= iMaxLen))
+	if (home && (rest = const_cast<char *>(SSearch(path, "$HOME"))) && (std::strlen(path) - 5 + home.getLength() <= max_length))
 	{
 		// String replace... there might be a more elegant way to do this.
 		memmove(rest + home.getLength() - SLen("$HOME"), rest, SLen(rest) + 1);
@@ -825,11 +825,11 @@ const char *C4Config::MakeTempUpdateFolder()
 	return General.TempUpdatePath;
 }
 
-const char *C4Config::AtTempUpdatePath(const char *szFilename)
+const char *C4Config::AtTempUpdatePath(const char *filename)
 {
 	SCopy(General.TempUpdatePath,AtPathFilename,_MAX_PATH-1);
 	AppendBackslash(AtPathFilename);
-	SAppend(szFilename,AtPathFilename,_MAX_PATH);
+	SAppend(filename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
 
