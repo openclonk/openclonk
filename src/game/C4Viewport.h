@@ -152,10 +152,10 @@ public:
 	void RecalculateViewports();
 	void DisableFoW();
 	void EnableFoW();
-	bool CreateViewport(int32_t player, bool silent = false);
-	bool CloseViewport(int32_t player, bool silent);
+	bool CreateViewport(int32_t player_nr, bool silent = false);
+	bool CloseViewport(int32_t player_nr, bool silent);
 	int32_t GetViewportCount();
-	C4Viewport* GetViewport(int32_t player, C4Viewport* prev = nullptr);
+	C4Viewport* GetViewport(int32_t player_nr, C4Viewport* prev = nullptr);
 	C4Viewport* GetFirstViewport() { return FirstViewport; }
 	bool CloseViewport(C4Viewport * viewport);
 #ifdef USE_WIN32_WINDOWS
