@@ -492,11 +492,11 @@ float C4Viewport::GetZoomByViewRange(int32_t size_x, int32_t size_y) const
 		return float(ViewWdt) / size_x;
 }
 
-void C4Viewport::SetZoom(float zoomValue)
+void C4Viewport::SetZoom(float zoom_value)
 {
-	Zoom = zoomValue;
+	Zoom = zoom_value;
 	// also set target to prevent zoom from changing back
-	ZoomTarget = zoomValue;
+	ZoomTarget = zoom_value;
 }
 
 void C4Viewport::AdjustZoomAndPosition()
@@ -655,14 +655,14 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 	DrawPlayerStartup(cgo);
 }
 
-bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
+bool C4Viewport::Init(int32_t for_player, bool set_temporary_only)
 {
 	// Fullscreen viewport initialization
 	// Set Player
-	if (!ValidPlr(iPlayer)) iPlayer = NO_OWNER;
-	Player=iPlayer;
+	if (!ValidPlr(for_player)) for_player = NO_OWNER;
+	Player=for_player;
 	ViewportOpenFrame = Game.FrameCounter;
-	if (!fSetTempOnly) fIsNoOwnerViewport = (iPlayer == NO_OWNER);
+	if (!set_temporary_only) fIsNoOwnerViewport = (for_player == NO_OWNER);
 	if (Application.isEditor)
 	{
 		// Console viewport initialization
@@ -680,7 +680,7 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	else
 	{
 		// Owned viewport: clear any flash message explaining observer menu
-		if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
+		if (ValidPlr(for_player)) ::GraphicsSystem.FlashMessage("");
 	}
 
 	EnableFoW();
@@ -731,10 +731,10 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 	                           pPlr->ColorDw | 0xff000000, ACenter);
 }
 
-void C4Viewport::ScrollView(float byX, float byY)
+void C4Viewport::ScrollView(float by_x, float by_y)
 {
-	SetViewX(viewX + byX);
-	SetViewY(viewY + byY);
+	SetViewX(viewX + by_x);
+	SetViewY(viewY + by_y);
 }
 
 void C4Viewport::SetViewX(float x)
@@ -775,14 +775,14 @@ void C4Viewport::SetViewY(float y)
 	UpdateBordersY();
 }
 
-void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt)
+void C4Viewport::SetOutputSize(int32_t draw_x, int32_t draw_y, int32_t out_x, int32_t out_y, int32_t out_wdt, int32_t out_hgt)
 {
-	int32_t deltaWidth = ViewWdt-iOutWdt;
-	int32_t deltaHeight = ViewHgt-iOutHgt;
+	int32_t deltaWidth = ViewWdt-out_wdt;
+	int32_t deltaHeight = ViewHgt-out_hgt;
 	// update output parameters
-	DrawX=iDrawX; DrawY=iDrawY;
-	OutX=iOutX; OutY=iOutY;
-	ViewWdt=iOutWdt; ViewHgt=iOutHgt;
+	DrawX=draw_x; DrawY=draw_y;
+	OutX=out_x; OutY=out_y;
+	ViewWdt=out_wdt; ViewHgt=out_hgt;
 	// update view position: Remain centered at previous position
 	// scrolling the view must be done after setting the new view width and height
 	ScrollView(deltaWidth/2, deltaHeight/2);
@@ -796,11 +796,11 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 		{
 			::MouseControl.UpdateClip();
 			// and inform GUI
-			::pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
+			::pGUI->SetPreferredDlgRect(C4Rect(out_x, out_y, out_wdt, out_hgt));
 		}
 }
 
-void C4Viewport::ClearPointers(C4Object *pObj)
+void C4Viewport::ClearPointers(C4Object *obj)
 {
 
 }
@@ -819,7 +819,7 @@ void C4Viewport::NextPlayer()
 	if (iPlr != Player) Init(iPlr, true);
 }
 
-bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
+bool C4Viewport::IsViewportMenu(class C4Menu *menu)
 {
 	// check all associated menus
 	// Get player
@@ -827,11 +827,11 @@ bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
 	// Player eliminated: No menu
 	if (pPlr && pPlr->Eliminated) return false;
 	// Player cursor object menu
-	if (pPlr && pPlr->Cursor && pPlr->Cursor->Menu == pMenu) return true;
+	if (pPlr && pPlr->Cursor && pPlr->Cursor->Menu == menu) return true;
 	// Player menu
-	if (pPlr && pPlr->Menu.IsActive() && &(pPlr->Menu) == pMenu) return true;
+	if (pPlr && pPlr->Menu.IsActive() && &(pPlr->Menu) == menu) return true;
 	// Fullscreen menu (if active, only one viewport can exist)
-	if (FullScreen.MainMenu && FullScreen.MainMenu->IsActive() && FullScreen.MainMenu == pMenu) return true;
+	if (FullScreen.MainMenu && FullScreen.MainMenu->IsActive() && FullScreen.MainMenu == menu) return true;
 	// no match
 	return false;
 }
@@ -880,23 +880,23 @@ void C4ViewportList::DrawFullscreenBackground()
 	}
 }
 
-bool C4ViewportList::CloseViewport(C4Viewport * cvp)
+bool C4ViewportList::CloseViewport(C4Viewport * viewport)
 {
-	if (!cvp) return false;
+	if (!viewport) return false;
 	// Chop the start of the chain off
-	if (FirstViewport == cvp)
+	if (FirstViewport == viewport)
 	{
-		FirstViewport = cvp->Next;
-		delete cvp;
+		FirstViewport = viewport->Next;
+		delete viewport;
 		StartSoundEffect("UI::CloseViewport");
 	}
 	// Take out of the chain
 	else for (C4Viewport * prev = FirstViewport; prev; prev = prev->Next)
 		{
-			if (prev->Next == cvp)
+			if (prev->Next == viewport)
 			{
-				prev->Next = cvp->Next;
-				delete cvp;
+				prev->Next = viewport->Next;
+				delete viewport;
 				StartSoundEffect("UI::CloseViewport");
 			}
 		}
@@ -916,12 +916,12 @@ C4Viewport* C4ViewportList::GetViewport(HWND hwnd)
 	return nullptr;
 }
 #endif
-bool C4ViewportList::CreateViewport(int32_t iPlayer, bool fSilent)
+bool C4ViewportList::CreateViewport(int32_t player, bool silent)
 {
 	// Create and init new viewport, add to viewport list
 	int32_t iLastCount = GetViewportCount();
 	C4Viewport *nvp = new C4Viewport;
-	bool fOkay = nvp->Init(iPlayer, false);
+	bool fOkay = nvp->Init(player, false);
 	if (!fOkay) { delete nvp; return false; }
 	C4Viewport *pLast;
 	for (pLast=FirstViewport; pLast && pLast->Next; pLast=pLast->Next) {}
@@ -931,14 +931,14 @@ bool C4ViewportList::CreateViewport(int32_t iPlayer, bool fSilent)
 	// Viewports start off at centered position
 	nvp->CenterPosition();
 	// Initial player zoom values to viewport (in case they were set early in InitializePlayer, loaded from savegame, etc.)
-	C4Player *plr = ::Players.Get(iPlayer);
+	C4Player *plr = ::Players.Get(player);
 	if (plr)
 	{
 		plr->ZoomToViewport(nvp, true, false, false);
 		plr->ZoomLimitsToViewport(nvp);
 	}
 	// Action sound
-	if (GetViewportCount()!=iLastCount) if (!fSilent)
+	if (GetViewportCount()!=iLastCount) if (!silent)
 			StartSoundEffect("UI::CloseViewport");
 	return true;
 }
@@ -955,12 +955,12 @@ void C4ViewportList::EnableFoW()
 		cvp->EnableFoW();
 }
 
-void C4ViewportList::ClearPointers(C4Object *pObj)
+void C4ViewportList::ClearPointers(C4Object *obj)
 {
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-		cvp->ClearPointers(pObj);
+		cvp->ClearPointers(obj);
 }
-bool C4ViewportList::CloseViewport(int32_t iPlayer, bool fSilent)
+bool C4ViewportList::CloseViewport(int32_t player, bool silent)
 {
 	// Close all matching viewports
 	int32_t iLastCount = GetViewportCount();
@@ -968,7 +968,7 @@ bool C4ViewportList::CloseViewport(int32_t iPlayer, bool fSilent)
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=next)
 	{
 		next=cvp->Next;
-		if (cvp->Player==iPlayer || (iPlayer==NO_OWNER && cvp->fIsNoOwnerViewport))
+		if (cvp->Player==player || (player==NO_OWNER && cvp->fIsNoOwnerViewport))
 		{
 			delete cvp;
 			if (prev) prev->Next=next;
@@ -983,7 +983,7 @@ bool C4ViewportList::CloseViewport(int32_t iPlayer, bool fSilent)
 		// Recalculate viewports
 		RecalculateViewports();
 		// Action sound
-		if (!fSilent) StartSoundEffect("UI::CloseViewport");
+		if (!silent) StartSoundEffect("UI::CloseViewport");
 	}
 	return true;
 }
@@ -1069,32 +1069,32 @@ int32_t C4ViewportList::GetViewportCount()
 	return iResult;
 }
 
-C4Viewport* C4ViewportList::GetViewport(int32_t iPlayer, C4Viewport* pPrev)
+C4Viewport* C4ViewportList::GetViewport(int32_t player, C4Viewport* prev)
 {
-	for (C4Viewport *cvp=pPrev ? pPrev->Next : FirstViewport; cvp; cvp=cvp->Next)
-		if (cvp->Player==iPlayer || (iPlayer==NO_OWNER && cvp->fIsNoOwnerViewport))
+	for (C4Viewport *cvp=prev ? prev->Next : FirstViewport; cvp; cvp=cvp->Next)
+		if (cvp->Player==player || (player==NO_OWNER && cvp->fIsNoOwnerViewport))
 			return cvp;
 	return nullptr;
 }
 
-int32_t C4ViewportList::GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius, int32_t *outPlayer)
+int32_t C4ViewportList::GetAudibility(int32_t x, int32_t y, int32_t *pan, int32_t audibility_radius, int32_t *out_player)
 {
 	// default audibility radius
-	if (!iAudibilityRadius) iAudibilityRadius = C4AudibilityRadius;
+	if (!audibility_radius) audibility_radius = C4AudibilityRadius;
 	// Accumulate audibility by viewports
-	int32_t iAudible=0; *iPan = 0;
+	int32_t iAudible=0; *pan = 0;
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
 	{
-		float distanceToCenterOfViewport = Distance(cvp->GetViewCenterX(),cvp->GetViewCenterY(),iX,iY);
+		float distanceToCenterOfViewport = Distance(cvp->GetViewCenterX(),cvp->GetViewCenterY(),x,y);
 		int32_t audibility = Clamp<int32_t>(100 - 100 * distanceToCenterOfViewport / C4AudibilityRadius, 0, 100);
 		if (audibility > iAudible)
 		{
 			iAudible = audibility;
-			if (outPlayer) *outPlayer = cvp->Player;
+			if (out_player) *out_player = cvp->Player;
 		}
-		*iPan += (iX-(cvp->GetViewCenterX())) / 5;
+		*pan += (x-(cvp->GetViewCenterX())) / 5;
 	}
-	*iPan = Clamp<int32_t>(*iPan, -100, 100);
+	*pan = Clamp<int32_t>(*pan, -100, 100);
 	return iAudible;
 }
 
@@ -1145,7 +1145,7 @@ bool C4ViewportList::ViewportNextPlayer()
 	return true;
 }
 
-bool C4ViewportList::FreeScroll(C4Vec2D vScrollBy)
+bool C4ViewportList::FreeScroll(C4Vec2D scroll_by)
 {
 	// safety: move valid?
 	if ((!Game.C4S.Head.Replay || !Game.C4S.Head.Film) && !GetViewport(NO_OWNER)) return false;
@@ -1153,7 +1153,7 @@ bool C4ViewportList::FreeScroll(C4Vec2D vScrollBy)
 	if (!vp) return false;
 	// move then (old static code crap...)
 	static int32_t vp_vx=0; static int32_t vp_vy=0; static int32_t vp_vf=0;
-	int32_t dx=vScrollBy.x; int32_t dy=vScrollBy.y;
+	int32_t dx=scroll_by.x; int32_t dy=scroll_by.y;
 	if (Game.FrameCounter-vp_vf < 5)
 		{ dx += vp_vx; dy += vp_vy; }
 	vp_vx=dx; vp_vy=dy; vp_vf=Game.FrameCounter;
@@ -1173,13 +1173,13 @@ bool C4ViewportList::ViewportZoomIn()
 	return true;
 }
 
-void C4ViewportList::MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
+void C4ViewportList::MouseMoveToViewport(int32_t button, int32_t x, int32_t y, DWORD key_param)
 {
 	// Pass on to mouse controlled viewport
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
 		if (::MouseControl.IsViewport(cvp))
-			::MouseControl.Move( iButton,
-			                     Clamp<int32_t>(iX-cvp->OutX,0,cvp->ViewWdt-1),
-			                     Clamp<int32_t>(iY-cvp->OutY,0,cvp->ViewHgt-1),
-			                     dwKeyParam );
+			::MouseControl.Move( button,
+			                     Clamp<int32_t>(x-cvp->OutX,0,cvp->ViewWdt-1),
+			                     Clamp<int32_t>(y-cvp->OutY,0,cvp->ViewHgt-1),
+			                     key_param );
 }
