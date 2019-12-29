@@ -791,7 +791,7 @@ void C4Game::InitFullscreenComponents(bool is_running)
 	// an early OnResolutionChanged() call. Ignore it, the message board,
 	// upper board and viewports will be initialized within the regular
 	// startup sequence then.
-	if(!GraphicsResource.IsInitialized()) return;
+	if (!GraphicsResource.IsInitialized()) return;
 
 	// fullscreen message board
 	C4Facet cgo;
@@ -1841,7 +1841,7 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 		size_t iSize;
 		StdStrBuf realFilename;
 
-		if(ScenarioFile.FindEntry(FormatString("%s.*",C4CFN_ScenarioTitle).getData(),&realFilename,&iSize))
+		if (ScenarioFile.FindEntry(FormatString("%s.*",C4CFN_ScenarioTitle).getData(),&realFilename,&iSize))
 			if (ScenarioFile.LoadEntry(realFilename.getData(),&bpBytes,&iSize))
 				hGroup.Add(realFilename.getData(),bpBytes, iSize, false, true);
 	}
@@ -3752,7 +3752,7 @@ bool C4Game::DrawTextSpecImage(C4Facet &target, const char *spec, C4DrawTransfor
 	if (!spec) return false;
 
 	C4Facet fctSource;
-	if(GetTextSpecFacet(spec, fctSource))
+	if (GetTextSpecFacet(spec, fctSource))
 	{
 		fctSource.DrawXT(target.Surface, target.X, target.Y, target.Wdt, target.Hgt, 0, 0, transform);
 		return true;
@@ -3774,7 +3774,7 @@ float C4Game::GetTextSpecImageAspect(const char* spec)
 	if (!spec) return -1.0f;
 
 	C4Facet fctSource;
-	if(GetTextSpecFacet(spec, fctSource))
+	if (GetTextSpecFacet(spec, fctSource))
 	{
 		return static_cast<float>(fctSource.Wdt) / static_cast<float>(fctSource.Hgt);
 	}
@@ -3784,7 +3784,7 @@ float C4Game::GetTextSpecImageAspect(const char* spec)
 		if (!pDef) return -1.0f;
 
 		C4DefGraphics* pGfx = &pDef->Graphics;
-		if(pGfx->Type == C4DefGraphics::TYPE_Bitmap)
+		if (pGfx->Type == C4DefGraphics::TYPE_Bitmap)
 		{
 			return static_cast<float>(pDef->PictureRect.Wdt) / static_cast<float>(pDef->PictureRect.Hgt);
 		}
