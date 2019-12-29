@@ -193,12 +193,12 @@ public:
 	                       C4Real xdir = Fix0, C4Real ydir = Fix0, C4Real rdir = Fix0, int32_t controller = NO_OWNER);
 	C4Object *CreateObject(C4ID type, C4Object *creator, int32_t owner = NO_OWNER,
 	                       int32_t x = 50, int32_t y = 50, int32_t r = 0, bool grow_from_center = false,
-	                       C4Real xdir = Fix0, C4Real ydir = Fix0, C4Real rdir = Fix0, int32_t iController = NO_OWNER);
+	                       C4Real xdir = Fix0, C4Real ydir = Fix0, C4Real rdir = Fix0, int32_t controller = NO_OWNER);
 	C4Object *CreateObjectConstruction(C4PropList * type,
 	                                   C4Object *creator,
 	                                   int32_t owner,
 	                                   int32_t center_x = 0, int32_t bottom_y = 0,
-	                                   int32_t con = 1, bool terrain = false);
+	                                   int32_t con = 1, bool adjust_terrain = false);
 	C4Object *CreateInfoObject(C4ObjectInfo *info, int32_t owner,
 	                           int32_t x = 50, int32_t y = 50);
 	C4Object *FindConstuctionSiteBlock(int32_t x, int32_t y, int32_t wdt, int32_t hgt);
