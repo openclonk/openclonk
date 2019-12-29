@@ -1273,7 +1273,7 @@ C4Object *C4Game::FindVisObject(float x, float y, int32_t player_nr, const C4Fac
 									{
 										// object position for game object
 										check_x = game_x; check_y = game_y;
-										cObj->GetViewPos(iObjX, iObjY, tx, ty, viewport_game);
+										cObj->GetViewPos(iObjX, iObjY, x, y, viewport_game);
 									}
 									// Point search
 									if (Inside<float>(check_x-(iObjX+cObj->Shape.x),0, float(cObj->Shape.Wdt)-1))
