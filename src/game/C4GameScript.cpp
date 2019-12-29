@@ -253,21 +253,29 @@ static C4Object *FnCreateConstruction(C4PropList * _this,
 	return obj;
 }
 
-static C4ValueArray *FnFindConstructionSite(C4PropList * _this, C4PropList * PropList, int32_t v1, int32_t v2)
+static C4ValueArray *FnFindConstructionSite(C4PropList * _this, C4PropList * PropList, int32_t abs_x, int32_t abs_y)
 {
 	// Get def
-	C4Def *pDef;
-	if (!(pDef=PropList->GetDef())) return nullptr;
-	// Construction check at starting position
-	if (ConstructionCheck(PropList, v1, v2))
+	C4Def *def;
+	if (!(def = PropList->GetDef()))
+	{
 		return nullptr;
+	}
+	// Construction check at starting position
+	if (ConstructionCheck(PropList, abs_x, abs_y))
+	{
+		return nullptr;
+	}
 	// Search for real
-	bool result = !!FindConSiteSpot(v1, v2, pDef->Shape.Wdt, pDef->Shape.Hgt, 20);
-	if(!result) return nullptr;
-	auto *pArray = new C4ValueArray(2);
-	pArray->SetItem(0, C4VInt(v1));
-	pArray->SetItem(1, C4VInt(v2));
-	return pArray;
+	bool result = !!FindConSiteSpot(abs_x, abs_y, def->Shape.Wdt, def->Shape.Hgt, 20);
+	if (!result)
+	{
+		return nullptr;
+	}
+	auto *array = new C4ValueArray(2);
+	array->SetItem(0, C4VInt(abs_x));
+	array->SetItem(1, C4VInt(abs_y));
+	return array;
 }
 
 static bool FnCheckConstructionSite(C4PropList * _this, C4PropList * PropList, int32_t x, int32_t y)
@@ -285,14 +293,14 @@ static bool FnCheckConstructionSite(C4PropList * _this, C4PropList * PropList, i
 	return ConstructionCheck(PropList, x, y);
 }
 
-C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4SortObject **pSOs, const C4Object *context)
+C4FindObject *CreateCriterionsFromPars(C4Value *parameters, C4FindObject **pFOs, C4SortObject **pSOs, const C4Object *context)
 {
 	int i, iCnt = 0, iSortCnt = 0;
 	bool has_layer_check = false;
 	// Read all parameters
 	for (i = 0; i < C4AUL_MAX_Par; i++)
 	{
-		C4Value Data = *(pPars++);
+		C4Value Data = *(parameters++);
 		// No data given?
 		if (!Data) break;
 		// Construct
@@ -339,11 +347,11 @@ C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4So
 	return pFO;
 }
 
-static C4Value FnObjectCount(C4PropList * _this, C4Value *pPars)
+static C4Value FnObjectCount(C4PropList * _this, C4Value *parameters)
 {
 	// Create FindObject-structure
 	C4FindObject *pFOs[C4AUL_MAX_Par+1]; // +1 array element to include space for implicit layer check
-	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, nullptr, Object(_this));
+	C4FindObject *pFO = CreateCriterionsFromPars(parameters, pFOs, nullptr, Object(_this));
 	// Error?
 	if (!pFO)
 		throw C4AulExecError("ObjectCount: No valid search criterions supplied");
@@ -355,12 +363,12 @@ static C4Value FnObjectCount(C4PropList * _this, C4Value *pPars)
 	return C4VInt(iCnt);
 }
 
-static C4Value FnFindObject(C4PropList * _this, C4Value *pPars)
+static C4Value FnFindObject(C4PropList * _this, C4Value *parameters)
 {
 	// Create FindObject-structure
 	C4FindObject *pFOs[C4AUL_MAX_Par]; // +1 array element to include space for implicit layer check
 	C4SortObject *pSOs[C4AUL_MAX_Par];
-	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs, Object(_this));
+	C4FindObject *pFO = CreateCriterionsFromPars(parameters, pFOs, pSOs, Object(_this));
 	// Error?
 	if (!pFO)
 		throw C4AulExecError("FindObject: No valid search criterions supplied");
@@ -372,12 +380,12 @@ static C4Value FnFindObject(C4PropList * _this, C4Value *pPars)
 	return C4VObj(pObj);
 }
 
-static C4Value FnFindObjects(C4PropList * _this, C4Value *pPars)
+static C4Value FnFindObjects(C4PropList * _this, C4Value *parameters)
 {
 	// Create FindObject-structure
 	C4FindObject *pFOs[C4AUL_MAX_Par]; // +1 array element to include space for implicit layer check
 	C4SortObject *pSOs[C4AUL_MAX_Par];
-	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs, Object(_this));
+	C4FindObject *pFO = CreateCriterionsFromPars(parameters, pFOs, pSOs, Object(_this));
 	// Error?
 	if (!pFO)
 		throw C4AulExecError("FindObjects: No valid search criterions supplied");
@@ -1187,8 +1195,8 @@ static bool FnSurrenderPlayer(C4PropList * _this, long iPlr)
 // undocumented!
 static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, long idPlayer)
 	{
-	if(!Game.Parameters.isLeague()) return false;
-	if(idPlayer && !Game.PlayerInfos.GetPlayerInfoByID(idPlayer)) return false;
+	if (!Game.Parameters.isLeague()) return false;
+	if (idPlayer && !Game.PlayerInfos.GetPlayerInfoByID(idPlayer)) return false;
 	Game.RoundResults.SetLeaguePerformance(iScore, idPlayer);
 	return true;
 	}
@@ -1361,10 +1369,10 @@ static C4ValueArray* FnPathFree2(C4PropList * _this, int32_t x1, int32_t y1, int
 	int32_t x = -1, y = -1;
 	if (!PathFree(x1, y1, x2, y2, &x, &y))
 	{
-		C4ValueArray *pArray = new C4ValueArray(2);
-		pArray->SetItem(0, C4VInt(x));
-		pArray->SetItem(1, C4VInt(y));
-		return pArray;
+		C4ValueArray *array = new C4ValueArray(2);
+		array->SetItem(0, C4VInt(x));
+		array->SetItem(1, C4VInt(y));
+		return array;
 	}
 	return nullptr;
 }
@@ -1419,7 +1427,7 @@ static int32_t FnGetLeagueScore(C4PropList * _this, long idPlayer)
 
 static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long idPlayer)
 {
-	if(!Game.Parameters.League.getLength() || !idPlayer) return false;
+	if (!Game.Parameters.League.getLength() || !idPlayer) return false;
 	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(idPlayer);
 	if (!info) return false;
 	info->SetLeagueProgressData(pNewData ? pNewData->GetCStr() : nullptr);
@@ -1428,7 +1436,7 @@ static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long
 
 static C4String *FnGetLeagueProgressData(C4PropList * _this, long idPlayer)
 {
-	if(!Game.Parameters.League.getLength()) return nullptr;
+	if (!Game.Parameters.League.getLength()) return nullptr;
 	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(idPlayer);
 	if (!info) return nullptr;
 	return String(info->GetLeagueProgressData());
@@ -1921,47 +1929,47 @@ static bool FnClearParticles(C4PropList * _this)
 
 static C4ValueArray* FnPV_Linear(C4PropList * _this, C4Value startValue, C4Value endValue)
 {
-	C4ValueArray *pArray = new C4ValueArray(3);
-	pArray->SetItem(0, C4VInt(C4PV_Linear));
-	pArray->SetItem(1, startValue);
-	pArray->SetItem(2, endValue);
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(3);
+	array->SetItem(0, C4VInt(C4PV_Linear));
+	array->SetItem(1, startValue);
+	array->SetItem(2, endValue);
+	return array;
 }
 
 static C4ValueArray* FnPV_Random(C4PropList * _this, C4Value startValue, C4Value endValue, C4Value rerollInterval, C4Value seed)
 {
-	C4ValueArray *pArray = new C4ValueArray(4);
-	pArray->SetItem(0, C4VInt(C4PV_Random));
-	pArray->SetItem(1, startValue);
-	pArray->SetItem(2, endValue);
-	pArray->SetItem(3, rerollInterval);
-	pArray->SetItem(4, seed);
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(4);
+	array->SetItem(0, C4VInt(C4PV_Random));
+	array->SetItem(1, startValue);
+	array->SetItem(2, endValue);
+	array->SetItem(3, rerollInterval);
+	array->SetItem(4, seed);
+	return array;
 }
 
 static C4ValueArray* FnPV_Direction(C4PropList * _this, C4Value factor)
 {
-	C4ValueArray *pArray = new C4ValueArray(2);
-	pArray->SetItem(0, C4VInt(C4PV_Direction));
-	pArray->SetItem(1, factor.GetType() != C4V_Nil ? factor : C4VInt(1000));
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(2);
+	array->SetItem(0, C4VInt(C4PV_Direction));
+	array->SetItem(1, factor.GetType() != C4V_Nil ? factor : C4VInt(1000));
+	return array;
 }
 
 static C4ValueArray* FnPV_Step(C4PropList * _this, C4Value step, C4Value startValue, C4Value delay, C4Value maximumValue)
 {
-	C4ValueArray *pArray = new C4ValueArray(5);
-	pArray->SetItem(0, C4VInt(C4PV_Step));
-	pArray->SetItem(1, step);
-	pArray->SetItem(2, startValue);
-	pArray->SetItem(3, delay);
-	pArray->SetItem(4, maximumValue);
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(5);
+	array->SetItem(0, C4VInt(C4PV_Step));
+	array->SetItem(1, step);
+	array->SetItem(2, startValue);
+	array->SetItem(3, delay);
+	array->SetItem(4, maximumValue);
+	return array;
 }
 
 static C4Value FnPV_KeyFrames(C4PropList * _this, C4Value *pars)
 {
-	C4ValueArray *pArray = new C4ValueArray(C4AUL_MAX_Par);
-	pArray->SetItem(0, C4VInt(C4PV_KeyFrames));
+	C4ValueArray *array = new C4ValueArray(C4AUL_MAX_Par);
+	array->SetItem(0, C4VInt(C4PV_KeyFrames));
 	const int offset = 1;
 
 	// Read all parameters
@@ -1972,79 +1980,79 @@ static C4Value FnPV_KeyFrames(C4PropList * _this, C4Value *pars)
 		// No data given?
 		if (Data.GetType() == C4V_Nil) break;
 
-		pArray->SetItem(offset + i, Data);
+		array->SetItem(offset + i, Data);
 	}
-	pArray->SetSize(i + offset);
-	return C4Value(pArray);
+	array->SetSize(i + offset);
+	return C4Value(array);
 }
 
 static C4ValueArray* FnPV_Sin(C4PropList * _this, C4Value value, C4Value amplitude, C4Value offset)
 {
-	C4ValueArray *pArray = new C4ValueArray(5);
-	pArray->SetItem(0, C4VInt(C4PV_Sin));
-	pArray->SetItem(1, value);
-	pArray->SetItem(2, amplitude);
-	pArray->SetItem(3, offset);
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(5);
+	array->SetItem(0, C4VInt(C4PV_Sin));
+	array->SetItem(1, value);
+	array->SetItem(2, amplitude);
+	array->SetItem(3, offset);
+	return array;
 }
 
 static C4ValueArray* FnPV_Cos(C4PropList * _this, C4Value value, C4Value amplitude, C4Value offset)
 {
-	C4ValueArray *pArray = new C4ValueArray(5);
-	pArray->SetItem(0, C4VInt(C4PV_Cos));
-	pArray->SetItem(1, value);
-	pArray->SetItem(2, amplitude);
-	pArray->SetItem(3, offset);
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(5);
+	array->SetItem(0, C4VInt(C4PV_Cos));
+	array->SetItem(1, value);
+	array->SetItem(2, amplitude);
+	array->SetItem(3, offset);
+	return array;
 }
 
 static C4ValueArray* FnPV_Speed(C4PropList * _this, C4Value factor, C4Value startValue)
 {
-	C4ValueArray *pArray = new C4ValueArray(3);
-	pArray->SetItem(0, C4VInt(C4PV_Speed));
-	pArray->SetItem(1, factor.GetType() == C4V_Nil ? C4VInt(1000) : factor);
-	pArray->SetItem(2, startValue);
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(3);
+	array->SetItem(0, C4VInt(C4PV_Speed));
+	array->SetItem(1, factor.GetType() == C4V_Nil ? C4VInt(1000) : factor);
+	array->SetItem(2, startValue);
+	return array;
 }
 
 static C4ValueArray* FnPV_Wind(C4PropList * _this, C4Value factor, C4Value startValue)
 {
-	C4ValueArray *pArray = new C4ValueArray(3);
-	pArray->SetItem(0, C4VInt(C4PV_Wind));
-	pArray->SetItem(1, factor.GetType() == C4V_Nil ? C4VInt(1000) : factor);
-	pArray->SetItem(2, startValue);
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(3);
+	array->SetItem(0, C4VInt(C4PV_Wind));
+	array->SetItem(1, factor.GetType() == C4V_Nil ? C4VInt(1000) : factor);
+	array->SetItem(2, startValue);
+	return array;
 }
 
 static C4ValueArray* FnPV_Gravity(C4PropList * _this, C4Value factor, C4Value startValue)
 {
-	C4ValueArray *pArray = new C4ValueArray(3);
-	pArray->SetItem(0, C4VInt(C4PV_Gravity));
-	pArray->SetItem(1, factor.GetType() == C4V_Nil ? C4VInt(1000) : factor);
-	pArray->SetItem(2, startValue);
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(3);
+	array->SetItem(0, C4VInt(C4PV_Gravity));
+	array->SetItem(1, factor.GetType() == C4V_Nil ? C4VInt(1000) : factor);
+	array->SetItem(2, startValue);
+	return array;
 }
 
 static C4ValueArray* FnPC_Die(C4PropList * _this)
 {
-	C4ValueArray *pArray = new C4ValueArray(1);
-	pArray->SetItem(0, C4VInt(C4PC_Die));
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(1);
+	array->SetItem(0, C4VInt(C4PC_Die));
+	return array;
 }
 
 static C4ValueArray* FnPC_Bounce(C4PropList * _this, C4Value bouncyness)
 {
-	C4ValueArray *pArray = new C4ValueArray(2);
-	pArray->SetItem(0, C4VInt(C4PC_Bounce));
-	pArray->SetItem(1, bouncyness.GetType() != C4V_Nil ? bouncyness : C4VInt(1000));
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(2);
+	array->SetItem(0, C4VInt(C4PC_Bounce));
+	array->SetItem(1, bouncyness.GetType() != C4V_Nil ? bouncyness : C4VInt(1000));
+	return array;
 }
 
 static C4ValueArray* FnPC_Stop(C4PropList * _this)
 {
-	C4ValueArray *pArray = new C4ValueArray(1);
-	pArray->SetItem(0, C4VInt(C4PC_Stop));
-	return pArray;
+	C4ValueArray *array = new C4ValueArray(1);
+	array->SetItem(0, C4VInt(C4PC_Stop));
+	return array;
 }
 
 static bool FnSetSkyParallax(C4PropList * _this, Nillable<long> iMode, Nillable<long> iParX, Nillable<long> iParY, Nillable<long> iXDir, Nillable<long> iYDir, Nillable<long> iX, Nillable<long> iY)
@@ -2489,7 +2497,7 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 {
 	// safeties: for global messages pSrc needs to be object/definition. For object-local messages, any proplist is OK
 	if (pSrc)
-		if(!pSrc->GetDef() && !pSrc->GetObject() && !pSrc->GetPropertyPropList(P_Source) && !pObj) return false;
+		if (!pSrc->GetDef() && !pSrc->GetObject() && !pSrc->GetPropertyPropList(P_Source) && !pObj) return false;
 	if (!pMsg) return false;
 	if (pObj && !pObj->Status) return false;
 	const char *szMsg = pMsg->GetCStr();
@@ -2700,7 +2708,7 @@ static bool FnGetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl)
 static C4String *FnGetPlayerControlAssignment(C4PropList * _this, long player, long control, bool human_readable, bool short_name)
 {
 	// WARNING: As many functions returning strings, the result is not sync safe!
-	// "" is returned for invalid controls to make the obvious if(GetPlayerControlAssignmentName(...)) not cause a sync loss
+	// "" is returned for invalid controls to make the obvious if (GetPlayerControlAssignmentName(...)) not cause a sync loss
 	// get desired assignment from parameters
 	C4Player *plr = ::Players.Get(player);
 	if (!plr) return nullptr; // invalid player
