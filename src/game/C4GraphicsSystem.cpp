@@ -176,12 +176,12 @@ void C4GraphicsSystem::ClearFullscreenBackground()
 	--iRedrawBackground;
 }
 
-bool C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec)
+bool C4GraphicsSystem::InitLoaderScreen(const char *image_name)
 {
 	// create new loader; overwrite current only if successful
 	C4LoaderScreen *pNewLoader = new C4LoaderScreen();
 	pNewLoader->SetBlackScreen(false);
-	if (!pNewLoader->Init(szLoaderSpec)) { delete pNewLoader; return false; }
+	if (!pNewLoader->Init(image_name)) { delete pNewLoader; return false; }
 	if (pLoaderScreen) delete pLoaderScreen;
 	pLoaderScreen = pNewLoader;
 	// done, success
@@ -194,7 +194,7 @@ void C4GraphicsSystem::EnableLoaderDrawing()
 	if (pLoaderScreen) pLoaderScreen->SetBlackScreen(false);
 }
 
-bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll, float fSaveAllZoom)
+bool C4GraphicsSystem::SaveScreenshot(bool save_all, float zoom_factor_all)
 {
 	// Find a unique screenshot filename by iterating over all possible names
 	// Keep static counter so multiple screenshots in succession do not use same filename even if the background thread hasn't started writing the file yet
@@ -204,7 +204,7 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll, float fSaveAllZoom)
 	do
 		sprintf(szFilename,"Screenshot%03i.png",iScreenshotIndex++);
 	while (FileExists(strFilePath = Config.AtScreenshotPath(szFilename)));
-	bool fSuccess=DoSaveScreenshot(fSaveAll, strFilePath, fSaveAllZoom);
+	bool fSuccess=DoSaveScreenshot(save_all, strFilePath, zoom_factor_all);
 	// log if successful/where it has been stored
 	if (!fSuccess)
 		LogF(LoadResStr("IDS_PRC_SCREENSHOTERROR"), Config.AtUserDataRelativePath(Config.AtScreenshotPath(szFilename)));
@@ -214,7 +214,7 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll, float fSaveAllZoom)
 	return !!fSuccess;
 }
 
-bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, float fSaveAllZoom)
+bool C4GraphicsSystem::DoSaveScreenshot(bool save_all, const char *filename, float zoom_factor_all)
 {
 	// Fullscreen only
 	if (Application.isEditor)
@@ -226,10 +226,10 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 	if (!FullScreen.pSurface) return false;
 
 	// save landscape
-	if (fSaveAll)
+	if (save_all)
 	{
 		// Create full map screenshots at zoom 2x. Fractional zooms (like 1.7x) should work but might cause some trouble at screen borders.
-		float zoom = fSaveAllZoom;
+		float zoom = zoom_factor_all;
 		// get viewport to draw in
 		C4Viewport *pVP=::Viewports.GetFirstViewport(); if (!pVP) return false;
 		// create image large enough to hold the landscape
@@ -298,11 +298,11 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 		// restore viewport size
 		::Viewports.RecalculateViewports();
 		// save!
-		CPNGFile::ScheduleSaving(png.release(), szFilename);
+		CPNGFile::ScheduleSaving(png.release(), filename);
 		return true;
 	}
 	// Save primary surface in background thread
-	return FullScreen.pSurface->SavePNG(szFilename, false, false, true);
+	return FullScreen.pSurface->SavePNG(filename, false, false, true);
 }
 
 void C4GraphicsSystem::DeactivateDebugOutput()
@@ -349,11 +349,11 @@ void C4GraphicsSystem::FlashMessage(const char *szMessage)
 	InvalidateBg();
 }
 
-void C4GraphicsSystem::FlashMessageOnOff(const char *strWhat, bool fOn)
+void C4GraphicsSystem::FlashMessageOnOff(const char *description, bool switch_on)
 {
-	StdStrBuf strMessage;
-	strMessage.Format("%s: %s", strWhat, LoadResStr(fOn ? "IDS_CTL_ON" : "IDS_CTL_OFF"));
-	FlashMessage(strMessage.getData());
+	StdStrBuf message;
+	message.Format("%s: %s", description, LoadResStr(switch_on ? "IDS_CTL_ON" : "IDS_CTL_OFF"));
+	FlashMessage(message.getData());
 }
 
 void C4GraphicsSystem::DrawFlashMessage()
