@@ -237,7 +237,7 @@ static C4Object *FnCreateConstruction(C4PropList * _this,
 	}
 
 	// Check site
-	if (check_site && !ConstructionCheck(PropList,rel_x,rel_y,Object(_this)))
+	if (check_site && !ConstructionCheck(PropList, rel_x, rel_y, Object(_this)))
 	{
 		return nullptr;
 	}
@@ -273,10 +273,10 @@ static C4ValueArray *FnFindConstructionSite(C4PropList * _this, C4PropList * Pro
 	C4Def *pDef;
 	if (!(pDef=PropList->GetDef())) return nullptr;
 	// Construction check at starting position
-	if (ConstructionCheck(PropList,v1,v2))
+	if (ConstructionCheck(PropList, v1, v2))
 		return nullptr;
 	// Search for real
-	bool result = !!FindConSiteSpot(v1, v2, pDef->Shape.Wdt,pDef->Shape.Hgt, 20);
+	bool result = !!FindConSiteSpot(v1, v2, pDef->Shape.Wdt, pDef->Shape.Hgt, 20);
 	if(!result) return nullptr;
 	auto *pArray = new C4ValueArray(2);
 	pArray->SetItem(0, C4VInt(v1));
@@ -409,7 +409,7 @@ static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long 
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 	int32_t insert_x=x, insert_y=y;
-	if (!::Landscape.InsertMaterial(mat,&insert_x,&insert_y,vx,vy)) return false;
+	if (!::Landscape.InsertMaterial(mat, &insert_x, &insert_y, vx, vy)) return false;
 	// output insertion position if desired (may be out of landscape range)
 	if (insert_position && !insert_position->IsFrozen())
 	{
@@ -423,7 +423,7 @@ static bool FnCanInsertMaterial(C4PropList * _this, long mat, long x, long y, C4
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 	int32_t insert_x=x, insert_y=y;
-	if (!::Landscape.InsertMaterial(mat,&insert_x,&insert_y,0,0,true)) return false;
+	if (!::Landscape.InsertMaterial(mat, &insert_x, &insert_y, 0,0, true)) return false;
 	// output insertion position if desired
 	if (insert_position && !insert_position->IsFrozen())
 	{
@@ -456,7 +456,7 @@ static long FnGetMaterialCount(C4PropList * _this, long iMaterial, bool fReal)
 static long FnGetMaterial(C4PropList * _this, long x, long y)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	return GBackMat(x,y);
+	return GBackMat(x, y);
 }
 
 static long FnGetBackMaterial(C4PropList * _this, long x, long y)
@@ -516,19 +516,19 @@ static Nillable<long> FnGetAverageTextureColor(C4PropList * _this, C4String* Tex
 static bool FnGBackSolid(C4PropList * _this, long x, long y)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	return GBackSolid(x,y);
+	return GBackSolid(x, y);
 }
 
 static bool FnGBackSemiSolid(C4PropList * _this, long x, long y)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	return GBackSemiSolid(x,y);
+	return GBackSemiSolid(x, y);
 }
 
 static bool FnGBackLiquid(C4PropList * _this, long x, long y)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	return GBackLiquid(x,y);
+	return GBackLiquid(x, y);
 }
 
 static bool FnGBackSky(C4PropList * _this, long x, long y)
@@ -542,8 +542,8 @@ static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 	long extracted=0; for (; extracted<amount; extracted++)
 	{
-		if (GBackMat(x,y)!=mat) return extracted;
-		if (::Landscape.ExtractMaterial(x,y,distant_first)!=mat) return extracted;
+		if (GBackMat(x, y)!=mat) return extracted;
+		if (::Landscape.ExtractMaterial(x, y,distant_first)!=mat) return extracted;
 	}
 	return extracted;
 }
@@ -741,7 +741,7 @@ static bool FnGameOver(C4PropList * _this, long iGameOverValue /* provided for f
 static bool FnGainScenarioAccess(C4PropList * _this, C4String *szPassword)
 {
 	if (std::strlen(Config.General.MissionAccess)+std::strlen(FnStringPar(szPassword))+3>CFG_MaxString) return false;
-	SAddModule(Config.General.MissionAccess,FnStringPar(szPassword));
+	SAddModule(Config.General.MissionAccess, FnStringPar(szPassword));
 	return true;
 }
 
@@ -756,8 +756,8 @@ static C4Value FnPlayerMessage(C4PropList * _this, C4Value * Pars)
 
 	// Speech
 	bool fSpoken=false;
-	if (SCopySegment(FnStringPar(szMessage),1,buf.getMData(),'$'))
-		if (StartSoundEffect(buf.getData(),false,100, Object(_this)))
+	if (SCopySegment(FnStringPar(szMessage), 1,buf.getMData(), '$'))
+		if (StartSoundEffect(buf.getData(), false, 100, Object(_this)))
 			fSpoken=true;
 
 	// Text
@@ -766,7 +766,7 @@ static C4Value FnPlayerMessage(C4PropList * _this, C4Value * Pars)
 		buf.Take(FnStringFormat(_this, szMessage, &Pars[2], 8));
 		const char * dollar = strchr(buf.getData(), '$');
 		if (dollar) buf.Shrink(dollar - buf.getData());
-		GameMsgObjectPlayer(buf.getData(),Object(_this), player_nr);
+		GameMsgObjectPlayer(buf.getData(), Object(_this), player_nr);
 	}
 	return C4VBool(true);
 }
@@ -781,17 +781,17 @@ static C4Value FnMessage(C4PropList * _this, C4Value * Pars)
 
 	// Speech
 	bool fSpoken=false;
-	if (SCopySegment(FnStringPar(szMessage),1,buf.getMData(),'$'))
-		if (StartSoundEffect(buf.getData(),false,100, Object(_this)))
+	if (SCopySegment(FnStringPar(szMessage), 1,buf.getMData(), '$'))
+		if (StartSoundEffect(buf.getData(), false, 100, Object(_this)))
 			fSpoken=true;
 
 	// Text
 	if (!fSpoken)
 	{
-		buf.Take(FnStringFormat(_this,szMessage, &Pars[1], 9));
+		buf.Take(FnStringFormat(_this, szMessage, &Pars[1], 9));
 		const char * dollar = strchr(buf.getData(), '$');
 		if (dollar) buf.Shrink(dollar - buf.getData());
-		GameMsgObject(buf.getData(),Object(_this));
+		GameMsgObject(buf.getData(), Object(_this));
 	}
 	return C4VBool(true);
 }
@@ -804,7 +804,7 @@ static C4Value FnAddMessage(C4PropList * _this, C4Value * Pars)
 	if (!szMessage) return C4VBool(false);
 
 	::Messages.Append(C4GM_Target, FnStringFormat(_this, szMessage, &Pars[1], 9).getData(),
-	                  Object(_this),NO_OWNER,0,0,C4RGB(0xff, 0xff, 0xff));
+	                  Object(_this), NO_OWNER, 0,0, C4RGB(0xff, 0xff, 0xff));
 	return C4VBool(true);
 }
 
@@ -841,10 +841,10 @@ static bool FnHostile(C4PropList * _this, long iPlr1, long iPlr2, bool fCheckOne
 {
 	if (fCheckOneWayOnly)
 	{
-		return ::Players.HostilityDeclared(iPlr1,iPlr2);
+		return ::Players.HostilityDeclared(iPlr1, iPlr2);
 	}
 	else
-		return !!Hostile(iPlr1,iPlr2);
+		return !!Hostile(iPlr1, iPlr2);
 }
 
 static bool FnSetHostility(C4PropList * _this, long iPlr, long iPlr2, bool fHostile, bool fSilent, bool fNoCalls)
@@ -859,7 +859,7 @@ static bool FnSetHostility(C4PropList * _this, long iPlr, long iPlr2, bool fHost
 	}
 	// OK; set hostility
 	bool fOldHostility = ::Players.HostilityDeclared(iPlr, iPlr2);
-	if (!player->SetHostility(iPlr2,fHostile, fSilent)) return false;
+	if (!player->SetHostility(iPlr2, fHostile, fSilent)) return false;
 	// calls afterwards
 	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile), C4VBool(fOldHostility)), true);
 	return true;
@@ -1004,7 +1004,7 @@ static bool FnDoBaseMaterial(C4PropList * _this, long iPlr, C4ID id, long iChang
 	if (!pDef) return false;
 	// add to material
 	long iLastcount = ::Players.Get(iPlr)->BaseMaterial.GetIDCount(id);
-	return ::Players.Get(iPlr)->BaseMaterial.SetIDCount(id,iLastcount+iChange,true);
+	return ::Players.Get(iPlr)->BaseMaterial.SetIDCount(id, iLastcount+iChange, true);
 }
 
 static bool FnDoBaseProduction(C4PropList * _this, long iPlr, C4ID id, long iChange)
@@ -1015,7 +1015,7 @@ static bool FnDoBaseProduction(C4PropList * _this, long iPlr, C4ID id, long iCha
 	if (!pDef) return false;
 	// add to material
 	long iLastcount = ::Players.Get(iPlr)->BaseProduction.GetIDCount(id);
-	return ::Players.Get(iPlr)->BaseProduction.SetIDCount(id,iLastcount+iChange,true);
+	return ::Players.Get(iPlr)->BaseProduction.SetIDCount(id, iLastcount+iChange, true);
 }
 
 static bool FnSetPlrKnowledge(C4PropList * _this, Nillable<long> iPlr, C4ID id, bool fRemove)
@@ -1042,7 +1042,7 @@ static C4Value FnGetPlrKnowledge(C4PropList * _this, int iPlr, C4ID id, int iInd
 {
 	if (!ValidPlr(iPlr)) return C4VBool(false);
 	// Search by id, check if available, return bool
-	if (id) return C4VBool(::Players.Get(iPlr)->Knowledge.GetIDCount(id,1) != 0);
+	if (id) return C4VBool(::Players.Get(iPlr)->Knowledge.GetIDCount(id, 1) != 0);
 	// Search indexed item of given category, return C4ID
 	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->Knowledge.GetID( ::Definitions, dwCategory, iIndex )));
 }
@@ -1264,7 +1264,7 @@ static long FnGetWind(C4PropList * _this, long x, long y, bool fGlobal)
 	if (fGlobal) return ::Weather.Wind;
 	// local wind
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	return ::Weather.GetWind(x,y);
+	return ::Weather.GetWind(x, y);
 }
 
 static void FnSetWind(C4PropList * _this, long iWind)
@@ -1327,22 +1327,22 @@ static long FnLandscapeHeight(C4PropList * _this)
 
 static void FnShakeFree(C4PropList * _this, long x, long y, long rad)
 {
-	::Landscape.ShakeFree(x,y,rad);
+	::Landscape.ShakeFree(x, y,rad);
 }
 
 static long FnDigFree(C4PropList * _this, long x, long y, long rad, bool no_dig2objects, bool no_instability_check)
 {
-	return ::Landscape.DigFree(x,y,rad,Object(_this),no_dig2objects,no_instability_check);
+	return ::Landscape.DigFree(x, y,rad, Object(_this), no_dig2objects, no_instability_check);
 }
 
 static long FnDigFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt, bool no_dig2objects, bool no_instability_check)
 {
-	return ::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,Object(_this),no_dig2objects,no_instability_check);
+	return ::Landscape.DigFreeRect(iX, iY, iWdt, iHgt, Object(_this), no_dig2objects, no_instability_check);
 }
 
 static void FnClearFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt)
 {
-	::Landscape.ClearFreeRect(iX,iY,iWdt,iHgt);
+	::Landscape.ClearFreeRect(iX, iY, iWdt, iHgt);
 }
 
 static bool FnPathFree(C4PropList * _this, long X1, long Y1, long X2, long Y2)
@@ -2525,7 +2525,7 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 	sMsg.Ref(szMsg);
 	if (dwFlags & C4GM_DropSpeech) sMsg.SplitAtChar('$', nullptr);
 	// create it!
-	return ::Messages.New(iType,sMsg,pObj,iOwner,iOffX,iOffY,(uint32_t)dwClr, idDeco, pSrc, dwFlags, iHSize);
+	return ::Messages.New(iType, sMsg, pObj, iOwner, iOffX, iOffY, (uint32_t)dwClr, idDeco, pSrc, dwFlags, iHSize);
 }
 
 static int FnGuiOpen(C4PropList * _this, C4PropList *menu)
