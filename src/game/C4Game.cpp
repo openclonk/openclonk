@@ -1899,7 +1899,7 @@ bool C4Game::DoKeyboardInput(C4KeyCodeEx Key, C4KeyEventType eEventType, class C
 		{
 			if (!Application.isEditor)
 			{
-				if (FullScreen.pMenu && FullScreen.pMenu->IsActive()) // fullscreen menu
+				if (FullScreen.MainMenu && FullScreen.MainMenu->IsActive()) // fullscreen menu
 					InScope |= KEYSCOPE_FullSMenu;
 				else if (Game.C4S.Head.Replay && C4S.Head.Film) // film view only
 					InScope |= KEYSCOPE_FilmView;

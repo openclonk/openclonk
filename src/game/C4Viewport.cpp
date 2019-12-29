@@ -184,10 +184,10 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo0)
 		pPlr->Menu.Draw(cgo);
 	}
 	// Fullscreen menu
-	if (FullScreen.pMenu && FullScreen.pMenu->IsActive())
+	if (FullScreen.MainMenu && FullScreen.MainMenu->IsActive())
 	{
-		if (ResetMenuPositions) FullScreen.pMenu->ResetLocation();
-		FullScreen.pMenu->Draw(cgo);
+		if (ResetMenuPositions) FullScreen.MainMenu->ResetLocation();
+		FullScreen.MainMenu->Draw(cgo);
 	}
 
 	// Flag done
@@ -831,7 +831,7 @@ bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
 	// Player menu
 	if (pPlr && pPlr->Menu.IsActive() && &(pPlr->Menu) == pMenu) return true;
 	// Fullscreen menu (if active, only one viewport can exist)
-	if (FullScreen.pMenu && FullScreen.pMenu->IsActive() && FullScreen.pMenu == pMenu) return true;
+	if (FullScreen.MainMenu && FullScreen.MainMenu->IsActive() && FullScreen.MainMenu == pMenu) return true;
 	// no match
 	return false;
 }
