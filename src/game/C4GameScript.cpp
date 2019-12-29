@@ -48,6 +48,27 @@
 #include "player/C4PlayerList.h"
 #include "script/C4AulDefFunc.h"
 
+
+void MakeAbsCoordinates(C4PropList * _this, int32_t &x, int32_t &y)
+{
+	C4Object *obj = Object(_this);
+	if (obj)
+	{
+		x += obj->GetX();
+		y += obj->GetY();
+	}
+}
+
+void MakeAbsCoordinates(C4PropList * _this, long &x, long &y)
+{
+	C4Object *obj = Object(_this);
+	if (obj)
+	{
+		x += obj->GetX();
+		y += obj->GetY();
+	}
+}
+
 C4Effect ** FnGetEffectsFor(C4PropList * target)
 {
 	if (target)
@@ -71,14 +92,10 @@ C4Effect ** FnGetEffectsFor(C4PropList * target)
 }
 
 // undocumented!
-static bool FnIncinerateLandscape(C4PropList * _this, long rel_x, long rel_y, long caused_by_plr)
+static bool FnIncinerateLandscape(C4PropList * _this, long x, long y, long caused_by_plr)
 {
-	if (Object(_this))
-	{
-		rel_x += Object(_this)->GetX();
-		rel_y += Object(_this)->GetY();
-	}
-	return !!::Landscape.Incinerate(rel_x, rel_y, caused_by_plr);
+	MakeAbsCoordinates(_this, x, y);
+	return !!::Landscape.Incinerate(x, y, caused_by_plr);
 }
 
 static void FnSetGravity(C4PropList * _this, long gravity)
@@ -154,13 +171,9 @@ static Nillable<long> FnGetY(C4PropList * _this, long precision)
 	return fixtoi(Object(_this)->fix_y, precision);
 }
 
-static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, long rel_x, long rel_y, Nillable<long> owner)
+static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, long x, long y, Nillable<long> owner)
 {
-	if (Object(_this)) // Local object calls override
-	{
-		rel_x += Object(_this)->GetX();
-		rel_y += Object(_this)->GetY();
-	}
+	MakeAbsCoordinates(_this, x, y);
 
 	long set_owner = owner;
 	if (owner.IsNil())
@@ -175,7 +188,7 @@ static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, 
 		}
 	}
 
-	C4Object *obj = Game.CreateObject(PropList, Object(_this), set_owner, rel_x, rel_y);
+	C4Object *obj = Game.CreateObject(PropList, Object(_this), set_owner, x, y);
 
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
 	if (obj && Object(_this) && Object(_this)->Controller > NO_OWNER)
@@ -186,13 +199,9 @@ static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, 
 	return obj;
 }
 
-static C4Object *FnCreateObject(C4PropList * _this, C4PropList * PropList, long rel_x, long rel_y, Nillable<long> owner)
+static C4Object *FnCreateObject(C4PropList * _this, C4PropList * PropList, long x, long y, Nillable<long> owner)
 {
-	if (Object(_this)) // Local object calls override
-	{
-		rel_x += Object(_this)->GetX();
-		rel_y += Object(_this)->GetY();
-	}
+	MakeAbsCoordinates(_this, x, y);
 
 	long set_owner = owner;
 	if (owner.IsNil())
@@ -207,7 +216,7 @@ static C4Object *FnCreateObject(C4PropList * _this, C4PropList * PropList, long 
 		}
 	}
 
-	C4Object *obj = Game.CreateObject(PropList, Object(_this), set_owner, rel_x, rel_y, 0, true);
+	C4Object *obj = Game.CreateObject(PropList, Object(_this), set_owner, x, y, 0, true);
 
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
 	if (obj && Object(_this) && Object(_this)->Controller > NO_OWNER)
@@ -220,7 +229,7 @@ static C4Object *FnCreateObject(C4PropList * _this, C4PropList * PropList, long 
 
 
 static C4Object *FnCreateConstruction(C4PropList * _this,
-                                      C4PropList * PropList, long rel_x, long rel_y, Nillable<long> owner,
+                                      C4PropList * PropList, long x, long y, Nillable<long> owner,
                                       long completion, bool adjust_terrain, bool check_site)
 {
 	// Make sure parameters are valid
@@ -230,14 +239,10 @@ static C4Object *FnCreateConstruction(C4PropList * _this,
 	}
 
 	// Local object calls override position offset, owner
-	if (Object(_this))
-	{
-		rel_x += Object(_this)->GetX();
-		rel_y += Object(_this)->GetY();
-	}
+	MakeAbsCoordinates(_this, x, y);
 
 	// Check site
-	if (check_site && !ConstructionCheck(PropList, rel_x, rel_y, Object(_this)))
+	if (check_site && !ConstructionCheck(PropList, x, y, Object(_this)))
 	{
 		return nullptr;
 	}
@@ -256,7 +261,7 @@ static C4Object *FnCreateConstruction(C4PropList * _this,
 	}
 
 	// Create site object
-	C4Object *obj = Game.CreateObjectConstruction(PropList, Object(_this), set_owner, rel_x, rel_y, completion*FullCon/100, adjust_terrain);
+	C4Object *obj = Game.CreateObjectConstruction(PropList, Object(_this), set_owner, x, y, completion*FullCon/100, adjust_terrain);
 
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
 	if (obj && Object(_this) && Object(_this)->Controller>NO_OWNER)
@@ -284,21 +289,19 @@ static C4ValueArray *FnFindConstructionSite(C4PropList * _this, C4PropList * Pro
 	return pArray;
 }
 
-static bool FnCheckConstructionSite(C4PropList * _this, C4PropList * PropList, int32_t iXOffset, int32_t iYOffset)
+static bool FnCheckConstructionSite(C4PropList * _this, C4PropList * PropList, int32_t x, int32_t y)
 {
 	// Make sure parameters are valid
 	if (!PropList || !PropList->GetDef())
-		return false;
-
-	// Local object calls override position offset, owner
-	if (Object(_this))
 	{
-		iXOffset+=Object(_this)->GetX();
-		iYOffset+=Object(_this)->GetY();
+		return false;
 	}
 
+	// Local object calls override position offset, owner
+	MakeAbsCoordinates(_this, x, y);
+
 	// Check construction site
-	return ConstructionCheck(PropList, iXOffset, iYOffset);
+	return ConstructionCheck(PropList, x, y);
 }
 
 C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4SortObject **pSOs, const C4Object *context)
@@ -407,9 +410,14 @@ static C4Value FnFindObjects(C4PropList * _this, C4Value *pPars)
 
 static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long vx, long vy, C4PropList *insert_position)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	int32_t insert_x=x, insert_y=y;
-	if (!::Landscape.InsertMaterial(mat, &insert_x, &insert_y, vx, vy)) return false;
+	MakeAbsCoordinates(_this, x, y);
+	int32_t insert_x = x;
+	int32_t insert_y = y;
+	if (!::Landscape.InsertMaterial(mat, &insert_x, &insert_y, vx, vy))
+	{
+		return false;
+	}
+
 	// output insertion position if desired (may be out of landscape range)
 	if (insert_position && !insert_position->IsFrozen())
 	{
@@ -421,9 +429,14 @@ static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long 
 
 static bool FnCanInsertMaterial(C4PropList * _this, long mat, long x, long y, C4PropList *insert_position)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	int32_t insert_x=x, insert_y=y;
-	if (!::Landscape.InsertMaterial(mat, &insert_x, &insert_y, 0,0, true)) return false;
+	MakeAbsCoordinates(_this, x, y);
+	int32_t insert_x = x;
+	int32_t insert_y = y;
+	if (!::Landscape.InsertMaterial(mat, &insert_x, &insert_y, 0, 0, true))
+	{
+		return false;
+	}
+
 	// output insertion position if desired
 	if (insert_position && !insert_position->IsFrozen())
 	{
@@ -439,68 +452,80 @@ static bool FnExecutePXS(C4PropList * _this, long frames, C4PropList *callback)
 	{
 		::PXS.Execute();
 		if (callback)
+		{
 			callback->Call(P_Timer, &C4AulParSet(i));
+		}
 	}
 	return true;
 }
 
-static long FnGetMaterialCount(C4PropList * _this, long iMaterial, bool fReal)
+static long FnGetMaterialCount(C4PropList * _this, long material_nr, bool real)
 {
-	if (!MatValid(iMaterial)) return -1;
-	if (fReal || !::MaterialMap.Map[iMaterial].MinHeightCount)
-		return ::Landscape.GetMatCount(iMaterial);
+	if (!MatValid(material_nr))
+	{
+		return -1;
+	}
+	if (real || !::MaterialMap.Map[material_nr].MinHeightCount)
+	{
+		return ::Landscape.GetMatCount(material_nr);
+	}
 	else
-		return ::Landscape.GetEffectiveMatCount(iMaterial);
+	{
+		return ::Landscape.GetEffectiveMatCount(material_nr);
+	}
 }
 
 static long FnGetMaterial(C4PropList * _this, long x, long y)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+	MakeAbsCoordinates(_this, x, y);
 	return GBackMat(x, y);
 }
 
 static long FnGetBackMaterial(C4PropList * _this, long x, long y)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+	MakeAbsCoordinates(_this, x, y);
 	return ::Landscape.GetBackMat(x, y);
+}
+
+C4String *GetTextureName(int32_t texture_nr)
+{
+	if (!texture_nr)
+	{
+		return nullptr;
+	}
+	// Get material-texture mapping
+	const C4TexMapEntry *texture = ::TextureMap.GetEntry(texture_nr);
+	if (!texture)
+	{
+		return nullptr;
+	}
+	// Return tex name
+	return String(texture->GetTextureName());
 }
 
 static C4String *FnGetTexture(C4PropList * _this, long x, long y)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-
-	// Get texture
-	int32_t iTex = PixCol2Tex(::Landscape.GetPix(x, y));
-	if (!iTex) return nullptr;
-	// Get material-texture mapping
-	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
-	if (!pTex) return nullptr;
-	// Return tex name
-	return String(pTex->GetTextureName());
+	MakeAbsCoordinates(_this, x, y);
+	return GetTextureName(PixCol2Tex(::Landscape.GetPix(x, y)));
 }
 
 static C4String *FnGetBackTexture(C4PropList * _this, long x, long y)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-
-	// Get texture
-	int32_t iTex = PixCol2Tex(::Landscape.GetBackPix(x, y));
-	if (!iTex) return nullptr;
-	// Get material-texture mapping
-	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
-	if (!pTex) return nullptr;
-	// Return tex name
-	return String(pTex->GetTextureName());
+	MakeAbsCoordinates(_this, x, y);
+	return GetTextureName(PixCol2Tex(::Landscape.GetBackPix(x, y)));
 }
 
 // Note: Might be async in case of 16<->32 bit textures!
-static Nillable<long> FnGetAverageTextureColor(C4PropList * _this, C4String* Texture)
+static Nillable<long> FnGetAverageTextureColor(C4PropList * _this, C4String* texture)
 {
 	// Safety
-	if(!Texture) return C4Void();
+	if (!texture)
+	{
+		return C4Void();
+	}
 	// Check texture
 	StdStrBuf texture_name;
-	texture_name.Ref(Texture->GetCStr());
+	texture_name.Ref(texture->GetCStr());
 	const char* pch = strchr(texture_name.getData(), '-');
 	if (pch != nullptr)
 	{
@@ -509,38 +534,42 @@ static Nillable<long> FnGetAverageTextureColor(C4PropList * _this, C4String* Tex
 		texture_name.SetLength(len);
 	}
 	C4Texture* Tex = ::TextureMap.GetTexture(texture_name.getData());
-	if(!Tex) return C4Void();
+	if (!Tex)
+	{
+		return C4Void();
+	}
 	return Tex->GetAverageColor();
 }
 
 static bool FnGBackSolid(C4PropList * _this, long x, long y)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+	MakeAbsCoordinates(_this, x, y);
 	return GBackSolid(x, y);
 }
 
 static bool FnGBackSemiSolid(C4PropList * _this, long x, long y)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+	MakeAbsCoordinates(_this, x, y);
 	return GBackSemiSolid(x, y);
 }
 
 static bool FnGBackLiquid(C4PropList * _this, long x, long y)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+	MakeAbsCoordinates(_this, x, y);
 	return GBackLiquid(x, y);
 }
 
 static bool FnGBackSky(C4PropList * _this, long x, long y)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+	MakeAbsCoordinates(_this, x, y);
 	return Landscape.GetBackPix(x, y) == 0;
 }
 
 static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat, long amount, bool distant_first)
 {
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	long extracted=0; for (; extracted<amount; extracted++)
+	MakeAbsCoordinates(_this, x, y);
+	long extracted = 0;
+	for (; extracted<amount; extracted++)
 	{
 		if (GBackMat(x, y)!=mat) return extracted;
 		if (::Landscape.ExtractMaterial(x, y,distant_first)!=mat) return extracted;
@@ -813,22 +842,22 @@ static long FnMaterial(C4PropList * _this, C4String *mat_name)
 	return ::MaterialMap.Get(FnStringPar(mat_name));
 }
 
-C4Object* FnPlaceVegetation(C4PropList * _this, C4PropList * Def, long iX, long iY, long iWdt, long iHgt, long iGrowth, C4PropList * shape)
+C4Object* FnPlaceVegetation(C4PropList * _this, C4PropList * Def, long x, long y, long iWdt, long iHgt, long iGrowth, C4PropList * shape)
 {
 	if (shape)
 	{
 		// New-style call with scripted shape
 		C4PropList *out_pos = C4PropList::New(nullptr);
 		C4Value vout_pos = C4VPropList(out_pos);
-		return Game.PlaceVegetation(Def, iX, iY, iWdt, iHgt, iGrowth, shape, out_pos);
+		return Game.PlaceVegetation(Def, x, y, iWdt, iHgt, iGrowth, shape, out_pos);
 	}
 	else
 	{
 		// Call in old-style shape
 		// Local call: relative coordinates
-		if (Object(_this)) { iX += Object(_this)->GetX(); iY += Object(_this)->GetY(); }
+		MakeAbsCoordinates(_this, x, y);
 		// Place vegetation
-		return Game.PlaceVegetation(Def, iX, iY, iWdt, iHgt, iGrowth, nullptr, nullptr);
+		return Game.PlaceVegetation(Def, x, y, iWdt, iHgt, iGrowth, nullptr, nullptr);
 	}
 }
 
@@ -1263,7 +1292,7 @@ static long FnGetWind(C4PropList * _this, long x, long y, bool fGlobal)
 	// global wind
 	if (fGlobal) return ::Weather.Wind;
 	// local wind
-	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+	MakeAbsCoordinates(_this, x, y);
 	return ::Weather.GetWind(x, y);
 }
 
@@ -2227,11 +2256,7 @@ static C4ValueArray* FnSimFlight(C4PropList * _this, int X, int Y, Nillable<int>
 {
 	if (!precision) precision = 10;
 	// check and set parameters
-	if (Object(_this))
-	{
-		X += Object(_this)->GetX();
-		Y += Object(_this)->GetY();
-	}
+	MakeAbsCoordinates(_this, X, Y);
 	int XDir = pvrXDir.IsNil() && Object(_this) ? fixtoi(Object(_this)->xdir, precision) : static_cast<int>(pvrXDir);
 	int YDir = pvrXDir.IsNil() && Object(_this) ? fixtoi(Object(_this)->ydir, precision) : static_cast<int>(pvrYDir);
 
@@ -2799,7 +2824,7 @@ static long FnGetPXSCount(C4PropList * _this, Nillable<long> iMaterial, Nillable
 	{
 		// Material in area; offset by caller
 		int32_t x = iX0, y = iY0;
-		if (Object(_this)) { x += Object(_this)->GetX(); y += Object(_this)->GetY(); }
+		MakeAbsCoordinates(_this, x, y);
 		return ::PXS.GetCount(iMaterial.IsNil() ? MNone : static_cast<int32_t>(iMaterial), x, y, iWdt, iHgt);
 	}
 }
