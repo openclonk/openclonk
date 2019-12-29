@@ -132,20 +132,20 @@ bool C4Game::InitDefs()
 		int iMinProgress = 25 + (25 * i) / iDefResCount;
 		int iMaxProgress = 25 + (25 * (i + 1)) / iDefResCount;
 		++i;
-		iDefs+=::Definitions.Load(pDef->getFile(),C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem,true,iMinProgress,iMaxProgress);
+		iDefs+=::Definitions.Load(pDef->getFile(),C4D_Load_RX, Config.General.LanguageEx,&Application.SoundSystem, true, iMinProgress, iMaxProgress);
 
 		// Def load failure
 		if (::Definitions.LoadFailure) return false;
 	}
 
 	// Load for scenario file - ignore sys group here, because it has been loaded already
-	iDefs+=::Definitions.Load(ScenarioFile,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem,true,true,35,40, false);
+	iDefs+=::Definitions.Load(ScenarioFile, C4D_Load_RX, Config.General.LanguageEx,&Application.SoundSystem, true, true, 35, 40, false);
 
 	// Absolutely no defs: we don't like that
 	if (!iDefs) { LogFatal(LoadResStr("IDS_PRC_NODEFS")); return false; }
 
 	// Check def engine version (should be done immediately on def load)
-	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2);
+	iDefs=::Definitions.CheckEngineVersion(C4XVER1, C4XVER2);
 	if (iDefs>0) { LogF(LoadResStr("IDS_PRC_DEFSINVC4X"),iDefs); }
 
 	// Check for unmet requirements
@@ -527,7 +527,7 @@ bool C4Game::Init()
 
 void C4Game::SetScenarioFilename(const char * c4sfile)
 {
-	SCopy(c4sfile,ScenarioFilename,_MAX_PATH);
+	SCopy(c4sfile, ScenarioFilename, _MAX_PATH);
 	if (SEqualNoCase(GetFilename(c4sfile),"scenario.txt"))
 	{
 		if (GetFilename(ScenarioFilename) != ScenarioFilename) *(GetFilename(ScenarioFilename) - 1) = 0;
@@ -1033,7 +1033,7 @@ C4Object* C4Game::NewObject( C4PropList *def, C4Object *creator,
 	C4Object *pObj;
 	if (!(pObj=new C4Object)) return nullptr;
 	// Initialize object
-	pObj->Init( def,creator,owner,info,x,y,iR,xdir,ydir,rdir, controller );
+	pObj->Init( def, creator, owner, info, x,y, iR, xdir, ydir, rdir, controller );
 	// Add to object list
 	if (!Objects.Add(pObj)) { delete pObj; return nullptr; }
 	// ---- From now on, object is ready to be used in scripts!
@@ -1066,10 +1066,10 @@ C4Object* C4Game::CreateObject(C4ID id, C4Object *creator, int32_t owner,
 	// Get pDef
 	if (!(pDef=C4Id2Def(id))) return nullptr;
 	// Create object
-	return NewObject(pDef,creator,
-	                 owner,nullptr,
-	                 x,y,r,
-	                 xdir,ydir,rdir,
+	return NewObject(pDef, creator,
+	                 owner, nullptr,
+	                 x, y,r,
+	                 xdir, ydir, rdir,
 	                 FullCon, controller, grow_from_center);
 }
 
@@ -1080,10 +1080,10 @@ C4Object* C4Game::CreateObject(C4PropList * proplist, C4Object *creator, int32_t
 	// check Definition
 	if (!proplist || !proplist->GetDef()) return nullptr;
 	// Create object
-	return NewObject(proplist,creator,
-	                 owner,nullptr,
-	                 x,y,r,
-	                 xdir,ydir,rdir,
+	return NewObject(proplist, creator,
+	                 owner, nullptr,
+	                 x, y,r,
+	                 xdir, ydir, rdir,
 					 FullCon, controller, grow_from_center);
 }
 
@@ -1096,10 +1096,10 @@ C4Object* C4Game::CreateInfoObject(C4ObjectInfo *info, int32_t owner,
 	// Get def
 	if (!(def=C4Id2Def(info->id))) return nullptr;
 	// Create object
-	return NewObject( def,nullptr,
-	                  owner,info,
-	                  x,y,0,
-	                  Fix0,Fix0,Fix0,
+	return NewObject( def, nullptr,
+	                  owner, info,
+	                  x, y,0,
+	                  Fix0, Fix0, Fix0,
 	                  FullCon, NO_OWNER, false);
 }
 
@@ -1117,7 +1117,7 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * proplist,
 	if (!proplist) return nullptr;
 	if (!(pDef=proplist->GetDef())) return nullptr;
 
-	int32_t dx,dy,dwdt,dhgt;
+	int32_t dx, dy, dwdt, dhgt;
 	dwdt=pDef->Shape.Wdt; dhgt=pDef->Shape.Hgt;
 	dx=center_x-dwdt/2; dy=bottom_y-dhgt;
 
@@ -1126,17 +1126,17 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * proplist,
 	{
 		// Clear site background (ignored for ultra-large structures)
 		if (dwdt*dhgt<12000)
-			Landscape.DigFreeRect(dx,dy,dwdt,dhgt);
+			Landscape.DigFreeRect(dx, dy, dwdt, dhgt);
 		// Raise Terrain
-		Landscape.RaiseTerrain(dx,dy+dhgt,dwdt);
+		Landscape.RaiseTerrain(dx, dy+dhgt, dwdt);
 	}
 
 	// Create object
 	if (!(pObj=NewObject(proplist,
 	                     creator,
-	                     owner,nullptr,
-	                     center_x,bottom_y,0,
-	                     Fix0,Fix0,Fix0,
+	                     owner, nullptr,
+	                     center_x, bottom_y, 0,
+	                     Fix0, Fix0, Fix0,
 	                     con, creator ? creator->Controller : NO_OWNER, false))) return nullptr;
 
 	return pObj;
@@ -1145,7 +1145,7 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * proplist,
 // Finds an object (OCF_Exclusive) that blocks a potential construction site in the given rectangle 
 C4Object* C4Game::FindConstuctionSiteBlock(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt)
 {
-	C4Rect rect1,rect2;
+	C4Rect rect1, rect2;
 	rect1.x=tx; rect1.y=ty; rect1.Wdt=wdt; rect1.Hgt=hgt;
 	C4LArea Area(&::Objects.Sectors, tx, ty, wdt, hgt); C4LSector *pSector;
 	for (C4ObjectList *pObjs = Area.FirstObjectShapes(&pSector); pSector; pObjs = Area.NextObjectShapes(pObjs, &pSector))
@@ -1166,7 +1166,7 @@ C4Object* C4Game::FindObject(C4Def * def,
 {
 
 	C4Object *pClosest=nullptr;
-	int32_t iClosest = 0,iDistance,iFartherThan=-1;
+	int32_t iClosest = 0, iDistance, iFartherThan=-1;
 	C4Object *pFindNextCpy=find_next;
 
 	// check the easy case first: no instances at all?
@@ -1195,8 +1195,8 @@ C4Object* C4Game::FindObject(C4Def * def,
 							// Point
 							if ((wdt==0) && (hgt==0))
 							{
-								if (Inside<int32_t>(x-(cObj->GetX()+cObj->Shape.x),0,cObj->Shape.Wdt-1))
-									if (Inside<int32_t>(y-(cObj->GetY()+cObj->Shape.y),0,cObj->Shape.Hgt-1))
+								if (Inside<int32_t>(x-(cObj->GetX()+cObj->Shape.x),0, cObj->Shape.Wdt-1))
+									if (Inside<int32_t>(y-(cObj->GetY()+cObj->Shape.y),0, cObj->Shape.Hgt-1))
 										return cObj;
 								continue;
 							}
@@ -1213,7 +1213,7 @@ C4Object* C4Game::FindObject(C4Def * def,
 										{ pClosest=cObj; iClosest=iDistance; }
 							}
 							// Range
-							else if (Inside<int32_t>(cObj->GetX()-x,0,wdt-1) && Inside<int32_t>(cObj->GetY()-y,0,hgt-1))
+							else if (Inside<int32_t>(cObj->GetX()-x, 0,wdt-1) && Inside<int32_t>(cObj->GetY()-y, 0,hgt-1))
 								return cObj;
 						}
 
@@ -1276,8 +1276,8 @@ C4Object *C4Game::FindVisObject(float x, float y, int32_t player_nr, const C4Fac
 										cObj->GetViewPos(iObjX, iObjY, tx, ty, viewport_game);
 									}
 									// Point search
-									if (Inside<float>(check_x-(iObjX+cObj->Shape.x),0,float(cObj->Shape.Wdt)-1))
-										if (Inside<float>(check_y-(iObjY+cObj->Shape.y-cObj->addtop()),0,float(cObj->Shape.Hgt+cObj->addtop()-1)))
+									if (Inside<float>(check_x-(iObjX+cObj->Shape.x),0, float(cObj->Shape.Wdt)-1))
+										if (Inside<float>(check_y-(iObjY+cObj->Shape.y-cObj->addtop()),0, float(cObj->Shape.Hgt+cObj->addtop()-1)))
 											return cObj;
 								}
 		}
@@ -1384,7 +1384,7 @@ bool C4Game::DropFile(const char *filename, float x, float y)
 		if ((c_id=DefFileGetID(filename)))
 			// Get loaded def or try to load def from file
 			if ( (cdef=C4Id2Def(c_id))
-			     || (::Definitions.Load(filename,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem) && (cdef=C4Id2Def(c_id))) )
+			     || (::Definitions.Load(filename, C4D_Load_RX, Config.General.LanguageEx,&Application.SoundSystem) && (cdef=C4Id2Def(c_id))) )
 			{
 				return DropDef(c_id, x, y);
 			}
@@ -1428,8 +1428,8 @@ void C4Game::CastObjects(C4ID id, C4Object *creator, int32_t num, int32_t level,
 		C4Real xdir = C4REAL10(Random(2*level+1)-level);
 		C4Real ydir = C4REAL10(Random(2*level+1)-level);
 		C4Real rdir = itofix(Random(3)+1);
-		C4Object *obj = CreateObject(id,creator,owner,
-		             x,y,angle,
+		C4Object *obj = CreateObject(id, creator, owner,
+		             x, y,angle,
 					 false,
 		             xdir,
 		             ydir,
@@ -1758,7 +1758,7 @@ void C4Game::CompileFunc(StdCompiler *compiler, CompileSettings settings, C4Valu
 bool C4Game::CompileRuntimeData(C4Group &group, InitMode init_mode, bool exact, bool sync, C4ValueNumbers * numbers)
 {
 	::Objects.Clear(init_mode != IM_Section);
-	GameText.Load(group,C4CFN_Game);
+	GameText.Load(group, C4CFN_Game);
 	CompileSettings Settings(init_mode, false, exact, sync);
 	// C4Game is not defaulted on compilation.
 	// Loading of runtime data overrides only certain values.
@@ -1789,7 +1789,7 @@ bool C4Game::SaveData(C4Group &group, bool save_section, bool save_exact, bool s
 		if (!Buf.getLength()) Buf.Copy(" ");
 
 		// Save
-		return group.Add(C4CFN_Game,Buf,false,true);
+		return group.Add(C4CFN_Game, Buf, false, true);
 	}
 	else
 	{
@@ -1843,19 +1843,19 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 
 		if(ScenarioFile.FindEntry(FormatString("%s.*",C4CFN_ScenarioTitle).getData(),&realFilename,&iSize))
 			if (ScenarioFile.LoadEntry(realFilename.getData(),&bpBytes,&iSize))
-				hGroup.Add(realFilename.getData(),bpBytes,iSize,false,true);
+				hGroup.Add(realFilename.getData(),bpBytes, iSize, false, true);
 	}
 
 	// Fullscreen screenshot
 	else if (!Application.isEditor && Application.Active)
 	{
-		C4Surface * sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
-		if (!(sfcPic = new C4Surface(iSfcWdt,iSfcHgt,0))) return false;
+		C4Surface * sfcPic; int32_t iSfcWdt=200, iSfcHgt=150;
+		if (!(sfcPic = new C4Surface(iSfcWdt, iSfcHgt, 0))) return false;
 
 		// Fullscreen
 		pDraw->Blit(FullScreen.pSurface,
-		                        0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.GetLineHeight()),
-		                        sfcPic,0,0,iSfcWdt,iSfcHgt);
+		                        0.0f, 0.0f, float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.GetLineHeight()),
+		                        sfcPic, 0,0, iSfcWdt, iSfcHgt);
 
 		bool fOkay=true;
 		fOkay = sfcPic->SavePNG(Config.AtTempPath(C4CFN_TempTitle), false, false, false);
@@ -1991,8 +1991,8 @@ bool C4Game::QuickSave(const char *filename, const char *title, bool force_save)
 
 bool LandscapeFree(int32_t x, int32_t y)
 {
-	if (!Inside<int32_t>(x,0,::Landscape.GetWidth()-1) || !Inside<int32_t>(y,0,::Landscape.GetHeight()-1)) return false;
-	return !DensitySolid(GBackDensity(x,y));
+	if (!Inside<int32_t>(x, 0,::Landscape.GetWidth()-1) || !Inside<int32_t>(y, 0,::Landscape.GetHeight()-1)) return false;
+	return !DensitySolid(GBackDensity(x, y));
 }
 
 static void FileMonitorCallback(const char * file, const char * extrafile)
@@ -2037,7 +2037,7 @@ bool C4Game::ReloadDef(C4ID id)
 	// Message
 	LogF("Reloading %s from %s",pDef->id.ToString(),GetFilename(pDef->Filename));
 	// Reload def
-	if (::Definitions.Reload(pDef,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem))
+	if (::Definitions.Reload(pDef, C4D_Load_RX, Config.General.LanguageEx,&Application.SoundSystem))
 	{
 		// update script engine - this will also do include callbacks and Freeze() pDef
 		ReLinkScriptEngine();
@@ -2597,8 +2597,8 @@ bool C4Game::InitControl()
 int32_t ListExpandValids(C4IDList &rlist,
                          C4ID *idlist, int32_t maxidlist)
 {
-	int32_t cnt,cnt2,ccount,cpos;
-	for (cpos=0,cnt=0; rlist.GetID(cnt); cnt++)
+	int32_t cnt, cnt2, ccount, cpos;
+	for (cpos=0, cnt=0; rlist.GetID(cnt); cnt++)
 		if (C4Id2Def(rlist.GetID(cnt,&ccount)))
 			for (cnt2=0; cnt2<ccount; cnt2++)
 				if (cpos<maxidlist)
@@ -2608,12 +2608,12 @@ int32_t ListExpandValids(C4IDList &rlist,
 
 bool C4Game::PlaceInEarth(C4ID id)
 {
-	int32_t cnt,tx,ty;
+	int32_t cnt, tx, ty;
 	for (cnt=0; cnt<35; cnt++) // cheap trys
 	{
 		tx=Random(::Landscape.GetWidth()); ty=Random(::Landscape.GetHeight());
-		if (GBackMat(tx,ty)==MEarth)
-			if (CreateObject(id,nullptr,NO_OWNER,tx,ty,Random(360)))
+		if (GBackMat(tx, ty)==MEarth)
+			if (CreateObject(id, nullptr, NO_OWNER, tx, ty, Random(360)))
 				return true;
 	}
 	return false;
@@ -2655,7 +2655,7 @@ static bool PlaceVegetation_IsPosInBounds(int32_t iTx, int32_t iTy, int32_t iX, 
 
 C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t x, int32_t y, int32_t wdt, int32_t hgt, int32_t growth, C4PropList * shape_proplist, C4PropList * out_pos_proplist)
 {
-	int32_t cnt,iTx,iTy,iMaterial;
+	int32_t cnt, iTx, iTy, iMaterial;
 
 	// Get definition
 	C4Def* pDef;
@@ -2678,25 +2678,25 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t x, int32_t y, i
 			// Random hit within target area
 			if (!PlaceVegetation_GetRandomPoint(x, y, wdt, hgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) break;
 			// Above tunnel
-			while ((iTy>0) && Landscape.GetBackPix(iTx,iTy) == 0) iTy--;
+			while ((iTy>0) && Landscape.GetBackPix(iTx, iTy) == 0) iTy--;
 			// Above semi solid
-			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,::Landscape.GetHeight()-50))
+			if (!AboveSemiSolid(iTx, iTy) || !Inside<int32_t>(iTy, 50,::Landscape.GetHeight()-50))
 				continue;
 			// Still inside bounds?
 			if (!PlaceVegetation_IsPosInBounds(iTx, iTy, x, y, wdt, hgt, shape_proplist)) continue;
 			// Free above
-			if (GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt/2))
+			if (GBackSemiSolid(iTx, iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx, iTy-pDef->Shape.Hgt/2))
 				continue;
 			// Free upleft and upright
-			if (GBackSemiSolid(iTx-pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3) || GBackSemiSolid(iTx+pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3))
+			if (GBackSemiSolid(iTx-pDef->Shape.Wdt/2, iTy-pDef->Shape.Hgt*2/3) || GBackSemiSolid(iTx+pDef->Shape.Wdt/2, iTy-pDef->Shape.Hgt*2/3))
 				continue;
 			// Soil check
 			iTy+=3; // two pix into ground
-			iMaterial = GBackMat(iTx,iTy);
+			iMaterial = GBackMat(iTx, iTy);
 			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
 				{
 					iTy+=5;
-					return CreateObjectConstruction(PropList,nullptr,NO_OWNER,iTx,iTy,growth);
+					return CreateObjectConstruction(PropList, nullptr, NO_OWNER, iTx, iTy, growth);
 				}
 		}
 		break;
@@ -2706,16 +2706,16 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t x, int32_t y, i
 		// Random range
 		if (!PlaceVegetation_GetRandomPoint(x, y, wdt, hgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) return nullptr;
 		// Find liquid
-		if (!FindSurfaceLiquid(iTx,iTy,pDef->Shape.Wdt,pDef->Shape.Hgt))
-			if (!FindLiquid(iTx,iTy,pDef->Shape.Wdt,pDef->Shape.Hgt))
+		if (!FindSurfaceLiquid(iTx, iTy, pDef->Shape.Wdt, pDef->Shape.Hgt))
+			if (!FindLiquid(iTx, iTy, pDef->Shape.Wdt, pDef->Shape.Hgt))
 				return nullptr;
 		// Liquid bottom
-		if (!SemiAboveSolid(iTx,iTy)) return nullptr;
+		if (!SemiAboveSolid(iTx, iTy)) return nullptr;
 		iTy+=3;
 		// Still inside bounds?
 		if (!PlaceVegetation_IsPosInBounds(iTx, iTy, x, y, wdt, hgt, shape_proplist)) return nullptr;
 		// Create object
-		return CreateObjectConstruction(PropList,nullptr,NO_OWNER,iTx,iTy,growth);
+		return CreateObjectConstruction(PropList, nullptr, NO_OWNER, iTx, iTy, growth);
 		break;
 
 		// Underground/Tunnel
@@ -2725,20 +2725,20 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t x, int32_t y, i
 			// Random range
 			if (!PlaceVegetation_GetRandomPoint(x, y, wdt, hgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) break;
 			// Find tunnel
-			if (!FindTunnel(iTx,iTy,pDef->Shape.Wdt,pDef->Shape.Hgt))
+			if (!FindTunnel(iTx, iTy, pDef->Shape.Wdt, pDef->Shape.Hgt))
 				continue;
 			// Tunnel bottom
-			if (!AboveSemiSolid(iTx,iTy)) continue;
+			if (!AboveSemiSolid(iTx, iTy)) continue;
 			// Still inside bounds?
 			if (!PlaceVegetation_IsPosInBounds(iTx, iTy, x, y, wdt, hgt, shape_proplist)) continue;
 			// Soil check
 			iTy+=3; // two pix into ground
-			iMaterial = GBackMat(iTx,iTy);
+			iMaterial = GBackMat(iTx, iTy);
 			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
 				{
 					// Create object
 					iTy+=5;
-					return CreateObjectConstruction(PropList,nullptr,NO_OWNER,iTx,iTy,growth);
+					return CreateObjectConstruction(PropList, nullptr, NO_OWNER, iTx, iTy, growth);
 				}
 		}
 
@@ -2749,24 +2749,24 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t x, int32_t y, i
 			// Random hit within target area
 			if (!PlaceVegetation_GetRandomPoint(x, y, wdt, hgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) break;
 			// Above semi solid
-			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,::Landscape.GetHeight()-50))
+			if (!AboveSemiSolid(iTx, iTy) || !Inside<int32_t>(iTy, 50,::Landscape.GetHeight()-50))
 				continue;
 			// Free above
-			if (GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt/2))
+			if (GBackSemiSolid(iTx, iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx, iTy-pDef->Shape.Hgt/2))
 				continue;
 			// Still inside bounds?
 			if (!PlaceVegetation_IsPosInBounds(iTx, iTy, x, y, wdt, hgt, shape_proplist))
 				continue;
 			// Free upleft and upright
-			if (GBackSemiSolid(iTx-pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3) || GBackSemiSolid(iTx+pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3))
+			if (GBackSemiSolid(iTx-pDef->Shape.Wdt/2, iTy-pDef->Shape.Hgt*2/3) || GBackSemiSolid(iTx+pDef->Shape.Wdt/2, iTy-pDef->Shape.Hgt*2/3))
 				continue;
 			// Soil check
 			iTy+=3; // two pix into ground
-			iMaterial = GBackMat(iTx,iTy);
+			iMaterial = GBackMat(iTx, iTy);
 			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
 				{
 					iTy+=5;
-					return CreateObjectConstruction(PropList,nullptr,NO_OWNER,iTx,iTy,growth);
+					return CreateObjectConstruction(PropList, nullptr, NO_OWNER, iTx, iTy, growth);
 				}
 		}
 
@@ -2780,27 +2780,27 @@ C4Object* C4Game::PlaceAnimal(C4PropList* PropList)
 {
 	C4Def * pDef;
 	if (!PropList || !(pDef = PropList->GetDef())) return nullptr;
-	int32_t iX,iY;
+	int32_t iX, iY;
 	// Placement
 	switch (PropList->GetPropertyInt(P_Placement))
 	{
 		// Running free
 	case C4D_Place_Surface:
 		iX=Random(::Landscape.GetWidth()); iY=Random(::Landscape.GetHeight());
-		if (!FindSolidGround(iX,iY,pDef->Shape.Wdt)) return nullptr;
+		if (!FindSolidGround(iX, iY, pDef->Shape.Wdt)) return nullptr;
 		break;
 		// In liquid
 	case C4D_Place_Liquid:
 		iX=Random(::Landscape.GetWidth()); iY=Random(::Landscape.GetHeight());
-		if (!FindSurfaceLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
-			if (!FindLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
+		if (!FindSurfaceLiquid(iX, iY, pDef->Shape.Wdt, pDef->Shape.Hgt))
+			if (!FindLiquid(iX, iY, pDef->Shape.Wdt, pDef->Shape.Hgt))
 				return nullptr;
 		iY+=pDef->Shape.Hgt/2;
 		break;
 		// Floating in air
 	case C4D_Place_Air:
 		iX=Random(::Landscape.GetWidth());
-		for (iY=0; (iY<::Landscape.GetHeight()) && !GBackSemiSolid(iX,iY); iY++) {}
+		for (iY=0; (iY<::Landscape.GetHeight()) && !GBackSemiSolid(iX, iY); iY++) {}
 		if (iY<=0) return nullptr;
 		iY=Random(iY);
 		break;
@@ -2808,18 +2808,18 @@ C4Object* C4Game::PlaceAnimal(C4PropList* PropList)
 		return nullptr;
 	}
 	// Create object
-	return CreateObject(PropList,nullptr,NO_OWNER,iX,iY);
+	return CreateObject(PropList, nullptr, NO_OWNER, iX, iY);
 }
 
 void C4Game::InitInEarth()
 {
 	const int32_t maxvid=100;
-	int32_t cnt,vidnum;
+	int32_t cnt, vidnum;
 	C4ID vidlist[maxvid];
 	// Amount
 	int32_t amt=(::Landscape.GetWidth()*::Landscape.GetHeight()/5000)*C4S.Landscape.InEarthLevel.Evaluate()/100;
 	// List all valid IDs from C4S
-	vidnum=ListExpandValids(C4S.Landscape.InEarth,vidlist,maxvid);
+	vidnum=ListExpandValids(C4S.Landscape.InEarth, vidlist, maxvid);
 	// Place
 	if (vidnum>0)
 		for (cnt=0; cnt<amt; cnt++)
@@ -2830,21 +2830,21 @@ void C4Game::InitInEarth()
 void C4Game::InitVegetation()
 {
 	const int32_t maxvid=100;
-	int32_t cnt,vidnum;
+	int32_t cnt, vidnum;
 	C4ID vidlist[maxvid];
 	// Amount
 	int32_t amt=(::Landscape.GetWidth()/50)*C4S.Landscape.VegLevel.Evaluate()/100;
 	// Get percentage vidlist from C4S
-	vidnum=ListExpandValids(C4S.Landscape.Vegetation,vidlist,maxvid);
+	vidnum=ListExpandValids(C4S.Landscape.Vegetation, vidlist, maxvid);
 	// Place vegetation
 	if (vidnum>0)
 		for (cnt=0; cnt<amt; cnt++)
-			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0,0,::Landscape.GetWidth(),::Landscape.GetHeight(),-1,nullptr,nullptr);
+			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0, 0,::Landscape.GetWidth(),::Landscape.GetHeight(),-1, nullptr, nullptr);
 }
 
 void C4Game::InitAnimals()
 {
-	int32_t cnt,cnt2;
+	int32_t cnt, cnt2;
 	C4ID idAnimal; int32_t iCount;
 	// Place animals
 	for (cnt=0; (idAnimal=C4S.Animals.FreeLife.GetID(cnt,&iCount)); cnt++)
@@ -2860,7 +2860,7 @@ void C4Game::InitAnimals()
 bool C4Game::LoadScenarioComponents()
 {
 	// Info
-	Info.Load(ScenarioFile,C4CFN_Info);
+	Info.Load(ScenarioFile, C4CFN_Info);
 	// Overload clonk names from scenario file
 	if (ScenarioFile.EntryCount(C4CFN_Names))
 		Names.Load(ScenarioFile, C4CFN_Names);
@@ -3065,7 +3065,7 @@ C4Player *C4Game::JoinPlayer(const char *filename, int32_t at_client, const char
 	assert(info);
 	C4Player *pPlr;
 	// Join
-	if (!( pPlr = Players.Join(filename,true,at_client,at_client_name, info, nullptr) )) return nullptr;
+	if (!( pPlr = Players.Join(filename, true, at_client, at_client_name, info, nullptr) )) return nullptr;
 	// Player final init
 	pPlr->FinalInit(true);
 	// Create player viewport
@@ -3320,11 +3320,11 @@ bool C4Game::CheckObjectEnumeration()
 			for (C4Object *cObj2 : Objects)
 				if (cObj2!=cObj)
 					if (cObj->Number==cObj2->Number)
-						{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
+						{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s)",cObj2->Number, cObj->GetName(),cObj2->GetName()).getData()); return false; }
 			for (C4Object *cObj2 : Objects.InactiveObjects)
 				if (cObj2!=cObj)
 					if (cObj->Number==cObj2->Number)
-						{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
+						{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number, cObj->GetName(),cObj2->GetName()).getData()); return false; }
 			return true;
 		}
 	};
@@ -3360,31 +3360,31 @@ void C4Game::InitValueOverloads()
 void C4Game::InitEnvironment()
 {
 	// Place environment objects
-	int32_t cnt,cnt2;
+	int32_t cnt, cnt2;
 	C4ID idType; int32_t iCount;
 	for (cnt=0; (idType=C4S.Environment.Objects.GetID(cnt,&iCount)); cnt++)
 		for (cnt2=0; cnt2<iCount; cnt2++)
-			CreateObject(idType,nullptr);
+			CreateObject(idType, nullptr);
 }
 
 void C4Game::InitRules()
 {
 	// Place rule objects
-	int32_t cnt,cnt2;
+	int32_t cnt, cnt2;
 	C4ID idType; int32_t iCount;
 	for (cnt=0; (idType=Parameters.Rules.GetID(cnt,&iCount)); cnt++)
-		for (cnt2=0; cnt2<std::max<int32_t>(iCount,1); cnt2++)
-			CreateObject(idType,nullptr);
+		for (cnt2=0; cnt2<std::max<int32_t>(iCount, 1); cnt2++)
+			CreateObject(idType, nullptr);
 }
 
 void C4Game::InitGoals()
 {
 	// Place goal objects
-	int32_t cnt,cnt2;
+	int32_t cnt, cnt2;
 	C4ID idType; int32_t iCount;
 	for (cnt=0; (idType=Parameters.Goals.GetID(cnt,&iCount)); cnt++)
 		for (cnt2=0; cnt2<iCount; cnt2++)
-			CreateObject(idType,nullptr);
+			CreateObject(idType, nullptr);
 }
 
 void C4Game::SetInitProgress(float to_progress)
@@ -3411,7 +3411,7 @@ void C4Game::SetInitProgress(float to_progress)
 void C4Game::OnResolutionChanged(unsigned int res_x, unsigned int res_y)
 {
 	// update anything that's dependant on screen resolution
-	pGUI->SetBounds(C4Rect(0,0,res_x,res_y));
+	pGUI->SetBounds(C4Rect(0, 0,res_x, res_y));
 	if (FullScreen.Active)
 		InitFullscreenComponents(!!IsRunning);
 	// note that this may fail if the gfx groups are closed already (runtime resolution change)
@@ -3549,7 +3549,7 @@ bool C4Game::LoadScenarioSection(const char *section_name, DWORD flags)
 		{
 			C4ValueNumbers numbers;
 			// objects: do not save info objects or inactive objects
-			if (!SaveData(*pGrp,true,false, false, &numbers))
+			if (!SaveData(*pGrp, true, false, false, &numbers))
 			{
 				DebugLog("LoadScenarioSection: Error saving objects");
 				return false;
@@ -3825,7 +3825,7 @@ bool C4Game::DrawPropListSpecImage(C4Facet &target, C4PropList *spec)
 		// Alternative named graphics
 		C4DefGraphics *source_graphics = source_def->Graphics.Get(source_name->GetCStr());
 		if (!source_graphics) return false;
-		source_graphics->Draw(target, color, nullptr, 0,0, nullptr);
+		source_graphics->Draw(target, color, nullptr, 0, 0, nullptr);
 	}
 	return true;
 }
