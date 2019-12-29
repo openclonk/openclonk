@@ -171,30 +171,40 @@ static Nillable<long> FnGetY(C4PropList * _this, long precision)
 	return fixtoi(Object(_this)->fix_y, precision);
 }
 
-static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, long x, long y, Nillable<long> owner)
+long GetValidOwner(C4PropList * _this, Nillable<long> owner)
 {
-	MakeAbsCoordinates(_this, x, y);
-
-	long set_owner = owner;
 	if (owner.IsNil())
 	{
 		if (Object(_this))
 		{
-			set_owner = Object(_this)->Controller;
+			return Object(_this)->Controller;
 		}
 		else
 		{
-			set_owner = NO_OWNER;
+			return NO_OWNER;
 		}
 	}
+	return owner;
+}
 
-	C4Object *obj = Game.CreateObject(PropList, Object(_this), set_owner, x, y);
-
+void AssignController(C4PropList * _this, C4Object * obj)
+{
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
 	if (obj && Object(_this) && Object(_this)->Controller > NO_OWNER)
 	{
 		obj->Controller = Object(_this)->Controller;
 	}
+}
+
+static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, long x, long y, Nillable<long> owner)
+{
+	MakeAbsCoordinates(_this, x, y);
+	long set_owner = GetValidOwner(_this, owner);
+
+	C4Object *obj = Game.CreateObject(PropList, Object(_this), set_owner, x, y);
+
+	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
+	AssignController(_this, obj);
 
 	return obj;
 }
@@ -202,27 +212,12 @@ static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, 
 static C4Object *FnCreateObject(C4PropList * _this, C4PropList * PropList, long x, long y, Nillable<long> owner)
 {
 	MakeAbsCoordinates(_this, x, y);
-
-	long set_owner = owner;
-	if (owner.IsNil())
-	{
-		if (Object(_this))
-		{
-			set_owner = Object(_this)->Controller;
-		}
-		else
-		{
-			set_owner = NO_OWNER;
-		}
-	}
+	long set_owner = GetValidOwner(_this, owner);
 
 	C4Object *obj = Game.CreateObject(PropList, Object(_this), set_owner, x, y, 0, true);
 
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
-	if (obj && Object(_this) && Object(_this)->Controller > NO_OWNER)
-	{
-		obj->Controller = Object(_this)->Controller;
-	}
+	AssignController(_this, obj);
 
 	return obj;
 }
@@ -247,27 +242,13 @@ static C4Object *FnCreateConstruction(C4PropList * _this,
 		return nullptr;
 	}
 
-	long set_owner = owner;
-	if (owner.IsNil())
-	{
-		if (Object(_this))
-		{
-			set_owner = Object(_this)->Controller;
-		}
-		else
-		{
-			set_owner = NO_OWNER;
-		}
-	}
+	long set_owner = GetValidOwner(_this, owner);
 
 	// Create site object
 	C4Object *obj = Game.CreateObjectConstruction(PropList, Object(_this), set_owner, x, y, completion*FullCon/100, adjust_terrain);
 
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
-	if (obj && Object(_this) && Object(_this)->Controller>NO_OWNER)
-	{
-		obj->Controller = Object(_this)->Controller;
-	}
+	AssignController(_this, obj);
 
 	return obj;
 }
