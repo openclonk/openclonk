@@ -295,55 +295,73 @@ static bool FnCheckConstructionSite(C4PropList * _this, C4PropList * PropList, i
 
 C4FindObject *CreateCriterionsFromPars(C4Value *parameters, C4FindObject **pFOs, C4SortObject **pSOs, const C4Object *context)
 {
-	int i, iCnt = 0, iSortCnt = 0;
+	int count = 0;
+	int sort_count = 0;
 	bool has_layer_check = false;
 	// Read all parameters
-	for (i = 0; i < C4AUL_MAX_Par; i++)
+	for (int i = 0; i < C4AUL_MAX_Par; i++)
 	{
 		C4Value Data = *(parameters++);
 		// No data given?
-		if (!Data) break;
+		if (!Data)
+		{
+			break;
+		}
 		// Construct
 		C4SortObject *pSO = nullptr;
 		C4FindObject *pFO = C4FindObject::CreateByValue(Data, pSOs ? &pSO : nullptr, context, &has_layer_check);
 		// Add FindObject
 		if (pFO)
 		{
-			pFOs[iCnt++] = pFO;
+			pFOs[count++] = pFO;
 		}
 		// Add SortObject
 		if (pSO)
 		{
-			pSOs[iSortCnt++] = pSO;
+			pSOs[sort_count++] = pSO;
 		}
 	}
 	// No criterions?
-	if (!iCnt)
+	if (!count)
 	{
-		for (i = 0; i < iSortCnt; ++i) delete pSOs[i];
+		for (int i = 0; i < sort_count; ++i)
+		{
+			delete pSOs[i];
+		}
 		return nullptr;
 	}
 	// Implicit layer check
 	if (context && !has_layer_check)
 	{
-		pFOs[iCnt++] = new C4FindObjectLayer(context->Layer);
+		pFOs[count++] = new C4FindObjectLayer(context->Layer);
 	}
 	// create sort criterion
 	C4SortObject *pSO = nullptr;
-	if (iSortCnt)
+	if (sort_count)
 	{
-		if (iSortCnt == 1)
+		if (sort_count == 1)
+		{
 			pSO = pSOs[0];
+		}
 		else
-			pSO = new C4SortObjectMultiple(iSortCnt, pSOs, false);
+		{
+			pSO = new C4SortObjectMultiple(sort_count, pSOs, false);
+		}
 	}
 	// Create search object
 	C4FindObject *pFO;
-	if (iCnt == 1)
+	if (count == 1)
+	{
 		pFO = pFOs[0];
+	}
 	else
-		pFO = new C4FindObjectAnd(iCnt, pFOs, false);
-	if (pSO) pFO->SetSort(pSO);
+	{
+		pFO = new C4FindObjectAnd(count, pFOs, false);
+	}
+	if (pSO)
+	{
+		pFO->SetSort(pSO);
+	}
 	return pFO;
 }
 
@@ -354,13 +372,15 @@ static C4Value FnObjectCount(C4PropList * _this, C4Value *parameters)
 	C4FindObject *pFO = CreateCriterionsFromPars(parameters, pFOs, nullptr, Object(_this));
 	// Error?
 	if (!pFO)
+	{
 		throw C4AulExecError("ObjectCount: No valid search criterions supplied");
+	}
 	// Search
-	int32_t iCnt = pFO->Count(::Objects, ::Objects.Sectors);
+	int32_t count = pFO->Count(::Objects, ::Objects.Sectors);
 	// Free
 	delete pFO;
 	// Return
-	return C4VInt(iCnt);
+	return C4VInt(count);
 }
 
 static C4Value FnFindObject(C4PropList * _this, C4Value *parameters)
@@ -371,13 +391,15 @@ static C4Value FnFindObject(C4PropList * _this, C4Value *parameters)
 	C4FindObject *pFO = CreateCriterionsFromPars(parameters, pFOs, pSOs, Object(_this));
 	// Error?
 	if (!pFO)
+	{
 		throw C4AulExecError("FindObject: No valid search criterions supplied");
+	}
 	// Search
-	C4Object *pObj = pFO->Find(::Objects, ::Objects.Sectors);
+	C4Object *obj = pFO->Find(::Objects, ::Objects.Sectors);
 	// Free
 	delete pFO;
 	// Return
-	return C4VObj(pObj);
+	return C4VObj(obj);
 }
 
 static C4Value FnFindObjects(C4PropList * _this, C4Value *parameters)
@@ -388,13 +410,15 @@ static C4Value FnFindObjects(C4PropList * _this, C4Value *parameters)
 	C4FindObject *pFO = CreateCriterionsFromPars(parameters, pFOs, pSOs, Object(_this));
 	// Error?
 	if (!pFO)
+	{
 		throw C4AulExecError("FindObjects: No valid search criterions supplied");
+	}
 	// Search
-	C4ValueArray *pResult = pFO->FindMany(::Objects, ::Objects.Sectors);
+	C4ValueArray *results = pFO->FindMany(::Objects, ::Objects.Sectors);
 	// Free
 	delete pFO;
 	// Return
-	return C4VArray(pResult);
+	return C4VArray(results);
 }
 
 static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long vx, long vy, C4PropList *insert_position)
@@ -560,97 +584,139 @@ static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat
 	long extracted = 0;
 	for (; extracted<amount; extracted++)
 	{
-		if (GBackMat(x, y)!=mat) return extracted;
-		if (::Landscape.ExtractMaterial(x, y,distant_first)!=mat) return extracted;
+		if (GBackMat(x, y) != mat)
+		{
+			return extracted;
+		}
+		if (::Landscape.ExtractMaterial(x, y,distant_first) != mat)
+		{
+			return extracted;
+		}
 	}
 	return extracted;
 }
 
-static void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> iCausedBy, Nillable<long> iMaxDensity)
+static void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> caused_by_player_nr, Nillable<long> max_density)
 {
-	if (iCausedBy.IsNil() && Object(_this)) iCausedBy = Object(_this)->Controller;
-	if (iMaxDensity.IsNil()) iMaxDensity = C4M_Vehicle;
+	if (caused_by_player_nr.IsNil() && Object(_this))
+	{
+		caused_by_player_nr = Object(_this)->Controller;
+	}
+	if (max_density.IsNil())
+	{
+		max_density = C4M_Vehicle;
+	}
 
-	::Landscape.BlastFree(iX, iY, iLevel, iCausedBy, Object(_this), iMaxDensity);
+	::Landscape.BlastFree(iX, iY, iLevel, caused_by_player_nr, Object(_this), max_density);
 }
 
-static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iCustomFalloffDistance, long iPitch, C4PropList *modifier_props)
+static bool FnSoundAt(C4PropList * _this, C4String *szSound, long x, long y, Nillable<long> level, Nillable<long> at_player_nr, long custom_falloff_distance, long pitch, C4PropList *modifier_props)
 {
 	// play here?
-	if (!iAtPlayer.IsNil())
+	if (!at_player_nr.IsNil())
 	{
 		// get player to play at
-		C4Player *player = ::Players.Get(iAtPlayer);
+		C4Player *player = ::Players.Get(at_player_nr);
 		// not existant? fail
-		if (!player) return false;
+		if (!player)
+		{
+			return false;
+		}
 		// network client: don't play here
 		// return true for network sync
-		if (!player->LocalControl) return true;
+		if (!player->LocalControl)
+		{
+			return true;
+		}
 	}
 	// even less than nothing?
-	if (iLevel<0) return true;
+	if (level < 0)
+	{
+		return true;
+	}
 	// default sound level
-	if (iLevel.IsNil() || iLevel>100)
-		iLevel=100;
+	if (level.IsNil() || level > 100)
+	{
+		level = 100;
+	}
 	// modifier from prop list
 	C4SoundModifier *modifier;
 	if (modifier_props)
+	{
 		modifier = Application.SoundSystem.Modifiers.Get(modifier_props, true);
+	}
 	else
+	{
 		modifier = nullptr;
+	}
 	// target object
-	MakeAbsCoordinates(_this, iX, iY);
-	StartSoundEffectAt(FnStringPar(szSound), iX, iY, iLevel, iCustomFalloffDistance, iPitch, modifier);
+	MakeAbsCoordinates(_this, x, y);
+	StartSoundEffectAt(FnStringPar(szSound), x, y, level, custom_falloff_distance, pitch, modifier);
 	// always return true (network safety!)
 	return true;
 }
 
-static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, long iCustomFalloffDistance, long iPitch, C4PropList *modifier_props)
+static bool FnSound(C4PropList * _this, C4String *sound, bool global, Nillable<long> level, Nillable<long> at_player_nr, long loop_count, long custom_falloff_distance, long pitch, C4PropList *modifier_props)
 {
 	// play here?
-	if (!iAtPlayer.IsNil())
+	if (!at_player_nr.IsNil())
 	{
 		// get player to play at
-		C4Player *player = ::Players.Get(iAtPlayer);
+		C4Player *player = ::Players.Get(at_player_nr);
 		// not existant? fail
-		if (!player) return false;
+		if (!player)
+		{
+			return false;
+		}
 		// network client: don't play here
 		// return true for network sync
-		if (!player->LocalControl) return true;
+		if (!player->LocalControl)
+		{
+			return true;
+		}
 	}
 	// even less than nothing?
-	if (iLevel<0) return true;
+	if (level < 0) return true;
 	// default sound level
-	if (iLevel.IsNil() || iLevel>100)
-		iLevel=100;
+	if (level.IsNil() || level>100)
+	{
+		level = 100;
+	}
 	// modifier from prop list
 	C4SoundModifier *modifier;
 	if (modifier_props)
+	{
 		modifier = Application.SoundSystem.Modifiers.Get(modifier_props, true);
+	}
 	else
+	{
 		modifier = nullptr;
+	}
 	// target object
-	C4Object *pObj = nullptr;
-	if (!fGlobal) pObj = Object(_this);
+	C4Object *obj = nullptr;
+	if (!global)
+	{
+		obj = Object(_this);
+	}
 	// play/stop?
-	if (iLoop >= 0)
+	if (loop_count >= 0)
 	{
 		// already playing?
-		C4SoundInstance *inst = GetSoundInstance(FnStringPar(szSound), pObj);
+		C4SoundInstance *inst = GetSoundInstance(FnStringPar(sound), obj);
 		if (inst)
 		{
 			// then just update parameters
-			SoundUpdate(inst, iLevel, iPitch);
+			SoundUpdate(inst, level, pitch);
 		}
 		else
 		{
 			// try to play effect
-			StartSoundEffect(FnStringPar(szSound), !!iLoop, iLevel, pObj, iCustomFalloffDistance, iPitch, modifier);
+			StartSoundEffect(FnStringPar(sound), !!loop_count, level, obj, custom_falloff_distance, pitch, modifier);
 		}
 	}
 	else
 	{
-		StopSoundEffect(FnStringPar(szSound), pObj);
+		StopSoundEffect(FnStringPar(sound), obj);
 	}
 	// always return true (network safety!)
 	return true;
@@ -663,11 +729,18 @@ static bool FnChangeSoundModifier(C4PropList * _this, C4PropList *modifier_props
 	// modifier not found. May be due to savegame resume.
 	// In that case, creation/updates will happen automatically next time Sound() is called
 	// always return true for sync safety because the internal C4SoundModifierList is not synchronized
-	if (!modifier) return true;
+	if (!modifier)
+	{
+		return true;
+	}
 	if (release)
+	{
 		modifier->Release();
+	}
 	else
+	{
 		modifier->Update();
+	}
 	return true;
 }
 
@@ -682,27 +755,36 @@ static bool FnSetGlobalSoundModifier(C4PropList * _this, C4PropList *modifier_pr
 	else
 	{
 		// modifier for all viewports of a player
-		C4Player *plr = ::Players.Get(at_player);
-		if (!plr) return false;
-		plr->SetSoundModifier(modifier_props);
+		C4Player *player = ::Players.Get(at_player);
+		if (!player)
+		{
+			return false;
+		}
+		player->SetSoundModifier(modifier_props);
 	}
 	// always true on valid params for sync safety
 	return true;
 }
 
-static bool FnMusic(C4PropList * _this, C4String *szSongname, bool fLoop, long iFadeTime_ms, long max_resume_time_ms)
+static bool FnMusic(C4PropList * _this, C4String *song_name, bool loop, long fade_time_ms, long max_resume_time_ms)
 {
+	if (max_resume_time_ms < 0)
+	{
+		return false; // Safety
+	}
 	bool success;
-	if (max_resume_time_ms < 0) return false; // Safety
-	if (!szSongname)
+	if (!song_name)
 	{
 		success = Application.MusicSystem.Stop();
 	}
 	else
 	{
-		success = Application.MusicSystem.Play(FnStringPar(szSongname), !!fLoop, iFadeTime_ms, double(max_resume_time_ms)/1000.0);
+		success = Application.MusicSystem.Play(FnStringPar(song_name), !!loop, fade_time_ms, double(max_resume_time_ms)/1000.0);
 	}
-	if (::Control.SyncMode()) return true;
+	if (::Control.SyncMode())
+	{
+		return true;
+	}
 	return success;
 }
 
@@ -711,26 +793,35 @@ static long FnMusicLevel(C4PropList * _this, long iLevel)
 	return ::Application.MusicSystem.SetGameMusicLevel(iLevel);
 }
 
-static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, Nillable<long> iAtPlayer, bool fForceSwitch, long iFadeTime_ms, long max_resume_time_ms)
+static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, Nillable<long> at_player_nr, bool force_switch, long fade_time_ms, long max_resume_time_ms)
 {
 	// Safety
-	if (max_resume_time_ms < 0) return 0;
-	// If a player number is provided, set play list for clients where given player is local only
-	if (!iAtPlayer.IsNil() && iAtPlayer != NO_OWNER)
+	if (max_resume_time_ms < 0)
 	{
-		C4Player *at_plr = ::Players.Get(iAtPlayer);
-		if (!at_plr) return 0;
-		if (!at_plr->LocalControl) return 0;
+		return 0;
+	}
+	// If a player number is provided, set play list for clients where given player is local only
+	if (!at_player_nr.IsNil() && at_player_nr != NO_OWNER)
+	{
+		C4Player *at_plr = ::Players.Get(at_player_nr);
+		if (!at_plr)
+		{
+			return 0;
+		}
+		if (!at_plr->LocalControl)
+		{
+			return 0;
+		}
 	}
 	// Playlist might be a string for the new playlist, a proplist with more info, or nil to reset the playlist
-	C4String * szPlayList = playlist_data.getStr();
+	C4String * playlist = playlist_data.getStr();
 	C4PropList *playlist_props = nullptr;
-	if (!szPlayList)
+	if (!playlist)
 	{
 		playlist_props = playlist_data.getPropList();
 		if (playlist_props)
 		{
-			szPlayList = playlist_props->GetPropertyStr(P_PlayList);
+			playlist = playlist_props->GetPropertyStr(P_PlayList);
 			// Update playlist properties
 			C4Value val;
 			if (playlist_props->GetProperty(P_MusicBreakMin, &val)) ::Application.MusicSystem.SetMusicBreakMin(val.getInt());
@@ -740,10 +831,13 @@ static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, Nil
 		}
 	}
 	// Set playlist; count entries
-	long iFilesInPlayList = ::Application.MusicSystem.SetPlayList(FnStringPar(szPlayList), fForceSwitch, iFadeTime_ms, double(max_resume_time_ms)/1000.0f);
+	long files_in_playlist = ::Application.MusicSystem.SetPlayList(FnStringPar(playlist), force_switch, fade_time_ms, double(max_resume_time_ms)/1000.0f);
 	// network/record/replay: return 0 for sync reasons
-	if (::Control.SyncMode()) return 0;
-	return iFilesInPlayList;
+	if (::Control.SyncMode())
+	{
+		return 0;
+	}
+	return files_in_playlist;
 }
 
 static bool FnGameOver(C4PropList * _this, long iGameOverValue /* provided for future compatibility */)
@@ -753,32 +847,48 @@ static bool FnGameOver(C4PropList * _this, long iGameOverValue /* provided for f
 
 static bool FnGainScenarioAccess(C4PropList * _this, C4String *szPassword)
 {
-	if (std::strlen(Config.General.MissionAccess)+std::strlen(FnStringPar(szPassword))+3>CFG_MaxString) return false;
+	if (std::strlen(Config.General.MissionAccess)+std::strlen(FnStringPar(szPassword)) + 3 > CFG_MaxString)
+	{
+		return false;
+	}
 	SAddModule(Config.General.MissionAccess, FnStringPar(szPassword));
 	return true;
 }
 
-static C4Value FnPlayerMessage(C4PropList * _this, C4Value * Pars)
+static C4Value FnPlayerMessage(C4PropList * _this, C4Value * parameters)
 {
-	if (!Object(_this)) throw NeedObjectContext("PlayerMessage");
-	int player_nr = Pars[0].getInt();
-	C4String * szMessage = Pars[1].getStr();
-	if (!szMessage) return C4VBool(false);
+	if (!Object(_this))
+	{
+		throw NeedObjectContext("PlayerMessage");
+	}
+	int player_nr = parameters[0].getInt();
+	C4String * message = parameters[1].getStr();
+	if (!message)
+	{
+		return C4VBool(false);
+	}
 	StdStrBuf buf;
-	buf.SetLength(szMessage->GetData().getLength());
+	buf.SetLength(message->GetData().getLength());
 
 	// Speech
-	bool fSpoken=false;
-	if (SCopySegment(FnStringPar(szMessage), 1,buf.getMData(), '$'))
+	bool is_spoken = false;
+	if (SCopySegment(FnStringPar(message), 1,buf.getMData(), '$'))
+	{
 		if (StartSoundEffect(buf.getData(), false, 100, Object(_this)))
-			fSpoken=true;
+		{
+			is_spoken = true;
+		}
+	}
 
 	// Text
-	if (!fSpoken)
+	if (!is_spoken)
 	{
-		buf.Take(FnStringFormat(_this, szMessage, &Pars[2], 8));
+		buf.Take(FnStringFormat(_this, message, &parameters[2], 8));
 		const char * dollar = strchr(buf.getData(), '$');
-		if (dollar) buf.Shrink(dollar - buf.getData());
+		if (dollar)
+		{
+			buf.Shrink(dollar - buf.getData());
+		}
 		GameMsgObjectPlayer(buf.getData(), Object(_this), player_nr);
 	}
 	return C4VBool(true);
@@ -810,13 +920,19 @@ static C4Value FnMessage(C4PropList * _this, C4Value * Pars)
 }
 
 // undocumented!
-static C4Value FnAddMessage(C4PropList * _this, C4Value * Pars)
+static C4Value FnAddMessage(C4PropList * _this, C4Value * parameters)
 {
-	if (!Object(_this)) throw NeedObjectContext("AddMessage");
-	C4String * szMessage = Pars[0].getStr();
-	if (!szMessage) return C4VBool(false);
+	if (!Object(_this))
+	{
+		throw NeedObjectContext("AddMessage");
+	}
+	C4String * message = parameters[0].getStr();
+	if (!message)
+	{
+		return C4VBool(false);
+	}
 
-	::Messages.Append(C4GM_Target, FnStringFormat(_this, szMessage, &Pars[1], 9).getData(),
+	::Messages.Append(C4GM_Target, FnStringFormat(_this, message, &parameters[1], 9).getData(),
 	                  Object(_this), NO_OWNER, 0,0, C4RGB(0xff, 0xff, 0xff));
 	return C4VBool(true);
 }
@@ -826,14 +942,14 @@ static long FnMaterial(C4PropList * _this, C4String *mat_name)
 	return ::MaterialMap.Get(FnStringPar(mat_name));
 }
 
-C4Object* FnPlaceVegetation(C4PropList * _this, C4PropList * Def, long x, long y, long iWdt, long iHgt, long iGrowth, C4PropList * shape)
+C4Object* FnPlaceVegetation(C4PropList * _this, C4PropList * Def, long x, long y, long wdt, long hgt, long growth, C4PropList * shape)
 {
 	if (shape)
 	{
 		// New-style call with scripted shape
 		C4PropList *out_pos = C4PropList::New(nullptr);
 		C4Value vout_pos = C4VPropList(out_pos);
-		return Game.PlaceVegetation(Def, x, y, iWdt, iHgt, iGrowth, shape, out_pos);
+		return Game.PlaceVegetation(Def, x, y, wdt, hgt, growth, shape, out_pos);
 	}
 	else
 	{
@@ -841,7 +957,7 @@ C4Object* FnPlaceVegetation(C4PropList * _this, C4PropList * Def, long x, long y
 		// Local call: relative coordinates
 		MakeAbsCoordinates(_this, x, y);
 		// Place vegetation
-		return Game.PlaceVegetation(Def, x, y, iWdt, iHgt, iGrowth, nullptr, nullptr);
+		return Game.PlaceVegetation(Def, x, y, wdt, hgt, growth, nullptr, nullptr);
 	}
 }
 
@@ -850,58 +966,83 @@ C4Object* FnPlaceAnimal(C4PropList * _this, C4PropList * Def)
 	return Game.PlaceAnimal(Def? Def : _this);
 }
 
-static bool FnHostile(C4PropList * _this, long iPlr1, long iPlr2, bool fCheckOneWayOnly)
+static bool FnHostile(C4PropList * _this, long player_nr1, long player_nr2, bool check_one_way_only)
 {
-	if (fCheckOneWayOnly)
+	if (check_one_way_only)
 	{
-		return ::Players.HostilityDeclared(iPlr1, iPlr2);
+		return ::Players.HostilityDeclared(player_nr1, player_nr2);
 	}
 	else
-		return !!Hostile(iPlr1, iPlr2);
+	{
+		return !!Hostile(player_nr1, player_nr2);
+	}
 }
 
-static bool FnSetHostility(C4PropList * _this, long iPlr, long iPlr2, bool fHostile, bool fSilent, bool fNoCalls)
+static bool FnSetHostility(C4PropList * _this, long player_nr1, long player_nr2, bool hostile, bool silent, bool no_calls)
 {
-	C4Player *player = ::Players.Get(iPlr);
-	if (!player) return false;
-	// do rejection test first
-	if (!fNoCalls)
+	C4Player *player = ::Players.Get(player_nr1);
+	if (!player)
 	{
-		if (!!::Game.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(iPlr, iPlr2, fHostile), true, true))
+		return false;
+	}
+	// do rejection test first
+	if (!no_calls)
+	{
+		if (!!::Game.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(player_nr1, player_nr2, hostile), true, true))
+		{
 			return false;
+		}
 	}
 	// OK; set hostility
-	bool fOldHostility = ::Players.HostilityDeclared(iPlr, iPlr2);
-	if (!player->SetHostility(iPlr2, fHostile, fSilent)) return false;
+	bool old_hostility = ::Players.HostilityDeclared(player_nr1, player_nr2);
+	if (!player->SetHostility(player_nr2, hostile, silent))
+	{
+		return false;
+	}
 	// calls afterwards
-	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile), C4VBool(fOldHostility)), true);
+	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(player_nr1), C4VInt(player_nr2), C4VBool(hostile), C4VBool(old_hostility)), true);
 	return true;
 }
 
-static bool FnSetPlrView(C4PropList * _this, long iPlr, C4Object *tobj, bool immediate_position)
+static bool FnSetPlrView(C4PropList * _this, long player_nr, C4Object *target, bool immediate_position)
 {
-	if (!ValidPlr(iPlr)) return false;
-	::Players.Get(iPlr)->SetViewMode(C4PVM_Target, tobj, immediate_position);
+	if (!ValidPlr(player_nr))
+	{
+		return false;
+	}
+	::Players.Get(player_nr)->SetViewMode(C4PVM_Target, target, immediate_position);
 	return true;
 }
 
-static long FnGetPlrViewMode(C4PropList * _this, long iPlr)
+static long FnGetPlrViewMode(C4PropList * _this, long player_nr)
 {
-	if (!ValidPlr(iPlr)) return -1;
-	if (::Control.SyncMode()) return -1;
-	return ::Players.Get(iPlr)->ViewMode;
+	if (!ValidPlr(player_nr))
+	{
+		return -1;
+	}
+	if (::Control.SyncMode())
+	{
+		return -1;
+	}
+	return ::Players.Get(player_nr)->ViewMode;
 }
 
-static void FnResetCursorView(C4PropList * _this, long plr, bool immediate_position)
+static void FnResetCursorView(C4PropList * _this, long player_nr, bool immediate_position)
 {
-	C4Player *pplr = ::Players.Get(plr);
-	if (pplr) pplr->ResetCursorView(immediate_position);
+	C4Player *player = ::Players.Get(player_nr);
+	if (player)
+	{
+		player->ResetCursorView(immediate_position);
+	}
 }
 
-static C4Object *FnGetPlrView(C4PropList * _this, long iPlr)
+static C4Object *FnGetPlrView(C4PropList * _this, long player_nr)
 {
-	C4Player *player = ::Players.Get(iPlr);
-	if (!player || player->ViewMode != C4PVM_Target) return nullptr;
+	C4Player *player = ::Players.Get(player_nr);
+	if (!player || player->ViewMode != C4PVM_Target)
+	{
+		return nullptr;
+	}
 	return player->ViewTarget;
 }
 
@@ -913,151 +1054,211 @@ static const int PLRZOOM_Direct     = 0x01,
                  PLRZOOM_LimitMax   = 0x20,
                  PLRZOOM_Set        = 0x40;
 
-static bool FnSetPlayerZoomByViewRange(C4PropList * _this, long plr_idx, long range_wdt, long range_hgt, long flags)
+static bool FnSetPlayerZoomByViewRange(C4PropList * _this, long player_nr, long range_wdt, long range_hgt, long flags)
 {
 	// zoom size safety - both ranges 0 is fine, it causes a zoom reset to default
-	if (range_wdt < 0 || range_hgt < 0) return false;
-	// special player NO_OWNER: apply to all viewports
-	if (plr_idx == NO_OWNER)
+	if (range_wdt < 0 || range_hgt < 0)
 	{
-		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
-			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
-				FnSetPlayerZoomByViewRange(_this, plr->Number, range_wdt, range_hgt, flags);
+		return false;
+	}
+	// special player NO_OWNER: apply to all viewports
+	if (player_nr == NO_OWNER)
+	{
+		for (C4Player *player = ::Players.First; player; player = player->Next)
+		{
+			if (player->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+			{
+				FnSetPlayerZoomByViewRange(_this, player->Number, range_wdt, range_hgt, flags);
+			}
+		}
 		return true;
 	}
 	else
 	{
 		// safety check on player only, so function return result is always in sync
-		C4Player *plr = ::Players.Get(plr_idx);
-		if (!plr) return false;
+		C4Player *player = ::Players.Get(player_nr);
+		if (!player)
+		{
+			return false;
+		}
 		// adjust values in player
-		if (flags & PLRZOOM_LimitMin) plr->SetMinZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		if (flags & PLRZOOM_LimitMax) plr->SetMaxZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		if (flags & PLRZOOM_LimitMin) player->SetMinZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		if (flags & PLRZOOM_LimitMax) player->SetMaxZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
 		// set values after setting min/max to ensure old limits don't block new value
 		if ((flags & PLRZOOM_Set) || !(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
 		{
-			plr->SetZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+			player->SetZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
 		}
 
 	}
 	return true;
 }
 
-static C4PropList *FnGetPlayerZoomLimits(C4PropList * _this, long plr_idx)
+static C4PropList *FnGetPlayerZoomLimits(C4PropList * _this, long player_nr)
 {
 	// get player
-	C4Player *plr = ::Players.Get(plr_idx);
-	if (!plr) return nullptr;
+	C4Player *player = ::Players.Get(player_nr);
+	if (!player)
+	{
+		return nullptr;
+	}
 	// collect limits in a prop list
 	// if neither width not height is set for zoom limits, return engine defaults.
 	C4PropList *result = C4PropList::New();
-	if (!result) return nullptr;
-	result->SetPropertyByS(::Strings.RegString("MaxWidth"), C4VInt((plr->ZoomLimitMaxWdt || plr->ZoomLimitMaxHgt) ? plr->ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX));
-	result->SetPropertyByS(::Strings.RegString("MaxHeight"), C4VInt(plr->ZoomLimitMaxHgt));
-	result->SetPropertyByS(::Strings.RegString("MaxValue"), C4VInt(fixtoi(plr->ZoomLimitMaxVal, 100)));
-	result->SetPropertyByS(::Strings.RegString("MinWidth"), C4VInt((plr->ZoomLimitMinWdt || plr->ZoomLimitMinHgt) ? plr->ZoomLimitMinWdt : C4VP_DefMinViewRangeX));
-	result->SetPropertyByS(::Strings.RegString("MinHeight"), C4VInt(plr->ZoomLimitMinHgt));
-	result->SetPropertyByS(::Strings.RegString("MinValue"), C4VInt(fixtoi(plr->ZoomLimitMinVal, 100)));
+	if (!result)
+	{
+		return nullptr;
+	}
+	result->SetPropertyByS(::Strings.RegString("MaxWidth"), C4VInt((player->ZoomLimitMaxWdt || player->ZoomLimitMaxHgt) ? player->ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX));
+	result->SetPropertyByS(::Strings.RegString("MaxHeight"), C4VInt(player->ZoomLimitMaxHgt));
+	result->SetPropertyByS(::Strings.RegString("MaxValue"), C4VInt(fixtoi(player->ZoomLimitMaxVal, 100)));
+	result->SetPropertyByS(::Strings.RegString("MinWidth"), C4VInt((player->ZoomLimitMinWdt || player->ZoomLimitMinHgt) ? player->ZoomLimitMinWdt : C4VP_DefMinViewRangeX));
+	result->SetPropertyByS(::Strings.RegString("MinHeight"), C4VInt(player->ZoomLimitMinHgt));
+	result->SetPropertyByS(::Strings.RegString("MinValue"), C4VInt(fixtoi(player->ZoomLimitMinVal, 100)));
 	return result;
 }
 
-static bool FnSetPlayerZoom(C4PropList * _this, long plr_idx, long zoom, long precision, long flags)
+static bool FnSetPlayerZoom(C4PropList * _this, long player_nr, long zoom, long precision, long flags)
 {
 	// parameter safety. 0/0 means "reset to default".
-	if (zoom < 0 || precision < 0) return false;
-	// special player NO_OWNER: apply to all viewports
-	if (plr_idx == NO_OWNER)
+	if (zoom < 0 || precision < 0)
 	{
-		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
-			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
-				FnSetPlayerZoom(_this, plr->Number, zoom, precision, flags);
+		return false;
+	}
+	// special player NO_OWNER: apply to all viewports
+	if (player_nr == NO_OWNER)
+	{
+		for (C4Player *player = ::Players.First; player; player = player->Next)
+		{
+			if (player->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+			{
+				FnSetPlayerZoom(_this, player->Number, zoom, precision, flags);
+			}
+		}
 		return true;
 	}
 	else
 	{
 		// zoom factor calculation
-		if (!precision) precision = 1;
+		if (!precision)
+		{
+			precision = 1;
+		}
 		C4Real fZoom = itofix(zoom, precision);
 		// safety check on player only, so function return result is always in sync
-		C4Player *plr = ::Players.Get(plr_idx);
-		if (!plr) return false;
+		C4Player *player = ::Players.Get(player_nr);
+		if (!player)
+		{
+			return false;
+		}
 		// adjust values in player
-		if (flags & PLRZOOM_LimitMin) plr->SetMinZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		if (flags & PLRZOOM_LimitMax) plr->SetMaxZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		if (flags & PLRZOOM_LimitMin) player->SetMinZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		if (flags & PLRZOOM_LimitMax) player->SetMaxZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
 		if ((flags & PLRZOOM_Set) || !(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
 		{
-			plr->SetZoom(fZoom, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+			player->SetZoom(fZoom, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
 		}
 
 	}
 	return true;
 }
 
-static bool FnSetPlayerViewLock(C4PropList * _this, long plr_idx, bool is_locked)
+static bool FnSetPlayerViewLock(C4PropList * _this, long player_nr, bool is_locked)
 {
 	// special player NO_OWNER: apply to all players
-	if (plr_idx == NO_OWNER)
+	if (player_nr == NO_OWNER)
 	{
-		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
-			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
-				FnSetPlayerViewLock(_this, plr->Number, is_locked);
+		for (C4Player *player = ::Players.First; player; player=player->Next)
+		{
+			if (player->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+			{
+				FnSetPlayerViewLock(_this, player->Number, is_locked);
+			}
+		}
 		return true;
 	}
-	C4Player *plr = ::Players.Get(plr_idx);
-	if (!plr) return false;
-	plr->SetViewLocked(is_locked);
+	C4Player *player = ::Players.Get(player_nr);
+	if (!player)
+	{
+		return false;
+	}
+	player->SetViewLocked(is_locked);
 	return true;
 }
 
-static bool FnDoBaseMaterial(C4PropList * _this, long iPlr, C4ID id, long iChange)
+static bool FnDoBaseMaterial(C4PropList * _this, long player_nr, C4ID id, long change)
 {
 	// validity check
-	if (!ValidPlr(iPlr)) return false;
-	C4Def *pDef = C4Id2Def(id);
-	if (!pDef) return false;
+	if (!ValidPlr(player_nr))
+	{
+		return false;
+	}
+	C4Def *def = C4Id2Def(id);
+	if (!def)
+	{
+		return false;
+	}
 	// add to material
-	long iLastcount = ::Players.Get(iPlr)->BaseMaterial.GetIDCount(id);
-	return ::Players.Get(iPlr)->BaseMaterial.SetIDCount(id, iLastcount+iChange, true);
+	long last_count = ::Players.Get(player_nr)->BaseMaterial.GetIDCount(id);
+	return ::Players.Get(player_nr)->BaseMaterial.SetIDCount(id, last_count + change, true);
 }
 
-static bool FnDoBaseProduction(C4PropList * _this, long iPlr, C4ID id, long iChange)
+static bool FnDoBaseProduction(C4PropList * _this, long player_nr, C4ID id, long change)
 {
 	// validity check
-	if (!ValidPlr(iPlr)) return false;
-	C4Def *pDef = C4Id2Def(id);
-	if (!pDef) return false;
+	if (!ValidPlr(player_nr))
+	{
+		return false;
+	}
+	C4Def *def = C4Id2Def(id);
+	if (!def)
+	{
+		return false;
+	}
 	// add to material
-	long iLastcount = ::Players.Get(iPlr)->BaseProduction.GetIDCount(id);
-	return ::Players.Get(iPlr)->BaseProduction.SetIDCount(id, iLastcount+iChange, true);
+	long last_count = ::Players.Get(player_nr)->BaseProduction.GetIDCount(id);
+	return ::Players.Get(player_nr)->BaseProduction.SetIDCount(id, last_count + change, true);
 }
 
-static bool FnSetPlrKnowledge(C4PropList * _this, Nillable<long> iPlr, C4ID id, bool fRemove)
+static bool FnSetPlrKnowledge(C4PropList * _this, Nillable<long> player_nr, C4ID id, bool remove)
 {
-	
 	bool success = false;
-	// iPlr == nil: Call for all players
-	if (iPlr.IsNil())
+	// player_nr == nil: Call for all players
+	if (player_nr.IsNil())
 	{
 		for (C4Player *player = ::Players.First; player; player = player->Next)
-			if (player->SetKnowledge(id, fRemove))
+		{
+			if (player->SetKnowledge(id, remove))
+			{
 				success = true;
+			}
+		}
 	}
 	else
 	{
 		// Otherwise call for requested player
-		C4Player *player = ::Players.Get(iPlr);
-		if (player) success = player->SetKnowledge(id, fRemove);
+		C4Player *player = ::Players.Get(player_nr);
+		if (player)
+		{
+			success = player->SetKnowledge(id, remove);
+		}
 	}
 	return success;
 }
 
-static C4Value FnGetPlrKnowledge(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
+static C4Value FnGetPlrKnowledge(C4PropList * _this, int player_nr, C4ID id, int index, int category)
 {
-	if (!ValidPlr(iPlr)) return C4VBool(false);
+	if (!ValidPlr(player_nr))
+	{
+		return C4VBool(false);
+	}
 	// Search by id, check if available, return bool
-	if (id) return C4VBool(::Players.Get(iPlr)->Knowledge.GetIDCount(id, 1) != 0);
+	if (id)
+	{
+		return C4VBool(::Players.Get(player_nr)->Knowledge.GetIDCount(id, 1) != 0);
+	}
 	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->Knowledge.GetID( ::Definitions, dwCategory, iIndex )));
+	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->Knowledge.GetID( ::Definitions, category, index )));
 }
 
 static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
@@ -1069,137 +1270,183 @@ static C4String * FnGetDefinitionGroupPath(C4PropList * _this)
 {
 	// Must have loaded all paths
 	if (Application.isEditor)
+	{
 		::Console.EnsureDefinitionListInitialized();
+	}
 	// Resolve definition
 	C4Def *def = _this->GetDef();
-	if (!def || !def->ConsoleGroupPath.getData()) return nullptr;
+	if (!def || !def->ConsoleGroupPath.getData())
+	{
+		return nullptr;
+	}
 	return ::Strings.RegString(def->ConsoleGroupPath.getData());
 }
 
-static C4Value FnGetBaseMaterial(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
+static C4Value FnGetBaseMaterial(C4PropList * _this, int player_nr, C4ID id, int index, int category)
 {
-	if (!ValidPlr(iPlr)) return C4VBool(false);
+	if (!ValidPlr(player_nr))
+	{
+		return C4VBool(false);
+	}
 	// Search by id, return available count
-	if (id) return C4VInt(::Players.Get(iPlr)->BaseMaterial.GetIDCount(id));
+	if (id)
+	{
+		return C4VInt(::Players.Get(player_nr)->BaseMaterial.GetIDCount(id));
+	}
 	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->BaseMaterial.GetID( ::Definitions, dwCategory, iIndex )));
+	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->BaseMaterial.GetID( ::Definitions, category, index )));
 }
 
-static C4Value FnGetBaseProduction(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
+static C4Value FnGetBaseProduction(C4PropList * _this, int player_nr, C4ID id, int index, int category)
 {
-	if (!ValidPlr(iPlr)) return C4VBool(false);
+	if (!ValidPlr(player_nr))
+	{
+		return C4VBool(false);
+	}
 	// Search by id, return available count
-	if (id) return C4VInt(::Players.Get(iPlr)->BaseProduction.GetIDCount(id));
+	if (id)
+	{
+		return C4VInt(::Players.Get(player_nr)->BaseProduction.GetIDCount(id));
+	}
 	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->BaseProduction.GetID( ::Definitions, dwCategory, iIndex )));
+	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->BaseProduction.GetID( ::Definitions, category, index )));
 }
 
-static long FnGetWealth(C4PropList * _this, long iPlr)
+static long FnGetWealth(C4PropList * _this, long player_nr)
 {
-	if (!ValidPlr(iPlr)) return 0;
-	return ::Players.Get(iPlr)->Wealth;
+	if (!ValidPlr(player_nr)) return 0;
+	return ::Players.Get(player_nr)->Wealth;
 }
 
-static bool FnSetWealth(C4PropList * _this, long iPlr, long iValue)
+static bool FnSetWealth(C4PropList * _this, long player_nr, long value)
 {
-	if (!ValidPlr(iPlr)) return false;
-	::Players.Get(iPlr)->SetWealth(iValue);
+	if (!ValidPlr(player_nr)) return false;
+	::Players.Get(player_nr)->SetWealth(value);
 	return true;
 }
 
-static long FnDoPlayerScore(C4PropList * _this, long iPlr, long iChange)
+static long FnDoPlayerScore(C4PropList * _this, long player_nr, long change)
 {
-	if (!ValidPlr(iPlr)) return false;
-	return ::Players.Get(iPlr)->DoScore(iChange);
+	if (!ValidPlr(player_nr)) return false;
+	return ::Players.Get(player_nr)->DoScore(change);
 }
 
-static long FnGetPlayerScore(C4PropList * _this, long iPlr)
+static long FnGetPlayerScore(C4PropList * _this, long player_nr)
 {
-	if (!ValidPlr(iPlr)) return 0;
-	return ::Players.Get(iPlr)->CurrentScore;
+	if (!ValidPlr(player_nr)) return 0;
+	return ::Players.Get(player_nr)->CurrentScore;
 }
 
-static long FnGetPlayerScoreGain(C4PropList * _this, long iPlr)
+static long FnGetPlayerScoreGain(C4PropList * _this, long player_nr)
 {
-	if (!ValidPlr(iPlr)) return 0;
-	return ::Players.Get(iPlr)->CurrentScore - ::Players.Get(iPlr)->InitialScore;
+	if (!ValidPlr(player_nr)) return 0;
+	return ::Players.Get(player_nr)->CurrentScore - ::Players.Get(player_nr)->InitialScore;
 }
 
-static C4Object *FnGetHiRank(C4PropList * _this, long iPlr)
+static C4Object *FnGetHiRank(C4PropList * _this, long player_nr)
 {
-	if (!ValidPlr(iPlr)) return nullptr;
-	return ::Players.Get(iPlr)->GetHiRankActiveCrew();
+	if (!ValidPlr(player_nr)) return nullptr;
+	return ::Players.Get(player_nr)->GetHiRankActiveCrew();
 }
 
-static C4Object *FnGetCrew(C4PropList * _this, long iPlr, long index)
+static C4Object *FnGetCrew(C4PropList * _this, long player_nr, long index)
 {
-	if (!ValidPlr(iPlr)) return nullptr;
-	return ::Players.Get(iPlr)->Crew.GetObject(index);
+	if (!ValidPlr(player_nr)) return nullptr;
+	return ::Players.Get(player_nr)->Crew.GetObject(index);
 }
 
-static long FnGetCrewCount(C4PropList * _this, long iPlr)
+static long FnGetCrewCount(C4PropList * _this, long player_nr)
 {
-	if (!ValidPlr(iPlr)) return 0;
-	return ::Players.Get(iPlr)->Crew.ObjectCount();
+	if (!ValidPlr(player_nr)) return 0;
+	return ::Players.Get(player_nr)->Crew.ObjectCount();
 }
 
-static long FnGetPlayerCount(C4PropList * _this, long iType)
+static long FnGetPlayerCount(C4PropList * _this, long type)
 {
-	if (!iType)
+	if (!type)
+	{
 		return ::Players.GetCount();
+	}
 	else
-		return ::Players.GetCount((C4PlayerType) iType);
+	{
+		return ::Players.GetCount((C4PlayerType) type);
+	}
 }
 
-static long FnGetPlayerByIndex(C4PropList * _this, long iIndex, long iType)
+static long FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 {
-	C4Player *pPlayer;
-	if (iType)
-		pPlayer = ::Players.GetByIndex(iIndex, (C4PlayerType) iType);
+	C4Player *player;
+	if (type)
+	{
+		player = ::Players.GetByIndex(index, (C4PlayerType) type);
+	}
 	else
-		pPlayer = ::Players.GetByIndex(iIndex);
-	if (!pPlayer) return NO_OWNER;
-	return pPlayer->Number;
+	{
+		player = ::Players.GetByIndex(index);
+	}
+	if (!player) return NO_OWNER;
+	return player->Number;
 }
 
-static long FnEliminatePlayer(C4PropList * _this, long iPlr, bool fRemoveDirect)
+static long FnEliminatePlayer(C4PropList * _this, long player_nr, bool remove_direct)
 {
-	C4Player *player=::Players.Get(iPlr);
-	if (!player) return false;
+	C4Player *player = ::Players.Get(player_nr);
+	if (!player)
+	{
+		return false;
+	}
 	// direct removal?
-	if (fRemoveDirect)
+	if (remove_direct)
 	{
 		// do direct removal (no fate)
-		if (::Control.isCtrlHost()) ::Players.CtrlRemove(iPlr, false);
+		if (::Control.isCtrlHost())
+		{
+			::Players.CtrlRemove(player_nr, false);
+		}
 		return true;
 		}
 	else
 	{
 		// do regular elimination
-		if (player->Eliminated) return false;
+		if (player->Eliminated)
+		{
+			return false;
+		}
 		player->Eliminate();
 	}
 	return true;
 }
 
 // undocumented!
-static bool FnSurrenderPlayer(C4PropList * _this, long iPlr)
+static bool FnSurrenderPlayer(C4PropList * _this, long player_nr)
 {
-	C4Player *player=::Players.Get(iPlr);
-	if (!player) return false;
-	if (player->Eliminated) return false;
+	C4Player *player = ::Players.Get(player_nr);
+	if (!player)
+	{
+		return false;
+	}
+	if (player->Eliminated)
+	{
+		return false;
+	}
 	player->Surrender();
 	return true;
 }
 
 // undocumented!
-static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, long idPlayer)
+static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, long player_id)
+{
+	if (!Game.Parameters.isLeague())
 	{
-	if (!Game.Parameters.isLeague()) return false;
-	if (idPlayer && !Game.PlayerInfos.GetPlayerInfoByID(idPlayer)) return false;
-	Game.RoundResults.SetLeaguePerformance(iScore, idPlayer);
-	return true;
+		return false;
 	}
+	if (player_id && !Game.PlayerInfos.GetPlayerInfoByID(player_id))
+	{
+		return false;
+	}
+	Game.RoundResults.SetLeaguePerformance(iScore, player_id);
+	return true;
+}
 
 
 static const int32_t CSPF_FixedAttributes = 1 << 0,
@@ -1209,14 +1456,20 @@ static const int32_t CSPF_FixedAttributes = 1 << 0,
                      CSPF_NoScenarioSave = 1 << 4;
 
 
-static bool FnCreateScriptPlayer(C4PropList * _this, C4String *szName, long dwColor, long idTeam, long dwFlags, C4ID idExtra)
+static bool FnCreateScriptPlayer(C4PropList * _this, C4String *name, long dwColor, long team_id, long dwFlags, C4ID idExtra)
 {
 	// safety
-	if (!szName || !szName->GetData().getLength()) return false;
+	if (!name || !name->GetData().getLength())
+	{
+		return false;
+	}
 	// this script command puts a new script player info into the list
 	// the actual join will be delayed and synchronized via queue
 	// processed by control host only - clients/replay/etc. will perform the join via queue
-	if (!::Control.isCtrlHost()) return true;
+	if (!::Control.isCtrlHost())
+	{
+		return true;
+	}
 	C4PlayerInfo *pScriptPlrInfo = new C4PlayerInfo();
 	uint32_t dwInfoFlags = 0u;
 	if (dwFlags & CSPF_FixedAttributes   ) dwInfoFlags |= C4PlayerInfo::PIF_AttributesFixed;
@@ -1224,8 +1477,8 @@ static bool FnCreateScriptPlayer(C4PropList * _this, C4String *szName, long dwCo
 	if (dwFlags & CSPF_NoEliminationCheck) dwInfoFlags |= C4PlayerInfo::PIF_NoEliminationCheck;
 	if (dwFlags & CSPF_Invisible         ) dwInfoFlags |= C4PlayerInfo::PIF_Invisible;
 	if (dwFlags & CSPF_NoScenarioSave)     dwInfoFlags |= C4PlayerInfo::PIF_NoScenarioSave;
-	pScriptPlrInfo->SetAsScriptPlayer(szName->GetCStr(), dwColor, dwInfoFlags, idExtra);
-	pScriptPlrInfo->SetTeam(idTeam);
+	pScriptPlrInfo->SetAsScriptPlayer(name->GetCStr(), dwColor, dwInfoFlags, idExtra);
+	pScriptPlrInfo->SetTeam(team_id);
 	C4ClientPlayerInfos JoinPkt(nullptr, true, pScriptPlrInfo);
 	// add to queue!
 	Game.PlayerInfos.DoPlayerInfoUpdate(&JoinPkt);
@@ -1233,61 +1486,70 @@ static bool FnCreateScriptPlayer(C4PropList * _this, C4String *szName, long dwCo
 	return true;
 }
 
-static C4Object *FnGetCursor(C4PropList * _this, long iPlr)
+static C4Object *FnGetCursor(C4PropList * _this, long player_nr)
 {
 	// get player
-	C4Player *player = ::Players.Get(iPlr);
+	C4Player *player = ::Players.Get(player_nr);
 	// invalid player?
-	if (!player) return nullptr;
+	if (!player)
+	{
+		return nullptr;
+	}
 	return player->Cursor;
 }
 
 // undocumented!
-static C4Object *FnGetViewCursor(C4PropList * _this, long iPlr)
+static C4Object *FnGetViewCursor(C4PropList * _this, long player_nr)
 {
 	// get player
-	C4Player *player = ::Players.Get(iPlr);
+	C4Player *player = ::Players.Get(player_nr);
 	// get viewcursor
 	return player ? player->ViewCursor : nullptr;
 }
 
-static bool FnSetCursor(C4PropList * _this, long iPlr, C4Object *pObj, bool fNoSelectArrow)
+static bool FnSetCursor(C4PropList * _this, long player_nr, C4Object *obj, bool no_select_arrow)
 {
-	C4Player *player = ::Players.Get(iPlr);
-	if (!player || (pObj && !pObj->Status) || (pObj && pObj->CrewDisabled)) return false;
-	player->SetCursor(pObj, !fNoSelectArrow);
+	C4Player *player = ::Players.Get(player_nr);
+	if (!player || (obj && !obj->Status) || (obj && obj->CrewDisabled)) return false;
+	player->SetCursor(obj, !no_select_arrow);
 	return true;
 }
 
 // undocumented!
-static bool FnSetViewCursor(C4PropList * _this, long iPlr, C4Object *pObj)
+static bool FnSetViewCursor(C4PropList * _this, long player_nr, C4Object *obj)
 {
 	// get player
-	C4Player *player = ::Players.Get(iPlr);
+	C4Player *player = ::Players.Get(player_nr);
 	// invalid player?
-	if (!player) return false;
+	if (!player)
+	{
+		return false;
+	}
 	// set viewcursor
-	player->ViewCursor = pObj;
+	player->ViewCursor = obj;
 	return true;
 }
 
-static long FnGetWind(C4PropList * _this, long x, long y, bool fGlobal)
+static long FnGetWind(C4PropList * _this, long x, long y, bool global)
 {
 	// global wind
-	if (fGlobal) return ::Weather.Wind;
+	if (global)
+	{
+		return ::Weather.Wind;
+	}
 	// local wind
 	MakeAbsCoordinates(_this, x, y);
 	return ::Weather.GetWind(x, y);
 }
 
-static void FnSetWind(C4PropList * _this, long iWind)
+static void FnSetWind(C4PropList * _this, long wind)
 {
-	::Weather.SetWind(iWind);
+	::Weather.SetWind(wind);
 }
 
-static void FnSetTemperature(C4PropList * _this, long iTemperature)
+static void FnSetTemperature(C4PropList * _this, long temperature)
 {
-	::Weather.SetTemperature(iTemperature);
+	::Weather.SetTemperature(temperature);
 }
 
 static long FnGetTemperature(C4PropList * _this)
@@ -1295,22 +1557,26 @@ static long FnGetTemperature(C4PropList * _this)
 	return ::Weather.GetTemperature();
 }
 
-static void FnSetAmbientBrightness(C4PropList * _this, long iBrightness)
+static void FnSetAmbientBrightness(C4PropList * _this, long brightness)
 {
 	if (::Landscape.HasFoW())
-		::Landscape.GetFoW()->Ambient.SetBrightness(iBrightness / 100.);
+	{
+		::Landscape.GetFoW()->Ambient.SetBrightness(brightness / 100.);
+	}
 }
 
 static long FnGetAmbientBrightness(C4PropList * _this)
 {
 	if (!::Landscape.HasFoW())
+	{
 		return 100;
+	}
 	return static_cast<long>(::Landscape.GetFoW()->Ambient.GetBrightness() * 100. + 0.5);
 }
 
-static void FnSetSeason(C4PropList * _this, long iSeason)
+static void FnSetSeason(C4PropList * _this, long season)
 {
-	::Weather.SetSeason(iSeason);
+	::Weather.SetSeason(season);
 }
 
 static long FnGetSeason(C4PropList * _this)
@@ -1318,9 +1584,9 @@ static long FnGetSeason(C4PropList * _this)
 	return ::Weather.GetSeason();
 }
 
-static void FnSetClimate(C4PropList * _this, long iClimate)
+static void FnSetClimate(C4PropList * _this, long climate)
 {
-	::Weather.SetClimate(iClimate);
+	::Weather.SetClimate(climate);
 }
 
 static long FnGetClimate(C4PropList * _this)
@@ -1338,29 +1604,29 @@ static long FnLandscapeHeight(C4PropList * _this)
 	return ::Landscape.GetHeight();
 }
 
-static void FnShakeFree(C4PropList * _this, long x, long y, long rad)
+static void FnShakeFree(C4PropList * _this, long x, long y, long radius)
 {
-	::Landscape.ShakeFree(x, y,rad);
+	::Landscape.ShakeFree(x, y,radius);
 }
 
-static long FnDigFree(C4PropList * _this, long x, long y, long rad, bool no_dig2objects, bool no_instability_check)
+static long FnDigFree(C4PropList * _this, long x, long y, long radius, bool no_dig2objects, bool no_instability_check)
 {
-	return ::Landscape.DigFree(x, y,rad, Object(_this), no_dig2objects, no_instability_check);
+	return ::Landscape.DigFree(x, y,radius, Object(_this), no_dig2objects, no_instability_check);
 }
 
-static long FnDigFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt, bool no_dig2objects, bool no_instability_check)
+static long FnDigFreeRect(C4PropList * _this, long x, long y, long wdt, long hgt, bool no_dig2objects, bool no_instability_check)
 {
-	return ::Landscape.DigFreeRect(iX, iY, iWdt, iHgt, Object(_this), no_dig2objects, no_instability_check);
+	return ::Landscape.DigFreeRect(x, y, wdt, hgt, Object(_this), no_dig2objects, no_instability_check);
 }
 
-static void FnClearFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt)
+static void FnClearFreeRect(C4PropList * _this, long x, long y, long wdt, long hgt)
 {
-	::Landscape.ClearFreeRect(iX, iY, iWdt, iHgt);
+	::Landscape.ClearFreeRect(x, y, wdt, hgt);
 }
 
-static bool FnPathFree(C4PropList * _this, long X1, long Y1, long X2, long Y2)
+static bool FnPathFree(C4PropList * _this, long x1, long y1, long x2, long y2)
 {
-	return !!PathFree(X1, Y1, X2, Y2);
+	return !!PathFree(x1, y1, x2, y2);
 }
 
 // undocumented!
@@ -1383,21 +1649,24 @@ C4Object* FnObject(C4PropList * _this, long iNumber)
 	// See FnObjectNumber
 }
 
-static C4Value FnGameCallEx(C4PropList * _this, C4Value * Pars)
+static C4Value FnGameCallEx(C4PropList * _this, C4Value * parameters)
 {
-	C4String * fn = Pars[0].getStr();
+	C4String * fn = parameters[0].getStr();
 	if (!fn) return C4Value();
 
 	// copy parameters
 	C4AulParSet ParSet;
-	ParSet.Copy(&Pars[1], 9);
+	ParSet.Copy(&parameters[1], 9);
 	// Call
 	return ::Game.GRBroadcast(fn->GetCStr(), &ParSet, true);
 }
 
 static C4Object * FnEditCursor(C4PropList * _this)
 {
-	if (::Control.SyncMode()) return nullptr;
+	if (::Control.SyncMode())
+	{
+		return nullptr;
+	}
 	return Console.EditCursor.GetTarget();
 }
 
@@ -1414,100 +1683,141 @@ static C4String *FnGetLeague(C4PropList * _this, long idx)
 	return String(sIdxLeague.getData());
 }
 
-static int32_t FnGetLeagueScore(C4PropList * _this, long idPlayer)
+static int32_t FnGetLeagueScore(C4PropList * _this, long player_id)
 {
 	// security
-	if (idPlayer < 1) return 0;
+	if (player_id < 1)
+	{
+		return 0;
+	}
 	// get info
-	C4PlayerInfo *pInfo = Game.PlayerInfos.GetPlayerInfoByID(idPlayer);
-	if (!pInfo) return 0;
+	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(player_id);
+	if (!info)
+	{
+		return 0;
+	}
 	// get league score
-	return pInfo->getLeagueScore();
+	return info->getLeagueScore();
 }
 
-static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long idPlayer)
+static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long player_id)
 {
-	if (!Game.Parameters.League.getLength() || !idPlayer) return false;
-	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(idPlayer);
-	if (!info) return false;
+	if (!Game.Parameters.League.getLength() || !player_id)
+	{
+		return false;
+	}
+	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(player_id);
+	if (!info)
+	{
+		return false;
+	}
 	info->SetLeagueProgressData(pNewData ? pNewData->GetCStr() : nullptr);
 	return true;
 }
 
-static C4String *FnGetLeagueProgressData(C4PropList * _this, long idPlayer)
+static C4String *FnGetLeagueProgressData(C4PropList * _this, long player_id)
 {
-	if (!Game.Parameters.League.getLength()) return nullptr;
-	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(idPlayer);
-	if (!info) return nullptr;
+	if (!Game.Parameters.League.getLength())
+	{
+		return nullptr;
+	}
+	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(player_id);
+	if (!info)
+	{
+		return nullptr;
+	}
 	return String(info->GetLeagueProgressData());
 }
 
 // undocumented!
-static bool FnTestMessageBoard(C4PropList * _this, long iForPlr, bool fTestIfInUse)
+static bool FnTestMessageBoard(C4PropList * _this, long player_nr, bool test_if_in_use)
 {
 	// multi-query-MessageBoard is always available if the player is valid =)
 	// (but it won't do anything in developer mode...)
-	C4Player *player = ::Players.Get(iForPlr);
+	C4Player *player = ::Players.Get(player_nr);
 	if (!player) return false;
-	if (!fTestIfInUse) return true;
+	if (!test_if_in_use) return true;
 	// single query only if no query is scheduled
 	return player->HasMessageBoardQuery();
 }
 
 // undocumented!
-static bool FnCallMessageBoard(C4PropList * _this, C4Object *pObj, bool fUpperCase, C4String *szQueryString, long iForPlr)
+static bool FnCallMessageBoard(C4PropList * _this, C4Object *obj, bool upper_case, C4String *query_string, long player_nr)
 {
-	if (!pObj) pObj=Object(_this);
-	if (pObj && !pObj->Status) return false;
+	if (!obj)
+	{
+		obj = Object(_this);
+	}
+	if (obj && !obj->Status)
+	{
+		return false;
+	}
 	// check player
-	C4Player *player = ::Players.Get(iForPlr);
-	if (!player) return false;
+	C4Player *player = ::Players.Get(player_nr);
+	if (!player)
+	{
+		return false;
+	}
 	// remove any previous
-	player->CallMessageBoard(pObj, StdStrBuf(FnStringPar(szQueryString)), !!fUpperCase);
+	player->CallMessageBoard(obj, StdStrBuf(FnStringPar(query_string)), !!upper_case);
 	return true;
 }
 
 // undocumented!
-static bool FnAbortMessageBoard(C4PropList * _this, C4Object *pObj, long iForPlr)
+static bool FnAbortMessageBoard(C4PropList * _this, C4Object *obj, long player_nr)
 {
-	if (!pObj) pObj=Object(_this);
+	if (!obj)
+	{
+		obj = Object(_this);
+	}
 	// check player
-	C4Player *player = ::Players.Get(iForPlr);
-	if (!player) return false;
+	C4Player *player = ::Players.Get(player_nr);
+	if (!player)
+	{
+		return false;
+	}
 	// close TypeIn if active
-	::MessageInput.AbortMsgBoardQuery(pObj, iForPlr);
+	::MessageInput.AbortMsgBoardQuery(obj, player_nr);
 	// abort for it
-	return player->RemoveMessageBoardQuery(pObj);
+	return player->RemoveMessageBoardQuery(obj);
 }
 
-static void FnSetFoW(C4PropList * _this, bool fEnabled, long iPlr)
+static void FnSetFoW(C4PropList * _this, bool enabled, long player_nr)
 {
 	// safety
-	if (!ValidPlr(iPlr)) return;
+	if (!ValidPlr(player_nr))
+	{
+		return;
+	}
 	// set enabled
-	::Players.Get(iPlr)->SetFoW(!!fEnabled);
+	::Players.Get(player_nr)->SetFoW(!!enabled);
 }
 
-static long FnSetMaxPlayer(C4PropList * _this, long iTo)
+static long FnSetMaxPlayer(C4PropList * _this, long player_count)
 {
 	// think positive! :)
-	if (iTo < 0) return false;
+	if (player_count < 0)
+	{
+		return false;
+	}
 	// script functions don't need to pass ControlQueue!
-	Game.Parameters.MaxPlayers = iTo;
+	Game.Parameters.MaxPlayers = player_count;
 	// success
 	return true;
 }
 
-static bool FnGetScenarioAccess(C4PropList * _this, C4String *strMissionAccess)
+static bool FnGetScenarioAccess(C4PropList * _this, C4String *password)
 {
 	// safety
-	if (!strMissionAccess) return false;
+	if (!password) return false;
 
 	// non-sync mode: warn
 	if (::Control.SyncMode())
+	{
 		Log("Warning: using GetScenarioAccess may cause desyncs when playing records!");
+	}
 
-	return SIsModule(Config.General.MissionAccess, FnStringPar(strMissionAccess));
+	return SIsModule(Config.General.MissionAccess, FnStringPar(password));
 }
 
 // Helper to read or write a value from/to a structure. Must be two
@@ -2431,11 +2741,11 @@ static long FnGetTeamCount(C4PropList * _this)
 }
 
 // undocumented!
-static bool FnInitScenarioPlayer(C4PropList * _this, long player_nr, long idTeam)
+static bool FnInitScenarioPlayer(C4PropList * _this, long player_nr, long team_id)
 {
 	C4Player *player = ::Players.Get(player_nr);
 	if (!player) return false;
-	return player->ScenarioAndTeamInit(idTeam);
+	return player->ScenarioAndTeamInit(team_id);
 }
 
 static bool FnSetScoreboardData(C4PropList * _this, long iRowID, long iColID, C4String *pText, long iData)
@@ -2456,7 +2766,7 @@ static int32_t FnGetScoreboardData(C4PropList * _this, long iRowID, long iColID)
 	return Game.Scoreboard.GetCellData(iColID, iRowID);
 }
 
-static bool FnDoScoreboardShow(C4PropList * _this, long iChange, long iForPlr)
+static bool FnDoScoreboardShow(C4PropList * _this, long change, long iForPlr)
 {
 	C4Player *player;
 	if (iForPlr)
@@ -2466,7 +2776,7 @@ static bool FnDoScoreboardShow(C4PropList * _this, long iChange, long iForPlr)
 		if (!(player = ::Players.Get(iForPlr-1))) return false;
 		if (!player->LocalControl) return true;
 	}
-	Game.Scoreboard.DoDlgShow(iChange, false);
+	Game.Scoreboard.DoDlgShow(change, false);
 	return true;
 }
 
@@ -2476,14 +2786,14 @@ static bool FnSortScoreboard(C4PropList * _this, long iByColID, bool fReverse)
 }
 
 // undocumented!
-static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, long idPlayer)
+static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, long player_id)
 {
 	// safety
 	if (!pText) return false;
 	if (!pText->GetCStr()) return false;
-	if (idPlayer && !Game.PlayerInfos.GetPlayerInfoByID(idPlayer)) return false;
+	if (player_id && !Game.PlayerInfos.GetPlayerInfoByID(player_id)) return false;
 	// add data
-	Game.RoundResults.AddCustomEvaluationString(pText->GetCStr(), idPlayer);
+	Game.RoundResults.AddCustomEvaluationString(pText->GetCStr(), player_id);
 	return true;
 }
 
@@ -2643,13 +2953,13 @@ static bool FnSetNextScenario(C4PropList * _this, C4String *szNextMission, C4Str
 	return true;
 }
 
-static long FnGetPlayerControlState(C4PropList * _this, long iPlr, long iControl, bool fMovedState)
+static long FnGetPlayerControlState(C4PropList * _this, long player_nr, long iControl, bool fMovedState)
 {
 	// get control set to check
 	C4PlayerControl *pCheckCtrl = nullptr;
-	if (iPlr != NO_OWNER)
+	if (player_nr != NO_OWNER)
 	{
-		C4Player *player = ::Players.Get(iPlr);
+		C4Player *player = ::Players.Get(player_nr);
 		if (player)
 		{
 			pCheckCtrl = &(player->Control);
