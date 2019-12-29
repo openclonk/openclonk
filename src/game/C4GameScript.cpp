@@ -591,12 +591,7 @@ static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, N
 	else
 		modifier = nullptr;
 	// target object
-	C4Object *pObj = Object(_this);
-	if (pObj)
-	{
-		iX += pObj->GetX();
-		iY += pObj->GetY();
-	}
+	MakeAbsCoordinates(_this, iX, iY);
 	StartSoundEffectAt(FnStringPar(szSound), iX, iY, iLevel, iCustomFalloffDistance, iPitch, modifier);
 	// always return true (network safety!)
 	return true;
