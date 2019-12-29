@@ -107,7 +107,6 @@ public:
 	int32_t ShowCrewCNames; // show clonk names above clonks?
 	int32_t PXSGfx;     // show PXS-graphics (instead of sole pixels)
 	int32_t Gamma; // gamma value
-	int32_t Currency;   // default wealth symbolseb
 	int32_t Monitor;    // monitor index to play on
 	int32_t MaxRefreshDelay; // minimum time after which graphics should be refreshed (ms)
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated

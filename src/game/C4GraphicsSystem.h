@@ -47,21 +47,23 @@ public:
 	bool StartDrawing();
 	void FinishDrawing();
 	void Execute();
-	void FlashMessage(const char *szMessage);
-	void FlashMessageOnOff(const char *strWhat, bool fOn);
+	void FlashMessage(const char *message);
+	void FlashMessageOnOff(const char *description, bool switch_on);
 	void DeactivateDebugOutput();
 	bool Init();
-	bool InitLoaderScreen(const char *szLoaderSpec);
+	bool InitLoaderScreen(const char *image_name);
 	void EnableLoaderDrawing(); // reset black screen loader flag
-	bool SaveScreenshotKey(bool fSaveAll) { return SaveScreenshot(fSaveAll, 2.0f); } // keyboard callback for creating screenshot. create at default zoom.
-	bool SaveScreenshot(bool fSaveAll, float fSaveAllZoom);
-	bool DoSaveScreenshot(bool fSaveAll, const char *szFilename, float fSaveAllZoom);
+	bool SaveScreenshotKey(bool save_all) { return SaveScreenshot(save_all, 2.0f); } // keyboard callback for creating screenshot. create at default zoom.
+	bool SaveScreenshot(bool save_all, float zoom_factor_all);
+	bool DoSaveScreenshot(bool save_all, const char *filename, float zoom_factor_all);
 	inline void InvalidateBg() { iRedrawBackground=2; }
 	inline void OverwriteBg() { InvalidateBg(); }
 
 private:
 	char FlashMessageText[C4MaxTitle+1];
-	int32_t FlashMessageTime,FlashMessageX,FlashMessageY;
+	int32_t FlashMessageTime;
+	int32_t FlashMessageX;
+	int32_t FlashMessageY;
 	void DrawHelp();
 	void DrawFlashMessage();
 	void DrawHoldMessages();

@@ -135,7 +135,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *compiler)
 	compiler->Value(mkNamingAdapt(Windowed,              "Windowed",             0             ,false, true));
 	compiler->Value(mkNamingAdapt(PXSGfx,                "PXSGfx"  ,             1             ));
 	compiler->Value(mkNamingAdapt(Gamma,                 "Gamma"  ,              100           ));
-	compiler->Value(mkNamingAdapt(Currency,              "Currency"  ,           0             ));
 	compiler->Value(mkNamingAdapt(Monitor,               "Monitor",              0             )); // 0 = D3DADAPTER_DEFAULT
 	compiler->Value(mkNamingAdapt(MaxRefreshDelay,       "MaxRefreshDelay",      30            ));
 	compiler->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
@@ -519,7 +518,7 @@ void C4ConfigGeneral::DeterminePaths()
 	SCopy(ExePath.getMData(),SystemDataPath);
 #elif defined(__APPLE__)
 	SCopy(::Application.GetGameDataPath().c_str(), SystemDataPath);
-#elif defined(WITH_APPDIR_INSTALLATION)
+#elif defined(WITH_AUTOMATIC_UPDATE) && defined(WITH_APPDIR_INSTALLATION)
 	// AppDir: layout like normal unix installation, but relative to executable.
 	auto str = FormatString("%s%s", ExePath.getMData(), OC_SYSTEM_DATA_DIR);
 	SCopy(str.getMData(), SystemDataPath);
