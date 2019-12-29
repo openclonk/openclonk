@@ -27,7 +27,7 @@ bool IsKeyDown(int iKey);
 class C4FullScreen: public C4Window
 {
 public:
-	C4MainMenu *pMenu;
+	C4MainMenu *MainMenu;
 public:
 	C4FullScreen();
 	~C4FullScreen() override;
@@ -36,9 +36,9 @@ public:
 	bool ShowAbortDlg(); // show game abort dialog (Escape pressed)
 	bool ActivateMenuMain();
 	void CloseMenu();
-	bool MenuKeyControl(BYTE byCom); // direct keyboard callback
+	bool MenuKeyControl(BYTE command); // direct keyboard callback
 	using C4Window::Init;
-	C4Window * Init(C4AbstractApp * pApp);
+	C4Window * Init(C4AbstractApp * application);
 	// User requests close
 	void Close() override;
 	void Clear() override;

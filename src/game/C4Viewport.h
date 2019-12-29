@@ -33,36 +33,39 @@ public:
 	C4Viewport();
 	~C4Viewport();
 	// "display" coordinates
-	int32_t ViewWdt,ViewHgt;
+	int32_t ViewWdt;
+	int32_t ViewHgt;
 	// position of landscape border (left,top,right, bottom) in viewport. 0 if there is not border
 	float BorderLeft, BorderTop, BorderRight, BorderBottom;
-	int32_t DrawX,DrawY;
+	int32_t DrawX;
+	int32_t DrawY;
 	// facets used for last drawing operations
-	C4TargetFacet last_game_draw_cgo, last_gui_draw_cgo;
+	C4TargetFacet last_game_draw_cgo;
+	C4TargetFacet last_gui_draw_cgo;
 	// factor between "landscape" and "display"
 	bool fIsNoOwnerViewport; // this viewport is found for searches of NO_OWNER-viewports; even if it has a player assigned (for network obs)
 
 	float GetZoom() { return Zoom; }
-	void SetZoom(float zoomValue);
-	float GetGUIZoom() const { return Clamp<float>(float(ViewWdt)/1280,0.5f,1.0f); }
+	void SetZoom(float zoom_value);
+	float GetGUIZoom() const { return Clamp<float>(float(ViewWdt)/1280, 0.5f, 1.0f); }
 	void Execute();
-	void ClearPointers(C4Object *pObj);
-	void SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt);
+	void ClearPointers(C4Object *obj);
+	void SetOutputSize(int32_t draw_x, int32_t draw_y, int32_t out_x, int32_t out_y, int32_t out_wdt, int32_t out_hgt);
 	void CalculateZoom();
 	void ChangeZoom(float by_factor);
-	void SetZoom(float to_zoom, bool direct=false);
+	void SetZoom(float to_zoom, bool direct = false);
 	void SetZoomLimits(float to_min_zoom, float to_max_zoom);
 	float GetZoomByViewRange(int32_t size_x, int32_t size_y) const; // set zoom such that the supplied size is visible in the viewport
 	float GetZoomLimitMin() const { return ZoomLimitMin; }
 	float GetZoomLimitMax() const { return ZoomLimitMax; }
 	float GetZoomTarget() const { return ZoomTarget; }
-	bool Init(int32_t iPlayer, bool fSetTempOnly);
-	void DropFile(const char* fileName, float x, float y);
+	bool Init(int32_t for_player, bool set_temporary_only);
+	void DropFile(const char* filename, float x, float y);
 	bool TogglePlayerLock();
 	bool GetPlayerLock() { return PlayerLock; }
 	void NextPlayer();
 	C4Rect GetOutputRect() { return C4Rect(OutX, OutY, ViewWdt, ViewHgt); }
-	bool IsViewportMenu(class C4Menu *pMenu);
+	bool IsViewportMenu(class C4Menu *menu);
 	C4Viewport *GetNext() { return Next; }
 	int32_t GetPlayer() { return Player; }
 	void CenterPosition();
@@ -83,7 +86,7 @@ public:
 	float WindowToGameY(int32_t win_y) { return GetViewY() + float(win_y) / Zoom; }
 
 	/** Scroll the viewport by x,y */
-	void ScrollView(float byX, float byY);
+	void ScrollView(float by_x, float by_y);
 	/** Set the view position. */
 	void SetViewX(float x);
 	void SetViewY(float y);
@@ -91,7 +94,7 @@ public:
 	void SetViewOffset(int32_t x, int32_t y) { viewOffsX = x; viewOffsY = y; }
 
 private:
-	float viewX,viewY;	// current view position in landscape coordinates (upper left corner)
+	float viewX, viewY;	// current view position in landscape coordinates (upper left corner)
 	float targetViewX, targetViewY; // target view position for smooth scrolling
 	int32_t viewOffsX, viewOffsY;	// desired view offset in landscape coordinates
 
@@ -110,7 +113,7 @@ protected:
 	std::unique_ptr<C4ViewportWindow> pWindow;
 	std::unique_ptr<C4FoWRegion> pFoW;
 	void DrawPlayerStartup(C4TargetFacet &cgo);
-	void Draw(C4TargetFacet &cgo, bool fDrawGame, bool fDrawOverlay);
+	void Draw(C4TargetFacet &cgo, bool draw_game, bool draw_overlay);
 	void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);
 	void DrawMenu(C4TargetFacet &cgo);
 	void DrawPlayerInfo(C4TargetFacet &cgo);
@@ -121,7 +124,7 @@ public:
 	float GetZoom() const { return Zoom; }
 	void AdjustPosition(bool immediate = false);
 	C4ViewportWindow* GetWindow() {return pWindow.get();}
-	bool UpdateOutputSize(int32_t new_width=0, int32_t new_height=0);
+	bool UpdateOutputSize(int32_t new_width = 0, int32_t new_height = 0);
 	bool ViewPositionByScrollBars();
 	bool ScrollBarsByViewPosition();
 
@@ -143,29 +146,29 @@ public:
 	C4ViewportList();
 	~C4ViewportList();
 	void Clear();
-	void ClearPointers(C4Object *pObj);
+	void ClearPointers(C4Object *obj);
 	void Execute(bool DrawBackground);
 	void SortViewportsByPlayerControl();
 	void RecalculateViewports();
 	void DisableFoW();
 	void EnableFoW();
-	bool CreateViewport(int32_t iPlayer, bool fSilent=false);
-	bool CloseViewport(int32_t iPlayer, bool fSilent);
+	bool CreateViewport(int32_t player_nr, bool silent = false);
+	bool CloseViewport(int32_t player_nr, bool silent);
 	int32_t GetViewportCount();
-	C4Viewport* GetViewport(int32_t iPlayer, C4Viewport* pPrev = nullptr);
+	C4Viewport* GetViewport(int32_t player_nr, C4Viewport* prev = nullptr);
 	C4Viewport* GetFirstViewport() { return FirstViewport; }
-	bool CloseViewport(C4Viewport * cvp);
+	bool CloseViewport(C4Viewport * viewport);
 #ifdef USE_WIN32_WINDOWS
 	C4Viewport* GetViewport(HWND hwnd);
 #endif
-	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius = 0, int32_t *outPlayer = nullptr);
+	int32_t GetAudibility(int32_t x, int32_t y, int32_t *pan, int32_t audibility_radius = 0, int32_t *out_player = nullptr);
 	bool ViewportNextPlayer();
 
-	bool FreeScroll(C4Vec2D vScrollBy); // key callback: Scroll ownerless viewport by some offset
+	bool FreeScroll(C4Vec2D scroll_by); // key callback: Scroll ownerless viewport by some offset
 	bool ViewportZoomOut();
 	bool ViewportZoomIn();
 protected:
-	void MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+	void MouseMoveToViewport(int32_t button, int32_t x, int32_t y, DWORD key_param);
 	void DrawFullscreenBackground();
 	C4Viewport *FirstViewport{nullptr};
 	C4Facet ViewportArea;
