@@ -2876,7 +2876,6 @@ bool C4Game::InitGame(C4Group &group, InitMode init_mode, bool load_sky, C4Value
 		Log(LoadResStr("IDS_PRC_ENVIRONMENT"));
 		InitVegetation();
 		InitInEarth();
-		InitEnvironment();
 		InitRules();
 		InitGoals();
 		Landscape.PostInitMap();
@@ -4099,20 +4098,6 @@ void C4Game::InitValueOverloads()
 		if ((def = ::Definitions.ID2Def(overload_id)))
 		{
 			def->Value = C4S.Game.Realism.ValueOverloads.GetIDCount(overload_id);
-		}
-	}
-}
-
-void C4Game::InitEnvironment()
-{
-	// Place environment objects
-	C4ID id;
-	int32_t amount;
-	for (int32_t index = 0; (id = C4S.Environment.Objects.GetID(index, &amount)); index++)
-	{
-		for (int32_t placed = 0; placed < amount; placed++)
-		{
-			CreateObject(id, nullptr);
 		}
 	}
 }

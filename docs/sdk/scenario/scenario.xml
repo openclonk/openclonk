@@ -394,21 +394,6 @@
   </text>
   <text>
     <table>
-      <caption id="SektionEnvironment">Section [Environment]</caption>
-      <rowh>
-        <col>Value</col>
-        <col>Data type</col>
-        <col>Description</col>
-      </rowh>
-      <row>
-        <literal_col>Objects</literal_col>
-        <col>ID list</col>
-        <col>Environment control objects that are placed at game start.</col>
-      </row>
-    </table>
-  </text>
-  <text>
-    <table>
       <caption id="SektionDefinitions">Section [Definitions]</caption>
       <rowh>
         <col>Value</col>

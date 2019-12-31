@@ -205,15 +205,6 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 };
 
-class C4SEnvironment
-{
-public:
-	C4IDList Objects;
-public:
-	void Default();
-	void CompileFunc(StdCompiler *pComp);
-};
-
 class C4Scenario
 {
 public:
@@ -225,7 +216,6 @@ public:
 	C4SPlrStart     PlrStart[C4S_MaxPlayer];
 	C4SLandscape    Landscape;
 	C4SWeather      Weather;
-	C4SEnvironment  Environment;
 public:
 	void SetExactLandscape();
 	void Clear();

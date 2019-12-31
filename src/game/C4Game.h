@@ -238,7 +238,6 @@ protected:
 	void InitGoals();
 	void InitRules();
 	void InitValueOverloads();
-	void InitEnvironment();
 	void CloseScenario();
 	void DeleteObjects(bool delete_inactive);
 	void ExecObjects();

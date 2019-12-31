@@ -85,7 +85,6 @@ void C4Scenario::Default()
 	Landscape.Default();
 	Weather.Default();
 	Game.Realism.Default();
-	Environment.Default();
 }
 
 bool C4Scenario::Load(C4Group &hGroup, bool fLoadSection, bool suppress_errors)
@@ -133,7 +132,6 @@ void C4Scenario::CompileFunc(StdCompiler *pComp, bool fSection)
 		pComp->Value(mkNamingAdapt(PlrStart[i], FormatString("Player%d", i+1).getData()));
 	pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
 	pComp->Value(mkNamingAdapt(Weather, "Weather"));
-	pComp->Value(mkNamingAdapt(Environment, "Environment"));
 }
 
 int32_t C4Scenario::GetMinPlayer()
@@ -374,16 +372,6 @@ void C4SWeather::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(YearSpeed,               "YearSpeed",               C4SVal(50)));
 	pComp->Value(mkNamingAdapt(Wind,                    "Wind",                  C4SVal(0,70,-100,+100), true));
 	pComp->Value(mkNamingAdapt(NoGamma,                 "NoGamma",               true));
-}
-
-void C4SEnvironment::Default()
-{
-	Objects.Clear();
-}
-
-void C4SEnvironment::CompileFunc(StdCompiler *pComp)
-{
-	pComp->Value(mkNamingAdapt(Objects,                 "Objects",               C4IDList()));
 }
 
 void C4SRealism::Default()
