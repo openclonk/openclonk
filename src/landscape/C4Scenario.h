@@ -208,8 +208,6 @@ public:
 class C4SAnimals
 {
 public:
-	C4IDList EarthNest;
-public:
 	void Default();
 	void CompileFunc(StdCompiler *pComp);
 };

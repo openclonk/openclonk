@@ -365,11 +365,6 @@
         <col>Data type</col>
         <col>Description</col>
       </rowh>
-      <row>
-        <col>Nest</col>
-        <col>ID list</col>
-        <col>Buried nests.</col>
-      </row>
     </table>
   </text>
   <text>

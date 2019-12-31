@@ -2876,7 +2876,6 @@ bool C4Game::InitGame(C4Group &group, InitMode init_mode, bool load_sky, C4Value
 		Log(LoadResStr("IDS_PRC_ENVIRONMENT"));
 		InitVegetation();
 		InitInEarth();
-		InitAnimals();
 		InitEnvironment();
 		InitRules();
 		InitGoals();
@@ -3477,20 +3476,6 @@ void C4Game::InitVegetation()
 		}
 	}
 }
-
-void C4Game::InitAnimals()
-{
-	C4ID idAnimal; int32_t iCount;
-	// Place nests
-	for (int32_t cnt = 0; (idAnimal = C4S.Animals.EarthNest.GetID(cnt,&iCount)); cnt++)
-	{
-		for (int32_t cnt2 = 0; cnt2 < iCount; cnt2++)
-		{
-			PlaceInEarth(idAnimal);
-		}
-	}
-}
-
 
 bool C4Game::LoadScenarioComponents()
 {

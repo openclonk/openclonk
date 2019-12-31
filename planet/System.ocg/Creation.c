@@ -15,7 +15,7 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 	var mat;
 	var objhgt = id->GetDefCoreVal("Height", "DefCore");
 	
-	mat = Material(mat_str);
+	mat = Material(mat_str ?? "Earth");
 	// Some failsavety.
 	if (mat == -1)
 		if (mat_str != "GBackSolid" && mat_str != "GBackSemiSolid" && mat_str != "GBackLiquid" && mat_str != "GBackSky")

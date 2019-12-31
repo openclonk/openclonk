@@ -7,6 +7,10 @@
 
 protected func Initialize()
 {
+	// Earth objects
+	PlaceObjects(Loam, 50);
+	PlaceObjects(Firestone, 20);
+
 	// Create the parkour goal.
 	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	// Set start point.
