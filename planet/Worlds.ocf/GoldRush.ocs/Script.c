@@ -123,8 +123,7 @@ private func InitVegetation(int map_size)
 private func InitAnimals(int map_size)
 {
 	// Some butterflies as atmosphere.
-	for (var i = 0; i < 10 + 5 * map_size; i++)
-		PlaceAnimal(Butterfly);
+	Butterfly->Place(10 + 5 * map_size);
 	return;
 }
 

@@ -3443,41 +3443,6 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t x, int32_t y, i
 	return nullptr;
 }
 
-C4Object* C4Game::PlaceAnimal(C4PropList* PropList)
-{
-	C4Def * pDef;
-	if (!PropList || !(pDef = PropList->GetDef())) return nullptr;
-	int32_t iX, iY;
-	// Placement
-	switch (PropList->GetPropertyInt(P_Placement))
-	{
-		// Running free
-	case C4D_Place_Surface:
-		iX = Random(::Landscape.GetWidth()); iY = Random(::Landscape.GetHeight());
-		if (!FindSolidGround(iX, iY, pDef->Shape.Wdt)) return nullptr;
-		break;
-		// In liquid
-	case C4D_Place_Liquid:
-		iX = Random(::Landscape.GetWidth()); iY = Random(::Landscape.GetHeight());
-		if (!FindSurfaceLiquid(iX, iY, pDef->Shape.Wdt, pDef->Shape.Hgt))
-			if (!FindLiquid(iX, iY, pDef->Shape.Wdt, pDef->Shape.Hgt))
-				return nullptr;
-		iY += pDef->Shape.Hgt/2;
-		break;
-		// Floating in air
-	case C4D_Place_Air:
-		iX = Random(::Landscape.GetWidth());
-		for (iY = 0; (iY<::Landscape.GetHeight()) && !GBackSemiSolid(iX, iY); iY++) {}
-		if (iY <= 0) return nullptr;
-		iY = Random(iY);
-		break;
-	default:
-		return nullptr;
-	}
-	// Create object
-	return CreateObject(PropList, nullptr, NO_OWNER, iX, iY);
-}
-
 void C4Game::InitInEarth()
 {
 	const int32_t maxvid = 100;
@@ -3515,20 +3480,11 @@ void C4Game::InitVegetation()
 
 void C4Game::InitAnimals()
 {
-	int32_t cnt, cnt2;
 	C4ID idAnimal; int32_t iCount;
-	// Place animals
-	for (cnt = 0; (idAnimal = C4S.Animals.FreeLife.GetID(cnt,&iCount)); cnt++)
-	{
-		for (cnt2 = 0; cnt2 < iCount; cnt2++)
-		{
-			PlaceAnimal(C4Id2Def(idAnimal));
-		}
-	}
 	// Place nests
-	for (cnt = 0; (idAnimal = C4S.Animals.EarthNest.GetID(cnt,&iCount)); cnt++)
+	for (int32_t cnt = 0; (idAnimal = C4S.Animals.EarthNest.GetID(cnt,&iCount)); cnt++)
 	{
-		for (cnt2 = 0; cnt2 < iCount; cnt2++)
+		for (int32_t cnt2 = 0; cnt2 < iCount; cnt2++)
 		{
 			PlaceInEarth(idAnimal);
 		}

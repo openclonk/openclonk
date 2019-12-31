@@ -214,7 +214,6 @@ public:
 	int32_t ObjectCount(C4ID id);
 	void CastObjects(C4ID id, C4Object *creator, int32_t num, int32_t level, int32_t x, int32_t y, int32_t owner = NO_OWNER, int32_t controller = NO_OWNER, C4ValueArray *out_objects = nullptr);
 	C4Object *PlaceVegetation(C4PropList *def, int32_t x, int32_t y, int32_t wdt, int32_t hgt, int32_t growth, C4PropList *shape_proplist, C4PropList * out_pos_proplist);
-	C4Object *PlaceAnimal(C4PropList *def);
 	C4Value GRBroadcast(const char *function, C4AulParSet *pars = nullptr, bool pass_error = false, bool reject_test = false);  // call function in scenario script and all goals/rules/environment objects
 
 	bool LoadScenarioSection(const char *section_name, DWORD flags);

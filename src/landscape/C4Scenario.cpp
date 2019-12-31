@@ -380,13 +380,11 @@ void C4SWeather::CompileFunc(StdCompiler *pComp)
 
 void C4SAnimals::Default()
 {
-	FreeLife.Clear();
 	EarthNest.Clear();
 }
 
 void C4SAnimals::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(FreeLife,                "Animal",               C4IDList()));
 	pComp->Value(mkNamingAdapt(EarthNest,               "Nest",                  C4IDList()));
 }
 

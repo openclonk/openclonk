@@ -47,6 +47,5 @@ private func InitVegetation()
 private func InitAnimals(int map_size)
 {
 	// Some butterflies
-	for (var i = 0; i < 10 + 5 * Max(1, LandscapeWidth() / 500); i++)
-		PlaceAnimal(Butterfly);
+	Butterfly->Place(10 + 5 * Max(1, LandscapeWidth() / 500));
 }

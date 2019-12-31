@@ -961,11 +961,6 @@ C4Object* FnPlaceVegetation(C4PropList * _this, C4PropList * Def, long x, long y
 	}
 }
 
-C4Object* FnPlaceAnimal(C4PropList * _this, C4PropList * Def)
-{
-	return Game.PlaceAnimal(Def? Def : _this);
-}
-
 static bool FnHostile(C4PropList * _this, long player_nr1, long player_nr2, bool check_one_way_only)
 {
 	if (check_one_way_only)
@@ -3186,7 +3181,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(Hostile);
 	F(SetHostility);
 	F(PlaceVegetation);
-	F(PlaceAnimal);
 	F(GameOver);
 	F(GetHiRank);
 	F(GetCrew);

@@ -204,8 +204,7 @@ private func InitAnimals(int map_size, int difficulty)
 	var hgt = LandscapeHeight();
 	
 	// Some butterflies as atmosphere.
-	for (var i = 0; i < 8; i++)
-		PlaceAnimal(Butterfly);
+	Butterfly->Place(8);
 		
 	// Some wipfs underground.
 	Wipf->Place(10);

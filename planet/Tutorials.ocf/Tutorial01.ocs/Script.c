@@ -239,8 +239,7 @@ private func InitAnimals()
 	wipf.Description = "$WipfDescription$";
 	
 	// Some butterflies as atmosphere.
-	for (var i = 0; i < 25; i++)
-		PlaceAnimal(Butterfly);
+	Butterfly->Place(25);
 		
 	// Some fish in the big lake.
 	Fish->Place(5, Rectangle(500, 300, 300, 150));

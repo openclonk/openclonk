@@ -208,7 +208,6 @@ public:
 class C4SAnimals
 {
 public:
-	C4IDList FreeLife;
 	C4IDList EarthNest;
 public:
 	void Default();
