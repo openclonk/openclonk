@@ -205,13 +205,6 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 };
 
-class C4SAnimals
-{
-public:
-	void Default();
-	void CompileFunc(StdCompiler *pComp);
-};
-
 class C4SEnvironment
 {
 public:
@@ -231,7 +224,6 @@ public:
 	C4SGame         Game;
 	C4SPlrStart     PlrStart[C4S_MaxPlayer];
 	C4SLandscape    Landscape;
-	C4SAnimals      Animals;
 	C4SWeather      Weather;
 	C4SEnvironment  Environment;
 public:

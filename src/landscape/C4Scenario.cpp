@@ -83,7 +83,6 @@ void C4Scenario::Default()
 	Game.Default();
 	for (cnt=0; cnt<C4S_MaxPlayer; cnt++) PlrStart[cnt].Default();
 	Landscape.Default();
-	Animals.Default();
 	Weather.Default();
 	Game.Realism.Default();
 	Environment.Default();
@@ -133,7 +132,6 @@ void C4Scenario::CompileFunc(StdCompiler *pComp, bool fSection)
 	for (int32_t i = 0; i < C4S_MaxPlayer; i++)
 		pComp->Value(mkNamingAdapt(PlrStart[i], FormatString("Player%d", i+1).getData()));
 	pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
-	pComp->Value(mkNamingAdapt(Animals, "Animals"));
 	pComp->Value(mkNamingAdapt(Weather, "Weather"));
 	pComp->Value(mkNamingAdapt(Environment, "Environment"));
 }
@@ -376,14 +374,6 @@ void C4SWeather::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(YearSpeed,               "YearSpeed",               C4SVal(50)));
 	pComp->Value(mkNamingAdapt(Wind,                    "Wind",                  C4SVal(0,70,-100,+100), true));
 	pComp->Value(mkNamingAdapt(NoGamma,                 "NoGamma",               true));
-}
-
-void C4SAnimals::Default()
-{
-}
-
-void C4SAnimals::CompileFunc(StdCompiler *pComp)
-{
 }
 
 void C4SEnvironment::Default()

@@ -359,16 +359,6 @@
   </text>
   <text>
     <table>
-      <caption id="SektionAnimals">Section [Animals]</caption>
-      <rowh>
-        <col>Value</col>
-        <col>Data type</col>
-        <col>Description</col>
-      </rowh>
-    </table>
-  </text>
-  <text>
-    <table>
       <caption id="SektionWeather">Section [Weather]</caption>
       <rowh>
         <col>Value</col>
