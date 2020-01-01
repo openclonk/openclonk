@@ -58,12 +58,12 @@
       <row>
         <col>Difficulty</col>
         <col>Integer</col>
-        <col>Difficulty of the scenario. Scenarios in a folder are sorted ascendingly by difficulty if specified or by the alphabet otherwise.</col>
+        <col>Difficulty of the scenario. Scenarios in a folder are sorted by alphabetical order usually, but if this value is specified they are sorted by difficulty in ascending order instead.</col>
       </row>
       <row>
         <col>NoInitialize</col>
         <col>Integer</col>
-        <col>0 or 1. If 1, basic startup objects as defined in Scenario.txt (player material and buildings, animals, vegetation) are not placed. This flag is automatically set in savegaes and is used to avoid duplication by repeated scenario initialization. The flag ignores among others the values Buildings, Vehicles, Material, Vegetation, InEarth, and Animals.</col>
+        <col>0 or 1. If 1, basic startup objects as defined in Scenario.txt (player material and buildings) are not placed. This flag is automatically set in savegames and is used to avoid duplication by repeated scenario initialization. The flag ignores among others the values Buildings, Vehicles, Material, and InEarth.</col>
       </row>
       <row>
         <col>MissionAccess</col>
