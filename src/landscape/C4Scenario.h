@@ -163,8 +163,6 @@ class C4SLandscape
 {
 public:
 	bool ExactLandscape;
-	C4SVal VegLevel;
-	C4IDList Vegetation;
 	C4SVal InEarthLevel;
 	C4IDList InEarth;
 	int32_t BottomOpen,TopOpen;

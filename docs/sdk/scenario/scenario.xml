@@ -201,16 +201,6 @@
         <col>Description</col>
       </rowh>
       <row>
-        <literal_col>Vegetation</literal_col>
-        <col>ID list</col>
-        <col>Vegetation types and ratio.</col>
-      </row>
-      <row>
-        <literal_col>VegetationLevel</literal_col>
-        <col>4 integers</col>
-        <col>0-100. Vegetation amount.</col>
-      </row>
-      <row>
         <literal_col>InEarth</literal_col>
         <col>ID list</col>
         <col>Types and proportionate shares of buried objects.</col>

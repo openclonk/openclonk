@@ -2874,7 +2874,6 @@ bool C4Game::InitGame(C4Group &group, InitMode init_mode, bool load_sky, C4Value
 	if (!C4S.Head.NoInitialize && landscape_loaded)
 	{
 		Log(LoadResStr("IDS_PRC_ENVIRONMENT"));
-		InitVegetation();
 		InitInEarth();
 		InitRules();
 		InitGoals();
@@ -3455,25 +3454,6 @@ void C4Game::InitInEarth()
 		for (cnt = 0; cnt < amt; cnt++)
 			PlaceInEarth(vidlist[Random(vidnum)]);
 
-}
-
-void C4Game::InitVegetation()
-{
-	const int32_t maxvid = 100;
-	int32_t cnt, vidnum;
-	C4ID vidlist[maxvid];
-	// Amount
-	int32_t amt=(::Landscape.GetWidth()/50)*C4S.Landscape.VegLevel.Evaluate()/100;
-	// Get percentage vidlist from C4S
-	vidnum = ListExpandValids(C4S.Landscape.Vegetation, vidlist, maxvid);
-	// Place vegetation
-	if (vidnum > 0)
-	{
-		for (cnt = 0; cnt < amt; cnt++)
-		{
-			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0, 0,::Landscape.GetWidth(),::Landscape.GetHeight(),-1, nullptr, nullptr);
-		}
-	}
 }
 
 bool C4Game::LoadScenarioComponents()

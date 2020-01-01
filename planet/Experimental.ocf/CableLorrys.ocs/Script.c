@@ -10,6 +10,8 @@
 
 protected func Initialize()
 {
+	Mushroom->Place(CalcVegetationAmount());
+
 	//var workshop = CreateObjectAbove(ToolsWorkshop, 835, 360);
 	//var c1 = CreateObjectAbove(CableCrossing, 765, 355);
 	//var c2 = CreateObjectAbove(CableCrossing, 695, 415);

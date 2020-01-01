@@ -234,7 +234,6 @@ public:
 protected:
 	void Default();
 	void InitInEarth();
-	void InitVegetation();
 	void InitGoals();
 	void InitRules();
 	void InitValueOverloads();

@@ -56,6 +56,8 @@ protected func Initialize()
 	AddEffect("Snowfall", nil, 1, 2);
 	//Wind
 	Sound("Environment::WindLoop", true, 40, nil, +1);
+	// Vegetation
+	Tree_Coniferous->Place(CalcVegetationAmount());
 
 	// Spawn some chests with items around the map.
 	for (var i = 0; i < 10; i++)
