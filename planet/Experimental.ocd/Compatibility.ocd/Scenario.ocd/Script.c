@@ -32,6 +32,7 @@ static const PlayerProfile = new Global
 	Crew = {Clonk = 1},
 	BaseMaterial = {},
 	BaseProduction = {},
+	Vehicles = {},
 };
 
 local Player1 = nil;
@@ -173,5 +174,51 @@ func InitializePlayer(int player_nr, int x, int y, object base, int team, id ext
 	{
 		DoBaseProduction(player_nr, material, 1);
 	}
+	
+	// Vehicles
+	for (var type in GetAsList(settings.Vehicles))
+	{
+		var vehicle = CreateObject(type, x, y, player_nr);
+		if (!vehicle)
+		{
+			continue;
+		}
+		if (base)
+		{
+			vehicle->Enter(base);
+			vehicle->SetCommand("Exit");
+		}
+		else
+		{
+			var area = Loc_InRect(x - 30, y - 100, 60, 200);
+			PlaceOnSurface(vehicle, area);
+		}
+	}
 	return true;
+}
+
+func PlaceOnSurface(object target, array area)
+{
+	var type = target->GetId();
+	var left = type->GetDefOffset(0);
+	var space_top = Loc_Space(type->GetDefHeight(), CNAT_Top);
+	var space_l = Loc_Space(Abs(left), CNAT_Left);
+	var space_r = Loc_Space(left + type->GetDefWidth(), CNAT_Right);
+	var on_surface = Loc_Wall(CNAT_Bottom, Loc_Not(Loc_Liquid()));
+	// Find object near the desired area first, with less restrictions
+	var spot = FindLocation(on_surface, space_l, space_r, space_top, area);
+	spot = spot ?? FindLocation(on_surface, space_top, area);
+	spot = spot ?? FindLocation(on_surface, area);
+	// Same again, but on the whole landscape
+	if (area != nil)
+	{
+		spot = FindLocation(on_surface, space_l, space_r, space_top);
+		spot = spot ?? FindLocation(on_surface, space_top);
+		spot = spot ?? FindLocation(on_surface);
+	}
+
+	if (spot)
+	{
+		target->SetPosition(spot.x, spot.y);
+	}
 }

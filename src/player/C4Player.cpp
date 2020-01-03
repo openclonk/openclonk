@@ -548,27 +548,6 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 	}
 }
 
-void C4Player::PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
-{
-	int32_t cnt,cnt2,ctx,cty;
-	C4Def *def; C4ID cid; C4Object *cobj;
-	for (cnt=0; (cid=Game.C4S.PlrStart[PlrStartIndex].ReadyVehic.GetID(cnt)); cnt++)
-	{
-		if ((def=C4Id2Def(cid)))
-			for (cnt2=0; cnt2<Game.C4S.PlrStart[PlrStartIndex].ReadyVehic.GetCount(cnt); cnt2++)
-			{
-				ctx=tx1+Random(tx2-tx1); cty=ty;
-				if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
-					FindLevelGround(ctx,cty,def->Shape.Wdt,6);
-				if ((cobj=Game.CreateObject(cid,nullptr,Number,ctx,cty)))
-				{
-					if (FirstBase) // First base overrides target location
-						{ cobj->Enter(FirstBase); cobj->SetCommand(C4CMD_Exit); }
-				}
-			}
-	}
-}
-
 void C4Player::PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
 {
 	int32_t cnt,cnt2,ctx,cty;
@@ -675,7 +654,6 @@ bool C4Player::ScenarioInit()
 	C4Object *FirstBase = nullptr;
 	PlaceReadyBase(ptx,pty,&FirstBase);
 	PlaceReadyMaterial(ptx-10,ptx+10,pty,FirstBase);
-	PlaceReadyVehic(ptx-30,ptx+30,pty,FirstBase);
 	PlaceReadyCrew(ptx-30,ptx+30,pty,FirstBase);
 
 	// set initial hostility by team info
