@@ -116,10 +116,6 @@ public:
 	int32_t CurrentScore,InitialScore;
 	int32_t ObjectsOwned;
 	HostilitySet Hostility;
-	// Home Base
-	C4IDList BaseMaterial;
-	C4IDList BaseProduction;
-	int32_t ProductionDelay,ProductionUnit;
 	// Crew
 	C4ObjectInfoList CrewInfoList; // No Save //
 	C4ObjectList Crew; // Save new in 4.95.2 (for sync reasons)
@@ -210,7 +206,6 @@ protected:
 	void InitControl();
 	void UpdateView();
 	void CheckElimination();
-	void ExecBaseProduction();
 	void PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase);
 	void PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
 	void PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
