@@ -175,11 +175,6 @@
         <col>ID list</col>
         <col>Objects the player should initially be able to create.</col>
       </row>
-      <row>
-        <literal_col>Magic</literal_col>
-        <col>ID list</col>
-        <col>Available spells. If the list is empty, all spells are available (backwards compatibility).</col>
-      </row>
     </table>
   </text>
   <text>
