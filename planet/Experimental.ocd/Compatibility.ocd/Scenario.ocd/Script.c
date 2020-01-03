@@ -26,6 +26,19 @@
  
 /* --- Properties --- */
 
+static const PlayerProfile = new Global
+{
+	Wealth = [0, 0, 0, 250]
+	Crew = {Clonk = 1},
+	BaseMaterial = {},
+	BaseProduction = {},
+};
+
+local Player1 = nil;
+local Player2 = nil;
+local Player3 = nil;
+local Player4 = nil;
+
 local Vegetation = {};               // Vegetation types and ratio.
 local VegetationLevel = [50, 30, 0, 100];
 local InEarth = {};
@@ -98,13 +111,9 @@ func InitAnimals()
 func InitEnvironment()
 {
 	// Place environment objects
-	for (var prop in GetProperties(Objects))
+	for (var type in GetAsList(Objects))
 	{
-		var type = GetDefinition(prop);
-		for (var amount = Objects[prop]; amount > 0; --amount)
-		{
-			CreateObject(type, 0, 0, NO_OWNER);
-		}
+		CreateObject(type, 0, 0, NO_OWNER);
 	}
 }
 
@@ -132,4 +141,37 @@ func GetAsList(proplist props)
 		}
 	}
 	return list;
+}
+
+func InitializePlayer(int player_nr, int x, int y, object base, int team, id extra_data)
+{
+	var profiles = [Player1, Player2, Player3, Player4];
+	RemoveHoles(profiles);
+	if (!GetLength(profiles))
+	{
+		profiles = [new PlayerProfile {}];
+	}
+	
+	var settings;
+	var profiles_num = GetLength(profiles);
+	if (profiles_num > 1)
+	{
+		settings = profiles[player_nr % profiles_num];
+	}
+	else
+	{
+		settings = profiles[0];
+	}
+
+	// Wealth, home base materials, abilities
+	SetWealth(player_nr, RandomRange(settings.Wealth[0], settings.Wealth[1], settings.Wealth[2], settings.Wealth[3]));
+	for (var material in GetAsList(settings.BaseMaterial))
+	{
+		DoBaseMaterial(player_nr, material, 1);
+	}
+	for (var material in GetAsList(settings.BaseProduction))
+	{
+		DoBaseProduction(player_nr, material, 1);
+	}
+	return true;
 }
