@@ -238,7 +238,6 @@ void C4SPlrStart::Default()
 	EnforcePosition=0;
 	ReadyCrew.Default();
 	ReadyBase.Default();
-	ReadyMaterial.Default();
 	BuildKnowledge.Default();
 }
 
@@ -251,7 +250,6 @@ bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 {
 	return (ReadyCrew == rhs.ReadyCrew)
 	       && (ReadyBase == rhs.ReadyBase)
-	       && (ReadyMaterial == rhs.ReadyMaterial)
 	       && (BuildKnowledge == rhs.BuildKnowledge);
 }
 
@@ -263,7 +261,6 @@ void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(EnforcePosition,         "EnforcePosition",       0));
 	pComp->Value(mkNamingAdapt(ReadyCrew,               "Crew",                  crewDefault));
 	pComp->Value(mkNamingAdapt(ReadyBase,               "Buildings",             C4IDList()));
-	pComp->Value(mkNamingAdapt(ReadyMaterial,           "Material",              C4IDList()));
 	pComp->Value(mkNamingAdapt(BuildKnowledge,          "Knowledge",             C4IDList()));
 }
 

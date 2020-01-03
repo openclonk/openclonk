@@ -548,34 +548,6 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 	}
 }
 
-void C4Player::PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
-{
-	int32_t cnt,cnt2,ctx,cty;
-	C4Def *def; C4ID cid;
-
-	// In base
-	if (FirstBase)
-	{
-		FirstBase->CreateContentsByList(Game.C4S.PlrStart[PlrStartIndex].ReadyMaterial);
-	}
-
-	// Outside
-	else
-	{
-		for (cnt=0; (cid=Game.C4S.PlrStart[PlrStartIndex].ReadyMaterial.GetID(cnt)); cnt++)
-		{
-			if ((def=C4Id2Def(cid)))
-				for (cnt2=0; cnt2<Game.C4S.PlrStart[PlrStartIndex].ReadyMaterial.GetCount(cnt); cnt2++)
-				{
-					ctx=tx1+Random(tx2-tx1); cty=ty;
-					if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
-						FindSolidGround(ctx,cty,def->Shape.Wdt);
-					Game.CreateObject(cid,nullptr,Number,ctx,cty);
-				}
-		}
-	}
-}
-
 bool C4Player::ScenarioInit()
 {
 	int32_t ptx,pty;
@@ -653,7 +625,6 @@ bool C4Player::ScenarioInit()
 	// Place Readies
 	C4Object *FirstBase = nullptr;
 	PlaceReadyBase(ptx,pty,&FirstBase);
-	PlaceReadyMaterial(ptx-10,ptx+10,pty,FirstBase);
 	PlaceReadyCrew(ptx-30,ptx+30,pty,FirstBase);
 
 	// set initial hostility by team info

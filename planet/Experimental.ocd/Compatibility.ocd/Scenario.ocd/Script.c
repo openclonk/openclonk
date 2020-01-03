@@ -32,6 +32,7 @@ static const PlayerProfile = new Global
 	Crew = {Clonk = 1},
 	BaseMaterial = {},
 	BaseProduction = {},
+	Material = {},
 	Vehicles = {},
 };
 
@@ -175,31 +176,37 @@ func InitializePlayer(int player_nr, int x, int y, object base, int team, id ext
 		DoBaseProduction(player_nr, material, 1);
 	}
 	
-	// Vehicles
-	for (var type in GetAsList(settings.Vehicles))
+	// Material
+	for (var item in GetAsList(settings.Material))
 	{
-		var vehicle = CreateObject(type, x, y, player_nr);
-		if (!vehicle)
-		{
-			continue;
-		}
 		if (base)
 		{
-			vehicle->Enter(base);
-			vehicle->SetCommand("Exit");
+			base->CreateContents(item);
 		}
 		else
 		{
-			var area = Loc_InRect(x - 30, y - 100, 60, 200);
-			PlaceOnSurface(vehicle, area);
+			PlaceOnSurface(item, x, y, 5, 20);
+		}
+	}
+	
+	// Vehicles
+	for (var vehicle in GetAsList(settings.Vehicles))
+	{
+		if (base)
+		{
+			base->CreateContents(vehicle)->SetCommand("Exit");
+		}
+		else
+		{
+			PlaceOnSurface(player_nr, vehicle, x, y, 60, 200);
 		}
 	}
 	return true;
 }
 
-func PlaceOnSurface(object target, array area)
+func PlaceOnSurface(int player, id type, int x, int y, int wdt, int hgt)
 {
-	var type = target->GetId();
+	var area = Loc_InRect(x - wdt/2, y - hgt/2, wdt, hgt);
 	var left = type->GetDefOffset(0);
 	var space_top = Loc_Space(type->GetDefHeight(), CNAT_Top);
 	var space_l = Loc_Space(Abs(left), CNAT_Left);
@@ -219,6 +226,6 @@ func PlaceOnSurface(object target, array area)
 
 	if (spot)
 	{
-		target->SetPosition(spot.x, spot.y);
+		CreateObject(type, spot.x, spot.y, player);
 	}
 }
