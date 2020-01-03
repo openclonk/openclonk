@@ -141,11 +141,6 @@
         <col>Description</col>
       </rowh>
       <row>
-        <literal_col>Wealth</literal_col>
-        <col>4 integers</col>
-        <col>Seed capital.</col>
-      </row>
-      <row>
         <literal_col>Position</literal_col>
         <col>2 Integer</col>
         <col>Start position as coordinates for the un-zoomed landscape. Both -1: Random position.</col>

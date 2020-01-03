@@ -43,12 +43,10 @@ static void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner)
 	{
 	case C4MN_Buy:
 		::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), true, dwColor);
-		::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
 		::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), false, 0);
 		break;
 	case C4MN_Sell:
 		::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), true, dwColor);
-		::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
 		::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), false, 1);
 		break;
 	}

@@ -617,7 +617,7 @@ bool C4Player::ScenarioInit()
 	Status = PS_Normal;
 
 	// Wealth, home base materials, abilities
-	Wealth=Game.C4S.PlrStart[PlrStartIndex].Wealth.Evaluate();
+	Wealth=0;
 	Knowledge=Game.C4S.PlrStart[PlrStartIndex].BuildKnowledge;
 	Knowledge.ConsolidateValids(::Definitions);
 
