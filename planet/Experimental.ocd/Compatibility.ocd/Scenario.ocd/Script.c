@@ -50,31 +50,24 @@ func Initialize()
 
 func InitVegetation()
 {
-
 	// Get an array with the correct ratios
-	var vegetation = [];
-	for (var prop in GetProperties(Vegetation))
-	{
-		var type = GetDefinition(prop);
-		if (!type)
-		{
-			continue;
-		}
-		for (var amount = Vegetation[prop]; amount > 0; --amount)
-		{
-			PushBack(vegetation, type);
-		}
-	}
-
-	var length = GetLength(vegetation);
+	var vegetation = GetAsList(Vegetation);
+	
 	for (var amount = CalcVegetationAmount(RandomRange(VegetationLevel[0], VegetationLevel[1], VegetationLevel[2], VegetationLevel[3])); amount > 0; --amount)
 	{
-		PlaceVegetation(vegetation[Random(length)]);
+		PlaceVegetation(RandomElement(vegetation));
 	}
 }
 
 func InitInEarth()
 {
+	// Get an array with the correct ratios
+	var in_earth = GetAsList(InEarth);
+
+	for (var amount = CalcInEarthAmount(RandomRange(InEarthLevel[0], InEarthLevel[1], InEarthLevel[2], InEarthLevel[3])); amount > 0; --amount)
+	{
+		PlaceObjects(RandomElement(in_earth), 1);
+	}
 }
 
 func InitAnimals()
@@ -121,4 +114,22 @@ func InitRules()
 
 func InitGoals()
 {
+}
+
+func GetAsList(proplist props)
+{
+	var list = [];
+	for (var prop in GetProperties(props))
+	{
+		var type = GetDefinition(prop);
+		if (!type)
+		{
+			continue;
+		}
+		for (var amount = props[prop]; amount > 0; --amount)
+		{
+			PushBack(list, type);
+		}
+	}
+	return list;
 }

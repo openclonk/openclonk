@@ -24,8 +24,6 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-InEarth=Rock=1;Loam=1;Firestone=1
-InEarthLevel=40
 Sky=Clouds2
 SkyScrollMode=2
 

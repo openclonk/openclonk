@@ -286,8 +286,6 @@ void C4SLandscape::Default()
 	AutoScanSideOpen=1;
 	SkyDef[0]=0;
 	for (int & cnt : SkyDefFade) cnt=0;
-	InEarthLevel.Set(50,0,0,100);
-	InEarth.Default();
 	MapWdt.Set(100,0,64,250);
 	MapHgt.Set(50,0,40,250);
 	MapZoom.Set(8,0,1,15);
@@ -322,8 +320,6 @@ void C4SLandscape::GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum)
 void C4SLandscape::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(ExactLandscape,          "ExactLandscape",        false));
-	pComp->Value(mkNamingAdapt(InEarth,                 "InEarth",               C4IDList()));
-	pComp->Value(mkNamingAdapt(InEarthLevel,            "InEarthLevel",          C4SVal(50,0,0,100), true));
 	pComp->Value(mkNamingAdapt(mkStringAdaptA(SkyDef),  "Sky",                   ""));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(SkyDefFade,0),"SkyFade"            ));
 	pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            0));

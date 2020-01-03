@@ -2874,7 +2874,6 @@ bool C4Game::InitGame(C4Group &group, InitMode init_mode, bool load_sky, C4Value
 	if (!C4S.Head.NoInitialize && landscape_loaded)
 	{
 		Log(LoadResStr("IDS_PRC_ENVIRONMENT"));
-		InitInEarth();
 		InitRules();
 		InitGoals();
 		Landscape.PostInitMap();
@@ -3265,24 +3264,6 @@ int32_t ListExpandValids(C4IDList &rlist,
 	return cpos;
 }
 
-bool C4Game::PlaceInEarth(C4ID id)
-{
-	int32_t cnt, tx, ty;
-	for (cnt = 0; cnt < 35; cnt++) // cheap trys
-	{
-		tx = Random(::Landscape.GetWidth());
-		ty = Random(::Landscape.GetHeight());
-		if (GBackMat(tx, ty) == MEarth)
-		{
-			if (CreateObject(id, nullptr, NO_OWNER, tx, ty, Random(360)))
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 static bool PlaceVegetation_GetRandomPoint(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4PropList * shape_proplist, C4PropList * out_pos_proplist, int32_t *piTx, int32_t *piTy)
 {
 	// Helper for C4Game::PlaceVegetation: return random position in rectangle. Use shape_proplist if provided.
@@ -3438,22 +3419,6 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t x, int32_t y, i
 
 	// Undefined placement type
 	return nullptr;
-}
-
-void C4Game::InitInEarth()
-{
-	const int32_t maxvid = 100;
-	int32_t cnt, vidnum;
-	C4ID vidlist[maxvid];
-	// Amount
-	int32_t amt=(::Landscape.GetWidth()*::Landscape.GetHeight()/5000)*C4S.Landscape.InEarthLevel.Evaluate()/100;
-	// List all valid IDs from C4S
-	vidnum = ListExpandValids(C4S.Landscape.InEarth, vidlist, maxvid);
-	// Place
-	if (vidnum > 0)
-		for (cnt = 0; cnt < amt; cnt++)
-			PlaceInEarth(vidlist[Random(vidnum)]);
-
 }
 
 bool C4Game::LoadScenarioComponents()

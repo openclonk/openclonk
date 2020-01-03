@@ -10,7 +10,15 @@
 
 protected func Initialize()
 {
+	// Vegetation
 	Mushroom->Place(CalcVegetationAmount());
+	
+	// Earth objects
+	var in_earth = [Rock, Nugget, Firestone, Loam];
+	for (var amount = CalcInEarthAmount(65); amount > 0; --amount)
+	{
+		PlaceObjects(RandomElement(in_earth), 1);
+	}
 
 	//var workshop = CreateObjectAbove(ToolsWorkshop, 835, 360);
 	//var c1 = CreateObjectAbove(CableCrossing, 765, 355);

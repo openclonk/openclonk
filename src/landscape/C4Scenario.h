@@ -163,8 +163,6 @@ class C4SLandscape
 {
 public:
 	bool ExactLandscape;
-	C4SVal InEarthLevel;
-	C4IDList InEarth;
 	int32_t BottomOpen,TopOpen;
 	int32_t LeftOpen,RightOpen;
 	int32_t AutoScanSideOpen;

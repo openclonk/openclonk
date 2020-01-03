@@ -23,8 +23,6 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-InEarth=Rock=1;Firestone=3;Loam=3
-InEarthLevel=80,0,0,100
 Sky=Clouds2
 MapWidth=120
 MapHeight=320

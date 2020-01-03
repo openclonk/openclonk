@@ -18,6 +18,13 @@ func Initialize()
 	// Vegetation
 	Tree_Coniferous->Place(20, Shape->Rectangle(106, 121, 826, 335), { keep_area = true });
 	PlaceGrass(20, 0, 106);
+	
+	// Earth objects
+	var in_earth = [Rock, Loam, Loam];
+	for (var amount = CalcInEarthAmount(30); amount > 0; --amount)
+	{
+		PlaceObjects(RandomElement(in_earth), 1);
+	}
 
 	// The castle
 	CreateObjectAbove(Raiders_CastleBack, 1068, 256, NO_OWNER);

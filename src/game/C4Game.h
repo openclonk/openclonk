@@ -233,7 +233,6 @@ public:
 	std::unique_ptr<C4ScriptGuiWindow> ScriptGuiRoot;
 protected:
 	void Default();
-	void InitInEarth();
 	void InitGoals();
 	void InitRules();
 	void InitValueOverloads();
@@ -262,7 +261,6 @@ protected:
 	bool InitDefs();
 	bool InitMaterialTexture();
 	bool GameOverCheck();
-	bool PlaceInEarth(C4ID id);
 public:
 	void CompileFunc(StdCompiler *compiler, CompileSettings settings, C4ValueNumbers *);
 	bool SaveData(C4Group &group, bool save_section, bool save_exact, bool save_sync, C4ValueNumbers *);

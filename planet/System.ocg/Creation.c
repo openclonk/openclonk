@@ -258,3 +258,12 @@ global func CalcVegetationAmount(int level)
 	level = level ?? 100;
 	return (LandscapeWidth() / 50) * level / 100;
 }
+
+// Calculates the amount of objects in earth, as previously done in the game engine.
+// level: preferably a value between 0 and 100, preferably specified by RandomRange
+// undocumented
+global func CalcInEarthAmount(int level)
+{
+	level = level ?? 100;
+	return (LandscapeWidth() * LandscapeHeight() / 5000) * level / 100;
+}
