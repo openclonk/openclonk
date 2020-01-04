@@ -5,7 +5,7 @@
 <doc>
   <title>Scenario.txt</title>
   <h>Scenario.txt</h>
-  <text>In Scenario.txt you can define basic scenario settings including simple dynamic maps, player presets and starting material, game goals, weather conditions etc. Most of these settings can also be made in the scenario properties of the menu system. For more complex settings and mission sequences you will have to write a <emlink href="scenario/script.html">script</emlink>.</text>
+  <text>In Scenario.txt you can define basic scenario settings including simple dynamic maps, weather conditions etc. For more complex settings and mission sequences you will have to write a <emlink href="scenario/script.html">script</emlink>.</text>
   <text>Some of the values require four numbers which specify mean, deviation, minimum and maximum. The value which is actually used is computed by <code>BoundBy(mean+Random(2*deviation+1)-deviation,minimum,maximum);</code>.</text>
   <text>
     <table>
@@ -58,12 +58,12 @@
       <row>
         <col>Difficulty</col>
         <col>Integer</col>
-        <col>Difficulty of the scenario. Scenarios in a folder are sorted ascendingly by difficulty if specified or by the alphabet otherwise.</col>
+        <col>Difficulty of the scenario. Scenarios in a folder are sorted by alphabetical order usually, but if this value is specified they are sorted by difficulty in ascending order instead.</col>
       </row>
       <row>
         <col>NoInitialize</col>
         <col>Integer</col>
-        <col>0 or 1. If 1, basic startup objects as defined in Scenario.txt (player material and buildings, animals, vegetation) are not placed. This flag is automatically set in savegaes and is used to avoid duplication by repeated scenario initialization. The flag ignores among others the values Buildings, Vehicles, Material, Vegetation, InEarth, and Animals.</col>
+        <col>0 or 1. If 1, basic startup objects as defined in Scenario.txt (player material and buildings) are not placed. This flag is automatically set in savegames and is used to avoid duplication by repeated scenario initialization. The flag ignores among others the values Buildings, and Material.</col>
       </row>
       <row>
         <col>MissionAccess</col>
@@ -134,92 +134,12 @@
   </text>
   <text>
     <table>
-      <caption id="SektionenPlayer1Player2Player3Player4">Sections [Player1] [Player2] [Player3] [Player4]</caption>
-      <rowh>
-        <col>Value</col>
-        <col>Data type</col>
-        <col>Description</col>
-      </rowh>
-      <row>
-        <literal_col>Wealth</literal_col>
-        <col>4 integers</col>
-        <col>Seed capital.</col>
-      </row>
-      <row>
-        <literal_col>Position</literal_col>
-        <col>2 Integer</col>
-        <col>Start position as coordinates for the un-zoomed landscape. Both -1: Random position.</col>
-      </row>
-      <row>
-        <literal_col>Crew</literal_col>
-        <col>ID list</col>
-        <col>Type and count of initial crew members.</col>
-      </row>
-      <row>
-        <literal_col>Buildings</literal_col>
-        <col>ID list</col>
-        <col>Buildings available at game start.</col>
-      </row>
-      <row>
-        <literal_col>Vehicles</literal_col>
-        <col>ID list</col>
-        <col>Vehicles available at game start.</col>
-      </row>
-      <row>
-        <literal_col>Material</literal_col>
-        <col>ID list</col>
-        <col>Materials available at game start</col>
-      </row>
-      <row>
-        <literal_col>Knowledge</literal_col>
-        <col>ID list</col>
-        <col>Objects the player should initially be able to create.</col>
-      </row>
-      <row>
-        <literal_col>BaseMaterial</literal_col>
-        <col>ID list</col>
-        <col>Materials available to buy at game start.</col>
-      </row>
-      <row>
-        <literal_col>BaseProduction</literal_col>
-        <col>ID list</col>
-        <col>Additional supply of materials to buy.</col>
-      </row>
-      <row>
-        <literal_col>Magic</literal_col>
-        <col>ID list</col>
-        <col>Available spells. If the list is empty, all spells are available (backwards compatibility).</col>
-      </row>
-    </table>
-  </text>
-  <text>
-    <table>
       <caption id="SektionLandscape">Section [Landscape]</caption>
       <rowh>
         <col>Value</col>
         <col>Data type</col>
         <col>Description</col>
       </rowh>
-      <row>
-        <literal_col>Vegetation</literal_col>
-        <col>ID list</col>
-        <col>Vegetation types and ratio.</col>
-      </row>
-      <row>
-        <literal_col>VegetationLevel</literal_col>
-        <col>4 integers</col>
-        <col>0-100. Vegetation amount.</col>
-      </row>
-      <row>
-        <literal_col>InEarth</literal_col>
-        <col>ID list</col>
-        <col>Types and proportionate shares of buried objects.</col>
-      </row>
-      <row>
-        <literal_col>InEarthLevel</literal_col>
-        <col>4 integers</col>
-        <col>0-100. Amount of buried objects.</col>
-      </row>
       <row>
         <literal_col>Sky</literal_col>
         <col>String</col>
@@ -359,26 +279,6 @@
   </text>
   <text>
     <table>
-      <caption id="SektionAnimals">Section [Animals]</caption>
-      <rowh>
-        <col>Value</col>
-        <col>Data type</col>
-        <col>Description</col>
-      </rowh>
-      <row>
-        <col>Animals</col>
-        <col>ID list</col>
-        <col>Freewheeling creatures.</col>
-      </row>
-      <row>
-        <col>Nest</col>
-        <col>ID list</col>
-        <col>Buried nests.</col>
-      </row>
-    </table>
-  </text>
-  <text>
-    <table>
       <caption id="SektionWeather">Section [Weather]</caption>
       <rowh>
         <col>Value</col>
@@ -414,21 +314,6 @@
   </text>
   <text>
     <table>
-      <caption id="SektionEnvironment">Section [Environment]</caption>
-      <rowh>
-        <col>Value</col>
-        <col>Data type</col>
-        <col>Description</col>
-      </rowh>
-      <row>
-        <literal_col>Objects</literal_col>
-        <col>ID list</col>
-        <col>Environment control objects that are placed at game start.</col>
-      </row>
-    </table>
-  </text>
-  <text>
-    <table>
       <caption id="SektionDefinitions">Section [Definitions]</caption>
       <rowh>
         <col>Value</col>
@@ -454,4 +339,5 @@
   </text>
   <author>Sven2</author><date>2002-04</date>
   <author>Newton</author><date>2010-02</date>
+  <author>Marky</author><date>2019-12</date>
 </doc>

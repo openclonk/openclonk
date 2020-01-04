@@ -4,24 +4,9 @@ Icon=24
 Version=8,0
 Difficulty=60
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Game]
 Goals=Goal_SellGems=1;
 Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
-
-[Player1]
-Crew=Clonk=1
-
-[Player2]
-Crew=Clonk=1
-
-[Player3]
-Crew=Clonk=1
-
-[Player4]
-Crew=Clonk=1
 
 [Landscape]
 Sky=Clouds1

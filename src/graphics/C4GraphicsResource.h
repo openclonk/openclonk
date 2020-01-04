@@ -48,7 +48,6 @@ public:
 	C4FacetID fctPlayer;
 	C4FacetID fctFlag;
 	C4FacetID fctCrew;
-	C4FacetID fctWealth;
 	C4FacetID fctRank;
 	int32_t iNumRanks;
 	C4FacetID fctFire;

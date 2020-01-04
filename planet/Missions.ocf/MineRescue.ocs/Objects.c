@@ -249,5 +249,10 @@ func InitializeObjects()
 	Chest0224->CreateContents(Firestone);
 	Chest0226->CreateContents(Firestone);
 
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                     ->SetStartingBaseMaterial([])
+                     ->SetStartingMaterial([])
+                     ->SetStartingKnowledge("idlist", [Idol, Foundry, ToolsWorkshop, Flagpole, Sawmill, Elevator, Pump, ChemicalLab, Armory, InventorsLab, Basement, Lorry, Cannon, Catapult, Pickaxe, Axe, Hammer, Shovel, Firestone, Barrel, MetalBarrel, Dynamite, DynamiteBox, Pipe, GrappleBow, PowderKeg, Ropeladder]);
+
 	return true;
 }

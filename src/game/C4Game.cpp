@@ -2874,10 +2874,6 @@ bool C4Game::InitGame(C4Group &group, InitMode init_mode, bool load_sky, C4Value
 	if (!C4S.Head.NoInitialize && landscape_loaded)
 	{
 		Log(LoadResStr("IDS_PRC_ENVIRONMENT"));
-		InitVegetation();
-		InitInEarth();
-		InitAnimals();
-		InitEnvironment();
 		InitRules();
 		InitGoals();
 		Landscape.PostInitMap();
@@ -3268,24 +3264,6 @@ int32_t ListExpandValids(C4IDList &rlist,
 	return cpos;
 }
 
-bool C4Game::PlaceInEarth(C4ID id)
-{
-	int32_t cnt, tx, ty;
-	for (cnt = 0; cnt < 35; cnt++) // cheap trys
-	{
-		tx = Random(::Landscape.GetWidth());
-		ty = Random(::Landscape.GetHeight());
-		if (GBackMat(tx, ty) == MEarth)
-		{
-			if (CreateObject(id, nullptr, NO_OWNER, tx, ty, Random(360)))
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 static bool PlaceVegetation_GetRandomPoint(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4PropList * shape_proplist, C4PropList * out_pos_proplist, int32_t *piTx, int32_t *piTy)
 {
 	// Helper for C4Game::PlaceVegetation: return random position in rectangle. Use shape_proplist if provided.
@@ -3442,99 +3420,6 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t x, int32_t y, i
 	// Undefined placement type
 	return nullptr;
 }
-
-C4Object* C4Game::PlaceAnimal(C4PropList* PropList)
-{
-	C4Def * pDef;
-	if (!PropList || !(pDef = PropList->GetDef())) return nullptr;
-	int32_t iX, iY;
-	// Placement
-	switch (PropList->GetPropertyInt(P_Placement))
-	{
-		// Running free
-	case C4D_Place_Surface:
-		iX = Random(::Landscape.GetWidth()); iY = Random(::Landscape.GetHeight());
-		if (!FindSolidGround(iX, iY, pDef->Shape.Wdt)) return nullptr;
-		break;
-		// In liquid
-	case C4D_Place_Liquid:
-		iX = Random(::Landscape.GetWidth()); iY = Random(::Landscape.GetHeight());
-		if (!FindSurfaceLiquid(iX, iY, pDef->Shape.Wdt, pDef->Shape.Hgt))
-			if (!FindLiquid(iX, iY, pDef->Shape.Wdt, pDef->Shape.Hgt))
-				return nullptr;
-		iY += pDef->Shape.Hgt/2;
-		break;
-		// Floating in air
-	case C4D_Place_Air:
-		iX = Random(::Landscape.GetWidth());
-		for (iY = 0; (iY<::Landscape.GetHeight()) && !GBackSemiSolid(iX, iY); iY++) {}
-		if (iY <= 0) return nullptr;
-		iY = Random(iY);
-		break;
-	default:
-		return nullptr;
-	}
-	// Create object
-	return CreateObject(PropList, nullptr, NO_OWNER, iX, iY);
-}
-
-void C4Game::InitInEarth()
-{
-	const int32_t maxvid = 100;
-	int32_t cnt, vidnum;
-	C4ID vidlist[maxvid];
-	// Amount
-	int32_t amt=(::Landscape.GetWidth()*::Landscape.GetHeight()/5000)*C4S.Landscape.InEarthLevel.Evaluate()/100;
-	// List all valid IDs from C4S
-	vidnum = ListExpandValids(C4S.Landscape.InEarth, vidlist, maxvid);
-	// Place
-	if (vidnum > 0)
-		for (cnt = 0; cnt < amt; cnt++)
-			PlaceInEarth(vidlist[Random(vidnum)]);
-
-}
-
-void C4Game::InitVegetation()
-{
-	const int32_t maxvid = 100;
-	int32_t cnt, vidnum;
-	C4ID vidlist[maxvid];
-	// Amount
-	int32_t amt=(::Landscape.GetWidth()/50)*C4S.Landscape.VegLevel.Evaluate()/100;
-	// Get percentage vidlist from C4S
-	vidnum = ListExpandValids(C4S.Landscape.Vegetation, vidlist, maxvid);
-	// Place vegetation
-	if (vidnum > 0)
-	{
-		for (cnt = 0; cnt < amt; cnt++)
-		{
-			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0, 0,::Landscape.GetWidth(),::Landscape.GetHeight(),-1, nullptr, nullptr);
-		}
-	}
-}
-
-void C4Game::InitAnimals()
-{
-	int32_t cnt, cnt2;
-	C4ID idAnimal; int32_t iCount;
-	// Place animals
-	for (cnt = 0; (idAnimal = C4S.Animals.FreeLife.GetID(cnt,&iCount)); cnt++)
-	{
-		for (cnt2 = 0; cnt2 < iCount; cnt2++)
-		{
-			PlaceAnimal(C4Id2Def(idAnimal));
-		}
-	}
-	// Place nests
-	for (cnt = 0; (idAnimal = C4S.Animals.EarthNest.GetID(cnt,&iCount)); cnt++)
-	{
-		for (cnt2 = 0; cnt2 < iCount; cnt2++)
-		{
-			PlaceInEarth(idAnimal);
-		}
-	}
-}
-
 
 bool C4Game::LoadScenarioComponents()
 {
@@ -4158,20 +4043,6 @@ void C4Game::InitValueOverloads()
 		if ((def = ::Definitions.ID2Def(overload_id)))
 		{
 			def->Value = C4S.Game.Realism.ValueOverloads.GetIDCount(overload_id);
-		}
-	}
-}
-
-void C4Game::InitEnvironment()
-{
-	// Place environment objects
-	C4ID id;
-	int32_t amount;
-	for (int32_t index = 0; (id = C4S.Environment.Objects.GetID(index, &amount)); index++)
-	{
-		for (int32_t placed = 0; placed < amount; placed++)
-		{
-			CreateObject(id, nullptr);
 		}
 	}
 }

@@ -8,21 +8,6 @@ Difficulty=50
 Mode=Parkour
 Goals=Goal_Parkour=1;
 
-[Definitions]
-Definition1=Objects.ocd
-
-[Player1]
-Crew=Clonk=1
-
-[Player2]
-Crew=Clonk=1
-
-[Player3]
-Crew=Clonk=1
-
-[Player4]
-Crew=Clonk=1
-
 [Landscape]
 InEarthLevel=0,0
 Sky=Clouds2

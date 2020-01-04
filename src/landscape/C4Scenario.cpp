@@ -81,12 +81,9 @@ void C4Scenario::Default()
 	Head.Default();
 	Definitions.Default();
 	Game.Default();
-	for (cnt=0; cnt<C4S_MaxPlayer; cnt++) PlrStart[cnt].Default();
 	Landscape.Default();
-	Animals.Default();
 	Weather.Default();
 	Game.Realism.Default();
-	Environment.Default();
 }
 
 bool C4Scenario::Load(C4Group &hGroup, bool fLoadSection, bool suppress_errors)
@@ -130,12 +127,8 @@ void C4Scenario::CompileFunc(StdCompiler *pComp, bool fSection)
 	pComp->Value(mkNamingAdapt(mkParAdapt(Head, fSection), "Head"));
 	if (!fSection) pComp->Value(mkNamingAdapt(Definitions, "Definitions"));
 	pComp->Value(mkNamingAdapt(mkParAdapt(Game, fSection), "Game"));
-	for (int32_t i = 0; i < C4S_MaxPlayer; i++)
-		pComp->Value(mkNamingAdapt(PlrStart[i], FormatString("Player%d", i+1).getData()));
 	pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
-	pComp->Value(mkNamingAdapt(Animals, "Animals"));
 	pComp->Value(mkNamingAdapt(Weather, "Weather"));
-	pComp->Value(mkNamingAdapt(Environment, "Environment"));
 }
 
 int32_t C4Scenario::GetMinPlayer()
@@ -236,53 +229,6 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 	pComp->Value(mkNamingAdapt(EvaluateOnAbort,                                   "EvaluateOnAbort", false));
 }
 
-void C4SPlrStart::Default()
-{
-	Wealth.Set(0,0,0,250);
-	Position[0]=Position[1]=-1;
-	EnforcePosition=0;
-	ReadyCrew.Default();
-	ReadyBase.Default();
-	ReadyVehic.Default();
-	ReadyMaterial.Default();
-	BuildKnowledge.Default();
-	BaseMaterial.Default();
-	BaseProduction.Default();
-}
-
-bool C4SPlrStart::EquipmentEqual(C4SPlrStart &rhs)
-{
-	return *this == rhs;
-}
-
-bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
-{
-	return (Wealth == rhs.Wealth)
-	       && (ReadyCrew == rhs.ReadyCrew)
-	       && (ReadyBase == rhs.ReadyBase)
-	       && (ReadyVehic == rhs.ReadyVehic)
-	       && (ReadyMaterial == rhs.ReadyMaterial)
-	       && (BuildKnowledge == rhs.BuildKnowledge)
-	       && (BaseMaterial == rhs.BaseMaterial)
-	       && (BaseProduction == rhs.BaseProduction);
-}
-
-void C4SPlrStart::CompileFunc(StdCompiler *pComp)
-{
-	C4IDList crewDefault;
-	crewDefault.SetIDCount(C4ID::Clonk,1,true);
-	pComp->Value(mkNamingAdapt(Wealth,                  "Wealth",                C4SVal(0, 0, 0,250), true));
-	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Position,-1), "Position"           ));
-	pComp->Value(mkNamingAdapt(EnforcePosition,         "EnforcePosition",       0));
-	pComp->Value(mkNamingAdapt(ReadyCrew,               "Crew",                  crewDefault));
-	pComp->Value(mkNamingAdapt(ReadyBase,               "Buildings",             C4IDList()));
-	pComp->Value(mkNamingAdapt(ReadyVehic,              "Vehicles",              C4IDList()));
-	pComp->Value(mkNamingAdapt(ReadyMaterial,           "Material",              C4IDList()));
-	pComp->Value(mkNamingAdapt(BuildKnowledge,          "Knowledge",             C4IDList()));
-	pComp->Value(mkNamingAdapt(BaseMaterial,        "BaseMaterial",      C4IDList()));
-	pComp->Value(mkNamingAdapt(BaseProduction,      "BaseProduction",    C4IDList()));
-}
-
 void C4SLandscape::Default()
 {
 	BottomOpen=0; TopOpen=1;
@@ -290,10 +236,6 @@ void C4SLandscape::Default()
 	AutoScanSideOpen=1;
 	SkyDef[0]=0;
 	for (int & cnt : SkyDefFade) cnt=0;
-	VegLevel.Set(50,30,0,100);
-	Vegetation.Default();
-	InEarthLevel.Set(50,0,0,100);
-	InEarth.Default();
 	MapWdt.Set(100,0,64,250);
 	MapHgt.Set(50,0,40,250);
 	MapZoom.Set(8,0,1,15);
@@ -328,10 +270,6 @@ void C4SLandscape::GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum)
 void C4SLandscape::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(ExactLandscape,          "ExactLandscape",        false));
-	pComp->Value(mkNamingAdapt(Vegetation,              "Vegetation",            C4IDList()));
-	pComp->Value(mkNamingAdapt(VegLevel,                "VegetationLevel",       C4SVal(50,30,0,100), true));
-	pComp->Value(mkNamingAdapt(InEarth,                 "InEarth",               C4IDList()));
-	pComp->Value(mkNamingAdapt(InEarthLevel,            "InEarthLevel",          C4SVal(50,0,0,100), true));
 	pComp->Value(mkNamingAdapt(mkStringAdaptA(SkyDef),  "Sky",                   ""));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(SkyDefFade,0),"SkyFade"            ));
 	pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            0));
@@ -376,28 +314,6 @@ void C4SWeather::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(YearSpeed,               "YearSpeed",               C4SVal(50)));
 	pComp->Value(mkNamingAdapt(Wind,                    "Wind",                  C4SVal(0,70,-100,+100), true));
 	pComp->Value(mkNamingAdapt(NoGamma,                 "NoGamma",               true));
-}
-
-void C4SAnimals::Default()
-{
-	FreeLife.Clear();
-	EarthNest.Clear();
-}
-
-void C4SAnimals::CompileFunc(StdCompiler *pComp)
-{
-	pComp->Value(mkNamingAdapt(FreeLife,                "Animal",               C4IDList()));
-	pComp->Value(mkNamingAdapt(EarthNest,               "Nest",                  C4IDList()));
-}
-
-void C4SEnvironment::Default()
-{
-	Objects.Clear();
-}
-
-void C4SEnvironment::CompileFunc(StdCompiler *pComp)
-{
-	pComp->Value(mkNamingAdapt(Objects,                 "Objects",               C4IDList()));
 }
 
 void C4SRealism::Default()

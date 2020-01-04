@@ -4,23 +4,8 @@ Icon=35
 Version=8,0
 Difficulty=90
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Game]
 ValueOverloads=Ruby=10;Amethyst=10
-
-[Player1]
-Crew=Clonk=2
-
-[Player2]
-Crew=Clonk=2
-
-[Player3]
-Crew=Clonk=2
-
-[Player4]
-Crew=Clonk=2
 
 [Landscape]
 Sky=Clouds1

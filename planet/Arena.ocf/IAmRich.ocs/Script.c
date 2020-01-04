@@ -56,6 +56,11 @@ func Initialize()
 	if (SCENPAR_NoEnergy == 1) CreateObject(Rule_NoPowerNeed);
 	
 	CreateEffect(updatescoreboardfx, 1, 35);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+	                         ->SetStartingBaseMaterial([])
+	                         ->SetStartingMaterial([])
+                             ->SetStartingKnowledge();
 }
 
 func InitializePlayer(int plr)
@@ -65,6 +70,17 @@ func InitializePlayer(int plr)
 	crew->CreateContents(Hammer);
 	crew->CreateContents(Axe);
 	
+	var flagpole = CreateFlagpole(crew);
+	if (flagpole && ObjectDistance(crew, flagpole) > 100)
+	{
+		var x = flagpole->GetX();
+		var y = flagpole->GetY();
+		for (var i = 0; i < GetCrewCount(plr); ++i)
+		{
+			GetCrew(plr, i)->SetPosition(x, y);
+		}
+	}
+
 	GivePlayerAllKnowledge(plr);
 	BaseMats(plr);
 	
@@ -85,8 +101,47 @@ func UpdateScoreboard()
 	{
 		var playerid = GetPlayerByIndex(i);
 		var pscore = GetWealth(GetPlayerByIndex(i));
-		SetScoreboardData(playerid, COL_Score, Format("%i", pscore), pscore);
+		SetScoreboardData(playerid, COL_Score, Format("%d", pscore), pscore);
 	}	
+}
+
+func CreateFlagpole(object near_clonk)
+{
+	var xy = FindConstructionSite(Flagpole, near_clonk->GetX(), near_clonk->GetY());
+	var flagpole;
+	if (xy)
+	{
+		flagpole = CreateConstruction(Flagpole, xy[0], xy[1], near_clonk->GetOwner(), 100, true);
+	}
+	if (!flagpole)
+	{
+		var type = Flagpole;
+		var area = Loc_InRect(near_clonk->GetX() - 50, near_clonk->GetY() - 50, 100, 100);
+		var left = type->GetDefOffset(0);
+		var space_top = Loc_Space(type->GetDefHeight(), CNAT_Top);
+		var space_l = Loc_Space(Abs(left), CNAT_Left);
+		var space_r = Loc_Space(left + type->GetDefWidth(), CNAT_Right);
+		var on_surface = Loc_Wall(CNAT_Bottom, Loc_Not(Loc_Liquid()));
+		
+		// Find object near the desired area first, with less restrictions
+		var spot = FindLocation(on_surface, space_l, space_r, space_top, area);
+		spot = spot ?? FindLocation(on_surface, space_top, area);
+		spot = spot ?? FindLocation(on_surface, area);
+		
+		// Same again, but on the whole landscape
+		if (area != nil)
+		{
+			spot = FindLocation(on_surface, space_l, space_r, space_top);
+			spot = spot ?? FindLocation(on_surface, space_top);
+			spot = spot ?? FindLocation(on_surface);
+		}
+	
+		if (spot)
+		{
+			flagpole = CreateConstruction(Flagpole, spot.x, spot.y, near_clonk->GetOwner(), 100, true);
+		}
+	}
+	return flagpole;
 }
 
 func OnClonkDeath(object clonk, int killed_by)
@@ -113,11 +168,7 @@ func BaseMats(int plr)
 			[Clonk,       10,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 	
 	if (SCENPAR_BO_BuildingMaterial == 1)
@@ -130,11 +181,7 @@ func BaseMats(int plr)
 			[Loam,       10,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 	
 	if (SCENPAR_BO_Tools == 1)
@@ -155,11 +202,7 @@ func BaseMats(int plr)
 			[Barrel,      2,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 	
 	if (SCENPAR_BO_Weapons == 1)
@@ -190,11 +233,7 @@ func BaseMats(int plr)
 			[PowderKeg,   5,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 	
 	if (SCENPAR_BO_Food == 1)
@@ -208,10 +247,6 @@ func BaseMats(int plr)
 			[Sproutberry, 10,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 }

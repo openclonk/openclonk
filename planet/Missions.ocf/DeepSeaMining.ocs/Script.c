@@ -87,6 +87,8 @@ protected func InitializePlayer(int plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	if (!g_intro_done) return true;
 	
+	SetWealth(plr, 25);
+	
 	// Position and materials
 	var i, crew;
 	for (i = 0; crew = GetCrew(plr, i); ++i)
@@ -104,6 +106,15 @@ protected func InitializePlayer(int plr)
 	// Claim ownership of unowned structures
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole")), Find_Owner(NO_OWNER)))
 		structure->SetOwner(plr);
+		
+	// Base material
+	var materials = [
+		[Bread, 25, 25]
+	];
+	GivePlayerBaseMaterial(plr, materials);
+	
+	// Knowledge
+	GivePlrKnowledge(plr, [Flagpole, Foundry, WindGenerator, SteamEngine, Compensator, Sawmill, ChemicalLab, Elevator, Pump, ToolsWorkshop, Basement, WallKit, GoldBar, Loam, Metal, Axe, Barrel, Bucket, Dynamite, Hammer, Pickaxe, Pipe, Shovel, TeleGlove, DynamiteBox, Lorry, Chest, WoodenBridge, DivingHelmet]);
 
 	return;
 }

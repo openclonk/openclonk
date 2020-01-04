@@ -34,6 +34,11 @@ protected func Initialize()
 	InitEnvironment(SCENPAR_Difficulty);
 	InitVegetation(SCENPAR_MapSize);
 	InitAnimals(SCENPAR_MapSize, SCENPAR_Difficulty);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                     ->SetStartingBaseMaterial([])
+                     ->SetStartingMaterial([])
+                     ->SetStartingKnowledge();
 	return;
 }
 
@@ -204,8 +209,7 @@ private func InitAnimals(int map_size, int difficulty)
 	var hgt = LandscapeHeight();
 	
 	// Some butterflies as atmosphere.
-	for (var i = 0; i < 8; i++)
-		PlaceAnimal(Butterfly);
+	Butterfly->Place(8);
 		
 	// Some wipfs underground.
 	Wipf->Place(10);

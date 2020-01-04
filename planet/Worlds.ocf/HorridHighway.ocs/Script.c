@@ -40,6 +40,11 @@ protected func Initialize()
 	InitMiddleIsland();
 	InitRightIsland();
 	InitDisasters(SCENPAR_Difficulty);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                 ->SetStartingBaseMaterial([])
+                 ->SetStartingMaterial([])
+                 ->SetStartingKnowledge();
 	return;
 }
 
@@ -80,7 +85,7 @@ protected func InitializePlayer(int plr)
 	// Give the player its base materials.
 	GivePlayerElementaryBaseMaterial(plr);
 	GivePlayerToolsBaseMaterial(plr);
-	GivePlayerSpecificBaseMaterial(plr, [[Dynamite, 20, 10]]);
+	GivePlayerBaseMaterial(plr, [[Dynamite, 20, 10]]);
 	
 	// Claim ownership of structures, last player who joins owns all the flags.
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"))))

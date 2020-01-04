@@ -206,5 +206,12 @@ func InitializeObjects()
 	CreateObject(Firestone, 159, 747);
 	CreateObject(Firestone, 199, 469);
 	CreateObject(Firestone, 361, 350);
+
+	var mapzoom = GetScenarioVal("MapZoom", "Landscape");
+	CreateObject(PlayerStart, 193 * mapzoom, 42 * mapzoom)
+	  ->SetStartingCrew([{id = Clonk, count = 2}])
+      ->SetStartingBaseMaterial([])
+      ->SetStartingMaterial([])
+      ->SetStartingKnowledge("idlist", [Airplane_Engine, Scaffold, Foundry, ToolsWorkshop, ChemicalLab, WindGenerator, Flagpole, Sawmill, Elevator, Basement, Lorry, Pickaxe, Axe, Hammer, Shovel, Firestone, Barrel, Dynamite, DynamiteBox, Pump, Chest, WoodenBridge]);
 	return true;
 }

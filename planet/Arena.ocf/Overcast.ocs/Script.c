@@ -15,8 +15,11 @@ protected func Initialize()
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
 	GetRelaunchRule()->SetLastWeaponUse(false);
-	
+
 	//Enviroment.
+	PlaceObjects(Firestone, 30);
+	PlaceObjects(Loam, 20);
+	PlaceObjects(Rock, 15);
 	Cloud->Place(25);
 	SetSkyAdjust(RGBa(250, 250, 255, 128),RGB(200, 200, 220));
 	Sound("Environment::BirdsLoop", true, 100, nil, 1);

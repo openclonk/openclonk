@@ -138,35 +138,11 @@ public:
 
 const int32_t C4S_MaxMapPlayerExtend = 4;
 
-class C4SPlrStart
-{
-public:
-	C4SVal Wealth;
-	int32_t Position[2];
-	int32_t EnforcePosition;
-	C4IDList ReadyCrew;
-	C4IDList ReadyBase;
-	C4IDList ReadyVehic;
-	C4IDList ReadyMaterial;
-	C4IDList BuildKnowledge;
-	C4IDList BaseMaterial;
-	C4IDList BaseProduction;
-public:
-	void Default();
-	bool EquipmentEqual(C4SPlrStart &rhs);
-	bool operator==(const C4SPlrStart& rhs);
-	void CompileFunc(StdCompiler *pComp);
-};
-
 
 class C4SLandscape
 {
 public:
 	bool ExactLandscape;
-	C4SVal VegLevel;
-	C4IDList Vegetation;
-	C4SVal InEarthLevel;
-	C4IDList InEarth;
 	int32_t BottomOpen,TopOpen;
 	int32_t LeftOpen,RightOpen;
 	int32_t AutoScanSideOpen;
@@ -205,25 +181,6 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 };
 
-class C4SAnimals
-{
-public:
-	C4IDList FreeLife;
-	C4IDList EarthNest;
-public:
-	void Default();
-	void CompileFunc(StdCompiler *pComp);
-};
-
-class C4SEnvironment
-{
-public:
-	C4IDList Objects;
-public:
-	void Default();
-	void CompileFunc(StdCompiler *pComp);
-};
-
 class C4Scenario
 {
 public:
@@ -232,11 +189,8 @@ public:
 	C4SHead         Head;
 	C4SDefinitions  Definitions;
 	C4SGame         Game;
-	C4SPlrStart     PlrStart[C4S_MaxPlayer];
 	C4SLandscape    Landscape;
-	C4SAnimals      Animals;
 	C4SWeather      Weather;
-	C4SEnvironment  Environment;
 public:
 	void SetExactLandscape();
 	void Clear();

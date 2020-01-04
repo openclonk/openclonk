@@ -6,7 +6,7 @@
   <func>
     <title>PlaceAnimal</title>
     <category>Environment</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -19,6 +19,8 @@
     </syntax>
     <desc>Creates an animal of the specified type in the landscape. The placement position depends on the Placement value in the <emlink href="definition/defcore.html">DefCore</emlink> of the animal's definition. Returns a pointer to the newly created animal.</desc>
     <related><funclink>PlaceVegetation</funclink></related>
+    <remark>Redirects to <code>id->Place()</code> in 9.0 OC, to be removed in 10.0 OC. Use the <code>Place</code> function instead.</remark>
   </func>
   <author>jwk</author><date>2002-08</date>
+  <author>Marky</author><date>2019-12</date>
 </funcs>

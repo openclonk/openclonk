@@ -8,24 +8,7 @@ Difficulty=80
 [Game]
 Mode=Melee
 
-[Definitions]
-Definition1=Objects.ocd
-
-[Player1]
-Crew=Clonk=1
-
-[Player2]
-Crew=Clonk=1
-
-[Player3]
-Crew=Clonk=1
-
-[Player4]
-Crew=Clonk=1
-
 [Landscape]
-InEarth=Rock=1;Loam=1;Firestone=1
-InEarthLevel=40
 Sky=Clouds2
 SkyScrollMode=2
 

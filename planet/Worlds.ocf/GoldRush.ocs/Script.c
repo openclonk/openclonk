@@ -35,6 +35,11 @@ protected func Initialize()
 	InitVegetation(SCENPAR_MapSize);
 	InitAnimals(SCENPAR_MapSize);
 	InitMaterial(4 - SCENPAR_Difficulty);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                     ->SetStartingBaseMaterial([])
+                     ->SetStartingMaterial([])
+                     ->SetStartingKnowledge();
 	return;
 }
 
@@ -123,8 +128,7 @@ private func InitVegetation(int map_size)
 private func InitAnimals(int map_size)
 {
 	// Some butterflies as atmosphere.
-	for (var i = 0; i < 10 + 5 * map_size; i++)
-		PlaceAnimal(Butterfly);
+	Butterfly->Place(10 + 5 * map_size);
 	return;
 }
 

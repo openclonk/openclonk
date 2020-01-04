@@ -7,24 +7,7 @@ Difficulty=40
 [Game]
 Mode=Parkour
 
-[Definitions]
-Definition1=Objects.ocd
-
-[Player1]
-Crew=Clonk=1
-
-[Player2]
-Crew=Clonk=1
-
-[Player3]
-Crew=Clonk=1
-
-[Player4]
-Crew=Clonk=1
-
 [Landscape]
-InEarth=Rock=1;Dynamite=1;Firestone=1;Loam=1
-InEarthLevel=60
 Sky=Clouds1
 MapWidth=500
 MapHeight=250

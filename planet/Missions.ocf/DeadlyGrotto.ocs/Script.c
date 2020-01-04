@@ -23,6 +23,11 @@ func Initialize()
 	Mushroom->Place(5, Shape->Rectangle(100, 0, 600, 300));
 	// Sky
 	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                     ->SetStartingBaseMaterial([])
+                     ->SetStartingMaterial([])
+                     ->SetStartingKnowledge();
 	return true;
 }
 
@@ -47,6 +52,14 @@ func InitializePlayer(int plr)
 		crew->SetPosition(600 + Random(40), 736-10);
 		crew->CreateContents(Shovel);
 	}
+	// Base material
+	var materials = [
+		[Clonk, 5, 5],
+		[Bread, 5, 5]
+	];
+	GivePlayerBaseMaterial(plr, materials);
+	// Plans
+	GivePlrKnowledge(plr, [Flagpole, Foundry, WindGenerator, SteamEngine, Compensator, Sawmill, ChemicalLab, Elevator, Pump, ToolsWorkshop, Basement, WallKit, GoldBar, Loam, Metal, Axe, Barrel, Bucket, Dynamite, Hammer, WindBag, Pickaxe, Pipe, Shovel, TeleGlove, DynamiteBox, Chest, WoodenBridge]);
 	return true;
 }
 

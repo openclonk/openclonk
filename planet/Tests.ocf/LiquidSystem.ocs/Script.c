@@ -54,7 +54,7 @@ protected func InitializePlayer(int plr)
 	
 	// Some knowledge to construct a flagpole.
 	GetCrew(plr)->CreateContents(Hammer);
-	SetPlrKnowledge(plr, Flagpole);
+	GivePlrKnowledge(plr, Flagpole);
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);

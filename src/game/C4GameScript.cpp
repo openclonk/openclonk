@@ -961,11 +961,6 @@ C4Object* FnPlaceVegetation(C4PropList * _this, C4PropList * Def, long x, long y
 	}
 }
 
-C4Object* FnPlaceAnimal(C4PropList * _this, C4PropList * Def)
-{
-	return Game.PlaceAnimal(Def? Def : _this);
-}
-
 static bool FnHostile(C4PropList * _this, long player_nr1, long player_nr2, bool check_one_way_only)
 {
 	if (check_one_way_only)
@@ -1186,81 +1181,6 @@ static bool FnSetPlayerViewLock(C4PropList * _this, long player_nr, bool is_lock
 	return true;
 }
 
-static bool FnDoBaseMaterial(C4PropList * _this, long player_nr, C4ID id, long change)
-{
-	// validity check
-	if (!ValidPlr(player_nr))
-	{
-		return false;
-	}
-	C4Def *def = C4Id2Def(id);
-	if (!def)
-	{
-		return false;
-	}
-	// add to material
-	long last_count = ::Players.Get(player_nr)->BaseMaterial.GetIDCount(id);
-	return ::Players.Get(player_nr)->BaseMaterial.SetIDCount(id, last_count + change, true);
-}
-
-static bool FnDoBaseProduction(C4PropList * _this, long player_nr, C4ID id, long change)
-{
-	// validity check
-	if (!ValidPlr(player_nr))
-	{
-		return false;
-	}
-	C4Def *def = C4Id2Def(id);
-	if (!def)
-	{
-		return false;
-	}
-	// add to material
-	long last_count = ::Players.Get(player_nr)->BaseProduction.GetIDCount(id);
-	return ::Players.Get(player_nr)->BaseProduction.SetIDCount(id, last_count + change, true);
-}
-
-static bool FnSetPlrKnowledge(C4PropList * _this, Nillable<long> player_nr, C4ID id, bool remove)
-{
-	bool success = false;
-	// player_nr == nil: Call for all players
-	if (player_nr.IsNil())
-	{
-		for (C4Player *player = ::Players.First; player; player = player->Next)
-		{
-			if (player->SetKnowledge(id, remove))
-			{
-				success = true;
-			}
-		}
-	}
-	else
-	{
-		// Otherwise call for requested player
-		C4Player *player = ::Players.Get(player_nr);
-		if (player)
-		{
-			success = player->SetKnowledge(id, remove);
-		}
-	}
-	return success;
-}
-
-static C4Value FnGetPlrKnowledge(C4PropList * _this, int player_nr, C4ID id, int index, int category)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return C4VBool(false);
-	}
-	// Search by id, check if available, return bool
-	if (id)
-	{
-		return C4VBool(::Players.Get(player_nr)->Knowledge.GetIDCount(id, 1) != 0);
-	}
-	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->Knowledge.GetID( ::Definitions, category, index )));
-}
-
 static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 {
 	return ::Definitions.GetDef(iIndex);
@@ -1280,36 +1200,6 @@ static C4String * FnGetDefinitionGroupPath(C4PropList * _this)
 		return nullptr;
 	}
 	return ::Strings.RegString(def->ConsoleGroupPath.getData());
-}
-
-static C4Value FnGetBaseMaterial(C4PropList * _this, int player_nr, C4ID id, int index, int category)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return C4VBool(false);
-	}
-	// Search by id, return available count
-	if (id)
-	{
-		return C4VInt(::Players.Get(player_nr)->BaseMaterial.GetIDCount(id));
-	}
-	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->BaseMaterial.GetID( ::Definitions, category, index )));
-}
-
-static C4Value FnGetBaseProduction(C4PropList * _this, int player_nr, C4ID id, int index, int category)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return C4VBool(false);
-	}
-	// Search by id, return available count
-	if (id)
-	{
-		return C4VInt(::Players.Get(player_nr)->BaseProduction.GetIDCount(id));
-	}
-	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->BaseProduction.GetID( ::Definitions, category, index )));
 }
 
 static long FnGetWealth(C4PropList * _this, long player_nr)
@@ -3166,7 +3056,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(MusicLevel);
 	F(SetPlayList);
 	F(SetPlrView);
-	F(SetPlrKnowledge);
 	F(GetPlrViewMode);
 	F(ResetCursorView);
 	F(GetPlrView);
@@ -3186,7 +3075,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(Hostile);
 	F(SetHostility);
 	F(PlaceVegetation);
-	F(PlaceAnimal);
 	F(GameOver);
 	F(GetHiRank);
 	F(GetCrew);
@@ -3231,8 +3119,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetPlayerZoomLimits);
 	F(SetPlayerZoom);
 	F(SetPlayerViewLock);
-	F(DoBaseMaterial);
-	F(DoBaseProduction);
 	F(GainScenarioAccess);
 	F(IsNetwork);
 	F(IsEditor);
@@ -3313,9 +3199,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(EditCursor);
 	F(GainScenarioAchievement);
 	F(GetPXSCount);
-	F(GetPlrKnowledge);
-	F(GetBaseMaterial);
-	F(GetBaseProduction);
 	F(GetDefCoreVal);
 	F(GetObjectVal);
 	F(GetObjectInfoCoreVal);
