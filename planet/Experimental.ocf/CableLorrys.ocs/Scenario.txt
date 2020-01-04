@@ -8,18 +8,6 @@ NoInitialize=true
 [Game]
 Rules=RSTR=1
 
-[Player1]
-Knowledge=WoodenCabin=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;CableCrossing=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;DynamiteBox=1
-
-[Player2]
-Knowledge=WoodenCabin=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;CableCrossing=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;DynamiteBox=1
-
-[Player3]
-Knowledge=WoodenCabin=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;CableCrossing=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;DynamiteBox=1
-
-[Player4]
-Knowledge=WoodenCabin=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;CableCrossing=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;DynamiteBox=1
-
 [Landscape]
 BottomOpen=1
 MapWidth=500,0,64,10000
