@@ -23,6 +23,11 @@ func Initialize()
 	Mushroom->Place(5, Shape->Rectangle(100, 0, 600, 300));
 	// Sky
 	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                     ->SetStartingBaseMaterial([])
+                     ->SetStartingMaterial([])
+                     ->SetStartingKnowledge();
 	return true;
 }
 

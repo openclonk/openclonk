@@ -9,9 +9,6 @@ Difficulty=4
 Definition1=Objects.ocd
 Definition2=Decoration.ocd
 
-[Player1]
-Crew=Clonk=1
-
 [Landscape]
 Sky=Clouds1
 SkyScrollMode=2

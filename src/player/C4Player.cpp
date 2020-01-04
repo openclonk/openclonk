@@ -483,12 +483,8 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 	C4Def *pDef;
 
 	// Place crew
-	int32_t iCount;
-	C4ID id;
-	for (cnt=0; (id=Game.C4S.PlrStart[PlrStartIndex].ReadyCrew.GetID(cnt,&iCount)); cnt++)
-	{
-		// Minimum one clonk if empty id
-		iCount = std::max<int32_t>(iCount,1);
+	int32_t iCount = 1;
+	C4ID id = C4ID::Clonk;
 
 		for (int32_t cnt2=0; cnt2<iCount; cnt2++)
 		{
@@ -519,7 +515,6 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 				}
 			}
 		}
-	}
 
 }
 

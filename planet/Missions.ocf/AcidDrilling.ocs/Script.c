@@ -7,6 +7,11 @@ func Initialize()
 	g_crystal_player = NO_OWNER;
 	// Environment
 	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
+
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                         ->SetStartingBaseMaterial([])
+                         ->SetStartingMaterial([])
+                         ->SetStartingKnowledge();
 	return true;
 }
 

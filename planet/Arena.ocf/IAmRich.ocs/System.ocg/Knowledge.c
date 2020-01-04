@@ -115,7 +115,7 @@ global func GivePlayerAdvancedKnowledge(int plr)
 		// Advanced items in tools workshop and needed materials.
 		Ropeladder, MetalBarrel, PowderKeg, WallKit, Cloth, DivingHelmet,
 		// Advanced items in inventors lab.
-		TeleGlove, WindBag, GrappleBow, Boompack, Balloon,
+		TeleGlove, WindBag, GrappleBow, Boompack, Balloon
 	];
 	for (var plan in knowledge)
 		SetPlrKnowledge(plr, plan);

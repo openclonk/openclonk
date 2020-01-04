@@ -56,6 +56,11 @@ func Initialize()
 	if (SCENPAR_NoEnergy == 1) CreateObject(Rule_NoPowerNeed);
 	
 	CreateEffect(updatescoreboardfx, 1, 35);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+	                         ->SetStartingBaseMaterial([])
+	                         ->SetStartingMaterial([])
+                             ->SetStartingKnowledge();
 }
 
 func InitializePlayer(int plr)

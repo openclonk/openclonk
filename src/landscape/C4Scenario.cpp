@@ -236,7 +236,6 @@ void C4SPlrStart::Default()
 {
 	Position[0]=Position[1]=-1;
 	EnforcePosition=0;
-	ReadyCrew.Default();
 	ReadyBase.Default();
 }
 
@@ -247,17 +246,13 @@ bool C4SPlrStart::EquipmentEqual(C4SPlrStart &rhs)
 
 bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 {
-	return (ReadyCrew == rhs.ReadyCrew)
-	       && (ReadyBase == rhs.ReadyBase);
+	return (ReadyBase == rhs.ReadyBase);
 }
 
 void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 {
-	C4IDList crewDefault;
-	crewDefault.SetIDCount(C4ID::Clonk,1,true);
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Position,-1), "Position"           ));
 	pComp->Value(mkNamingAdapt(EnforcePosition,         "EnforcePosition",       0));
-	pComp->Value(mkNamingAdapt(ReadyCrew,               "Crew",                  crewDefault));
 	pComp->Value(mkNamingAdapt(ReadyBase,               "Buildings",             C4IDList()));
 }
 

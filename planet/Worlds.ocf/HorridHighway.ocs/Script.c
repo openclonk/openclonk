@@ -40,6 +40,11 @@ protected func Initialize()
 	InitMiddleIsland();
 	InitRightIsland();
 	InitDisasters(SCENPAR_Difficulty);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                 ->SetStartingBaseMaterial([])
+                 ->SetStartingMaterial([])
+                 ->SetStartingKnowledge();
 	return;
 }
 

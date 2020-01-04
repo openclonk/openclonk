@@ -143,7 +143,6 @@ class C4SPlrStart
 public:
 	int32_t Position[2];
 	int32_t EnforcePosition;
-	C4IDList ReadyCrew;
 	C4IDList ReadyBase;
 public:
 	void Default();

@@ -11,6 +11,11 @@ func Initialize()
 	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObject(Rule_BuyAtFlagpole);
 	// Environment
 	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                     ->SetStartingBaseMaterial([])
+                     ->SetStartingMaterial([])
+                     ->SetStartingKnowledge();
 	return true;
 }
 
@@ -44,6 +49,7 @@ func InitializePlayer(int plr)
 		[Dynamite,    50, 50]
 	];
 	GivePlayerBaseMaterial(plr, materials);
+	GivePlrKnowledge(plr, [Flagpole, Foundry, WindGenerator, SteamEngine, Compensator, Sawmill, ChemicalLab, InventorsLab, Elevator, ToolsWorkshop, Pump, Basement, GoldBar, Loam, Metal, Axe, Barrel, Dynamite, Hammer, WindBag, Shovel, Pipe, TeleGlove, GrappleBow, Ropeladder, Catapult, Pickaxe, DynamiteBox, Torch, Loom, Cloth, WoodenBridge]);
 	return true;
 }
 

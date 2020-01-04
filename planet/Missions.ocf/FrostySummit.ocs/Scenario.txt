@@ -11,18 +11,6 @@ Definition1=Objects.ocd
 Goals=Goal_SellGems=1;
 Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
 
-[Player1]
-Crew=Clonk=1
-
-[Player2]
-Crew=Clonk=1
-
-[Player3]
-Crew=Clonk=1
-
-[Player4]
-Crew=Clonk=1
-
 [Landscape]
 Sky=Clouds1
 TopOpen=1

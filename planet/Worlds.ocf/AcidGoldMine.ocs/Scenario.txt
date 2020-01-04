@@ -7,18 +7,6 @@ Difficulty=100
 [Definitions]
 Definition1=Objects.ocd
 
-[Player1]
-Crew=Clonk=2
-
-[Player2]
-Crew=Clonk=2
-
-[Player3]
-Crew=Clonk=2
-
-[Player4]
-Crew=Clonk=2
-
 [Landscape]
 Sky=Clouds1
 MapWidth=90

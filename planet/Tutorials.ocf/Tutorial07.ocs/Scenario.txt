@@ -8,9 +8,6 @@ Difficulty=7
 [Definitions]
 Definition1=Objects.ocd
 
-[Player1]
-Crew=Clonk=1
-
 [Landscape]
 BottomOpen=1
 Sky=Clouds1

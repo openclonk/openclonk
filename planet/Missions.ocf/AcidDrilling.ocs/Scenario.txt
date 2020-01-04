@@ -12,18 +12,6 @@ Definition2=Decoration.ocd
 Goals=Goal_AcidDrilling=1
 Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1
 
-[Player1]
-Crew=Clonk=2
-
-[Player2]
-Crew=Clonk=2
-
-[Player3]
-Crew=Clonk=2
-
-[Player4]
-Crew=Clonk=2
-
 [Landscape]
 Sky=Clouds1
 TopOpen=0

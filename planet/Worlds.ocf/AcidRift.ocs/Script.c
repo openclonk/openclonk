@@ -35,7 +35,12 @@ protected func Initialize()
 	InitEnvironment(SCENPAR_MapSize, SCENPAR_Difficulty);
 	InitVegetation(SCENPAR_MapSize, SCENPAR_Difficulty);
 	InitAnimals(SCENPAR_Difficulty);
-	InitMaterial(4 - SCENPAR_Difficulty);	
+	InitMaterial(4 - SCENPAR_Difficulty);
+
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                     ->SetStartingBaseMaterial([])
+                     ->SetStartingMaterial([])
+                     ->SetStartingKnowledge();
 	return;
 }
 

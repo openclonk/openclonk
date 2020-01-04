@@ -204,8 +204,6 @@ protected:
 	void UpdateView();
 	void CheckElimination();
 	void PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase);
-	void PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
-	void PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
 	void PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
 	void CheckCrewExPromotion();
 

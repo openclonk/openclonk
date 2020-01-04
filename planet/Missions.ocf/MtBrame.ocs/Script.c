@@ -50,6 +50,7 @@ func InitializePlayer(int plr)
 			crew->CreateContents(Shovel);
 		}
 	}
+	GivePlrKnowledge(plr, [Lorry, Catapult, Pickaxe, Axe, Shovel, Firestone, Barrel, Dynamite, Loam]);
 }
 
 func OnGoalsFulfilled()
