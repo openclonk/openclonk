@@ -1,13 +1,14 @@
 /**
 	Base Material & Production
-	Library to control the players base material and production. The initial values are read
-	from the Scenario.txt entries and per script one can modify these by:
+	
+	Library to control the players base material and production:
      * GetBaseMaterial(int player, id material, int index, int category)
      * SetBaseMaterial(int player, id material, int amount)
      * DoBaseMaterial(int player, id material, int change)
      * GetBaseProduction(int player, id material, int index, int category)
      * SetBaseProduction(int player, id material, int amount)
      * DoBaseProduction(int player, id material, int change)
+     
     Performs also two callbacks to a base of the player:
      * OnBaseMaterialChange(id material, int change);
      * OnBaseProductionChange(id material, int change);
@@ -104,44 +105,6 @@ protected func GetBaseMaterialManager(int player)
 
 protected func Initialize()
 {
-	// Gather base materials based on Scenario.txt player entries.
-	// TODO: Check teams and get the fitting player section
-	var player = GetOwner() % 4 + 1;
-	var section = Format("Player%d", player); 
-	
-	// Initialize arrays for material and production.
-	base_material = [];
-	base_production = [];
-	
-	// Load materials from Scenario.txt
-	var index;
-	var material, count;	
-	while (true)
-	{
-		material = GetScenarioVal("BaseMaterial", section, index * 2);
-		count = GetScenarioVal("BaseMaterial", section, index * 2 + 1);
-		if (!material && !count) break;
-		if (material)
-		{
-			PushBack(base_material, [material, count]);
-		}
-		index++;
-	}
-	
-	// Load production from Scenario.txt
-	index = 0;
-	while (true)
-	{
-		material = GetScenarioVal("BaseProduction", section, index * 2);
-		count = GetScenarioVal("BaseProduction", section, index * 2 + 1);
-		if (!material && !count) break;
-		if (material)
-		{
-			PushBack(base_production, [material, count]);
-		}
-		index++;
-	}
-	
 	// Add a timer for executing base production.
 	AddTimer("ExecBaseProduction", BASEMATERIAL_ProductionRate);
 	return;
