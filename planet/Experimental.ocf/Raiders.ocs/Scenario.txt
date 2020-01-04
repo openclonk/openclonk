@@ -5,9 +5,6 @@ Version=8,0
 MaxPlayer=4
 Difficulty=25
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Game]
 Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1;
 

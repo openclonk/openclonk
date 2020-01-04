@@ -4,9 +4,6 @@ Title=GoldRush
 Version=8,0
 Difficulty=10
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Landscape]
 Sky=Clouds2
 MapWidth=100

@@ -3,9 +3,6 @@ Icon=15
 Title=IAmRich
 Version=8,0
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Landscape]
 Sky=Clouds2
 MapWidth=100

@@ -4,9 +4,6 @@ Title=LostMine
 Version=8,0
 Difficulty=55
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Game]
 Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
 

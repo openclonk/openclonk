@@ -4,9 +4,6 @@ Title=Clonkomotive
 Version=8,0
 Difficulty=40
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Landscape]
 MapWidth=400
 MapHeight=120

@@ -5,9 +5,6 @@ Version=8,0
 MaxPlayer=1
 Difficulty=8
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Landscape]
 BottomOpen=1
 Sky=Clouds1

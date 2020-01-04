@@ -6,7 +6,6 @@ Difficulty=45
 NoInitialize=true
 
 [Definitions]
-Definition1=Objects.ocd
 Definition2=Decoration.ocd
 
 [Game]

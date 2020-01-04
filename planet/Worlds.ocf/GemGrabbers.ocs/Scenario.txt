@@ -4,9 +4,6 @@ Icon=35
 Version=8,0
 Difficulty=90
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Game]
 ValueOverloads=Ruby=10;Amethyst=10
 

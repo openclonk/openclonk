@@ -7,7 +7,6 @@ NoInitialize=true
 MissionAccess=S2Treasure
 
 [Definitions]
-Definition1=Objects.ocd
 Definition2=Decoration.ocd
 
 [Game]

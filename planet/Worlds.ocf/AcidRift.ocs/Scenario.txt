@@ -4,9 +4,6 @@ Title=AcidRift
 Version=8,0
 Difficulty=80
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Landscape]
 Sky=Clouds2
 MapZoom=6

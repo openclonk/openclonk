@@ -7,9 +7,6 @@ Difficulty=10
 [Game]
 Mode=Parkour
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Landscape]
 Sky=WinterMountains
 BottomOpen=2

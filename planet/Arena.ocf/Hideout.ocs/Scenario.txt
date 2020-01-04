@@ -8,9 +8,6 @@ Difficulty=90
 [Game]
 Mode=Melee
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Landscape]
 Sky=Clouds2
 SkyScrollMode=2

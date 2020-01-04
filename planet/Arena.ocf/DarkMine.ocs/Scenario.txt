@@ -7,9 +7,6 @@ Icon=15
 [Game]
 Mode=Melee
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Landscape]
 MapWidth=140
 MapHeight=140

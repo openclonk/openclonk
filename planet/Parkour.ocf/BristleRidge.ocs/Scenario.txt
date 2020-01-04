@@ -7,9 +7,6 @@ Difficulty=40
 [Game]
 Mode=Parkour
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Landscape]
 Sky=Clouds1
 MapWidth=500
