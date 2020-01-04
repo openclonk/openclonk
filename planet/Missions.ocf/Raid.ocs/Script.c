@@ -84,6 +84,8 @@ func InitializePlayer(int plr)
 	// Join intro listening or regular scenario
 	SetPlayerViewLock(plr, true);
 	JoinPlayer(plr);
+	GivePlrKnowledge(plr, [Foundry, ToolsWorkshop, WindGenerator, Flagpole, Sawmill, Elevator, ChemicalLab, Lorry, Pickaxe, Axe, Hammer, Shovel, Barrel, Dynamite, DynamiteBox, Loam, Bucket, GoldBar, Metal, Pipe, WallKit, WindGenerator]);
+	
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	return;
