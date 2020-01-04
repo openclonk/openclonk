@@ -64,7 +64,7 @@ func InitializePlayer(int plr)
 	JoinPlayer(plr);
 	GetCrew(plr)->CreateContents(Shovel);
 	// Knowledge
-	SetPlrKnowledge(plr, [ToolsWorkshop, Foundry, Flagpole, Elevator, Armory, ChemicalLab, Lorry, Pickaxe, Shovel, Firestone, Barrel, Dynamite, DynamiteBox, Loam, Bucket, Sword, Metal, Balloon, Boompack, GrappleBow, WindBag, Pipe, Pump, PowderKeg, Ropeladder, Bow, Arrow, Club, IronBomb, Javelin, Shield, Catapult, WallKit, WoodenBridge, Basement]);
+	GivePlrKnowledge(plr, [ToolsWorkshop, Foundry, Flagpole, Elevator, Armory, ChemicalLab, Lorry, Pickaxe, Shovel, Firestone, Barrel, Dynamite, DynamiteBox, Loam, Bucket, Sword, Metal, Balloon, Boompack, GrappleBow, WindBag, Pipe, Pump, PowderKeg, Ropeladder, Bow, Arrow, Club, IronBomb, Javelin, Shield, Catapult, WallKit, WoodenBridge, Basement]);
 	return true;
 }
 
