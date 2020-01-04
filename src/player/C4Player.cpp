@@ -569,8 +569,6 @@ bool C4Player::ScenarioInit()
 
 	// Wealth, home base materials, abilities
 	Wealth=0;
-	Knowledge=Game.C4S.PlrStart[PlrStartIndex].BuildKnowledge;
-	Knowledge.ConsolidateValids(::Definitions);
 
 	// Starting position
 	ptx = Game.C4S.PlrStart[PlrStartIndex].Position[0];
@@ -691,21 +689,6 @@ bool C4Player::SetWealth(int32_t iVal)
 	::Game.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(Number));
 
 	return true;
-}
-
-bool C4Player::SetKnowledge(C4ID id, bool fRemove)
-{
-	if (fRemove)
-	{
-		long iIndex = Knowledge.GetIndex(id);
-		if (iIndex<0) return false;
-		return Knowledge.DeleteItem(iIndex);
-	}
-	else
-	{
-		if (!C4Id2Def(id)) return false;
-		return Knowledge.SetIDCount(id, 1, true);
-	}
 }
 
 void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget, bool immediate_position)
@@ -1054,7 +1037,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(ViewCursor,          "ViewCursor",           C4ObjectPtr::Null));
 	pComp->Value(mkNamingAdapt(MessageStatus,       "MessageStatus",        0));
 	pComp->Value(mkNamingAdapt(toC4CStr(MessageBuf),"MessageBuf",           ""));
-	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(Crew, numbers), "Crew"            ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
@@ -1153,7 +1135,6 @@ void C4Player::DefaultRuntimeData()
 	MessageStatus=0;
 	MessageBuf[0]=0;
 	Hostility.clear();
-	Knowledge.Default();
 	FlashCom=0;
 }
 

@@ -145,7 +145,6 @@ public:
 	int32_t EnforcePosition;
 	C4IDList ReadyCrew;
 	C4IDList ReadyBase;
-	C4IDList BuildKnowledge;
 public:
 	void Default();
 	bool EquipmentEqual(C4SPlrStart &rhs);
