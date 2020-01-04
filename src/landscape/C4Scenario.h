@@ -138,16 +138,6 @@ public:
 
 const int32_t C4S_MaxMapPlayerExtend = 4;
 
-class C4SPlrStart
-{
-public:
-	int32_t Position[2];
-	int32_t EnforcePosition;
-public:
-	void Default();
-	void CompileFunc(StdCompiler *pComp);
-};
-
 
 class C4SLandscape
 {
@@ -199,7 +189,6 @@ public:
 	C4SHead         Head;
 	C4SDefinitions  Definitions;
 	C4SGame         Game;
-	C4SPlrStart     PlrStart[C4S_MaxPlayer];
 	C4SLandscape    Landscape;
 	C4SWeather      Weather;
 public:

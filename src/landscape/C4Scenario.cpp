@@ -81,7 +81,6 @@ void C4Scenario::Default()
 	Head.Default();
 	Definitions.Default();
 	Game.Default();
-	for (cnt=0; cnt<C4S_MaxPlayer; cnt++) PlrStart[cnt].Default();
 	Landscape.Default();
 	Weather.Default();
 	Game.Realism.Default();
@@ -128,8 +127,6 @@ void C4Scenario::CompileFunc(StdCompiler *pComp, bool fSection)
 	pComp->Value(mkNamingAdapt(mkParAdapt(Head, fSection), "Head"));
 	if (!fSection) pComp->Value(mkNamingAdapt(Definitions, "Definitions"));
 	pComp->Value(mkNamingAdapt(mkParAdapt(Game, fSection), "Game"));
-	for (int32_t i = 0; i < C4S_MaxPlayer; i++)
-		pComp->Value(mkNamingAdapt(PlrStart[i], FormatString("Player%d", i+1).getData()));
 	pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
 	pComp->Value(mkNamingAdapt(Weather, "Weather"));
 }
@@ -230,18 +227,6 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 	pComp->Value(mkNamingAdapt(Rules,                                             "Rules",           C4IDList()));
 	pComp->Value(mkNamingAdapt(FoWEnabled,                                        "FoWEnabled",      true));
 	pComp->Value(mkNamingAdapt(EvaluateOnAbort,                                   "EvaluateOnAbort", false));
-}
-
-void C4SPlrStart::Default()
-{
-	Position[0]=Position[1]=-1;
-	EnforcePosition=0;
-}
-
-void C4SPlrStart::CompileFunc(StdCompiler *pComp)
-{
-	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Position,-1), "Position"           ));
-	pComp->Value(mkNamingAdapt(EnforcePosition,         "EnforcePosition",       0));
 }
 
 void C4SLandscape::Default()

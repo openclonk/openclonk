@@ -191,16 +191,7 @@ void C4Player::Execute()
 					if ((pSelectedTeam = Game.Teams.GetTeamByID(idSelectedTeam)))
 					{
 						int32_t iPlrStartIndex = pSelectedTeam->GetPlrStartIndex();
-						if (iPlrStartIndex && Inside<int32_t>(iPlrStartIndex, 1, C4S_MaxPlayer))
-						{
-							if (Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] > -1)
-							{
-								// player has selected a team that has a valid start position assigned
-								// set view to this position!
-								ViewX = Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] * ::Landscape.GetMapZoom();
-								ViewY = Game.C4S.PlrStart[iPlrStartIndex-1].Position[1] * ::Landscape.GetMapZoom();
-							}
-						}
+						// TODO: Maybe do this as a callback? There are no player start positions anymore
 					}
 				}
 			}
@@ -496,8 +487,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty)
 			if (!pInfo || !(pDef=C4Id2Def(pInfo->id))) continue;
 			// Crew placement location
 			ctx=tx1+Random(tx2-tx1); cty=ty;
-			if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
-				FindSolidGround(ctx,cty,pDef->Shape.Wdt*3);
+			FindSolidGround(ctx,cty,pDef->Shape.Wdt*3);
 			// Create object
 			if ((nobj=Game.CreateInfoObject(pInfo,Number,ctx,cty)))
 			{
@@ -518,8 +508,6 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty)
 
 bool C4Player::ScenarioInit()
 {
-	int32_t ptx,pty;
-
 	// player start index by team, if specified. Otherwise by player number
 	PlrStartIndex = Number % C4S_MaxPlayer;
 	C4Team *pTeam; int32_t i;
@@ -539,54 +527,46 @@ bool C4Player::ScenarioInit()
 	Wealth=0;
 
 	// Starting position
-	ptx = Game.C4S.PlrStart[PlrStartIndex].Position[0];
-	pty = Game.C4S.PlrStart[PlrStartIndex].Position[1];
-
-	// Zoomed position
-	if (ptx>-1) ptx = Clamp<int32_t>( ptx * Game.C4S.Landscape.MapZoom.Evaluate(), 0, ::Landscape.GetWidth()-1 );
-	if (pty>-1) pty = Clamp<int32_t>( pty * Game.C4S.Landscape.MapZoom.Evaluate(), 0, ::Landscape.GetHeight()-1 );
+	int32_t ptx = -1;
+	int32_t pty = -1;
 
 	// Standard position (PrefPosition)
-	if (ptx<0)
-		if (Game.StartupPlayerCount>=2)
+	if (Game.StartupPlayerCount>=2)
+	{
+		int32_t iMaxPos=Game.StartupPlayerCount;
+		// Try to initialize PrefPosition using teams. This should put players of a team next to each other.
+		int PrefPosition = 0;
+		C4PlayerInfo *plr;
+		for (int i = 0; (plr = Game.PlayerInfos.GetPlayerInfoByIndex(i)) != nullptr; i++)
 		{
-			int32_t iMaxPos=Game.StartupPlayerCount;
-			// Try to initialize PrefPosition using teams. This should put players of a team next to each other.
-			int PrefPosition = 0;
-			C4PlayerInfo *plr;
-			for (int i = 0; (plr = Game.PlayerInfos.GetPlayerInfoByIndex(i)) != nullptr; i++)
-			{
-				if (plr->GetTeam() < Team)
-					PrefPosition++;
-			}
-			// Map preferred position to available positions
-			int32_t iStartPos=Clamp(PrefPosition*iMaxPos/C4P_MaxPosition,0,iMaxPos-1);
-			int32_t iPosition=iStartPos;
-			// Distribute according to availability
-			while (::Players.PositionTaken(iPosition))
-			{
-				++iPosition;
-				iPosition %= iMaxPos;
-				if (iPosition == iStartPos)
-					break;
-			}
-			Position=iPosition;
-			// Set x position
-			ptx=Clamp(16+Position*(::Landscape.GetWidth()-32)/(iMaxPos-1),0,::Landscape.GetWidth()-16);
+			if (plr->GetTeam() < Team)
+				PrefPosition++;
 		}
+		// Map preferred position to available positions
+		int32_t iStartPos=Clamp(PrefPosition*iMaxPos/C4P_MaxPosition,0,iMaxPos-1);
+		int32_t iPosition=iStartPos;
+		// Distribute according to availability
+		while (::Players.PositionTaken(iPosition))
+		{
+			++iPosition;
+			iPosition %= iMaxPos;
+			if (iPosition == iStartPos)
+				break;
+		}
+		Position=iPosition;
+		// Set x position
+		ptx=Clamp(16+Position*(::Landscape.GetWidth()-32)/(iMaxPos-1),0,::Landscape.GetWidth()-16);
+	}
 
 	// All-random position
 	if (ptx<0) ptx=16+Random(::Landscape.GetWidth()-32);
 	if (pty<0) pty=16+Random(::Landscape.GetHeight()-32);
 
 	// Place to solid ground
-	if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
-	{
-		// Use nearest above-ground...
-		FindSolidGround(ptx,pty,30);
-		// Might have hit a small lake, or similar: Search a real site spot from here
-		FindConSiteSpot(ptx, pty, 30, 50, 400);
-	}
+	// Use nearest above-ground...
+	FindSolidGround(ptx,pty,30);
+	// Might have hit a small lake, or similar: Search a real site spot from here
+	FindConSiteSpot(ptx, pty, 30, 50, 400);
 
 	// Place Readies
 	C4Object *FirstBase = nullptr;

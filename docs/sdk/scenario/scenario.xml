@@ -5,7 +5,7 @@
 <doc>
   <title>Scenario.txt</title>
   <h>Scenario.txt</h>
-  <text>In Scenario.txt you can define basic scenario settings including simple dynamic maps, player presets and starting material, game goals, weather conditions etc. Most of these settings can also be made in the scenario properties of the menu system. For more complex settings and mission sequences you will have to write a <emlink href="scenario/script.html">script</emlink>.</text>
+  <text>In Scenario.txt you can define basic scenario settings including simple dynamic maps, weather conditions etc. For more complex settings and mission sequences you will have to write a <emlink href="scenario/script.html">script</emlink>.</text>
   <text>Some of the values require four numbers which specify mean, deviation, minimum and maximum. The value which is actually used is computed by <code>BoundBy(mean+Random(2*deviation+1)-deviation,minimum,maximum);</code>.</text>
   <text>
     <table>
@@ -129,21 +129,6 @@
         <col>EvaluateOnAbort</col>
         <col>Bool</col>
         <col>If enabled, the game will be evaluated even when aborted by the player. This is intended for scenarios like Tower of Despair that save progress in players. Default false.</col>
-      </row>
-    </table>
-  </text>
-  <text>
-    <table>
-      <caption id="SektionenPlayer1Player2Player3Player4">Sections [Player1] [Player2] [Player3] [Player4]</caption>
-      <rowh>
-        <col>Value</col>
-        <col>Data type</col>
-        <col>Description</col>
-      </rowh>
-      <row>
-        <literal_col>Position</literal_col>
-        <col>2 Integer</col>
-        <col>Start position as coordinates for the un-zoomed landscape. Both -1: Random position.</col>
       </row>
     </table>
   </text>
