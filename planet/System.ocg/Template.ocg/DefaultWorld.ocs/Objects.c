@@ -6,10 +6,14 @@
 public func InitializeObjects()
 {
 	// Place player start centered above ground
-	var start_x = LandscapeWidth()/2;
+	var start_x = LandscapeWidth() / 2;
 	var start_y = 0;
-	while (!GBackSolid(start_x, start_y) && start_y < LandscapeHeight()) ++start_y;
+	while (!GBackSolid(start_x, start_y) && start_y < LandscapeHeight())
+	{
+		++start_y;
+	}
 	CreateObjectAbove(PlayerStart, start_x, start_y);
+
 	// Place regular objects
 	InitEnvironment();
 	InitVegetation();
