@@ -236,24 +236,12 @@ void C4SPlrStart::Default()
 {
 	Position[0]=Position[1]=-1;
 	EnforcePosition=0;
-	ReadyBase.Default();
-}
-
-bool C4SPlrStart::EquipmentEqual(C4SPlrStart &rhs)
-{
-	return *this == rhs;
-}
-
-bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
-{
-	return (ReadyBase == rhs.ReadyBase);
 }
 
 void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Position,-1), "Position"           ));
 	pComp->Value(mkNamingAdapt(EnforcePosition,         "EnforcePosition",       0));
-	pComp->Value(mkNamingAdapt(ReadyBase,               "Buildings",             C4IDList()));
 }
 
 void C4SLandscape::Default()

@@ -475,7 +475,7 @@ bool C4Player::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny)
 	return true;
 }
 
-void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
+void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty)
 {
 	int32_t cnt,ctx,cty;
 	C4Object *nobj;
@@ -505,8 +505,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 				Crew.Add(nobj, C4ObjectList::stNone);
 				// add visibility range
 				nobj->SetLightRange(C4FOW_DefLightRangeX, C4FOW_DefLightFadeoutRangeX);
-				// If base is present, enter base
-				if (FirstBase) { nobj->Enter(FirstBase); nobj->SetCommand(C4CMD_Exit); }
+
 				// OnJoinCrew callback
 				{
 					C4DebugRecOff DbgRecOff{ !DEBUGREC_RECRUITMENT };
@@ -515,32 +514,6 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 				}
 			}
 		}
-
-}
-
-void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
-{
-	int32_t cnt,cnt2,ctx,cty;
-	C4Def *def;
-	C4ID cid;
-	C4Object *cbase;
-	// Create ready base structures
-	for (cnt=0; (cid=Game.C4S.PlrStart[PlrStartIndex].ReadyBase.GetID(cnt)); cnt++)
-	{
-		if ((def=C4Id2Def(cid)))
-			for (cnt2=0; cnt2<Game.C4S.PlrStart[PlrStartIndex].ReadyBase.GetCount(cnt); cnt2++)
-			{
-				ctx=tx; cty=ty;
-				if (Game.C4S.PlrStart[PlrStartIndex].EnforcePosition
-				    || FindConSiteSpot(ctx,cty,def->Shape.Wdt,def->Shape.Hgt,20))
-					if ((cbase=Game.CreateObjectConstruction(C4Id2Def(cid),nullptr,Number,ctx,cty,FullCon,true)))
-					{
-						// FirstBase
-						if (!(*pFirstBase)) if ((cbase->Def->Entrance.Wdt>0) && (cbase->Def->Entrance.Hgt>0))
-								{ *pFirstBase=cbase; tx=(*pFirstBase)->GetX(); ty=(*pFirstBase)->GetY(); }
-					}
-			}
-	}
 }
 
 bool C4Player::ScenarioInit()
@@ -611,14 +584,13 @@ bool C4Player::ScenarioInit()
 	{
 		// Use nearest above-ground...
 		FindSolidGround(ptx,pty,30);
-		// Might have hit a small lake, or similar: Seach a real site spot from here
+		// Might have hit a small lake, or similar: Search a real site spot from here
 		FindConSiteSpot(ptx, pty, 30, 50, 400);
 	}
 
 	// Place Readies
 	C4Object *FirstBase = nullptr;
-	PlaceReadyBase(ptx,pty,&FirstBase);
-	PlaceReadyCrew(ptx-30,ptx+30,pty,FirstBase);
+	PlaceReadyCrew(ptx-30,ptx+30,pty);
 
 	// set initial hostility by team info
 	if (Team) SetTeamHostility();

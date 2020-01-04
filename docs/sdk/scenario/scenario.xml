@@ -145,21 +145,6 @@
         <col>2 Integer</col>
         <col>Start position as coordinates for the un-zoomed landscape. Both -1: Random position.</col>
       </row>
-      <row>
-        <literal_col>Crew</literal_col>
-        <col>ID list</col>
-        <col>Type and count of initial crew members.</col>
-      </row>
-      <row>
-        <literal_col>Buildings</literal_col>
-        <col>ID list</col>
-        <col>Buildings available at game start.</col>
-      </row>
-      <row>
-        <literal_col>Knowledge</literal_col>
-        <col>ID list</col>
-        <col>Objects the player should initially be able to create.</col>
-      </row>
     </table>
   </text>
   <text>

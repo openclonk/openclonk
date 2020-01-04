@@ -6,20 +6,6 @@ Version=8,0
 [Definitions]
 Definition1=Objects.ocd
 
-[Game]
-
-[Player1]
-Buildings=Flagpole=1
-
-[Player2]
-Buildings=Flagpole=1
-
-[Player3]
-Buildings=Flagpole=1
-
-[Player4]
-Buildings=Flagpole=1
-
 [Landscape]
 Sky=Clouds2
 MapWidth=100

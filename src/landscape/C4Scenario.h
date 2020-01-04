@@ -143,11 +143,8 @@ class C4SPlrStart
 public:
 	int32_t Position[2];
 	int32_t EnforcePosition;
-	C4IDList ReadyBase;
 public:
 	void Default();
-	bool EquipmentEqual(C4SPlrStart &rhs);
-	bool operator==(const C4SPlrStart& rhs);
 	void CompileFunc(StdCompiler *pComp);
 };
 
