@@ -19,8 +19,8 @@
 
 // Local variables to store the player's material and production.
 // Is an array filled with [id, count] arrays.
-local base_material;
-local base_production;
+local base_material = [];
+local base_production = [];
 local production_unit = 0;
 
 // Maximum number of material. 
