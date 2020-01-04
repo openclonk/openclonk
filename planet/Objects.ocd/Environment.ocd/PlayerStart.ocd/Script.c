@@ -437,7 +437,10 @@ private func InitializeMaterial(int plr)
 				}
 			}
 		}
-		if (best_target) best_target->Collect(obj); // May fail due to contents full
+		if (best_target)
+		{
+			best_target->Collect(obj); // May fail due to contents full
+		}
 	}
 	return true;
 }
@@ -462,7 +465,7 @@ private func InitializeKnowledge(int plr)
 			{
 				if (GetIndexOf(exceptlist, def) == -1)
 				{
-					SetPlrKnowledge(plr, def);
+					GivePlrKnowledge(plr, def);
 				}
 			}
 		}
@@ -471,7 +474,7 @@ private func InitializeKnowledge(int plr)
 	{
 		for (def in starting_knowledge.Data)
 		{
-			SetPlrKnowledge(plr, def);
+			GivePlrKnowledge(plr, def);
 		}
 	}
 	else
