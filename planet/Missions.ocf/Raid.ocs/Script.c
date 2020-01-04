@@ -80,7 +80,7 @@ func InitializePlayer(int plr)
 	// Ensure flag has owner
 	if (g_flagpole && g_flagpole->GetOwner()<0) g_flagpole->SetOwner(plr);
 	// Late join stuff
-	if (g_pyrit_spoken) SetPlrKnowledge(plr, Airplane);
+	if (g_pyrit_spoken) GivePlrKnowledge(plr, Airplane);
 	// Join intro listening or regular scenario
 	SetPlayerViewLock(plr, true);
 	JoinPlayer(plr);

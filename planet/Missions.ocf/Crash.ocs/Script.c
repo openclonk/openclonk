@@ -122,9 +122,9 @@ func OnGoalsFulfilled()
 
 func GiveExtraPlans(int plr)
 {
-	SetPlrKnowledge(plr, Pump);
-	SetPlrKnowledge(plr, Pipe);
-	SetPlrKnowledge(plr, Catapult);
-	SetPlrKnowledge(plr, Cannon);
+	GivePlrKnowledge(plr, Pump);
+	GivePlrKnowledge(plr, Pipe);
+	GivePlrKnowledge(plr, Catapult);
+	GivePlrKnowledge(plr, Cannon);
 	return true;
 }
