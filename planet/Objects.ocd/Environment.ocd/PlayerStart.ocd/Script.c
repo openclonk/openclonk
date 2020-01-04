@@ -92,7 +92,7 @@ public func SetStartingPlayers(string setting, param)
 	{
 		starting_players = nil; // None
 	}
-	return true;
+	return this;
 }
 
 public func SetStartingKnowledge(string setting, param)
@@ -105,13 +105,13 @@ public func SetStartingKnowledge(string setting, param)
 	{
 		starting_knowledge = nil; // None
 	}
-	return true;
+	return this;
 }
 
 public func SetStartingCrew(array new_crew)
 {
 	starting_crew = new_crew;
-	return true;
+	return this;
 }
 
 public func SetStartingMaterial(array new_material)
@@ -133,41 +133,43 @@ public func SetStartingMaterial(array new_material)
 	{
 		starting_material = new_material;
 	}
-	return true;
+	return this;
 }
 
 public func SetStartingWealth(int new_wealth)
 {
 	starting_wealth = new_wealth;
-	return true;
+	return this;
 }
 
 public func SetStartingBaseMaterial(array new_material)
 {
 	starting_base_material = new_material;
-	return true;
+	return this;
 }
 
 public func SetClonkMaxContentsCount(int new_clonk_max_contents_count)
 {
 	clonk_max_contents_count = new_clonk_max_contents_count;
-	return true;
+	return this;
 }
 
 public func SetClonkMaxEnergy(int new_clonk_max_energy)
 {
 	clonk_max_energy = new_clonk_max_energy;
-	return true;
+	return this;
 }
 
 public func SetRespawnMaterial(new_material)
 {
 	respawn_material = new_material;
+	return this;
 }
 
 public func SetViewLock(bool lock)
 {
 	view_lock = lock;
+	return this;
 }
 
 public func SetZoomMin(int zoom)
@@ -176,6 +178,7 @@ public func SetZoomMin(int zoom)
 	this.EditorProps.zoom_max.Options[1].Delegate.Min = zoom_min;
 	this.EditorProps.zoom_set.Options[1].Delegate.Min = zoom_min;
 	SetZoomSet(Max(zoom_set ?? this.EditorProps.zoom_set.Options[1].Value, zoom_min));
+	return this;
 }
 
 public func SetZoomMax(int zoom)
@@ -184,6 +187,7 @@ public func SetZoomMax(int zoom)
 	this.EditorProps.zoom_max.Options[1].Delegate.Max = zoom_max;
 	this.EditorProps.zoom_set.Options[1].Delegate.Max = zoom_max;
 	SetZoomSet(Min(zoom_set ?? this.EditorProps.zoom_set.Options[1].Value, zoom_max));
+	return this;
 }
 
 public func SetZoomSet(int zoom)
@@ -193,6 +197,7 @@ public func SetZoomSet(int zoom)
 	{
 		InitializeView(plr);
 	}
+	return this;
 }
 
 
@@ -506,16 +511,28 @@ public func SaveScenarioObject(props, ...)
 {
 	if (!inherited(props, ...)) return false;
 	if (!DeepEqual(starting_players, GetID().starting_players))
+	{
 		if (starting_players)
+		{
 			props->AddCall("Players", this, "SetStartingPlayers", Format("%v", starting_players.Option), starting_players.Data);
+		}
 		else
+		{
 			props->AddCall("Players", this, "SetStartingPlayers", nil);
-			
+		}
+	}
+
 	if (!DeepEqual(starting_knowledge, GetID().starting_knowledge))
+	{
 		if (starting_knowledge)
+		{
 			props->AddCall("Knowledge", this, "SetStartingKnowledge", Format("%v", starting_knowledge.Option), starting_knowledge.Data);
+		}
 		else
+		{
 			props->AddCall("Knowledge", this, "SetStartingKnowledge", nil);
+		}
+	}
 			
 	if (!DeepEqual(starting_crew, GetID().starting_crew)) props->AddCall("Crew", this, "SetStartingCrew", starting_crew);
 	if (!DeepEqual(starting_material, GetID().starting_material)) props->AddCall("Material", this, "SetStartingMaterial", starting_material);
