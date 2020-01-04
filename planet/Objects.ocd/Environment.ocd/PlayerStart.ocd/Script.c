@@ -377,7 +377,10 @@ private func InitializeMaterial(int plr)
 				}
 			}
 		}
-		if (best_target) best_target->Collect(obj); // May fail due to contents full
+		if (best_target)
+		{
+			best_target->Collect(obj); // May fail due to contents full
+		}
 	}
 	return true;
 }
@@ -389,16 +392,27 @@ private func InitializeKnowledge(int plr)
 	if (starting_knowledge.Option == "all" || starting_knowledge.Option == "allexcept")
 	{
 		var i = 0, exceptlist = [];
-		if (starting_knowledge.Option == "allexcept") exceptlist = starting_knowledge.Data;
+		if (starting_knowledge.Option == "allexcept")
+		{
+			exceptlist = starting_knowledge.Data;
+		}
 		while (def = GetDefinition(i++))
+		{
 			if (!(def->GetCategory() & (C4D_Rule | C4D_Goal | C4D_Environment)))
+			{
 				if (GetIndexOf(exceptlist, def) == -1)
-					SetPlrKnowledge(plr, def);
+				{
+					GivePlrKnowledge(plr, def);
+				}
+			}
+		}
 	}
 	else if (starting_knowledge.Option == "idlist")
 	{
 		for (def in starting_knowledge.Data)
-			SetPlrKnowledge(plr, def);
+		{
+			GivePlrKnowledge(plr, def);
+		}
 	}
 	else
 	{
