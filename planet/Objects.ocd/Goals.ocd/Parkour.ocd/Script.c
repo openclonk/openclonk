@@ -154,9 +154,8 @@ public func PlayerReachedFinishCP(int plr, object cp, bool is_first_clear)
 {
 	if (finished)
 		return;
-	var plrid = GetPlayerID(plr);
 	var team = GetPlayerTeam(plr);
-	plr_list[plrid]++;
+	plr_list[plr]++;
 	if (team)
 		team_list[team]++;
 	UpdateScoreboard(plr);
@@ -184,8 +183,7 @@ public func AddPlayerClearedCP(int plr, object cp, bool is_first_clear, bool is_
 {
 	if (finished)
 		return;
-	var plrid = GetPlayerID(plr);
-	plr_list[plrid]++;
+	plr_list[plr]++;
 	UpdateScoreboard(plr);
 	if (!is_team_auto_clear) // No callback if only auto-cleared for other team members after another player cleared it
 	{
@@ -316,8 +314,7 @@ public func GetShortDescription(int plr)
 // Returns the length the player has completed.
 private func GetPlayerPosition(int plr)
 {
-	var plrid = GetPlayerID(plr);
-	var cleared = plr_list[plrid];
+	var cleared = plr_list[plr];
 	var length = 0;
 	// Add length of cleared checkpoints.
 	for (var i = 0; i < cleared; i++)
@@ -371,8 +368,7 @@ private func GetParkourLength()
 // Returns the number of checkpoints cleared by the player.
 public func GetPlayerClearedCheckpoints(int plr)
 {
-	var plrid = GetPlayerID(plr);
-	return plr_list[plrid];
+	return plr_list[plr];
 }
 
 public func GetLeaderClearedCheckpoints()
@@ -413,9 +409,8 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 		SetHostility(GetPlayerByIndex(i), plr, false, true);
 	}
 	// Init Respawn CP to start CP.
-	var plrid = GetPlayerID(plr);
 	respawn_list[plr] = cp_list[0];
-	plr_list[plrid] = 0;
+	plr_list[plr] = 0;
 	if (team)
 		if (!team_list[team])
 			team_list[team] = 0;
@@ -541,8 +536,7 @@ private func UpdateScoreboard(int plr)
 {
 	if (finished)
 		return;
-	var plrid = GetPlayerID(plr);
-	Scoreboard->SetPlayerData(plr, "checkpoints", plr_list[plrid]);
+	Scoreboard->SetPlayerData(plr, "checkpoints", plr_list[plr]);
 	var bt = GetPlrExtraData(plr, time_store);
 	Scoreboard->SetPlayerData(plr, "besttime", TimeToString(bt), bt);
 	return;
@@ -707,14 +701,13 @@ private func AddEvalData(int plr)
 {
 	if (finished)
 		return;
-	var plrid = GetPlayerID(plr);
-	var cps = plr_list[plrid];
+	var cps = plr_list[plr];
 	var msg;
 	if (cps == cp_count)
 		msg = "$MsgEvalPlayerAll$";
 	else
 		msg = Format("$MsgEvalPlayerX$", cps, cp_count);
-	AddEvaluationData(msg, plrid);
+	AddEvaluationData(msg, plr);
 	return;
 }
 
