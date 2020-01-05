@@ -140,7 +140,7 @@ void C4ConsoleGUI::AddMenuItemForPlayer(C4Player* player, StdStrBuf& player_text
 		[C4AppDelegate instance].addViewportForPlayerMenuItem.submenu
 		addItemWithTitle:[NSString stringWithUTF8String:player_text.getData()] action:@selector(newViewportForPlayer:) keyEquivalent:@""
 	];
-	[item setTag:player->Number];
+	[item setTag:player->ID];
 	[item setTarget: C4AppDelegate.instance];
 }
 
@@ -436,7 +436,7 @@ void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_tex
 		addItemWithTitle:[NSString stringWithUTF8String:player_text.getData()] action:@selector(kickPlayer:) keyEquivalent:@""
 	];
 	[item setEnabled:enabled];
-	[item setTag:player->Number];
+	[item setTag:player->ID];
 	[item setTarget: ctrler(this)];
 }
 

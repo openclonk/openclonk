@@ -998,12 +998,12 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 
 void C4ConsoleGUI::AddMenuItemForPlayer(C4Player* player, StdStrBuf& player_text)
 {
-	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexViewport),IDM_VIEWPORT_NEW1+player->Number,player_text.getData(), true);
+	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexViewport),IDM_VIEWPORT_NEW1+player->ID,player_text.getData(), true);
 }
 
 void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_text, bool enabled)
 {
-	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexPlayer),IDM_PLAYER_QUIT1+player->Number,player_text.getData(),(!::Network.isEnabled() || ::Network.isHost()) && Editing);
+	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexPlayer),IDM_PLAYER_QUIT1+player->ID,player_text.getData(),(!::Network.isEnabled() || ::Network.isHost()) && Editing);
 }
 
 void C4ConsoleGUI::AddNetMenu()

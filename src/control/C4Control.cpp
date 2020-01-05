@@ -450,7 +450,7 @@ C4ControlPlayerMouse *C4ControlPlayerMouse::Hover(const C4Player *player, const 
 
 	auto control = new C4ControlPlayerMouse();
 	control->action = CPM_Hover;
-	control->player = player->Number;
+	control->player = player->ID;
 	control->drag_obj = drag ? drag->Number : 0;
 	control->target_obj = target ? target->Number : 0;
 	control->old_obj = old_target ? old_target->Number : 0;
@@ -463,7 +463,7 @@ C4ControlPlayerMouse *C4ControlPlayerMouse::DragDrop(const C4Player *player, con
 
 	auto control = new C4ControlPlayerMouse();
 	control->action = CPM_Drop;
-	control->player = player->Number;
+	control->player = player->ID;
 	control->drag_obj = drag ? drag->Number : 0;
 	control->target_obj = target ? target->Number : 0;
 	return control;
@@ -550,7 +550,7 @@ void C4ControlMenuCommand::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlPlayerAction
 C4ControlPlayerAction::C4ControlPlayerAction(const C4Player *source)
-	: source(source ? source->Number : NO_OWNER), target(NO_OWNER)
+	: source(source ? source->ID : NO_OWNER), target(NO_OWNER)
 {
 }
 
@@ -590,7 +590,7 @@ C4ControlPlayerAction *C4ControlPlayerAction::SetHostility(const C4Player *sourc
 	assert(target);
 	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
 	control->action = CPA_SetHostility;
-	control->target = target ? target->Number : NO_OWNER;
+	control->target = target ? target->ID : NO_OWNER;
 	control->param_int = hostile;
 	return control;
 }
@@ -650,14 +650,14 @@ void C4ControlPlayerAction::Execute() const
 		C4Object *goal = ::Objects.SafeObjectPointer(target);
 		if (!goal) return;
 		// Call it
-		C4AulParSet pars(source_player->Number);
+		C4AulParSet pars(source_player->ID);
 		goal->Call("Activate", &pars);
 		break;
 	}
 
 	case CPA_ActivateGoalMenu:
 		// open menu
-		source_player->Menu.ActivateGoals(source_player->Number, source_player->LocalControl && !::Control.isReplay());
+		source_player->Menu.ActivateGoals(source_player->ID, source_player->LocalControl && !::Control.isReplay());
 		break;
 
 	case CPA_SetHostility:
@@ -667,7 +667,7 @@ void C4ControlPlayerAction::Execute() const
 		if (!target_player) return;
 		
 		// Proxy the hostility change through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(source_player->Number, target_player->Number, param_int != 0);
+		C4AulParSet pars(source_player->ID, target_player->ID, param_int != 0);
 		::ScriptEngine.Call("SetHostility", &pars);
 		break;
 	}
@@ -682,7 +682,7 @@ void C4ControlPlayerAction::Execute() const
 		if (!team && target != TEAMID_New) return;
 
 		// Proxy the team switch through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(source_player->Number, target);
+		C4AulParSet pars(source_player->ID, target);
 		::ScriptEngine.Call("SetPlayerTeam", &pars);
 		break;
 	}
@@ -690,7 +690,7 @@ void C4ControlPlayerAction::Execute() const
 	case CPA_InitScenarioPlayer:
 	{
 		// Proxy the call through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(source_player->Number, target);
+		C4AulParSet pars(source_player->ID, target);
 		::ScriptEngine.Call("InitScenarioPlayer", &pars);
 		break;
 	}
@@ -700,7 +700,7 @@ void C4ControlPlayerAction::Execute() const
 		// Notify scripts about player control selection
 		const char *callback_name = PSF_InitializePlayerControl;
 		
-		C4AulParSet pars(source_player->Number);
+		C4AulParSet pars(source_player->ID);
 		// If the player is using a control set, its name is stored in param_str
 		if (param_str)
 		{
@@ -1543,7 +1543,7 @@ void C4ControlMessage::Execute() const
 			// for running game mode, check actual hostility
 			C4Player *pLocalPlr;
 			for (int cnt = 0; (pLocalPlr = ::Players.GetLocalByIndex(cnt)); cnt++)
-				if (!Hostile(pLocalPlr->Number, iPlayer))
+				if (!Hostile(pLocalPlr->ID, iPlayer))
 					break;
 			if (pLocalPlr) Log(FormatString("<c %x>{%s} %s</c>", pPlr->ColorDw, pPlr->GetName(), szMessage).getData());
 		}

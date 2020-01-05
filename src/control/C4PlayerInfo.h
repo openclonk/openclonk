@@ -186,7 +186,6 @@ public:
 	int32_t getLeagueRank() const { return iLeagueRank; } // returns rank on league server (0 for not assigned)
 	int32_t getLeagueRankSymbol() const { return iLeagueRankSymbol; } // returns rank symbol on league server (0 for not assigned)
 	int32_t getLeagueScoreProjected() const { return iLeagueScoreProjected; } // returns score on league server in case of win (0 for not assigned)
-	int32_t GetInGameNumber() const { return iInGameNumber; } // returns player number the player had in the game
 	bool IsLeagueProjectedGainValid() const { return iLeagueProjectedGain>=0; }
 	int32_t GetLeagueProjectedGain() const { return iLeagueProjectedGain; } // get score gain in primary league if this player's team wins
 	const char *GetLeagueProgressData() const { return sLeagueProgressData.getData(); } 

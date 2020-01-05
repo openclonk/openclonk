@@ -305,7 +305,7 @@ void C4RoundResults::EvaluateGame()
 {
 	// set game data
 	C4Player *pFirstLocalPlayer = ::Players.GetLocalByIndex(0);
-	int32_t iFirstLocalPlayer = pFirstLocalPlayer ? pFirstLocalPlayer->Number : NO_OWNER;
+	int32_t iFirstLocalPlayer = pFirstLocalPlayer ? pFirstLocalPlayer->ID : NO_OWNER;
 	EvaluateGoals(Goals, FulfilledGoals, iFirstLocalPlayer);
 	iPlayingTime = Game.Time;
 

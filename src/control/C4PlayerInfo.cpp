@@ -1620,7 +1620,7 @@ void C4PlayerInfoList::RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlay
 			// remove players that were in the game but are not associated
 			if (pInfo->IsJoined() && !GetPlayerInfoBySavegameID(pInfo->GetID()))
 			{
-				if (::Players.RemoveUnjoined(pInfo->GetInGameNumber()))
+				if (::Players.RemoveUnjoined(pInfo->GetID()))
 				{
 					LogF(LoadResStr("IDS_PRC_REMOVEPLR"), pInfo->GetName());
 				}

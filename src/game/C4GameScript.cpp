@@ -1061,9 +1061,9 @@ static bool FnSetPlayerZoomByViewRange(C4PropList * _this, long player_nr, long 
 	{
 		for (C4Player *player = ::Players.First; player; player = player->Next)
 		{
-			if (player->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+			if (player->ID != NO_OWNER) // can't happen, but would be a crash if it did...
 			{
-				FnSetPlayerZoomByViewRange(_this, player->Number, range_wdt, range_hgt, flags);
+				FnSetPlayerZoomByViewRange(_this, player->ID, range_wdt, range_hgt, flags);
 			}
 		}
 		return true;
@@ -1125,9 +1125,9 @@ static bool FnSetPlayerZoom(C4PropList * _this, long player_nr, long zoom, long 
 	{
 		for (C4Player *player = ::Players.First; player; player = player->Next)
 		{
-			if (player->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+			if (player->ID != NO_OWNER) // can't happen, but would be a crash if it did...
 			{
-				FnSetPlayerZoom(_this, player->Number, zoom, precision, flags);
+				FnSetPlayerZoom(_this, player->ID, zoom, precision, flags);
 			}
 		}
 		return true;
@@ -1165,9 +1165,9 @@ static bool FnSetPlayerViewLock(C4PropList * _this, long player_nr, bool is_lock
 	{
 		for (C4Player *player = ::Players.First; player; player=player->Next)
 		{
-			if (player->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+			if (player->ID != NO_OWNER) // can't happen, but would be a crash if it did...
 			{
-				FnSetPlayerViewLock(_this, player->Number, is_locked);
+				FnSetPlayerViewLock(_this, player->ID, is_locked);
 			}
 		}
 		return true;
@@ -1275,7 +1275,7 @@ static long FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 		player = ::Players.GetByIndex(index);
 	}
 	if (!player) return NO_OWNER;
-	return player->Number;
+	return player->ID;
 }
 
 static long FnEliminatePlayer(C4PropList * _this, long player_nr, bool remove_direct)
@@ -2929,8 +2929,8 @@ static bool FnPlayRumble(C4PropList * _this, long player, long strength, long le
 	if (player == NO_OWNER)
 	{
 		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
-			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
-				FnPlayRumble(_this, plr->Number, strength, length);
+			if (plr->ID != NO_OWNER) // can't happen, but would be a crash if it did...
+				FnPlayRumble(_this, plr->ID, strength, length);
 		return true;
 	}
 	C4Player *plr = ::Players.Get(player);
@@ -2948,8 +2948,8 @@ static bool FnStopRumble(C4PropList * _this, long player)
 	if (player == NO_OWNER)
 	{
 		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
-			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
-				FnStopRumble(_this, plr->Number);
+			if (plr->ID != NO_OWNER) // can't happen, but would be a crash if it did...
+				FnStopRumble(_this, plr->ID);
 		return true;
 	}
 	C4Player *plr = ::Players.Get(player);
