@@ -11,7 +11,7 @@
 --*/
 
 
-local score_death_list; // Here the death count of all players is stored, access through plrid.
+local score_death_list; // Here the death count of all players is stored, access through plr.
 
 /*-- Callbacks --*/
 
@@ -38,9 +38,8 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 {
-	var plrid = GetPlayerID(plr);
 	// Create scoreboard entry for this player, will only do it once
-	score_death_list[plrid] = 0;
+	score_death_list[plr] = 0;
 	Scoreboard->NewPlayerEntry(plr);
 	return _inherited(plr, ...);
 }
@@ -48,10 +47,9 @@ protected func InitializePlayer(int plr)
 protected func OnClonkDeath(object clonk, int killer)
 {
 	var plr = clonk->GetOwner();
-	var plrid = GetPlayerID(plr);
 	// Modify scoreboard death count entry for this player.
-	score_death_list[plrid]++;
-	Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plrid]);
+	score_death_list[plr]++;
+	Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plr]);
 	return _inherited(clonk, killer, ...);
 }
 
@@ -64,16 +62,14 @@ protected func RemovePlayer(int plr)
 
 public func SetDeathCount(int plr)
 {
-	var plrid = GetPlayerID(plr);
-	score_death_list[plrid] = 0;
-	Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plrid]);
+	score_death_list[plr] = 0;
+	Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plr]);
 	return;
 }
 
 public func GetDeathCount(int plr)
 {
-	var plrid = GetPlayerID(plr);
-	return score_death_list[plrid];
+	return score_death_list[plr];
 }
 
 local Name = "Scoreboard Deaths";

@@ -6,7 +6,7 @@
   <func>
     <title>GetPlayerID</title>
     <category>Player</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -19,6 +19,7 @@
     </syntax>
     <desc>Returns the player-ID of a joined player. Player-IDs are being counted upwards starting at 1. Other than player numbers, they won't be used again after a player has been eliminated. Each newly joined player has a unique ID.</desc>
     <remark>In network games, player IDs are being assigned in the lobby phase. Because lobby players might be removed before the game start (either manually or by disconnecting clients), you cannot assume that all player-IDs from 1 to <funclink>GetPlayerCount</funclink>() are set.</remark>
+    <remark>In 9.0 OC the player number was replaced by the player ID, and the player ID starts at 0, too.</remark>
     <examples>
       <example>
         <code>static player_names, player_scores;
@@ -49,4 +50,5 @@ protected func OnGameOver()
     <related><funclink>GetPlayerTeam</funclink></related>
   </func>
   <author>Sven2</author><date>2006-03</date>
+  <author>Marky</author><date>2020-01</date>
 </funcs>

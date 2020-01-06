@@ -718,7 +718,7 @@ void C4PlayerInfoList::Clear()
 	delete [] ppClients; ppClients = nullptr;
 	iClientCount = iClientCapacity = 0;
 	// reset player ID counter
-	iLastPlayerID = 0;
+	iLastPlayerID = NO_OWNER;
 }
 
 void C4PlayerInfoList::GrowList(size_t iByVal)
@@ -1620,7 +1620,7 @@ void C4PlayerInfoList::RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlay
 			// remove players that were in the game but are not associated
 			if (pInfo->IsJoined() && !GetPlayerInfoBySavegameID(pInfo->GetID()))
 			{
-				if (::Players.RemoveUnjoined(pInfo->GetInGameNumber()))
+				if (::Players.RemoveUnjoined(pInfo->GetID()))
 				{
 					LogF(LoadResStr("IDS_PRC_REMOVEPLR"), pInfo->GetName());
 				}

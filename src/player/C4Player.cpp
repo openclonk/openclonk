@@ -47,7 +47,6 @@
 C4Player::C4Player() : C4PlayerInfoCore()
 {
 	Filename[0] = 0;
-	Number = C4P_Number_None;
 	ID = 0;
 	Team = 0;
 	DefaultRuntimeData();
@@ -256,7 +255,6 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	}
 	// Status init
 	Status=PS_Normal;
-	Number = iNumber;
 	ID = pInfo->GetID();
 	Team = pInfo->GetTeam();
 	NoEliminationCheck = pInfo->IsNoEliminationCheck();
@@ -334,14 +332,14 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 			C4Def *pDefCallback;
 			if (idCallback && (pDefCallback = C4Id2Def(idCallback)))
 			{
-				pDefCallback->Call(PSF_InitializeScriptPlayer, &C4AulParSet(Number, Team));
+				pDefCallback->Call(PSF_InitializeScriptPlayer, &C4AulParSet(ID, Team));
 			}
 		}
 		else
 		{
 			// player preinit: In case a team needs to be chosen first, no InitializePlayer-broadcast is done
 			// this callback shall give scripters a chance to do stuff like starting an intro or enabling FoW, which might need to be done
-			::Game.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(Number));
+			::Game.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(ID));
 			// direct init
 			if (Status != PS_TeamSelection) if (!ScenarioInit()) return false;
 		}
@@ -360,7 +358,6 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 			// was joined
 			if (!Game.C4S.Head.SaveGame && pInfo->GetType() == C4PT_Script)
 			{
-				Number = pInfo->GetInGameNumber();
 				ColorDw = pInfo->GetColor();
 				ID = pInfo->GetID();
 				Team = pInfo->GetTeam();
@@ -369,7 +366,6 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 				return false;
 		}
 		// Reset values default-overriden by old runtime data load (safety?)
-		if (Number==C4P_Number_None) Number=iNumber;
 		if (szFilename) SCopy(Config.AtUserDataPath(szFilename),Filename); else *Filename='\0';
 		// NET2: Direct joins always send accurate client IDs and names in params
 		// do not overwrite them with savegame data, because players might as well
@@ -489,7 +485,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty)
 			ctx=tx1+Random(tx2-tx1); cty=ty;
 			FindSolidGround(ctx,cty,pDef->Shape.Wdt*3);
 			// Create object
-			if ((nobj=Game.CreateInfoObject(pInfo,Number,ctx,cty)))
+			if ((nobj=Game.CreateInfoObject(pInfo,ID,ctx,cty)))
 			{
 				// Add object to crew
 				Crew.Add(nobj, C4ObjectList::stNone);
@@ -499,7 +495,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty)
 				// OnJoinCrew callback
 				{
 					C4DebugRecOff DbgRecOff{ !DEBUGREC_RECRUITMENT };
-					C4AulParSet parset(Number);
+					C4AulParSet parset(ID);
 					nobj->Call(PSF_OnJoinCrew, &parset);
 				}
 			}
@@ -509,7 +505,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty)
 bool C4Player::ScenarioInit()
 {
 	// player start index by team, if specified. Otherwise by player number
-	PlrStartIndex = Number % C4S_MaxPlayer;
+	PlrStartIndex = ID % C4S_MaxPlayer; // FIXME: That is a workaround, but the player start index does not exist anymore because we removed it from the scenario
 	C4Team *pTeam; int32_t i;
 	if (Team && (pTeam = Game.Teams.GetTeamByID(Team))) if ((i=pTeam->GetPlrStartIndex())) PlrStartIndex=i-1;
 
@@ -576,7 +572,7 @@ bool C4Player::ScenarioInit()
 	if (Team) SetTeamHostility();
 
 	// Scenario script initialization
-	::Game.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(Number,
+	::Game.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(ID,
 	                        ptx,
 	                        pty,
 	                        FirstBase,
@@ -592,7 +588,7 @@ bool C4Player::FinalInit(bool fInitialScore)
 	// Init player's mouse control
 	if (LocalControl)
 		if (MouseControl)
-			::MouseControl.Init(Number);
+			::MouseControl.Init(ID);
 
 	// Set initial score
 	if (fInitialScore)
@@ -633,7 +629,7 @@ bool C4Player::SetWealth(int32_t iVal)
 
 	Wealth=Clamp<int32_t>(iVal,0,1000000000);
 
-	::Game.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(Number));
+	::Game.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(ID));
 
 	return true;
 }
@@ -646,7 +642,7 @@ void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget, bool immediate_posi
 	if (immediate_position)
 	{
 		UpdateView();
-		C4Viewport *vp = ::Viewports.GetViewport(this->Number);
+		C4Viewport *vp = ::Viewports.GetViewport(this->ID);
 		if (vp) vp->AdjustPosition(true);
 	}
 }
@@ -795,8 +791,8 @@ void C4Player::SetTeamHostility()
 		if (pPlr != this)
 		{
 			bool fHostile = (pPlr->Team != Team);
-			SetHostility(pPlr->Number, fHostile, true);
-			pPlr->SetHostility(Number, fHostile, true);
+			SetHostility(pPlr->ID, fHostile, true);
+			pPlr->SetHostility(ID, fHostile, true);
 		}
 }
 
@@ -913,12 +909,12 @@ bool C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 		pObj->UpdateLight();
 
 	// controlled by the player
-	pObj->Controller = Number;
+	pObj->Controller = ID;
 
 	// OnJoinCrew callback
 	if (fDoCalls)
 	{
-		C4AulParSet parset(Number);
+		C4AulParSet parset(ID);
 		pObj->Call(PSF_OnJoinCrew, &parset);
 	}
 
@@ -952,7 +948,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(Status,              "Status",               0));
 	pComp->Value(mkNamingAdapt(AtClient,            "AtClient",             C4ClientIDUnknown));
 	pComp->Value(mkNamingAdapt(toC4CStr(AtClientName),"AtClientName",        "Local"));
-	pComp->Value(mkNamingAdapt(Number,              "Index",                C4P_Number_None));
 	pComp->Value(mkNamingAdapt(ID,                  "ID",                   0));
 	pComp->Value(mkNamingAdapt(Eliminated,          "Eliminated",           0));
 	pComp->Value(mkNamingAdapt(Surrendered,         "Surrendered",          0));
@@ -1089,7 +1084,7 @@ bool C4Player::ActivateMenuTeamSelection(bool fFromMain)
 {
 	// Menu symbol/init
 	bool fSwitch = !(Status==PS_TeamSelection);
-	Menu.InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_Team),LoadResStr("IDS_MSG_SELTEAM"),Number, C4MN_Extra_None, 0, fSwitch ? C4MN_TeamSwitch : C4MN_TeamSelection);
+	Menu.InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_Team),LoadResStr("IDS_MSG_SELTEAM"),ID, C4MN_Extra_None, 0, fSwitch ? C4MN_TeamSwitch : C4MN_TeamSelection);
 	Menu.SetAlignment(fSwitch ? C4MN_Align_Left | C4MN_Align_Bottom : 0);
 	Menu.Refill();
 	// Go back to options menu on close
@@ -1141,7 +1136,7 @@ int32_t C4Player::FindNewOwner() const
 				if (pPlrInfo) if (pPlrInfo->IsJoined())
 				{
 					// this looks like a good new owner
-					iNewOwner = pPlrInfo->GetInGameNumber();
+					iNewOwner = pPlrInfo->GetID();
 					break;
 				}
 			}
@@ -1152,8 +1147,8 @@ int32_t C4Player::FindNewOwner() const
 	if (iNewOwner == NO_OWNER)
 		for (C4Player *pOtherPlr = ::Players.First; pOtherPlr; pOtherPlr = pOtherPlr->Next)
 			if (pOtherPlr != this) if (!pOtherPlr->Eliminated)
-					if (!::Players.Hostile(pOtherPlr->Number, Number))
-						iNewOwner = pOtherPlr->Number;
+					if (!::Players.Hostile(pOtherPlr->ID, ID))
+						iNewOwner = pOtherPlr->ID;
 
 	return iNewOwner;
 }
@@ -1166,7 +1161,7 @@ void C4Player::NotifyOwnedObjects()
 	{
 		for (C4Object *cobj : *pList)
 		{
-			if (cobj->Status && cobj->Owner == Number)
+			if (cobj->Status && cobj->Owner == ID)
 			{
 				C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
 				if (pFn)
@@ -1280,7 +1275,7 @@ void C4Player::InitControl()
 		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::InitPlayerControl(this, ControlSet), CDT_Queue);
 	}
 	// clear old control method and register new
-	Control.RegisterKeyset(Number, ControlSet);
+	Control.RegisterKeyset(ID, ControlSet);
 }
 
 bool C4Player::FindGamepad()
@@ -1419,7 +1414,7 @@ bool C4Player::SetObjectCrewStatus(C4Object *pCrew, bool fNewStatus)
 		if (!Crew.IsContained(pCrew)) return true;
 		// ...or remove
 		Crew.Remove(pCrew);
-		C4AulParSet parset(Number);
+		C4AulParSet parset(ID);
 		pCrew->Call(PSF_OnRemoveCrew, &parset);
 		// remove info, if assigned to this player
 		// theoretically, info objects could remain when the player is deleted
@@ -1508,7 +1503,7 @@ void C4Player::ExecMsgBoardQueries()
 		while (pCheck) if (!pCheck->fAnswered) break; else pCheck = pCheck->pNext;
 	if (!pCheck) return;
 	// open it
-	::MessageInput.StartTypeIn(true, pCheck->CallbackObj, pCheck->fIsUppercase, false, Number, pCheck->sInputQuery);
+	::MessageInput.StartTypeIn(true, pCheck->CallbackObj, pCheck->fIsUppercase, false, ID, pCheck->sInputQuery);
 }
 
 void C4Player::CallMessageBoard(C4Object *pForObj, const StdStrBuf &sQueryString, bool fIsUppercase)
@@ -1567,7 +1562,7 @@ void C4Player::SetPlayerColor(uint32_t dwNewClr)
 	uint32_t dwOldClr = ColorDw;
 	ColorDw = dwNewClr;
 	for (C4Object *pObj : Objects)
-		if (pObj && pObj->Status && pObj->Owner == Number)
+		if (pObj && pObj->Status && pObj->Owner == ID)
 		{
 			if ((pObj->Color & 0xffffff) == (dwOldClr & 0xffffff))
 				pObj->Color = (pObj->Color & 0xff000000u) | (dwNewClr & 0xffffff);
@@ -1593,7 +1588,7 @@ void C4Player::ToggleMouseControl()
 	// Activate mouse control if it's available
 	if (!MouseControl && !::Players.MouseControlTaken())
 	{
-		::MouseControl.Init(Number);
+		::MouseControl.Init(ID);
 		MouseControl=true;
 	}
 	// Deactivate mouse control
@@ -1613,7 +1608,7 @@ bool C4Player::ActivateMenuMain()
 	// Not during game over dialog
 	if (C4GameOverDlg::IsShown()) return false;
 	// Open menu
-	return !!Menu.ActivateMain(Number);
+	return !!Menu.ActivateMain(ID);
 }
 
 void C4Player::HostilitySet::CompileFunc(StdCompiler *pComp)
@@ -1638,7 +1633,7 @@ void C4Player::HostilitySet::CompileFunc(StdCompiler *pComp)
 		pComp->Value(entries);
 		for (auto it : *this)
 		{
-			int32_t num = it->Number;
+			int32_t num = it->ID;
 			pComp->Value(num); // Can't use (*it)->Number directly because StdCompiler is dumb about constness
 		}
 	}
@@ -1686,7 +1681,7 @@ void C4Player::SetMaxZoom(C4Real zoom, bool no_increase, bool no_decrease)
 void C4Player::ZoomToViewports(bool direct, bool no_increase, bool no_decrease)
 {
 	C4Viewport *vp = nullptr;
-	while((vp = ::Viewports.GetViewport(Number, vp)) != nullptr)
+	while((vp = ::Viewports.GetViewport(ID, vp)) != nullptr)
 		ZoomToViewport(vp, direct, no_increase, no_decrease);
 }
 
@@ -1702,7 +1697,7 @@ void C4Player::ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase, boo
 void C4Player::ZoomLimitsToViewports()
 {
 	C4Viewport *vp = nullptr;
-	while((vp = ::Viewports.GetViewport(Number, vp)) != nullptr)
+	while((vp = ::Viewports.GetViewport(ID, vp)) != nullptr)
 		ZoomLimitsToViewport(vp);
 }
 
@@ -1786,5 +1781,5 @@ void C4Player::SetSoundModifier(C4PropList *new_modifier)
 		mod = nullptr;
 	}
 	// update in sound system
-	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, Number);
+	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, ID);
 }

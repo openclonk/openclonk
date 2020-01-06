@@ -115,7 +115,7 @@ bool C4FullScreen::ViewportCheck()
 			{
 				if ((player = ::Players.First))
 				{
-					player_count = player->Number;
+					player_count = player->ID;
 				}
 			}
 			// Create viewport
@@ -155,7 +155,7 @@ bool C4FullScreen::ViewportCheck()
 		if (Game.C4S.Head.Replay && Game.C4S.Head.Film && (player = ::Players.First))
 		{
 			// assign viewport to joined player
-			no_owner_viewport->Init(player->Number, true);
+			no_owner_viewport->Init(player->ID, true);
 		}
 	}
 	// Done

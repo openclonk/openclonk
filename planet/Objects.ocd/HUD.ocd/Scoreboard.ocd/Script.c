@@ -17,12 +17,12 @@ static const Scoreboard_X_title = SBRD_Caption;
 // wrapper for Scoreboard->NewEntry, adds a new entry for a player with the tagged player name as the title
 public func NewPlayerEntry(int plr)
 {
-	return Scoreboard->NewEntry(GetPlayerID(plr), GetTaggedPlayerName(plr));
+	return Scoreboard->NewEntry(plr, GetTaggedPlayerName(plr));
 }
 
 public func RemovePlayerEntry(int plr)
 {
-	return Scoreboard->RemoveEntry(GetPlayerID(plr));
+	return Scoreboard->RemoveEntry(plr);
 }
 
 // adds a new entry (row) to the scoreboard, will return the ID of the added entry
@@ -82,8 +82,7 @@ public func SetPlayerData(
 	, int sort_parameter /* parameter used for sorting. if nil, 'to' is used if possible*/
 	)
 {
-	var ID = GetPlayerID(plr);
-	return Scoreboard->SetData(ID, key, to, sort_parameter);
+	return Scoreboard->SetData(plr, key, to, sort_parameter);
 }
 
 // sets a value for a specific key of any entry in the scoreboard and updates it

@@ -343,7 +343,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 		if (!pToPlr) return false;
 		// set
 		eMsgType = C4CMT_Private;
-		iToPlayer = pToPlr->Number;
+		iToPlayer = pToPlr->ID;
 		szMsg = szText + 10 + SLen(szText);
 		if (szMsg > szText + SLen(szText)) return false;
 	}
@@ -416,7 +416,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 		C4Player *pPlr = Game.IsRunning ? ::Players.GetLocalByIndex(0) : nullptr;
 		// send
 		::Control.DoInput(CID_Message,
-		                  new C4ControlMessage(eMsgType, szMessage, pPlr ? pPlr->Number : -1, iToPlayer),
+		                  new C4ControlMessage(eMsgType, szMessage, pPlr ? pPlr->ID : -1, iToPlayer),
 		                  CDT_Private);
 	}
 
@@ -815,7 +815,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			// share one computer, we can't distinguish between them anyway
 			int32_t player_num = NO_OWNER;
 			C4Player *player = ::Players.GetLocalByIndex(0);
-			if (player) player_num = player->Number;
+			if (player) player_num = player->ID;
 
 			// send command to network
 			::Control.DoInput(CID_MsgBoardCmd, new C4ControlMsgBoardCmd(szCmdName, pCmdPar, player_num), CDT_Decide);

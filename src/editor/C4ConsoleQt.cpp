@@ -204,13 +204,13 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 void C4ConsoleGUI::AddMenuItemForPlayer(C4Player  *player, StdStrBuf& player_text)
 {
 	// Add "new viewport for X" to window menu
-	if (Active) state->AddPlayerViewportMenuItem(player->Number, player_text.getData());
+	if (Active) state->AddPlayerViewportMenuItem(player->ID, player_text.getData());
 }
 
 void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_text, bool enabled)
 {
 	// Add "kick X" to player menu
-	if (Active) state->AddKickPlayerMenuItem(player->Number, player_text.getData(), enabled);
+	if (Active) state->AddKickPlayerMenuItem(player->ID, player_text.getData(), enabled);
 }
 
 void C4ConsoleGUI::ClearViewportMenu()

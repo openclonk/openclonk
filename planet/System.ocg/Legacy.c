@@ -21,6 +21,18 @@ global func GetMissionAccess(string password)
 	return GetScenarioAccess(password);
 }
 
+global func GetPlayerID(int plr_nr)
+{
+	LogLegacyWarning("GetPlayerID", "The player ID and player number are the same since 9.0 OC", VERSION_10_0_OC);
+	return plr_nr;
+}
+
+global func GetPlayerByID(int plr_id)
+{
+	LogLegacyWarning("GetPlayerByID", "The player ID and player number are the same since 9.0 OC", VERSION_10_0_OC);
+	return plr_id;
+}
+
 global func PlaceAnimal(id animal_id)
 {
 	LogLegacyWarning("PlaceAnimal", "id->Place()", VERSION_10_0_OC);
