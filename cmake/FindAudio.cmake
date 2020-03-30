@@ -105,7 +105,7 @@ endif()
 # make sure the provider is available.
 if(Audio_TK STREQUAL "OpenAL")
 	__FINDAUDIO_FINDOPENAL()
-	if(OpenAL_FOUND AND (APPLE OR Alut_FOUND) AND OggVorbis_FOUND)
+	if(OpenAL_FOUND AND Alut_FOUND AND OggVorbis_FOUND)
 		set(Audio_FOUND TRUE)
 		set(Audio_LIBRARIES ${OpenAL_LIBRARIES} ${OggVorbis_LIBRARIES})
 		set(Audio_INCLUDE_DIRS ${OpenAL_INCLUDE_DIRS} ${OggVorbis_INCLUDE_DIRS})
