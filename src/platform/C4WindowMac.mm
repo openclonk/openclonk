@@ -13,6 +13,7 @@
  * for the above references.
  */
  
+#define GL_SILENCE_DEPRECATION
 #include "C4Include.h"
 #include "graphics/C4DrawGL.h"
 #include "platform/C4Window.h"
@@ -218,8 +219,8 @@ C4KeyCode K_PRINT = -100;
 C4KeyCode K_CENTER = -101;
 C4KeyCode K_NUM = -102;
 
-int MK_SHIFT = NSShiftKeyMask;
-int MK_CONTROL = NSControlKeyMask;
-int MK_ALT = NSAlternateKeyMask;
+int MK_SHIFT = NSEventModifierFlagShift;
+int MK_CONTROL = NSEventModifierFlagControl;
+int MK_ALT = NSEventModifierFlagOption;
 
 #endif
