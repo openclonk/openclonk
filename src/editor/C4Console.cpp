@@ -648,7 +648,7 @@ void C4Console::RegisterRecentInput(const char *input, RecentScriptInputLists se
 		mru.erase(mru.begin());
 }
 
-#if !(defined(USE_WIN32_WINDOWS) || defined(USE_COCOA) || defined(WITH_QT_EDITOR))
+#if !(defined(USE_WIN32_WINDOWS) || defined(WITH_QT_EDITOR))
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
 	public: State(C4ConsoleGUI *console): Super(console) {}
@@ -706,7 +706,9 @@ void C4ToolsDlg::UpdateIFTControls() {}
 void C4ToolsDlg::UpdateLandscapeModeCtrls() {}
 void C4ToolsDlg::UpdateTextures() {}
 void C4ToolsDlg::UpdateToolCtrls() {}
+#if !defined(USE_COCOA)
 bool C4Viewport::ScrollBarsByViewPosition() {return false;}
 bool C4Viewport::TogglePlayerLock() {return false;}
+#endif
 #include "editor/C4ConsoleGUICommon.h"
 #endif
