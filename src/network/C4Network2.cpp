@@ -1177,7 +1177,7 @@ void C4Network2::DrawStatus(C4TargetFacet &cgo)
 			                   pClient->getMsgConn()->getPingTime(),
 			                   pClient->getMsgConn()->getPacketLoss());
 			if (pClient->getMsgConn() != pClient->getDataConn())
-				Stat.AppendFormat( ", Data: %s (%s:%d p%d l%d)",
+				Stat.AppendFormat( ", Data: %s (%s p%d l%d)",
 				                   NetIO.getNetIOName(pClient->getDataConn()->getNetClass()),
 								   pClient->getDataConn()->getPeerAddr().ToString().getData(),
 				                   pClient->getDataConn()->getPingTime(),
