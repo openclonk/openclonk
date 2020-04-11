@@ -13,6 +13,7 @@
  * for the above references.
  */
 
+#define GL_SILENCE_DEPRECATION
 #include <GL/glew.h>
 
 #include "C4Include.h"
