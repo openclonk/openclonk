@@ -876,6 +876,7 @@ set(MAPE_SOURCES
 	src/mape/window.h
 	mape-resource.c
 )
+set_property(SOURCE mape-resource.c PROPERTY SKIP_AUTOGEN ON)
 
 # source files specific to an operating system
 if(APPLE)
