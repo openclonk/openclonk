@@ -47,7 +47,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 @end
 
 @implementation ClonkScreenfillingWindow
-- (BOOL) canBecomeKeyWindow;
+- (BOOL) canBecomeKeyWindow
 {
 	return YES; // a resounding one
 }
