@@ -1413,9 +1413,9 @@ bool C4Group::DeleteEntry(const char *szFilename, bool fRecycle)
 		{
 			if (!EraseItem(szPath)) return false;
 		}
-		break;
 		// refresh file list
 		ResetSearch(true);
+		break;
 	default: break; // InGrp & Deleted ignored
 	}
 	return true;
