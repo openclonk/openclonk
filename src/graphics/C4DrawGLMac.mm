@@ -602,6 +602,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	if (controller && controller.openGLView)
 	{
 		[controller.openGLView setContext:ctx];
+		[ctx setView:controller.openGLView];
 	}
 
 	this_context = contexts.insert(contexts.end(), this);
