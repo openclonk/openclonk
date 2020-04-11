@@ -59,6 +59,7 @@ find_package(ZLIB ${_FIND_ZLIB_ARG})
 
 if(ZLIB_FOUND)
   find_path(PNG_PNG_INCLUDE_DIR png.h
+  /usr/local/include/libpng16           # Homebrew on macOS
   /usr/local/include/libpng             # OpenBSD
   )
 
