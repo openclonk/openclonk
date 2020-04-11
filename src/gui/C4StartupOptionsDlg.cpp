@@ -312,7 +312,7 @@ void C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::UpdateAs
 // --- C4StartupOptionsDlg::ControlConfigListBox::ListItem
 
 C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, bool has_extra_spacing)
-	: C4GUI::Window(), parent_list(parent_list), assignment_label(nullptr), has_extra_spacing(has_extra_spacing)
+	: C4GUI::Window(), assignment_label(nullptr), has_extra_spacing(has_extra_spacing)
 {
 	int32_t margin = 2;
 	// adding to listbox will size the element horizontally and move to proper position

@@ -199,7 +199,6 @@ private:
 		class ListItem : public C4GUI::Window
 		{
 		private:
-			ControlConfigListBox *parent_list;
 			ControlAssignmentLabel *assignment_label;
 			bool has_extra_spacing; // if true, add a bit of spacing on top of this item to group elements
 

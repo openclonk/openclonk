@@ -1518,7 +1518,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 		if (SafeVisit(n->init))
 			MaybePopValueOf(n->init);
 	}
-	int cond = -1, condition_jump = -1;
+	int cond = -1;
 	PushLoop();
 	if (n->cond)
 	{

@@ -25,8 +25,10 @@
 
 #ifndef USE_CONSOLE
 
+#if defined(USE_WGL) || defined(USE_SDL_MAINLOOP)
 static const int REQUESTED_GL_CTX_MAJOR = 3;
 static const int REQUESTED_GL_CTX_MINOR = 2;
+#endif
 
 std::list<CStdGLCtx*> CStdGLCtx::contexts;
 

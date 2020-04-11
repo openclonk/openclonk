@@ -763,7 +763,6 @@ void C4TexRef::Unlock()
 				pGL->pMainCtx->Select();
 			}
 
-			const bool fTileable = (iFlags & C4SF_Tileable) != 0;
 			const bool fMipMap = (iFlags & C4SF_MipMap) != 0;
 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

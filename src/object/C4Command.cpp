@@ -39,7 +39,6 @@ const int32_t FollowRange=6,PushToRange=10,DigOutPositionRange=15;
 const int32_t PathRange=20,MaxPathRange=1000;
 const int32_t JumpAngle=35,JumpLowAngle=80,JumpAngleRange=10,JumpHighAngle=0;
 const int32_t FlightAngleRange=60;
-const int32_t DigOutDirectRange=130;
 const int32_t LetGoHangleAngle=110;
 
 StdEnumAdapt<int32_t>::Entry EnumAdaptCommandEntries[C4CMD_Last - C4CMD_First + 2];
