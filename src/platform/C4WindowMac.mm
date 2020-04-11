@@ -38,6 +38,7 @@ C4Window::C4Window ():
 
 C4Window::~C4Window () {}
 
+#ifndef WITH_QT_EDITOR
 static NSString* windowXibNameForWindowKind(C4Window::WindowKind kind)
 {
 	switch (kind)
@@ -53,6 +54,7 @@ static NSString* windowXibNameForWindowKind(C4Window::WindowKind kind)
 		return nil;
 	}
 }
+#endif
 
 C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {

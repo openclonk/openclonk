@@ -54,7 +54,6 @@ private:
 	static bool is_shown;
 	int32_t iPlrListCount;
 	class C4PlayerInfoListBox **ppPlayerLists;
-	C4GoalDisplay *pGoalDisplay;
 	C4GUI::Label *pNetResultLabel{nullptr}; // label showing league result, disconnect, etc.
 	C4GUI::Button *pBtnExit, *pBtnContinue;
 	bool fIsNetDone{false}; // set if league is evaluated and round results arrived

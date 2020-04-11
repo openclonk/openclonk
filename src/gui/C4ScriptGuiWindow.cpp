@@ -913,8 +913,6 @@ const C4Value C4ScriptGuiWindow::ToC4Value()
 		P_Tooltip
 	};
 
-	const int32_t entryCount = sizeof(toSave) / sizeof(int32_t);
-
 	for (int prop : toSave)
 	{
 		C4Value val;

@@ -49,12 +49,11 @@ protected:
 	class DensityProvider : public C4DensityProvider
 	{
 	private:
-		class C4Object *pForObject;
 		C4SolidMask &rSolidMaskData;
 
 	public:
-		DensityProvider(class C4Object *pForObject, C4SolidMask &rSolidMaskData)
-				: pForObject(pForObject), rSolidMaskData(rSolidMaskData) {}
+		DensityProvider(C4SolidMask &rSolidMaskData)
+				: rSolidMaskData(rSolidMaskData) {}
 
 		int32_t GetDensity(int32_t x, int32_t y) const override;
 	};

@@ -340,7 +340,7 @@ void C4FoWDrawLightTextureStrategy::DrawLightVertex(float x, float y)
 }
 
 C4FoWDrawWireframeStrategy::C4FoWDrawWireframeStrategy(const C4FoWLight* light, const C4TargetFacet *screen) :
-  light(light), screen(screen), vbo_size(0), ibo_size(0)
+  screen(screen), vbo_size(0), ibo_size(0)
 {
 	glGenBuffers(2, bo);
 	vaoid = pGL->GenVAOID();

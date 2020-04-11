@@ -35,7 +35,9 @@ public:
 
 private:
 	C4FoW *pFoW;
+#ifndef USE_CONSOLE
 	C4Player *pPlayer;
+#endif
 	std::unique_ptr<C4Surface> pSurface, pBackSurface;
 	C4Rect Region, OldRegion;
 	FLOAT_RECT ViewportRegion; // Region covered by visible viewport

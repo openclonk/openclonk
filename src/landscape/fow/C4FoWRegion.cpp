@@ -20,8 +20,8 @@
 
 C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
 	: pFoW(pFoW)
-	, pPlayer(pPlayer)
 #ifndef USE_CONSOLE
+	, pPlayer(pPlayer)
 	, hFrameBufDraw(0), hFrameBufRead(0), hVBO(0), vaoid(0)
 #endif
 	, Region(0,0,0,0), OldRegion(0,0,0,0)

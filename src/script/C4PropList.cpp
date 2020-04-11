@@ -284,7 +284,7 @@ void C4PropList::ThawRecursively()
 {
 	//thaw self and all owned properties
 	Thaw();
-	C4PropListStatic *s = IsStatic();
+	//C4PropListStatic *s = IsStatic();
 	//if (s) LogF("Thaw: %s", s->GetDataString().getData());
 	auto prop_names = GetUnsortedProperties(nullptr, ::ScriptEngine.GetPropList());
 	for (auto prop_name : prop_names)

@@ -333,9 +333,6 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 		return Blit8(sfcSource, int(fx), int(fy), int(fwdt), int(fhgt), sfcTarget, int(tx), int(ty), int(twdt), int(thgt), fSrcColKey, pTransform);
 	}
 
-	// calc stretch
-	float scaleX = twdt/fwdt;
-	float scaleY = thgt/fhgt;
 	// bound
 	if (ClipAll) return true;
 	// inside screen?
@@ -356,9 +353,6 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	// blit with basesfc?
 	bool fBaseSfc=false;
 	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->texture) fBaseSfc = true;
-	// get involved texture offsets
-	int iTexSizeX=sfcSource->iTexSize;
-	int iTexSizeY=sfcSource->iTexSize;
 
 	C4TexRef *pTex = sfcSource->texture.get();
 	// set up blit data

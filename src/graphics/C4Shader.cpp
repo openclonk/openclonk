@@ -19,8 +19,10 @@
 #include "game/C4Application.h"
 #include "graphics/C4DrawGL.h"
 
+#ifndef USE_CONSOLE
 // How often we check whether shader files got updated
 const uint32_t C4Shader_RefreshInterval = 1000; // ms
+#endif
 
 struct C4ShaderPosName {
 	int Position; const char *Name;
