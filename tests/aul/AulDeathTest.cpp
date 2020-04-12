@@ -26,8 +26,14 @@ class AulDeathTest : public AulTest
 
 // DEATH_SUCCESS_CODE is arbitrarily chosen such that it's unlikely to be
 // returned by failing code.
+// macOS/clang/libc++ doesn't support quick_exit.
 #define DEATH_SUCCESS_CODE 86
-#define EXPECT_NO_DEATH(code) EXPECT_EXIT({code; std::quick_exit(DEATH_SUCCESS_CODE);}, ::testing::ExitedWithCode(DEATH_SUCCESS_CODE), "")
+#if defined(_LIBCPP_CSTDLIB) && !defined(_LIBCPP_HAS_QUICK_EXIT)
+#define QUICK_EXIT exit
+#else
+#define QUICK_EXIT quick_exit
+#endif
+#define EXPECT_NO_DEATH(code) EXPECT_EXIT({code; QUICK_EXIT(DEATH_SUCCESS_CODE);}, ::testing::ExitedWithCode(DEATH_SUCCESS_CODE), "")
 
 TEST_F(AulDeathTest, NestedFunctions)
 {

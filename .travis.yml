@@ -52,6 +52,20 @@ matrix:
           - TYPE=Debug 
           - BSYS="Ninja#ninja -k30"
 
+    # macOS build
+    - os: osx
+      compiler: clang
+      osx_image: xcode11.3
+      install:
+          - brew upgrade pkg-config  # https://github.com/Homebrew/brew/issues/5068, presumably can be removed soon
+          - brew install freealut glew libogg libvorbis sdl2
+      env:
+          - CXX_FLAGS="-fcolor-diagnostics"
+          - TYPE=RelWithDebInfo
+          - BSYS="Unix Makefiles#make -k"
+          - CMAKE_FLAGS="-DDEPLOY_QT_LIBRARIES=1 -DCMAKE_PREFIX_PATH=/usr/local/opt/openal-soft;/usr/local/opt/qt"
+          - OLD_CMAKE=1
+
 before_install:
     - for t in test mock; do wget https://github.com/google/google$t/archive/release-1.7.0.tar.gz -Og$t.tgz && tar xvf g$t.tgz; done 
     # Install current cmake version.

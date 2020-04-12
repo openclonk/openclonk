@@ -885,7 +885,6 @@ if(APPLE)
 		src/platform/C4FileMonitorMac.mm
 		src/platform/C4AppDelegate.h
 		src/platform/C4AppDelegate.mm
-		src/platform/StdSchedulerMac.mm
 		src/platform/ObjectiveCAssociated.h
 	)
 	list(APPEND OC_GUI_SOURCES ${OC_BUNDLE_RESOURCES})
@@ -1030,6 +1029,7 @@ src/platform/StdFile.h
 src/platform/StdRegistry.cpp
 src/platform/StdRegistry.h
 src/platform/StdScheduler.cpp
+$<$<BOOL:${APPLE}>:src/platform/StdSchedulerMac.mm>
 src/platform/StdSchedulerWin32.cpp
 src/platform/StdSchedulerPoll.cpp
 src/platform/StdScheduler.h
