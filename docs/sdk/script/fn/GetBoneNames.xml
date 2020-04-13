@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetBoneNames</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+    </syntax>
+    <desc>Returns the bone names for the the calling object. May also be called from definition context to return the default mesh's bones of this definition.</desc>
+    <examples>
+	  <example>
+		<code>func HasHead(def definition) {
+	<funclink>for</funclink> (var bone in definition-><funclink>GetBoneNames</funclink>()) {
+		<funclink>if</funclink> (<funclink>WildcardMatch</funclink>(bone, "*Head*") || <funclink>WildcardMatch</funclink>(bone, "*head*")) {
+			return true;
+		}
+	}
+	return false;
+}</code>
+		<text>Returns true if the definition has any bone named &quot;Head&quot;</text>
+	  </example>
+    </examples>
+    <related><funclink>AttachMesh</funclink></related>
+  </func>
+  <author>Kanibal</author><date>2020-04</date>
+</funcs>
