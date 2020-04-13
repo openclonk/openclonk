@@ -388,7 +388,7 @@ void StdMeshSkeleton::AddMasterBone(StdMeshBone *bone)
 const StdMeshBone* StdMeshSkeleton::GetBoneByName(const StdStrBuf& name) const
 {
 	// Lookup parent bone
-	for (auto Bone : Bones)
+	for (const auto & Bone : Bones)
 		if (Bone->Name == name)
 			return Bone;
 
