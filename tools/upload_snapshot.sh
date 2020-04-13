@@ -14,7 +14,7 @@ branch=$(git symbolic-ref --short HEAD)
 : ${branch:=$TRAVIS_BRANCH}
 [[ -n $branch ]] || error "could not get branch name"
 
-date=$(date --date="$(git show -s --format=%ci)" -u -Is | sed 's/+00:\?00$/Z/')
+date=$(TZ=UTC git show -s --format=%cd --date=format-local:%Y-%m-%dT%H:%M:%SZ)
 [[ -n $date ]] || error "could not get commit date"
 
 : ${OC_REL_URL:?target URL not set}
