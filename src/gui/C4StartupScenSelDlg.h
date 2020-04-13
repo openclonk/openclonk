@@ -431,6 +431,7 @@ private:
 	class C4GameOptionButtons *pGameOptionButtons;
 	C4GUI::Button *pOpenBtn;
 	C4GUI::Tabular *pScenSelStyleTabular;
+	C4GUI::Edit *searchBar;
 
 	C4ScenarioListLoader *pScenLoader;
 
@@ -473,6 +474,12 @@ protected:
 	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(); }
 	void OnSelDblClick(class C4GUI::Element *pEl) { DoOK(); }
 	void OnButtonScenario(C4GUI::Control *pEl);
+
+	C4GUI::Edit::InputResult OnSearchBarEnter(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)
+	{
+		UpdateList();
+		return C4GUI::Edit::IR_Abort;
+	}
 
 	void OnLeagueOptionChanged() override;
 
