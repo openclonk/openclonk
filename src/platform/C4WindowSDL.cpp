@@ -75,7 +75,14 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, /*REQUESTED_GL_CTX_MINOR*/ 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, (Config.Graphics.DebugOpenGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0));
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SetMultisamplingAttributes(Config.Graphics.MultiSampling);
+	std::vector<int> available_samples {};
+	if (Config.Graphics.MultiSampling > 0)
+		EnumerateMultiSamples(available_samples, Config.Graphics.MultiSampling);
+	int samples = 0; // Default to initializing without AA if nothing was available
+	for (auto e : available_samples)
+		if (samples < e && e <= Config.Graphics.MultiSampling)
+			samples = e;
+	SetMultisamplingAttributes(samples);
 	uint32_t flags = SDL_WINDOW_OPENGL;
 	if (windowKind == W_Fullscreen && size->Wdt == -1)
 		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -87,6 +94,7 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 		Log(SDL_GetError());
 		return nullptr;
 	}
+	Config.Graphics.MultiSampling = samples;
 	SDL_SetWindowData(window, "C4Window", this);
 	Active = true;
 	SDL_ShowCursor(SDL_DISABLE);
@@ -115,10 +123,11 @@ void C4Window::Clear()
 #endif
 }
 
-void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples, int min_expected) const
 {
 	int max_samples;
 	glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
+	max_samples = std::max(max_samples, min_expected);
 	samples.clear();
 	for (int s = 2; s <= max_samples; s *= 2)
 	{

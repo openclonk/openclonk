@@ -573,7 +573,7 @@ void CStdGLCtx::Clear(bool multisample_change)
 	}
 }
 
-void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples, int) const
 {
 	[C4OpenGLView enumerateMultiSamples:samples];
 }

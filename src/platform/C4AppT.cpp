@@ -102,7 +102,7 @@ bool C4AbstractApp::FlushMessages()
 void C4Window::Clear() {}
 C4Window::C4Window() = default;
 C4Window::~C4Window() = default;
-void C4Window::EnumerateMultiSamples(std::vector<int, std::allocator<int> >&) const  {}
+void C4Window::EnumerateMultiSamples(std::vector<int, std::allocator<int> >&, int) const  {}
 void C4Window::FlashWindow() {}
 void C4Window::GrabMouse(bool) {}
 bool C4Window::GetSize(C4Rect*) {return false;}

@@ -802,7 +802,7 @@ void C4Window::GrabMouse(bool grab)
 	// TODO
 }
 
-void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples, int) const
 {
 #ifndef USE_CONSOLE
 	if(pGL && pGL->pMainCtx)
