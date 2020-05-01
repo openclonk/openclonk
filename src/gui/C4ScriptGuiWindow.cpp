@@ -2071,10 +2071,10 @@ void C4ScriptGuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t
 		if (viewport)
 		{
 			const float guiZoom = viewport->GetGUIZoom();
-			const float x = float(parentOffsetX + rcBounds.x) / guiZoom;
-			const float y = float(parentOffsetY + rcBounds.y) / guiZoom;
-			const float wdt = float(rcBounds.Wdt) / guiZoom;
-			const float hgt = float(rcBounds.Hgt) / guiZoom;
+			const int32_t x = int32_t((parentOffsetX + rcBounds.x) / guiZoom);
+			const int32_t y = int32_t((parentOffsetY + rcBounds.y) / guiZoom);
+			const int32_t wdt = int32_t(rcBounds.Wdt / guiZoom);
+			const int32_t hgt = int32_t(rcBounds.Hgt / guiZoom);
 			::MouseControl.SetTooltipRectangle(C4Rect(x, y, wdt, hgt));
 			::MouseControl.SetTooltipText(*strBuf);
 		}

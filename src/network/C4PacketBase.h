@@ -226,8 +226,10 @@ protected:
 	StdCopyBuf Data;
 public:
 	C4PktBuf();
-	C4PktBuf(const C4PktBuf &rCopy);
-	C4PktBuf(const StdBuf &rCpyData);
+	C4PktBuf(const C4PktBuf &rCopy) { *this = rCopy; }
+	C4PktBuf(const StdBuf &rCpyData) { *this = rCpyData; }
+	C4PktBuf &operator =(const C4PktBuf &rCopy);
+	C4PktBuf &operator =(const StdBuf &rCopy);
 
 	size_t getSize() const { return Data.getSize(); }
 	const void *getData() const { return Data.getData(); }

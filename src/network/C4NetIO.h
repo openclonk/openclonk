@@ -138,6 +138,7 @@ public:
 
 		EndpointAddress() { Clear(); }
 		EndpointAddress(const EndpointAddress &other) : HostAddress() { SetAddress(other); }
+		EndpointAddress& operator=(const EndpointAddress &other) { SetAddress(other); return *this; }
 		EndpointAddress(const HostAddress &host, uint16_t port = IPPORT_NONE) : HostAddress(host) { SetPort(port); }
 		EndpointAddress(HostAddress::SpecialAddress addr, uint16_t port = IPPORT_NONE) : HostAddress(addr) { SetPort(port); }
 		explicit EndpointAddress(const StdStrBuf &addr) { SetAddress(addr); }

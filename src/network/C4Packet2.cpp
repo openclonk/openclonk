@@ -168,14 +168,15 @@ void C4PacketBase::unpack(const C4NetIOPacket &Pkt, char *pStatus)
 
 C4PktBuf::C4PktBuf() = default;
 
-C4PktBuf::C4PktBuf(const C4PktBuf &rCopy) : C4PacketBase(rCopy)
-{
-	Data.Copy(rCopy.Data);
-}
-
-C4PktBuf::C4PktBuf(const StdBuf &rCpyData)
+C4PktBuf& C4PktBuf::operator=(const StdBuf &rCpyData)
 {
 	Data.Copy(rCpyData);
+	return *this;
+}
+C4PktBuf& C4PktBuf::operator=(const C4PktBuf &rCopy)
+{
+	Data.Copy(rCopy.Data);
+	return *this;
 }
 
 void C4PktBuf::CompileFunc(StdCompiler *pComp)
