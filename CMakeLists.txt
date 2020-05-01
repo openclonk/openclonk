@@ -574,6 +574,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4ScriptGuiWindow.h
 	src/gui/C4StartupAboutDlg.cpp
 	src/gui/C4StartupAboutDlg.h
+	src/gui/C4StartupLegalDlg.cpp
+	src/gui/C4StartupLegalDlg.h
 	src/gui/C4Startup.cpp
 	src/gui/C4Startup.h
 	src/gui/C4StartupMainDlg.cpp
