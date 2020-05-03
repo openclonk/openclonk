@@ -27,6 +27,7 @@
 #include "object/C4ObjectList.h"
 #include "object/C4ObjectPtr.h"
 #include "script/C4Value.h"
+#include "script/C4PropList.h"
 
 const int32_t C4PVM_Cursor    = 0,
               C4PVM_Target    = 1,
@@ -45,7 +46,7 @@ static const int C4VP_DefViewRangeX    = 300,
 static const int C4FOW_DefLightRangeX = 300,
                  C4FOW_DefLightFadeoutRangeX = 80;
 
-class C4Player: public C4PlayerInfoCore
+class C4Player: public C4PlayerInfoCore, public C4PropList
 {
 	class HostilitySet : public std::set<const C4Player*>
 	{
@@ -258,6 +259,16 @@ private:
 public:
 	// custom scenario achievements
 	bool GainScenarioAchievement(const char *achievement_id, int32_t value, const char *scen_name_override=nullptr);
+	// Handle custom proplist properties
+	C4Player * GetPlayer() override { return this; } // Required by template magic
+	void SetPropertyByS(C4String * k, const C4Value & to) override;
+	void ResetProperty(C4String * k) override;
+	bool GetPropertyByS(const C4String *k, C4Value *pResult) const override;
+	C4ValueArray * GetProperties() const override;
+	
+private:
+	// Register script functions to the proplist by setting this prototype
+	static C4PropList* GetPropListPrototype(const char *name);
 };
 
 #endif

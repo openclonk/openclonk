@@ -43,8 +43,9 @@
 #include "object/C4ObjectMenu.h"
 #include "platform/C4GamePadCon.h"
 #include "player/C4PlayerList.h"
+#include "script/C4AulDefFunc.h"
 
-C4Player::C4Player() : C4PlayerInfoCore()
+C4Player::C4Player() : C4PlayerInfoCore(), C4PropList(GetPropListPrototype("_Player"))
 {
 	Filename[0] = 0;
 	ID = 0;
@@ -84,6 +85,21 @@ C4Player::~C4Player()
 		pMsgBoardQuery = pNext;
 	}
 	ClearControl();
+}
+
+C4PropList* C4Player::GetPropListPrototype(const char *name)
+{
+	C4Value temp;
+	if (!::ScriptEngine.GetGlobalConstant(name, &temp))
+	{
+		throw NeedPlayerContext(FormatString("Global constant %s not defined", name).getData());
+	}
+	C4PropList * p = temp.getPropList();
+	if (!p)
+	{
+		throw NeedPlayerContext(FormatString("Global constant %s is not a proplist anymore", name).getData());
+	}
+	return p;
 }
 
 bool C4Player::ObjectInCrew(C4Object *tobj)
@@ -1782,4 +1798,52 @@ void C4Player::SetSoundModifier(C4PropList *new_modifier)
 	}
 	// update in sound system
 	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, ID);
+}
+
+void C4Player::SetPropertyByS(C4String * k, const C4Value & to)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_ID:
+				throw new C4AulExecError("effect: Prototype is readonly");
+		}
+	}
+	C4PropList::SetPropertyByS(k, to);
+}
+
+void C4Player::ResetProperty(C4String * k)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_ID:
+				throw C4AulExecError("Player: ID is readonly");
+		}
+	}
+	C4PropList::ResetProperty(k);
+}
+
+bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_ID: *pResult = C4VInt(ID); return true;
+		}
+	}
+	return C4PropList::GetPropertyByS(k, pResult);
+}
+
+C4ValueArray * C4Player::GetProperties() const
+{
+	C4ValueArray * a = C4PropList::GetProperties();
+	int i;
+	i = a->GetSize();
+	a->SetSize(i + 1);
+	(*a)[i++] = C4VString(&::Strings.P[P_ID]);
+	return a;
 }
