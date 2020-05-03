@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayer</title>
+    <category>Player</category>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>proplist</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>ID of the player to get.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the player proplist. If the specified player number is invalid, <code>nil</code> is returned.</desc>
+    <text>
+      <table>
+        <caption id="PropertiesTable">Player Properties</caption>
+        <rowh>
+          <col>Name</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col><code>ID</code></col>
+          <col>int</col>
+          <col>The player ID, see <funclink>GetPlayerID</funclink>, read-only.</col>
+        </row>
+      </table>
+    </text>
+  </func>
+  <author>Marky</author><date>2020-05</date>
+</funcs>

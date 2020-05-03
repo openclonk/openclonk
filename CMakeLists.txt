@@ -785,6 +785,8 @@ set(OC_CLONK_SOURCES
 	src/player/C4Player.h
 	src/player/C4PlayerList.cpp
 	src/player/C4PlayerList.h
+	src/player/C4PlayerScript.cpp
+	src/player/C4PlayerScript.h
 	src/player/C4RankSystem.cpp
 	src/player/C4RankSystem.h
 	src/player/C4ScenarioParameters.cpp
