@@ -70,8 +70,10 @@ void C4Shape::Rotate(C4Real angle, bool update_vertices)
 		// Rotate vertices
 		for (int32_t cnt = 0; cnt < VtxNum; cnt++)
 		{
-			VtxX[cnt] = fixtoi(rot_matrix[0] * VtxX[cnt] + rot_matrix[1] * VtxY[cnt]);
-			VtxY[cnt] = fixtoi(rot_matrix[2] * VtxX[cnt] + rot_matrix[3] * VtxY[cnt]);
+			int32_t old_x = VtxX[cnt];
+			int32_t old_y = VtxY[cnt];
+			VtxX[cnt] = fixtoi(rot_matrix[0] * old_x + rot_matrix[1] * old_y);
+			VtxY[cnt] = fixtoi(rot_matrix[2] * old_x + rot_matrix[3] * old_y);
 		}
 	}
 
