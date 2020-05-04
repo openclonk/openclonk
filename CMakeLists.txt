@@ -386,6 +386,20 @@ if(NOT C4GROUP_TOOL_ONLY)
 	)
 endif()
 
+add_executable(generate-license-headers tools/generate_license_headers.cpp)
+if (NOT C4GROUP_TOOL_ONLY)
+	set_target_properties(generate-license-headers PROPERTIES EXCLUDE_FROM_ALL On)
+endif()
+set(OC_LICENSES ${CMAKE_CURRENT_BINARY_DIR}/OCLicenses.cpp)
+add_custom_command(
+	OUTPUT ${OC_LICENSES}
+	COMMENT "Genereate OCLicenses.cpp"
+	COMMAND generate-license-headers ${OC_LICENSES} TRADEMARK "Clonk Trademark" COPYING "OpenClonk Engine Engine License" planet/COPYING "OpenClonk Game Content License"
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	DEPENDS COPYING TRADEMARK planet/COPYING generate-license-headers
+)
+add_custom_target(license-headers DEPENDS ${OC_LICENSES})
+
 ############################################################################
 # Mac OS bundle setup
 ############################################################################
@@ -1040,6 +1054,7 @@ src/platform/C4TimeMilliseconds.h
 src/zlib/gzio.c
 src/zlib/gzio.h
 src/zlib/zutil.h
+${OC_LICENSES}
 
 	# pcg is a header-only library which we're listing solely so MSVC shows
 	# the sources in the solution explorer. We could use an INTERFACE library
@@ -1049,6 +1064,7 @@ src/zlib/zutil.h
 	thirdparty/pcg/pcg_random.hpp
 	thirdparty/pcg/pcg_uint128.hpp
 )
+add_dependencies(libmisc license-headers)
 
 target_link_libraries(libmisc ${ZLIB_LIBRARIES})
 if (WIN32)

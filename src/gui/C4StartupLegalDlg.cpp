@@ -21,8 +21,7 @@
 #include "C4Version.h"
 #include "graphics/C4GraphicsResource.h"
 #include "game/C4Application.h"
-
-#include <fstream>
+#include "C4Licenses.h"
 
 
 // Sorted by commit count this release, e.g.: git shortlog -s v7.0.. | sort -rn
@@ -51,18 +50,12 @@ C4StartupLegalDlg::C4StartupLegalDlg() : C4StartupDlg(LoadResStr("IDS_DLG_DISPLA
 	AddElement(textbox);
 	textbox->SetDecoration(false, false, nullptr, true);
 
-	C4Group licenses;
-    licenses.OpenAsChild(&::Application.SystemGroup, "Legal.ocg");
-	StdStrBuf licenseName;
-	while (licenses.FindNextEntry("*.txt", &licenseName)) {
-        std::string licenseNameCut(licenseName.getData(), std::max<size_t>(licenseName.getLength() - 4, 0));
-        textbox->AddTextLine(licenseNameCut.c_str(), &::GraphicsResource.TitleFont, C4GUI_NotifyFontClr, false, true);
-        char * licenseContent = nullptr; size_t licenseSize;
-        licenses.LoadEntry(licenseName.getData(), &licenseContent, &licenseSize, 1);
-		textbox->AddTextLine(licenseContent, &::GraphicsResource.TextFont, C4GUI_MessageFontClr, false, true);
-		free(licenseContent);
-        textbox->AddTextLine(" ", &::GraphicsResource.TitleFont, C4GUI_MessageFontClr, false, true);
-    }
+	for(const auto& license : OCLicenses) {
+		textbox->AddTextLine(license.name.c_str(), &::GraphicsResource.TitleFont, C4GUI_NotifyFontClr, false, true);
+		textbox->AddTextLine(license.content.c_str(), &::GraphicsResource.TextFont, C4GUI_MessageFontClr, false, true);
+		textbox->AddTextLine(" ", &::GraphicsResource.TitleFont, C4GUI_MessageFontClr, false, true);
+	}
+
 	textbox->UpdateHeight();
 }
 
