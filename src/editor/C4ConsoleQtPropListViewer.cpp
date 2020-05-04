@@ -1494,7 +1494,6 @@ void C4PropertyDelegateEnum::SetOptionValue(const C4PropertyPath &use_path, cons
 	}
 	else
 	{
-		C4PropList *option_props = option.props.getPropList();
 		use_path.SetProperty(option_value, ignore_base_props_static);
 	}
 	factory->GetPropertyModel()->DoOnUpdateCall(use_path, this);
@@ -2706,7 +2705,6 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		property_groups.resize(group_index + 1);
 	}
 	PropertyGroup &properties = property_groups[group_index];
-	C4PropListStatic *proplist_static = add_proplist->IsStatic();
 	// Resolve properties
 	struct PropAndKey
 	{
@@ -2745,7 +2743,6 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		layout_valid = false;
 		properties.props.resize(new_properties_resolved.size());
 	}
-	C4Effect *fx = target_proplist->GetEffect();
 	for (int32_t i = 0; i < new_properties_resolved.size(); ++i)
 	{
 		Property *prop = &properties.props[i];
@@ -2796,7 +2793,6 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 				{
 					// New shape or shape type mismatch: Generate new shape at this path and put into the shape holder list
 					shape = ::Console.EditCursor.GetShapes()->CreateShape(base_object ? base_object : target_proplist->GetObject(), new_shape_delegate->GetCreationProps().getPropList(), v, new_shape_delegate);
-					C4PropertyDelegateFactory *factory = this->delegate_factory;
 					new_shape_delegate->ConnectSignals(shape, prop->shape_property_path);
 					prop->shape->Set(shape);
 					prop->shape->SetLastValue(v);
@@ -3001,7 +2997,6 @@ void C4ConsoleQtPropListModel::UpdateSelection(int32_t major_sel, int32_t minor_
 int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplist, int32_t *default_selection_group, int32_t *default_selection_index)
 {
 	assert(target_proplist);
-	C4PropList *base_proplist = this->base_proplist.getPropList();
 	C4Object *base_obj = this->base_proplist.getObj(), *obj = nullptr;
 	C4PropList *info_proplist = this->info_proplist.getPropList();
 	int32_t num_groups = 0;
@@ -3035,7 +3030,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 			C4Value v_target_proplist = C4VPropList(target_proplist);
 			prop->delegate->GetPropertyValue(v_target_proplist, prop->key, 0, &v);
 			C4PropertyPath shape_property_path = prop->delegate->GetPathForProperty(prop);
-			const C4PropertyDelegateShape *current_shape_delegate = prop->delegate->GetShapeDelegate(v, &shape_property_path); // to resolve v
+			prop->delegate->GetShapeDelegate(v, &shape_property_path); // to resolve v
 			if (::Console.EditCursor.GetShapes()->GetSelectedShapeData(v, prop->shape_property_path, &shape_item_editorprops, &shape_item_value, &shape_item_name, &shape_item_target_path))
 			{
 				if (AddPropertyGroup(shape_item_editorprops, num_groups, QString(shape_item_name ? shape_item_name->GetCStr() :"???"), shape_item_value, shape_item_target_path, obj, nullptr, nullptr))

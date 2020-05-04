@@ -232,7 +232,6 @@ class C4PlayerControlAssignmentSet
 {
 private:
 	StdCopyStrBuf sName, sGUIName, sParentSetName;
-	const C4PlayerControlAssignmentSet *parent_set{nullptr};
 	C4PlayerControlAssignmentVec Assignments; // ordered by priority
 
 	bool has_keyboard{true};

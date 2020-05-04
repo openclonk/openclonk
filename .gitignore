@@ -90,9 +90,16 @@ c4script_autogen/
 libc4script_autogen/
 libmisc_autogen/
 libopenclonk_autogen/
+mape_autogen/
 netpuncher_autogen/
 openclonk-server_autogen/
 openclonk_autogen/
+tests/aul_test
+tests/aul_test_autogen/
+tests/gmock_autogen/
+tests/gtest_autogen/
+tests/tests
+tests/tests_autogen/
 thirdparty/blake2/blake2_autogen/
 
 # Temporary files created by Microsoft Visual Studio

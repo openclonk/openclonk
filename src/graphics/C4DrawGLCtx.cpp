@@ -25,8 +25,10 @@
 
 #ifndef USE_CONSOLE
 
+#if defined(USE_WGL) || defined(USE_SDL_MAINLOOP)
 static const int REQUESTED_GL_CTX_MAJOR = 3;
 static const int REQUESTED_GL_CTX_MINOR = 2;
+#endif
 
 std::list<CStdGLCtx*> CStdGLCtx::contexts;
 
@@ -79,7 +81,7 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 
 	for(int i = 1; i < n_formats+1; ++i)
 	{
-		int new_attributes[] = { WGL_DRAW_TO_WINDOW_ARB, WGL_SUPPORT_OPENGL_ARB, WGL_DOUBLE_BUFFER_ARB, WGL_COLOR_BITS_ARB, WGL_DEPTH_BITS_ARB, WGL_STENCIL_BITS_ARB, WGL_AUX_BUFFERS_ARB, WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB };
+		int new_attributes[] = { WGL_DRAW_TO_WINDOW_ARB, WGL_SUPPORT_OPENGL_ARB, WGL_DOUBLE_BUFFER_ARB, WGL_COLOR_BITS_ARB, WGL_DEPTH_BITS_ARB, WGL_STENCIL_BITS_ARB, WGL_AUX_BUFFERS_ARB, WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB, WGL_PIXEL_TYPE_ARB };
 		const unsigned int nnew_attributes = sizeof(new_attributes)/sizeof(int);
 
 		int new_results[nnew_attributes];
@@ -91,6 +93,10 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 		// however, when choosing it then texturing does not work anymore. I am not
 		// exactly sure what the cause of that is, so let's not choose that one for now.
 		if(new_results[4] > 24) continue;
+
+		// ensure that we get an RGB buffer. otherwise we might end up with a float buffer, which messes up gamma.
+		if (new_results[9] != WGL_TYPE_RGBA_ARB) 
+			continue;
 
 		// Multisampling with just one sample is equivalent to no-multisampling,
 		// so don't include that in the result.

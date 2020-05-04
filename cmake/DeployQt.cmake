@@ -82,6 +82,7 @@ function(macdeployqt target)
         COMMAND "${MACDEPLOYQT_EXECUTABLE}"
             \"$<TARGET_FILE_DIR:${target}>/../..\"
             -always-overwrite
+            $<$<CONFIG:Debug>:-no-strip>
         COMMENT "Deploying Qt..."
     )
 endfunction()

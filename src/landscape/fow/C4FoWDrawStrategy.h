@@ -170,11 +170,9 @@ private:
 
 	void DrawVertex(Vertex& vertex);
 
-	const C4FoWLight* light;
 	const C4TargetFacet* screen;
 
 	GLuint bo[2];
-	GLuint ibo;
 	std::vector<Vertex> vertices;
 	unsigned int vbo_size;
 	unsigned int ibo_size;

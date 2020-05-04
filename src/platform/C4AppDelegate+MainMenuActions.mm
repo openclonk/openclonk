@@ -13,6 +13,7 @@
  * for the above references.
  */
 
+#define GL_SILENCE_DEPRECATION
 #include <GL/glew.h>
 
 #include "C4Include.h"
@@ -78,12 +79,12 @@
 	Console.PlayerJoin();
 }
 
-- (IBAction) openPropTools:(id)sender;
+- (IBAction) openPropTools:(id)sender
 {
 	Console.EditCursor.OpenPropTools();
 }
 
-- (IBAction) showAbout:(id)sender;
+- (IBAction) showAbout:(id)sender
 {
 	Console.HelpAbout();
 }
@@ -117,7 +118,7 @@
 	[editorWindowController.toolSelector selectSegmentWithTag:[sender tag]];
 }
 
-- (IBAction) suggestQuitting:(id)sender;
+- (IBAction) suggestQuitting:(id)sender
 {
 	if (!Application.isEditor && Game.IsRunning)
 	{
@@ -181,7 +182,7 @@
 	return YES;
 }
 
-- (IBAction) visitWebsite:(id)sender;
+- (IBAction) visitWebsite:(id)sender
 {
 	OpenURL("http://wiki.openclonk.org");
 }
@@ -192,12 +193,12 @@
 	Game.DoKeyboardInput(key, KEYEV_Up,   false, false, false, false, NULL);
 }
 
-- (IBAction) makeScreenshot:(id)sender;
+- (IBAction) makeScreenshot:(id)sender
 {
 	::GraphicsSystem.SaveScreenshotKey(false);
 }
 
-- (IBAction) makeScreenshotOfWholeMap:(id)sender;
+- (IBAction) makeScreenshotOfWholeMap:(id)sender
 {
 	::GraphicsSystem.SaveScreenshotKey(true);
 }

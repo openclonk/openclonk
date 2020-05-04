@@ -1724,9 +1724,9 @@ bool C4Group::DeleteEntry(const char *filename, bool do_recycle)
 		{
 			if (!EraseItem(path)) return false;
 		}
-		break; // FIXME: This causes dead code, not sure if this was intended by the author
 		// refresh file list
 		ResetSearch(true);
+		break;
 	default: break; // InGrp & Deleted ignored
 	}
 	return true;

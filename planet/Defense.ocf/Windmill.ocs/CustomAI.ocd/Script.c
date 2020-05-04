@@ -6,7 +6,7 @@ local AIRSHIP_LOST_DIST = 50;
 local AIRSHIP_BOARD_DIST = 60;
 // How near must neighbouring airships be to trigger evasive maneuvers
 local AIRSHIP_VICINITY_DIST = 60;
-// How near must an archer be to a target to shoot. Theoretically, archers can shoot from much farer away but that's too brutal for the players
+// How near must an archer be to a target to shoot. Theoretically, archers can shoot from much further away but that's too brutal for the players
 local ARCHER_SHOOT_DIST = 500;
 
 

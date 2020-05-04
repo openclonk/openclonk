@@ -29,7 +29,7 @@
 /* The main class of the application, the application's delegate */
 @implementation C4AppDelegate
 
-+ (C4AppDelegate*) instance;
++ (C4AppDelegate*) instance
 {
 	return (C4AppDelegate*)[[NSApplication sharedApplication] delegate];
 }

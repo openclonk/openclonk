@@ -1371,14 +1371,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">newViewportForPlayerMenuItem</string>
-						<reference key="source" ref="898186092"/>
-						<reference key="destination" ref="131903444"/>
-					</object>
-					<int key="connectionID">484</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
 						<string key="label">kickPlayerMenuItem</string>
 						<reference key="source" ref="898186092"/>
 						<reference key="destination" ref="973140780"/>

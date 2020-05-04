@@ -157,7 +157,8 @@ if(WIN32 AND MINGW)
 endif()
 
 if(APPLE)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc -headerpad_max_install_names")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -headerpad_max_install_names")
 endif()
 
 ############################################################################
@@ -875,6 +876,7 @@ set(MAPE_SOURCES
 	src/mape/window.h
 	mape-resource.c
 )
+set_property(SOURCE mape-resource.c PROPERTY SKIP_AUTOGEN ON)
 
 # source files specific to an operating system
 if(APPLE)
@@ -883,7 +885,6 @@ if(APPLE)
 		src/platform/C4FileMonitorMac.mm
 		src/platform/C4AppDelegate.h
 		src/platform/C4AppDelegate.mm
-		src/platform/StdSchedulerMac.mm
 		src/platform/ObjectiveCAssociated.h
 	)
 	list(APPEND OC_GUI_SOURCES ${OC_BUNDLE_RESOURCES})
@@ -1028,6 +1029,7 @@ src/platform/StdFile.h
 src/platform/StdRegistry.cpp
 src/platform/StdRegistry.h
 src/platform/StdScheduler.cpp
+$<$<BOOL:${APPLE}>:src/platform/StdSchedulerMac.mm>
 src/platform/StdSchedulerWin32.cpp
 src/platform/StdSchedulerPoll.cpp
 src/platform/StdScheduler.h
@@ -1217,7 +1219,7 @@ if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 				windeployqt(openclonk)
 			elseif(APPLE)
 				include(DeployQt)
-				macdeployqt(nitroshare-client)
+				macdeployqt(openclonk)
 			endif()
 		endif()
 	endif()
@@ -1266,6 +1268,10 @@ if(GTK3_FOUND AND GTK3_gtksourceview_FOUND AND NOT HEADLESS_ONLY AND NOT C4GROUP
 	target_compile_options(mape PRIVATE ${GTK3_COMPILE_DEFINITIONS} ${GTK3_gtksourceview_COMPILE_DEFINITIONS})
 	set_property(TARGET mape PROPERTY FOLDER "Utilities")
 	target_include_directories(mape PRIVATE ${GTK3_INCLUDE_DIRS} ${GTK3_gtksourceview_INCLUDE_DIRS})
+	target_link_directories(mape PRIVATE
+		${GTK3_LIBRARY_DIRS}
+		${GTK3_gtksourceview_LIBRARY_DIRS}
+	)
 	target_link_libraries(mape
 		${GTK3_LIBRARIES}
 		${GTK3_gtksourceview_LIBRARIES}

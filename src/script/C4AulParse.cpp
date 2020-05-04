@@ -1377,19 +1377,11 @@ std::unique_ptr<::aul::ast::RangeLoop> C4AulParse::Parse_ForEach()
 	return loop;
 }
 
-static bool GetPropertyByS(const C4PropList * p, const char * s, C4Value & v)
-{
-	C4String * k = Strings.FindString(s);
-	if (!k) return false;
-	return p->GetPropertyByS(k, &v);
-}
-
 std::unique_ptr<::aul::ast::Expr> C4AulParse::Parse_Expression(int iParentPrio)
 {
 	const char *NodeStart = TokenSPos;
 	std::unique_ptr<::aul::ast::Expr> expr;
 	const C4ScriptOpDef * op;
-	C4AulFunc *FoundFn = nullptr;
 	C4Value val;
 	switch (TokenType)
 	{
