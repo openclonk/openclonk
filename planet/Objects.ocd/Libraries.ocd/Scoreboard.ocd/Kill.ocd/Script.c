@@ -45,7 +45,7 @@ protected func OnClonkDeath(object clonk, int killer)
 		return _inherited(clonk, killer, ...);
 	// Modify scoreboard kill count entry for killer.
 	score_kill_list[killer]++;
-	Scoreboard->SetPlayerData(killer, "kills", score_kill_list[plrid]);
+	Scoreboard->SetPlayerData(killer, "kills", score_kill_list[killer]);
 	return _inherited(clonk, killer, ...);
 }
 
