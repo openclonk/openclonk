@@ -36,16 +36,16 @@ protected func InitializePlayer(int plr)
 
 protected func OnClonkDeath(object clonk, int killer)
 {
-	var plr = clonk->GetOwner();
+	var owner = clonk->GetOwner();
 	// Only if killer exists and has not committed suicide.
-	if (killer == plr || killer == NO_OWNER)
+	if (killer == owner || killer == NO_OWNER)
 		return _inherited(clonk, killer, ...);
 	// Only if killer and victim are on different teams.
-	if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(plr))
+	if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(owner))
 		return _inherited(clonk, killer, ...);
 	// Modify scoreboard kill count entry for killer.
 	score_kill_list[killer]++;
-	Scoreboard->SetPlayerData(killer, "kills", score_kill_list[plrid]);
+	Scoreboard->SetPlayerData(killer, "kills", score_kill_list[killer]);
 	return _inherited(clonk, killer, ...);
 }
 
