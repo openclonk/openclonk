@@ -363,6 +363,19 @@ if(NOT C4GROUP_TOOL_ONLY)
 endif()
 
 ############################################################################
+# native tools
+############################################################################
+IF(CMAKE_CROSSCOMPILING)
+	SET(IMPORT_NATIVE_TOOLS "IMPORT_NATIVE_TOOLS-NOTFOUND" CACHE FILEPATH "Export file from a native build")
+	INCLUDE(${IMPORT_NATIVE_TOOLS})
+	SET(native_c4group native-c4group)
+	SET(native_oc-licenses-into-code native-oc-licenses-into-code)
+ELSE()
+	SET(native_c4group c4group)
+	SET(native_oc-licenses-into-code oc-licenses-into-code)
+ENDIF()
+
+############################################################################
 # generated source files
 ############################################################################
 if(NOT C4GROUP_TOOL_ONLY)
@@ -386,19 +399,21 @@ if(NOT C4GROUP_TOOL_ONLY)
 	)
 endif()
 
-add_executable(generate-license-headers tools/generate_license_headers.cpp)
-if (NOT C4GROUP_TOOL_ONLY)
-	set_target_properties(generate-license-headers PROPERTIES EXCLUDE_FROM_ALL On)
+IF(NOT CMAKE_CROSSCOMPILING)
+	add_executable(oc-licenses-into-code tools/generate_license_headers.cpp)
+	if (NOT C4GROUP_TOOL_ONLY)
+		set_target_properties(oc-licenses-into-code PROPERTIES EXCLUDE_FROM_ALL On)
+	endif()
 endif()
 set(OC_LICENSES ${CMAKE_CURRENT_BINARY_DIR}/OCLicenses.cpp)
 add_custom_command(
 	OUTPUT ${OC_LICENSES}
-	COMMENT "Genereate OCLicenses.cpp"
-	COMMAND generate-license-headers ${OC_LICENSES} TRADEMARK "Clonk Trademark" COPYING "OpenClonk Engine Engine License" planet/COPYING "OpenClonk Game Content License"
+	COMMENT "Generating OCLicenses.cpp"
+	COMMAND ${native_oc-licenses-into-code} ${OC_LICENSES} TRADEMARK "Clonk Trademark" COPYING "OpenClonk Engine Engine License" planet/COPYING "OpenClonk Game Content License"
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	DEPENDS COPYING TRADEMARK planet/COPYING generate-license-headers
+	DEPENDS COPYING TRADEMARK planet/COPYING ${native_oc-licenses-into-code}
 )
-add_custom_target(license-headers DEPENDS ${OC_LICENSES})
+add_custom_target(licenses-into-code-target DEPENDS ${OC_LICENSES})
 
 ############################################################################
 # Mac OS bundle setup
@@ -1064,7 +1079,7 @@ ${OC_LICENSES}
 	thirdparty/pcg/pcg_random.hpp
 	thirdparty/pcg/pcg_uint128.hpp
 )
-add_dependencies(libmisc license-headers)
+add_dependencies(libmisc licenses-into-code-target)
 
 target_link_libraries(libmisc ${ZLIB_LIBRARIES})
 if (WIN32)
@@ -1509,22 +1524,7 @@ endif()
 
 # Export native tools for later use in cross-compile builds
 IF(NOT CMAKE_CROSSCOMPILING)
-	EXPORT(TARGETS c4group FILE ${CMAKE_BINARY_DIR}/NativeToolsExport.cmake NAMESPACE native- )
-ENDIF()
-
-# When cross-compiling, import c4group from a native build
-IF(CMAKE_CROSSCOMPILING)
-	FIND_PROGRAM(C4GROUP_PATH NAMES c4group PATHS)
-
-	IF (NOT C4GROUP_PATH)
-		SET(IMPORT_NATIVE_TOOLS "IMPORT_NATIVE_TOOLS-NOTFOUND" CACHE FILEPATH "Export file from a native build")
-		INCLUDE(${IMPORT_NATIVE_TOOLS})
-		SET(native_c4group native-c4group)
-	ELSE()
-		SET(native_c4group ${C4GROUP_PATH})
-	ENDIF()
-ELSE()
-	SET(native_c4group c4group)
+	EXPORT(TARGETS c4group oc-licenses-into-code FILE ${CMAKE_BINARY_DIR}/NativeToolsExport.cmake NAMESPACE native- )
 ENDIF()
 
 if(NOT C4GROUP_TOOL_ONLY)
