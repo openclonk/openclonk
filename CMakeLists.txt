@@ -413,7 +413,6 @@ add_custom_command(
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	DEPENDS COPYING TRADEMARK planet/COPYING ${native_oc-licenses-into-code}
 )
-add_custom_target(licenses-into-code-target DEPENDS ${OC_LICENSES})
 
 ############################################################################
 # Mac OS bundle setup
@@ -1079,7 +1078,6 @@ ${OC_LICENSES}
 	thirdparty/pcg/pcg_random.hpp
 	thirdparty/pcg/pcg_uint128.hpp
 )
-add_dependencies(libmisc licenses-into-code-target)
 
 target_link_libraries(libmisc ${ZLIB_LIBRARIES})
 if (WIN32)
