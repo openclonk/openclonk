@@ -405,11 +405,25 @@ IF(NOT CMAKE_CROSSCOMPILING)
 		set_target_properties(oc-licenses-into-code PROPERTIES EXCLUDE_FROM_ALL On)
 	endif()
 endif()
+set(OC_LICENSE_LIST
+	TRADEMARK "Clonk Trademark"
+	COPYING "OpenClonk Engine Engine License"
+	planet/COPYING "OpenClonk Game Content License"
+	licenses/xiph.txt "OGG Library"
+	licenses/getopt.txt "Getopt Library"
+	licenses/apache.txt "Various Libraries"
+	licenses/LGPL.txt "Various Libraries"
+	thirdparty/pcg/pcg_random.hpp "PCG Random number generator"
+	thirdparty/timsort/README.rst "Timsort"
+)
+if(HAVE_BACKWARD)
+	set(OC_LICENSE_LIST ${OC_LICENSE_LIST} thirdparty/backward-cpp/LICENSE.txt "backward-cpp Stack Trace Pretty Printer")
+endif()
 set(OC_LICENSES ${CMAKE_CURRENT_BINARY_DIR}/OCLicenses.cpp)
 add_custom_command(
 	OUTPUT ${OC_LICENSES}
 	COMMENT "Generating OCLicenses.cpp"
-	COMMAND ${native_oc-licenses-into-code} ${OC_LICENSES} TRADEMARK "Clonk Trademark" COPYING "OpenClonk Engine Engine License" planet/COPYING "OpenClonk Game Content License"
+	COMMAND ${native_oc-licenses-into-code} ${OC_LICENSES} ${OC_LICENSE_LIST}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	DEPENDS COPYING TRADEMARK planet/COPYING ${native_oc-licenses-into-code}
 )
