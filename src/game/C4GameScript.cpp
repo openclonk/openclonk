@@ -3045,7 +3045,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetPlayerName);
 	F(GetPlayer);
 	F(GetPlayerType);
-	F(GetPlayerColor);
 	F(GetPlrClonkSkin);
 	F(CreateObject);
 	F(CreateObjectAbove);

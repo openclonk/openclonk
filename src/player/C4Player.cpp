@@ -43,9 +43,10 @@
 #include "object/C4ObjectMenu.h"
 #include "platform/C4GamePadCon.h"
 #include "player/C4PlayerList.h"
+#include "player/C4PlayerScript.h"
 #include "script/C4AulDefFunc.h"
 
-C4Player::C4Player() : C4PlayerInfoCore(), C4PropList(GetPropListPrototype("_Player"))
+C4Player::C4Player() : C4PlayerInfoCore(), C4PropList(GetPropListPrototype(C4PlayerScript::PROTOTYPE_NAME))
 {
 	Filename[0] = 0;
 	ID = 0;

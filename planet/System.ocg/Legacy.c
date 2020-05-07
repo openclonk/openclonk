@@ -21,6 +21,22 @@ global func GetMissionAccess(string password)
 	return GetScenarioAccess(password);
 }
 
+/* -- Player stuff -- */
+
+global func GetPlayerColor(int player_nr)
+{
+	LogLegacyWarning("GetPlayerColor", "Since 9.0 OC you can call GetPlayer(player)->GetColor() instead.", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetColor();
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 global func GetPlayerID(int plr_nr)
 {
 	LogLegacyWarning("GetPlayerID", "The player ID and player number are the same since 9.0 OC", VERSION_10_0_OC);

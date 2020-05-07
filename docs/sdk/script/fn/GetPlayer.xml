@@ -17,7 +17,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the player proplist. If the specified player number is invalid, <code>nil</code> is returned. </desc>
+    <desc>Returns the player proplist. If the specified player number is invalid, <code>nil</code> is returned.</desc>
     <text>
       <table>
         <caption id="PropertiesTable">Player Properties</caption>

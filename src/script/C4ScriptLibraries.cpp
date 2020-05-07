@@ -205,31 +205,10 @@ public:
 	C4ScriptLibraryCrypto() : C4ScriptLibrary(LIBRARY_NAME) {}
 };
 
-class C4ScriptPlayerPrototype : public C4ScriptLibrary
-{
-	static constexpr const char *LIBRARY_NAME = "_Player";
-
-	// Calculates a hash value over a given input string.
-	static bool IsPlayer(C4Player *_this)
-	{
-		return true;
-	}
-
-protected:
-	void CreateFunctions() override
-	{
-		AddFunc(this, "IsPlayer", &IsPlayer);
-	}
-
-public:
-	C4ScriptPlayerPrototype() : C4ScriptLibrary(LIBRARY_NAME) {}
-};
-
 void C4ScriptLibrary::InstantiateAllLibraries(C4AulScriptEngine *engine)
 {
 	C4ScriptLibrary *libraries[] = {
-		new C4ScriptLibraryCrypto,
-		new C4ScriptPlayerPrototype
+		new C4ScriptLibraryCrypto
 	};
 
 	for (auto library : libraries)
