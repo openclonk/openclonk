@@ -46,7 +46,7 @@
 #include "player/C4PlayerScript.h"
 #include "script/C4AulDefFunc.h"
 
-C4Player::C4Player() : C4PlayerInfoCore(), C4PropList(GetPropListPrototype(C4PlayerScript::PROTOTYPE_NAME))
+C4Player::C4Player() : C4PlayerInfoCore(), C4PropList(GetPropListPrototype(C4PlayerScript::PROTOTYPE_NAME_SCRIPT))
 {
 	Filename[0] = 0;
 	ID = 0;

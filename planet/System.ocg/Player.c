@@ -5,6 +5,13 @@
 	@author timi, Maikel, Joern, Zapper, Randrian
 */
 
+static const Player = new _Player
+{
+	// _Player contains all the scripting functions for players
+	// Player is the prototype for all players and can be expanded
+	// with data or functions.
+};
+
 // Returns the player number of player_name, or none if there is no such player. (written by timi for CR/CE/CP)
 // documented in /docs/sdk/script/fn
 global func GetPlayerByName(string player_name)

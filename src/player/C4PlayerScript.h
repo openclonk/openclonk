@@ -16,6 +16,9 @@
 class C4PlayerScript
 {
 public:
-	static constexpr const char *PROTOTYPE_NAME = "_Player";
+	// The script functions are registered to this player prototype in the engine 
+	static constexpr const char *PROTOTYPE_NAME_ENGINE = "_Player";
+	// The actual player prototype is defined in script and inherits from the engine prototype
+	static constexpr const char *PROTOTYPE_NAME_SCRIPT = "Player";
 	static void RegisterWithEngine(C4AulScriptEngine *engine);
 };

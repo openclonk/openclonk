@@ -27,8 +27,8 @@ static long FnGetColor(C4Player * player)
 
 void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 {
-    C4PropListStatic* prototype = new C4PropListStatic(nullptr, nullptr, ::Strings.RegString(PROTOTYPE_NAME));
-	engine->RegisterGlobalConstant(PROTOTYPE_NAME, C4VPropList(prototype));
+    C4PropListStatic* prototype = new C4PropListStatic(nullptr, nullptr, ::Strings.RegString(PROTOTYPE_NAME_ENGINE));
+	engine->RegisterGlobalConstant(PROTOTYPE_NAME_ENGINE, C4VPropList(prototype));
 	#define F(f) ::AddFunc(prototype, #f, Fn##f)
 		F(GetColor);
 	#undef F
