@@ -25,7 +25,7 @@ global func GetMissionAccess(string password)
 
 global func GetPlayerColor(int player_nr)
 {
-	LogLegacyWarning("GetPlayerColor", "Since 9.0 OC you can call GetPlayer(player)->GetColor() instead.", VERSION_10_0_OC);
+	LogLegacyWarning("GetPlayerColor", "GetPlayer(player)->GetColor()", VERSION_10_0_OC);
 	var player = GetPlayer(player_nr);
 	if (player)
 	{
@@ -39,13 +39,13 @@ global func GetPlayerColor(int player_nr)
 
 global func GetPlayerID(int plr_nr)
 {
-	LogLegacyWarning("GetPlayerID", "The player ID and player number are the same since 9.0 OC", VERSION_10_0_OC);
+	LogLegacyWarningCustom("GetPlayerID", "The player ID and player number are the same since 9.0 OC", VERSION_10_0_OC);
 	return plr_nr;
 }
 
 global func GetPlayerByID(int plr_id)
 {
-	LogLegacyWarning("GetPlayerByID", "The player ID and player number are the same since 9.0 OC", VERSION_10_0_OC);
+	LogLegacyWarningCustom("GetPlayerByID", "The player ID and player number are the same since 9.0 OC", VERSION_10_0_OC);
 	return plr_id;
 }
 
@@ -83,10 +83,16 @@ global func SetBridgeActionData()
 
 global func LogLegacyWarning(string function_name, string replacement_name, string version)
 {
-	Log("WARNING: Do not use the legacy function \"%s\" anymore; use \"%s\" instead (complete removal is planned for \"%s\").", function_name, replacement_name, version);
+	Log("WARNING: Do not use the legacy function \"%s\" anymore; you can use \"%s\" instead (complete removal is planned for \"%s\").", function_name, replacement_name, version);
 }
 
 global func LogLegacyWarningRemoved(string function_name)
 {
 	Log("WARNING: Do not use the legacy function \"%s\" anymore; it was removed and has no effect.", function_name);
 }
+
+global func LogLegacyWarningCustom(string function_name, string custom, string version)
+{
+	Log("WARNING: Do not use the legacy function \"%s\" anymore; %s (complete removal is planned for \"%s\").", function_name, custom, version);
+}
+
