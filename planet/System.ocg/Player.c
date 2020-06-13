@@ -10,6 +10,10 @@ static const Player = new _Player
 	// _Player contains all the scripting functions for players
 	// Player is the prototype for all players and can be expanded
 	// with data or functions.
+
+	// Functions
+	GetName = Global.GetName,  // No need to redefine this in the engine
+
 };
 
 // Returns the player number of player_name, or none if there is no such player. (written by timi for CR/CE/CP)

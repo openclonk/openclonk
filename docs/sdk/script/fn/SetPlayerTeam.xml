@@ -6,7 +6,7 @@
   <func>
     <title>SetPlayerTeam</title>
     <category>Player</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -29,10 +29,12 @@
     </syntax>
     <desc>Assigns a player to a new team. The player limit (MaxPlayer) of the team will be considered.</desc>
     <remark>The function "RejectTeamSwitch" will be called in all game goal, rule, and environment objects. If any of these calls return <code>true</code>, then the team switch will not take place. If the team switch was performed successfully, the function "OnTeamSwitch" is called in all objects mentioned above (including the player number and new and old team numbers).</remark>
+    <remark>This function was discontinued in 9.0 OC, because it can be retrieved from <funclink>GetPlayer</funclink> by calling <code>SetTeam</code>.</funclink>
     <related>
       <emlink href="scenario/Teams.html">Teams</emlink>
       <funclink>GetPlayerTeam</funclink>
     </related>
   </func>
   <author>Clonkonaut</author><date>2008-04</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

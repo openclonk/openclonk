@@ -7,7 +7,7 @@
     <title>GetPlayerZoomLimits</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>5.0 OC</version>
+    <version>5.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>proplist</rtype>
       <params>
@@ -51,6 +51,7 @@
       </table>
     </desc>
     <remark>It is currently not possible to query the current zoom because these values are not synchronized.</remark>
+    <remark>In 9.0 this function was discontinued, because the properties can be retrieved from <funclink>GetPlayer</funclink> directly.</remark>
     <examples>
       <example>
         <code>func ReduceSight(int player)
@@ -69,4 +70,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2014-05</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

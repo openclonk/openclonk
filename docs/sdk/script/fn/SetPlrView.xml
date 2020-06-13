@@ -7,19 +7,19 @@
     <title>SetPlrView</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>Player whose view distance to want to set.</desc>
+          <desc>Player whose view focus you want to set.</desc>
         </param>
         <param>
           <type>object</type>
           <name>obj</name>
-          <desc>Object to which to want to set the view.</desc>
+          <desc>Object to which you want to set the view.</desc>
           <optional />
         </param>
         <param>
@@ -30,6 +30,7 @@
       </params>
     </syntax>
     <desc>Centers a player's view to the specified object. The view will follow this object until the next player command.</desc>
+    <remark>In 9.0 OC this function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetViewTarget()</code>.</remark>
     <examples>
       <example>
         <code>local enemy;
@@ -49,7 +50,7 @@ protected func Timer()
 	{
 		// search for an enemy crew member in a distance of max. 300 pixels, return the closest one
 		enemy = <funclink>FindObject</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>),<funclink>Find_Distance</funclink>(300),<funclink>Find_Hostile</funclink>(GetOwner()),<funclink>Sort_Distance</funclink>());
-		SetPlrView(<funclink>GetOwner</funclink>(),this);
+		<funclink>GetPlayer</funclink>(<funclink>GetOwner</funclink>())-&gt;SetViewTarget(this);
 		<funclink>SetLightRange</funclink>(100);
 	}
 	
@@ -74,4 +75,5 @@ protected func Timer()
   </func>
   <author>PeterW</author><date>2003-04</date>
   <author>Sven2</author><date>2015-12</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

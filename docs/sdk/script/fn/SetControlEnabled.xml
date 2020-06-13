@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetControlEnabled</title>
+    <category>Player</category>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>control</name>
+          <desc>Control to query. A CON_* constant should be used here.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>is_enabled</name>
+          <desc>Whether the control should be enabled or not.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Allows disabling specific controls for a player.</desc>
+    <related>
+      <funclink>GetControlEnabled</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2020-06</date>
+</funcs>
