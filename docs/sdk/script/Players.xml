@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Player Proplist</title>
+  <h>Player Proplist</h>
+  <part>
+    <text>Player proplists contain the player data for the current scenario:</text>
+    <dl>
+      <dt><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="player/properties.html">Properties</emlink></dt>
+      <dd>
+        <text>Player properties.</text>
+      </dd>
+      <dt><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="definition/script.html">Functions</emlink></dt>
+      <dd>
+        <text>Player functions.</text>
+      </dd>
+	  </dl>
+  </part>
+  <author>Marky</author><date>2020-06</date>
+</doc>

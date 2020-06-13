@@ -109,15 +109,6 @@ static long FnGetGravity(C4PropList * _this)
 	return fixtoi(::Landscape.GetGravity() * 100);
 }
 
-static C4String *FnGetPlayerName(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return nullptr;
-	}
-	return String(::Players.Get(player_nr)->GetName());
-}
-
 static C4PropList *FnGetPlayer(C4PropList * _this, long player_nr)
 {
 	if (!ValidPlr(player_nr))
@@ -3042,7 +3033,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetY);
 	F(GetDefinition);
 	F(GetDefinitionGroupPath);
-	F(GetPlayerName);
 	F(GetPlayer);
 	F(GetPlayerType);
 	F(GetPlrClonkSkin);

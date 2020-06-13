@@ -1808,7 +1808,9 @@ void C4Player::SetPropertyByS(C4String * k, const C4Value & to)
 		switch(k - &Strings.P[0])
 		{
 			case P_ID:
-				throw new C4AulExecError("effect: Prototype is readonly");
+				throw new C4AulExecError("player: ID is readonly");
+			case P_Name:
+				throw new C4AulExecError("player: Name is readonly");
 		}
 	}
 	C4PropList::SetPropertyByS(k, to);
@@ -1822,6 +1824,8 @@ void C4Player::ResetProperty(C4String * k)
 		{
 			case P_ID:
 				throw C4AulExecError("Player: ID is readonly");
+			case P_Name:
+				throw new C4AulExecError("player: Name is readonly");
 		}
 	}
 	C4PropList::ResetProperty(k);
@@ -1833,7 +1837,8 @@ bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
 	{
 		switch(k - &Strings.P[0])
 		{
-			case P_ID: *pResult = C4VInt(ID); return true;
+			case P_ID:   *pResult = C4VInt(ID);  return true;
+			case P_Name: *pResult = C4VString(Name); return true;
 		}
 	}
 	return C4PropList::GetPropertyByS(k, pResult);
@@ -1846,5 +1851,6 @@ C4ValueArray * C4Player::GetProperties() const
 	i = a->GetSize();
 	a->SetSize(i + 1);
 	(*a)[i++] = C4VString(&::Strings.P[P_ID]);
+	(*a)[i++] = C4VString(&::Strings.P[P_Name]);
 	return a;
 }

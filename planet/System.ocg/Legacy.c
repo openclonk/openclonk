@@ -49,6 +49,20 @@ global func GetPlayerByID(int plr_id)
 	return plr_id;
 }
 
+global func GetPlayerName(int player_nr)
+{
+	LogLegacyWarning("GetPlayerName", "GetPlayer(player)->GetName()", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetName();
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 global func PlaceAnimal(id animal_id)
 {
 	LogLegacyWarning("PlaceAnimal", "id->Place()", VERSION_10_0_OC);
