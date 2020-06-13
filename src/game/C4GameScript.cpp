@@ -118,16 +118,6 @@ static C4PropList *FnGetPlayer(C4PropList * _this, long player_nr)
 	return ::Players.Get(player_nr);
 }
 
-static long FnGetPlayerType(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return 0;
-	}
-	return player->GetType();
-}
-
 static long FnGetPlayerColor(C4PropList * _this, long player_nr)
 {
 	C4Player *player = ::Players.Get(player_nr);
@@ -3034,7 +3024,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetDefinition);
 	F(GetDefinitionGroupPath);
 	F(GetPlayer);
-	F(GetPlayerType);
 	F(GetPlrClonkSkin);
 	F(CreateObject);
 	F(CreateObjectAbove);

@@ -63,6 +63,20 @@ global func GetPlayerName(int player_nr)
 	}
 }
 
+global func GetPlayerType(int player_nr)
+{
+	LogLegacyWarning("GetPlayerType", "GetPlayer(player).Type", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player.Type;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 global func PlaceAnimal(id animal_id)
 {
 	LogLegacyWarning("PlaceAnimal", "id->Place()", VERSION_10_0_OC);
