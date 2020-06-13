@@ -118,12 +118,6 @@ static C4PropList *FnGetPlayer(C4PropList * _this, long player_nr)
 	return ::Players.Get(player_nr);
 }
 
-static long FnGetPlayerColor(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	return player ? player->ColorDw : 0;
-}
-
 // undocumented!
 static Nillable<long> FnGetPlrClonkSkin(C4PropList * _this, long player_nr)
 {
