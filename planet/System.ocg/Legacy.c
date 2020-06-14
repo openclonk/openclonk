@@ -77,6 +77,20 @@ global func GetPlayerType(int player_nr)
 	}
 }
 
+global func GetPlrClonkSkin(int player_nr)
+{
+	LogLegacyWarning("GetPlrClonkSkin", "GetPlayer(player).CrewSkin", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player.CrewSkin;
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 global func PlaceAnimal(id animal_id)
 {
 	LogLegacyWarning("PlaceAnimal", "id->Place()", VERSION_10_0_OC);

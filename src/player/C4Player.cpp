@@ -1807,9 +1807,10 @@ static void ProtectReadonlyProperty(C4String * k)
 	{
 		switch(k - &Strings.P[0])
 		{
-			case P_ID:   throw new C4AulExecError("player: ID is readonly");
-			case P_Name: throw new C4AulExecError("player: Name is readonly");
-			case P_Type: throw new C4AulExecError("player: Type is readonly");
+			case P_ID:       throw new C4AulExecError("player: ID is readonly");
+			case P_Name:     throw new C4AulExecError("player: Name is readonly");
+			case P_Type:     throw new C4AulExecError("player: Type is readonly");
+			case P_CrewSkin: throw new C4AulExecError("player: CrewSkin is readonly");
 		}
 	}
 }
@@ -1832,9 +1833,10 @@ bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
 	{
 		switch(k - &Strings.P[0])
 		{
-			case P_ID:   *pResult = C4VInt(ID);        return true;
-			case P_Name: *pResult = C4VString(Name);   return true;
-			case P_Type: *pResult = C4VInt(GetType()); return true;
+			case P_ID:       *pResult = C4VInt(ID);            return true;
+			case P_Name:     *pResult = C4VString(Name);       return true;
+			case P_Type:     *pResult = C4VInt(GetType());     return true;
+			case P_CrewSkin: *pResult = C4VInt(PrefClonkSkin); return true;
 		}
 	}
 	return C4PropList::GetPropertyByS(k, pResult);
@@ -1845,9 +1847,10 @@ C4ValueArray * C4Player::GetProperties() const
 	C4ValueArray * a = C4PropList::GetProperties();
 	int i;
 	i = a->GetSize();
-	a->SetSize(i + 1);
+	a->SetSize(i + 4);
 	(*a)[i++] = C4VString(&::Strings.P[P_ID]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Name]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Type]);
+	(*a)[i++] = C4VString(&::Strings.P[P_CrewSkin]);
 	return a;
 }

@@ -118,17 +118,6 @@ static C4PropList *FnGetPlayer(C4PropList * _this, long player_nr)
 	return ::Players.Get(player_nr);
 }
 
-// undocumented!
-static Nillable<long> FnGetPlrClonkSkin(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (player)
-	{
-		return player->PrefClonkSkin;
-	}
-	return C4Void();
-}
-
 static Nillable<long> FnGetX(C4PropList * _this, long precision)
 {
 	if (!Object(_this))
@@ -3018,7 +3007,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetDefinition);
 	F(GetDefinitionGroupPath);
 	F(GetPlayer);
-	F(GetPlrClonkSkin);
 	F(CreateObject);
 	F(CreateObjectAbove);
 	F(CreateConstruction);

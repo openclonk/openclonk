@@ -540,6 +540,7 @@ enum C4PropertyName
 	P_Translatable,
 	P_Function,
 	P_Translate,
+	P_CrewSkin,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

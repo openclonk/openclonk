@@ -21,6 +21,11 @@
           <col>The unique player number, readonly.</col>
         </row>
         <row>
+          <col><code>CrewSkin</code></col>
+          <col>int</col>
+          <col>The number of the crew skin/appearance from the player profile, readonly.</col>
+        </row>
+        <row>
           <col><code>Name</code></col>
           <col>string</col>
           <col>Name of the player, readonly.</col>
