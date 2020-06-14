@@ -213,9 +213,32 @@ global func SetPlrView(int player_nr, object target, bool immediate)
 	}
 }
 
+global func SetPlayerViewLock(int player_nr, bool is_locked)
+{
+	LogLegacyWarning("SetPlayerViewLock", "GetPlayer(player)->SetViewLocked(is_locked)", VERSION_10_0_OC);
+	// special player NO_OWNER: apply to all players
+	if (player_nr == NO_OWNER)
+	{
+		for (var index = 0; index < GetPlayerCount(player_type); index++)
+		{
+			SetPlayerViewLock(GetPlayerByIndex(index), is_locked);
+		}
+		return true;
+	}
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		player->SetViewLocked(is_locked);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 global func SetViewCursor(int player_nr, object target)
 {
-
 	LogLegacyWarning("SetViewCursor", "GetPlayer(player)->SetViewCursor(target)", VERSION_10_0_OC);
 	var player = GetPlayer(player_nr);
 	if (player)

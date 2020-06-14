@@ -107,6 +107,12 @@ static bool FnSetViewCursor(C4Player *player, C4Object *target)
 	return true; // For same behaviour as in SetCursor
 }
 
+static bool FnSetViewLocked(C4Player *player, bool is_locked)
+{
+	player->SetViewLocked(is_locked);
+	return true;
+}
+
 static bool FnSetViewTarget(C4Player *player, C4Object *target, bool immediate_position)
 {
 	player->SetViewMode(C4PVM_Target, target, immediate_position);
@@ -138,6 +144,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 		F(ResetCursorView);
 		F(SetCursor);
 		F(SetViewCursor);
+		F(SetViewLocked);
 	    F(SetViewTarget);
 		F(Surrender);
 	#undef F

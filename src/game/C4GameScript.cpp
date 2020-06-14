@@ -1088,29 +1088,6 @@ static bool FnSetPlayerZoom(C4PropList * _this, long player_nr, long zoom, long 
 	return true;
 }
 
-static bool FnSetPlayerViewLock(C4PropList * _this, long player_nr, bool is_locked)
-{
-	// special player NO_OWNER: apply to all players
-	if (player_nr == NO_OWNER)
-	{
-		for (C4Player *player = ::Players.First; player; player=player->Next)
-		{
-			if (player->ID != NO_OWNER) // can't happen, but would be a crash if it did...
-			{
-				FnSetPlayerViewLock(_this, player->ID, is_locked);
-			}
-		}
-		return true;
-	}
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return false;
-	}
-	player->SetViewLocked(is_locked);
-	return true;
-}
-
 static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 {
 	return ::Definitions.GetDef(iIndex);
@@ -2933,7 +2910,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetPlayerZoomByViewRange);
 	F(GetPlayerZoomLimits);
 	F(SetPlayerZoom);
-	F(SetPlayerViewLock);
 	F(GainScenarioAccess);
 	F(IsNetwork);
 	F(IsEditor);
