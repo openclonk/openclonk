@@ -1811,6 +1811,12 @@ static void ProtectReadonlyProperty(C4String * k)
 			case P_Name:     throw new C4AulExecError("player: Name is readonly");
 			case P_Type:     throw new C4AulExecError("player: Type is readonly");
 			case P_CrewSkin: throw new C4AulExecError("player: CrewSkin is readonly");
+			case P_ZoomLimit_MaxHeight: throw new C4AulExecError("player: ZoomLimit is readonly");
+			case P_ZoomLimit_MaxValue:  throw new C4AulExecError("player: ZoomLimit is readonly");
+			case P_ZoomLimit_MaxWidth:  throw new C4AulExecError("player: ZoomLimit is readonly");
+			case P_ZoomLimit_MinHeight: throw new C4AulExecError("player: ZoomLimit is readonly");
+			case P_ZoomLimit_MinValue:  throw new C4AulExecError("player: ZoomLimit is readonly");
+			case P_ZoomLimit_MinWidth:  throw new C4AulExecError("player: ZoomLimit is readonly");
 		}
 	}
 }
@@ -1837,6 +1843,12 @@ bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
 			case P_Name:     *pResult = C4VString(Name);       return true;
 			case P_Type:     *pResult = C4VInt(GetType());     return true;
 			case P_CrewSkin: *pResult = C4VInt(PrefClonkSkin); return true;
+			case P_ZoomLimit_MaxWidth:  *pResult = C4VInt((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX); return true;
+	        case P_ZoomLimit_MaxHeight: *pResult = C4VInt(ZoomLimitMaxHgt); return true;
+	        case P_ZoomLimit_MaxValue:  *pResult = C4VInt(fixtoi(ZoomLimitMaxVal, 100)); return true;
+	        case P_ZoomLimit_MinWidth:  *pResult = C4VInt((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX); return true;
+	        case P_ZoomLimit_MinHeight: *pResult = C4VInt(ZoomLimitMinHgt); return true;
+	        case P_ZoomLimit_MinValue:  *pResult = C4VInt(fixtoi(ZoomLimitMinVal, 100)); return true;
 		}
 	}
 	return C4PropList::GetPropertyByS(k, pResult);
@@ -1847,10 +1859,16 @@ C4ValueArray * C4Player::GetProperties() const
 	C4ValueArray * a = C4PropList::GetProperties();
 	int i;
 	i = a->GetSize();
-	a->SetSize(i + 4);
+	a->SetSize(i + 10);
 	(*a)[i++] = C4VString(&::Strings.P[P_ID]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Name]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Type]);
 	(*a)[i++] = C4VString(&::Strings.P[P_CrewSkin]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MaxHeight]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MaxValue]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MaxWidth]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MinHeight]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MinValue]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MinWidth]);
 	return a;
 }

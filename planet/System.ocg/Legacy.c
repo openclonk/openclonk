@@ -119,6 +119,28 @@ global func GetPlayerType(int player_nr)
 	}
 }
 
+global func GetPlayerZoomLimits(int player_nr)
+{
+	LogLegacyWarning("GetPlayerZoomLimits", "GetPlayer(player) and the respective zoom limit", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return
+		{
+			MaxWidth  = player.ZoomLimit_MaxWidth,
+			MaxHeight = player.ZoomLimit_MaxHeight,
+			MaxValue  = player.ZoomLimit_MaxValue,
+			MinWidth  = player.ZoomLimit_MinWidth,
+			MinHeight = player.ZoomLimit_MinHeight,
+			MinValue  = player.ZoomLimit_MinValue,
+		};
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 global func GetPlrClonkSkin(int player_nr)
 {
 	LogLegacyWarning("GetPlrClonkSkin", "GetPlayer(player).CrewSkin", VERSION_10_0_OC);
@@ -219,7 +241,7 @@ global func SetPlayerViewLock(int player_nr, bool is_locked)
 	// special player NO_OWNER: apply to all players
 	if (player_nr == NO_OWNER)
 	{
-		for (var index = 0; index < GetPlayerCount(player_type); index++)
+		for (var index = 0; index < GetPlayerCount(); index++)
 		{
 			SetPlayerViewLock(GetPlayerByIndex(index), is_locked);
 		}

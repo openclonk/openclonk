@@ -1019,30 +1019,6 @@ static bool FnSetPlayerZoomByViewRange(C4PropList * _this, long player_nr, long 
 	return true;
 }
 
-static C4PropList *FnGetPlayerZoomLimits(C4PropList * _this, long player_nr)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return nullptr;
-	}
-	// collect limits in a prop list
-	// if neither width not height is set for zoom limits, return engine defaults.
-	C4PropList *result = C4PropList::New();
-	if (!result)
-	{
-		return nullptr;
-	}
-	result->SetPropertyByS(::Strings.RegString("MaxWidth"), C4VInt((player->ZoomLimitMaxWdt || player->ZoomLimitMaxHgt) ? player->ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX));
-	result->SetPropertyByS(::Strings.RegString("MaxHeight"), C4VInt(player->ZoomLimitMaxHgt));
-	result->SetPropertyByS(::Strings.RegString("MaxValue"), C4VInt(fixtoi(player->ZoomLimitMaxVal, 100)));
-	result->SetPropertyByS(::Strings.RegString("MinWidth"), C4VInt((player->ZoomLimitMinWdt || player->ZoomLimitMinHgt) ? player->ZoomLimitMinWdt : C4VP_DefMinViewRangeX));
-	result->SetPropertyByS(::Strings.RegString("MinHeight"), C4VInt(player->ZoomLimitMinHgt));
-	result->SetPropertyByS(::Strings.RegString("MinValue"), C4VInt(fixtoi(player->ZoomLimitMinVal, 100)));
-	return result;
-}
-
 static bool FnSetPlayerZoom(C4PropList * _this, long player_nr, long zoom, long precision, long flags)
 {
 	// parameter safety. 0/0 means "reset to default".
@@ -2908,7 +2884,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetClimate);
 	F(GetClimate);
 	F(SetPlayerZoomByViewRange);
-	F(GetPlayerZoomLimits);
 	F(SetPlayerZoom);
 	F(GainScenarioAccess);
 	F(IsNetwork);
