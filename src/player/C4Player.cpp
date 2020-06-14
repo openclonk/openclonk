@@ -1801,7 +1801,7 @@ void C4Player::SetSoundModifier(C4PropList *new_modifier)
 	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, ID);
 }
 
-void C4Player::SetPropertyByS(C4String * k, const C4Value & to)
+static void ProtectReadonlyProperty(C4String * k)
 {
 	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
 	{
@@ -1812,20 +1812,17 @@ void C4Player::SetPropertyByS(C4String * k, const C4Value & to)
 			case P_Type: throw new C4AulExecError("player: Type is readonly");
 		}
 	}
+}
+
+void C4Player::SetPropertyByS(C4String * k, const C4Value & to)
+{
+	ProtectReadonlyProperty(k);
 	C4PropList::SetPropertyByS(k, to);
 }
 
 void C4Player::ResetProperty(C4String * k)
 {
-	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
-	{
-		switch(k - &Strings.P[0])
-		{
-			case P_ID:   throw new C4AulExecError("player: ID is readonly");
-			case P_Name: throw new C4AulExecError("player: Name is readonly");
-			case P_Type: throw new C4AulExecError("player: Type is readonly");
-		}
-	}
+	ProtectReadonlyProperty(k);
 	C4PropList::ResetProperty(k);
 }
 
@@ -1835,8 +1832,8 @@ bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
 	{
 		switch(k - &Strings.P[0])
 		{
-			case P_ID:   *pResult = C4VInt(ID);  return true;
-			case P_Name: *pResult = C4VString(Name); return true;
+			case P_ID:   *pResult = C4VInt(ID);        return true;
+			case P_Name: *pResult = C4VString(Name);   return true;
 			case P_Type: *pResult = C4VInt(GetType()); return true;
 		}
 	}
