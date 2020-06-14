@@ -995,15 +995,6 @@ static long FnGetPlrViewMode(C4PropList * _this, long player_nr)
 	return ::Players.Get(player_nr)->ViewMode;
 }
 
-static void FnResetCursorView(C4PropList * _this, long player_nr, bool immediate_position)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (player)
-	{
-		player->ResetCursorView(immediate_position);
-	}
-}
-
 static C4Object *FnGetPlrView(C4PropList * _this, long player_nr)
 {
 	C4Player *player = ::Players.Get(player_nr);
@@ -1295,50 +1286,6 @@ static bool FnCreateScriptPlayer(C4PropList * _this, C4String *name, long dwColo
 	// add to queue!
 	Game.PlayerInfos.DoPlayerInfoUpdate(&JoinPkt);
 	// always successful for sync reasons
-	return true;
-}
-
-static C4Object *FnGetCursor(C4PropList * _this, long player_nr)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	// invalid player?
-	if (!player)
-	{
-		return nullptr;
-	}
-	return player->Cursor;
-}
-
-// undocumented!
-static C4Object *FnGetViewCursor(C4PropList * _this, long player_nr)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	// get viewcursor
-	return player ? player->ViewCursor : nullptr;
-}
-
-static bool FnSetCursor(C4PropList * _this, long player_nr, C4Object *obj, bool no_select_arrow)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player || (obj && !obj->Status) || (obj && obj->CrewDisabled)) return false;
-	player->SetCursor(obj, !no_select_arrow);
-	return true;
-}
-
-// undocumented!
-static bool FnSetViewCursor(C4PropList * _this, long player_nr, C4Object *obj)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	// invalid player?
-	if (!player)
-	{
-		return false;
-	}
-	// set viewcursor
-	player->ViewCursor = obj;
 	return true;
 }
 
@@ -2970,7 +2917,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetPlayList);
 	F(SetPlrView);
 	F(GetPlrViewMode);
-	F(ResetCursorView);
 	F(GetPlrView);
 	F(GetWealth);
 	F(SetWealth);
@@ -2998,10 +2944,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetLeagueProgressData);
 	F(GetLeagueProgressData);
 	F(CreateScriptPlayer);
-	F(GetCursor);
-	F(GetViewCursor);
-	F(SetCursor);
-	F(SetViewCursor);
 	F(GetMaterial);
 	F(GetBackMaterial);
 	F(GetTexture);

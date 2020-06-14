@@ -147,6 +147,16 @@ global func GetViewCursor(int player_nr)
 	}
 }
 
+global func ResetCursorView(int player_nr, bool immediate)
+{
+	LogLegacyWarning("ResetCursorView", "GetPlayer(player)->ResetCursorView(immediate)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		player->ResetCursorView(immediate);
+	}
+}
+
 global func SetCursor(int player_nr, object target, bool no_select_arrow)
 {
 	LogLegacyWarning("SetCursor", "GetPlayer(player)->SetCursor(target, no_select_arrow)", VERSION_10_0_OC);

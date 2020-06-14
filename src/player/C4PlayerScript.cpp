@@ -68,6 +68,11 @@ static C4Object *FnGetViewCursor(C4Player *player)
 	return player->ViewCursor ? player->ViewCursor : player->Cursor;
 }
 
+static void FnResetCursorView(C4Player *player, bool immediate_position)
+{
+	player->ResetCursorView(immediate_position);
+}
+
 static bool FnSetCursor(C4Player *player, C4Object *target, bool no_select_arrow)
 {
 	if ((target && !target->Status) || (target && target->CrewDisabled))
@@ -104,9 +109,10 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 		F(GetCursor);
 		F(GetHiRank);
 		F(GetViewCursor);
-		F(Surrender);
+		F(ResetCursorView);
 		F(SetCursor);
 		F(SetViewCursor);
+		F(Surrender);
 	#undef F
 	prototype->Freeze();
 }
