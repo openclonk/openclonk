@@ -1252,22 +1252,6 @@ static long FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 }
 
 // undocumented!
-static bool FnSurrenderPlayer(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return false;
-	}
-	if (player->Eliminated)
-	{
-		return false;
-	}
-	player->Surrender();
-	return true;
-}
-
-// undocumented!
 static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, long player_id)
 {
 	if (!Game.Parameters.isLeague())
@@ -3016,7 +3000,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetCrewCount);
 	F(GetPlayerCount);
 	F(GetPlayerByIndex);
-	F(SurrenderPlayer);
 	F(GetLeagueScore);
 	F(SetLeaguePerformance);
 	F(SetLeagueProgressData);

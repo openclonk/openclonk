@@ -51,6 +51,16 @@ static long FnEliminate(C4Player * player, bool remove_direct)
 	return true;
 }
 
+static bool FnSurrender(C4Player * player)
+{
+	if (player->Eliminated)
+	{
+		return false;
+	}
+	player->Surrender();
+	return true;
+}
+
 void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 {
     C4PropListStatic* prototype = new C4PropListStatic(nullptr, nullptr, ::Strings.RegString(PROTOTYPE_NAME_ENGINE));
@@ -58,6 +68,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	#define F(f) ::AddFunc(prototype, #f, Fn##f)
 		F(GetColor);
 		F(Eliminate);
+		F(Surrender);
 	#undef F
 	prototype->Freeze();
 }
