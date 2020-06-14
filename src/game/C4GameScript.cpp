@@ -971,40 +971,6 @@ static bool FnSetHostility(C4PropList * _this, long player_nr1, long player_nr2,
 	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(player_nr1), C4VInt(player_nr2), C4VBool(hostile), C4VBool(old_hostility)), true);
 	return true;
 }
-
-static bool FnSetPlrView(C4PropList * _this, long player_nr, C4Object *target, bool immediate_position)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return false;
-	}
-	::Players.Get(player_nr)->SetViewMode(C4PVM_Target, target, immediate_position);
-	return true;
-}
-
-static long FnGetPlrViewMode(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return -1;
-	}
-	if (::Control.SyncMode())
-	{
-		return -1;
-	}
-	return ::Players.Get(player_nr)->ViewMode;
-}
-
-static C4Object *FnGetPlrView(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player || player->ViewMode != C4PVM_Target)
-	{
-		return nullptr;
-	}
-	return player->ViewTarget;
-}
-
 // flags for SetPlayerZoom* calls
 static const int PLRZOOM_Direct     = 0x01,
                  PLRZOOM_NoIncrease = 0x04,
@@ -2915,9 +2881,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(Music);
 	F(MusicLevel);
 	F(SetPlayList);
-	F(SetPlrView);
-	F(GetPlrViewMode);
-	F(GetPlrView);
 	F(GetWealth);
 	F(SetWealth);
 	F(DoPlayerScore);
@@ -3164,6 +3127,10 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 
 	{ "C4PT_User"                 ,C4V_Int,      C4PT_User },
 	{ "C4PT_Script"               ,C4V_Int,      C4PT_Script },
+
+	{ "C4PVM_Cursor"              ,C4V_Int,      C4PVM_Cursor },
+	{ "C4PVM_Target"              ,C4V_Int,      C4PVM_Target },
+	{ "C4PVM_Scrolling"           ,C4V_Int,      C4PVM_Scrolling },
 
 	{ "CSPF_FixedAttributes"      ,C4V_Int,      CSPF_FixedAttributes },
 	{ "CSPF_NoScenarioInit"       ,C4V_Int,      CSPF_NoScenarioInit },

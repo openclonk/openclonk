@@ -68,6 +68,24 @@ static C4Object *FnGetViewCursor(C4Player *player)
 	return player->ViewCursor ? player->ViewCursor : player->Cursor;
 }
 
+static long FnGetViewMode(C4Player *player)
+{
+	if (::Control.SyncMode())
+	{
+		return -1;
+	}
+	return player->ViewMode;
+}
+
+static C4Object *FnGetViewTarget(C4Player *player)
+{
+	if (player->ViewMode != C4PVM_Target)
+	{
+		return nullptr;
+	}
+	return player->ViewTarget;
+}
+
 static void FnResetCursorView(C4Player *player, bool immediate_position)
 {
 	player->ResetCursorView(immediate_position);
@@ -87,6 +105,12 @@ static bool FnSetViewCursor(C4Player *player, C4Object *target)
 {
 	player->ViewCursor = target;
 	return true; // For same behaviour as in SetCursor
+}
+
+static bool FnSetViewTarget(C4Player *player, C4Object *target, bool immediate_position)
+{
+	player->SetViewMode(C4PVM_Target, target, immediate_position);
+	return true;
 }
 
 static bool FnSurrender(C4Player *player)
@@ -109,9 +133,12 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 		F(GetCursor);
 		F(GetHiRank);
 		F(GetViewCursor);
+	    F(GetViewMode);
+	    F(GetViewTarget);
 		F(ResetCursorView);
 		F(SetCursor);
 		F(SetViewCursor);
+	    F(SetViewTarget);
 		F(Surrender);
 	#undef F
 	prototype->Freeze();

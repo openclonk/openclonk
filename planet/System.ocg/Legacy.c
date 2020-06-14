@@ -133,6 +133,34 @@ global func GetPlrClonkSkin(int player_nr)
 	}
 }
 
+global func GetPlrView(int player_nr)
+{
+	LogLegacyWarning("GetPlrView", "GetPlayer(player)->GetViewTarget()", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetViewTarget();
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+global func GetPlrViewMode(int player_nr)
+{
+	LogLegacyWarning("GetPlrViewMode", "GetPlayer(player)->GetViewMode()", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetViewMode();
+	}
+	else
+	{
+		return -1;
+	}
+}
+
 global func GetViewCursor(int player_nr)
 {
 	LogLegacyWarning("GetViewCursor", "GetPlayer(player)->GetViewCursor()", VERSION_10_0_OC);
@@ -164,6 +192,20 @@ global func SetCursor(int player_nr, object target, bool no_select_arrow)
 	if (player)
 	{
 		return player->SetCursor(target, no_select_arrow);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+global func SetPlrView(int player_nr, object target, bool immediate)
+{
+	LogLegacyWarning("SetPlrView", "GetPlayer(player)->SetViewTarget(target, immediate)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->SetCursor(target, immediate);
 	}
 	else
 	{
