@@ -37,17 +37,17 @@ global func EliminatePlayer(int player_nr, bool remove_direct)
 	}
 }
 
-global func SurrenderPlayer(int player_nr, bool remove_direct)
+global func GetCursor(int player_nr)
 {
-	LogLegacyWarning("SurrenderPlayer", "GetPlayer(player)->Surrender()", VERSION_10_0_OC);
+	LogLegacyWarning("GetCursor", "GetPlayer(player)->GetCursor()", VERSION_10_0_OC);
 	var player = GetPlayer(player_nr);
 	if (player)
 	{
-		return player->Surrender();
+		return player->GetCursor();
 	}
 	else
 	{
-		return false;
+		return nil;
 	}
 }
 
@@ -132,6 +132,66 @@ global func GetPlrClonkSkin(int player_nr)
 		return nil;
 	}
 }
+
+global func GetViewCursor(int player_nr)
+{
+	LogLegacyWarning("GetViewCursor", "GetPlayer(player)->GetViewCursor()", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetViewCursor();
+	}
+	else
+	{
+		return nil;
+	}
+}
+
+global func SetCursor(int player_nr, object target, bool no_select_arrow)
+{
+	LogLegacyWarning("SetCursor", "GetPlayer(player)->SetCursor(target, no_select_arrow)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->SetCursor(target, no_select_arrow);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+global func SetViewCursor(int player_nr, object target)
+{
+
+	LogLegacyWarning("SetViewCursor", "GetPlayer(player)->SetViewCursor(target)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->SetViewCursor(target);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+global func SurrenderPlayer(int player_nr, bool remove_direct)
+{
+	LogLegacyWarning("SurrenderPlayer", "GetPlayer(player)->Surrender()", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->Surrender();
+	}
+	else
+	{
+		return false;
+	}
+}
+
+/* -- Other stuff -- */
+
 
 global func PlaceAnimal(id animal_id)
 {

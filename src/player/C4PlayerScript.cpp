@@ -16,23 +16,15 @@
 #include "C4Include.h"
 
 #include "control/C4GameControl.h"
+#include "object/C4Object.h"
 #include "script/C4Aul.h"
 #include "script/C4AulDefFunc.h"
 #include "player/C4Player.h"
 #include "player/C4PlayerList.h"
 #include "player/C4PlayerScript.h"
 
-static long FnGetColor(C4Player * player)
-{
-	return player->ColorDw;
-}
 
-static C4Object *FnGetHiRank(C4Player * player)
-{
-	return player->GetHiRankActiveCrew();
-}
-
-static long FnEliminate(C4Player * player, bool remove_direct)
+static long FnEliminate(C4Player *player, bool remove_direct)
 {
 	// direct removal?
 	if (remove_direct)
@@ -56,7 +48,43 @@ static long FnEliminate(C4Player * player, bool remove_direct)
 	return true;
 }
 
-static bool FnSurrender(C4Player * player)
+static long FnGetColor(C4Player *player)
+{
+	return player->ColorDw;
+}
+
+static C4Object *FnGetCursor(C4Player *player)
+{
+	return player->Cursor;
+}
+
+static C4Object *FnGetHiRank(C4Player *player)
+{
+	return player->GetHiRankActiveCrew();
+}
+
+static C4Object *FnGetViewCursor(C4Player *player)
+{
+	return player->ViewCursor ? player->ViewCursor : player->Cursor;
+}
+
+static bool FnSetCursor(C4Player *player, C4Object *target, bool no_select_arrow)
+{
+	if ((target && !target->Status) || (target && target->CrewDisabled))
+	{
+		return false;
+	}
+	player->SetCursor(target, !no_select_arrow);
+	return true;
+}
+
+static bool FnSetViewCursor(C4Player *player, C4Object *target)
+{
+	player->ViewCursor = target;
+	return true; // For same behaviour as in SetCursor
+}
+
+static bool FnSurrender(C4Player *player)
 {
 	if (player->Eliminated)
 	{
@@ -71,10 +99,14 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
     C4PropListStatic* prototype = new C4PropListStatic(nullptr, nullptr, ::Strings.RegString(PROTOTYPE_NAME_ENGINE));
 	engine->RegisterGlobalConstant(PROTOTYPE_NAME_ENGINE, C4VPropList(prototype));
 	#define F(f) ::AddFunc(prototype, #f, Fn##f)
-		F(GetColor);
-		F(GetHiRank);
 		F(Eliminate);
+		F(GetColor);
+		F(GetCursor);
+		F(GetHiRank);
+		F(GetViewCursor);
 		F(Surrender);
+		F(SetCursor);
+		F(SetViewCursor);
 	#undef F
 	prototype->Freeze();
 }
