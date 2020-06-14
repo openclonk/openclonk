@@ -51,6 +51,20 @@ global func SurrenderPlayer(int player_nr, bool remove_direct)
 	}
 }
 
+global func GetHiRank(int player_nr)
+{
+	LogLegacyWarning("GetHiRank", "GetPlayer(player)->GetHiRank()", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetHiRank();
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 global func GetPlayerColor(int player_nr)
 {
 	LogLegacyWarning("GetPlayerColor", "GetPlayer(player)->GetColor()", VERSION_10_0_OC);

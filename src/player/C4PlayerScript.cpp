@@ -27,6 +27,11 @@ static long FnGetColor(C4Player * player)
 	return player->ColorDw;
 }
 
+static C4Object *FnGetHiRank(C4Player * player)
+{
+	return player->GetHiRankActiveCrew();
+}
+
 static long FnEliminate(C4Player * player, bool remove_direct)
 {
 	// direct removal?
@@ -67,6 +72,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	engine->RegisterGlobalConstant(PROTOTYPE_NAME_ENGINE, C4VPropList(prototype));
 	#define F(f) ::AddFunc(prototype, #f, Fn##f)
 		F(GetColor);
+		F(GetHiRank);
 		F(Eliminate);
 		F(Surrender);
 	#undef F

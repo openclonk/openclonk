@@ -1206,12 +1206,6 @@ static long FnGetPlayerScoreGain(C4PropList * _this, long player_nr)
 	return ::Players.Get(player_nr)->CurrentScore - ::Players.Get(player_nr)->InitialScore;
 }
 
-static C4Object *FnGetHiRank(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return nullptr;
-	return ::Players.Get(player_nr)->GetHiRankActiveCrew();
-}
-
 static C4Object *FnGetCrew(C4PropList * _this, long player_nr, long index)
 {
 	if (!ValidPlr(player_nr)) return nullptr;
@@ -2995,7 +2989,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetHostility);
 	F(PlaceVegetation);
 	F(GameOver);
-	F(GetHiRank);
 	F(GetCrew);
 	F(GetCrewCount);
 	F(GetPlayerCount);
