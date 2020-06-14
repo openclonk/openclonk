@@ -1251,35 +1251,6 @@ static long FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 	return player->ID;
 }
 
-static long FnEliminatePlayer(C4PropList * _this, long player_nr, bool remove_direct)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return false;
-	}
-	// direct removal?
-	if (remove_direct)
-	{
-		// do direct removal (no fate)
-		if (::Control.isCtrlHost())
-		{
-			::Players.CtrlRemove(player_nr, false);
-		}
-		return true;
-		}
-	else
-	{
-		// do regular elimination
-		if (player->Eliminated)
-		{
-			return false;
-		}
-		player->Eliminate();
-	}
-	return true;
-}
-
 // undocumented!
 static bool FnSurrenderPlayer(C4PropList * _this, long player_nr)
 {
@@ -3045,7 +3016,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetCrewCount);
 	F(GetPlayerCount);
 	F(GetPlayerByIndex);
-	F(EliminatePlayer);
 	F(SurrenderPlayer);
 	F(GetLeagueScore);
 	F(SetLeaguePerformance);

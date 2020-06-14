@@ -15,14 +15,40 @@
 
 #include "C4Include.h"
 
+#include "control/C4GameControl.h"
 #include "script/C4Aul.h"
 #include "script/C4AulDefFunc.h"
 #include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 #include "player/C4PlayerScript.h"
 
 static long FnGetColor(C4Player * player)
 {
 	return player->ColorDw;
+}
+
+static long FnEliminate(C4Player * player, bool remove_direct)
+{
+	// direct removal?
+	if (remove_direct)
+	{
+		// do direct removal (no fate)
+		if (::Control.isCtrlHost())
+		{
+			::Players.CtrlRemove(player->ID, false);
+		}
+		return true;
+	}
+	else
+	{
+		// do regular elimination
+		if (player->Eliminated)
+		{
+			return false;
+		}
+		player->Eliminate();
+	}
+	return true;
 }
 
 void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
@@ -31,6 +57,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	engine->RegisterGlobalConstant(PROTOTYPE_NAME_ENGINE, C4VPropList(prototype));
 	#define F(f) ::AddFunc(prototype, #f, Fn##f)
 		F(GetColor);
+		F(Eliminate);
 	#undef F
 	prototype->Freeze();
 }
