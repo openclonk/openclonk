@@ -1098,24 +1098,6 @@ static bool FnSetWealth(C4PropList * _this, long player_nr, long value)
 	return true;
 }
 
-static long FnDoPlayerScore(C4PropList * _this, long player_nr, long change)
-{
-	if (!ValidPlr(player_nr)) return false;
-	return ::Players.Get(player_nr)->DoScore(change);
-}
-
-static long FnGetPlayerScore(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return 0;
-	return ::Players.Get(player_nr)->CurrentScore;
-}
-
-static long FnGetPlayerScoreGain(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return 0;
-	return ::Players.Get(player_nr)->CurrentScore - ::Players.Get(player_nr)->InitialScore;
-}
-
 static C4Object *FnGetCrew(C4PropList * _this, long player_nr, long index)
 {
 	if (!ValidPlr(player_nr)) return nullptr;
@@ -2836,9 +2818,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetPlayList);
 	F(GetWealth);
 	F(SetWealth);
-	F(DoPlayerScore);
-	F(GetPlayerScore);
-	F(GetPlayerScoreGain);
 	F(GetWind);
 	F(SetWind);
 	F(GetTemperature);

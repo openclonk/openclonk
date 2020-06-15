@@ -42,11 +42,20 @@
           <col>Name of the player, read-only.</col>
         </row>
         <row>
+          <col><code>InitialScore</code></col>
+          <col>int</col>
+          <col>The score value that was saved in the player profile at the beginning of the round, read-only.</col>
+        </row>
+        <row>
+          <col><code>Score</code></col>
+          <col>int</col>
+          <col>The current score of this player.</col>
+        </row>
+        <row>
           <col><code>Type</code></col>
           <col>int</col>
           <col>Type of the player, read-only. See <a href="#PlayerTypesTable">Player Types</a></col>
         </row>
-
         <row>
           <col><code>ZoomLimit_MaxWidth</code></col>
           <col>int</col>

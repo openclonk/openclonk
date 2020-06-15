@@ -23,6 +23,20 @@ global func GetMissionAccess(string password)
 
 /* -- Player stuff -- */
 
+global func DoPlayerScore(int player_nr, int change)
+{
+	LogLegacyWarning("DoPlayerScore", "GetPlayer(player).Score += change", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player.Score += change;
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 global func EliminatePlayer(int player_nr, bool remove_direct)
 {
 	LogLegacyWarning("EliminatePlayer", "GetPlayer(player)->Eliminate(remove_direct)", VERSION_10_0_OC);
@@ -180,6 +194,34 @@ global func GetPlrViewMode(int player_nr)
 	else
 	{
 		return -1;
+	}
+}
+
+global func GetPlayerScore(int player_nr)
+{
+	LogLegacyWarning("GetPlayerScore", "GetPlayer(player).Score", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player.Score;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+global func GetPlayerScoreGain(player_nr)
+{
+	LogLegacyWarning("GetPlayerScoreGain", "GetPlayer(player).Score - GetPlayer(player).InitialScore", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player.Score - player.InitialScore;
+	}
+	else
+	{
+		return 0;
 	}
 }
 

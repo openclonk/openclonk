@@ -315,6 +315,8 @@ C4StringTable::C4StringTable()
 	P[P_Function] = "Function";
 	P[P_Translate] = "Translate";
 	P[P_CrewSkin] = "CrewSkin";
+	P[P_InitialScore] = "InitialScore";
+	P[P_Score] = "Score";
 	P[P_ZoomLimit_MaxWidth] = "ZoomLimit_MaxWidth";
 	P[P_ZoomLimit_MaxHeight] = "ZoomLimit_MaxHeight";
 	P[P_ZoomLimit_MaxValue] = "ZoomLimit_MaxValue";
