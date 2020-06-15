@@ -72,6 +72,7 @@ C4Player::C4Player() : C4PlayerInfoCore(), C4PropList(GetPropListPrototype(C4Pla
 	ZoomLimitMinVal = ZoomLimitMaxVal = ZoomVal = Fix0;
 	ViewLock = true;
 	SoundModifier.Set0();
+	SetPropertyByS(::Strings.RegString("Data"), C4VPropList(C4PropList::New()));
 }
 
 C4Player::~C4Player()
@@ -1859,7 +1860,7 @@ bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
 			case P_Type:         *pResult = C4VInt(GetType());        return true;
 			case P_CrewSkin:     *pResult = C4VInt(PrefClonkSkin);    return true;
 			case P_InitialScore: *pResult = C4VInt(InitialScore);     return true;
-			case P_Score:        *pResult = C4VInt(CurrentScore);            return true;
+			case P_Score:        *pResult = C4VInt(CurrentScore);     return true;
 			case P_ZoomLimit_MaxWidth:  *pResult = C4VInt((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX); return true;
 	        case P_ZoomLimit_MaxHeight: *pResult = C4VInt(ZoomLimitMaxHgt); return true;
 	        case P_ZoomLimit_MaxValue:  *pResult = C4VInt(fixtoi(ZoomLimitMaxVal, 100)); return true;

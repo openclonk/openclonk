@@ -32,14 +32,19 @@
           <col>The player ID, see <funclink>GetPlayerID</funclink>, read-only.</col>
         </row>
         <row>
+          <col><code>Name</code></col>
+          <col>string</col>
+          <col>Name of the player, read-only.</col>
+        </row>
+        <row>
           <col><code>CrewSkin</code></col>
           <col>int</col>
           <col>The number of the crew skin/appearance from the player profile, read-only.</col>
         </row>
         <row>
-          <col><code>Name</code></col>
-          <col>string</col>
-          <col>Name of the player, read-only.</col>
+          <col><code>Data</code></col>
+          <col>proplist</col>
+          <col>Storage space for all the player specific data for this scenario.</col>
         </row>
         <row>
           <col><code>InitialScore</code></col>
