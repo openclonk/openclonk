@@ -51,6 +51,34 @@ global func EliminatePlayer(int player_nr, bool remove_direct)
 	}
 }
 
+global func GetCrew(int player_nr, int index)
+{
+	LogLegacyWarning("GetCrew", "GetPlayer(player)->GetCrew(index)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetCrew(index);
+	}
+	else
+	{
+		return nil;
+	}
+}
+
+global func GetCrewCount(int player_nr, int index)
+{
+	LogLegacyWarning("GetCrewCount", "GetPlayer(player)->GetCrewCount()", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetCrewCount();
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 global func GetCursor(int player_nr)
 {
 	LogLegacyWarning("GetCursor", "GetPlayer(player)->GetCursor()", VERSION_10_0_OC);

@@ -53,6 +53,27 @@ static long FnGetColor(C4Player *player)
 	return player->ColorDw;
 }
 
+static C4Object *FnGetCrew(C4Player *player, long index)
+{
+	return player->Crew.GetObject(index);
+}
+
+static long FnGetCrewCount(C4Player *player)
+{
+	return player->Crew.ObjectCount();
+}
+
+static C4Value FnGetCrewMembers(C4Player *player)
+{
+	int32_t count = FnGetCrewCount(player);
+	C4ValueArray *results = new C4ValueArray(count);
+	for (int32_t i = 0; i < count; ++i)
+	{
+		(*results)[i] = C4VObj(FnGetCrew(player, i));
+	}
+	return C4VArray(results);
+}
+
 static C4Object *FnGetCursor(C4Player *player)
 {
 	return player->Cursor;
@@ -137,6 +158,9 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 		F(Eliminate);
 		F(GetColor);
 		F(GetCursor);
+	    F(GetCrew);
+	    F(GetCrewCount);
+	    F(GetCrewMembers);
 		F(GetHiRank);
 		F(GetViewCursor);
 	    F(GetViewMode);

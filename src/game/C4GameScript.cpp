@@ -1098,18 +1098,6 @@ static bool FnSetWealth(C4PropList * _this, long player_nr, long value)
 	return true;
 }
 
-static C4Object *FnGetCrew(C4PropList * _this, long player_nr, long index)
-{
-	if (!ValidPlr(player_nr)) return nullptr;
-	return ::Players.Get(player_nr)->Crew.GetObject(index);
-}
-
-static long FnGetCrewCount(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return 0;
-	return ::Players.Get(player_nr)->Crew.ObjectCount();
-}
-
 static long FnGetPlayerCount(C4PropList * _this, long type)
 {
 	if (!type)
@@ -2830,8 +2818,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetHostility);
 	F(PlaceVegetation);
 	F(GameOver);
-	F(GetCrew);
-	F(GetCrewCount);
 	F(GetPlayerCount);
 	F(GetPlayerByIndex);
 	F(GetLeagueScore);
