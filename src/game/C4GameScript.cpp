@@ -2595,82 +2595,6 @@ static bool FnSetNextScenario(C4PropList * _this, C4String *szNextMission, C4Str
 	return true;
 }
 
-static long FnGetPlayerControlState(C4PropList * _this, long player_nr, long iControl, bool fMovedState)
-{
-	// get control set to check
-	C4PlayerControl *pCheckCtrl = nullptr;
-	if (player_nr != NO_OWNER)
-	{
-		C4Player *player = ::Players.Get(player_nr);
-		if (player)
-		{
-			pCheckCtrl = &(player->Control);
-		}
-	}
-	// invalid player or no controls
-	if (!pCheckCtrl) return 0;
-	// query control
-	const C4PlayerControl::CSync::ControlDownState *pControlState = pCheckCtrl->GetControlDownState(iControl);
-	// no state means not down
-	if (!pControlState) return 0;
-	// otherwise take either down-value or moved-value
-	return fMovedState ? pControlState->MovedState.iStrength : pControlState->DownState.iStrength;
-}
-
-// undocumented!
-static bool FnSetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl, bool is_enabled)
-{
-	// get control set to check
-	C4PlayerControl *plrctrl = nullptr;
-	if (iplr != NO_OWNER)
-	{
-		C4Player *plr = ::Players.Get(iplr);
-		if (plr)
-		{
-			plrctrl = &(plr->Control);
-		}
-	}
-	// invalid player or no controls
-	if (!plrctrl) return false;
-	// invalid control
-	if (ctrl >= int32_t(Game.PlayerControlDefs.GetCount())) return false;
-	// query
-	return plrctrl->SetControlDisabled(ctrl, !is_enabled);
-}
-
-// undocumented!
-static bool FnGetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl)
-{
-	// get control set to check
-	C4PlayerControl *plrctrl = nullptr;
-	if (iplr != NO_OWNER)
-	{
-		C4Player *plr = ::Players.Get(iplr);
-		if (plr)
-		{
-			plrctrl = &(plr->Control);
-		}
-	}
-	// invalid player or no controls
-	if (!plrctrl) return false;
-	return !plrctrl->IsControlDisabled(ctrl);
-}
-
-// undocumented!
-static C4String *FnGetPlayerControlAssignment(C4PropList * _this, long player, long control, bool human_readable, bool short_name)
-{
-	// WARNING: As many functions returning strings, the result is not sync safe!
-	// "" is returned for invalid controls to make the obvious if (GetPlayerControlAssignmentName(...)) not cause a sync loss
-	// get desired assignment from parameters
-	C4Player *plr = ::Players.Get(player);
-	if (!plr) return nullptr; // invalid player
-	if (!plr->ControlSet) return String(""); // player has no control (remote player)
-	C4PlayerControlAssignment *assignment = plr->ControlSet->GetAssignmentByControl(control);
-	if (!assignment) return String("");
-	// get assignment as readable string
-	return String(assignment->GetKeysAsString(human_readable, short_name).getData());
-}
-
 // strength: 0-1000, length: milliseconds
 static bool FnPlayRumble(C4PropList * _this, long player, long strength, long length)
 {
@@ -2918,10 +2842,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(PathFree);
 	F(PathFree2);
 	F(SetNextScenario);
-	F(GetPlayerControlState);
-	F(SetPlayerControlEnabled);
-	F(GetPlayerControlEnabled);
-	F(GetPlayerControlAssignment);
 	F(PlayRumble);
 	F(StopRumble);
 	F(GetStartupPlayerCount);

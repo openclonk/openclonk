@@ -74,6 +74,49 @@ static C4Value FnGetCrewMembers(C4Player *player)
 	return C4VArray(results);
 }
 
+// undocumented!
+static C4String *FnGetControlAssignment(C4Player *player, long control, bool human_readable, bool short_name)
+{
+	// WARNING: As many functions returning strings, the result is not sync safe!
+	// "" is returned for invalid controls to make the obvious if (GetPlayerControlAssignmentName(...)) not cause a sync loss
+	// get desired assignment from parameters
+	if (!player->ControlSet) return String(""); // player has no control (remote player)
+	C4PlayerControlAssignment *assignment = player->ControlSet->GetAssignmentByControl(control);
+	if (!assignment) return String("");
+	// get assignment as readable string
+	return String(assignment->GetKeysAsString(human_readable, short_name).getData());
+}
+
+// undocumented!
+static bool FnGetControlEnabled(C4Player *player, long ctrl)
+{
+	// get control set to check
+	C4PlayerControl *plrctrl = &(player->Control);
+	if (plrctrl)
+	{
+		return !plrctrl->IsControlDisabled(ctrl);
+	}
+	// invalid player or no controls
+	return false;
+}
+
+static long FnGetControlState(C4Player *player, long iControl, bool fMovedState)
+{
+	// get control set to check
+	C4PlayerControl *plrctrl = &(player->Control);
+	if (plrctrl)
+	{
+		// query control
+		const C4PlayerControl::CSync::ControlDownState *pControlState = plrctrl->GetControlDownState(iControl);
+		// no state means not down
+		if (!pControlState) return 0;
+		// otherwise take either down-value or moved-value
+		return fMovedState ? pControlState->MovedState.iStrength : pControlState->DownState.iStrength;
+	}
+	// invalid player or no controls
+	return 0;
+}
+
 static C4Object *FnGetCursor(C4Player *player)
 {
 	return player->Cursor;
@@ -110,6 +153,22 @@ static C4Object *FnGetViewTarget(C4Player *player)
 static void FnResetCursorView(C4Player *player, bool immediate_position)
 {
 	player->ResetCursorView(immediate_position);
+}
+
+// undocumented!
+static bool FnSetControlEnabled(C4Player *player, long ctrl, bool is_enabled)
+{
+	// get control set to check
+	C4PlayerControl *plrctrl = &(player->Control);
+	if (plrctrl)
+	{
+		// invalid control
+		if (ctrl >= int32_t(Game.PlayerControlDefs.GetCount())) return false;
+		// query
+		return plrctrl->SetControlDisabled(ctrl, !is_enabled);
+	}
+	// invalid player or no controls
+	return false;
 }
 
 static bool FnSetCursor(C4Player *player, C4Object *target, bool no_select_arrow)
@@ -157,6 +216,9 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	#define F(f) ::AddFunc(prototype, #f, Fn##f)
 		F(Eliminate);
 		F(GetColor);
+		F(GetControlAssignment);
+		F(GetControlEnabled);
+		F(GetControlState);
 		F(GetCursor);
 	    F(GetCrew);
 	    F(GetCrewCount);
@@ -166,6 +228,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	    F(GetViewMode);
 	    F(GetViewTarget);
 		F(ResetCursorView);
+		F(SetControlEnabled);
 		F(SetCursor);
 		F(SetViewCursor);
 		F(SetViewLocked);

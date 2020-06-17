@@ -121,6 +121,48 @@ global func GetPlayerColor(int player_nr)
 	}
 }
 
+global func GetPlayerControlAssignment(int player_nr, int ctrl, bool human_readable, bool short_name)
+{
+	LogLegacyWarning("GetPlayerControlAssignment", "GetPlayer(player)->GetControlAssignment(ctrl, human_readable, short_name)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetControlAssignment(ctrl, human_readable, short_name);
+	}
+	else
+	{
+		return "";
+	}
+}
+
+global func GetPlayerControlEnabled(int player_nr, int ctrl)
+{
+	LogLegacyWarning("GetPlayerControlEnabled", "GetPlayer(player)->GetControlEnabled(ctrl)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetControlEnabled(ctrl);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+global func GetPlayerControlState(int player_nr, int ctrl, bool analog_strength)
+{
+	LogLegacyWarning("GetPlayerControlAssignment", "GetPlayer(player)->GetControlState(ctrl, analog_strength)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetControlState(ctrl, analog_strength);
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 global func GetPlayerID(int plr_nr)
 {
 	LogLegacyWarningCustom("GetPlayerID", "The player ID and player number are the same since 9.0 OC", VERSION_10_0_OC);
@@ -298,6 +340,20 @@ global func SetPlrView(int player_nr, object target, bool immediate)
 	if (player)
 	{
 		return player->SetCursor(target, immediate);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+global func SetPlayerControlEnabled(int player_nr, int ctrl, bool is_enabled)
+{
+	LogLegacyWarning("SetPlayerControlEnabled", "GetPlayer(player)->SetControlEnabled(ctrl, is_enabled)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->SetControlEnabled(ctrl, is_enabled);
 	}
 	else
 	{
