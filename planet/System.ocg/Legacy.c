@@ -333,6 +333,20 @@ global func SetCursor(int player_nr, object target, bool no_select_arrow)
 	}
 }
 
+global func SetFoW(bool enabled, int player_nr)
+{
+	LogLegacyWarning("SetFoW", "GetPlayer(player)->SetFoW(enabled)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->SetFoW(enabled);
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 global func SetPlrView(int player_nr, object target, bool immediate)
 {
 	LogLegacyWarning("SetPlrView", "GetPlayer(player)->SetViewTarget(target, immediate)", VERSION_10_0_OC);

@@ -181,6 +181,11 @@ static bool FnSetCursor(C4Player *player, C4Object *target, bool no_select_arrow
 	return true;
 }
 
+static void FnSetFoW(C4Player *player, bool enabled)
+{
+	player->SetFoW(!!enabled);
+}
+
 static bool FnSetViewCursor(C4Player *player, C4Object *target)
 {
 	player->ViewCursor = target;
@@ -230,6 +235,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 		F(ResetCursorView);
 		F(SetControlEnabled);
 		F(SetCursor);
+	    F(SetFoW);
 		F(SetViewCursor);
 		F(SetViewLocked);
 	    F(SetViewTarget);

@@ -1430,17 +1430,6 @@ static bool FnAbortMessageBoard(C4PropList * _this, C4Object *obj, long player_n
 	return player->RemoveMessageBoardQuery(obj);
 }
 
-static void FnSetFoW(C4PropList * _this, bool enabled, long player_nr)
-{
-	// safety
-	if (!ValidPlr(player_nr))
-	{
-		return;
-	}
-	// set enabled
-	::Players.Get(player_nr)->SetFoW(!!enabled);
-}
-
 static long FnSetMaxPlayer(C4PropList * _this, long player_count)
 {
 	// think positive! :)
@@ -2781,7 +2770,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	::AddFunc(p, "TestMessageBoard", FnTestMessageBoard, false);
 	::AddFunc(p, "CallMessageBoard", FnCallMessageBoard, false);
 	::AddFunc(p, "AbortMessageBoard", FnAbortMessageBoard, false);
-	F(SetFoW);
 	F(SetMaxPlayer);
 	F(Object);
 	F(GetTime);
