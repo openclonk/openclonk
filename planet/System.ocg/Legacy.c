@@ -189,6 +189,20 @@ global func GetPlayerName(int player_nr)
 	}
 }
 
+global func GetPlayerTeam(int player_nr)
+{
+	LogLegacyWarning("GetPlayerTeam", "GetPlayer(player)->GetTeam()", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetTeam();
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 global func GetPlayerType(int player_nr)
 {
 	LogLegacyWarning("GetPlayerType", "GetPlayer(player).Type", VERSION_10_0_OC);
@@ -368,6 +382,20 @@ global func SetPlayerControlEnabled(int player_nr, int ctrl, bool is_enabled)
 	if (player)
 	{
 		return player->SetControlEnabled(ctrl, is_enabled);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+global func SetPlayerTeam(int player_nr, int new_team, bool no_calls)
+{
+	LogLegacyWarning("SetPlayerTeam", "GetPlayer(player)->SetTeam(new_team, no_calls)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->SetTeam(new_team, no_calls);
 	}
 	else
 	{

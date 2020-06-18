@@ -2251,73 +2251,6 @@ static bool FnSetPreSend(C4PropList * _this, long iToVal, C4String *pNewName)
 	return true;
 }
 
-static long FnGetPlayerTeam(C4PropList * _this, long player_nr)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player) return 0;
-	// search team containing this player
-	C4Team *pTeam = Game.Teams.GetTeamByPlayerID(player->ID);
-	if (pTeam) return pTeam->GetID();
-	// special value of -1 indicating that the team is still to be chosen
-	if (player->IsChosingTeam()) return -1;
-	// No team.
-	return 0;
-}
-
-static bool FnSetPlayerTeam(C4PropList * _this, long player_nr, long idNewTeam, bool fNoCalls)
-{
-	// no team changing in league games
-	if (Game.Parameters.isLeague()) return false;
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player) return false;
-	C4PlayerInfo *pPlrInfo = player->GetInfo();
-	if (!pPlrInfo) return false;
-	// already in that team?
-	if (player->Team == idNewTeam) return true;
-	// ask team setting if it's allowed (also checks for valid team)
-	if (!Game.Teams.IsJoin2TeamAllowed(idNewTeam, pPlrInfo->GetType())) return false;
-	// ask script if it's allowed
-	if (!fNoCalls)
-	{
-		if (!!::Game.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(player_nr, idNewTeam), true, true))
-			return false;
-	}
-	// exit previous team
-	C4Team *pOldTeam = Game.Teams.GetTeamByPlayerID(player->ID);
-	int32_t idOldTeam = 0;
-	if (pOldTeam)
-	{
-		idOldTeam = pOldTeam->GetID();
-		pOldTeam->RemovePlayerByID(player->ID);
-	}
-	// enter new team
-	if (idNewTeam)
-	{
-		C4Team *pNewTeam = Game.Teams.GetGenerateTeamByID(idNewTeam);
-		if (pNewTeam)
-		{
-			pNewTeam->AddPlayer(*pPlrInfo, true);
-			idNewTeam = pNewTeam->GetID();
-		}
-		else
-		{
-			// unknown error
-			player->Team = idNewTeam = 0;
-		}
-	}
-	// update hositlities if this is not a "silent" change
-	if (!fNoCalls)
-	{
-		player->SetTeamHostility();
-	}
-	// do callback to reflect change in scenario
-	if (!fNoCalls)
-		::Game.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(player_nr, idNewTeam, idOldTeam), true);
-	return true;
-}
-
 // undocumented!
 static C4PropList *FnGetScriptPlayerExtraID(C4PropList * _this, long player_number)
 {
@@ -2804,8 +2737,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(LoadScenarioSection);
 	F(SetViewOffset);
 	::AddFunc(p, "SetPreSend", FnSetPreSend, false);
-	F(GetPlayerTeam);
-	F(SetPlayerTeam);
 	F(GetScriptPlayerExtraID);
 	F(GetTeamConfig);
 	F(GetTeamName);

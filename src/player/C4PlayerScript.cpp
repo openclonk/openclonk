@@ -127,6 +127,17 @@ static C4Object *FnGetHiRank(C4Player *player)
 	return player->GetHiRankActiveCrew();
 }
 
+static long FnGetTeam(C4Player *player)
+{
+	// search team containing this player
+	C4Team *pTeam = Game.Teams.GetTeamByPlayerID(player->ID);
+	if (pTeam) return pTeam->GetID();
+	// special value of -1 indicating that the team is still to be chosen
+	if (player->IsChosingTeam()) return -1;
+	// No team.
+	return 0;
+}
+
 static C4Object *FnGetViewCursor(C4Player *player)
 {
 	return player->ViewCursor ? player->ViewCursor : player->Cursor;
@@ -186,6 +197,55 @@ static void FnSetFoW(C4Player *player, bool enabled)
 	player->SetFoW(!!enabled);
 }
 
+static bool FnSetTeam(C4Player *player, long idNewTeam, bool no_calls)
+{
+	// no team changing in league games
+	if (Game.Parameters.isLeague()) return false;
+	C4PlayerInfo *playerinfo = player->GetInfo();
+	if (!playerinfo) return false;
+	// already in that team?
+	if (player->Team == idNewTeam) return true;
+	// ask team setting if it's allowed (also checks for valid team)
+	if (!Game.Teams.IsJoin2TeamAllowed(idNewTeam, playerinfo->GetType())) return false;
+	// ask script if it's allowed
+	if (!no_calls)
+	{
+		if (!!::Game.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(player->ID, idNewTeam), true, true))
+			return false;
+	}
+	// exit previous team
+	C4Team *pOldTeam = Game.Teams.GetTeamByPlayerID(player->ID);
+	int32_t idOldTeam = 0;
+	if (pOldTeam)
+	{
+		idOldTeam = pOldTeam->GetID();
+		pOldTeam->RemovePlayerByID(player->ID);
+	}
+	// enter new team
+	if (idNewTeam)
+	{
+		C4Team *pNewTeam = Game.Teams.GetGenerateTeamByID(idNewTeam);
+		if (pNewTeam)
+		{
+			pNewTeam->AddPlayer(*playerinfo, true);
+			idNewTeam = pNewTeam->GetID();
+		}
+		else
+		{
+			// unknown error
+			player->Team = idNewTeam = 0;
+		}
+	}
+	if (!no_calls)
+	{
+	    // update hositlities if this is not a "silent" change
+		player->SetTeamHostility();
+	    // do callback to reflect change in scenario
+		::Game.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(player->ID, idNewTeam, idOldTeam), true);
+	}
+	return true;
+}
+
 static bool FnSetViewCursor(C4Player *player, C4Object *target)
 {
 	player->ViewCursor = target;
@@ -229,6 +289,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	    F(GetCrewCount);
 	    F(GetCrewMembers);
 		F(GetHiRank);
+        F(GetTeam);
 		F(GetViewCursor);
 	    F(GetViewMode);
 	    F(GetViewTarget);
@@ -236,6 +297,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 		F(SetControlEnabled);
 		F(SetCursor);
 	    F(SetFoW);
+        F(SetTeam);
 		F(SetViewCursor);
 		F(SetViewLocked);
 	    F(SetViewTarget);
