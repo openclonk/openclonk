@@ -152,6 +152,34 @@ global func DoWealth(int player, int value)
 	return SetWealth(player, value + GetWealth(player));
 }
 
+global func GetWealth(int player_nr, int value)
+{
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player.Data.Wealth;
+	}
+	else
+	{
+		return nil;
+	}
+}
+
+global func SetWealth(int player_nr, int value)
+{
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		player.Data.Wealth = BoundBy(value, 0, 1000000000);
+		GameCallEx("OnWealthChanged", player_nr);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 // checks whether two players are allied - that means they are not hostile and neither of them is NO_OWNER
 global func IsAllied(int player1, int player2, bool check_one_way_only /* whether to check the hostility only in one direction */)
 {

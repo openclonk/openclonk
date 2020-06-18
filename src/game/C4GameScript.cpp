@@ -1195,19 +1195,6 @@ static C4Value FnGetBaseProduction(C4PropList * _this, int player_nr, C4ID id, i
 	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->BaseProduction.GetID( ::Definitions, category, index )));
 }
 
-static long FnGetWealth(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return 0;
-	return ::Players.Get(player_nr)->Wealth;
-}
-
-static bool FnSetWealth(C4PropList * _this, long player_nr, long value)
-{
-	if (!ValidPlr(player_nr)) return false;
-	::Players.Get(player_nr)->SetWealth(value);
-	return true;
-}
-
 static long FnGetPlayerCount(C4PropList * _this, long type)
 {
 	if (!type)
@@ -2714,8 +2701,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(MusicLevel);
 	F(SetPlayList);
 	F(SetPlrKnowledge);
-	F(GetWealth);
-	F(SetWealth);
 	F(GetWind);
 	F(SetWind);
 	F(GetTemperature);

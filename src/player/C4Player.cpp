@@ -636,7 +636,6 @@ bool C4Player::ScenarioInit()
 	Status = PS_Normal;
 
 	// Wealth, home base materials, abilities
-	Wealth=Game.C4S.PlrStart[PlrStartIndex].Wealth.Evaluate();
 	BaseMaterial=Game.C4S.PlrStart[PlrStartIndex].BaseMaterial;
 	BaseMaterial.ConsolidateValids(::Definitions);
 	BaseProduction=Game.C4S.PlrStart[PlrStartIndex].BaseProduction;
@@ -742,29 +741,6 @@ void C4Player::SetFoW(bool fEnable)
 {
 	// set flag
 	fFogOfWar = fEnable;
-}
-
-bool C4Player::DoWealth(int32_t iChange)
-{
-	if (LocalControl)
-	{
-		if (iChange>0) StartSoundEffect("UI::Cash");
-		if (iChange<0) StartSoundEffect("UI::UnCash");
-	}
-	SetWealth(Wealth+iChange);
-
-	return true;
-}
-
-bool C4Player::SetWealth(int32_t iVal)
-{
-	if (iVal == Wealth) return true;
-
-	Wealth=Clamp<int32_t>(iVal,0,1000000000);
-
-	::Game.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(Number));
-
-	return true;
 }
 
 bool C4Player::SetKnowledge(C4ID id, bool fRemove)
@@ -1118,7 +1094,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(ZoomVal,             "ZoomVal",              Fix0));
 	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
 	pComp->Value(mkNamingAdapt(ShowStartup,         "ShowStartup",          false));
-	pComp->Value(mkNamingAdapt(Wealth,              "Wealth",               0));
 	pComp->Value(mkNamingAdapt(CurrentScore,        "Score",                0));
 	pComp->Value(mkNamingAdapt(InitialScore,        "InitialScore",         0));
 	pComp->Value(mkNamingAdapt(ObjectsOwned,        "ObjectsOwned",         0));
@@ -1238,7 +1213,6 @@ void C4Player::DefaultRuntimeData()
 	ViewX=ViewY=0;
 	ViewTarget=nullptr;
 	ShowStartup=true;
-	Wealth=0;
 	CurrentScore=InitialScore=0;
 	ObjectsOwned=0;
 	ProductionDelay=ProductionUnit=0;
