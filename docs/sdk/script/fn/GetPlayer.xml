@@ -47,6 +47,11 @@
           <col>Storage space for all the player specific data for this scenario.</col>
         </row>
         <row>
+          <col><code>ExtraID</code></col>
+          <col>id</col>
+          <col>The extra ID of a <emlink href="script/ScriptPlayers.html">Script Player</emlink>, is nil for user controlled players.</col>
+        </row>
+        <row>
           <col><code>InitialScore</code></col>
           <col>int</col>
           <col>The score value that was saved in the player profile at the beginning of the round, read-only.</col>

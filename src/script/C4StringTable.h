@@ -541,6 +541,7 @@ enum C4PropertyName
 	P_Function,
 	P_Translate,
 	P_CrewSkin,
+	P_ExtraID,
 	P_InitialScore,
 	P_Score,
 // Zoom Limits,

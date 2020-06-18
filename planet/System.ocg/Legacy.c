@@ -309,6 +309,20 @@ global func GetPlayerScoreGain(player_nr)
 	}
 }
 
+global func GetScriptPlayerExtraID(player_nr)
+{
+	LogLegacyWarning("GetScriptPlayerExtraID", "GetPlayer(player).ExtraID", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player.ExtraID;
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 global func GetViewCursor(int player_nr)
 {
 	LogLegacyWarning("GetViewCursor", "GetPlayer(player)->GetViewCursor()", VERSION_10_0_OC);

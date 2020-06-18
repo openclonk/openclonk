@@ -1812,6 +1812,7 @@ static void ProtectReadonlyProperty(C4String *k)
 			case P_Name:                throw new C4AulExecError("player: Name is read-only");
 			case P_Type:                throw new C4AulExecError("player: Type is read-only");
 			case P_CrewSkin:            throw new C4AulExecError("player: CrewSkin is read-only");
+			case P_ExtraID:             throw new C4AulExecError("player: ExtraID is read-only");
 			case P_InitialScore:        throw new C4AulExecError("player: InitialScore is read-only");
 			case P_ZoomLimit_MaxHeight: throw new C4AulExecError("player: ZoomLimit is read-only");
 			case P_ZoomLimit_MaxValue:  throw new C4AulExecError("player: ZoomLimit is read-only");
@@ -1867,6 +1868,10 @@ bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
 	        case P_ZoomLimit_MinWidth:  *pResult = C4VInt((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX); return true;
 	        case P_ZoomLimit_MinHeight: *pResult = C4VInt(ZoomLimitMinHgt); return true;
 	        case P_ZoomLimit_MinValue:  *pResult = C4VInt(fixtoi(ZoomLimitMinVal, 100)); return true;
+			case P_ExtraID: // Gives me a error: jump to case label [-fpermissive] caused by the line *info if I use this at any of the earlier cases..
+				C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(ID); // see GetInfo(), but I got a compile error using it
+				*pResult = info ? C4VPropList(C4Id2Def(info->GetScriptPlayerExtraID())) : C4VNull;
+				return true;
 		}
 	}
 	return C4PropList::GetPropertyByS(k, pResult);
@@ -1877,11 +1882,12 @@ C4ValueArray * C4Player::GetProperties() const
 	C4ValueArray * a = C4PropList::GetProperties();
 	int i;
 	i = a->GetSize();
-	a->SetSize(i + 12);
+	a->SetSize(i + 13);
 	(*a)[i++] = C4VString(&::Strings.P[P_ID]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Name]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Type]);
 	(*a)[i++] = C4VString(&::Strings.P[P_CrewSkin]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ExtraID]);
 	(*a)[i++] = C4VString(&::Strings.P[P_InitialScore]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Score]);
 	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MaxHeight]);
