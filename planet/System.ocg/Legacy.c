@@ -253,6 +253,20 @@ global func GetPlrClonkSkin(int player_nr)
 	}
 }
 
+global func GetPlrExtraData(int player_nr, string data_name)
+{
+	LogLegacyWarning("GetPlrExtraData", "GetPlayer(player)->GetExtraData(data_name)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->GetExtraData(data_name);
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 global func GetPlrView(int player_nr)
 {
 	LogLegacyWarning("GetPlrView", "GetPlayer(player)->GetViewTarget()", VERSION_10_0_OC);
@@ -368,6 +382,20 @@ global func SetFoW(bool enabled, int player_nr)
 	if (player)
 	{
 		return player->SetFoW(enabled);
+	}
+	else
+	{
+		return nil;
+	}
+}
+
+global func SetPlrExtraData(int player_nr, string data_name, any data)
+{
+	LogLegacyWarning("SetPlrExtraData", "GetPlayer(player)->SetExtraData(data_name, data)", VERSION_10_0_OC);
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player->SetExtraData(data_name, data);
 	}
 	else
 	{

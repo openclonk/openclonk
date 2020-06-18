@@ -122,6 +122,17 @@ static C4Object *FnGetCursor(C4Player *player)
 	return player->Cursor;
 }
 
+static C4Value FnGetExtraData(C4Player *player, C4String *DataName)
+{
+	const char *strDataName = FnStringPar(DataName);
+	// no name list?
+	if (!player->ExtraData.pNames) return C4Value();
+	long ival;
+	if ((ival = player->ExtraData.pNames->GetItemNr(strDataName)) == -1) return C4Value();
+	// return data
+	return player->ExtraData[ival];
+}
+
 static C4Object *FnGetHiRank(C4Player *player)
 {
 	return player->GetHiRankActiveCrew();
@@ -190,6 +201,37 @@ static bool FnSetCursor(C4Player *player, C4Object *target, bool no_select_arrow
 	}
 	player->SetCursor(target, !no_select_arrow);
 	return true;
+}
+
+static C4Value FnSetExtraData(C4Player *player, C4String *DataName, const C4Value & Data)
+{
+	const char * strDataName = FnStringPar(DataName);
+	// do not allow data type C4V_Array or C4V_C4Object
+	if (Data.GetType() != C4V_Nil &&
+	    Data.GetType() != C4V_Int &&
+	    Data.GetType() != C4V_Bool &&
+	    Data.GetType() != C4V_String) return C4VNull;
+	if (!player) return C4Value();
+	// no name list created yet?
+	if (!player->ExtraData.pNames)
+		// create name list
+		player->ExtraData.CreateTempNameList();
+	// data name already exists?
+	long ival;
+	if ((ival = player->ExtraData.pNames->GetItemNr(strDataName)) != -1)
+	{
+		player->ExtraData[ival] = Data;
+	}
+	else
+	{
+		// add name
+		player->ExtraData.pNames->AddName(strDataName);
+		// get val id & set
+		if ((ival = player->ExtraData.pNames->GetItemNr(strDataName)) == -1) return C4Value();
+		player->ExtraData[ival] = Data;
+	}
+	// ok, return the value that has been set
+	return Data;
 }
 
 static void FnSetFoW(C4Player *player, bool enabled)
@@ -288,6 +330,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	    F(GetCrew);
 	    F(GetCrewCount);
 	    F(GetCrewMembers);
+		F(GetExtraData);
 		F(GetHiRank);
         F(GetTeam);
 		F(GetViewCursor);
@@ -296,6 +339,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 		F(ResetCursorView);
 		F(SetControlEnabled);
 		F(SetCursor);
+		F(SetExtraData);
 	    F(SetFoW);
         F(SetTeam);
 		F(SetViewCursor);

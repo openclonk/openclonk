@@ -1765,49 +1765,6 @@ static long FnGetTime(C4PropList * _this)
 	return C4TimeMilliseconds::Now().AsInt();
 }
 
-static C4Value FnSetPlrExtraData(C4PropList * _this, int player_nr, C4String * DataName, const C4Value & Data)
-{
-	const char * strDataName = FnStringPar(DataName);
-	// do not allow data type C4V_Array or C4V_C4Object
-	if (Data.GetType() != C4V_Nil &&
-	    Data.GetType() != C4V_Int &&
-	    Data.GetType() != C4V_Bool &&
-	    Data.GetType() != C4V_String) return C4VNull;
-	C4Player* pPlayer = ::Players.Get(player_nr);
-	if (!pPlayer) return C4Value();
-	// no name list created yet?
-	if (!pPlayer->ExtraData.pNames)
-		// create name list
-		pPlayer->ExtraData.CreateTempNameList();
-	// data name already exists?
-	long ival;
-	if ((ival = pPlayer->ExtraData.pNames->GetItemNr(strDataName)) != -1)
-		pPlayer->ExtraData[ival] = Data;
-	else
-	{
-		// add name
-		pPlayer->ExtraData.pNames->AddName(strDataName);
-		// get val id & set
-		if ((ival = pPlayer->ExtraData.pNames->GetItemNr(strDataName)) == -1) return C4Value();
-		pPlayer->ExtraData[ival] = Data;
-	}
-	// ok, return the value that has been set
-	return Data;
-}
-
-static C4Value FnGetPlrExtraData(C4PropList * _this, int player_nr, C4String * DataName)
-{
-	const char *strDataName = FnStringPar(DataName);
-	C4Player* pPlayer = ::Players.Get(player_nr);
-	if (!pPlayer) return C4Value();
-	// no name list?
-	if (!pPlayer->ExtraData.pNames) return C4Value();
-	long ival;
-	if ((ival = pPlayer->ExtraData.pNames->GetItemNr(strDataName)) == -1) return C4Value();
-	// return data
-	return pPlayer->ExtraData[ival];
-}
-
 // undocumented!
 static long FnDrawMatChunks(C4PropList * _this, long tx, long ty, long twdt, long thgt, long icntx, long icnty, C4String *strMaterial, C4String *strTexture, bool bIFT)
 {
@@ -2764,8 +2721,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetPlayerVal);
 	F(GetPlayerInfoCoreVal);
 	F(GetMaterialVal);
-	F(SetPlrExtraData);
-	F(GetPlrExtraData);
 	F(PV_Linear);
 	F(PV_Random);
 	F(PV_Direction);
