@@ -112,7 +112,6 @@ public:
 	int32_t ZoomLimitMinWdt,ZoomLimitMinHgt,ZoomLimitMaxWdt,ZoomLimitMaxHgt,ZoomWdt,ZoomHgt; // zoom limits and last zoom set by script
 	C4Real ZoomLimitMinVal,ZoomLimitMaxVal,ZoomVal; // direct zoom values. 
 	// Game
-	int32_t Wealth;
 	int32_t CurrentScore,InitialScore;
 	int32_t ObjectsOwned;
 	HostilitySet Hostility;
@@ -175,8 +174,6 @@ public:
 	static bool Strip(const char *szFilename, bool fAggressive);
 	bool Message(const char *szMsg);
 	bool ObjectInCrew(C4Object *tobj);
-	bool DoWealth(int32_t change);
-	bool SetWealth(int32_t val);
 	bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
 	bool IsHostileTowards(const C4Player *opponent) const;
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);

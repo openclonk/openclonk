@@ -1085,19 +1085,6 @@ static C4String * FnGetDefinitionGroupPath(C4PropList * _this)
 	return ::Strings.RegString(def->ConsoleGroupPath.getData());
 }
 
-static long FnGetWealth(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return 0;
-	return ::Players.Get(player_nr)->Wealth;
-}
-
-static bool FnSetWealth(C4PropList * _this, long player_nr, long value)
-{
-	if (!ValidPlr(player_nr)) return false;
-	::Players.Get(player_nr)->SetWealth(value);
-	return true;
-}
-
 static long FnGetPlayerCount(C4PropList * _this, long type)
 {
 	if (!type)
@@ -2597,8 +2584,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(Music);
 	F(MusicLevel);
 	F(SetPlayList);
-	F(GetWealth);
-	F(SetWealth);
 	F(GetWind);
 	F(SetWind);
 	F(GetTemperature);
