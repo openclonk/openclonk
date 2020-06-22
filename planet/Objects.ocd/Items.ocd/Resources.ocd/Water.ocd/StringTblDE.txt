@@ -1,0 +1,2 @@
+Name=Wasser
+Description=Stellt ein Material-Pixel Wasser dar.

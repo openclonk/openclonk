@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,19 +17,19 @@
 // Menus attached to objects; script created or internal
 
 #include "C4Include.h"
-#include "C4ObjectMenu.h"
+#include "object/C4ObjectMenu.h"
 
-#include "C4Control.h"
-#include "C4Object.h"
-#include "C4ObjectCom.h"
-#include "C4Player.h"
-#include "C4Viewport.h"
-#include "C4MouseControl.h"
-#include "C4GraphicsResource.h"
-#include "C4Game.h"
-#include "C4PlayerList.h"
-#include "C4GameObjects.h"
-#include "C4AulExec.h"
+#include "control/C4Control.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
+#include "object/C4Def.h"
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectCom.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "script/C4AulExec.h"
 
 // -----------------------------------------------------------
 // C4ObjectMenu
@@ -43,7 +43,7 @@ void C4ObjectMenu::Default()
 {
 	C4Menu::Default();
 	eCallbackType = CB_None;
-	Object = ParentObject = RefillObject = NULL;
+	Object = ParentObject = RefillObject = nullptr;
 	RefillObjectContentsCount=0;
 	UserMenu = false;
 	CloseQuerying = false;
@@ -107,9 +107,9 @@ void C4ObjectMenu::OnSelectionChanged(int32_t iNewSelection)
 
 void C4ObjectMenu::ClearPointers(C4Object *pObj)
 {
-	if (Object==pObj) { Object=NULL; }
-	if (ParentObject==pObj) ParentObject=NULL; // Reason for menu close anyway.
-	if (RefillObject==pObj) RefillObject=NULL;
+	if (Object==pObj) { Object=nullptr; }
+	if (ParentObject==pObj) ParentObject=nullptr; // Reason for menu close anyway.
+	if (RefillObject==pObj) RefillObject=nullptr;
 	C4Menu::ClearPointers(pObj);
 }
 
@@ -118,7 +118,7 @@ C4Object* C4ObjectMenu::GetParentObject()
 	for (C4Object *cObj : Objects)
 		if (cObj->Menu == this)
 			return cObj;
-	return NULL;
+	return nullptr;
 }
 
 void C4ObjectMenu::SetRefillObject(C4Object *pObj)
@@ -170,8 +170,8 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				fctSymbol.Set(fctSymbol.Surface, 0,0,C4SymbolSize,C4SymbolSize);
 				pObj->Picture2Facet(fctSymbol);
 				// Commands
-				sprintf(szCommand,"SetCommand(\"Activate\",Object(%d))&&ExecuteCommand()",pObj->Number);
-				sprintf(szCommand2,"SetCommand(\"Activate\",nil,%d,0,Object(%d),%s)&&ExecuteCommand()",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,pDef->id.ToString());
+				sprintf(szCommand,R"(SetCommand("Activate",Object(%d))&&ExecuteCommand())",pObj->Number);
+				sprintf(szCommand2,R"(SetCommand("Activate",nil,%d,0,Object(%d),%s)&&ExecuteCommand())",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,pDef->id.ToString());
 				// Add menu item
 				Add(szCaption,fctSymbol,szCommand,iCount,pObj,"",pDef->id,szCommand2,true,pObj->GetValue(pTarget, NO_OWNER));
 				// facet taken over (arrg!)
@@ -215,11 +215,11 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				fctSymbol.Set(fctSymbol.Surface, 0, 0, C4SymbolSize, C4SymbolSize);
 				pObj->Picture2Facet(fctSymbol);
 				// Primary command: get/activate single object
-				sprintf(szCommand, "SetCommand(\"%s\", Object(%d)) && ExecuteCommand()", fGet ? "Get" : "Activate", pObj->Number);
+				sprintf(szCommand, R"(SetCommand("%s", Object(%d)) && ExecuteCommand())", fGet ? "Get" : "Activate", pObj->Number);
 				// Secondary command: get/activate all objects of the chosen type
 				szCommand2[0] = 0; int32_t iAllCount;
 				if ((iAllCount = pTarget->Contents.ObjectCount(pDef->id)) > 1)
-					sprintf(szCommand2, "SetCommand(\"%s\", nil, %d,0, Object(%d), %s) && ExecuteCommand()", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, pDef->id.ToString());
+					sprintf(szCommand2, R"(SetCommand("%s", nil, %d,0, Object(%d), %s) && ExecuteCommand())", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, pDef->id.ToString());
 				// Add menu item (with object)
 				Add(szCaption, fctSymbol, szCommand, iCount, pObj, "", pDef->id, szCommand2);
 				fctSymbol.Default();
@@ -304,7 +304,7 @@ bool C4ObjectMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 
 	case CB_Scenario:
 		// Object menu with scenario script callback
-		::AulExec.DirectExec(NULL, szCommand, "MenuCommand");
+		::AulExec.DirectExec(nullptr, szCommand, "MenuCommand");
 		break;
 
 	case CB_None:

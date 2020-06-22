@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,8 +16,8 @@
 #ifndef C4INTERACTIVETHREAD_H
 #define C4INTERACTIVETHREAD_H
 
-#include "StdScheduler.h"
-#include "StdSync.h"
+#include "platform/StdScheduler.h"
+#include "platform/StdSync.h"
 
 // Event types
 enum C4InteractiveEventType
@@ -51,7 +51,7 @@ private:
 	class C4InteractiveThread *pNotify;
 public:
 	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
-	virtual bool Execute(int iTimeout, pollfd * readyfds);
+	bool Execute(int iTimeout, pollfd * readyfds) override;
 };
 
 // Collects StdSchedulerProc objects and executes them in a separate thread
@@ -67,7 +67,7 @@ public:
 	{
 	public:
 		virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) = 0;
-		virtual ~Callback() { }
+		virtual ~Callback() = default;
 	};
 
 private:
@@ -101,7 +101,7 @@ public:
 	void RemoveProc(StdSchedulerProc *pProc);
 
 	// event queue
-	bool PushEvent(C4InteractiveEventType eEventType, void *pData = NULL);
+	bool PushEvent(C4InteractiveEventType eEventType, void *pData = nullptr);
 	void ProcessEvents(); // by main thread
 
 	// special events
@@ -120,7 +120,7 @@ public:
 	void SetCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
 	{ pCallbacks[eEvent] = pnNetworkCallback; }
 	void ClearCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
-	{ if (pCallbacks[eEvent] == pnNetworkCallback) pCallbacks[eEvent] = NULL; }
+	{ if (pCallbacks[eEvent] == pnNetworkCallback) pCallbacks[eEvent] = nullptr; }
 
 private:
 	bool PopEvent(C4InteractiveEventType *pEventType, void **ppData); // by main thread

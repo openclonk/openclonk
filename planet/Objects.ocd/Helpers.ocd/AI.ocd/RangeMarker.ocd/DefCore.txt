@@ -1,8 +1,0 @@
-[DefCore]
-id=RangeMarker
-Version=6,0
-Category=C4D_StaticBack
-Width=8
-Height=8
-Offset=0,0
-Rotate=1

@@ -1,5 +1,7 @@
 /*-- Bread --*/
 
+#include Library_Edible
+
 protected func Hit()
 {
 	Sound("Hits::GeneralHit?");
@@ -7,18 +9,11 @@ protected func Hit()
 
 /* Eating */
 
-protected func ControlUse(object clonk, int iX, int iY)
-{
-	clonk->Eat(this);
-	return true;
-}
-
 public func NutritionalValue() { return 50; }
-
 public func IsKitchenProduct() { return true; }
-public func GetLiquidNeed() { return ["Water", 50]; }
 public func GetFuelNeed() { return 50; }
 
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
+local Components = {Flour = 1, Water = 50};

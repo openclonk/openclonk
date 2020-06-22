@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,23 +16,23 @@
 #ifndef INC_C4STDINPROC
 #define INC_C4STDINPROC
 
-#include <StdScheduler.h>
+#include "platform/StdScheduler.h"
 
 // A simple alertable proc
 class C4StdInProc : public StdSchedulerProc
 {
 public:
 	C4StdInProc();
-	~C4StdInProc();
+	~C4StdInProc() override;
 
 	// StdSchedulerProc override
-	virtual bool Execute(int iTimeout, pollfd *);
+	bool Execute(int iTimeout, pollfd *) override;
 #ifdef STDSCHEDULER_USE_EVENTS
-	virtual HANDLE GetEvent() { return GetStdHandle(STD_INPUT_HANDLE); }
+	HANDLE GetEvent() override { return GetStdHandle(STD_INPUT_HANDLE); }
 #else
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
+	void GetFDs(std::vector<struct pollfd> & checkfds) override
 	{
-		pollfd pfd = { 0, POLLIN, 0 };
+		pollfd pfd = { 0, POLLIN | POLLERR | POLLHUP, 0 };
 		checkfds.push_back(pfd);
 	}
 #endif

@@ -2,6 +2,7 @@
 	Fade.c
 	Function to fade in and out objects.
 	
+	@author
 */
 
 global func FadeOut(int time, bool del)

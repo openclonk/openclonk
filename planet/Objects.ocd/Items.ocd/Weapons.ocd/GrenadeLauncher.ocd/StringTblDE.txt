@@ -1,2 +1,2 @@
 Name=Granatwerfer
-Description=Feuerwaffe. Der Granatwerfer ben�tigt Eisenbomben als Munition. Ziele und schieße mit [Benutzen].
+Description=Feuerwaffe. Der Granatwerfer benötigt Eisenbomben als Munition. Ziele und schieße mit [Benutzen].

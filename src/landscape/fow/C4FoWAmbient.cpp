@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,8 +14,10 @@
  */
 
 #include "C4Include.h"
-#include "C4FoWAmbient.h"
-#include "C4FoW.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "landscape/fow/C4FoWAmbient.h"
+#include "landscape/fow/C4FoW.h"
+#include "graphics/C4Draw.h"
 
 namespace
 {
@@ -58,7 +60,7 @@ double AmbientForPix(int x0, int y0, double R, const LightMap& light_map)
 // Everything is illuminated, independent of the landscape
 // This is used to obtain the normalization factor
 struct LightMapFull {
-	LightMapFull() {}
+	LightMapFull() = default;
 	bool operator()(int x, int y) const { return true; }
 };
 
@@ -70,8 +72,8 @@ struct LightMapZoom {
 	bool operator()(int x, int y) const
 	{
 		// Landscape coordinates
-		const int lx = Clamp(static_cast<int>((x + 0.5) * sx), 0, Landscape.Width - 1);
-		const int ly = Clamp(static_cast<int>((y + 0.5) * sy), 0, Landscape.Height - 1);
+		const int lx = Clamp(static_cast<int>((x + 0.5) * sx), 0, Landscape.GetWidth() - 1);
+		const int ly = Clamp(static_cast<int>((y + 0.5) * sy), 0, Landscape.GetHeight() - 1);
 		// LightMap check
 		return ::Landscape._GetLight(lx, ly);
 	}
@@ -83,15 +85,7 @@ struct LightMapZoom {
 
 } // anonymous namespace
 
-C4FoWAmbient::C4FoWAmbient() :
-#ifndef USE_CONSOLE
-	Tex(0),
-#endif
-	Resolution(0.), Radius(0.), FullCoverage(0.),
-	SizeX(0), LandscapeX(0), SizeY(0), LandscapeY(0),
-	Brightness(1.)
-{
-}
+C4FoWAmbient::C4FoWAmbient() = default;
 
 C4FoWAmbient::~C4FoWAmbient()
 {
@@ -124,8 +118,8 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	FullCoverage = full_coverage;
 
 	// Number of zoomed pixels
-	LandscapeX = landscape.Width;
-	LandscapeY = landscape.Height;
+	LandscapeX = Landscape.GetWidth();
+	LandscapeY = Landscape.GetHeight();
 	SizeX = std::min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeX / resolution)), pDraw->MaxTexSize);
 	SizeY = std::min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeY / resolution)), pDraw->MaxTexSize);
 
@@ -136,10 +130,10 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SizeX, SizeY, 0, GL_RED, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SizeX, SizeY, 0, GL_RED, GL_FLOAT, nullptr);
 
 	const C4TimeMilliseconds begin = C4TimeMilliseconds::Now();
-	UpdateFromLandscape(landscape, C4Rect(0, 0, landscape.Width, landscape.Height));
+	UpdateFromLandscape(landscape, C4Rect(0, 0, Landscape.GetWidth(), Landscape.GetHeight()));
 	uint32_t dt = C4TimeMilliseconds::Now() - begin;
 	LogF("Created %ux%u ambient map in %g secs", SizeX, SizeY, dt / 1000.);
 #endif
@@ -154,8 +148,8 @@ void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rec
 	assert(Tex != 0);
 
 	// Factor to go from zoomed to landscape coordinates
-	const double zoom_x = static_cast<double>(landscape.Width) / SizeX;
-	const double zoom_y = static_cast<double>(landscape.Height) / SizeY;
+	const double zoom_x = static_cast<double>(Landscape.GetWidth()) / SizeX;
+	const double zoom_y = static_cast<double>(Landscape.GetHeight()) / SizeY;
 	// Update region in zoomed coordinates
 	const unsigned int left = std::max(static_cast<int>( (update.x - Radius) / zoom_x), 0);
 	const unsigned int right = std::min(static_cast<unsigned int>( (update.x + update.Wdt + Radius) / zoom_x), SizeX - 1) + 1;

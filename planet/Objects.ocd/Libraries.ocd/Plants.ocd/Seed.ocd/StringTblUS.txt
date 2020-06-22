@@ -1,2 +1,14 @@
 TxtBadGround=Can't plant %s here!
 Description=Press [Use] to plant.
+SeedChance=Seed chance
+SeedChanceHelp=Specifies the replication rate of this plant. 0: No replication. 10000: Maximum (ca. every two seconds). The actual rate is increased if less then seed amount of plants is in the seed area.
+SeedArea=Seed area
+SeedAreaHelp=Side length of the rectangular area in which this plant seeds.
+SeedAmount=Seed amount
+SeedAmountHelp=Maximum number of plants of this type in seed area.
+SeedOffset=Seed minimum distance
+SeedOffsetHelp=Minimum distance of a new plant beside this plant.
+Confinement=Seed area
+ConfinementHelp=Limits the global area in which this plant may replicate.
+NoConfinmenet=No limit
+Rect=Rectangle

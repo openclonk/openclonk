@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,11 +16,9 @@
 // user input validation functions
 
 #include "C4Include.h"
-#include <C4InputValidation.h>
-#include <C4Log.h>
-#include "C4Markup.h"
+#include "lib/C4InputValidation.h"
 
-#include <cctype>
+#include "lib/C4Markup.h"
 
 namespace C4InVal
 {
@@ -161,7 +159,7 @@ namespace C4InVal
 			assert(!"not yet implemented");
 		}
 		// issue warning for invalid adjustments
-		if (0) if (!fValid)
+		if (false) if (!fValid)
 		{
 			const char *szOption = "unknown";
 			switch (eOption)
@@ -178,7 +176,7 @@ namespace C4InVal
 			case VAL_IRCChannel:       szOption = "IRC channel";      break;
 			case VAL_Comment:          szOption = "Comment";          break;
 			}
-			LogF("WARNING: Adjusted invalid user input for \"%s\" to \"%s\"", szOption, rsString.getData());
+			LogF(R"(WARNING: Adjusted invalid user input for "%s" to "%s")", szOption, rsString.getData());
 		}
 		return !fValid;
 	}

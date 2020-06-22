@@ -1,3 +1,3 @@
  Parkour
 
-Dieser Rundenordner enthält Wettrennen und kooperative Hindernisläufe. Ziel ist hier der möglichst schnelle Abschluss der Szenarien. In jedem Szenario gilt es nicht nur, ans Ende zu gelangen, sondern auch unterwegs verteilte Checkpunkte abzulaufen.
+Dieser Rundenordner enthÃ¤lt Wettrennen und kooperative HindernislÃ¤ufe. Ziel ist hier der mÃ¶glichst schnelle Abschluss der Szenarien. In jedem Szenario gilt es nicht nur, ans Ende zu gelangen, sondern auch unterwegs verteilte Checkpunkte abzulaufen.

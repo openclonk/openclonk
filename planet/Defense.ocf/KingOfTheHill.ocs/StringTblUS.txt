@@ -1,0 +1,3 @@
+TeamAttackers=Attackers
+TeamDefenders=Defenders
+MsgWave=Attack!

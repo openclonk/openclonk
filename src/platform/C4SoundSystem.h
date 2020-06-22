@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,8 @@
 #ifndef INC_C4SoundSystem
 #define INC_C4SoundSystem
 
-#include <C4Group.h>
-#include <C4SoundModifiers.h>
+#include "c4group/C4Group.h"
+#include "platform/C4SoundModifiers.h"
 
 const int32_t
 	C4MaxSoundName=100,
@@ -43,24 +43,26 @@ public:
 	void Clear();
 	void Execute();
 	int32_t LoadEffects(C4Group &hGroup, const char *namespace_prefix, bool group_is_root);
-	C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
+	C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = nullptr, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = nullptr);
 	C4SoundInstance *FindInstance(const char *szSound, C4Object *pObj);
 	C4SoundInstance *GetFirstInstance() const;
 	C4SoundInstance *GetNextInstance(C4SoundInstance *prev) const;
 	bool Init();
 	void ClearPointers(C4Object *pObj);
+	C4SoundEffect *GetFirstSound() const { return FirstSound; }
 
 	C4SoundModifierList Modifiers;
 protected:
 	C4Group SoundFile;
-	C4SoundEffect *FirstSound; // TODO: Add a hash map for sound lookup. Also add a global list for all running sound instances.
+	C4SoundEffect *FirstSound{nullptr}; // TODO: Add a hash map for sound lookup. Also add a global list for all running sound instances.
+	bool initialized{false};
 	void ClearEffects();
 	C4SoundEffect* GetEffect(const char *szSound);
 	int32_t RemoveEffect(const char *szFilename);
 };
 
-C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
-C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume = 100, int32_t iCustomFallofDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
+C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = nullptr, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = nullptr);
+C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume = 100, int32_t iCustomFallofDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = nullptr);
 C4SoundInstance *GetSoundInstance(const char *szSndName, C4Object *pObj);
 void StopSoundEffect(const char *szSndName, C4Object *pObj);
 void SoundLevel(const char *szSndName, C4Object *pObj, int32_t iLevel);

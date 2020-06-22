@@ -98,7 +98,10 @@ public func FxIntroControlAirshipStop(object target, proplist effect, int reason
 	if (temp)
 		return FX_OK;
 	if (effect.airship)
+	{
 		effect.airship->SetContactDensity(C4M_Solid);
+		effect.airship->SetSolidMask();	
+	}
 	if (effect.host)
 	{
 		effect.host->SetCommand("UnGrab");

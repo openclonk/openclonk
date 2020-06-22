@@ -69,12 +69,12 @@ func InitFuzzyRules()
 	brain->AddSet("hunger", "high", [[25, 0], [100, 1], [100, 1]]);
 	
 	// RULES
-	brain->AddRule(brain->And("hunger=high", "food=right"), "swim=right");
-	brain->AddRule(brain->And("hunger=high", "food=left"), "swim=left");
-	brain->AddRule("hunger=high", "speed=fast");
-	brain->AddRule(brain->Or("wall_range=close", "hunger=low"), "speed=slow");
-	brain->AddRule(brain->And("left_wall=close", brain->Not("right_wall=close")), "swim=sharp_right");
-	brain->AddRule("right_wall=close", "swim=sharp_left");
+	brain->AddRule(brain->And("hunger = high", "food = right"), "swim = right");
+	brain->AddRule(brain->And("hunger = high", "food = left"), "swim = left");
+	brain->AddRule("hunger = high", "speed = fast");
+	brain->AddRule(brain->Or("wall_range = close", "hunger = low"), "speed = slow");
+	brain->AddRule(brain->And("left_wall = close", brain->Not("right_wall = close")), "swim = sharp_right");
+	brain->AddRule("right_wall = close", "swim = sharp_left");
 }
 
 
@@ -94,8 +94,6 @@ func DoEat(object obj)
 		obj->DoEnergy(-BiteStrength);
 	hunger -= 20;
 	if (hunger < 0) hunger = 0;
-	//CastParticles("MaterialParticle", 10, 10, 0, 0, 10, 20, RGB(200, 5, 5), RGB(200, 5, 5));
-	
 	DoEnergy(BiteStrength);
 }
 
@@ -115,14 +113,16 @@ local Name = "$Name$";
 local Description = "$Description$";
 local MaxEnergy = 50000;
 local Placement = 1;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local BreatheWater = 1;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;
 
 func IsPrey() { return false; }
 func IsPredator() { return true; }
 
-func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
+func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(2000, 0, 0), Trans_Scale(1500), Trans_Rotate(20, 1, 0, 0), Trans_Rotate(70, 0, 1, 0));
 }
 

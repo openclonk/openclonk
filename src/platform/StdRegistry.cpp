@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,11 +18,9 @@
 /* Some wrappers for easier access to the Windows registry */
 
 #include "C4Include.h"
-#include <StdRegistry.h>
+#include "platform/StdRegistry.h"
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
-#include <stdio.h>
 
 StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName)
 {
@@ -38,7 +36,7 @@ StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName)
 	while(true)
 	{
 		DWORD valtype;
-		switch(RegQueryValueExW(ckey, GetWideChar(szValueName), NULL, &valtype,
+		switch(RegQueryValueExW(ckey, GetWideChar(szValueName), nullptr, &valtype,
 			sValue, &dwValSize))
 		{
 		case ERROR_SUCCESS:
@@ -75,10 +73,10 @@ bool SetRegistryString(const char *szSubKey,
 	if ((qerr=RegCreateKeyExW(HKEY_CURRENT_USER,
 	                         GetWideChar(szSubKey),
 	                         0,
-	                         L"",
+	                         nullptr,
 	                         REG_OPTION_NON_VOLATILE,
 	                         KEY_ALL_ACCESS,
-	                         NULL,
+	                         nullptr,
 	                         &ckey,
 	                         &disposition
 	                        ))!=ERROR_SUCCESS) return false;
@@ -131,10 +129,10 @@ static bool SetRegClassesRoot(const wchar_t *szSubKey,
 	if ((qerr=RegCreateKeyExW(HKEY_CLASSES_ROOT,
 	                         szSubKey,
 	                         0,
-	                         L"",
+	                         nullptr,
 	                         REG_OPTION_NON_VOLATILE,
 	                         KEY_ALL_ACCESS,
-	                         NULL,
+	                         nullptr,
 	                         &ckey,
 	                         &disposition
 	                        ))!=ERROR_SUCCESS) return false;
@@ -163,15 +161,15 @@ bool SetRegShell(const wchar_t *szClassName,
 	wchar_t szKeyName[256+1];
 	// Set shell caption
 	_snwprintf(szKeyName,256,L"%s\\Shell\\%s",szClassName,szShellName);
-	if (!SetRegClassesRoot(szKeyName, NULL, szShellCaption)) return false;
+	if (!SetRegClassesRoot(szKeyName, nullptr, szShellCaption)) return false;
 	// Set shell command
 	_snwprintf(szKeyName,256,L"%s\\Shell\\%s\\Command",szClassName,szShellName);
-	if (!SetRegClassesRoot(szKeyName, NULL, szCommand)) return false;
+	if (!SetRegClassesRoot(szKeyName, nullptr, szCommand)) return false;
 	// Set as default command
 	if (fMakeDefault)
 	{
 		_snwprintf(szKeyName, 256,L"%s\\Shell", szClassName);
-		if (!SetRegClassesRoot(szKeyName, NULL, szShellName)) return false;
+		if (!SetRegClassesRoot(szKeyName, nullptr, szShellName)) return false;
 	}
 	return true;
 }
@@ -254,7 +252,7 @@ StdCompilerConfigWrite::StdCompilerConfigWrite(HKEY hRoot, const char *szPath)
 {
 	pKey->Name = szPath;
 	pKey->subindex = 0;
-	pKey->Handle = 0;
+	pKey->Handle = nullptr;
 	CreateKey(hRoot);
 }
 
@@ -270,8 +268,8 @@ bool StdCompilerConfigWrite::Name(const char *szName)
 	// Open parent key (if not already done so)
 	CreateKey();
 	// Push new subkey onto the stack
-	Key *pnKey = new Key();
-	pnKey->Handle = 0;
+	auto *pnKey = new Key();
+	pnKey->Handle = nullptr;
 	pnKey->subindex = 0;
 	if (pKey->LastChildName == szName)
 		pnKey->Name.Format("%s%d", szName, (int)++pKey->subindex);
@@ -283,7 +281,7 @@ bool StdCompilerConfigWrite::Name(const char *szName)
 	pnKey->Parent = pKey;
 	pKey = pnKey;
 	iDepth++;
-	LastString.Clear();
+	last_written_string.clear();
 	return true;
 }
 
@@ -293,12 +291,12 @@ void StdCompilerConfigWrite::NameEnd(bool fBreak)
 	// Close current key
 	if (pKey->Handle)
 		RegCloseKey(pKey->Handle);
-	LastString.Clear();
 	// Pop
 	Key *poKey = pKey;
 	pKey = poKey->Parent;
 	delete poKey;
 	iDepth--;
+	last_written_string.clear();
 }
 
 bool StdCompilerConfigWrite::FollowName(const char *szName)
@@ -319,9 +317,9 @@ bool StdCompilerConfigWrite::Default(const char *szName)
 
 bool StdCompilerConfigWrite::Separator(Sep eSep)
 {
-	// Append separators to last string
-	char sep [] = { SeparatorToChar(eSep), '\0' };
-	WriteString(sep);
+	// Just append separator and re-write last string
+	const char s[2] = { SeparatorToChar(eSep) , '\0' };
+	WriteString(s);
 	return true;
 }
 
@@ -368,6 +366,11 @@ void StdCompilerConfigWrite::String(char **pszString, RawCompileType eType)
 	WriteString(pszString ? *pszString : "");
 }
 
+void StdCompilerConfigWrite::String(std::string &str, RawCompileType eType)
+{
+	WriteString(str.c_str());
+}
+
 void StdCompilerConfigWrite::Raw(void *pData, size_t iSize, RawCompileType eType)
 {
 	excCorrupt("Raw values aren't supported for registry compilers!");
@@ -391,9 +394,9 @@ void StdCompilerConfigWrite::CreateKey(HKEY hParent)
 	// Open/Create registry key
 	if (RegCreateKeyExW(hParent ? hParent : pKey->Parent->Handle,
 	                   pKey->Name.GetWideChar(),
-	                   0, L"", REG_OPTION_NON_VOLATILE,
-	                   KEY_WRITE, NULL,
-	                   &pKey->Handle, NULL) != ERROR_SUCCESS)
+	                   0, nullptr, REG_OPTION_NON_VOLATILE,
+	                   KEY_WRITE, nullptr,
+	                   &pKey->Handle, nullptr) != ERROR_SUCCESS)
 		excCorrupt("Could not create key %s!", pKey->Name.getData());
 }
 
@@ -408,9 +411,10 @@ void StdCompilerConfigWrite::WriteDWord(uint32_t iVal)
 
 void StdCompilerConfigWrite::WriteString(const char *szString)
 {
-	// Append or set the value
-	if (LastString.getLength()) LastString.Append(szString); else LastString.Copy(szString);
-	StdBuf v = LastString.GetWideCharBuf();
+	// Append to write-string and just re-write
+	// This is probably pretty inefficient, but config saving only uses it for a few key overloads
+	last_written_string += szString;
+	StdBuf v = GetWideCharBuf(last_written_string.c_str());
 	if (RegSetValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
 	                  0, REG_SZ, getBufPtr<BYTE>(v), v.getSize()) != ERROR_SUCCESS)
 		excCorrupt("Could not write key %s!", pKey->Name.getData());
@@ -428,7 +432,7 @@ StdCompilerConfigRead::StdCompilerConfigRead(HKEY hRoot, const char *szPath)
 	if (RegOpenKeyExW(hRoot, GetWideChar(szPath),
 	                 0, KEY_READ,
 	                 &pKey->Handle) != ERROR_SUCCESS)
-		pKey->Handle = 0;
+		pKey->Handle = nullptr;
 }
 
 StdCompilerConfigRead::~StdCompilerConfigRead()
@@ -456,10 +460,10 @@ bool StdCompilerConfigRead::Name(const char *szName)
 	                 0, KEY_READ,
 	                 &hSubKey) != ERROR_SUCCESS)
 	{
-		hSubKey = 0;
+		hSubKey = nullptr;
 		// Try to query value (exists?)
 		if (RegQueryValueExW(pKey->Handle, sName.GetWideChar(),
-		                    0, &dwType, NULL, NULL) != ERROR_SUCCESS)
+		                    nullptr, &dwType, nullptr, nullptr) != ERROR_SUCCESS)
 			fFound = false;
 	}
 	// Push new subkey on the stack
@@ -472,8 +476,7 @@ bool StdCompilerConfigRead::Name(const char *szName)
 	pnKey->Type = dwType;
 	pKey = pnKey;
 	iDepth++;
-	// Last string reset
-	LastString.Clear();
+	ResetLastString();
 	return fFound;
 }
 
@@ -483,12 +486,19 @@ void StdCompilerConfigRead::NameEnd(bool fBreak)
 	// Close current key
 	if (pKey->Handle)
 		RegCloseKey(pKey->Handle);
-	LastString.Clear();
 	// Pop
 	Key *poKey = pKey;
 	pKey = poKey->Parent;
 	delete poKey;
 	iDepth--;
+	ResetLastString();
+}
+
+void StdCompilerConfigRead::ResetLastString()
+{
+	has_read_string = false;
+	has_separator_mismatch = false;
+	last_read_string.clear();
 }
 
 bool StdCompilerConfigRead::FollowName(const char *szName)
@@ -498,26 +508,25 @@ bool StdCompilerConfigRead::FollowName(const char *szName)
 
 bool StdCompilerConfigRead::Separator(Sep eSep)
 {
-	// ensure string is loaded in case value begins with a separator
-	if (!LastString.getData()) LastString.Take(ReadString());
-	if (LastString.getData())
+	// Make sure there's a string to work on
+	ReadString();
+	// Match?
+	if (last_read_string.size() && (last_read_string.front() == SeparatorToChar(eSep)))
 	{
-		// separator within string: check if it is there
-		if (LastString.getLength() && *LastString.getData() == SeparatorToChar(eSep))
-		{
-			LastString.Take(StdStrBuf(LastString.getData()+1, true));
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		// Match found. Just advance.
+		last_read_string = last_read_string.substr(1);
+		return true;
 	}
 	else
 	{
-		// No separators outside strings
+		// Separator mismatch? Let all read attempts fail until the correct separator is found or the naming ends.
+		has_separator_mismatch = true;
 		return false;
 	}
+}
+
+void StdCompilerConfigRead::NoSeparator() {
+       has_separator_mismatch = false;
 }
 
 void StdCompilerConfigRead::DWord(int32_t &rInt)
@@ -548,8 +557,8 @@ void StdCompilerConfigRead::Boolean(bool &rBool)
 {
 	try
 	{
-		StdStrBuf szVal = ReadString();
-		rBool = (szVal == "true");
+		ReadString();
+		rBool = (!has_separator_mismatch && (last_read_string == "true"));
 	}
 	catch (NotFoundException *pExc)
 	{
@@ -562,8 +571,8 @@ void StdCompilerConfigRead::Character(char &rChar)
 {
 	try
 	{
-		StdStrBuf szVal = ReadString();
-		rChar = *szVal.getData();
+		ReadString();
+		rChar = (last_read_string.length() && !has_separator_mismatch) ? last_read_string.front() : '\0';
 	}
 	catch (NotFoundException *pExc)
 	{
@@ -575,46 +584,44 @@ void StdCompilerConfigRead::Character(char &rChar)
 
 void StdCompilerConfigRead::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
-	if (!LastString) LastString.Take(ReadString());
-	if (!LastString.getLength()) { *szString='\0'; return; }
-	// when reading identifiers, only take parts of the string
-	if (eType == RCT_Idtf || eType == RCT_IdtfAllowEmpty)
-	{
-		const char *s = LastString.getData();
-		size_t ncpy = 0;
-		while (isalnum((unsigned char)s[ncpy])) ++ncpy;
-		SCopy(LastString.getData(), szString, std::min(iMaxLength, ncpy));
-		LastString.Take(StdStrBuf(s+ncpy, true));
-	}
-	else
-	{
-		SCopy(LastString.getData(), szString, iMaxLength);
-	}
+	std::string s;
+	String(s, eType);
+	SCopy(s.c_str(), szString, iMaxLength);
 }
 
 void StdCompilerConfigRead::String(char **pszString, RawCompileType eType)
 {
-	if (!LastString) LastString.Take(ReadString());
-	// when reading identifiers, only take parts of the string
-	if (eType == RCT_Idtf || eType == RCT_IdtfAllowEmpty)
+	// Read string, copy into buffer and release buffer (to use buffer allocation method)
+	std::string s;
+	String(s, eType);
+	StdStrBuf sbuf(s.c_str(), true);
+	*pszString = sbuf.GrabPointer();
+}
+
+void StdCompilerConfigRead::String(std::string &str, RawCompileType type)
+{
+	// Read from string until end marker is found
+	ReadString();
+	if (has_separator_mismatch || !last_read_string.length()) { str = "\0"; return; }
+	size_t string_end_pos = 0;
+	const char *s = last_read_string.c_str();
+	size_t spos = 0;
+	while (!IsStringEnd(s[spos], type)) ++spos;
+	if (spos < last_read_string.length())
 	{
-		const char *s = LastString.getData();
-		size_t ncpy = 0;
-		while (isalnum((unsigned char)s[ncpy])) ++ncpy;
-		StdStrBuf Result(LastString.getData(), ncpy, true);
-		Result.getMData()[ncpy] = '\0';
-		*pszString = Result.GrabPointer();
-		LastString.Take(StdStrBuf(s+ncpy, true));
+		str = last_read_string.substr(0, spos);
+		last_read_string = last_read_string.substr(spos);
 	}
 	else
 	{
-		*pszString = LastString.GrabPointer();
+		str = last_read_string;
+		last_read_string.clear();
 	}
 }
 
 void StdCompilerConfigRead::Raw(void *pData, size_t iSize, RawCompileType eType)
 {
-	excCorrupt(0, "Raw values aren't supported for registry compilers!");
+	excCorrupt(nullptr, "Raw values aren't supported for registry compilers!");
 }
 
 void StdCompilerConfigRead::Begin()
@@ -635,10 +642,12 @@ uint32_t StdCompilerConfigRead::ReadDWord()
 	// Wrong type?
 	if (pKey->Type != REG_DWORD && pKey->Type != REG_DWORD_LITTLE_ENDIAN)
 		{ excNotFound("Wrong value type!"); return 0; }
+	// Clear previous string
+	ResetLastString();
 	// Read
 	uint32_t iVal; DWORD iSize = sizeof(iVal);
 	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-	                    0, NULL,
+	                    nullptr, nullptr,
 	                    reinterpret_cast<LPBYTE>(&iVal),
 	                    &iSize) != ERROR_SUCCESS)
 		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return 0; }
@@ -649,33 +658,51 @@ uint32_t StdCompilerConfigRead::ReadDWord()
 	return iVal;
 }
 
-StdStrBuf StdCompilerConfigRead::ReadString()
+void StdCompilerConfigRead::ReadString()
 {
-	// Virtual key?
-	if (pKey->Virtual)
-		{ excNotFound("Could not read value %s! Parent key doesn't exist!", pKey->Name.getData()); return StdStrBuf(); }
-	// Wrong type?
-	if (pKey->Type != REG_SZ)
-		{ excNotFound("Wrong value type!"); return StdStrBuf(); }
-	// Get size of string
-	DWORD iSize;
-	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-	                    0, NULL,
-	                    NULL,
-	                    &iSize) != ERROR_SUCCESS)
-		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return StdStrBuf(); }
-	// Allocate string
-	StdBuf Result; Result.SetSize(iSize);
-	// Read
-	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-	                    0, NULL,
-	                    reinterpret_cast<BYTE *>(Result.getMData()),
-	                    &iSize) != ERROR_SUCCESS)
-		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return StdStrBuf(); }
-	// Check size
-	if (wcslen(getBufPtr<wchar_t>(Result)) + 1 != iSize / sizeof(wchar_t))
-		{ excCorrupt("Wrong size of a string!"); return StdStrBuf(); }
-	return StdStrBuf(getBufPtr<wchar_t>(Result));
+	// Already read?
+	if (!has_read_string)
+	{
+		ResetLastString();
+		// Virtual key?
+		if (pKey->Virtual)
+		{
+			excNotFound("Could not read value %s! Parent key doesn't exist!", pKey->Name.getData()); return;
+		}
+		// Wrong type?
+		if (pKey->Type != REG_SZ)
+		{
+			excNotFound("Wrong value type!"); return;
+		}
+		// Get size of string
+		DWORD iSize;
+		if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
+			nullptr, nullptr,
+			nullptr,
+			&iSize) != ERROR_SUCCESS)
+		{
+			excNotFound("Could not read value %s!", pKey->Name.getData()); return;
+		}
+		// Allocate string
+		StdBuf Result; Result.SetSize(iSize);
+		// Read
+		if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
+			nullptr, nullptr,
+			reinterpret_cast<BYTE *>(Result.getMData()),
+			&iSize) != ERROR_SUCCESS)
+		{
+			excNotFound("Could not read value %s!", pKey->Name.getData()); return;
+		}
+		// Check size
+		if (wcslen(getBufPtr<wchar_t>(Result)) + 1 != iSize / sizeof(wchar_t))
+		{
+			excCorrupt("Wrong size of a string!"); return;
+		}
+		// Remember string
+		StdStrBuf str_result(getBufPtr<wchar_t>(Result));
+		last_read_string = str_result.getData();
+		has_read_string = true;
+	}
 }
 
 #endif // _WIN32

@@ -7,26 +7,38 @@
     <title>Find_Property</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>7.0 OC</version>
+    <version>7.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>array</rtype>
       <params>
         <param>
           <type>string</type>
-          <name>function</name>
-          <desc>Function to call</desc>
+          <name>property</name>
+          <desc>Name of the property to check</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>value</name>
+          <desc>Value the property should match</desc>
+          <optional />
         </param>
       </params>
     </syntax>
-    <desc>Search criterion: Finds all objects which have the property set to a value that converts to boolean true.</desc>
+    <desc>Search criterion: Finds all objects which have the property set to a value that converts to boolean true or equals the given value.</desc>
+    <remark>Due to C4Script limitations, it is not possible to search for value nil with this function.</remark>
     <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
     <examples>
       <example>
-        <code><funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(20), <funclink>Find_Property</funclink>(&quot;Collectible&quot;))</code>
+        <code><funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(20), Find_Property(&quot;Collectible&quot;))</code>
         <text>Returns all nearby collectible objects.</text>
+      </example>
+      <example>
+        <code><funclink>FindObjects</funclink>(Find_Property(&quot;Visibility&quot;, VIS_None))</code>
+        <text>Returns all invisible objects. Note that <emlink href="definition/visibility.html">Visibility</emlink> is a bitmap, but Find_Property compares the whole value.</text>
       </example>
     </examples>
     <related><funclink>FindObjects</funclink></related>
   </func>
   <author>Sven2</author><date>2015-08</date>
+  <author>Luchs</author><date>2018-04</date>
 </funcs>

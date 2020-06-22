@@ -1,2 +1,6 @@
 Name=Spin Wheel
 Description=Open and close connected castle door with [Up] and [Down] respectively.
+UpAction='Up' action
+DownAction='Down' action
+ControlUp=Wheel up
+ControlDown=Wheel down

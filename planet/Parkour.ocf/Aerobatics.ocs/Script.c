@@ -2,16 +2,9 @@
 	Aerobatics
 	Several small sky islands form a chaotic parkour with lots of usable and respawning items.
 	
-	TODO:
-	horizontal mode with large map
-	reset player cp completion to killer (idea)
-	
 	@author Maikel
 */
 
-
-static checkpoint_locations;
-static inventorslab_location;
 
 protected func Initialize()
 {
@@ -49,10 +42,6 @@ protected func Initialize()
 	
 	// Rules: no power and restart with keeping inventory.
 	CreateObject(Rule_NoPowerNeed);
-	var restart = FindObject(Find_ID(Rule_Restart));
-	if (!restart)
-		restart = CreateObject(Rule_Restart);
-	restart->SetRemoveContents(false);
 	
 	// Initialize parts of the scenario.
 	var amount = BoundBy(SCENPAR_NrCheckPoints, 6, 20);
@@ -86,6 +75,7 @@ private func InitMaterials(int amount)
 	PlaceObjects(Dynamite, 4 * amount, "Earth");
 	PlaceObjects(Loam, 4 * amount, "Earth");
 	PlaceObjects(Metal, 2 * amount, "Earth");
+	PlaceObjects(Cloth, amount, "Earth");
 	// Additional item spawns.
 	if (SCENPAR_GameMode == 2)
 	{
@@ -98,28 +88,26 @@ private func InitMaterials(int amount)
 	// Place chests on several of the sky islands.
 	for (var count = 0; count < amount / 2; count++)
 	{
-		var pos = FindIslandLocation();
+		var pos = FindIslandLocation(true);
 		if (!pos)
 			continue;	
 		var chest = CreateObjectAbove(Chest, pos.x, pos.y);
 		chest->CreateContents(Dynamite, 4);
-		chest->CreateContents(Club);
-		chest->CreateContents(Javelin);
-		chest->CreateContents(Musket)->CreateContents(LeadShot);
-		chest->CreateContents(Bow)->CreateContents(Arrow);
-		chest->CreateContents(Bread, 2);
-		chest->CreateContents(IronBomb);
-		chest->CreateContents(Cloth);
-		chest->CreateContents(Pickaxe);
-		if (!Random(2))
-			chest->CreateContents(GrenadeLauncher)->CreateContents(IronBomb);
+		chest->CreateContents(Club, 4);
+		chest->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
+		chest->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
+		chest->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
+		chest->CreateContents(IronBomb, 4);
+		chest->CreateContents(GrenadeLauncher)->CreateContents(IronBomb);
+		chest->CreateContents(GrenadeLauncher)->CreateContents(IronBomb);
 		if (!Random(2))
 			chest->CreateContents(Boompack);
 		if (!Random(2))
 			chest->CreateContents(WallKit);
-		if (!Random(2))
-			chest->CreateContents(TeleGlove);
 	}
+	// Load all weapons in the chests.
+	for (var weapon in FindObjects(Find_Or(Find_ID(Blunderbuss), Find_ID(GrenadeLauncher))))
+		weapon->SetLoaded();
 	// Place some catapults.
 	for (var count = 0; count < amount / 4; count++)
 	{
@@ -144,15 +132,18 @@ private func InitMaterials(int amount)
 	return;
 }
 
-private func FindIslandLocation()
+private func FindIslandLocation(bool is_chest)
 {
-	var pos;
-	for (var tries = 0; tries < 100; tries++)
+	var map_zoom = GetScenarioVal("MapZoom", "Landscape");	
+	var pos = {x = inventorslab_location[0] * map_zoom, y = inventorslab_location[1] * map_zoom};
+	for (var tries = 0; tries < 200; tries++)
 	{
 		pos = FindLocation(Loc_Sky(), Loc_Wall(CNAT_Bottom));
 		if (!pos)
 			continue;
 		if (FindObject(Find_Category(C4D_Vehicle), Find_Distance(30, pos.x, pos.y)))
+			continue;
+		if (is_chest && FindObject(Find_Or(Find_ID(ParkourCheckpoint), Find_ID(Chest)), Find_Distance(30, pos.x, pos.y)))
 			continue;
 		break;
 	}
@@ -185,6 +176,7 @@ private func InitVegetation(int amount)
 	Tree_Coniferous2->Place(amount / 4);
 	Tree_Coniferous3->Place(amount / 4);
 	Cotton->Place(amount / 2);
+	Vine->Place(amount);
 	return;
 }
 

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,7 +20,7 @@
 #ifndef INC_C4PlayerList
 #define INC_C4PlayerList
 
-#include "C4PlayerInfo.h"
+#include "control/C4PlayerInfo.h"
 
 class C4PlayerList
 {
@@ -74,6 +74,7 @@ public:
 	bool PositionTaken(int iPosition) const;
 	int CheckColorDw(DWORD dwColor, C4Player *pExclude); // return minimum difference to the other player's colors
 	bool SynchronizeLocalFiles(); // syncrhonize all local player files; resetting InGame times
+	bool HasPlayerInTeamSelection(); // Return whether any player is in the pre-join team selection dialogue
 protected:
 	int GetFreeNumber() const;
 	void RecheckPlayerSort(C4Player *pForPlayer);

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,23 +19,6 @@
 
 #ifndef INC_C4ScenarioParameters
 #define INC_C4ScenarioParameters
-
-// Maps IDs to achievement graphics to be shown beside scenarios (and maybe other things)
-class C4AchievementGraphics
-{
-	std::map<StdCopyStrBuf, C4FacetSurface *> Graphics;
-	int32_t idGrp; // ID of group file from which achievements were loaded
-
-public:
-	C4AchievementGraphics() : idGrp(0) {}
-
-	// Init will always  load all achievement files from the first group that contains achievements
-	bool Init(C4Group &File);
-	bool Init(C4GroupSet &Files);
-	void Clear();
-
-	C4FacetSurface *FindByName(const char *name) const;
-};
 
 // Definition for a custom setting for the scenario
 class C4ScenarioParameterDef
@@ -64,14 +47,14 @@ private:
 	ParameterType Type; // Type of parameter. Always enum.
 
 	std::vector<Option> Options; // possible options to be selected for an enum type
-	int32_t Default; // value of option selected by default for an enum type
-	int32_t LeagueValue; // if nonzero, option is forced to this value in league games
+	int32_t Default{0}; // value of option selected by default for an enum type
+	int32_t LeagueValue{0}; // if nonzero, option is forced to this value in league games
 
 	StdCopyStrBuf Achievement; // if this parameter is an achievement, this string contains the name of the achievement graphics to be used
 
 public:
-	C4ScenarioParameterDef() : Default(0), LeagueValue(0) {} 
-	~C4ScenarioParameterDef() {}
+	C4ScenarioParameterDef() = default;
+	~C4ScenarioParameterDef() = default;
 
 	const char *GetName() const { return Name.getData(); }
 	const char *GetDescription() const { return Description.getData(); }
@@ -94,8 +77,8 @@ class C4ScenarioParameterDefs
 	std::vector<C4ScenarioParameterDef> Parameters;
 
 public:
-	C4ScenarioParameterDefs() {}
-	~C4ScenarioParameterDefs() {}
+	C4ScenarioParameterDefs() = default;
+	~C4ScenarioParameterDefs() = default;
 
 	void Clear() { Parameters.clear(); }
 
@@ -113,8 +96,8 @@ class C4ScenarioParameters
 	std::map<StdCopyStrBuf, int32_t> Parameters;
 
 public:
-	C4ScenarioParameters() {}
-	~C4ScenarioParameters() {}
+	C4ScenarioParameters() = default;
+	~C4ScenarioParameters() = default;
 
 	void Clear();
 	void Merge(const C4ScenarioParameters &other);

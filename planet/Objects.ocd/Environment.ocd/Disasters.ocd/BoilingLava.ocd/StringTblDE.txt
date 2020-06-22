@@ -1,2 +1,12 @@
 Name=Kochende Lava
-Description=L�sst die Lava auf der Karte brodeln
+Description=Lässt die Lava auf der Karte brodeln
+Intensity=Intensität
+IntensityHelp=Wie viele Blasen pro Frame erzeugt werden. Bei 0 ist das Brodeln deaktiviert.
+Area=Gebiet
+AreaHelp=In welchem Gebiet Blasen erzeugt werden.
+FullMap=Ganze Karte
+Rect=Rechteck
+SetBoilingIntensity=Brodel-Intensität setzen
+SetBoilingIntensityHelp=Setzt die Intensität eines Kochende Lava/Säure-Objektes
+Boiler=Kochende Fluessigkeit-Objekt
+BoilerTargetHelp=Das geänderte 'Kochende Lava' / 'Kochende Säure' Objekt.

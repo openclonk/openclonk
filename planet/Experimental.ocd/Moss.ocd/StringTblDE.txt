@@ -1,2 +1,0 @@
-Name=Moos
-Description=Moos wächst unterirdisch nahe des Wassers. Zum kultivieren ins Wasser nahe Erde legen. Zum trocknen kontakt mit Wasser vermeiden. Kultivieren und trocknen dauern seine Zeit.

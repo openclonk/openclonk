@@ -1,8 +1,0 @@
-[DefCore]
-id=ConstructionSite
-Version=6,0
-Category=C4D_StaticBack
-Width=16
-Height=16
-Offset=-8,-14
-ClosedContainer=2

@@ -2,8 +2,6 @@
 
 /* Riku dialogue */
 
-static g_got_gem_task, g_treasure_collected;
-
 func Dlg_Riku_1(object clonk)
 {
 	if (g_treasure_collected) return CallDialogue(clonk, 1, "Gem");

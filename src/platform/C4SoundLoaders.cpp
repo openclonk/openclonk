@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,16 +14,16 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4SoundLoaders.h"
-#include <C4MusicFile.h>
+#include "C4Include.h"
+#include "platform/C4SoundLoaders.h"
 
-#include <C4Application.h>
+#include "game/C4Application.h"
+#include "platform/C4MusicFile.h"
 
 
 using namespace C4SoundLoaders;
 
-SoundLoader* SoundLoader::first_loader(NULL);
+SoundLoader* SoundLoader::first_loader(nullptr);
 
 #if AUDIO_TK == AUDIO_TK_OPENAL && defined(__APPLE__)
 namespace
@@ -57,9 +57,9 @@ bool AppleSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_lengt
 	AudioFileID sound_file;
 	OSStatus err = AudioFileOpenWithCallbacks((void*)data_container,
 		AudioToolBoxReadCallback,
-		NULL,
+		nullptr,
 		AudioToolBoxGetSizeProc,
-		NULL,
+		nullptr,
 		0,
 		&sound_file
 	);
@@ -198,7 +198,7 @@ bool VorbisLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, u
 	callbacks.tell_func = &mem_tell_func;
 	
 	// open using callbacks
-	if (ov_open_callbacks(&compressed, &ogg_file, NULL, 0, callbacks) != 0)
+	if (ov_open_callbacks(&compressed, &ogg_file, nullptr, 0, callbacks) != 0)
 	{
 		ov_clear(&ogg_file);
 		return false;

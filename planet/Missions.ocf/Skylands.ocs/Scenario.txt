@@ -1,7 +1,7 @@
 [Head]
 Icon=25
 Title=Skylands
-Version=6,0
+Version=8,0
 Difficulty=90
 MaxPlayer=30
 NoInitialize=true

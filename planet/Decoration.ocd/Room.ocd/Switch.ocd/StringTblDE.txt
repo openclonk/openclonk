@@ -1,0 +1,8 @@
+Name=Schalter
+Description=Öffnet oder schließt Türen und andere Dinge. Bedienung mit Anfassen und Richtungstasten.
+MsgStuck=Klemmt :(
+SwitchLeft=Schalter links
+SwitchRight=Schalter rechts
+Rotate=Drehen
+LeftAction=Aktion links
+RightAction=Aktion rechts

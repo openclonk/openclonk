@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,10 +15,11 @@
  */
 
 #include "C4Include.h"
-#include "C4MeshAnimation.h"
-#include "C4Object.h"
-#include "C4ValueArray.h"
-#include "C4Game.h"
+#include "object/C4MeshAnimation.h"
+
+#include "object/C4Object.h"
+#include "script/C4Aul.h"
+#include "script/C4ValueArray.h"
 
 namespace
 {
@@ -64,13 +65,13 @@ StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, 
 		return new C4ValueProviderLinear(itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(end, 1000), len, static_cast<C4AnimationEnding>(Data[5].getInt()));
 	}
 	case C4AVP_X:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		if (Data[4].getInt() == 0)
 			throw C4AulExecError("Length cannot be zero");
 
 		return new C4ValueProviderX(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_Y:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		if (Data[4].getInt() == 0)
 			throw C4AulExecError("Length cannot be zero");
 
@@ -78,61 +79,61 @@ StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, 
 	case C4AVP_R:
 		if(Data.GetSize() >= 4 && Data[3] != C4VNull)
 			pForObj = Data[3].getObj();
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		return new C4ValueProviderR(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000));
 	case C4AVP_AbsX:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		if (Data[4].getInt() == 0)
 			throw C4AulExecError("Length cannot be zero");
 		return new C4ValueProviderAbsX(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_AbsY:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		if (Data[4].getInt() == 0)
 			throw C4AulExecError("Length cannot be zero");
 		return new C4ValueProviderAbsY(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_Dist:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		if (Data[4].getInt() == 0)
 			throw C4AulExecError("Length cannot be zero");
 		return new C4ValueProviderDist(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_XDir:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		if (Data[3].getInt() == 0)
 			throw C4AulExecError("MaxXDir cannot be zero");
 		return new C4ValueProviderXDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_YDir:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		if (Data[3].getInt() == 0)
 			throw C4AulExecError("MaxYDir cannot be zero");
 		return new C4ValueProviderYDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_RDir:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		if (Data[4].getInt() - Data[3].getInt() == 0)
 			throw C4AulExecError("MaxRDir - MinRDir cannot be zero");
 		return new C4ValueProviderRDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[5].getInt()), itofix(Data[4].getInt(),Data[5].getInt()));
 
 	case C4AVP_AbsRDir:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		if (Data[4].getInt() - Data[3].getInt() == 0)
 			throw C4AulExecError("MaxRDir - MinRDir cannot be zero");
 		return new C4ValueProviderAbsRDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[5].getInt()), itofix(Data[4].getInt(),Data[5].getInt()));
 	case C4AVP_CosR:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		return new C4ValueProviderCosR(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_SinR:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		return new C4ValueProviderSinR(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_CosV:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		return new C4ValueProviderCosV(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_SinV:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		return new C4ValueProviderSinV(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_Action:
-		if (!pForObj) return NULL;
+		if (!pForObj) return nullptr;
 		return new C4ValueProviderAction(pForObj);
 	default:
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -186,7 +187,7 @@ void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
 		{ "Hold",   ANIM_Hold                          },
 		{ "Remove", ANIM_Remove                        },
 
-		{ NULL,     static_cast<C4AnimationEnding>(0)  }
+		{ nullptr,     static_cast<C4AnimationEnding>(0)  }
 	};
 
 	SerializableValueProvider::CompileFunc(pComp);
@@ -207,7 +208,7 @@ void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
 	// Game.FrameCounter and to make sure that the Value is always up to
 	// date (current frame) when saving by running Execute(). This could
 	// even be done in the base class.
-	if(pComp->isCompiler())
+	if(pComp->isDeserializer())
 		if(LastTick > Game.FrameCounter)
 			LastTick = 0;
 }

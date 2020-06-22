@@ -6,6 +6,7 @@
 */
 
 #include Library_Seed
+#include Library_Flammable
 
 local lib_seed_plant = Cotton;
 
@@ -18,10 +19,10 @@ private func Hit()
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount(bool get_partial)
-{ 
-	if (get_partial)
-		return GetCon()/2;
+public func GetFuelAmount(int requested_amount)
+{
+    // disregard the parameter, because only a complete chunk should be removed 
+	if (this != CottonSeed)	return GetCon()/2;
 	return 50;
 }
 

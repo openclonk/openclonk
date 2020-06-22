@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,7 +18,7 @@
 #ifndef INC_C4GameOptions
 #define INC_C4GameOptions
 
-#include "C4Gui.h"
+#include "gui/C4Gui.h"
 
 // options dialog: created as listbox inside another dialog
 // used to configure some standard runtime options, as well as custom game options
@@ -37,7 +37,7 @@ private:
 		// primary subcomponent: forward focus to this element
 		C4GUI::Control *pPrimarySubcomponent;
 
-		virtual bool IsFocused(C4GUI::Control *pCtrl)
+		bool IsFocused(C4GUI::Control *pCtrl) override
 		{
 			// also forward own focus to primary control
 			return BaseClass::IsFocused(pCtrl) || (HasFocus() && pPrimarySubcomponent == pCtrl);
@@ -81,10 +81,10 @@ private:
 		OptionScenarioParameter(class C4GameOptionsList *pForDlg, const class C4ScenarioParameterDef *parameter_def);
 
 	protected:
-		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller);
-		virtual void DoDropdownSelChange(int32_t idNewSelection);
+		void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller) override;
+		void DoDropdownSelChange(int32_t idNewSelection) override;
 
-		virtual void Update(); // update data to currently set option
+		void Update() override; // update data to currently set option
 	};
 
 
@@ -95,10 +95,10 @@ private:
 		OptionControlMode(class C4GameOptionsList *pForDlg);
 
 	protected:
-		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller);
-		virtual void DoDropdownSelChange(int32_t idNewSelection);
+		void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller) override;
+		void DoDropdownSelChange(int32_t idNewSelection) override;
 
-		virtual void Update(); // update data to current control rate
+		void Update() override; // update data to current control rate
 	};
 
 	// drop down list option to adjust control rate
@@ -108,10 +108,10 @@ private:
 		OptionControlRate(class C4GameOptionsList *pForDlg);
 
 	protected:
-		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller);
-		virtual void DoDropdownSelChange(int32_t idNewSelection);
+		void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller) override;
+		void DoDropdownSelChange(int32_t idNewSelection) override;
 
-		virtual void Update(); // update data to current control rate
+		void Update() override; // update data to current control rate
 	};
 
 	// drop down list option to adjust team usage
@@ -121,10 +121,10 @@ private:
 		OptionTeamDist(class C4GameOptionsList *pForDlg);
 
 	protected:
-		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller);
-		virtual void DoDropdownSelChange(int32_t idNewSelection);
+		void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller) override;
+		void DoDropdownSelChange(int32_t idNewSelection) override;
 
-		virtual void Update(); // update data to current team mode
+		void Update() override; // update data to current team mode
 	};
 
 	// drop down list option to adjust team color state
@@ -134,10 +134,10 @@ private:
 		OptionTeamColors(class C4GameOptionsList *pForDlg);
 
 	protected:
-		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller);
-		virtual void DoDropdownSelChange(int32_t idNewSelection);
+		void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller) override;
+		void DoDropdownSelChange(int32_t idNewSelection) override;
 
-		virtual void Update(); // update data to current team color mode
+		void Update() override; // update data to current team color mode
 	};
 
 	// drop down list option to adjust control rate
@@ -147,10 +147,10 @@ private:
 		OptionRuntimeJoin(class C4GameOptionsList *pForDlg);
 
 	protected:
-		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller);
-		virtual void DoDropdownSelChange(int32_t idNewSelection);
+		void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller) override;
+		void DoDropdownSelChange(int32_t idNewSelection) override;
 
-		virtual void Update(); // update data to current runtime join state
+		void Update() override; // update data to current runtime join state
 	};
 
 public:
@@ -162,8 +162,8 @@ public:
 		GOLS_Runtime
 	};
 
-	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, C4GameOptionsListSource source, class C4ScenarioParameterDefs *param_defs=NULL, class C4ScenarioParameters *params=NULL);
-	~C4GameOptionsList() { Deactivate(); }
+	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, C4GameOptionsListSource source, class C4ScenarioParameterDefs *param_defs=nullptr, class C4ScenarioParameters *params=nullptr);
+	~C4GameOptionsList() override { Deactivate(); }
 
 private:
 	C4GameOptionsListSource source; // where to draw options from. e.g. lobby options such as team colors aren't presented at run-time
@@ -176,9 +176,9 @@ private:
 public:
 	// update all option flags by current game state
 	void Update();
-	void OnSec1Timer() { Update(); }
+	void OnSec1Timer() override { Update(); }
 
-	// update to new parameter set. recreates option fields. set parameters to NULL for no options
+	// update to new parameter set. recreates option fields. set parameters to nullptr for no options
 	void SetParameters(C4ScenarioParameterDefs *param_defs, C4ScenarioParameters *params);
 
 	// activate/deactivate periodic updates

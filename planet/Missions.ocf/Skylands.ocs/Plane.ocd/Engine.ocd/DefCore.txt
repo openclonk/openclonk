@@ -1,6 +1,6 @@
 [DefCore]
 id=Airplane_Engine
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=13
 Height=8
@@ -10,6 +10,5 @@ VertexX=-3,-3,5,5
 VertexY=-3,3,-3,3
 VertexFriction=60,60,60,60
 Mass=20
-Components=Metal=10;
 Rotate=1
 Float=1

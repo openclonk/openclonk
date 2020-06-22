@@ -1,0 +1,7 @@
+Name=Schlitten
+Description=Zum Aufsatz auf Kabel. Transportiert Fahrzeuge.
+
+TooltipPickup=Dieses Fahrzeug an den Schlitten anhängen.
+TooltipDrop=Dieses Fahrzeug vom Schlitten abnehmen.
+DescPickup=%s an den Schlitten anhängen.
+DescDrop=%s vom Schlitten abnehmen.

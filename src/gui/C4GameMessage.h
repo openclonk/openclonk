@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,8 @@
 #ifndef INC_C4GameMessage
 #define INC_C4GameMessage
 
-#include <StdColors.h>
-#include <C4Value.h>
+#include "lib/StdColors.h"
+#include "script/C4Value.h"
 
 const int32_t C4GM_MaxText = 256,
               C4GM_MinDelay = 20;
@@ -66,7 +66,7 @@ protected:
 	C4ID DecoID;
 	C4PropList *PictureDef; // can be definition, object or prop list with Source and Name properties
 	C4Value PictureDefVal; // C4Value holding PictureDef to prevent deletion
-	C4GUI::FrameDecoration *pFrameDeco;
+	C4GUI::FrameDecoration *pFrameDeco{nullptr};
 	uint32_t dwFlags;
 protected:
 	void Init(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwCol, C4ID idDecoID, C4PropList *pSrc, uint32_t dwFlags, int width);
@@ -94,8 +94,8 @@ public:
 	void ClearPlayers(int32_t iPlayer, int32_t dwPositioningFlags);
 	void ClearPointers(C4Object *pObj);
 	void UpdateDef(C4ID idUpdDef); // called after reloaddef
-	bool New(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX = -1, int32_t iY = -1, uint32_t dwClr = 0xffFFFFFF, C4ID idDecoID=C4ID::None, C4PropList *pSrc=NULL, uint32_t dwFlags=0u, int32_t width=0);
-	bool New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID=C4ID::None, C4PropList *pSrc=NULL, uint32_t dwFlags=0u, int32_t width=0);
+	bool New(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX = -1, int32_t iY = -1, uint32_t dwClr = 0xffFFFFFF, C4ID idDecoID=C4ID::None, C4PropList *pSrc=nullptr, uint32_t dwFlags=0u, int32_t width=0);
+	bool New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID=C4ID::None, C4PropList *pSrc=nullptr, uint32_t dwFlags=0u, int32_t width=0);
 	bool Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t bCol, bool fNoDuplicates = false);
 };
 

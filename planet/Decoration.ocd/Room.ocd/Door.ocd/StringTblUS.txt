@@ -1,0 +1,10 @@
+Name=Door
+Description=A door which can be entered.
+MsgDoorLocked=This door is locked, bring the right key.
+Key=Key
+KeyHelp=A clonk must carry this key in order to enter the door. After successful entry, the door is unlocked and can be entered by anyone without a key.
+ConnectedDoor=Target door
+ConnectedDoorHelp=If a clonk enters the door, it will be transferred to this target door.
+EntranceAction=Action on entrance
+EntranceActionHelp=Action to be executed when a clonk enters the door.
+KeyUsed=Key used

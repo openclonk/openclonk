@@ -8,11 +8,11 @@
 	Use ChangeEffect properly to save calls
 */
 
-local fade_time;
+local fade_time = 18;
 
-protected func Activate(int plr)
+public func Activate(int by_plr)
 {
-	MessageWindow(GetProperty("Description"), plr);
+	MessageWindow(this.Description, by_plr);
 	return true;
 }
 
@@ -24,11 +24,10 @@ public func DoFadeTime(int to_add)
 
 protected func Initialize() 
 {
-	if(ObjectCount(Find_ID(Rule_ObjectFade), Find_Exclude(this))) {
+	if (ObjectCount(Find_ID(Rule_ObjectFade), Find_Exclude(this))) {
 		FindObject(Find_ID(Rule_ObjectFade), Find_Exclude(this))->DoFadeTime(36);
 		return RemoveObject();
 	}
-	fade_time = 18; // 18, because the timer will check once per second, so it's aproximately a second.
 	AddTimer("Timer");
 }
 
@@ -53,6 +52,12 @@ public func FxIntFadeOutCandidateTimer(object target, effect, int time)
 		return FX_Execute_Kill;
 	}
 	return FX_OK;
+}
+
+public func FadeOutObject(object target)
+{
+	// Definition or hooked call: Fade out an object (even if rule is not active)
+	return AddEffect("IntFadeOut", target, 100, 1, nil, Rule_ObjectFade);
 }
 
 func CheckFadeConditions(object fade)
@@ -86,7 +91,7 @@ public func FxIntFadeOutTimer(object target, effect, int time)
 
 	if (!(target->Contained()) && effect.x == target->GetX() && effect.y == target->GetY())
 	{
-		if(time >= fade_time) 
+		if (time >= fade_time) 
 		{
 			target->RemoveObject();
 			return -1;
@@ -110,3 +115,5 @@ public func FxIntFadeOutTimerEffect(string new_effect_name)
 
 local Name = "Object Fade";
 local Description = "$Description$";
+local Visibility = VIS_Editor;
+local EditorPlacementLimit = 1; // Rules are to be placed only once

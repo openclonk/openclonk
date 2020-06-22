@@ -18,12 +18,19 @@
 #include <C4Include.h>
 
 #include "AulTest.h"
+#include "ErrorHandler.h"
 
 #include "script/C4ScriptHost.h"
 #include "lib/C4Random.h"
 #include "object/C4DefList.h"
+#include "TestLog.h"
 
-C4Value AulTest::RunCode(const char *code, bool wrap)
+void AulTest::SetUp()
+{
+	part_count = 0;
+}
+
+C4Value AulTest::RunScript(const std::string &code)
 {
 	class OnScopeExit
 	{
@@ -38,35 +45,36 @@ C4Value AulTest::RunCode(const char *code, bool wrap)
 	InitCoreFunctionMap(&ScriptEngine);
 	FixedRandom(0x40490fdb);
 
-	std::string wrapped;
-	if (wrap)
-	{
-		wrapped = "func Main() {\n";
-		wrapped += code;
-		wrapped += "\n}\n";
-	}
-	else
-	{
-		wrapped = code;
-	}
 	std::string src("<");
 	auto test_info = ::testing::UnitTest::GetInstance()->current_test_info();
 	src += test_info->test_case_name();
 	src += "::";
 	src += test_info->name();
+	src += "::";
+	src += std::to_string(part_count++);
 	src += ">";
 
-	GameScript.LoadData(src.c_str(), wrapped.c_str(), NULL);
+	GameScript.LoadData(src.c_str(), code.c_str(), NULL);
 	ScriptEngine.Link(NULL);
 		
 	return GameScript.Call("Main", nullptr, true);
 }
-C4Value AulTest::RunExpr(const char *expr)
+
+C4Value AulTest::RunCode(const std::string &code)
+{
+	std::string wrapped = "func Main() {\n";
+	wrapped += code;
+	wrapped += "\n}\n";
+
+	return RunScript(wrapped);
+}
+
+C4Value AulTest::RunExpr(const std::string &expr)
 {
 	std::string code = "return ";
 	code += expr;
 	code += ';';
-	return RunCode(code.c_str());
+	return RunCode(code);
 }
 
 const C4Value AulTest::C4VINT_MIN = C4VInt(-2147483647 - 1);
@@ -105,21 +113,175 @@ TEST_F(AulTest, Loops)
 	EXPECT_EQ(C4Value(), RunCode("var a = [], sum; for(var i in a) sum += i; return sum;"));
 	EXPECT_EQ(C4VInt(1), RunCode("var a = [1], sum; for(var i in a) sum += i; return sum;"));
 	EXPECT_EQ(C4VInt(6), RunCode("var a = [1,2,3], sum; for(var i in a) sum += i; return sum;"));
+	EXPECT_EQ(C4VInt(-6), RunCode(R"(
+var a = [-3, -2, -1, 0, 1, 2, 3], b;
+for (var i in a) {
+	if (i > 0) break;
+	b += i;
+}
+return b;
+)"));
+	EXPECT_EQ(C4VInt(0), RunCode(R"(
+var a = [-3, -2, -1, 0, 1, 2, 3], b;
+for (var i in a) {
+	if (i < -1) continue;
+	if (i > 1) break;
+	b += i;
+}
+return b;
+)"));
+	// Test nested loops
+	EXPECT_EQ(C4VInt(-6), RunCode(R"(
+var a = [[-3, -2], [-1, 0], [1, 2, 3]], b;
+for (var i in a) {
+	for (var j in i) {
+		if (j > 0) break;
+		b += j;
+	}
+}
+return b;
+)"));
+
+	// Test syntax errors inside loops
+	{
+		// Syntax error in for loop initializer
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (var i = missing();;) break;"), C4AulExecError);
+	}
+	{
+		// Syntax error in for loop condition
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (; missing();) break;"), C4AulExecError);
+	}
+	{
+		// Syntax error in for loop incrementor
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (;; missing()) continue;"), C4AulExecError);
+	}
+	{
+		// Syntax error in for loop body
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (;;) missing();"), C4AulExecError);
+	}
+	{
+		// Syntax error in while loop condition
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("while (missing()) break;"), C4AulExecError);
+	}
+	{
+		// Syntax error in while loop body
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("while (1) missing();"), C4AulExecError);
+	}
+	{
+		// Syntax error in for-in loop body
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (var i in [1]) { missing(); }"), C4AulExecError);
+	}
 }
 
 TEST_F(AulTest, Locals)
 {
-	EXPECT_EQ(C4VInt(42), RunCode("local i = 42; func Main() { return i; }", false));
-	EXPECT_EQ(C4VInt(42), RunCode("local i; func Main() { i = 42; return i; }", false));
-	EXPECT_EQ(C4VInt(42), RunCode("func Main() { local i = 42; return i; }", false));
-	EXPECT_EQ(C4VInt(42), RunCode("local i = [42]; func Main() { return i[0]; }", false));
-	EXPECT_EQ(C4VInt(42), RunCode("local p = { i = 42 }; func Main() { return p.i; }", false));
-	EXPECT_EQ(C4VInt(42), RunCode("local p1 = { i = 42 }, p2 = new p1 {}; func Main() { return p2.i; }", false));
+	EXPECT_EQ(C4VInt(42), RunScript("local i = 42; func Main() { return i; }"));
+	EXPECT_EQ(C4VInt(42), RunScript("local i; func Main() { i = 42; return i; }"));
+	EXPECT_EQ(C4VInt(42), RunScript("func Main() { local i = 42; return i; }"));
+	EXPECT_EQ(C4VInt(42), RunScript("local i = [42]; func Main() { return i[0]; }"));
+	EXPECT_EQ(C4VInt(42), RunScript("local p = { i = 42 }; func Main() { return p.i; }"));
+	EXPECT_EQ(C4VInt(42), RunScript("local p1 = { i = 42 }, p2 = new p1 {}; func Main() { return p2.i; }"));
+}
+
+TEST_F(AulTest, ProplistFunctions)
+{
+	EXPECT_EQ(C4VInt(1), RunScript(R"(
+local a = new Global {
+	a = func() { return b; },
+	b = 1
+};
+func Main() { return a->Call(a.a); }
+)"));
+
+	EXPECT_EQ(C4VInt(1), RunScript(R"(
+static const a = { v = 1 };
+static const b = new a {
+	c = func() { return v; }
+};
+func Main() { return b->c(); }
+)"));
+
+	EXPECT_THROW(RunScript("func foo() { return { bar: func() {} }; }"), C4AulError);
 }
 
 TEST_F(AulTest, Eval)
 {
 	EXPECT_EQ(C4VInt(42), RunExpr("eval(\"42\")"));
-	EXPECT_EQ(C4VInt(42), RunCode("local i = 42; func Main() { return eval(\"this.i\"); }", false));
-	EXPECT_EQ(C4VInt(42), RunCode("local i; func Main() { eval(\"this.i = 42\"); return i; }", false));
+	EXPECT_EQ(C4VInt(42), RunScript("local i = 42; func Main() { return eval(\"this.i\"); }"));
+	EXPECT_EQ(C4VInt(42), RunScript("local i; func Main() { eval(\"this.i = 42\"); return i; }"));
+}
+
+TEST_F(AulTest, Vars)
+{
+	EXPECT_EQ(C4VInt(42), RunCode("var i = 21; i = i + i; return i;"));
+	EXPECT_EQ(C4VInt(42), RunCode("var i = -42; i = Abs(i); return i;"));
+}
+
+TEST_F(AulTest, GlobalVariables)
+{
+	EXPECT_EQ(C4V_PropList, RunScript("static const a = {}; func Main() { return a; }").GetType());
+	{
+		// #1850: Uncaught C4AulParseError with error in System.ocg script
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_)).Times(1);
+		EXPECT_NO_THROW(RunScript("static a = {}; func Main() {}"));
+	}
+}
+
+TEST_F(AulTest, ParameterPassing)
+{
+	EXPECT_EQ(C4VArray(
+		C4VInt(1), C4VInt(2), C4VInt(3), C4VInt(4), C4VInt(5),
+		C4VInt(6), C4VInt(7), C4VInt(8), C4VInt(9), C4VInt(10)),
+		RunScript(R"(
+func f(...)
+{
+	return [Par(0), Par(1), Par(2), Par(3), Par(4), Par(5), Par(6), Par(7), Par(8), Par(9)];
+}
+
+func Main()
+{
+	return f(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+}
+)"));
+
+	EXPECT_EQ(C4VArray(
+		C4VInt(1), C4VInt(2), C4VInt(3), C4VInt(4), C4VInt(5),
+		C4VInt(6), C4VInt(7), C4VInt(8), C4VInt(9), C4VInt(10)),
+		RunScript(R"(
+func f(a, b, ...)
+{
+	return g(b, a, ...);
+}
+
+func g(...)
+{
+	return [Par(0), Par(1), Par(2), Par(3), Par(4), Par(5), Par(6), Par(7), Par(8), Par(9)];
+}
+
+func Main()
+{
+	return f(2, 1, 3, 4, 5, 6, 7, 8, 9, 10);
+}
+)"));
+}
+
+TEST_F(AulTest, Conditionals)
+{
+	EXPECT_EQ(C4VInt(1), RunCode("if (true) return 1; else return 2;"));
+	EXPECT_EQ(C4VInt(2), RunCode("if (false) return 1; else return 2;"));
 }

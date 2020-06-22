@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,8 +19,9 @@
 #ifndef INC_STDDDRAW2
 #define INC_STDDDRAW2
 
-#include <C4Surface.h>
-#include <StdMeshMaterial.h>
+#include "lib/StdMeshMaterial.h"
+#include "graphics/C4Surface.h"
+#include "graphics/C4BltTransform.h"
 
 // Global Draw access pointer
 extern C4Draw *pDraw;
@@ -32,57 +33,6 @@ inline void DwTo4UB(DWORD dwClr, unsigned char (&r)[4])
 	r[2] = (unsigned char)( (dwClr      ) & 0xff);
 	r[3] = (unsigned char)( (dwClr >> 24) & 0xff);
 }
-
-// rotation info class
-class C4BltTransform
-{
-public:
-	float mat[9]; // transformation matrix
-public:
-	C4BltTransform() {} // default: don't init fields
-	void Set(float fA, float fB, float fC, float fD, float fE, float fF, float fG, float fH, float fI)
-	{ mat[0]=fA; mat[1]=fB; mat[2]=fC; mat[3]=fD; mat[4]=fE; mat[5]=fF; mat[6]=fG; mat[7]=fH; mat[8]=fI; }
-	void SetRotate(float iAngle, float fOffX, float fOffY); // set by angle and rotation offset
-	bool SetAsInv(C4BltTransform &rOfTransform);
-	void Rotate(float Angle, float fOffX, float fOffY) // rotate by angle around rotation offset
-	{
-		// multiply matrix as seen in SetRotate by own matrix
-		C4BltTransform rot; rot.SetRotate(Angle, fOffX, fOffY);
-		(*this) *= rot;
-	}
-	void SetMoveScale(float dx, float dy, float sx, float sy)
-	{
-		mat[0] = sx; mat[1] = 0;  mat[2] = dx;
-		mat[3] = 0;  mat[4] = sy; mat[5] = dy;
-		mat[6] = 0;  mat[7] = 0;  mat[8] = 1;
-	}
-	void MoveScale(float dx, float dy, float sx, float sy)
-	{
-		// multiply matrix by movescale matrix
-		C4BltTransform move; move.SetMoveScale(dx,dy,sx,sy);
-		(*this) *= move;
-	}
-	void ScaleAt(float sx, float sy, float tx, float ty)
-	{
-		// scale and move back so tx and ty remain fixpoints
-		MoveScale(-tx*(sx-1), -ty*(sy-1), sx, sy);
-	}
-	C4BltTransform &operator *= (const C4BltTransform &r)
-	{
-		// transform transformation
-		Set(mat[0]*r.mat[0] + mat[3]*r.mat[1] + mat[6]*r.mat[2],
-		    mat[1]*r.mat[0] + mat[4]*r.mat[1] + mat[7]*r.mat[2],
-		    mat[2]*r.mat[0] + mat[5]*r.mat[1] + mat[8]*r.mat[2],
-		    mat[0]*r.mat[3] + mat[3]*r.mat[4] + mat[6]*r.mat[5],
-		    mat[1]*r.mat[3] + mat[4]*r.mat[4] + mat[7]*r.mat[5],
-		    mat[2]*r.mat[3] + mat[5]*r.mat[4] + mat[8]*r.mat[5],
-		    mat[0]*r.mat[6] + mat[3]*r.mat[7] + mat[6]*r.mat[8],
-		    mat[1]*r.mat[6] + mat[4]*r.mat[7] + mat[7]*r.mat[8],
-		    mat[2]*r.mat[6] + mat[5]*r.mat[7] + mat[8]*r.mat[8]);
-		return *this;
-	}
-	void TransformPoint(float &rX, float &rY) const; // rotate point by angle
-};
 
 // pattern
 class C4Pattern
@@ -139,14 +89,15 @@ public:
 	static constexpr int COLOR_DEPTH = 32;
 	static constexpr int COLOR_DEPTH_BYTES = COLOR_DEPTH / 8;
 
-	C4Draw(): MaxTexSize(0) { }
-	virtual ~C4Draw() { pDraw=NULL; }
+	C4Draw() = default;
+	virtual ~C4Draw() { pDraw=nullptr; }
 public:
 	C4AbstractApp * pApp; // the application
 	bool Active;                    // set if device is ready to render, etc.
 	float gamma[C4MaxGammaRamps][3]; // input gammas
 	float gammaOut[3]; // combined gamma
-	int MaxTexSize;
+	int MaxTexSize{0};
+	C4ScriptUniform scriptUniform; // uniforms added to all draw calls
 protected:
 	float fClipX1,fClipY1,fClipX2,fClipY2; // clipper in unzoomed coordinates
 	float fStClipX1,fStClipY1,fStClipX2,fStClipY2; // stored clipper in unzoomed coordinates
@@ -167,7 +118,7 @@ public:
 	bool Init(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor);
 	virtual void Clear();
 	virtual void Default();
-	virtual CStdGLCtx *CreateContext(C4Window *, C4AbstractApp *) { return NULL; }
+	virtual CStdGLCtx *CreateContext(C4Window *, C4AbstractApp *) { return nullptr; }
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0; // reinit clipper for new resolution
 	// Clipper
 	bool GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2);
@@ -188,6 +139,7 @@ public:
 	void PrimaryUnlocked() { PrimaryLocked=false; }
 	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat) = 0; // Find best technique, fail if there is none
 	virtual bool PrepareRendering(C4Surface * sfcToSurface) = 0; // check if/make rendering possible to given surface
+	virtual bool EnsureMainContextSelected() = 0;
 	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) = 0; // create sprite shader
 	// Blit
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
@@ -196,15 +148,15 @@ public:
 	               C4Surface * sfcTarget, int tx, int ty, int wdt, int hgt);
 	bool Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
 	          C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
-	          bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	          bool fSrcColKey=false, const C4BltTransform *pTransform=nullptr);
 	bool BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
 	                  C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
-	                  bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	                  bool fSrcColKey=false, const C4BltTransform *pTransform=nullptr);
 	bool RenderMesh(StdMeshInstance &instance, C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform) = 0;
 	bool Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 	           C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
-	           bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	           bool fSrcColKey=false, const C4BltTransform *pTransform=nullptr);
 	bool BlitSimple(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
 	                C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
 	                bool fTransparency=true);
@@ -223,10 +175,11 @@ public:
 	void DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
 	void DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, C4ShaderCall* shader_call); // calls DrawQuadDw
 	void DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal);
-	void DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr);
+	void DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr, float width=1.0f);
 	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, C4ShaderCall* shader_call);
 	void DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol); // Consider using PerformMultiPix if you draw more than one pixel
 	void DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width = 1.0f); // Consider using PerformMultiLines if you draw more than one line
+	void DrawCircleDw(C4Surface * sfcTarget, float cx, float cy, float r, DWORD dwClr, float width = 1.0f);
 	// gamma
 	void SetGamma(float r, float g, float b, int32_t iRampIndex);  // set gamma
 	void ResetGamma(); // reset gamma to default
@@ -244,7 +197,7 @@ public:
 	void GetZoom(ZoomData *r) { r->Zoom=Zoom; r->X=ZoomX; r->Y=ZoomY; }
 	void ApplyZoom(float & X, float & Y);
 	void RemoveZoom(float & X, float & Y);
-	void SetMeshTransform(const StdMeshMatrix* Transform) { MeshTransform = Transform; } // if non-NULL make sure to keep matrix valid
+	void SetMeshTransform(const StdMeshMatrix* Transform) { MeshTransform = Transform; } // if non-nullptr make sure to keep matrix valid
 	void SetPerspective(bool fSet) { fUsePerspective = fSet; }
 
 	// device objects
@@ -255,7 +208,6 @@ public:
 protected:
 	bool StringOut(const char *szText, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, C4Markup &Markup, CStdFont *pFont, float fZoom);
 	bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
-	virtual bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor) = 0;
 	virtual bool Error(const char *szMsg);
 
 	friend class C4Surface;

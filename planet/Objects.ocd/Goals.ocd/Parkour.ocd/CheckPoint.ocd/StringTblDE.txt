@@ -1,7 +1,35 @@
 Name=Checkpoint
+Description=Kontrollpunkt fuer das Parkour-Spielziel.
+NameStart=Checkpoint Start
+NameFinish=Checkpoint Ziel
 
 #Log messages
-MsgClearedOrdered=%s has passed checkpoint %d, unfortunately %d players were there before.
-MsgClearedCheck=%s has passed a checkpoint, %d players have beaten him to there.
-MsgClearedOrderedFirst=%s is the first to pass checkpoint %d.
-MsgClearedCheckFirst=%s was the first one to pass this checkpoint.
+MsgClearedOrdered=%s hat Checkpoint %d passiert. Leider waren %d andere Spieler schneller.
+MsgClearedCheck=%s hat den Checkpoint passiert. Leider waren %d andere Spieler schneller.
+MsgClearedOrderedFirst=%s hat Checkpoint %d als erster passiert.
+MsgClearedCheckFirst=%s war der erste an diesem Checkpoint.
+
+NoGoalWarning=WARNUNG: Kein Parkour-Spielziel platziert. Parkour-Checkpoints benoetigen ein Spielziel.
+SelectPrev=Auswahl <<
+SelectPrevHelp=Waehlt den Checkpoint vor diesem Checkpoint aus.
+SelectNext=Auswahl >>
+SelectNextHelp=Waehlt den Checkpoint nach diesem Checkpoint aus.
+ReorderPrev=Sortierung <<
+ReorderPrevHelp=Tauscht diesen Checkpoint mit dem Vorherigen.
+ReorderNext=Sortierung >>
+ReorderNextHelp=Tauscht diesen Checkpoint mit dem Naechsten.
+
+Respawn=Neustart hier
+RespawnHelp=Ob Clonks beim Tod hier neu starten. 
+Check=Benoetigt
+CheckHelp=Ob dieser Checkpoint fuer die Erfuellung des Spielzieles erforderlich ist.
+Ordered=Sortiert
+OrderedHelp=Ob dieser Checkpoint in der richtigen Reihenfolge erreicht werden muss.
+Team=Team
+TeamHelp=Ob alle Spieler eines Teams diesen Checkpoint erreichen muessen.
+OnCleared=Aktion: CP erreicht
+OnClearedHelp=Aktion, die ausgefuehrt wird, wenn ein Spieler diesen Checkpoint freischaltet.
+OnFirstCleared=Aktion: CP erstmals erreicht
+OnFirstClearedHelp=Aktion, die ausgefuehrt wird, wenn der erste Spieler diesen Checkpoint freischaltet.
+OnRespawn=Aktion: Respawn
+OnRespawnHelp=Aktion, die ausgefuehrt wird, wenn ein Spieler an diesem Checkpoint neu startet.

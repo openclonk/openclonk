@@ -9,10 +9,26 @@
     <text>With #appendto, you can modify an existing object defintion script without changing the original file. For example, a scenario could change flints to cause bigger explosions, without having to duplicate the entire flint in the scenario.</text>
     <h id="Syntax">Declaration</h>
     <code>#appendto [id]</code>
-    <text>A script can append itself to one or multiple existing scripts using the <code>#appendto</code> directive. Functions of the same name will overload functions in the target script. The original overloaded functions can still be called using <emlink href="script/fn/inherited.html">inherited</emlink>. #included scripts are not appended with #append, but #appended scripts are included by #include.</text>
+    <text>A script can append itself to one or multiple existing scripts using the <code>#appendto</code> directive. Such script needs to be placed in System.ocg directory. Functions of the same name will overload functions in the target script. The original overloaded functions can still be called using <emlink href="script/fn/inherited.html">inherited</emlink>. #included scripts are not appended with #append, but #appended scripts are included by #include.</text>
     <code>#appendto *</code>
     <text>Appending to <code>*</code> will append this script to all definitions.</text>
     <text>A script can contain multiple #appendto directives. It is always compiled with the original script. This is of interest whenever local variables or functions from the appended script are used.</text>
+    <h id="Example">Example</h>
+    <code>#appendto WindBag
+
+// This function will be "overwritten" in the original windbag.
+// You can however call the original function by calling <funclink>_inherited</funclink>(...)
+// You'll find this quite often in other scenarios. Just take a look at other
+// scenarios that contain a System.ocg folder.
+func FxIntReloadTimer(object target, proplist effect)
+{
+	// Make the windbag reload faster.
+	var old_fill = fill_amount;
+	var ret = <funclink>inherited</funclink>(target, effect, ...);
+	if (fill_amount > old_fill)
+		fill_amount += (fill_amount - old_fill) * 5;
+	return ret;
+}</code>
   </part>
   <author>Sven2</author><date>2002-04</date>
   <author>matthes</author><date>2004-06</date>

@@ -2,4 +2,4 @@ Name=Expansion
 
 #Goal window
 MsgGoalFulfilled=You have reached your expansion goals.
-MsgGoalUnFulfilled=Expand your control region by constructing flags. Currently you only control %d% of the demanded region.
+MsgGoalUnFulfilled=Expand your control region by constructing flags. Currently you only control %d%% of the demanded region.

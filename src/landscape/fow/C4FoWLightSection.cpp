@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,17 +14,18 @@
  */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 
 #ifndef USE_CONSOLE
 
-#include "C4FoWLightSection.h"
-#include "C4FoWBeamTriangle.h"
-#include "C4FoWBeam.h"
-#include "C4FoWLight.h"
-#include "C4FoWRegion.h"
-#include "C4Landscape.h"
+#include "landscape/fow/C4FoWLightSection.h"
+#include "landscape/fow/C4FoWBeamTriangle.h"
+#include "landscape/fow/C4FoWBeam.h"
+#include "landscape/fow/C4FoWLight.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "landscape/C4Landscape.h"
 
-#include "float.h"
+#include <cfloat>
 
 #include <iterator>
 
@@ -120,7 +121,7 @@ C4FoWBeam *C4FoWLightSection::FindBeamLeftOf(int32_t x, int32_t y) const
 	// Trivial
 	y = std::max(y, 0);
 	if (!pBeams || !pBeams->isRight(x, y))
-		return NULL;
+		return nullptr;
 	// Go through list
 	// Note: In case this turns out expensive, one might think about implementing
 	// a skip-list. But I highly doubt it.
@@ -134,7 +135,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 {
 	// Transform rectangle into our coordinate system
 	C4Rect Rect = rtransRect(RectIn);
-	C4Rect Bounds = rtransRect(C4Rect(0,0,GBackWdt,GBackHgt));
+	C4Rect Bounds = rtransRect(C4Rect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight()));
 
 #ifdef LIGHT_DEBUG
 	if (!::Game.iTick255) {
@@ -179,7 +180,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 	if (beam)
 		LogSilentF("Start beam is %s", beam->getDesc().getData());
 #endif
-	C4FoWBeam *endBeam = NULL;
+	C4FoWBeam *endBeam = nullptr;
 	int32_t startY = Rect.GetBottom();
 	while (beam && !beam->isLeft(rx, ry)) {
 		if (beam->isDirty() && beam->getLeftEndY() <= Rect.y + Rect.Hgt) {
@@ -418,7 +419,7 @@ int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firs
 // not exist or the two lines are parallel.
 static inline bool find_cross(float x1, float y1, float x2, float y2,
                               float x3, float y3, float x4, float y4,
-                              float *px, float *py, float *pb = NULL)
+                              float *px, float *py, float *pb = nullptr)
 {
 	// We are looking for a, b so that
 	//  px = a*x1 + (1-a)*x2 = b*x3 + (1-b)*x4
@@ -440,7 +441,7 @@ static inline bool find_cross(float x1, float y1, float x2, float y2,
 
 std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *region) const
 {
-	C4FoWBeam *startBeam = NULL, *endBeam = NULL;
+	C4FoWBeam *startBeam = nullptr, *endBeam = nullptr;
 	int32_t beamCount = FindBeamsClipped(rtransRect(region->getRegion()), startBeam, endBeam);
 	std::list<C4FoWBeamTriangle> result;
 	float crossX=0.0f, crossY=0.0f;
@@ -751,10 +752,8 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 #endif
 
 	// Phase 2: Calculate fade points
-	for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(); it != result.end(); ++it)
+	for (auto & tri : result)
 	{
-		C4FoWBeamTriangle &tri = *it;
-
 		// Calculate light bounds. Note that the way light size is calculated
 		// and we are using it below, we need to consider an "asymetrical" light.
 		float lightLX, lightLY, lightRX, lightRY;
@@ -796,9 +795,8 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 
 void C4FoWLightSection::transTriangles(std::list<C4FoWBeamTriangle> &triangles) const
 {
-	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(); it != triangles.end(); ++it)
+	for (auto & tri : triangles)
 	{
-		C4FoWBeamTriangle &tri = *it;
 		float x,y;
 
 		x = tri.fanRX, y = tri.fanRY;
@@ -830,7 +828,7 @@ void C4FoWLightSection::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(rb, "rb"));
 	pComp->Value(mkNamingAdapt(rc, "rc"));
 	pComp->Value(mkNamingAdapt(rd, "rd"));
-	if (pComp->isDecompiler())
+	if (pComp->isSerializer())
 	{
 		for (C4FoWBeam *beam = pBeams; beam; beam = beam->getNext())
 			pComp->Value(mkNamingAdapt(*beam, "Beam"));
@@ -840,7 +838,7 @@ void C4FoWLightSection::CompileFunc(StdCompiler *pComp)
 		ClearBeams();
 		int32_t beam_count = 0;
 		pComp->Value(mkNamingCountAdapt<int32_t>(beam_count, "Beam"));
-		C4FoWBeam *last_beam = NULL;
+		C4FoWBeam *last_beam = nullptr;
 		for (int32_t i = 0; i < beam_count; ++i)
 		{
 			std::unique_ptr<C4FoWBeam> beam(new C4FoWBeam(0, 0, 0, 0));

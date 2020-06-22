@@ -3,14 +3,14 @@
 protected func Initialize()
 {
 	this["Visibility"] = VIS_Owner;
-	AddEffect("IntRotate",this,1,1,this);
+	AddEffect("IntRotate",this, 1, 1, this);
 	return;
 }
 
 public func FxIntRotateTimer(object target, effect, int timer)
 {
-	if(!GetActionTarget()) RemoveObject();
-	if(!target || !GetActionTarget()) return -1;
+	if (!GetActionTarget()) RemoveObject();
+	if (!target || !GetActionTarget()) return -1;
 	SetR(GetActionTarget()->GetR());
 }
 

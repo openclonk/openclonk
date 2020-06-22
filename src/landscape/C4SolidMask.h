@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,8 +19,8 @@
 #ifndef INC_C4SolidMask
 #define INC_C4SolidMask
 
-#include <C4ObjectList.h>
-#include <C4Shape.h>
+#include "object/C4ObjectList.h"
+#include "object/C4Shape.h"
 
 class C4SolidMask
 {
@@ -49,14 +49,13 @@ protected:
 	class DensityProvider : public C4DensityProvider
 	{
 	private:
-		class C4Object *pForObject;
 		C4SolidMask &rSolidMaskData;
 
 	public:
-		DensityProvider(class C4Object *pForObject, C4SolidMask &rSolidMaskData)
-				: pForObject(pForObject), rSolidMaskData(rSolidMaskData) {}
+		DensityProvider(C4SolidMask &rSolidMaskData)
+				: rSolidMaskData(rSolidMaskData) {}
 
-		virtual int32_t GetDensity(int32_t x, int32_t y) const;
+		int32_t GetDensity(int32_t x, int32_t y) const override;
 	};
 	// Remove the solidmask temporarily
 	void RemoveTemporary(C4Rect where);
@@ -82,12 +81,7 @@ public:
 	C4SolidMask(C4Object *pForObject);  // ctor
 	~C4SolidMask(); // dtor
 
-#ifdef SOLIDMASK_DEBUG
 	static bool CheckConsistency();
-#else
-	static bool CheckConsistency() { return true; }
-#endif
-
 	static void RemoveSolidMasks();
 	static void PutSolidMasks();
 

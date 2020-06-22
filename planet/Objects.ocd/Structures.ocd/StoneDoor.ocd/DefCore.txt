@@ -1,6 +1,6 @@
 [DefCore]
 id=StoneDoor
-Version=6,0
+Version=8,0
 Category=C4D_None
 Width=8
 Height=40
@@ -11,5 +11,4 @@ VertexY=-19,19
 VertexCNAT=4,8
 SolidMask=0,0,8,40,0,0
 Mass=1000
-Components=Rock=10;
 HorizontalFix=1

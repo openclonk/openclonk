@@ -7,7 +7,7 @@
     <title>GetComDir</title>
     <category>Objects</category>
     <subcat>Movement</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the current command direction of an object. This indicates the object's current intended heading. The exact evaluation of the command direction depends on the <emlink href="definition/procedures.html">procedure</emlink> of the current <emlink href="definition/actmap.html">activity</emlink>.</desc>
     <related>

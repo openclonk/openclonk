@@ -29,21 +29,68 @@ public func GetChance()
 	return;
 }
 
+// Sets the material, defaults to "Lava";
 public func SetMaterial(string material)
 {
 	if (this != Volcano)
 		return;
 	var effect = GetEffect("IntVolcanoControl");
 	if (effect)
-		effect.material = material;
+		effect.material = material ?? "Lava";
+	return;
+}
+
+// Sets the minimum strength in 1/4 pixels, defaults to 4.
+public func SetMinStrength(int strength)
+{
+	if (this != Volcano)
+		return;
+	var effect = GetEffect("IntVolcanoControl");
+	if (effect)
+		effect.min_strength = strength ?? 4;
+	return;
+}
+
+public func GetMinStrength()
+{
+	if (this != Volcano)
+		return;
+	var effect = GetEffect("IntVolcanoControl");
+	if (effect)
+		return effect.min_strength;
+	return;
+}
+
+// Sets the minimum strength in 1/4 pixels, defaults to 4.
+public func SetMaxStrength(int strength)
+{
+	if (this != Volcano)
+		return;
+	var effect = GetEffect("IntVolcanoControl");
+	if (effect)
+		effect.max_strength = strength ?? 100;
+	return;
+}
+
+public func GetMaxStrength()
+{
+	if (this != Volcano)
+		return;
+	var effect = GetEffect("IntVolcanoControl");
+	if (effect)
+		return effect.max_strength;
 	return;
 }
 
 protected func FxIntVolcanoControlStart(object target, proplist effect, int temp)
 {
-	// Default to lava as material.
+	// Default to lava as material, 1 to 25 pixels wide streams
 	if (!temp)
+	{
 		effect.material = "Lava";
+		effect.min_strength = 4;
+		effect.max_strength = 100;
+	}
 	return FX_OK;
 }
 
@@ -59,10 +106,12 @@ func FxIntVolcanoControlSaveScen(obj, fx, props)
 {
 	props->Add("Volcano", "Volcano->SetChance(%d)", fx.chance);
 	if (fx.material && fx.material != "Lava") props->Add("Volcano", "Volcano->SetMaterial(%v)", fx.material);
+	if (fx.min_strength && fx.min_strength != 4) props->Add("Volcano", "Volcano->SetMinStrength(%d)", fx.min_strength);
+	if (fx.max_strength && fx.max_strength != 100) props->Add("Volcano", "Volcano->SetMaxStrength(%d)", fx.max_strength);
 	return true;
 }
 
-
+// Launches a volcano at a given position, strength is measured in 1/4 pixels.
 global func LaunchVolcano(int x, int y, int strength, string material, int angle)
 {
 	var volcano = CreateObjectAbove(Volcano);
@@ -82,7 +131,7 @@ public func Launch(int x, int y, int strength, string material, int angle)
 	// Initial coordinates of the volcano.
 	SetPosition(x, y);
 	// Strength of the volcano.
-	str = BoundBy(strength, 1, 100);
+	str = BoundBy(strength, Volcano->GetMinStrength(), Volcano->GetMaxStrength());
 	// Volcano material.
 	mat = Material(material);
 	// Direction of the volcano.
@@ -102,7 +151,7 @@ public func Launch(int x, int y, int strength, string material, int angle)
 private func Advance()
 {
 	// Branch volcano.
-	if (!Random((120 - str) / 12))
+	if (!Random((Volcano->GetMaxStrength() + 20 - str) / 12))
 		Branch();
 	// Store old coordinates.
 	oldx = GetX();
@@ -163,11 +212,12 @@ private func Erupt()
 
 	// Cast other particles (lava chunks, ashes, ashclouds).
 	if (!Random(6))
-		if (WildcardMatch(MaterialName(mat), "*Lava*"))		
-			CastObjects(LavaChunk, 1, 60, 0, 0, 0, 40);
+	{
+		CastChunks(MaterialName(mat));
+	}
 
 	// Reduce strength.
-	if(!Random(3))
+	if (!Random(3))
 		str--;
 	if (str <= 0)
 		return RemoveObject();
@@ -177,12 +227,22 @@ private func Erupt()
 	return;
 }
 
+// Cast other particles (lava chunks, ashes, ashclouds).
+private func CastChunks(string material)
+{
+	if (WildcardMatch(material, "*Lava*"))
+	{		
+		CastObjects(LavaChunk, 1, 60, 0, 0, 0, 40);
+	}
+	return _inherited(material, ...);
+}
+
 // The volcano mainline branches into mainline + sideline.
 private func Branch()
 {
 	// Branch volcano.
 	var side = 2 * Random(2) - 1; // At which side the volcano branches.
-	var new_str = Max(Random(str / 2), 4); // Strength of the branch.
+	var new_str = Max(Random(str / 2), Volcano->GetMinStrength()); // Strength of the branch.
 	var x = side * Cos(angle, str / 4 - new_str / 4);
 	var y = side * Sin(angle, str / 4 - new_str / 4);
 	var new_mat = MaterialName(mat);

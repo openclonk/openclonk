@@ -1,0 +1,30 @@
+material Clonk_Amazon
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 1.000000 1.000000 1.000000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 1.000000
+			emissive 0.000000 0.000000 0.000000 1.000000
+
+			texture_unit Clonk
+			{
+				texture Amazon.png
+				tex_address_mode wrap
+				filtering trilinear
+				//colour_op_ex blend_current_alpha src_current src_texture
+				// Don't blend alpha, to make sure we have full intensity at the base/overlay border region
+				//alpha_op_ex add src_current src_texture
+			}
+			texture_unit Light
+			{
+				// apply lighting
+				colour_op_ex modulate src_current src_diffuse
+				alpha_op_ex modulate src_current src_diffuse
+			}
+		}
+	}
+}

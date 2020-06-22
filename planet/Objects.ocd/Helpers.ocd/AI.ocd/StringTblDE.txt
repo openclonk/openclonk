@@ -1,0 +1,1 @@
+EditorHelp=Dieser Clonk nutzt die Standard-Gegner-KI

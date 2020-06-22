@@ -1,6 +1,6 @@
 [Head]
 Title=DarkMine
-Version=6,0
+Version=8,0
 MinPlayer=2
 Icon=15
 
@@ -15,6 +15,7 @@ MapWidth=140
 MapHeight=140
 TopOpen=0
 BottomOpen=0
+Secret=true
 
 [Weather]
 Climate=0

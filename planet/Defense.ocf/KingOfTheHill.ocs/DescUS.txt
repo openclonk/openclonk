@@ -1,0 +1,10 @@
+King of the Hill
+
+You have to defend a hill which gives way to a large ruby cave against angry miners
+
+Goal: Survive as many attack waves as possible.
+
+Hints:
+- This round is cooperative, so work together and divide tasks.
+- Build up a settlement and defense during the earlier rounds of attack.
+- Resources and liquids reappear at certain locations.

@@ -1,0 +1,9 @@
+IgnoreAllies=Ignore allies
+GuardRange=Guarded area
+MaxAggroDistance=Attack radius
+AutoSearchTarget=Auto-search target
+AutoSearchTargetHelp=Looks for enemies automatically if true. If false, enemies must be provided via a script sequence.
+AttackTarget=Attack target
+AttackTargetHelp=If specified, this enemy is attacked by the AI clonk. If not specified, the nearest enemy will be attacked.
+Enemy=Enemy
+EnemyHelp=Which enemy to attack. If unspecified, attacks the nearest clonk.

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,21 +15,21 @@
  */
 // Startup screen for non-parameterized engine start
 
-#include <C4Include.h>
-#include <C4Startup.h>
+#include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "gui/C4Startup.h"
 
-#include <C4FontLoader.h>
-#include <C4StartupMainDlg.h>
-#include <C4StartupScenSelDlg.h>
-#include <C4StartupNetDlg.h>
-#include <C4StartupOptionsDlg.h>
-#include <C4StartupAboutDlg.h>
-#include <C4StartupPlrSelDlg.h>
-#include <C4Game.h>
-#include <C4Application.h>
-#include <C4Log.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
+#include "game/C4Application.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4FontLoader.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4StartupAboutDlg.h"
+#include "gui/C4StartupLegalDlg.h"
+#include "gui/C4StartupMainDlg.h"
+#include "gui/C4StartupNetDlg.h"
+#include "gui/C4StartupOptionsDlg.h"
+#include "gui/C4StartupPlrSelDlg.h"
+#include "gui/C4StartupScenSelDlg.h"
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 {
@@ -44,8 +44,8 @@ bool C4StartupGraphics::Init()
 	Game.SetInitProgress(38.0f);
 	if (!LoadFile(fctDlgPaper, "StartupDlgPaper")) return false;
 	if (!LoadFile(fctPlrPropBG, "StartupPlrPropBG")) return false;
-	if (!LoadFile(fctAboutBG, "StartupAboutBG")) return false;
-	fctAboutBG.GetFace().SetBackground();
+	if (!LoadFile(fctAboutTitles, "StartupAboutTitles")) return false;
+	fctAboutTitles.Set(fctAboutTitles.Surface,0,0,fctAboutTitles.Surface->Wdt,fctAboutTitles.Surface->Hgt/C4StartupAboutTitleCount);
 	if (!LoadFile(fctStartupLogo, "StartupLogo")) return false;
 	::GraphicsResource.ProgressStart = 92;
 	::GraphicsResource.ProgressIncrement = 0.5;
@@ -119,9 +119,9 @@ C4Startup::DialogID C4Startup::eLastDlgID = C4Startup::SDID_Main;
 StdCopyStrBuf C4Startup::sSubDialog = StdCopyStrBuf();
 
 // startup singleton instance
-C4Startup *C4Startup::pInstance = NULL;
+C4Startup *C4Startup::pInstance = nullptr;
 
-C4Startup::C4Startup() : fInStartup(false), pLastDlg(NULL), pCurrDlg(NULL)
+C4Startup::C4Startup()
 {
 	// must be single!
 	assert(!pInstance);
@@ -130,7 +130,7 @@ C4Startup::C4Startup() : fInStartup(false), pLastDlg(NULL), pCurrDlg(NULL)
 
 C4Startup::~C4Startup()
 {
-	pInstance = NULL;
+	pInstance = nullptr;
 	delete pLastDlg;
 	delete pCurrDlg;
 }
@@ -141,7 +141,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 	if (eToDlg == SDID_Back && (fLastDlgWasBack || !pLastDlg)) eToDlg = SDID_Main;
 	fLastDlgWasBack = false;
 	// create new dialog
-	C4StartupDlg *pToDlg = NULL;
+	C4StartupDlg *pToDlg = nullptr;
 	switch (eToDlg)
 	{
 	case SDID_Main:
@@ -162,6 +162,9 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 	case SDID_About:
 		pToDlg = new C4StartupAboutDlg();
 		break;
+	case SDID_Legal:
+		pToDlg = new C4StartupLegalDlg();
+		break;
 	case SDID_PlrSel:
 		pToDlg = new C4StartupPlrSelDlg();
 		break;
@@ -171,7 +174,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 		break;
 	};
 	assert(pToDlg);
-	if (!pToDlg) return NULL;
+	if (!pToDlg) return nullptr;
 	if (pToDlg != pLastDlg)
 	{
 		// remember current position
@@ -190,7 +193,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 		else
 		{
 			delete pLastDlg;
-			pLastDlg = NULL;
+			pLastDlg = nullptr;
 		}
 	}
 	// Okay; now using this dialog
@@ -202,16 +205,16 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 	{
 		if (!pToDlg->FadeIn(::pGUI))
 		{
-			delete pToDlg; pCurrDlg=NULL;
-			return NULL;
+			delete pToDlg; pCurrDlg=nullptr;
+			return nullptr;
 		}
 	}
 	else
 	{
 		if (!pToDlg->Show(::pGUI, true))
 		{
-			delete pToDlg; pCurrDlg=NULL;
-			return NULL;
+			delete pToDlg; pCurrDlg=nullptr;
+			return nullptr;
 		}
 	}
 	return pToDlg;
@@ -228,8 +231,8 @@ void C4Startup::DoStartup()
 	::GraphicsSystem.EnableLoaderDrawing();
 
 	// clear any previous
-	if (pLastDlg) { delete pLastDlg; pLastDlg = NULL; }
-	if (pCurrDlg) { delete pCurrDlg; pCurrDlg = NULL; }
+	if (pLastDlg) { delete pLastDlg; pLastDlg = nullptr; }
+	if (pCurrDlg) { delete pCurrDlg; pCurrDlg = nullptr; }
 
 	// start with the last dlg that was shown - at first startup main dialog
 	SwitchDialog(eLastDlgID, true, sSubDialog.getData());
@@ -259,7 +262,7 @@ void C4Startup::DoStartup()
 void C4Startup::DontStartup()
 {
 	// check whether startup was aborted
-	delete pLastDlg; pLastDlg = NULL;
+	delete pLastDlg; pLastDlg = nullptr;
 	if (pCurrDlg)
 	{
 		// deinit last shown dlg
@@ -268,7 +271,7 @@ void C4Startup::DontStartup()
 			pCurrDlg->Close(true);
 		}
 		delete pCurrDlg;
-		pCurrDlg = NULL;
+		pCurrDlg = nullptr;
 	}
 
 	// now no more in startup!
@@ -294,7 +297,7 @@ C4Startup *C4Startup::EnsureLoaded()
 		Game.SetInitProgress(37.0f);
 		// load startup specific gfx
 		if (!pStartup->Graphics.Init())
-			{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); delete pStartup; return NULL; }
+			{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); delete pStartup; return nullptr; }
 	}
 	return pInstance;
 }
@@ -302,7 +305,7 @@ C4Startup *C4Startup::EnsureLoaded()
 void C4Startup::Unload()
 {
 	// make sure startup data is destroyed
-	if (pInstance) { delete pInstance; pInstance=NULL; }
+	if (pInstance) { delete pInstance; pInstance=nullptr; }
 }
 
 void C4Startup::InitStartup()

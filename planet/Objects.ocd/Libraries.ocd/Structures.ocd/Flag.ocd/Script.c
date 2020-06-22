@@ -208,7 +208,6 @@ private func AddOwnership()
 	RefreshOwnershipOfSurrounding();
 	// Linked flags - refresh links for this flag and update the power system.
 	RefreshLinkedFlags();
-	RefreshAllPowerNetworks();
 	return;
 }
 
@@ -226,7 +225,6 @@ private func RemoveOwnership()
 	RefreshOwnershipOfSurrounding();
 	// Linked flags - refresh links for this flag and update the power system.
 	RefreshLinkedFlags();
-	RefreshAllPowerNetworks();
 	return;
 }
 
@@ -318,6 +316,8 @@ public func RefreshLinkedFlags()
 		{
 			for (var flag in LIB_FLAG_FlagList)
 			{
+				if (!flag)
+					continue;				
 				// A new connected flag must be allied.
 				if (!IsAllied(flag->GetOwner(), owner)) 
 					continue;
@@ -341,32 +341,13 @@ public func RefreshLinkedFlags()
 	// Update the linked flags for all other linked flags as well.
 	for (var other in lib_flag.linked_flags)
 		other->CopyLinkedFlags(this, lib_flag.linked_flags);
-	
+
 	// Since the connected flags have been updated it is necessary to update the power helper as well.
-	// First make sure the power system is initialized.
-	Library_Power->Init();
-	// Get the old power network for this flag.
-	var old_network = lib_flag.power_helper;
 	// Create a new power network for ths flag since we don't know whether flag links have been lost.
 	// We then just possibly remove the old ones if they exist.
-	lib_flag.power_helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
-	PushBack(LIB_POWR_Networks, lib_flag.power_helper);
-	// Make a list of the power networks which need to be merged into the new one.
-	var to_merge = [old_network];
-	for (var linked_flag in lib_flag.linked_flags)
-	{
-		// Add old network of this flag to merge list and reset to new network.
-		if (GetIndexOf(to_merge, linked_flag.lib_flag.power_helper) == -1)
-			PushBack(to_merge, linked_flag.lib_flag.power_helper);
-		linked_flag->SetPowerHelper(lib_flag.power_helper);
-	}
+	SetPowerHelper(GetPowerSystem()->CreateNetwork(), true, false);
 	// Now merge all networks into the newly created network.
-	for (var network in to_merge)
-	{
-		if (network == nil)
-			continue;
-		RefreshPowerNetwork(network);
-	}
+	GetPowerSystem()->RefreshAllPowerNetworks();
 	// Debugging logs.
 	//LogFlags();
 	return;
@@ -475,70 +456,24 @@ public func GetLinkedFlags() {return lib_flag.linked_flags; }
 
 public func GetPowerHelper() { return lib_flag.power_helper; }
 
-public func SetPowerHelper(object to) 
+public func SetPowerHelper(object to, bool update_linked_flags, bool report_inconsistency) 
 {
-	lib_flag.power_helper = to; 
-	return;
-}
-
-// Refreshes all power networks (Library_Power objects).
-public func RefreshAllPowerNetworks()
-{
-	// Don't do anything if there are no power helpers created yet.
-	if (GetType(LIB_POWR_Networks) != C4V_Array)
-		return;
-	
-	// Special handling for neutral networks of which there should be at most one.
-	for (var network in LIB_POWR_Networks)
+	var old_network = GetPowerHelper();
+	lib_flag.power_helper = to;
+	// Update linked flags
+	if (update_linked_flags)
 	{
-		if (!network || !network.lib_power.neutral_network) 
-			continue;
-		RefreshPowerNetwork(network);
-		break;
-	}
-	
-	// Do the same for all other helpers: delete / refresh.
-	for (var index = GetLength(LIB_POWR_Networks) - 1; index >= 0; index--)
-	{
-		var network = LIB_POWR_Networks[index];
-		if (!network) 
-			continue;
-		
-		if (network->IsEmpty())
+		for (var linked_flag in GetLinkedFlags())
 		{
-			network->RemoveObject();
-			RemoveArrayIndex(LIB_POWR_Networks, index);
-			continue;
+			if (!linked_flag)
+				continue;
+			// Assert different power helpers for the same network.
+			if (report_inconsistency && linked_flag->GetPowerHelper() != old_network)
+			{
+				FatalError("Flags in the same network have different power helpers.");
+			}
+			linked_flag->SetPowerHelper(to);
 		}
-		//network->CheckPowerBalance();
-	}
-	return;
-}
-
-private func RefreshPowerNetwork(object network)
-{
-	// Merge all the producers and consumers into their actual networks.
-	for (var link in Concatenate(network.lib_power.idle_producers, network.lib_power.active_producers))
-	{
-		if (!link)
-			continue;
-		var actual_network = Library_Power->GetPowerNetwork(link.obj);
-		if (!actual_network || actual_network == network)
-			continue;
-		// Remove from old network and add to new network.
-		network->RemovePowerProducer(link.obj);
-		actual_network->AddPowerProducer(link.obj, link.prod_amount, link.priority);
-	}
-	for (var link in Concatenate(network.lib_power.waiting_consumers, network.lib_power.active_consumers))
-	{
-		if (!link)
-			continue;
-		var actual_network = Library_Power->GetPowerNetwork(link.obj);
-		if (!actual_network || actual_network == network)
-			continue;
-		// Remove from old network and add to new network.
-		network->RemovePowerConsumer(link.obj);
-		actual_network->AddPowerConsumer(link.obj, link.cons_amount, link.priority);
 	}
 	return;
 }

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -26,22 +26,22 @@
 	serialized correctly and cleaned up if necessary when a menu window is closed or the property is overwritten by a script call!
 */
 
-#include <C4Include.h>
-#include <C4ScriptGuiWindow.h>
+#include "C4Include.h"
+#include "gui/C4ScriptGuiWindow.h"
 
-#include <C4Application.h>
-#include <C4DefList.h>
-#include <C4GraphicsSystem.h>
-#include <C4GraphicsResource.h>
-#include <C4Game.h>
-#include <C4Control.h>
-#include <C4MouseControl.h>
-#include <C4Object.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
-#include <C4Viewport.h>
-
-#include <cmath>
+#include "control/C4Control.h"
+#include "game/C4Application.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
+#include "lib/StdColors.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 // Adds some helpful logs for hunting control & menu based desyncs.
 //#define MenuDebugLogF(...) DebugLogF(__VA_ARGS__)
@@ -58,7 +58,7 @@ float C4ScriptGuiWindow::Em2Pix(float em)
 
 float C4ScriptGuiWindow::Pix2Em(float pix)
 {
-	return pix / static_cast<float>(::GraphicsResource.FontRegular.GetFontHeight());
+	return pix / static_cast<float>(std::max<int32_t>(1, ::GraphicsResource.FontRegular.GetFontHeight()));
 }
 
 C4ScriptGuiWindowAction::~C4ScriptGuiWindowAction()
@@ -126,13 +126,13 @@ const C4Value C4ScriptGuiWindowAction::ToC4Value(bool first)
 
 void C4ScriptGuiWindowAction::ClearPointers(C4Object *pObj)
 {
-	C4Object *targetObj = target ? target->GetObject() : 0;
+	C4Object *targetObj = target ? target->GetObject() : nullptr;
 
 	if (targetObj == pObj)
 	{
 		// not only forget object, but completely invalidate action
 		action = 0;
-		target = 0;
+		target = nullptr;
 	}
 	if (nextAction)
 		nextAction->ClearPointers(pObj);
@@ -306,7 +306,7 @@ void C4ScriptGuiWindowProperty::SetNull(C4String *tag)
 	if (!tag) tag = &Strings.P[P_Std];
 	taggedProperties[tag] = Prop();
 	current = &taggedProperties[tag];
-	current->data = 0;
+	current->data = nullptr;
 }
 
 void C4ScriptGuiWindowProperty::CleanUp(Prop &prop)
@@ -334,11 +334,11 @@ void C4ScriptGuiWindowProperty::CleanUp(Prop &prop)
 
 void C4ScriptGuiWindowProperty::CleanUpAll()
 {
-	for (std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
+	for (auto & taggedProperty : taggedProperties)
 	{
-		CleanUp(iter->second);
-		if (iter->first != &Strings.P[P_Std])
-			iter->first->DecRef();
+		CleanUp(taggedProperty.second);
+		if (taggedProperty.first != &Strings.P[P_Std])
+			taggedProperty.first->DecRef();
 	}
 }
 
@@ -352,10 +352,10 @@ const C4Value C4ScriptGuiWindowProperty::ToC4Value()
 
 	// go through all of the tagged properties and add a property to the proplist containing both the tag name
 	// and the serialzed C4Value of the properties' value
-	for(std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
+	for(auto & taggedProperty : taggedProperties)
 	{
-		C4String *tagString = iter->first;
-		const Prop &prop = iter->second;
+		C4String *tagString = taggedProperty.first;
+		const Prop &prop = taggedProperty.second;
 
 		C4Value val;
 
@@ -514,7 +514,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
 			current->obj = symbol->GetObject();
-		else current->obj = 0;
+		else current->obj = nullptr;
 		break;
 	}
 	case C4ScriptGuiWindowPropertyName::symbolDef:
@@ -522,7 +522,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
 			current->def = symbol->GetDef();
-		else current->def = 0;
+		else current->def = nullptr;
 		break;
 	}
 	case C4ScriptGuiWindowPropertyName::frameDecoration:
@@ -535,7 +535,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 			if (!current->deco->SetByDef(def))
 			{
 				delete current->deco;
-				current->deco = 0;
+				current->deco = nullptr;
 			}
 		}
 		break;
@@ -577,21 +577,21 @@ void C4ScriptGuiWindowProperty::ClearPointers(C4Object *pObj)
 {
 	// assume that we actually contain an object
 	// go through all the tags and, in case the tag has anything to do with objects, check and clear it
-	for (std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
+	for (auto & taggedProperty : taggedProperties)
 	{
 		switch (type)
 		{
 		case C4ScriptGuiWindowPropertyName::symbolObject:
-			if (iter->second.obj == pObj)
-				iter->second.obj = 0;
+			if (taggedProperty.second.obj == pObj)
+				taggedProperty.second.obj = nullptr;
 		break;
 
 		case C4ScriptGuiWindowPropertyName::onClickAction:
 		case C4ScriptGuiWindowPropertyName::onMouseInAction:
 		case C4ScriptGuiWindowPropertyName::onMouseOutAction:
 		case C4ScriptGuiWindowPropertyName::onCloseAction:
-			if (iter->second.action)
-				iter->second.action->ClearPointers(pObj);
+			if (taggedProperty.second.action)
+				taggedProperty.second.action->ClearPointers(pObj);
 		break;
 		default:
 			return;
@@ -611,9 +611,9 @@ bool C4ScriptGuiWindowProperty::SwitchTag(C4String *tag)
 std::list<C4ScriptGuiWindowAction*> C4ScriptGuiWindowProperty::GetAllActions()
 {
 	std::list<C4ScriptGuiWindowAction*> allActions;
-	for (std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
+	for (auto & taggedProperty : taggedProperties)
 	{
-		Prop &p = iter->second;
+		Prop &p = taggedProperty.second;
 		if (p.action)
 			allActions.push_back(p.action);
 	}
@@ -675,10 +675,10 @@ void C4ScriptGuiWindow::Init()
 	props[C4ScriptGuiWindowPropertyName::priority].SetNull();
 	props[C4ScriptGuiWindowPropertyName::player].SetInt(ANY_OWNER);
 
-	wasRemoved = false;
-	closeActionWasExecuted = false;
+	wasRemovedFromParent = false;
+	wasClosed = false;
 	currentMouseState = MouseState::None;
-	target = 0;
+	target = nullptr;
 	pScrollBar->fAutoHide = true;
 
 	rcBounds.x = rcBounds.y = 0;
@@ -690,8 +690,8 @@ C4ScriptGuiWindow::~C4ScriptGuiWindow()
 	ClearChildren(false);
 
 	// delete certain properties that contain allocated elements or referenced strings
-	for (int32_t i = 0; i < C4ScriptGuiWindowPropertyName::_lastProp; ++i)
-		props[i].CleanUpAll();
+	for (auto & prop : props)
+		prop.CleanUpAll();
 
 	if (pScrollBar)
 		delete pScrollBar;
@@ -720,7 +720,7 @@ void C4ScriptGuiWindow::SetMarginProperties(const C4Value &property, C4String *t
 	// always set all four margins
 	for (int i = 0; i < 4; ++i)
 	{
-		C4ScriptGuiWindowPropertyName relative, absolute;
+		C4ScriptGuiWindowPropertyName::type relative, absolute;
 		switch (i)
 		{
 		case 0:
@@ -769,7 +769,7 @@ C4Value C4ScriptGuiWindow::MarginsToC4Value()
 }
 
 // helper function
-void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName relative, C4ScriptGuiWindowPropertyName absolute, C4String *tag)
+void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName::type relative, C4ScriptGuiWindowPropertyName::type absolute, C4String *tag)
 {
 	// the value might be a tagged proplist again
 	if (property.GetType() == C4V_Type::C4V_PropList)
@@ -825,7 +825,7 @@ void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4S
 		}
 		else // error, abort! (readere is not in a clean state anyway)
 		{
-			LogF("Warning: Could not parse menu format string \"%s\"!", property.getStr()->GetCStr());
+			LogF(R"(Warning: Could not parse menu format string "%s"!)", property.getStr()->GetCStr());
 			return;
 		}
 
@@ -836,7 +836,7 @@ void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4S
 }
 
 // for saving
-C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName relativeName, C4ScriptGuiWindowPropertyName absoluteName)
+C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName::type relativeName, C4ScriptGuiWindowPropertyName::type absoluteName)
 {
 	// Go through all tags of the position attributes and save.
 	// Note that the tags for both the relative and the absolute attribute are always the same.
@@ -845,11 +845,11 @@ C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName relat
 	
 	C4PropList *proplist = nullptr;
 	const bool onlyStdTag = relative.taggedProperties.size() == 1;
-	for (std::map<C4String*, C4ScriptGuiWindowProperty::Prop>::iterator iter = relative.taggedProperties.begin(); iter != relative.taggedProperties.end(); ++iter)
+	for (auto & taggedProperty : relative.taggedProperties)
 	{
-		C4String *tag = iter->first;
+		C4String *tag = taggedProperty.first;
 		StdStrBuf buf;
-		buf.Format("%f%%%+fem", 100.0f * iter->second.f, absolute.taggedProperties[tag].f);
+		buf.Format("%f%%%+fem", 100.0f * taggedProperty.second.f, absolute.taggedProperties[tag].f);
 		C4String *propString = Strings.RegString(buf);
 
 		if (onlyStdTag)
@@ -913,11 +913,8 @@ const C4Value C4ScriptGuiWindow::ToC4Value()
 		P_Tooltip
 	};
 
-	const int32_t entryCount = sizeof(toSave) / sizeof(int32_t);
-
-	for (size_t i = 0; i < entryCount; ++i)
+	for (int prop : toSave)
 	{
-		int32_t prop = toSave[i];
 		C4Value val;
 
 		switch (prop)
@@ -1163,14 +1160,8 @@ void C4ScriptGuiWindow::ClearPointers(C4Object *pObj)
 {
 	// not removing or clearing anything twice
 	// if this flag is set, the object will not be used after this frame (callbacks?) anyway
-	if (wasRemoved) return;
+	if (wasRemovedFromParent) return;
 
-	if (target == pObj)
-	{
-		Close();
-		return;
-	}
-	
 	// all properties which have anything to do with objects need to be called from here!
 	props[C4ScriptGuiWindowPropertyName::symbolObject].ClearPointers(pObj);
 	props[C4ScriptGuiWindowPropertyName::onClickAction].ClearPointers(pObj);
@@ -1184,6 +1175,12 @@ void C4ScriptGuiWindow::ClearPointers(C4Object *pObj)
 		// increment the iterator before (possibly) deleting the child
 		++iter;
 		child->ClearPointers(pObj);
+	}
+
+	if (target == pObj)
+	{
+		MenuDebugLogF("Closing window (%d, %s, @%p, target: %p) due to target removal.", id, name, this, this->target);
+		Close();
 	}
 }
 
@@ -1286,22 +1283,33 @@ C4ScriptGuiWindow *C4ScriptGuiWindow::GetSubWindow(int32_t childID, C4Object *ch
 		if (subwindow->GetTarget() != childTarget) continue;
 		return subwindow;
 	}
-	return 0;
+	return nullptr;
 }
 
 void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool all)
 {
+	if (isRemovalLockedForClosingCallback())
+	{
+		// We are in potentially dangerous fields here (removing a window while another window is being removed).
+		// This has a decent chance to lead to accessing dead memory.
+		// It might still leave the GUI tree in an incorrect state (with dead target objects). But still better than a direct crash.
+		throw C4AulExecError("Trying to remove script GUI window (or window target) from within window closing callback.");
+	}
+
 	// do a layout update asap
 	if (!all && !IsRoot())
 		RequestLayoutUpdate();
 
 	if (child)
 	{
-		child->wasRemoved = true;
+		child->wasRemovedFromParent = true;
 		if (close) child->Close();
 		if (child->GetID() != 0)
 			ChildWithIDRemoved(child);
 		RemoveElement(static_cast<C4GUI::Element*>(child));
+		MenuDebugLogF("Deleting child (%d, %s, @%p, target: %p) from parent (%d, %s, @%p, target: %p).",
+			child->id, child->name, child, child->target,
+			id, name, this, target);
 		// RemoveElement does NOT delete the child itself.
 		delete child;
 	}
@@ -1311,7 +1319,11 @@ void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool a
 		for (Element * element : *this)
 		{
 			C4ScriptGuiWindow * child = static_cast<C4ScriptGuiWindow*>(element);
-			child->wasRemoved = true;
+			assert(child != nullptr);
+			MenuDebugLogF("Closing child (%d, %s, @%p, target: %p) due to parent (%d, %s, @%p, target: %p) removal.",
+				child->id, child->name, child, child->target,
+				id, name, this, target);
+			child->wasRemovedFromParent = true;
 			child->Close();
 			if (child->GetID() != 0)
 				ChildWithIDRemoved(child);
@@ -1324,30 +1336,33 @@ void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool a
 
 void C4ScriptGuiWindow::ClearChildren(bool close)
 {
-	RemoveChild(0, close, true);
+	RemoveChild(nullptr, close, true);
 }
 
 void C4ScriptGuiWindow::Close()
 {
+	// This can only be called once.
+	if (wasClosed)
+		return;
+	wasClosed = true;
 	// first, close all children and dispose of them properly
 	ClearChildren(true);
 
-	if (!closeActionWasExecuted)
+	// make call to target object if applicable
+	C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onCloseAction].GetAction();
+	// only calls are valid actions for OnClose
+	if (action && action->action == C4ScriptGuiWindowActionID::Call)
 	{
-		closeActionWasExecuted = true;
-
-		// make call to target object if applicable
-		C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onCloseAction].GetAction();
-		// only calls are valid actions for OnClose
-		if (action && action->action == C4ScriptGuiWindowActionID::Call)
-		{
-			// close is always syncronized (script call/object removal) and thus the action can be executed immediately
-			// (otherwise the GUI&action would have been removed anyway..)
-			action->ExecuteCommand(action->id, this, NO_OWNER);
-		}
+		// close is always syncronized (script call/object removal) and thus the action can be executed immediately
+		// (otherwise the GUI&action would have been removed anyway..)
+		lockRemovalForClosingCallback();
+		action->ExecuteCommand(action->id, this, NO_OWNER);
+		unlockRemovalForClosingCallback();
 	}
 
-	if (!wasRemoved)
+	target = nullptr;
+
+	if (!wasRemovedFromParent)
 	{
 		assert(GetParent() && "Close()ing GUIWindow without parent");
 		static_cast<C4ScriptGuiWindow*>(GetParent())->RemoveChild(this);
@@ -1380,7 +1395,7 @@ void C4ScriptGuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 }
 
 
-float C4ScriptGuiWindow::CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName absoluteProperty, C4ScriptGuiWindowPropertyName relativeProperty)
+float C4ScriptGuiWindow::CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName::type absoluteProperty, C4ScriptGuiWindowPropertyName::type relativeProperty)
 {
 	const float widthOrHeight = Em2Pix(props[absoluteProperty].GetFloat())
 		+ float(parentWidthOrHeight) * props[relativeProperty].GetFloat();
@@ -1403,6 +1418,7 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 	{
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 		// calculate the space the child needs, correctly respecting the margins
+		using namespace C4ScriptGuiWindowPropertyName;
 		const float childLeftMargin = child->CalculateRelativeSize(width, leftMargin, relLeftMargin);
 		const float childTopMargin = child->CalculateRelativeSize(height, topMargin, relTopMargin);
 		const float childRightMargin = child->CalculateRelativeSize(width, rightMargin, relRightMargin);
@@ -1419,8 +1435,8 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 		};
 
 		// do all the rounding after the calculations
-		const int32_t childWdt = (int32_t)(childWdtF + 0.5f);
-		const int32_t childHgt = (int32_t)(childHgtF + 0.5f);
+		const auto childWdt = (int32_t)(childWdtF + 0.5f);
+		const auto childHgt = (int32_t)(childHgtF + 0.5f);
 
 		// Check if the child even fits in the remainder of the row
 		const bool fitsInRow = (width - currentX) >= childWdt;
@@ -1442,6 +1458,92 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 	EnableScrollBar(lowestChildRelY > height, lowestChildRelY);
 }
 
+// Similar to the grid layout but tries to fill spaces more thoroughly.
+// It's slower and might reorder items.
+void C4ScriptGuiWindow::UpdateLayoutTightGrid()
+{
+	const int32_t &width = rcBounds.Wdt;
+	const int32_t &height = rcBounds.Hgt;
+	const int32_t borderX(0), borderY(0);
+	int32_t lowestChildRelY = 0;
+
+	std::list<C4ScriptGuiWindow*> alreadyPlacedChildren;
+
+	for (C4GUI::Element * element : *this)
+	{
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
+		// calculate the space the child needs, correctly respecting the margins
+		using namespace C4ScriptGuiWindowPropertyName;
+		const float childLeftMargin = child->CalculateRelativeSize(width, leftMargin, relLeftMargin);
+		const float childTopMargin = child->CalculateRelativeSize(height, topMargin, relTopMargin);
+		const float childRightMargin = child->CalculateRelativeSize(width, rightMargin, relRightMargin);
+		const float childBottomMargin = child->CalculateRelativeSize(height, bottomMargin, relBottomMargin);
+
+		const float childWdtF = float(child->rcBounds.Wdt) + childLeftMargin + childRightMargin;
+		const float childHgtF = float(child->rcBounds.Hgt) + childTopMargin + childBottomMargin;
+
+		// do all the rounding after the calculations
+		const auto childWdt = (int32_t)(childWdtF + 0.5f);
+		const auto childHgt = (int32_t)(childHgtF + 0.5f);
+
+		// Look for a free spot.
+		int32_t currentX = borderX;
+		int32_t currentY = borderY;
+
+		bool hadOverlap = false;
+		int overlapRepeats = 0;
+		do
+		{
+			auto overlapsWithOther = [&currentX, &currentY, &childWdt, &childHgt](C4ScriptGuiWindow *other)
+			{
+				if (currentX + childWdt <= other->rcBounds.x) return false;
+				if (currentY + childHgt <= other->rcBounds.y) return false;
+				if (currentX >= other->rcBounds.GetRight()) return false;
+				if (currentY >= other->rcBounds.GetBottom()) return false;
+				return true;
+			};
+
+			int32_t currentMinY = 0;
+			hadOverlap = false;
+			for (auto &other : alreadyPlacedChildren)
+			{
+				// Check if the other element is not yet above the new child.
+				if ((other->rcBounds.GetBottom() > currentY) && other->rcBounds.Hgt > 0)
+				{
+					if (currentMinY == 0 || (other->rcBounds.GetBottom() < currentMinY))
+						currentMinY = other->rcBounds.GetBottom();
+				}
+				// If overlapping, we must advance.
+				if (overlapsWithOther(other))
+				{
+					hadOverlap = true;
+					currentX = other->rcBounds.GetRight();
+					// Break line if the element doesn't fit anymore.
+					if (currentX + childWdt > width)
+					{
+						currentX = borderX;
+						// Start forcing change once we start repeating the check. Otherwise, there might
+						// be a composition of children that lead to infinite loop. The worst-case number
+						// of sensible checks might O(N^2) be with a really unfortunate children list.
+						const int32_t forcedMinimalChange = (overlapRepeats > alreadyPlacedChildren.size()) ? 1 : 0;
+						currentY = std::max(currentY + forcedMinimalChange, currentMinY);
+					}
+				}
+			}
+			overlapRepeats += 1;
+		} while (hadOverlap);
+
+		alreadyPlacedChildren.push_back(child);
+
+		lowestChildRelY = std::max(lowestChildRelY, currentY + childHgt);
+		child->rcBounds.x = currentX + static_cast<int32_t>(childLeftMargin);
+		child->rcBounds.y = currentY + static_cast<int32_t>(childTopMargin);
+	}
+
+	// do we need a scroll bar?
+	EnableScrollBar(lowestChildRelY > height, lowestChildRelY);
+}
+
 void C4ScriptGuiWindow::UpdateLayoutVertical()
 {
 	const int32_t borderY(0);
@@ -1453,6 +1555,7 @@ void C4ScriptGuiWindow::UpdateLayoutVertical()
 
 		// Do the calculations in floats first to not lose accuracy.
 		// Take the height of the child and then add the margins.
+		using namespace C4ScriptGuiWindowPropertyName;
 		const float childTopMargin = child->CalculateRelativeSize(rcBounds.Hgt, topMargin, relTopMargin);
 		const float childBottomMargin = child->CalculateRelativeSize(rcBounds.Hgt, bottomMargin, relBottomMargin);
 
@@ -1494,7 +1597,12 @@ bool C4ScriptGuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t
 
 	if (clipping)
 	{
-		myClippingRect = C4Rect(targetClipX1, targetClipY1, targetClipX2, targetClipY2);
+		// Take either the parent rectangle or restrict it additionally by the child's geometry.
+		myClippingRect = C4Rect(
+			std::max(currentClippingRect->x, targetClipX1),
+			std::max(currentClippingRect->y, targetClipY1),
+			std::min(currentClippingRect->Wdt, targetClipX2),
+			std::min(currentClippingRect->Hgt, targetClipY2));
 		currentClippingRect = &myClippingRect;
 	}
 
@@ -1513,9 +1621,8 @@ bool C4ScriptGuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t
 	// note that withMultipleFlag only plays a roll for the root-menu
 	bool oneDrawn = false; // was at least one child drawn?
 	//for (auto iter = rbegin(); iter != rend(); ++iter)
-	for (auto iter = begin(); iter != end(); ++iter)
+	for (auto element : *this)
 	{
-		C4GUI::Element *element = *iter;
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 
 		if (withMultipleFlag != -1)
@@ -1730,6 +1837,8 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 	// special layout selected?
 	if (style & C4ScriptGuiWindowStyleFlag::GridLayout)
 		UpdateLayoutGrid();
+	else if (style & C4ScriptGuiWindowStyleFlag::TightGridLayout)
+		UpdateLayoutTightGrid();
 	else if (style & C4ScriptGuiWindowStyleFlag::VerticalLayout)
 		UpdateLayoutVertical();
 
@@ -1840,7 +1949,7 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 	C4Object *symbolObject = props[C4ScriptGuiWindowPropertyName::symbolObject].GetObject();
 	if (symbolObject)
 	{
-		symbolObject->DrawPicture(cgoOut, false, NULL);
+		symbolObject->DrawPicture(cgoOut, false, nullptr);
 	}
 	else
 	{
@@ -1962,10 +2071,10 @@ void C4ScriptGuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t
 		if (viewport)
 		{
 			const float guiZoom = viewport->GetGUIZoom();
-			const float x = float(parentOffsetX + rcBounds.x) / guiZoom;
-			const float y = float(parentOffsetY + rcBounds.y) / guiZoom;
-			const float wdt = float(rcBounds.Wdt) / guiZoom;
-			const float hgt = float(rcBounds.Hgt) / guiZoom;
+			const int32_t x = int32_t((parentOffsetX + rcBounds.x) / guiZoom);
+			const int32_t y = int32_t((parentOffsetY + rcBounds.y) / guiZoom);
+			const int32_t wdt = int32_t(rcBounds.Wdt / guiZoom);
+			const int32_t hgt = int32_t(rcBounds.Hgt / guiZoom);
 			::MouseControl.SetTooltipRectangle(C4Rect(x, y, wdt, hgt));
 			::MouseControl.SetTooltipText(*strBuf);
 		}
@@ -2083,6 +2192,14 @@ bool C4ScriptGuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_
 	if (!HasMouseFocus())
 		OnMouseIn(player, parentOffsetX, parentOffsetY);
 
+	// Make sure the UI does not catch release events without matching key-down events.
+	// Otherwise, you could e.g. open a menu on left-down and then the menu would block the left-up event, leading to issues.
+	if (button == C4MC_Button_LeftUp)
+	{
+		// Do not catch up-events without prior down-events!
+		if (!(currentMouseState & MouseState::MouseDown)) return false;
+	}
+
 	// do not simply break the loop since some OnMouseOut might go missing
 	bool oneActionAlreadyExecuted = false;
 
@@ -2133,8 +2250,9 @@ bool C4ScriptGuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_
 	if (button == C4MC_Button_LeftDown || button == C4MC_Button_LeftDouble)
 		currentMouseState |= MouseState::MouseDown;
 	// trigger!
-	if (button == C4MC_Button_LeftUp && (currentMouseState & MouseState::MouseDown))
+	if (button == C4MC_Button_LeftUp)
 	{
+		currentMouseState = currentMouseState & ~MouseState::MouseDown;
 		C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onClickAction].GetAction();
 		if (action)
 		{
@@ -2206,9 +2324,8 @@ bool C4ScriptGuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t
 		MenuDebugLogF("children:\t%d", GetElementCount());
 		MenuDebugLogF("all actions:\t%d", props[actionType].GetAllActions().size());
 		std::list<C4ScriptGuiWindowAction*> allActions = props[actionType].GetAllActions();
-		for (std::list<C4ScriptGuiWindowAction*>::iterator iter = allActions.begin(); iter != allActions.end(); ++iter)
+		for (auto action : allActions)
 		{
-			C4ScriptGuiWindowAction *action = *iter;
 			assert(action && "C4ScriptGuiWindowProperty::GetAllActions returned list with null-pointer");
 
 			if (action->ExecuteCommand(actionID, this, player))
@@ -2259,4 +2376,19 @@ bool C4ScriptGuiWindow::IsVisibleTo(int32_t player)
 	if (target && !target->IsVisible(player, false)) return false;
 	// Default to visible!
 	return true;
+}
+
+void C4ScriptGuiWindow::lockRemovalForClosingCallback()
+{
+	lockRemovalForClosingCallbackCounter += 1;
+	if (!isMainWindow)
+		static_cast<C4ScriptGuiWindow*>(GetParent())->lockRemovalForClosingCallback();
+}
+
+void C4ScriptGuiWindow::unlockRemovalForClosingCallback()
+{
+	assert(lockRemovalForClosingCallbackCounter > 0);
+	lockRemovalForClosingCallbackCounter -= 1;
+	if (!isMainWindow)
+		static_cast<C4ScriptGuiWindow*>(GetParent())->unlockRemovalForClosingCallback();
 }

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,11 +13,10 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Reloc.h>
+#include "C4Include.h"
+#include "config/C4Reloc.h"
 
-#include <C4Config.h>
-#include <C4Application.h>
+#include "game/C4Application.h"
 
 C4Reloc Reloc; // singleton
 
@@ -36,10 +35,24 @@ void C4Reloc::Init()
 	StdCopyStrBuf planet(Config.General.ExePath);
 	planet.AppendBackslash();
 	planet.Append("planet");
-	AddPath(planet.getData());
+	if (DirectoryExists(planet.getData()))
+	{
+		// Only add planet if it's a valid contents folder.
+		// Because users may create a folder "planet" in their source repos.
+		StdCopyStrBuf planet_system_check(planet);
+		planet_system_check.AppendBackslash();
+		planet_system_check.Append(C4CFN_System);
+		if (ItemExists(planet_system_check.getData()))
+		{
+			AddPath(planet.getData());
+		}
+	}
 #endif
-	// Add main system path
-	AddPath(Config.General.SystemDataPath);
+	// Add main system path (unless it's using planet/ anyway, in which we would just slow down scenario enumeration by looking throug hthe whole source folder)
+	if (!Paths.size())
+	{
+		AddPath(Config.General.SystemDataPath);
+	}
 	// Add user path for additional data (player files, user scenarios, etc.)
 	AddPath(Config.General.UserDataPath, PATH_PreferredInstallationLocation);
 }
@@ -52,7 +65,7 @@ bool C4Reloc::AddPath(const char* path, PathType pathType)
 	if(std::find(Paths.begin(), Paths.end(), path) != Paths.end())
 		return false;
 
-	Paths.push_back(PathInfo(StdCopyStrBuf(path), pathType));
+	Paths.emplace_back(StdCopyStrBuf(path), pathType);
 	return true;
 }
 
@@ -70,8 +83,8 @@ bool C4Reloc::Open(C4Group& hGroup, const char* filename) const
 {
 	if(IsGlobalPath(filename)) return hGroup.Open(filename);
 
-	for(iterator iter = begin(); iter != end(); ++iter)
-		if(hGroup.Open(((*iter).strBuf + DirSep + filename).getData()))
+	for(const auto & iter : *this)
+		if(hGroup.Open((iter.strBuf + DirSep + filename).getData()))
 			return true;
 
 	return false;
@@ -85,9 +98,9 @@ bool C4Reloc::LocateItem(const char* filename, StdStrBuf& str) const
 		return true;
 	}
 
-	for(iterator iter = begin(); iter != end(); ++iter)
+	for(const auto & iter : *this)
 	{
-		str.Copy((*iter).strBuf + DirSep + filename);
+		str.Copy(iter.strBuf + DirSep + filename);
 		if(ItemExists(str.getData()))
 			return true;
 	}

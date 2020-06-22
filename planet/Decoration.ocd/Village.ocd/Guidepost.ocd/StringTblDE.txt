@@ -1,0 +1,5 @@
+Name=Wegweiser
+Description=Kann den richtigen Weg weisen.
+MsgRead=Lesen
+Inscription=Beschriftung
+InscriptionHelp=Text der beim Lesen des Wegweisers angezeigt wird.

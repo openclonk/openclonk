@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,8 +19,8 @@
 #ifndef INC_C4Sector
 #define INC_C4Sector
 
-#include <C4ObjectList.h>
-#include <C4Rect.h>
+#include "lib/C4Rect.h"
+#include "object/C4ObjectList.h"
 
 // class predefs
 class C4LSector;
@@ -35,7 +35,7 @@ const int32_t C4LSectorWdt = 50,
 class C4LSector
 {
 public:
-	C4LSector() { } // constructor
+	C4LSector() = default; // constructor
 	~C4LSector() { Clear(); } // destructor
 
 protected:
@@ -99,7 +99,7 @@ public:
 	C4LArea(C4LSectors *pSectors, C4Object *pObj) // initializing constructor
 	{ Set(pSectors, pObj); }
 
-	inline void Clear() { pFirst=pOut=NULL; } // zero sector
+	inline void Clear() { pFirst=pOut=nullptr; } // zero sector
 
 	bool operator == (const C4LArea &Area) const;
 
@@ -116,11 +116,11 @@ public:
 	bool Contains(C4LSector *pSct) const; // return whether sector is contained in area
 
 	inline C4ObjectList *FirstObjects(C4LSector **ppSct) // get first object list of this area
-	{ *ppSct=NULL; return NextObjects(NULL, ppSct); }
+	{ *ppSct=nullptr; return NextObjects(nullptr, ppSct); }
 	C4ObjectList *NextObjects(C4ObjectList *pPrev, C4LSector **ppSct); // get next object list of this area
 
 	inline C4ObjectList *FirstObjectShapes(C4LSector **ppSct) // get first object shapes list of this area
-	{ *ppSct=NULL; return NextObjectShapes(NULL, ppSct); }
+	{ *ppSct=nullptr; return NextObjectShapes(nullptr, ppSct); }
 	C4ObjectList *NextObjectShapes(C4ObjectList *pPrev, C4LSector **ppSct); // get next object shapes list of this area
 
 	void DebugRec(class C4Object *pObj, char cMarker);

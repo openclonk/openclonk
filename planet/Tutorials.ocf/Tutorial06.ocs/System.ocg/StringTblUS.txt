@@ -1,0 +1,16 @@
+# Dialogue: village head
+DlgVillageHeadGrateful=I am grateful you managed to get us here to Skyville.
+DlgVillageHeadWhatToDo=Yes, it is good that these villagers want to help us.
+DlgVillageHeadPower=Indeed, please help them restoring their power production.
+DlgVillageHeadIWill=I will!
+DlgVillageHeadAfterwards=Okay, then we can get some clunkers afterwards.
+
+# Dialogue: Skyville head
+DlgSkyvilleHeadThanks=Thanks for helping us out, it would be great if you could provide the shipyard with power again.
+DlgSkyvilleHeadDoBest=I'll do my best.
+DlgSkyvilleHeadManage=If you manage you can use the materials in the shipyard to produce an airplane.
+
+# Sequence: intro
+
+
+# Sequence: outro

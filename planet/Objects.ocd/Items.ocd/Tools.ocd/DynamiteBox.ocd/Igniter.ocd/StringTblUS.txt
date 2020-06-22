@@ -1,2 +1,2 @@
 Name=Igniter
-Description=Take shelter and press [Use] to ignite the placed dynamite.
+Description=Take shelter and keep [Use] pressed to ignite the placed dynamite.

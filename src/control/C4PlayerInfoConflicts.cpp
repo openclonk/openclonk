@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,12 +17,11 @@
 // e.g., changing colors if two players have the same
 // "There must be some easier way to do it"(tm)
 
-#include <C4Include.h>
-#include <C4PlayerInfo.h>
-#include <C4Game.h>
-#include <C4Teams.h>
-#include <StdColors.h>
-#include <C4Random.h>
+#include "C4Include.h"
+#include "control/C4PlayerInfo.h"
+#include "control/C4Teams.h"
+#include "lib/StdColors.h"
+#include "lib/C4Random.h"
 
 // number of times trying new player colors
 const int32_t C4MaxPlayerColorChangeTries = 100;
@@ -34,7 +33,7 @@ DWORD GenerateRandomPlayerColor(int32_t iTry) // generate a random player color 
 {
 	// generate a random one biased towards max channel luminance
 	// (for greater color difference and less gray-ish colors)
-	return C4RGB(std::min(SafeRandom(302), 256), std::min(SafeRandom(302), 256), std::min(SafeRandom(302), 256));
+	return C4RGB(std::min<int>(UnsyncedRandom(302), 256), std::min<int>(UnsyncedRandom(302), 256), std::min<int>(UnsyncedRandom(302), 256));
 }
 
 bool IsColorConflict(DWORD dwClr1, DWORD dwClr2) // return whether dwClr1 and dwClr2 are closely together
@@ -112,7 +111,7 @@ void C4PlayerInfoList::ResolvePlayerAttributeConflicts(C4ClientPlayerInfos *pSec
 
 // implementation of conflict resolver
 C4PlayerInfoListAttributeConflictResolver::C4PlayerInfoListAttributeConflictResolver(C4PlayerInfoList &rPriCheckList, const C4PlayerInfoList &rSecCheckList, C4ClientPlayerInfos *pSecPacket)
-		: ppCheckInfos(NULL), iCheckInfoCount(0), rPriCheckList(rPriCheckList), rSecCheckList(rSecCheckList), pSecPacket(pSecPacket)
+		: ppCheckInfos(nullptr), iCheckInfoCount(0), rPriCheckList(rPriCheckList), rSecCheckList(rSecCheckList), pSecPacket(pSecPacket)
 {
 	// prepare check array
 	int32_t iMaxCheckCount = rPriCheckList.GetInfoCount() + !!pSecPacket;
@@ -127,7 +126,7 @@ C4PlayerInfoListAttributeConflictResolver::C4PlayerInfoListAttributeConflictReso
 		else
 		{
 			// if the additional packet is in the list already, it needn't be a check packed (only resolve packet)
-			this->pSecPacket = NULL;
+			this->pSecPacket = nullptr;
 		}
 	}
 	// must check sec packet first
@@ -226,7 +225,7 @@ void C4PlayerInfoListAttributeConflictResolver::MarkConflicts(C4ClientPlayerInfo
 							{
 								// original attribute is taken by either one higher/equal priority by packet, or by two low prio packets
 								// in this case, don't revert to original
-								pLowPrioOriginalConflictPacket = NULL;
+								pLowPrioOriginalConflictPacket = nullptr;
 								fOriginalConflict = true;
 							}
 						}
@@ -260,7 +259,7 @@ void C4PlayerInfoListAttributeConflictResolver::ResolveInInfo()
 	{
 		// check against all other player infos, and given info, too (may be redundant)
 		fCurrentConflict = false;
-		pLowPrioOriginalConflictPacket = pLowPrioAlternateConflictPacket = NULL;
+		pLowPrioOriginalConflictPacket = pLowPrioAlternateConflictPacket = nullptr;
 		MarkConflicts(rPriCheckList, !iTries);
 		// check secondary list, too. But only for colors, not for names, because secondary list is Restore list
 		// and colors are retained in restore while names are always taken from new joins
@@ -322,7 +321,7 @@ void C4PlayerInfoListAttributeConflictResolver::ResolveInInfo()
 				if (!fOriginalConflict)
 				{
 					// revert to original name!
-					pResolveInfo->SetForcedName(NULL);
+					pResolveInfo->SetForcedName(nullptr);
 					if (pLowPrioOriginalConflictPacket) ReaddInfoForCheck(pLowPrioOriginalConflictPacket);
 					// done with this player (breaking the trial-loop)
 					break;

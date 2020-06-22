@@ -1,4 +1,0 @@
-Name=Base Respawn
-Name2=Respawn at flagpole
-Description=You respawn at the nearest base if sufficient clonks and clunkers are available.
-Description2=You respawn at the nearest respawn flagpole.

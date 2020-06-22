@@ -1,33 +1,26 @@
-/*--
-		Material.c
-		Authors: Ringwaul
+/**
+	Material.c
+	Functions relating to materials; any kind of operations.
+	
+	@author Ringwaul
+*/
 
-		Functions in relation to material; any kind of operations.
---*/
-
+// If depth is nil, the function will always measure the depth of the material.
+// Otherwise, the function will return true if the material is as deep or deeper than depth (in pixels).
 global func MaterialDepthCheck(int x, int y, string mat, int depth)
 {
-	var travelled;
-	var xval = x;
-	var yval = y;
+	var travelled = 0;
+	var matnum = Material(mat);
 
-	//If depth is equal to zero, the function will always measure the depth of the material.
-	//If depth is not equal to zero, the function will return true if the material is as deep or deeper than depth (in pixels).
-	if (depth == nil)
-		depth = LandscapeHeight();
-
-	while (travelled != depth)
+	while (y + GetY() < LandscapeHeight() && GetMaterial(x, y) == matnum)
 	{
-		if (GetMaterial(xval, yval) == Material(mat))
-		{
-			travelled++;
-			yval++;
-		}
-		if (GetMaterial(xval, yval) != Material(mat))
-			return travelled; // Returns depth of material.
+		travelled++;
+		y++;
+		if (travelled == depth)
+			return true;
 	}
-	if (travelled == depth)
-		return true;
+	if (depth == nil)
+		return travelled;
 	return false;
 }
 
@@ -35,15 +28,15 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 {
 	var iX, iY;
 	var iMaterial = Material(sMat);
-	for(var i = 0; i < 500; i++)
+	for (var i = 0; i < 500; i++)
 	{
-		iX = AbsX(iXStart+Random(iWidth));
-		iY = AbsY(iYStart+Random(iHeight));
-		if(GetMaterial(iX,iY)==iMaterial &&
-		   GetMaterial(iX+iSize,iY+iSize)==iMaterial &&
-		   GetMaterial(iX+iSize,iY-iSize)==iMaterial &&
-		   GetMaterial(iX-iSize,iY-iSize)==iMaterial &&
-		   GetMaterial(iX-iSize,iY+iSize)==iMaterial
+		iX = AbsX(iXStart + Random(iWidth));
+		iY = AbsY(iYStart + Random(iHeight));
+		if (GetMaterial(iX, iY)==iMaterial &&
+		   GetMaterial(iX + iSize, iY + iSize)==iMaterial &&
+		   GetMaterial(iX + iSize, iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize, iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize, iY + iSize)==iMaterial
 		) {
 			return [iX, iY]; // Location found.
 		}
@@ -56,11 +49,12 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 	@param y Y coordinate
 	@param distant_first If true, extraction position takes largest horizontal distance from given offset at same height to a maximum value of MaxSlide. Useful to ensure that no floor of 1px of liquid remains.
 	@return The material index of the removed pixel, or -1 if no liquid was found. */
+// documented in /docs/sdk/script/fn
 global func ExtractLiquid(int x, int y, bool distant_first)
 {
 	var result = ExtractLiquidAmount(x, y, 1, distant_first);
-	if(!result) return -1;
-	
+	if (!result)
+		return -1;
 	return result[0];
 }
 
@@ -74,15 +68,15 @@ global func ExtractLiquid(int x, int y, bool distant_first)
 global func ExtractLiquidAmount(int x, int y, int amount, bool distant_first)
 {
 	var mat = GetMaterial(x, y);
-	if(mat == -1)
+	if (mat == -1)
 		return nil;
 	var density = GetMaterialVal("Density", "Material", mat);
 	if (density < C4M_Liquid || density >= C4M_Solid)
 		return nil;
-	var amount = ExtractMaterialAmount(x, y, mat, amount, distant_first);
-	if (amount <= 0)
+	var extracted_amount = ExtractMaterialAmount(x, y, mat, amount, distant_first);
+	if (extracted_amount <= 0)
 		return nil;
-	return [mat, amount];
+	return [mat, extracted_amount];
 }
 
 /** Removes a material pixel from the specified location, if the material is flammable

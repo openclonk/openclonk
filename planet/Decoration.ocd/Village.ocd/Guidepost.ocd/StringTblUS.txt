@@ -1,0 +1,6 @@
+Name=Signpost
+Description=Can show the right way.
+MsgRead=Read
+Inscription=Inscription
+InscriptionHelp=Text that can be read by interacting with the signpost.
+

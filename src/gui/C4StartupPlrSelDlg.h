@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,9 +19,8 @@
 #ifndef INC_C4StartupPlrSelDlg
 #define INC_C4StartupPlrSelDlg
 
-#include <utility>
-#include "C4Startup.h"
-#include "C4InfoCore.h"
+#include "gui/C4Startup.h"
+#include "object/C4InfoCore.h"
 
 // startup dialog: Player selection
 class C4StartupPlrSelDlg : public C4StartupDlg
@@ -47,18 +46,18 @@ private:
 		StdStrBuf Filename;       // file info was loaded from
 
 	public:
-		ListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBeforeElement=NULL, bool fActivated=false);
+		ListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBeforeElement=nullptr, bool fActivated=false);
 		const C4FacetSurface &GetIconFacet() const { return pIcon->GetFacet(); }
-		virtual ~ListItem();
+		~ListItem() override;
 
 	protected:
 		virtual C4GUI::ContextMenu *ContextMenu() = 0;
 		C4GUI::ContextMenu *ContextMenu(C4GUI::Element *pEl, int32_t iX, int32_t iY)
 		{ return ContextMenu(); }
 
-		virtual void UpdateOwnPos(); // recalculate item positioning
+		void UpdateOwnPos() override; // recalculate item positioning
 		bool KeyCheck() { pCheck->ToggleCheck(true); return true; }
-		virtual bool IsFocusOnClick() { return false; } // do not focus; keep focus on listbox
+		bool IsFocusOnClick() override { return false; } // do not focus; keep focus on listbox
 
 		void SetName(const char *szNewName);
 		void SetIcon(C4GUI::Icons icoNew);
@@ -77,7 +76,7 @@ private:
 		virtual StdStrBuf GetDelWarning() = 0;
 		void GrabIcon(C4FacetSurface &rFromFacet);
 
-		virtual bool CheckNameHotkey(const char * c); // return whether this item can be selected by entering given char
+		bool CheckNameHotkey(const char * c) override; // return whether this item can be selected by entering given char
 
 		class LoadError : public StdStrBuf
 		{
@@ -95,21 +94,21 @@ public:
 		bool fHasCustomIcon;      // set for players with a BigIcon.png
 
 	public:
-		PlayerListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBeforeElement=NULL, bool fActivated=false);
-		~PlayerListItem() {}
+		PlayerListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBeforeElement=nullptr, bool fActivated=false);
+		~PlayerListItem() override = default;
 
 		void Load(const StdStrBuf &rsFilename); // may throw LoadError
 
 	protected:
-		virtual C4GUI::ContextMenu *ContextMenu();
+		C4GUI::ContextMenu *ContextMenu() override;
 
 	public:
 		const C4PlayerInfoCore &GetCore() const { return Core; }
 		void UpdateCore(C4PlayerInfoCore & NewCore); // Save Core to disk and update this item
 		void GrabCustomIcon(C4FacetSurface &fctGrabFrom);
-		virtual void SetSelectionInfo(C4GUI::TextWindow *pSelectionInfo);
-		virtual uint32_t GetColorDw() const { return Core.PrefColorDw; }
-		virtual StdStrBuf GetDelWarning();
+		void SetSelectionInfo(C4GUI::TextWindow *pSelectionInfo) override;
+		uint32_t GetColorDw() const override { return Core.PrefColorDw; }
+		StdStrBuf GetDelWarning() override;
 		bool MoveFilename(const char *szToFilename); // change filename to given
 	};
 
@@ -125,12 +124,12 @@ private:
 
 	public:
 		CrewListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, uint32_t dwPlrClr);
-		~CrewListItem() {}
+		~CrewListItem() override = default;
 
 		void Load(C4Group &rGrp, const StdStrBuf &rsFilename); // may throw LoadError
 
 	protected:
-		virtual C4GUI::ContextMenu *ContextMenu();
+		C4GUI::ContextMenu *ContextMenu() override;
 
 		void RewriteCore();
 
@@ -141,9 +140,9 @@ private:
 	public:
 		void UpdateClonkEnabled();
 
-		virtual uint32_t GetColorDw() const { return dwPlrClr; }; // get drawing color for portrait
-		virtual void SetSelectionInfo(C4GUI::TextWindow *pSelectionInfo); // clears text field and writes selection info text into it
-		virtual StdStrBuf GetDelWarning();
+		uint32_t GetColorDw() const override { return dwPlrClr; }; // get drawing color for portrait
+		void SetSelectionInfo(C4GUI::TextWindow *pSelectionInfo) override; // clears text field and writes selection info text into it
+		StdStrBuf GetDelWarning() override;
 		const C4ObjectInfoCore &GetCore() const { return Core; }
 
 		CrewListItem *GetNext() const { return static_cast<CrewListItem *>(ListItem::GetNext()); }
@@ -156,13 +155,13 @@ private:
 
 public:
 	C4StartupPlrSelDlg(); // ctor
-	~C4StartupPlrSelDlg(); // dtor
+	~C4StartupPlrSelDlg() override; // dtor
 
 private:
 	class C4KeyBinding *pKeyBack, *pKeyProperties, *pKeyCrew, *pKeyDelete, *pKeyRename, *pKeyNew;
 	class C4GUI::ListBox *pPlrListBox;
 	C4GUI::TextWindow *pSelectionInfo;
-	Mode eMode;
+	Mode eMode{PSDM_Player};
 
 	// in crew mode:
 	struct CurrPlayer_t
@@ -180,7 +179,7 @@ private:
 	void UpdatePlayerList(); // refill pPlrListBox with players in player folder, or with crew in selected player
 	void UpdateSelection();
 	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(); }
-	void OnSelDblClick(class C4GUI::Element *pEl) { C4GUI::GUISound("UI::Click"); OnPropertyBtn(NULL); }
+	void OnSelDblClick(class C4GUI::Element *pEl) { C4GUI::GUISound("UI::Click"); OnPropertyBtn(nullptr); }
 	void UpdateActivatedPlayers(); // update Config.General.Participants by currently activated players
 	void SelectItem(const StdStrBuf &Filename, bool fActivate); // find item by filename and select (and activate it, if desired)
 
@@ -196,33 +195,33 @@ protected:
 	ListItem *GetSelection();
 	void SetSelection(ListItem *pNewItem);
 
-	C4GUI::RenameEdit *pRenameEdit; // hack: set by crew list item renaming. Must be cleared when something is done in the dlg
+	C4GUI::RenameEdit *pRenameEdit{nullptr}; // hack: set by crew list item renaming. Must be cleared when something is done in the dlg
 	void AbortRenaming();
 
 	friend class ListItem; friend class PlayerListItem; friend class CrewListItem;
 	friend class C4StartupPlrPropertiesDlg;
 
 protected:
-	virtual int32_t GetMarginTop() { return (rcBounds.Hgt/7); }
-	virtual bool HasBackground() { return false; }
-	virtual void DrawElement(C4TargetFacet &cgo);
+	int32_t GetMarginTop() override { return (rcBounds.Hgt/7); }
+	bool HasBackground() override { return false; }
+	void DrawElement(C4TargetFacet &cgo) override;
 
-	virtual bool OnEnter() { return false; } // Enter ignored
-	virtual bool OnEscape() { DoBack(); return true; }
+	bool OnEnter() override { return false; } // Enter ignored
+	bool OnEscape() override { DoBack(); return true; }
 	bool KeyBack() { DoBack(); return true; }
-	bool KeyProperties() { OnPropertyBtn(NULL); return true; }
-	bool KeyCrew() { OnCrewBtn(NULL); return true; }
-	bool KeyDelete() { OnDelBtn(NULL); return true; }
-	bool KeyNew() { OnNewBtn(NULL); return true; }
+	bool KeyProperties() { OnPropertyBtn(nullptr); return true; }
+	bool KeyCrew() { OnCrewBtn(nullptr); return true; }
+	bool KeyDelete() { OnDelBtn(nullptr); return true; }
+	bool KeyNew() { OnNewBtn(nullptr); return true; }
 
 	void OnNewBtn(C4GUI::Control *btn);
 	void OnNew(const StdStrBuf &Playername);
 	void OnActivateBtn(C4GUI::Control *btn);
 	void OnPropertyBtn(C4GUI::Control *btn);
-	void OnPropertyCtx(C4GUI::Element *el) { OnPropertyBtn(NULL); }
+	void OnPropertyCtx(C4GUI::Element *el) { OnPropertyBtn(nullptr); }
 	void OnCrewBtn(C4GUI::Control *btn);
 	void OnDelBtn(C4GUI::Control *btn);
-	void OnDelCtx(C4GUI::Element *el) { OnDelBtn(NULL); }
+	void OnDelCtx(C4GUI::Element *el) { OnDelBtn(nullptr); }
 	void OnDelBtnConfirm(ListItem *pSel);
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(); }
 
@@ -234,7 +233,7 @@ public:
 class C4StartupPlrPropertiesDlg: public C4GUI::Dialog
 {
 protected:
-	C4StartupPlrSelDlg *pMainDlg; // may be NULL if shown as creation dialog in main menu!
+	C4StartupPlrSelDlg *pMainDlg; // may be nullptr if shown as creation dialog in main menu!
 	C4StartupPlrSelDlg::PlayerListItem * pForPlayer;
 	C4GUI::Edit *pNameEdit; // player name edit box
 	C4GUI::CheckBox *pAutoStopControl; // wether the player uses AutoStopControl
@@ -247,16 +246,16 @@ protected:
 	C4FacetSurface fctOldBigIcon;
 	C4FacetSurface fctNewBigIcon; // if assigned, save new picture/bigicon
 	bool fClearBigIcon; // if true, delete current picture/bigicon
-	virtual const char *GetID() { return "PlrPropertiesDlg"; }
+	const char *GetID() override { return "PlrPropertiesDlg"; }
 
-	void DrawElement(C4TargetFacet &cgo);
-	virtual int32_t GetMarginTop() { return 16; }
-	virtual int32_t GetMarginLeft() { return 45; }
-	virtual int32_t GetMarginRight() { return 55; }
-	virtual int32_t GetMarginBottom() { return 30; }
+	void DrawElement(C4TargetFacet &cgo) override;
+	int32_t GetMarginTop() override { return 16; }
+	int32_t GetMarginLeft() override { return 45; }
+	int32_t GetMarginRight() override { return 55; }
+	int32_t GetMarginBottom() override { return 30; }
 
-	virtual void UserClose(bool fOK); // OK only with a valid name
-	virtual bool IsComponentOutsideClientArea() { return true; } // OK and close btn
+	void UserClose(bool fOK) override; // OK only with a valid name
+	bool IsComponentOutsideClientArea() override { return true; } // OK and close btn
 
 	void OnClrChangeLeft(C4GUI::Control *pBtn);
 	void OnClrChangeRight(C4GUI::Control *pBtn);
@@ -274,13 +273,13 @@ private:
 	void UpdateBigIcon();
 
 	bool SetNewPicture(C4Surface &srcSfc, C4FacetSurface *trgFct, int32_t iMaxSize, bool fColorize);
-	void SetNewPicture(const char *szFromFilename); // set new bigicon by loading and scaling if necessary. If szFromFilename==NULL, clear bigicon
+	void SetNewPicture(const char *szFromFilename); // set new bigicon by loading and scaling if necessary. If szFromFilename==nullptr, clear bigicon
 
 public:
 	C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerListItem * pForPlayer, C4StartupPlrSelDlg *pMainDlg);
-	~C4StartupPlrPropertiesDlg() { }
+	~C4StartupPlrPropertiesDlg() override = default;
 
-	virtual void OnClosed(bool fOK); // close CB
+	void OnClosed(bool fOK) override; // close CB
 };
 
 #endif // INC_C4StartupPlrSelDlg

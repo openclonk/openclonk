@@ -32,6 +32,8 @@ public func NoConstructionFlip() { return true; }
 // Is a construction that is built just below the surface.
 public func IsBelowSurfaceConstruction() { return true; }
 
+public func IsHammerBuildable() { return true; }
+
 public func ConstructionCombineWith()
 {
 	return "ConnectWoodenBridge";
@@ -52,13 +54,17 @@ public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Left | CO
 
 public func IsStructureWithoutBasement() { return false; }
 
-// Called when the wooden bridge construction site is created
+/* Called when the wooden bridge construction site is created.
+   Returns the parameter "other_bridge", so that you can place
+   multiple bridges via script:
+   A->CombineWith(CreateObject(B))->...->CombineWith(CreateObject(C))
+*/
 public func CombineWith(object other_bridge)
 {
 	// Store the connected bridge.
 	SetConnectedBridge(other_bridge);
 	other_bridge->SetConnectedBridge(this);
-	return;
+	return other_bridge;
 }
 
 public func SetConnectedBridge(object other_bridge)
@@ -130,3 +136,4 @@ local BlastIncinerate = 2;
 local ContactIncinerate = 8;
 local NoBurnDecay = true;
 local HitPoints = 80;
+local Components = {Wood = 3};

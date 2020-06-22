@@ -44,12 +44,12 @@ private func Initialize()
 	SetAction("Fly");
 	SetPhase(Random(3));
 
-	_inherited();
+	_inherited(...);
 }
 
 private func Death()
 {
-	_inherited();
+	_inherited(...);
 	RemoveObject();
 }
 
@@ -58,7 +58,7 @@ private func MissionComplete()
 	if (enraged)
 		MoveToTarget();
 	else
-		_inherited();
+		_inherited(...);
 }
 
 private func Sleep()
@@ -74,19 +74,21 @@ private func Sleep()
 	}
 	// One last trip, then become invisible
 	MoveToTarget();
-	lib_insect_going2sleep = true;
+	// Insect might have been removed.
+	if (this)
+		lib_insect_going2sleep = true;
 }
 
 private func SleepComplete()
 {
 	SetAction("Sleep");
-	_inherited();
+	_inherited(...);
 }
 
 private func WakeUp()
 {
 	SetAction("Fly");
-	_inherited();
+	_inherited(...);
 }
 
 private func GetAttraction(proplist coordinates)
@@ -98,8 +100,8 @@ private func GetAttraction(proplist coordinates)
 		return false;
 	}
 	// GetAttraction will only be called for the swarm master, perfect to have just one being make sound
-	if(!Random(20))
-		Sound("Animals::Zap::Zap?", nil,nil,nil,nil, 200, Random(100));
+	if (!Random(20))
+		Sound("Animals::Zap::Zap?", nil, nil, nil, nil, 200, Random(100));
 
 	coordinates.x = home->GetX() + Random(20)-10;
 	coordinates.y = home->GetY() + Random(20)-10;
@@ -115,6 +117,8 @@ private func Enrage(proplist coordinates)
 {
 	if (!enrage_target)
 		CheckTarget();
+	if (!this)
+		return false;
 	if (!enrage_target)
 		return false;
 	if (ObjectDistance(enrage_target) < 10)
@@ -170,7 +174,7 @@ private func CheckTurn()
 
 private func AngryBuzz()
 {
-	Sound("Animals::Zap::Zap?", nil,nil,nil,nil, nil, -Random(100));
+	Sound("Animals::Zap::Zap?", {pitch = -Random(100)});
 }
 
 /*-- Saving --*/
@@ -246,5 +250,6 @@ local Name = "$Name$";
 local MaxEnergy = 30000;
 local MaxBreath = 250;
 local Placement = 2;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;

@@ -13,8 +13,6 @@
 	<h>Get started</h>
 	<text><emlink href="files.html">Game data</emlink> - Get an overview over the game data needed for the creation of custom game content.</text>
 	<text><emlink href="script/index.html">C4Script</emlink> - View the introduction to the script language C4Script.</text>
-	<h>Search the documentation</h>
-	<search/>
   </part>
   <author>Newton</author><date>2011-08</date>
 </doc>

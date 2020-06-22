@@ -1,0 +1,9 @@
+SetAINewHome=AI set position
+SetAINewHomeHelp=Lets an AI clonk walk to another position.
+NewHome=New position
+NewHomeHelp=Where to send the AI clonk.
+NewHomeDir=Direction
+NewHomeDirHelp=In which direction the AI clonk will look if no enemy is nearby.
+Unchanged=Unchanged
+Left=Left
+Right=Right

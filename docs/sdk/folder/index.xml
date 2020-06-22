@@ -60,6 +60,10 @@ US:My scenario collection</code>        <text>Important: No quotation marks and 
       <dd>
         <text>Scenario folders can contain local music files. Also see <emlink href="scenario/index.html#Musicocg">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>
+      <dt id="Systemocg"><img height="16" src="../../images/icon_system.png" width="16"/>System.ocg</dt>
+      <dd>
+		<text>Scenario folders can contain any number of script files (*.c). These can define or modify global functions, or append to loaded definitions. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
+      </dd>
       <dt id="ocd"><img height="16" src="../../images/icon_object_definition.png" width="16"/><emlink href="definition/index.html">*.ocd</emlink></dt>
       <dd>
         <text>Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href="scenario/index.html#ocd">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
@@ -75,4 +79,5 @@ US:My scenario collection</code>        <text>Important: No quotation marks and 
     </dl>
   </part>
   <author>Sven2</author><date>2006-09</date>
+  <author>Marky</author><date>2019-04</date>
 </doc>

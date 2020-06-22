@@ -14,8 +14,8 @@
  */
 
 #include "C4Include.h"
-#include "C4Material.h"
-#include "C4Texture.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4Texture.h"
 #include "mape/cpp-handles/material-handle.h"
 
 #define MATERIAL_MAP_TO_HANDLE(material_map) (reinterpret_cast<C4MaterialMapHandle*>(material_map))
@@ -62,7 +62,7 @@ void c4_material_map_crossmap_materials(C4MaterialMapHandle* material_map, C4Tex
     const char* overlay = mat->sTextureOverlay.getData();
     if(!overlay || *overlay == '\0')
     {
-      int first_tex_map_entry = HANDLE_TO_TEXTURE_MAP(texture_map)->GetIndex(mat->Name, NULL, false);
+      int first_tex_map_entry = HANDLE_TO_TEXTURE_MAP(texture_map)->GetIndex(mat->Name, nullptr, false);
       overlay = HANDLE_TO_TEXTURE_MAP(texture_map)->GetEntry(first_tex_map_entry)->GetTextureName();
     }
 

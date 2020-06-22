@@ -1,7 +1,7 @@
 # Pilot Name
-PilotName=Kapitän Orville
+PilotName=KapitÃ¤n Orville
 
 # Intro sequence messages
-MsgIronPeakAhead=Eisenberg voraus! Team ... Bereit machen für Absprung!
+MsgIronPeakAhead=Eisenberg voraus! Team ... Bereit machen fÃ¼r Absprung!
 MsgLandOnPeak=Team ... Landung unten auf dem Gipfel.
-MsgCrewLanded=Gut gemacht! Ich habe euch Werkzeuge zum Überleben gegeben. Eure Mission: Errichtet eine Siedlung und produziert Metall.
+MsgCrewLanded=Gut gemacht! Ich habe euch Werkzeuge zum Ãœberleben gegeben. Eure Mission: Errichtet eine Siedlung und produziert Metall.

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,35 +20,37 @@
 #ifndef INC_C4DefList
 #define INC_C4DefList
 
-#include <C4FontLoader.h>
-#include <StdMesh.h>
-#include <StdMeshLoader.h>
+#include "graphics/C4FontLoaderCustomImages.h"
 
-class C4DefList: public CStdFont::CustomImages
+class C4DefList: public CStdFontCustomImages
 {
 public:
 	C4DefList();
-	virtual ~C4DefList();
+	~C4DefList() override;
 public:
 	bool LoadFailure;
 	typedef std::map<C4ID, C4Def*> Table;
 	Table table;
 protected:
 	C4Def *FirstDef;
+	// Localized names of definition parent groups that do not contain a definition themselves
+	// Loaded for editor definition list
+	std::map<StdCopyStrBuf, StdCopyStrBuf> localized_group_folder_names;
 public:
 	void Default();
 	void Clear();
 	int32_t Load(C4Group &hGroup,
 	             DWORD dwLoadWhat, const char *szLanguage,
-	             C4SoundSystem *pSoundSystem = NULL,
+	             C4SoundSystem *pSoundSystem = nullptr,
 	             bool fOverload = false,
 	             bool fSearchMessage = false, int32_t iMinProgress=0, int32_t iMaxProgress=0, bool fLoadSysGroups = true);
 	int32_t Load(const char *szFilename,
 	             DWORD dwLoadWhat, const char *szLanguage,
-	             C4SoundSystem *pSoundSystem = NULL,
+	             C4SoundSystem *pSoundSystem = nullptr,
 	             bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
 	C4Def *ID2Def(C4ID id);
 	C4Def *GetDef(int32_t Index);
+	std::vector<C4Def*> GetAllDefs(C4String *filter_property=nullptr) const;
 	C4Def *GetByPath(const char *szPath);
 	C4Def *GetByName(const StdStrBuf &);
 	int32_t GetDefCount();
@@ -59,18 +61,20 @@ public:
 	void Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor);
 	void Remove(C4Def *def);
 	bool Remove(C4ID id);
-	bool Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem = NULL);
+	bool Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem = nullptr);
 	bool Add(C4Def *ndef, bool fOverload);
 	void BuildTable();
 	void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
 	void CallEveryDefinition();
+	void SortByPriority();
 	void Synchronize();
 	void AppendAndIncludeSkeletons();
 	StdMeshSkeletonLoader& GetSkeletonLoader();
+	const char *GetLocalizedGroupFolderName(const char *folder_path) const;
 
 	// callback from font renderer: get ID image
-	virtual bool DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform);
-	virtual float GetFontImageAspect(const char* szImageTag);
+	bool DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) override;
+	float GetFontImageAspect(const char* szImageTag) override;
 private:
 	std::unique_ptr<StdMeshSkeletonLoader> SkeletonLoader;
 };

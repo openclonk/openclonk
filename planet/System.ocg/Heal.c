@@ -2,28 +2,38 @@
     Heal.c
     Function to heal livings over time.
 
-    Author: Armin
+    @author Armin
 */
 
 /**
 	Heals the object over time for /amount/ HP.
 	Calling the function multiple times results in faster healing (as opposed to longer healing).
+	
+	If necessary, a custom interval can be set. The healing effect restores 1 energy per interval.
 */
-global func Heal(int amount)
+global func Heal(int amount, int interval)
 {
+	AssertObjectContext();
+
 	// Add effect.
-	var fx = this->AddEffect("HealingOverTime", this, 1, 36);
+	var fx = CreateEffect(FxHealingOverTime, 1, interval ?? 36);
 	fx.healing_amount = amount;
 	fx.done = 0;
 	return fx;
 }
 
-global func FxHealingOverTimeTimer(object target, effect fx)
+
+static const FxHealingOverTime = new Effect
 {
-	// Stop healing the Clonk if he reached full health.
-	if (target->GetEnergy() >= target.MaxEnergy/1000  || fx.done >= fx.healing_amount)
-		return -1;
-	target->DoEnergy(1);
-	fx.done++;
-	return FX_OK;
-}
+	Timer = func ()
+	{
+		// Stop healing the Clonk if he reached full health.
+		if (Target->GetEnergy() >= Target->GetMaxEnergy() || this.done >= this.healing_amount)
+		{
+			return FX_Execute_Kill;
+		}
+		Target->DoEnergy(1);
+		++this.done;
+		return FX_OK;
+	}
+};

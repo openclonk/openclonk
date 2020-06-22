@@ -1,6 +1,6 @@
 [DefCore]
 id=Igniter
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=4
 Height=6
@@ -13,3 +13,4 @@ Mass=15
 Picture=0,0,64,64
 Rotate=1
 Float=1
+HideInCreator=true

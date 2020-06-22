@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -23,17 +23,17 @@
 #ifndef INC_C4RoundResults
 #define INC_C4RoundResults
 
-#include "C4Components.h"
-#include "C4IDList.h"
-#include "C4PacketBase.h"
-#include "C4FacetEx.h"
+#include "c4group/C4Components.h"
+#include "graphics/C4FacetEx.h"
+#include "network/C4PacketBase.h"
+#include "object/C4IDList.h"
 
 // Contains additional data not present in C4PlayerInfo
 class C4RoundResultsPlayer
 {
 private:
 	// player ID of linked structure in Game.PlayerInfos
-	int32_t id;
+	int32_t id{0};
 
 	// player icon
 	// not compiled, so it will be lost for eliminated players after savegame resume,
@@ -41,24 +41,24 @@ private:
 	C4FacetSurface fctBigIcon;
 
 	// game data
-	uint32_t iTotalPlayingTime; // total playing time in seconds
-	int32_t iScoreOld, iScoreNew;
+	uint32_t iTotalPlayingTime{0}; // total playing time in seconds
+	int32_t iScoreOld{-1}, iScoreNew{-1};
 	StdCopyStrBuf sCustomEvaluationStrings; // scenario specific
 
 	// league data
-	int32_t iLeagueScoreNew;    // score on league server after this round - -1 for unknown
-	int32_t iLeagueScoreGain;   // league score gained by this round - -1 for unknown
-	int32_t iLeagueRankNew;     // rank on league server after this round
-	int32_t iLeagueRankSymbolNew; // rank symbol on league server after this round
-	int32_t iLeaguePerformance;		// script-set performance value, effect league-dependent
+	int32_t iLeagueScoreNew{-1};    // score on league server after this round - -1 for unknown
+	int32_t iLeagueScoreGain{0};   // league score gained by this round - -1 for unknown
+	int32_t iLeagueRankNew{0};     // rank on league server after this round
+	int32_t iLeagueRankSymbolNew{0}; // rank symbol on league server after this round
+	int32_t iLeaguePerformance{0};		// script-set performance value, effect league-dependent
 	StdCopyStrBuf sLeagueProgressData; // scenario-specific data to store more proigress info (which levels were done, etc.)
 	enum LeagueStatus
 	{
 		RRPLS_Unknown=0, RRPLS_Lost, RRPLS_Won
-	} eLeagueStatus; // whether player lost or won
+	} eLeagueStatus{RRPLS_Unknown}; // whether player lost or won
 
 public:
-	C4RoundResultsPlayer() : id(0), iTotalPlayingTime(0), iScoreOld(-1), iScoreNew(-1), iLeagueScoreNew(-1), iLeagueScoreGain(0), iLeagueRankNew(0), iLeagueRankSymbolNew(0), iLeaguePerformance(0), sLeagueProgressData(), eLeagueStatus(RRPLS_Unknown) {}
+	C4RoundResultsPlayer() : sLeagueProgressData() {}
 	C4RoundResultsPlayer(const C4RoundResultsPlayer &cpy) { *this=cpy; }
 
 	void CompileFunc(StdCompiler *pComp);
@@ -94,12 +94,12 @@ class C4RoundResultsPlayers
 {
 private:
 	// players
-	C4RoundResultsPlayer **ppPlayers;
-	int32_t iPlayerCount, iPlayerCapacity;
+	C4RoundResultsPlayer **ppPlayers{nullptr};
+	int32_t iPlayerCount{0}, iPlayerCapacity{0};
 
 public:
-	C4RoundResultsPlayers() : ppPlayers(NULL), iPlayerCount(0), iPlayerCapacity(0) {}
-	C4RoundResultsPlayers(const C4RoundResultsPlayers &cpy) : ppPlayers(NULL), iPlayerCount(0), iPlayerCapacity(0) { *this=cpy; }
+	C4RoundResultsPlayers() = default;
+	C4RoundResultsPlayers(const C4RoundResultsPlayers &cpy) { *this=cpy; }
 	~C4RoundResultsPlayers() { Clear(); }
 
 	void Clear();
@@ -139,7 +139,7 @@ private:
 	// game data
 	C4IDList Goals;     // Goals at time of evaluation
 	C4IDList FulfilledGoals; // only those goals that are fulfilled
-	uint32_t iPlayingTime; // game time in seconds
+	uint32_t iPlayingTime{0}; // game time in seconds
 	int32_t iLeaguePerformance; // settlement league performance points
 	bool fHideSettlementScore; // to hide the score in the evaluation dialogue (for melees)
 
@@ -149,9 +149,10 @@ private:
 
 	// scenario-specific
 	StdCopyStrBuf sCustomEvaluationStrings;
+	StdCopyStrBuf Statistics; // stats collected by script at the end of the round
 
 public:
-	C4RoundResults() : iPlayingTime(0) {}
+	C4RoundResults() = default;
 	~C4RoundResults() { Clear(); }
 
 	void Clear();
@@ -190,6 +191,8 @@ public:
 	void SetLeaguePerformance(int32_t iNewPerf, int32_t idPlayer = 0);
 	int32_t GetLeaguePerformance(int32_t idPlayer = 0) const;
 
+	StdCopyStrBuf GetStatistics() const { return Statistics; }
+
 	const C4RoundResultsPlayers &GetPlayers() const { return Players; }
 	const char *GetCustomEvaluationStrings() const { return sCustomEvaluationStrings.getData(); }
 	NetResult GetNetResult() const { return eNetResult; }
@@ -212,13 +215,13 @@ class C4PacketLeagueRoundResults : public C4PacketBase
 public:
 	C4RoundResultsPlayers Players; // league info for players
 	StdCopyStrBuf sResultsString; // league result string - or error message
-	bool fSuccess; // whether result was successful or not
+	bool fSuccess{false}; // whether result was successful or not
 
-	C4PacketLeagueRoundResults() : fSuccess(false) { } // std ctor
+	C4PacketLeagueRoundResults() = default; // std ctor
 	C4PacketLeagueRoundResults(const char *szResultsString, bool fSuccess, const C4RoundResultsPlayers &Players) : Players(Players), sResultsString(szResultsString), fSuccess(fSuccess) {} // ctor
 	C4PacketLeagueRoundResults(const char *szResultsString, bool fSuccess) : sResultsString(szResultsString), fSuccess(fSuccess) {} // ctor
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 

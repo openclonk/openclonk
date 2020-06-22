@@ -1,2 +1,2 @@
-Name=Sch‰del
+Name=Sch√§del
 Description=Relikt des Lebens.

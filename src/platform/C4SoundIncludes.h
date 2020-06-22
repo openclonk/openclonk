@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -35,7 +35,7 @@
  		// This is an ugly hack to make FreeALUT not dllimport everything.
 #		define _XBOX
 #	endif
-#	include <alut.h>
+#	include <AL/alut.h>
 #	undef _XBOX
 #	if defined(__APPLE__)
 #		import <CoreFoundation/CoreFoundation.h>

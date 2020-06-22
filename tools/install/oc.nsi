@@ -99,6 +99,11 @@ Section
   File /oname=c4group.exe "${C4GROUP}"
 
   File "*.dll"
+
+  SetOutPath "$INSTDIR\platforms"
+  File "platforms\"
+
+  SetOutPath "$INSTDIR"
   
   ; Delete any previously unpacked Music.ocg, which would block creation of the file.
   RMDir /r "$INSTDIR\Music.ocg"
@@ -256,6 +261,7 @@ Section Uninstall
   Delete "$INSTDIR\c4group.exe"
 
   Delete "$INSTDIR\*.dll"
+  RMDir /r "$INSTDIR\platforms"
 
   ; Music may or may not be unpacked.
   RMDir /r "$INSTDIR\Music.ocg"

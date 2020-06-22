@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Find_Cone</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>radius</name>
+          <desc>Cone radius.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>cone_angle</name>
+          <desc>The angle in which direction the cone points, zero means upwards and positive angles rotate clockwise.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>cone_width</name>
+          <desc>The angular width of the cone, all object within an angle of <code>cone_angle - cone_width</code> and <code>cone_angle + cone_width</code> will be found.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Distance reference point. In local calls, relative to the calling object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Distance reference point. In local calls, relative to the calling object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>prec_angle</name>
+          <desc>Precision for the <code>cone_angle</code> and <code>cone_width</code> parameters. For a higher precision while working with integers (whole numbers) you can specify a higher precision value. A precision of 10 will induce an angle range from 0 to 3600.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects within the cone with specified radius, cone angle and cone width with the tip of the cone originating at the specified coordinates. If no coordinates are specified, the position of the calling object is used.</desc>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Maikel</author><date>2017-7</date>
+</funcs>

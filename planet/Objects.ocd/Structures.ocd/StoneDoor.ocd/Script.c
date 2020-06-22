@@ -5,6 +5,8 @@
 	@authors Ringwaul, Maikel	
 */
 
+#include Library_SwitchTarget
+
 protected func Initialize()
 {
 	SetAction("Door");
@@ -56,6 +58,23 @@ private func ForceDigFree()
 	SetSolidMask();
 	DigFreeRect(GetX() - 4, GetY() - 20, 8, 40, true);
 	SetSolidMask(0, 0, 8, 40);
+}
+
+/*-- Switch control --*/
+
+// Reaction to operation by a switch: if open_door is true the door opens, otherwise it closes
+public func OnSetInputSignal(object operator, object switch, bool open_door)
+{
+	if (open_door)
+	{
+		OpenDoor();
+	}
+	else
+	{
+		CloseDoor();
+	}
+
+	_inherited(operator, switch, open_door, ...);
 }
 
 /*-- Automatic movement --*/
@@ -153,10 +172,41 @@ public func GetFloorOffset()
 {
 	// Searches downwards from the lowest vertex to the floor
 	var y_off;
-	for (y_off=0; !GBackSolid(0, 20+y_off); ++y_off)
+	for (y_off = 0; !GBackSolid(0, 20 + y_off); ++y_off)
 		if (y_off > 20) break; // max range
 	return y_off;
 }
+
+
+/* Editor */
+
+local EditorActions = {
+	OpenDoor = { Name = "$DoorUp$", Command = "OpenDoor()" },
+	CloseDoor = { Name = "$DoorDown$", Command = "CloseDoor()" }
+};
+
+public func Definition(def, ...)
+{
+	UserAction->AddEvaluator("Action", "Structure", "$DoorUp$", "$DoorUpDesc$", "open_door", [def, def.EvalAct_OpenDoor], { }, UserAction->GetObjectEvaluator("IsDoor", "$Door$", "$DoorTargetHelp$"), "Door");
+	UserAction->AddEvaluator("Action", "Structure", "$DoorDown$", "$DoorDownDesc$", "close_door", [def, def.EvalAct_CloseDoor], { }, UserAction->GetObjectEvaluator("IsDoor", "$Door$", "$DoorTargetHelp$"), "Door");
+	return _inherited(def, ...);
+}
+
+private func EvalAct_OpenDoor(props, context)
+{
+	var door = UserAction->EvaluateValue("Object", props.Door, context);
+	if (door) door->~OpenDoor();
+}
+
+private func EvalAct_CloseDoor(props, context)
+{
+	var door = UserAction->EvaluateValue("Object", props.Door, context);
+	if (door) door->~CloseDoor();
+}
+
+/* Properties */
+
+public func IsDoor() { return true; }
 
 local ActMap = {
 	Door = {
@@ -175,6 +225,9 @@ local ActMap = {
 		NextAction = "Door",
 	},
 };
+
 local Name = "$Name$";
-local EditCursorCommands = ["OpenDoor()", "CloseDoor()"];
-local Plane = 600;
+local Plane = 200;
+local Components = {Rock = 6};
+
+

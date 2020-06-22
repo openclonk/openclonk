@@ -48,9 +48,9 @@ private func FxMoveTimer(object target, effect, int time)
 	if (Inside(GetXDir(), -6, 6))
 		SetXDir(GetXDir() + 2 * Random(2) - 1);
 	
-	// Explodes near living things
-	var prey = FindObject(Find_Distance(GetCon()/15, 0, 0), Find_OCF(OCF_Alive));
-	if(prey != nil)
+	// Explodes near living things.
+	var prey = FindObject(Find_Distance(GetCon() / 15), Find_OCF(OCF_Alive), Find_Not(Find_Property("CorrosionResist")));
+	if (prey)
 		Explode(10);
 	return FX_OK;
 }

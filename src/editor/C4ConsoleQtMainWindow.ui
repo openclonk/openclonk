@@ -1,0 +1,2129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>955</width>
+    <height>625</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string comment="res">IDS_CNS_EDITOR</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/editor/res/oc64.png</normaloff>:/editor/res/oc64.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QComboBox" name="foregroundMatTexComboBox">
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QComboBox::AdjustToContents</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="drawSizeLabel">
+      <property name="text">
+       <string comment="res">IDS_CTL_SIZE</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QSlider" name="drawSizeSlider">
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="value">
+       <number>10</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QComboBox" name="backgroundMatTexComboBox">
+      <property name="sizeAdjustPolicy">
+       <enum>QComboBox::AdjustToContents</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="3">
+     <widget class="QDockWidget" name="welcomeDockWidget">
+      <property name="windowTitle">
+       <string comment="res">IDS_CNS_WELCOME</string>
+      </property>
+      <widget class="QWidget" name="welcomeDockWidgetContents">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QScrollArea" name="welcomeScrollArea">
+          <property name="palette">
+           <palette>
+            <active>
+             <colorrole role="Base">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>255</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="Window">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>251</green>
+                <blue>241</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </active>
+            <inactive>
+             <colorrole role="Base">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>255</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="Window">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>251</green>
+                <blue>241</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </inactive>
+            <disabled>
+             <colorrole role="Base">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>251</green>
+                <blue>241</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="Window">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>251</green>
+                <blue>241</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </disabled>
+           </palette>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="lineWidth">
+           <number>0</number>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="welcomeScrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>417</width>
+             <height>229</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="welcomeScrollLayout">
+            <item>
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Maximum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>10</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeTitleLabel">
+              <property name="font">
+               <font>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string comment="res">IDS_CNS_EDITOR</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Maximum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>10</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeStartLabel">
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string comment="res">IDS_MNU_START</string>
+              </property>
+              <property name="indent">
+               <number>15</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeNewLabel">
+              <property name="text">
+               <string comment="res">IDS_MNU_NEW</string>
+              </property>
+              <property name="indent">
+               <number>25</number>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::TextBrowserInteraction</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeOpenLabel">
+              <property name="text">
+               <string comment="res">IDS_MNU_OPEN</string>
+              </property>
+              <property name="indent">
+               <number>25</number>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::TextBrowserInteraction</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeExploreUserPathLabel">
+              <property name="text">
+               <string comment="res">IDS_MNU_EXPLOREUSERPATH</string>
+              </property>
+              <property name="indent">
+               <number>25</number>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::TextBrowserInteraction</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Maximum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>10</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeRecentLabel">
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string comment="res">IDS_MNU_RECENT</string>
+              </property>
+              <property name="indent">
+               <number>15</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>955</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string comment="res">IDS_MNU_FILE</string>
+    </property>
+    <addaction name="actionFileNew"/>
+    <addaction name="actionFileOpen"/>
+    <addaction name="actionFileOpenInNetwork"/>
+    <addaction name="actionFileOpenWithPlayers"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileRecord"/>
+    <addaction name="actionFileSaveScenario"/>
+    <addaction name="actionFileSaveScenarioAs"/>
+    <addaction name="actionFileSaveGameAs"/>
+    <addaction name="actionFileExportScenarioPacked"/>
+    <addaction name="actionFileReInitScenario"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileClose"/>
+    <addaction name="actionFileQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuPlayers">
+    <property name="title">
+     <string comment="res">IDS_MNU_PLAYER</string>
+    </property>
+    <addaction name="actionPlayerJoin"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string comment="res">?</string>
+    </property>
+    <addaction name="actionHelp"/>
+    <addaction name="actionHelpAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuWindows">
+    <property name="title">
+     <string comment="res">IDS_MNU_WINDOWS</string>
+    </property>
+    <addaction name="actionViewportNew"/>
+    <addaction name="actionNextViewport"/>
+   </widget>
+   <widget class="QMenu" name="menuNet">
+    <property name="title">
+     <string comment="res">IDS_MNU_NET</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string comment="res">IDS_MNU_TOOLS</string>
+    </property>
+    <widget class="QMenu" name="menuIDS_MNU_SHORTCUTS">
+     <property name="title">
+      <string comment="res">IDS_MNU_SHORTCUTS</string>
+     </property>
+     <addaction name="actionFocusGlobalScriptBox"/>
+     <addaction name="actionFocusObjectScriptBox"/>
+     <addaction name="actionOpenMaterialSelection"/>
+     <addaction name="actionGradeUp"/>
+     <addaction name="actionGradeDown"/>
+    </widget>
+    <addaction name="actionPlay"/>
+    <addaction name="actionPause"/>
+    <addaction name="separator"/>
+    <addaction name="actionCursorGame"/>
+    <addaction name="actionCursorSelect"/>
+    <addaction name="actionCursorCreateObj"/>
+    <addaction name="actionCursorDrawPen"/>
+    <addaction name="actionCursorDrawLine"/>
+    <addaction name="actionCursorDrawRect"/>
+    <addaction name="actionCursorFill"/>
+    <addaction name="actionCursorPicker"/>
+    <addaction name="separator"/>
+    <addaction name="actionDynamicLandscape"/>
+    <addaction name="actionStaticLandscape"/>
+    <addaction name="actionStaticFlatLandscape"/>
+    <addaction name="actionExactLandscape"/>
+    <addaction name="separator"/>
+    <addaction name="menuIDS_MNU_SHORTCUTS"/>
+    <addaction name="actionTranslations"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuPlayers"/>
+   <addaction name="menuWindows"/>
+   <addaction name="menuNet"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="propertyDockWidget">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string comment="res">IDS_CNS_PROPERTIES</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QFrame" name="userPropertyFrame">
+       <property name="frameShape">
+        <enum>QFrame::HLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="selectionInfoLabel">
+         <property name="baseSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>SELECTION</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="propertyEditAscendPathButton">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string comment="res">IDS_CNS_BACK</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="selectionHelpLabel">
+       <property name="text">
+        <string notr="true"/>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="objectActionPanel">
+       <property name="verticalSpacing">
+        <number>6</number>
+       </property>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="arrayEditingLayout">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QPushButton" name="arrayAddButton">
+         <property name="text">
+          <string comment="res">IDS_CNS_ARRAYADD</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="arrayRemoveButton">
+         <property name="text">
+          <string comment="res">IDS_CNS_ARRAYREMOVE</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QTreeView" name="propertyTable">
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::AllEditTriggers</set>
+       </property>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::InternalMove</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::MoveAction</enum>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ExtendedSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="indentation">
+        <number>9</number>
+       </property>
+       <property name="allColumnsShowFocus">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="propertyInputBox">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="logDockWidget">
+   <property name="windowTitle">
+    <string comment="res">IDS_CNS_LOG</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTextEdit" name="logView">
+       <property name="undoRedoEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="acceptRichText">
+        <bool>false</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="consoleInputBox">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="creatorDockWidget">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string comment="res">IDS_CNS_CREATOR</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTreeView" name="creatorTreeView">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionPlay"/>
+   <addaction name="actionPause"/>
+   <addaction name="separator"/>
+   <addaction name="actionCursorGame"/>
+   <addaction name="actionCursorSelect"/>
+   <addaction name="actionCursorCreateObj"/>
+   <addaction name="separator"/>
+   <addaction name="actionCursorDrawPen"/>
+   <addaction name="actionCursorDrawLine"/>
+   <addaction name="actionCursorDrawRect"/>
+   <addaction name="actionCursorFill"/>
+   <addaction name="actionCursorPicker"/>
+   <addaction name="separator"/>
+   <addaction name="actionDynamicLandscape"/>
+   <addaction name="actionStaticFlatLandscape"/>
+   <addaction name="actionStaticLandscape"/>
+   <addaction name="actionExactLandscape"/>
+   <addaction name="separator"/>
+  </widget>
+  <widget class="QDockWidget" name="objectListDockWidget">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string comment="res">IDS_CNS_OBJECTS</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTreeView" name="objectListView">
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ExtendedSelection</enum>
+       </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionPlay">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Play_Trans.png</normaloff>
+     <normalon>:/editor/res/Play_Trans.png</normalon>:/editor/res/Play_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_PLAY</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_PLAY</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_UNPAUSETHEGAME</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Halt_Trans.png</normaloff>:/editor/res/Halt_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_PAUSE</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_PAUSE</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_PAUSETHEGAME</string>
+   </property>
+   <property name="shortcut">
+    <string>Pause</string>
+   </property>
+  </action>
+  <action name="actionCursorGame">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Mouse_Trans.png</normaloff>:/editor/res/Mouse_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_CURSOR_GAME</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_GAME</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_CURSOR_GAME</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionCursorSelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Cursor_Trans.png</normaloff>:/editor/res/Cursor_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_CURSOR_SELECT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_SELECT</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_CURSOR_SELECT</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="actionCursorDrawPen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Brush_Trans.png</normaloff>:/editor/res/Brush_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_CURSOR_DRAWPEN</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWPEN</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_CURSOR_DRAWPEN</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
+  </action>
+  <action name="actionCursorDrawLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Line_Trans.png</normaloff>:/editor/res/Line_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_CURSOR_DRAWLINE</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWLINE</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_CURSOR_DRAWLINE</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
+   </property>
+  </action>
+  <action name="actionCursorDrawRect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Rect_Trans.png</normaloff>:/editor/res/Rect_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_CURSOR_DRAWRECT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWRECT</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_CURSOR_DRAWRECT</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+6</string>
+   </property>
+  </action>
+  <action name="actionCursorPicker">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Picker_Trans.png</normaloff>:/editor/res/Picker_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_CURSOR_DRAWPICKER</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWPICKER</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_CURSOR_DRAWPICKER</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+8</string>
+   </property>
+  </action>
+  <action name="actionDynamicLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Dynamic_Trans.png</normaloff>:/editor/res/Dynamic_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_MAP_DYNAMIC</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_MAP_DYNAMIC</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_MAP_DYNAMIC</string>
+   </property>
+  </action>
+  <action name="actionStaticLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Static_Trans.png</normaloff>:/editor/res/Static_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_MAP_STATIC</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_MAP_STATIC</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_MAP_STATIC</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="actionExactLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Exact_Trans.png</normaloff>:/editor/res/Exact_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_MAP_EXACT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_MAP_EXACT</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_MAP_EXACT</string>
+   </property>
+  </action>
+  <action name="actionCursorFill">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Fill_Trans.png</normaloff>:/editor/res/Fill_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_CURSOR_DRAWFILL</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWFILL</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_CURSOR_DRAWFILL</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+7</string>
+   </property>
+  </action>
+  <action name="actionViewportNew">
+   <property name="text">
+    <string comment="res">IDS_MNU_NEWVIEWPORT</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+0</string>
+   </property>
+  </action>
+  <action name="actionFileOpen">
+   <property name="text">
+    <string comment="res">IDS_MNU_OPEN</string>
+   </property>
+   <property name="toolTip">
+    <string>IDS_MNU_OPEN</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionFileOpenWithPlayers">
+   <property name="text">
+    <string comment="res">IDS_MNU_OPENWPLRS</string>
+   </property>
+  </action>
+  <action name="actionFileRecord">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_RECORD</string>
+   </property>
+  </action>
+  <action name="actionFileSaveScenario">
+   <property name="text">
+    <string comment="res">IDS_MNU_SAVESCENARIO</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionFileSaveScenarioAs">
+   <property name="text">
+    <string comment="res">IDS_MNU_SAVESCENARIOAS</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionFileSaveGameAs">
+   <property name="text">
+    <string comment="res">IDS_MNU_SAVEGAMEAS</string>
+   </property>
+  </action>
+  <action name="actionFileClose">
+   <property name="text">
+    <string comment="res">IDS_MNU_CLOSE</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionFileQuit">
+   <property name="text">
+    <string comment="res">IDS_MNU_QUIT</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionPlayerJoin">
+   <property name="text">
+    <string comment="res">IDS_MNU_JOIN</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+J</string>
+   </property>
+  </action>
+  <action name="actionHelpAbout">
+   <property name="text">
+    <string comment="res">IDS_MENU_ABOUT</string>
+   </property>
+  </action>
+  <action name="actionCursorCreateObj">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/CreateObj_Trans.png</normaloff>:/editor/res/CreateObj_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_CURSOR_CREATOR</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_CREATOR</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_CURSOR_CREATOR</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionFileNew">
+   <property name="text">
+    <string comment="res">IDS_MNU_NEW</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_NEW</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionStaticFlatLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/StaticFlat_Trans.png</normaloff>:/editor/res/StaticFlat_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_MAP_STATICFLAT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_MAP_STATICFLAT</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_MAP_STATICFLAT</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F8</string>
+   </property>
+  </action>
+  <action name="actionDeleteObject">
+   <property name="text">
+    <string comment="res">IDS_MNU_DELETE</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_DELETE</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionDuplicateObject">
+   <property name="text">
+    <string comment="res">IDS_MNU_DUPLICATE</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_DUPLICATE</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionEjectContents">
+   <property name="text">
+    <string comment="res">IDS_MNU_CONTENTS</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_CONTENTS</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/HelpOff.png</normaloff>
+     <normalon>:/editor/res/Help.png</normalon>:/editor/res/HelpOff.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_CNS_SHOWHELP</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_CNS_SHOWHELPTIP</string>
+   </property>
+  </action>
+  <action name="actionFileReInitScenario">
+   <property name="text">
+    <string comment="res">IDS_MNU_REINITSCEN</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_REINITSCEN</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
+   </property>
+  </action>
+  <action name="actionFocusGlobalScriptBox">
+   <property name="text">
+    <string comment="res">IDS_MNU_FOCUSGLOBALSCRIPTBOX</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_FOCUSGLOBALSCRIPTBOX</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_FOCUSGLOBALSCRIPTBOX</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+  </action>
+  <action name="actionFocusObjectScriptBox">
+   <property name="text">
+    <string comment="res">IDS_MNU_FOCUSOBJECTSCRIPTBOX</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_FOCUSOBJECTSCRIPTBOX</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_FOCUSOBJECTSCRIPTBOX</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F4</string>
+   </property>
+  </action>
+  <action name="actionOpenMaterialSelection">
+   <property name="text">
+    <string comment="res">IDS_MNU_OPENMATERIALSELECTION</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_OPENMATERIALSELECTION</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_OPENMATERIALSELECTION</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
+   </property>
+  </action>
+  <action name="actionNextViewport">
+   <property name="text">
+    <string comment="res">IDS_MNU_NEXTVIEWPORT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_NEXTVIEWPORT</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_NEXTVIEWPORT</string>
+   </property>
+   <property name="shortcut">
+    <string>F10</string>
+   </property>
+  </action>
+  <action name="actionGradeUp">
+   <property name="text">
+    <string comment="res">IDS_MNU_GRADEUP</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_GRADEUP</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_GRADEUP</string>
+   </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
+  </action>
+  <action name="actionGradeDown">
+   <property name="text">
+    <string comment="res">IDS_MNU_GRADEDOWN</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_GRADEDOWN</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_GRADEDOWN</string>
+   </property>
+   <property name="shortcut">
+    <string>-</string>
+   </property>
+  </action>
+  <action name="actionFileOpenInNetwork">
+   <property name="text">
+    <string comment="res">IDS_MNU_OPENNET</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_OPENNET</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_OPENNET</string>
+   </property>
+  </action>
+  <action name="actionFileExportScenarioPacked">
+   <property name="text">
+    <string comment="res">IDS_MNU_EXPORTSCENARIOPACKED</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_EXPORTSCENARIOPACKED</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_EXPORTSCENARIOPACKED</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+E</string>
+   </property>
+  </action>
+  <action name="actionTranslations">
+   <property name="text">
+    <string comment="res">IDS_MNU_TRANSLATIONTABLE</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_TRANSLATIONTABLE</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_TRANSLATIONTABLE</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionPlay</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>PlayPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPause</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>PausePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorGame</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorGamePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorSelect</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorSelectPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorDrawPen</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorDrawPenPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorDrawLine</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorDrawLinePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorDrawRect</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorDrawRectPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorPicker</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorPickerPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDynamicLandscape</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DynamicLandscapePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionStaticLandscape</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>StaticLandscapePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExactLandscape</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ExactLandscapePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorFill</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorFillPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>drawSizeSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DrawSizeChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>685</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionViewportNew</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ViewportNew()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPlayerJoin</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>PlayerJoin()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileSaveScenarioAs</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileSaveAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileSaveScenario</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileSave()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileSaveGameAs</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileSaveGameAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileRecord</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileRecord()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileQuit()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileClose</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileClose()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileOpenWithPlayers</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileOpenWithPlayers()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileOpen</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileOpen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionHelpAbout</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>HelpAbout()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorCreateObj</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorCreateObjPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>foregroundMatTexComboBox</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ForegroundMaterialChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>306</x>
+     <y>71</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>backgroundMatTexComboBox</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>BackgroundMaterialChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>306</x>
+     <y>91</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileNew</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileNew()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>welcomeNewLabel</sender>
+   <signal>linkActivated(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>WelcomeLinkActivated(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>676</x>
+     <y>234</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>welcomeOpenLabel</sender>
+   <signal>linkActivated(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>WelcomeLinkActivated(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>676</x>
+     <y>253</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>welcomeExploreUserPathLabel</sender>
+   <signal>linkActivated(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>WelcomeLinkActivated(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>676</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>propertyEditAscendPathButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>AscendPropertyPath()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>891</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>arrayAddButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>AddArrayElement()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>813</x>
+     <y>146</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>arrayRemoveButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>RemoveArrayElement()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>953</x>
+     <y>146</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionStaticFlatLandscape</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>StaticFlatLandscapePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDeleteObject</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>SelectionDelete()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDuplicateObject</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>SelectionDuplicate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionEjectContents</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>SelectionEjectContents()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionHelp</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>HelpToggle(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileReInitScenario</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileReInitScenario()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFocusGlobalScriptBox</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FocusGlobalScriptBox()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFocusObjectScriptBox</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FocusObjectScriptBox()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpenMaterialSelection</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>OpenMaterialSelection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNextViewport</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FocusNextViewport()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGradeDown</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>GradeDown()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGradeUp</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>GradeUp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileOpenInNetwork</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileOpenInNetwork()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileExportScenarioPacked</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileExportPacked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionTranslations</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>OpenTranslationsOverview()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>PlayPressed(bool)</slot>
+  <slot>PausePressed(bool)</slot>
+  <slot>CursorGamePressed(bool)</slot>
+  <slot>CursorSelectPressed(bool)</slot>
+  <slot>CursorDrawPenPressed(bool)</slot>
+  <slot>CursorDrawLinePressed(bool)</slot>
+  <slot>CursorDrawRectPressed(bool)</slot>
+  <slot>CursorPickerPressed(bool)</slot>
+  <slot>DynamicLandscapePressed(bool)</slot>
+  <slot>StaticLandscapePressed(bool)</slot>
+  <slot>ExactLandscapePressed(bool)</slot>
+  <slot>CursorFillPressed(bool)</slot>
+  <slot>DrawSizeChanged(int)</slot>
+  <slot>FileOpen()</slot>
+  <slot>FileOpenWithPlayers()</slot>
+  <slot>FileRecord()</slot>
+  <slot>FileSave()</slot>
+  <slot>FileSaveAs()</slot>
+  <slot>FileSaveGameAs()</slot>
+  <slot>FileClose()</slot>
+  <slot>FileQuit()</slot>
+  <slot>PlayerJoin()</slot>
+  <slot>ViewportNew()</slot>
+  <slot>HelpAbout()</slot>
+  <slot>ConsoleEnter(QString)</slot>
+  <slot>CursorCreateObjPressed(bool)</slot>
+  <slot>ForegroundMaterialChanged(QString)</slot>
+  <slot>BackgroundMaterialChanged(QString)</slot>
+  <slot>FileNew()</slot>
+  <slot>WelcomeLinkActivated(QString)</slot>
+  <slot>AscendPropertyPath()</slot>
+  <slot>AddArrayElement()</slot>
+  <slot>RemoveArrayElement()</slot>
+  <slot>StaticFlatLandscapePressed(bool)</slot>
+  <slot>SelectionDelete()</slot>
+  <slot>SelectionDuplicate()</slot>
+  <slot>SelectionEjectContents()</slot>
+  <slot>HelpToggle(bool)</slot>
+  <slot>FileReInitScenario()</slot>
+  <slot>FocusGlobalScriptBox()</slot>
+  <slot>FocusObjectScriptBox()</slot>
+  <slot>OpenMaterialSelection()</slot>
+  <slot>FocusNextViewport()</slot>
+  <slot>GradeUp()</slot>
+  <slot>GradeDown()</slot>
+  <slot>FileOpenInNetwork()</slot>
+  <slot>FileExportPacked()</slot>
+  <slot>OpenTranslationsOverview()</slot>
+ </slots>
+</ui>

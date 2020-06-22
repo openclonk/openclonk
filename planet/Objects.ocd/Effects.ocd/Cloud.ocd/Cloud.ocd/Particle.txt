@@ -1,3 +1,0 @@
-[Particle]
-Name=Cloud
-Face=0,0,512,350,-256,-175

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,18 +16,16 @@
 /* control management */
 
 #include "C4Include.h"
+#include "control/C4GameControl.h"
 
-#include <C4Application.h>
-#include <C4Game.h>
-#include <C4GameControl.h>
-#include <C4GameOverDlg.h>
-#include <C4Record.h>
-#include <C4Log.h>
-#include <C4Network2Stats.h>
-#include <C4MouseControl.h>
-#include <C4GamePadCon.h>
-#include <C4PlayerList.h>
-#include <C4Player.h>
+#include "control/C4Record.h"
+#include "game/C4Application.h"
+#include "gui/C4GameOverDlg.h"
+#include "gui/C4MouseControl.h"
+#include "network/C4Network2Stats.h"
+#include "platform/C4GamePadCon.h"
+#include "player/C4PlayerList.h"
+#include "player/C4Player.h"
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4355)
@@ -76,7 +74,7 @@ bool C4GameControl::InitReplay(C4Group &rGroup)
 	if (!pPlayback->Open(rGroup))
 	{
 		LogFatal(LoadResStr("IDS_ERR_REPLAYREAD"));
-		delete pPlayback; pPlayback = NULL;
+		delete pPlayback; pPlayback = nullptr;
 		return false;
 	}
 	// set mode
@@ -110,7 +108,7 @@ void C4GameControl::ChangeToLocal()
 	}
 	// replay: close playback
 	else if (eMode == CM_Replay)
-		{ delete pPlayback; pPlayback = NULL; }
+		{ delete pPlayback; pPlayback = nullptr; }
 
 	// we're now managing our own player info list; make sure counter works
 	Game.PlayerInfos.FixIDCounter();
@@ -143,7 +141,7 @@ bool C4GameControl::StartRecord(bool fInitial, bool fStreaming)
 	pRecord = new C4Record();
 	if (!pRecord->Start(fInitial))
 	{
-		delete pRecord; pRecord = NULL;
+		delete pRecord; pRecord = nullptr;
 		return false;
 	}
 	// streaming
@@ -152,7 +150,7 @@ bool C4GameControl::StartRecord(bool fInitial, bool fStreaming)
 		if (!pRecord->StartStreaming(fInitial) ||
 		    !::Network.StartStreaming(pRecord))
 		{
-			delete pRecord; pRecord = NULL;
+			delete pRecord; pRecord = nullptr;
 			return false;
 		}
 	}
@@ -170,7 +168,7 @@ void C4GameControl::StopRecord(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 		::Network.FinishStreaming();
 		pRecord->Stop(pRecordName, pRecordSHA1);
 		// just delete
-		delete pRecord; pRecord = NULL;
+		delete pRecord; pRecord = nullptr;
 	}
 }
 
@@ -216,15 +214,15 @@ void C4GameControl::Default()
 	eMode = CM_None;
 	fHost = fInitComplete = false;
 	iClientID = C4ClientIDUnknown;
-	pRecord = NULL;
-	pPlayback = NULL;
+	pRecord = nullptr;
+	pPlayback = nullptr;
 	SyncChecks.Clear();
 	ControlRate = Clamp<int>(Config.Network.ControlRate, 1, C4MaxControlRate);
 	ControlTick = 0;
 	SyncRate = C4SyncCheckRate;
 	DoSync = false;
 	fRecordNeeded = false;
-	pExecutingControl = NULL;
+	pExecutingControl = nullptr;
 }
 
 bool C4GameControl::Prepare()
@@ -317,7 +315,7 @@ void C4GameControl::Execute()
 	pExecutingControl = &Control;
 	Control.Execute();
 	Control.Clear();
-	pExecutingControl = NULL;
+	pExecutingControl = nullptr;
 
 	// statistics record
 	if (Game.pNetworkStatistics) Game.pNetworkStatistics->ExecuteControlFrame();
@@ -505,7 +503,7 @@ C4ControlSyncCheck *C4GameControl::GetSyncCheck(int32_t iTick)
 		if (pCheck->getFrame() == iTick)
 			return pCheck;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void C4GameControl::RemoveOldSyncChecks()

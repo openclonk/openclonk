@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,20 +16,20 @@
 // resource display list box
 
 #include "C4Include.h"
-#include "C4Network2Dialogs.h"
+#include "network/C4Network2Dialogs.h"
 
-#include <C4Application.h>
-#include "C4GameLobby.h"
-#include "C4FullScreen.h"
-#include "C4Network2.h"
-#include "C4PlayerInfo.h"
-#include "C4Network2Players.h"
-#include <C4GraphicsResource.h>
+#include "control/C4PlayerInfo.h"
+#include "game/C4Application.h"
+#include "game/C4FullScreen.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4GameLobby.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Players.h"
 
 // ----------- C4Network2ResDlg::ListItem ----------------------------------------------------------------
 
 C4Network2ResDlg::ListItem::ListItem(C4Network2ResDlg *pForResDlg, const C4Network2Res *pByRes)
-		: pSaveBtn(NULL)
+		: pSaveBtn(nullptr)
 {
 	// init by res core (2do)
 	iResID = pByRes->getResID();
@@ -43,7 +43,7 @@ C4Network2ResDlg::ListItem::ListItem(C4Network2ResDlg *pForResDlg, const C4Netwo
 	// create subcomponents
 	pFileIcon = new C4GUI::Icon(ca.GetFromLeft(iIconSize), C4GUI::Ico_Resource);
 	pLabel = new C4GUI::Label(szFilename, iIconSize + IconLabelSpacing,iVerticalIndent, ALeft);
-	pProgress = NULL;
+	pProgress = nullptr;
 	// add components
 	AddElement(pFileIcon); AddElement(pLabel);
 	// tooltip
@@ -71,7 +71,7 @@ void C4Network2ResDlg::ListItem::Update(const C4Network2Res *pByRes)
 			AddElement(pProgress);
 		}
 	}
-	else if (pProgress) { delete pProgress; pProgress=NULL; }
+	else if (pProgress) { delete pProgress; pProgress=nullptr; }
 	// update disk icon
 	if (IsSavePossible())
 	{
@@ -202,7 +202,7 @@ void C4Network2ResDlg::Update()
 			pItem = static_cast<ListItem *>(pItem->GetNext());
 		}
 		else
-			// not present: insert (or add if pItem=NULL)
+			// not present: insert (or add if pItem=nullptr)
 			InsertElement(new ListItem(this, pRes), pItem);
 	}
 	// del trailing items

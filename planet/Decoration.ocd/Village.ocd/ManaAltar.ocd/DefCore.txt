@@ -1,6 +1,6 @@
 [DefCore]
 id=EnvPack_ManaAltar
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=8
 Height=8
@@ -11,7 +11,6 @@ VertexY=1,-1,-1
 VertexFriction=20
 Value=1
 Mass=10
-Components=EnvPack_ManaAltar=1
 Projectile=1
 Rotate=1
 

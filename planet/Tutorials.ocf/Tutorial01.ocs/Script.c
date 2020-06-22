@@ -20,7 +20,8 @@ protected func Initialize()
 	var goal = CreateObject(Goal_Tutorial);
 	goal.Name = "$MsgGoalName$";
 	goal.Description = "$MsgGoalDescription$";
-	CreateObject(Rule_NoPowerNeed);
+	CreateObject(Rule_NoPowerNeed);	
+	GUI_Controller->ShowWealth();
 	
 	// Place objects in different sections.
 	InitStartLake();
@@ -32,13 +33,16 @@ protected func Initialize()
 	InitVegetation();
 	InitAnimals();
 	
+	// Show wealth in HUD.
+	GUI_Controller->ShowWealth();
+	
 	// Environment.
 	var time = CreateObject(Time);
 	time->SetTime(18 * 60 + 30);
 	time->SetCycleSpeed(0);
 
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorials.ocf\\Tutorial01.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial01.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -48,7 +52,7 @@ protected func OnGoalsFulfilled()
 	// Achievement: Tutorial completed.
 	GainScenarioAchievement("TutorialCompleted", 3);
 	// Dialogue options -> next round.
-	SetNextMission("Tutorials.ocf\\Tutorial02.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial02.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }
@@ -88,9 +92,9 @@ private func InitCaveEntrance()
 	trunk.MeshTransformation = [-70, 0, 998, 0, 0, 1000, 0, 0, -998, 0, -70, 0];
 	var waterfall;
 	waterfall = CreateWaterfall(325, 448, 2, "Water");
-	waterfall->SetDirection(2, 0, 3, 6);
+	waterfall->SetDirection(3, 3, 1, 3);
 	waterfall = CreateWaterfall(338, 450, 8, "Water");
-	waterfall->SetDirection(1, 0, 4, 8);
+	waterfall->SetDirection(3, 4, 2, 4);
 	CreateLiquidDrain(160, 648, 10);
 	CreateLiquidDrain(184, 648, 10);
 	CreateLiquidDrain(208, 648, 10);
@@ -250,9 +254,12 @@ protected func InitializePlayer(int plr)
 	// Position player's clonk.
 	var clonk = GetCrew(plr, 0);
 	clonk->SetPosition(60, 606);
-	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
-	effect.to_x = 60;
-	effect.to_y = 606;
+	var fx = AddEffect("ClonkRestore", clonk, 100, 10);
+	fx.to_x = 60;
+	fx.to_y = 606;
+	
+	// Some wealth for the guide message.
+	SetWealth(plr, 25);
 	
 	// Player controls disabled at the start.
 	DisablePlrControls(plr);
@@ -512,7 +519,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
-		Rule_BaseRespawn->TransferInventory(target, clonk);
+		Rule_Relaunch->TransferInventory(target, clonk);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");

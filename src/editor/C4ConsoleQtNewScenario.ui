@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NewScenarioDialog</class>
+ <widget class="QDialog" name="NewScenarioDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>656</width>
+    <height>277</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>323</width>
+    <height>114</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string comment="res">IDS_CNS_NEWSCENARIO</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/editor/res/ocs.ico</normaloff>:/editor/res/ocs.ico</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string comment="res">IDS_CNS_SCENARIOSETTINGS</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="2" column="3">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLineEdit" name="filenameEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="browseButton">
+            <property name="text">
+             <string comment="res">IDS_CNS_BROWSE</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLineEdit" name="titleEdit"/>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string comment="res">IDS_CNS_MAPSIZE</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string comment="res">IDS_CNS_TITLE</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>(</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string comment="res">IDS_CNS_WIDTH</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="mapWidthSpinBox">
+            <property name="minimum">
+             <number>16</number>
+            </property>
+            <property name="maximum">
+             <number>512</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>x</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string comment="res">IDS_CNS_HEIGHT</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="mapHeightSpinBox">
+            <property name="minimum">
+             <number>16</number>
+            </property>
+            <property name="maximum">
+             <number>512</number>
+            </property>
+            <property name="value">
+             <number>40</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>) x</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string comment="res">IDS_CNS_MAPZOOM</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="mapZoomSpinBox">
+            <property name="minimum">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <number>24</number>
+            </property>
+            <property name="value">
+             <number>8</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string comment="res">IDS_CNS_FILENAME</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string comment="res">IDS_CNS_DEFINITIONS</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="3">
+         <widget class="QTreeView" name="definitionTreeView">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="headerHidden">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string comment="res">IDS_CNS_GAMEMODE</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="3">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QComboBox" name="gameModeComboBox">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string>Unspecified</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Melee</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Parkour</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Settlement</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Defense</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string comment="res">IDS_CNS_TEMPLATE</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="templateComboBox"/>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>131</width>
+           <height>31</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="startInNetworkCheckbox">
+         <property name="toolTip">
+          <string comment="res">IDS_CNS_HOSTASNETWORKGAMEDESC</string>
+         </property>
+         <property name="text">
+          <string comment="res">IDS_CNS_HOSTASNETWORKGAME</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="okButton">
+         <property name="text">
+          <string comment="res">IDS_CNS_CREATE</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cancelButton">
+         <property name="text">
+          <string comment="res">IDS_DLG_CANCEL</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>titleEdit</tabstop>
+  <tabstop>filenameEdit</tabstop>
+  <tabstop>browseButton</tabstop>
+  <tabstop>mapWidthSpinBox</tabstop>
+  <tabstop>mapHeightSpinBox</tabstop>
+  <tabstop>mapZoomSpinBox</tabstop>
+  <tabstop>gameModeComboBox</tabstop>
+  <tabstop>templateComboBox</tabstop>
+  <tabstop>definitionTreeView</tabstop>
+  <tabstop>startInNetworkCheckbox</tabstop>
+  <tabstop>okButton</tabstop>
+  <tabstop>cancelButton</tabstop>
+ </tabstops>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>okButton</sender>
+   <signal>clicked()</signal>
+   <receiver>NewScenarioDialog</receiver>
+   <slot>CreatePressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>535</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>96</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>NewScenarioDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>640</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>179</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>titleEdit</sender>
+   <signal>textEdited(QString)</signal>
+   <receiver>NewScenarioDialog</receiver>
+   <slot>TitleChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>416</x>
+     <y>43</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>browseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>NewScenarioDialog</receiver>
+   <slot>BrowsePressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>629</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>templateComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>NewScenarioDialog</receiver>
+   <slot>SelectedTemplateChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>131</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>CreatePressed()</slot>
+  <slot>TitleChanged(QString)</slot>
+  <slot>BrowsePressed()</slot>
+  <slot>SelectedTemplateChanged(int)</slot>
+ </slots>
+</ui>

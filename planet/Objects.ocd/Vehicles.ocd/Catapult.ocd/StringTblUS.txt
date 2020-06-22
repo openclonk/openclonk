@@ -1,2 +1,5 @@
 Name=Catapult
 Description=Hold [Use] and pull the mouse to determine the strength of the throw. Clonks can also be launched; either by themselves, or with the help of another clonk.
+Gunner=Gunner
+GunnerHelp=Clonk to handle the catapult.
+NoGunnerHelp=No clonk is handling the catapult. Not recommended.

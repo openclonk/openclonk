@@ -33,7 +33,7 @@ HomebaseArtifacts=Artefakte
 
 HomebaseDescBow=Mittlere Reichweite, geringer Schaden. Endlos Pfeile.
 HomebaseDescJavelin=Kurze Reichweite, hoher Schaden. Endlos Speere.
-HomebaseDescMusket=Hohe Reichweite, mittlerer Schaden. Endlos Munition.
+HomebaseDescBlunderbuss=Hohe Reichweite, mittlerer Schaden. Endlos Munition.
 HomebaseDescGrenadeLauncher=Schleudert Bomben in die Gegner. Endlos Bomben.
 HomebaseDescWindBag=Lässt Luftstöße los, die Gegner von den Füßen fegen.
 HomebaseDescHammer=Zum Errichten von Verteidigungstuermen und anderen Gebaeuden.
@@ -41,7 +41,7 @@ HomebaseDescHammer=Zum Errichten von Verteidigungstuermen und anderen Gebaeuden.
 HomebaseLoadSpeed=Nachladezeit
 HomebaseDescLoadSpeed=Verkürzt den Ladevorgang von Fernkampfwaffen (alle).
 HomebaseShootingStrength=Schusskraft
-HomebaseDescShootingStrength=Verstärkt die Schusskraft, wodurch die Waffen weiter schießen (außer Muskete).
+HomebaseDescShootingStrength=Verstärkt die Schusskraft, wodurch die Waffen weiter schießen (außer Donnerbüchse).
 HomebaseLife=Lebensenergie
 HomebaseDescLife=Erhöht die Lebensenergie des Clonks.
 HomebaseAdvancedWeapons=Fortgeschrittene Waffen

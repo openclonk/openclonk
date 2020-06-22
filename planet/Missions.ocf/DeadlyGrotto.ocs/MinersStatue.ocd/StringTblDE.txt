@@ -1,2 +1,2 @@
 Name=Statue
-Description=Denkmal zu Ehren von Clunkus, dem berühmten Höhlenforscher.
+Description=Denkmal zu Ehren von Clunkus, dem berÃ¼hmten HÃ¶hlenforscher.

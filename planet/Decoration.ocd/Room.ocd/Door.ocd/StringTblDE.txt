@@ -1,0 +1,10 @@
+Name=Tür
+Description=Eine Tür wo man reingehen kann.
+MsgDoorLocked=Diese Tür ist geschlossen, bringe den richtigen Schlüssel mit.
+Key=Schluessel
+KeyHelp=Ein Clonk muss diesen Schluessel tragen, um die Tuer zu betreten. Danach ist die Tuer entriegelt und kann auch ohne Schluessel betreten werden.
+ConnectedDoor=Zieltuer
+ConnectedDoorHelp=Wenn ein Clonk die Tuer betritt, wird er in die Zieltuer verschoben.
+EntranceAction=Aktion beim Betreten
+EntranceActionHelp=Aktion, die beim Betreten der Tuer ausgeloest wird.
+KeyUsed=Schluessel benutzt

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,14 +15,15 @@
  */
 // complex dynamic landscape creator
 
-#include <C4Include.h>
-#include <C4MapCreatorS2.h>
-#include <C4Random.h>
-#include <C4Material.h>
-#include <C4ScriptHost.h>
-#include <C4Texture.h>
-#include <C4Record.h>
-#include <CSurface8.h>
+#include "C4Include.h"
+#include "landscape/C4MapCreatorS2.h"
+
+#include "control/C4Record.h"
+#include "graphics/CSurface8.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4Texture.h"
+#include "lib/C4Random.h"
+#include "script/C4ScriptHost.h"
 
 namespace {
 	// node attribute entry for SetField search
@@ -81,7 +82,7 @@ C4MCCallbackArray::C4MCCallbackArray(C4AulFunc *pSFunc, C4MapCreatorS2 *pMapCrea
 	// store fn
 	pSF = pSFunc;
 	// zero fields
-	pMap=NULL; pNext=NULL;
+	pMap=nullptr; pNext=nullptr;
 	// store and add in map creator
 	if ((this->pMapCreator=pMapCreator))
 		pMapCreator->CallbackArrays.Add(this);
@@ -134,7 +135,7 @@ void C4MCCallbackArray::Execute(int32_t iMapZoom)
 			Pars[0] = C4VInt((iIndex%iWdt) * iMapZoom - (iMapZoom/2));
 			Pars[1] = C4VInt((iIndex/iWdt) * iMapZoom - (iMapZoom/2));
 			// call
-			pSF->Exec(NULL, &Pars);
+			pSF->Exec(nullptr, &Pars);
 		}
 	// done
 }
@@ -165,7 +166,7 @@ void C4MCCallbackArrayList::Clear()
 		delete pArray;
 	}
 	// zero first-field
-	pFirst=NULL;
+	pFirst=nullptr;
 }
 
 void C4MCCallbackArrayList::Execute(int32_t iMapZoom)
@@ -191,7 +192,7 @@ C4MCNode::C4MCNode(C4MCNode *pOwner)
 C4MCNode::C4MCNode(C4MCParser* pParser, C4MCNode *pOwner, C4MCNode &rTemplate, bool fClone)
 {
 	// Make sure the template is not used recursively within itself
-	for(C4MCNode* pParent = pOwner; pParent != NULL; pParent = pParent->Owner)
+	for(C4MCNode* pParent = pOwner; pParent != nullptr; pParent = pParent->Owner)
 		if(pParent == &rTemplate)
 			throw C4MCParserErr(pParser, C4MCErr_NoRecTemplate, rTemplate.Name);
 	// set owner and stuff
@@ -215,7 +216,7 @@ C4MCNode::~C4MCNode()
 void C4MCNode::Reg2Owner(C4MCNode *pOwner)
 {
 	// init list
-	Child0=ChildL=NULL;
+	Child0=ChildL=nullptr;
 	// owner?
 	if ((Owner=pOwner))
 	{
@@ -229,11 +230,11 @@ void C4MCNode::Reg2Owner(C4MCNode *pOwner)
 	}
 	else
 	{
-		Prev=NULL;
-		MapCreator=NULL;
+		Prev=nullptr;
+		MapCreator=nullptr;
 	}
 	// we're always last entry
-	Next=NULL;
+	Next=nullptr;
 }
 
 void C4MCNode::Clear()
@@ -248,7 +249,7 @@ C4MCOverlay *C4MCNode::OwnerOverlay()
 		if (C4MCOverlay *pOwnrOvrl=pOwnr->Overlay())
 			return pOwnrOvrl;
 	// no overlay-owner
-	return NULL;
+	return nullptr;
 }
 
 C4MCNode *C4MCNode::GetNodeByName(const char *szName)
@@ -262,7 +263,7 @@ C4MCNode *C4MCNode::GetNodeByName(const char *szName)
 	// search owner, if present
 	if (Owner) return Owner->GetNodeByName(szName);
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 bool C4MCNode::SetField(C4MCParser *pParser, const char *szField, const char *szSVal, int32_t iVal, C4MCTokenType ValType)
@@ -311,14 +312,14 @@ C4MCOverlay::C4MCOverlay(C4MCNode *pOwner) : C4MCNode(pOwner)
 	Op=MCT_NONE;
 	MatClr=0;
 	MatClrBkg=0;
-	Algorithm=NULL;
+	Algorithm=nullptr;
 	Sub=false;
 	ZoomX=ZoomY=0;
 	FixedSeed=Seed=0;
 //  Alpha=Beta=0;
 	Turbulence=Lambda=Rotate=0;
 	Invert=LooseBounds=Group=Mask=false;
-	pEvaluateFunc=pDrawFunc=NULL;
+	pEvaluateFunc=pDrawFunc=nullptr;
 }
 
 C4MCOverlay::C4MCOverlay(C4MCParser* pParser, C4MCNode *pOwner, C4MCOverlay &rTemplate, bool fClone) : C4MCNode(pParser, pOwner, rTemplate, fClone)
@@ -365,7 +366,7 @@ void C4MCOverlay::Default()
 	Alpha.Set(0,false); Beta.Set(0,false); Turbulence=Lambda=Rotate=0; Invert=LooseBounds=Group=Mask=false;
 	FixedSeed=0;
 	// script funcs
-	pEvaluateFunc=pDrawFunc=NULL;
+	pEvaluateFunc=pDrawFunc=nullptr;
 }
 
 bool C4MCOverlay::SetField(C4MCParser *pParser, const char *szField, const char *szSVal, int32_t iVal, C4MCTokenType ValType)
@@ -451,7 +452,7 @@ C4MCAlgorithm *C4MCOverlay::GetAlgo(const char *szName)
 			// success!
 			return pAlgo;
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 void C4MCOverlay::Evaluate()
@@ -461,7 +462,7 @@ void C4MCOverlay::Evaluate()
 	// get mat color
 	if (Inside<int32_t>(Material,0,MapCreator->MatMap->Num-1))
 	{
-		MatClr=MapCreator->TexMap->GetIndexMatTex(MapCreator->MatMap->Map[Material].Name, *Texture ? Texture : NULL);
+		MatClr=MapCreator->TexMap->GetIndexMatTex(MapCreator->MatMap->Map[Material].Name, *Texture ? Texture : nullptr);
 		if(MatClr == 0 || !Sub)
 			MatClrBkg = 0;
 		else
@@ -499,7 +500,7 @@ void C4MCOverlay::Evaluate()
 
 C4MCOverlay *C4MCOverlay::FirstOfChain()
 {
-	// run backwards until NULL, non-overlay or overlay without operator is found
+	// run backwards until nullptr, non-overlay or overlay without operator is found
 	C4MCOverlay *pOvrl=this;
 	C4MCOverlay *pPrevO;
 	while (pOvrl->Prev)
@@ -623,7 +624,7 @@ bool C4MCOverlay::PeekPix(int32_t iX, int32_t iY)
 	// start with this one
 	C4MCOverlay *pOvrl=this; bool fLastSetC=false; C4MCTokenType eLastOp=MCT_NONE; BYTE Crap;
 	// loop through op chain
-	while (1)
+	while (true)
 	{
 		fLastSetC=pOvrl->RenderPix(iX, iY, Crap, Crap, eLastOp, fLastSetC, false);
 		eLastOp=pOvrl->Op;
@@ -724,7 +725,7 @@ bool C4MCMap::RenderTo(BYTE *pToBuf, BYTE *pToBufBkg, int32_t iPitch)
 			*pToBuf=0;
 			if (pToBufBkg) *pToBufBkg=0;
 			// render pixel value
-			C4MCOverlay *pRenderedOverlay = NULL;
+			C4MCOverlay *pRenderedOverlay = nullptr;
 			RenderPix(iX, iY, *pToBuf, pToBufBkg ? *pToBufBkg : dummyPix, MCT_NONE, false, true, &pRenderedOverlay);
 			// add draw-callback for rendered overlay
 			if (pRenderedOverlay)
@@ -739,7 +740,7 @@ bool C4MCMap::RenderTo(BYTE *pToBuf, BYTE *pToBufBkg, int32_t iPitch)
 		if (pToBufBkg) pToBufBkg+=iPitch-Wdt;
 	}
 	// reset render target
-	if (MapCreator) MapCreator->pCurrentMap=NULL;
+	if (MapCreator) MapCreator->pCurrentMap=nullptr;
 	// success
 	return true;
 }
@@ -755,7 +756,7 @@ void C4MCMap::SetSize(int32_t iWdt, int32_t iHgt)
 
 // map creator
 
-C4MapCreatorS2::C4MapCreatorS2(C4SLandscape *pLandscape, C4TextureMap *pTexMap, C4MaterialMap *pMatMap, int iPlayerCount) : C4MCNode(NULL)
+C4MapCreatorS2::C4MapCreatorS2(C4SLandscape *pLandscape, C4TextureMap *pTexMap, C4MaterialMap *pMatMap, int iPlayerCount) : C4MCNode(nullptr)
 {
 	// me r b creator
 	MapCreator=this;
@@ -782,7 +783,7 @@ void C4MapCreatorS2::Default()
 	DefaultMap.Default();
 	DefaultOverlay.Default();
 	DefaultPoint.Default();
-	pCurrentMap=NULL;
+	pCurrentMap=nullptr;
 }
 
 void C4MapCreatorS2::Clear()
@@ -829,7 +830,7 @@ bool C4MapCreatorS2::ReadScript(const char *szScript)
 
 C4MCMap *C4MapCreatorS2::GetMap(const char *szMapName)
 {
-	C4MCMap *pMap=NULL; C4MCNode *pNode;
+	C4MCMap *pMap=nullptr; C4MCNode *pNode;
 	// get map
 	if (szMapName && *szMapName)
 	{
@@ -853,8 +854,8 @@ C4MCMap *C4MapCreatorS2::GetMap(const char *szMapName)
 
 bool C4MapCreatorS2::Render(const char *szMapName, CSurface8*& sfcMap, CSurface8*& sfcMapBkg)
 {
-	assert(sfcMap == NULL);
-	assert(sfcMapBkg == NULL);
+	assert(sfcMap == nullptr);
+	assert(sfcMapBkg == nullptr);
 
 	// get map
 	C4MCMap *pMap=GetMap(szMapName);
@@ -886,11 +887,11 @@ BYTE *C4MapCreatorS2::RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t 
 {
 	// get map
 	C4MCMap *pMap=GetMap(szMapName);
-	if (!pMap) return NULL;
+	if (!pMap) return nullptr;
 
 	// get size
 	sfcWdt=pMap->Wdt; sfcHgt=pMap->Hgt;
-	if (!sfcWdt || !sfcHgt) return NULL;
+	if (!sfcWdt || !sfcHgt) return nullptr;
 	int dwSfcWdt = sfcWdt;
 	DWordAlign(dwSfcWdt);
 	sfcWdt = dwSfcWdt;
@@ -899,7 +900,7 @@ BYTE *C4MapCreatorS2::RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t 
 	BYTE *buf=new BYTE[sfcWdt*sfcHgt];
 
 	// render and return it
-	pMap->RenderTo(buf, NULL, sfcWdt);
+	pMap->RenderTo(buf, nullptr, sfcWdt);
 	return buf;
 }
 
@@ -931,7 +932,7 @@ C4MCParser::C4MCParser(C4MapCreatorS2 *pMapCreator)
 	// store map creator
 	MapCreator=pMapCreator;
 	// reset some fields
-	Code=NULL; BPos = NULL; CPos=NULL; *Filename=0;
+	Code=nullptr; BPos = nullptr; CPos=nullptr; *Filename=0;
 }
 
 C4MCParser::~C4MCParser()
@@ -943,7 +944,7 @@ C4MCParser::~C4MCParser()
 void C4MCParser::Clear()
 {
 	// clear code if present
-	if (Code) delete [] Code; Code=NULL; BPos = NULL; CPos=NULL;
+	delete [] Code; Code=nullptr; BPos = nullptr; CPos=nullptr;
 	// reset filename
 	*Filename=0;
 }
@@ -1096,7 +1097,7 @@ static void PrintNodeTree(C4MCNode *pNode, int depth)
 
 void C4MCParser::ParseTo(C4MCNode *pToNode)
 {
-	C4MCNode *pNewNode=NULL;  // new node
+	C4MCNode *pNewNode=nullptr;  // new node
 	bool Done=false;          // finished?
 	C4MCNodeType LastOperand = C4MCNodeType(-1); // last first operand of operator
 	char FieldName[C4MaxName];// buffer for current field to access
@@ -1301,7 +1302,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 			// evaluate node and children, if this is top-level
 			// we mustn't evaluate everything immediately, because parents must be evaluated first!
 			if (pToNode->GlobalScope()) pNewNode->ReEvaluate();
-			pNewNode=NULL;
+			pNewNode=nullptr;
 			break;
 		case PS_SETFIELD:
 			ParseValue (pToNode, FieldName);
@@ -1472,7 +1473,7 @@ void C4MCParser::ParseFile(const char *szFilename, C4Group *pGrp)
 	BPos=Code;
 	CPos=Code;
 	ParseTo(MapCreator);
-	if (0) PrintNodeTree(MapCreator, 0);
+	if (false) PrintNodeTree(MapCreator, 0);
 	// free code
 	// on errors, this will be done be destructor
 	Clear();
@@ -1486,7 +1487,7 @@ void C4MCParser::Parse(const char *szScript)
 	BPos=szScript;
 	CPos=szScript;
 	ParseTo(MapCreator);
-	if (0) PrintNodeTree(MapCreator, 0);
+	if (false) PrintNodeTree(MapCreator, 0);
 	// free code
 	// on errors, this will be done be destructor
 	Clear();
@@ -1630,7 +1631,7 @@ bool AlgoMandel(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 
 bool AlgoGradient(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 {
-	return (abs((iX^(iY*3)) * 2531011L) % 214013L) % z > iX / pOvrl->Wdt;
+	return (std::abs((iX^(iY*3)) * 2531011L) % 214013L) % z > iX / pOvrl->Wdt;
 }
 
 bool AlgoScript(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
@@ -1759,7 +1760,7 @@ C4MCAlgorithm C4MCAlgoMap[] =
 	{ "script",     &AlgoScript },
 	{ "rndall",     &AlgoRndAll },
 	{ "poly",       &AlgoPolygon },
-	{ "",     0 }
+	{ "",     nullptr }
 };
 
 #define offsC4MCOvrl(x) reinterpret_cast<C4MCOverlayOffsetType>(&C4MCOverlay::x)
@@ -1791,6 +1792,6 @@ namespace {
 		{ "mask",        C4MCV_Boolean,     offsC4MCOvrl(Mask)          },
 		{ "evalFn",      C4MCV_ScriptFunc,  offsC4MCOvrl(pEvaluateFunc) },
 		{ "drawFn",      C4MCV_ScriptFunc,  offsC4MCOvrl(pDrawFunc)     },
-		{ "", C4MCV_None, 0 }
+		{ "", C4MCV_None, nullptr }
 	};
 }

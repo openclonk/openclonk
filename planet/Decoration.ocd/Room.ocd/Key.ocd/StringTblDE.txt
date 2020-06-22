@@ -1,0 +1,2 @@
+Name=Schlüssel
+Description=Damit kann man etwas aufmachen.

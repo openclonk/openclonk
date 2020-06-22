@@ -1,6 +1,6 @@
 [DefCore]
 id=Signpost
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=32
 Height=32
@@ -10,7 +10,6 @@ VertexX=4
 VertexY=15
 VertexCNAT=8
 VertexFriction=100
-Components=Wood=1;
 Construction=1
 Mass=5
 Rotate=1

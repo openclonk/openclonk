@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetNextScenario</title>
+    <category>Player</category>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>scenario_name</name>
+          <desc>This is the path to the scenario file that should be started next. The path is relative to the game folder. Scenario paths contain all .oc* paths and the "\" file separators have to be escaped, e.g. "Missions.ocf\\Raid.ocs".</desc>
+        </param>
+        <param>
+          <type>caption</type>
+          <name>string</name>
+          <desc>Text that is displayed on the button that launches the scenario.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>description</type>
+          <name>string</name>
+          <desc>Description text for the button.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>If you call this function in a scenario you will get an option to launch another, or the same scenario, in the scenario end screen.</desc>
+    <remark>You can call this function multiple times during the scenario, but only the last call before the game is over is binding.</remark>
+    <examples>
+      <example>
+        <code>SetNextScenario(&quot;Missions.ocf\\Raid.ocs&quot;, &quot;Start the raid mission.&quot;, &quot;Launches another scenario.&quot;);</code>
+        <text>Defines, that the next scenario will be the "Raid" mission.</text>
+      </example>
+      <example>
+        <code>SetNextScenario(&quot;MyScenarioFolder.ocf\\MyScenario.ocs&quot;, &quot;Restart round.&quot;, &quot;Start this scenario from the beginning.&quot;);</code>
+        <text>If called in "MyScenarioFolder.ocf\MyScenario.ocs" this can be used to add a retry-option to that scenario.</text>
+      </example>
+    </examples>
+    <related><funclink>GainScenarioAccess</funclink>, <funclink>GetScenarioAccess</funclink></related>
+    <related><emlink href="scenario/ParameterDefs.xml">Scenario parameter definitions</emlink></related>
+  </func>
+  <author>Marky</author><date>2018-04</date>
+</funcs>

@@ -41,3 +41,16 @@ material Catapult
 		}
 	}
 }
+material Catapult_Damaged : Catapult
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture CatapultDamaged.png
+			}
+		}
+	}
+}

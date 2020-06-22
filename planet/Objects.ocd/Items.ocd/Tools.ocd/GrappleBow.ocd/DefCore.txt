@@ -1,6 +1,6 @@
 [DefCore]
 id=GrappleBow
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=8
 Height=6
@@ -9,8 +9,7 @@ Vertices=2
 VertexX=-3,3
 VertexY=0,0
 VertexFriction=80,80
-Value=12
+Value=16
 Mass=10
-Components=Wood=2;Metal=1;Rope=1;
 Rotate=1
 Float=2

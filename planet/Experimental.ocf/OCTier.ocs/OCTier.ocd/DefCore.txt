@@ -1,6 +1,6 @@
 [DefCore]
 id=OCTier
-Version=6,0
+Version=8,0
 Category=C4D_Living
 Width=32
 Height=32

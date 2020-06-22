@@ -1,0 +1,4 @@
+SwitchTarget=Target for the switch
+InvertSignal=Invert switch logic
+InvertSignalDesc=When a switch sets the input signal of its target the target instead uses the inverted value of the signal.
+ConnectClosestSwitchTarget=Connect switch target

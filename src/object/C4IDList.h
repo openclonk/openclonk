@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,7 +20,7 @@
 #ifndef INC_C4IDList
 #define INC_C4IDList
 
-#include <C4Id.h>
+#include "object/C4Id.h"
 
 // note that setting the chunk size for ID-Lists so low looks like an enormous waste
 // at first glance - however, due there's an incredibly large number of small ID-Lists
@@ -59,7 +59,7 @@ public:
 	void Clear();
 	bool IsClear() const;
 	// Access by direct index
-	C4ID GetID(size_t index, int32_t *ipCount=NULL) const;
+	C4ID GetID(size_t index, int32_t *ipCount=nullptr) const;
 	int32_t  GetCount(size_t index) const;
 	bool SetCount(size_t index, int32_t iCount);
 	// Access by ID
@@ -71,7 +71,7 @@ public:
 	int32_t  GetNumberOfIDs() const;
 	int32_t GetIndex(C4ID c_id) const;
 	// Access by category-sorted index
-	C4ID GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount=NULL) const;
+	C4ID GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount=nullptr) const;
 	int32_t  GetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index) const;
 	bool SetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t iCount);
 	int32_t  GetNumberOfIDs(C4DefList &rDefs, int32_t dwCategory) const;

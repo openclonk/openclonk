@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,14 +15,12 @@
  */
 // landscape sector base class
 
-#include <C4Include.h>
-#include <C4Sector.h>
+#include "C4Include.h"
+#include "object/C4Sector.h"
 
-#include <C4Game.h>
-#include <C4Object.h>
-#include <C4Log.h>
-#include <C4Record.h>
-#include <C4GameObjects.h>
+#include "control/C4Record.h"
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
 
 /* sector */
 
@@ -78,7 +76,7 @@ void C4LSectors::Clear()
 	// clear out-sector
 	SectorOut.Clear();
 	// free sectors
-	delete [] Sectors; Sectors=NULL;
+	delete [] Sectors; Sectors=nullptr;
 }
 
 C4LSector *C4LSectors::SectorAt(int ix, int iy)
@@ -246,7 +244,7 @@ bool C4LArea::operator == (const C4LArea &Area) const
 void C4LArea::Set(C4LSectors *pSectors, const C4Rect &Rect)
 {
 	// default: no area
-	pFirst=NULL; pOut=NULL;
+	pFirst=nullptr; pOut=nullptr;
 	// check bounds
 	C4Rect ClippedRect(Rect),
 	Bounds(0, 0, pSectors->PxWdt, pSectors->PxHgt);
@@ -279,7 +277,7 @@ C4LSector *C4LArea::Next(C4LSector *pPrev) const
 {
 	// the outside-sector is the last sector that is returned
 	if (pPrev == pOut)
-		return NULL;
+		return nullptr;
 	// within one line?
 	if (pPrev->x<xL)
 		return pPrev+1;
@@ -311,7 +309,7 @@ C4ObjectList *C4LArea::NextObjects(C4ObjectList *pPrev, C4LSector **ppSct)
 		*ppSct = Next(*ppSct);
 	// nothing left?
 	if (!*ppSct)
-		return NULL;
+		return nullptr;
 	// return object list
 	return &(*ppSct)->Objects;
 }
@@ -325,7 +323,7 @@ C4ObjectList *C4LArea::NextObjectShapes(C4ObjectList *pPrev, C4LSector **ppSct)
 		*ppSct = Next(*ppSct);
 	// nothing left?
 	if (!*ppSct)
-		return NULL;
+		return nullptr;
 	// return object list
 	return &(*ppSct)->ObjectShapes;
 }

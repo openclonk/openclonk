@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2015, The OpenClonk Team and contributors
+ * Copyright (c) 2015-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,13 +17,13 @@
 
 /* Handles the sound bank and plays effects using DSoundX */
 
-#include <C4Include.h>
-#include <C4SoundModifiers.h>
-#include <C4SoundSystem.h>
-#include <C4SoundInstance.h>
-#include <C4SoundIncludes.h>
-#include <C4Application.h>
-#include <C4Value.h>
+#include "C4Include.h"
+#include "platform/C4SoundModifiers.h"
+
+#include "game/C4Application.h"
+#include "platform/C4SoundInstance.h"
+#include "platform/C4SoundSystem.h"
+#include "script/C4Value.h"
 
 #if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 static LPALGENEFFECTS alGenEffects;
@@ -299,10 +299,10 @@ C4SoundModifier *C4SoundModifierList::Get(class C4PropList *props, bool create_i
 		[props](const C4SoundModifier *mod) { return mod->GetProps() == props; });
 	if (iter != sound_modifiers.end()) return *iter;
 	// if not found, create if desired
-	if (!create_if_not_found) return NULL;
+	if (!create_if_not_found) return nullptr;
 	C4SoundModifier *modifier;
 	int32_t effect_type = props->GetPropertyInt(P_Type);
-	if (!is_effect_available[effect_type]) return NULL; // Not supported D:
+	if (!is_effect_available[effect_type]) return nullptr; // Not supported D:
 	switch (effect_type)
 	{
 	case C4SoundModifier::C4SMT_Reverb:
@@ -316,7 +316,7 @@ C4SoundModifier *C4SoundModifierList::Get(class C4PropList *props, bool create_i
 		break;
 	default:
 		// invalid modifier
-		return NULL;
+		return nullptr;
 	}
 	// initial parameter settings
 	modifier->Update();
@@ -349,7 +349,7 @@ C4SoundModifier *C4SoundModifierList::GetGlobalModifier(int32_t player_index) co
 {
 	// safety
 	int32_t list_index = player_index + 1;
-	if (list_index < 0 || static_cast<size_t>(list_index) >= global_modifiers.size()) return NULL;
+	if (list_index < 0 || static_cast<size_t>(list_index) >= global_modifiers.size()) return nullptr;
 	// get from player and fall back to global list
 	C4SoundModifier *result = global_modifiers[list_index];
 	if (!result && list_index) result = global_modifiers[0];

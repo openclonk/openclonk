@@ -7,7 +7,7 @@
     <title>FindObjects</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>
@@ -60,6 +60,7 @@
       <funclink>Find_AnyLayer</funclink>
       <funclink>Find_AtPoint</funclink>
       <funclink>Find_Category</funclink>
+      <funclink>Find_Cone</funclink>
       <funclink>Find_Container</funclink>
       <funclink>Find_Distance</funclink>
       <funclink>Find_Exclude</funclink>

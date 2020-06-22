@@ -2,7 +2,7 @@
 
 protected func Construction()
 {
-	if(GBackSemiSolid())
+	if (GBackSemiSolid())
 		SetGraphics("Old");
 }
 
@@ -19,3 +19,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
 local Plane = 470;
+local Components = {Ore = 1};

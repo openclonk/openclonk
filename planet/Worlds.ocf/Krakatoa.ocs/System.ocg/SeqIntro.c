@@ -21,6 +21,7 @@ public func Intro_Init(int difficulty)
 	this.pilot->SetAction("Walk");
 	this.pilot->SetDir(DIR_Right);
 	this.pilot->SetColor(0xff0000aa);
+	this.airplane->PlaneMount(this.pilot);
 	this.airplane->FaceRight();
 	this.airplane->StartInstantFlight(90, 15);
 	this.airplane->SetXDir(12);
@@ -111,7 +112,7 @@ public func Intro_5()
 	this.airplane->SetMeshMaterial("CrashedAirplane");
 	this.airplane->MakeBroken();
 	this.airplane->CancelFlight();
-	RemoveEffect("IntPlane", this.airplane);
+	this.airplane->RemovePlaneControl();
 	this.airplane->SetRDir(10);
 	this.airplane->SetSpeed(46, -56);
 	// Forward plane hit call to sequence.
@@ -144,9 +145,9 @@ public func Intro_PlaneHit()
 	Sound("Objects::Plane::PlaneCrash", true);
 	var particles = Particles_Smoke(true);
 	particles.Size = PV_Linear(PV_Random(20, 60), PV_Random(50, 100));
-	CreateParticle("Smoke", PV_Random(-30,30), PV_Random(-30,30), PV_Random(-60, 60), PV_Random(-20,0), PV_Random(200, 500), particles, 20);
+	CreateParticle("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(-60, 60), PV_Random(-20, 0), PV_Random(200, 500), particles, 20);
 	particles.Size = PV_Linear(PV_Random(50, 80), PV_Random(100, 200));
-	CreateParticle("Smoke", PV_Random(-30,30), PV_Random(-30,30), PV_Random(-20, 20), PV_Random(-20,0), PV_Random(100, 200), particles, 20);
+	CreateParticle("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(-20, 20), PV_Random(-20, 0), PV_Random(100, 200), particles, 20);
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
@@ -163,7 +164,7 @@ public func Intro_PlaneHit()
 	// Stop plane movement and rotate for crash effect.
 	SetXDir(0);
 	this.Hit = this.intro_seq.plane_hit;
-	this.MeshTransformation = Trans_Mul(Trans_Rotate(10,0,2,1), Airplane.MeshTransformation);
+	this.MeshTransformation = Trans_Mul(Trans_Rotate(10, 0, 2, 1), Airplane.MeshTransformation);
 	this.intro_seq->ScheduleNext(50);
 	return true;
 }

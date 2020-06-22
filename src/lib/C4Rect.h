@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -21,8 +21,6 @@
 #define INC_C4Rect
 
 #define C4D_VertexCpyPos (C4D_MaxVertex/2)
-
-#include <vector>
 
 struct FLOAT_RECT { float left,right,top,bottom; };
 
@@ -82,7 +80,7 @@ public:
 public:
 	C4TargetRect(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)
 			: C4Rect(iX, iY, iWdt, iHgt), tx(iTX), ty(iTY) { }
-	C4TargetRect() { } // default ctor; doesn't initialize
+	C4TargetRect() = default; // default ctor; doesn't initialize
 	void Set(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY);
 	void Default();
 	bool ClipBy(C4TargetRect &rClip); // clip this rectangle by the given one (adding target positions) - return false if they don't overlap

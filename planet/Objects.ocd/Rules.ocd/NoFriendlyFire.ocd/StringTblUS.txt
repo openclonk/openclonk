@@ -1,0 +1,2 @@
+Name=No friendly fire
+Description=Crew members only take damage from hostile fire.

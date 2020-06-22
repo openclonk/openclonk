@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,7 +18,7 @@
 #ifndef INC_C4StartupMainDlg
 #define INC_C4StartupMainDlg
 
-#include "C4Startup.h"
+#include "gui/C4Startup.h"
 
 class C4StartupMainDlg : public C4StartupDlg
 {
@@ -32,8 +32,8 @@ protected:
 
 	void ConfirmMoveKey(const char *strKeyFilename);
 
-	virtual void DrawElement(C4TargetFacet &cgo);
-	virtual void OnClosed(bool fOK);    // callback when dlg got closed: Abort startup
+	void DrawElement(C4TargetFacet &cgo) override;
+	void OnClosed(bool fOK) override;    // callback when dlg got closed: Abort startup
 	C4GUI::ContextMenu *OnPlayerSelContext(C4GUI::Element *pBtn, int32_t iX, int32_t iY); // preliminary player selection via simple context menu
 	C4GUI::ContextMenu *OnPlayerSelContextAdd(C4GUI::Element *pBtn, int32_t iX, int32_t iY);
 	C4GUI::ContextMenu *OnPlayerSelContextRemove(C4GUI::Element *pBtn, int32_t iX, int32_t iY);
@@ -47,6 +47,7 @@ protected:
 	void OnNetJoinBtn(C4GUI::Control *btn); // callback: join net work game (direct join only for now)
 	void OnNetJoin(const StdStrBuf &rsHostAddress);
 	void OnOptionsBtn(C4GUI::Control *btn); // callback: Show options screen
+	void OnEditorBtn(C4GUI::Control *btn); // callback: Editor
 	void OnAboutBtn(C4GUI::Control *btn); // callback: Show about screen
 	void OnExitBtn(C4GUI::Control *btn); // callback: exit button pressed
 	void OnTODO(C4GUI::Control *btn); // button not yet implemented
@@ -54,11 +55,11 @@ protected:
 	bool KeyEnterDown(); // return pressed -> reroute as space
 	bool KeyEnterUp(); // return released -> reroute as space
 
-	virtual void OnShown(); // callback when shown: Show log if restart after failure; show player creation dlg on first start
+	void OnShown() override; // callback when shown: Show log if restart after failure; show player creation dlg on first start
 
 public:
 	C4StartupMainDlg(); // ctor
-	~C4StartupMainDlg(); // dtor
+	~C4StartupMainDlg() override; // dtor
 };
 
 #endif // INC_C4StartupMainDlg

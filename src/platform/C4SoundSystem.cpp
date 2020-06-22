@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,28 +17,20 @@
 
 /* Handles the sound bank and plays effects using DSoundX */
 
-#include <C4Include.h>
-#include <C4SoundSystem.h>
+#include "C4Include.h"
+#include "platform/C4SoundSystem.h"
 
-#include <C4SoundInstance.h>
-#include <C4Random.h>
-#include <C4Object.h>
-#include <C4Game.h>
-#include <C4Config.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4SoundIncludes.h>
-#include <C4SoundLoaders.h>
+#include "lib/C4Random.h"
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "object/C4Object.h"
+#include "platform/C4SoundIncludes.h"
+#include "platform/C4SoundInstance.h"
+#include "platform/C4SoundLoaders.h"
 
-C4SoundSystem::C4SoundSystem():
-		FirstSound (NULL)
-{
-}
+C4SoundSystem::C4SoundSystem() = default;
 
-C4SoundSystem::~C4SoundSystem()
-{
-
-}
+C4SoundSystem::~C4SoundSystem() = default;
 
 bool C4SoundSystem::Init()
 {
@@ -54,15 +46,17 @@ bool C4SoundSystem::Init()
 	if (!SoundFile.IsOpen())
 		if (!Reloc.Open(SoundFile, C4CFN_Sound)) return false;
 	// Load static sound from Sound.ocg
-	LoadEffects(SoundFile, NULL, false);
+	LoadEffects(SoundFile, nullptr, false);
 #if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_AllocateChannels(C4MaxSoundInstances);
 #endif
+	initialized = true;
 	return true;
 }
 
 void C4SoundSystem::Clear()
 {
+	initialized = false;
 	ClearEffects();
 	Modifiers.Clear();
 	// Close sound file
@@ -78,7 +72,7 @@ void C4SoundSystem::ClearEffects()
 		next=csfx->Next;
 		delete csfx;
 	}
-	FirstSound=NULL;
+	FirstSound=nullptr;
 }
 
 void C4SoundSystem::Execute()
@@ -97,7 +91,7 @@ void C4SoundSystem::Execute()
 C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 {
 	// Remember wildcards before adding .* extension - if there are 2 versions with different file extensions, play the last added
-	bool bRandomSound = SCharCount('?',szSndName) || SCharCount('*',szSndName);
+	bool bRandomSound = IsWildcardString(szSndName);
 	// Evaluate sound name
 	char szName[C4MaxSoundName+2+1];
 	SCopy(szSndName,szName,C4MaxSoundName);
@@ -115,8 +109,8 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 				++iNumber;
 		// Nothing found? Abort
 		if(iNumber == 0)
-			return NULL;
-		iNumber=SafeRandom(iNumber)+1;
+			return nullptr;
+		iNumber=UnsyncedRandom(iNumber)+1;
 	}
 	// Find requested sound effect in bank
 	C4SoundEffect *pSfx;
@@ -124,20 +118,20 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 		if (WildcardMatch(szName,pSfx->Name))
 			if(!--iNumber)
 				break;
-	return pSfx; // Is still NULL if nothing is found
+	return pSfx; // Is still nullptr if nothing is found
 }
 
 C4SoundInstance *C4SoundSystem::NewEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// Sound not active
-	if (!Config.Sound.RXSound) return NULL;
+	if (!initialized || !Config.Sound.RXSound) return nullptr;
 	// Get sound
 	C4SoundEffect *csfx;
 	if (!(csfx = GetEffect(szSndName)))
 	{
 		// Warn about missing or incorrectly spelled sound to allow finding mistakes earlier.
 		DebugLogF("Warning: could not find sound matching '%s'", szSndName);
-		return NULL;
+		return nullptr;
 	}
 	// Play
 	return csfx->New(fLoop, iVolume, pObj, iCustomFalloffDistance, iPitch, modifier);
@@ -156,7 +150,7 @@ C4SoundInstance *C4SoundSystem::FindInstance(const char *szSndName, C4Object *pO
 			C4SoundInstance *pInst = csfx->GetInstance(pObj);
 			if (pInst) return pInst;
 		}
-	return NULL;
+	return nullptr;
 }
 
 // LoadEffects will load all sound effects of all known sound types (i.e. *.wav and *.ogg) as defined in C4CFN_SoundFiles
@@ -225,7 +219,7 @@ int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, const char *namespace_prefix
 int32_t C4SoundSystem::RemoveEffect(const char *szFilename)
 {
 	int32_t iResult=0;
-	C4SoundEffect *pNext,*pPrev=NULL;
+	C4SoundEffect *pNext,*pPrev=nullptr;
 	for (C4SoundEffect *pSfx=FirstSound; pSfx; pSfx=pNext)
 	{
 		pNext=pSfx->Next;
@@ -253,7 +247,7 @@ C4SoundInstance *C4SoundSystem::GetFirstInstance() const
 	// Return by searching through effect linked list.
 	for (C4SoundEffect *pSfx = FirstSound; pSfx; pSfx = pSfx->Next)
 		if (pSfx->FirstInst) return pSfx->FirstInst;
-	return NULL;
+	return nullptr;
 }
 
 C4SoundInstance *C4SoundSystem::GetNextInstance(C4SoundInstance *prev) const
@@ -263,13 +257,13 @@ C4SoundInstance *C4SoundSystem::GetNextInstance(C4SoundInstance *prev) const
 	if (prev->pNext) return prev->pNext;
 	for (C4SoundEffect *pSfx = prev->pEffect->Next; pSfx; pSfx = pSfx->Next)
 		if (pSfx->FirstInst) return pSfx->FirstInst;
-	return NULL;
+	return nullptr;
 }
 
 C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// Sound check
-	if (!Config.Sound.RXSound) return NULL;
+	if (!Config.Sound.RXSound) return nullptr;
 	// Start new
 	return Application.SoundSystem.NewEffect(szSndName, fLoop, iVolume, pObj, iCustomFalloffDistance, iPitch, modifier);
 }
@@ -277,11 +271,11 @@ C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVo
 C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume, int32_t iCustomFallofDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// Sound check
-	if (!Config.Sound.RXSound) return NULL;
+	if (!Config.Sound.RXSound) return nullptr;
 	// Create
-	C4SoundInstance *pInst = StartSoundEffect(szSndName, false, iVolume, NULL, iCustomFallofDistance, iPitch, modifier);
+	C4SoundInstance *pInst = StartSoundEffect(szSndName, false, iVolume, nullptr, iCustomFallofDistance, iPitch, modifier);
 	// Set volume by position
-	if (pInst) pInst->SetVolumeByPos(iX, iY);
+	if (pInst) pInst->SetVolumeByPos(iX, iY, iVolume);
 	// Return
 	return pInst;
 }

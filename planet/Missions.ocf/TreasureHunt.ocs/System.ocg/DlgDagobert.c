@@ -2,11 +2,9 @@
 
 /* Dagobert dialogue */
 
-static g_got_gem_task, g_got_oil, g_goal;
-
 func Dlg_Dagobert_1(object clonk)
 {
-	var gem = FindObject(Find_ID(GemOfPower), Find_AtRect(-20,-20,20,20));
+	var gem = FindObject(Find_ID(GemOfPower), Find_AtRect(-20,-20, 20, 20));
 	if (g_got_oil)
 	{
 		MessageBox("$Dagobert1B$", clonk, dlg_target); // beautiful gem
@@ -168,6 +166,7 @@ func Dlg_Dagobert_Gem2(object clonk)
 	{
 		barrel->SetXDir(-15);
 		barrel->SetYDir(-20);
+		barrel->PutLiquid("Oil");
 	}
 	g_got_oil = true;
 	if (g_goal) g_goal->OnTreasureSold();

@@ -45,8 +45,8 @@ func Construction()
 	this.container.list_submenu.Right = "50%";
 	
 	// Hook into MouseIn/Out of the list menu to be able to show a description.
-	this.container.list_submenu->SetMouseOverCallback(this, "OnMouseOver");
-	this.container.list_submenu->SetMouseOutCallback(this, "OnMouseOut");
+	this.container.list_submenu->SetMouseOverCallback(this, "OnMouseOverListMenu");
+	this.container.list_submenu->SetMouseOutCallback(this, "OnMouseOutListMenu");
 }
 
 /* Updates the description box on the right side on mouse-over. */
@@ -105,14 +105,14 @@ func SetMouseOutCallback(proplist target, callback)
 	on_mouse_out_callback = [target, callback];
 }
 
-func OnMouseOver(parameter, int user_ID, int player)
+func OnMouseOverListMenu(parameter, int user_ID, int player)
 {
 	if (on_mouse_over_callback)
 		on_mouse_over_callback[0]->Call(on_mouse_over_callback[1], parameter, user_ID, player);
 	UpdateDescription(parameter);
 }
 
-func OnMouseOut(parameter, int user_ID, int player)
+func OnMouseOutListMenu(parameter, int user_ID, int player)
 {
 	if (on_mouse_out_callback)
 		on_mouse_out_callback[0]->Call(on_mouse_out_callback[1], parameter, user_ID, player);

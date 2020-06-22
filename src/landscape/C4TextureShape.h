@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,7 +20,7 @@
 #ifndef INC_C4TextureShape
 #define INC_C4TextureShape
 
-#include <CSurface8.h>
+#include "graphics/CSurface8.h"
 
 // Custom texture drawing shape for Map2Landscape zooming
 class C4TextureShape
@@ -28,12 +28,12 @@ class C4TextureShape
 private:
 	enum { Shape_None = 0xff }; // special value in data surface: No shape defined here.
 	CSurface8 data;
-	int32_t num_shapes;
+	int32_t num_shapes{0};
 	std::vector<bool> shape_border_x, shape_border_y; // whether shapes are touching horizontal/vertical borders
 	std::vector<int32_t> shape_pixnum; // number of pixels
 public:
-	C4TextureShape() : data(), num_shapes(0) {}
-	~C4TextureShape() {}
+	C4TextureShape() : data() {}
+	~C4TextureShape() = default;
 
 	void Clear();
 	bool Load(C4Group &group, const char *filename, int32_t base_tex_wdt, int32_t base_tex_hgt);
@@ -45,7 +45,7 @@ public:
 	int32_t GetMaxPolyWidth() const { return GetWidth() / 4; }
 	int32_t GetMaxPolyHeight() const { return GetHeight() / 4; }
 
-	void Draw(CSurface8 * sfcMap, CSurface8* sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY, int32_t MapZoom, int32_t min_overlap_ratio);
+	void Draw(const CSurface8 &sfcMap, const CSurface8 &sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY, int32_t MapZoom, int32_t min_overlap_ratio);
 };
 
 #endif

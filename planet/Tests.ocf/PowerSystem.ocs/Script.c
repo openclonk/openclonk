@@ -142,7 +142,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 			Log("Test %d not available, the previous test was the last test.", effect.testnr);
 			Log("=====================================");
 			Log("All tests have been successfully completed!");
-			return -1;
+			return FX_Execute_Kill;
 		}
 		effect.launched = true;
 	}		
@@ -245,14 +245,10 @@ global func Test3_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 80 + i * 20, 160, plr);
 		var source = CreateObjectAbove(Pipe, 176, 292, plr);
-		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-		source_pipe->SetActionTargets(source, pump);
-		pump->SetSource(source_pipe);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
 		var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-		drain_pipe->AddVertex(208, 48);
-		drain_pipe->SetActionTargets(drain, pump);
-		pump->SetDrain(drain_pipe);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+		drain->GetConnectedLine()->AddVertex(208, 48);
 	}
 	
 	// Log what the test is about.
@@ -290,15 +286,11 @@ global func Test4_OnStart(int plr)
 	// Power consumer: one pump.
 	var pump = CreateObjectAbove(Pump, 124, 160, plr);
 	var source = CreateObjectAbove(Pipe, 176, 292, plr);
-	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-	source_pipe->SetActionTargets(source, pump);
-	pump->SetSource(source_pipe);
+	source->ConnectPipeTo(pump, PIPE_STATE_Source);
 	var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-	drain_pipe->AddVertex(208, 48);
-	drain_pipe->SetActionTargets(drain, pump);
-	pump->SetDrain(drain_pipe);
-	
+	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+	drain->GetConnectedLine()->AddVertex(208, 48);
+
 	// Power connection: flagpole.
 	CreateObjectAbove(Flagpole, 304, 140, plr);	 
 	
@@ -343,14 +335,10 @@ global func Test5_OnStart(int plr)
 	// Power consumer: one pump.
 	var pump = CreateObjectAbove(Pump, 124, 160, plr);
 	var source = CreateObjectAbove(Pipe, 176, 292, plr);
-	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-	source_pipe->SetActionTargets(source, pump);
-	pump->SetSource(source_pipe);
+	source->ConnectPipeTo(pump, PIPE_STATE_Source);
 	var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-	drain_pipe->AddVertex(208, 48);
-	drain_pipe->SetActionTargets(drain, pump);
-	pump->SetDrain(drain_pipe);
+	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+	drain->GetConnectedLine()->AddVertex(208, 48);
 	
 	// Power connection: flagpole.
 	CreateObjectAbove(Flagpole, 304, 140, plr);	 
@@ -484,14 +472,10 @@ global func Test8_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 92 + i * 20, 160, plr);
 		var source = CreateObjectAbove(Pipe, 176, 292, plr);
-		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-		source_pipe->SetActionTargets(source, pump);
-		pump->SetSource(source_pipe);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
 		var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-		drain_pipe->AddVertex(208, 48);
-		drain_pipe->SetActionTargets(drain, pump);
-		pump->SetDrain(drain_pipe);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+		drain->GetConnectedLine()->AddVertex(208, 48);
 	}
 	
 	// Log what the test is about.
@@ -535,7 +519,7 @@ global func Test9_OnStart(int plr)
 	windmill->AddToQueue(Flour, 3);
 
 	// Log what the test is about.
-	Log("An on-demand producer (steam engine) always provides power to an reduced on-demand consumer (wind mill).");
+	Log("An on-demand producer (steam engine) always provides power to a reduced on-demand consumer (wind mill).");
 	return true;
 }
 
@@ -565,14 +549,10 @@ global func Test10_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 80 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 168, 292, plr);
-		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-		source_pipe->SetActionTargets(source, pump);
-		pump->SetSource(source_pipe);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
 		var drain = CreateObjectAbove(Pipe, 240, 100, plr);
-		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-		drain_pipe->AddVertex(208, 48);
-		drain_pipe->SetActionTargets(drain, pump);
-		pump->SetDrain(drain_pipe);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+		drain->GetConnectedLine()->AddVertex(208, 48);
 	}
 	
 	// Power source (network 2): four pumps.
@@ -580,16 +560,12 @@ global func Test10_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 228 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 256, 100, plr);
-		var source_pipe = CreateObjectAbove(PipeLine, 272, 24, plr);
-		source_pipe->AddVertex(288, 24);
-		source_pipe->AddVertex(288, 114);
-		source_pipe->AddVertex(282, 120);
-		source_pipe->SetActionTargets(source, pump);
-		pump->SetSource(source_pipe);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
+		source->GetConnectedLine()->AddVertex(288, 24);
+		source->GetConnectedLine()->AddVertex(288, 114);
+		source->GetConnectedLine()->AddVertex(288, 120);
 		var drain = CreateObjectAbove(Pipe, 184, 292, plr);
-		var drain_pipe = CreateObjectAbove(PipeLine, 208, 160, plr);
-		drain_pipe->SetActionTargets(drain, pump);
-		pump->SetDrain(drain_pipe);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 	}
 	
 	// Power connection (network 2): flagpole.
@@ -607,7 +583,7 @@ global func Test10_OnStart(int plr)
 
 global func Test10_Completed()
 {
-	if (ObjectCount(Find_ID(Wood)) >= 5)
+	if (ObjectCount(Find_ID(Wood), Find_NoContainer()) >= 5)
 		return true;
 	return false;
 }
@@ -701,6 +677,7 @@ global func Test12_OnStart(int plr)
 	workshop->AddToQueue(Shovel, 4);
 	var lab = CreateObjectAbove(InventorsLab, 450, 248, plr);
 	lab->CreateContents(Metal, 8);
+	lab->CreateContents(Diamond, 4);
 	lab->AddToQueue(TeleGlove, 4);
 	lab->SetNoPowerNeed(true);
 	ScheduleCall(nil, "Log", 1, 0, "Lab has no power need (per script).");
@@ -807,14 +784,10 @@ global func Test14_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 84 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 168, 292, plr);
-		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-		source_pipe->SetActionTargets(source, pump);
-		pump->SetSource(source_pipe);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
 		var drain = CreateObjectAbove(Pipe, 240, 100, plr);
-		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-		drain_pipe->AddVertex(208, 48);
-		drain_pipe->SetActionTargets(drain, pump);
-		pump->SetDrain(drain_pipe);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+		drain->GetConnectedLine()->AddVertex(208, 48);
 	}
 	
 	// Power source: four pumps.
@@ -822,16 +795,12 @@ global func Test14_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 228 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 256, 100, plr);
-		var source_pipe = CreateObjectAbove(PipeLine, 272, 24, plr);
-		source_pipe->AddVertex(288, 24);
-		source_pipe->AddVertex(288, 114);
-		source_pipe->AddVertex(282, 120);
-		source_pipe->SetActionTargets(source, pump);
-		pump->SetSource(source_pipe);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
+		source->GetConnectedLine()->AddVertex(288, 24);
+		source->GetConnectedLine()->AddVertex(288, 114);
+		source->GetConnectedLine()->AddVertex(282, 120);
 		var drain = CreateObjectAbove(Pipe, 184, 292, plr);
-		var drain_pipe = CreateObjectAbove(PipeLine, 208, 160, plr);
-		drain_pipe->SetActionTargets(drain, pump);
-		pump->SetDrain(drain_pipe);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 	}
 
 	// Power storage: four compensators.
@@ -876,6 +845,7 @@ global func Test14_OnStart(int plr)
 	// Power consumer: inventor's lab.
 	var lab = CreateObjectAbove(InventorsLab, 430, 248, plr);
 	lab->CreateContents(Metal, 40);
+	lab->CreateContents(Amethyst, 20);
 	lab->AddToQueue(TeleGlove, 20);
 
 	// Log what the test is about.
@@ -922,15 +892,11 @@ global func Test15_OnStart(int plr)
 	// Power consumer: a single pump.	
 	var pump = CreateObjectAbove(Pump, 84, 160, plr);
 	var source = CreateObjectAbove(Pipe, 168, 292, plr);
-	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-	source_pipe->SetActionTargets(source, pump);
-	pump->SetSource(source_pipe);
+	source->ConnectPipeTo(pump, PIPE_STATE_Source);
 	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
-	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-	drain_pipe->AddVertex(208, 48);
-	drain_pipe->SetActionTargets(drain, pump);
-	pump->SetDrain(drain_pipe);
-	
+	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+	drain->GetConnectedLine()->AddVertex(208, 48);
+
 	// Change the water levels.
 	Schedule(nil, "RemoveWater()", 2 * 36, 0);
 	Schedule(nil, "RestoreWaterLevels()", 4 * 36, 0);
@@ -960,7 +926,7 @@ global func Test15_OnFinished()
 
 static POWER_SYSTEM_Test16_Start;
 
-// Test for ndproduction of power not meeting a single demand, which should not lead to producing any power at all.
+// Test for underproduction of power not meeting a single demand, which should not lead to producing any power at all.
 global func Test16_OnStart(int plr)
 {
 	// Store the current frame.
@@ -997,7 +963,7 @@ global func Test16_Completed()
 		return false;
 	// Completed if the engine still has its fuel after 20 seconds.
 	if (FrameCounter() > 20 * 36 + POWER_SYSTEM_Test16_Start)
-		if (FindObject(Find_Container(engine), Find_ID(Coal)) || engine->GetFuelAmount() >= 1800 / 2)
+		if (FindObject(Find_Container(engine), Find_ID(Coal)) || engine->GetFuelAmount() >= 100 / 2)
 			return true;
 	return false;
 }
@@ -1099,14 +1065,10 @@ global func Test19_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 80 + i * 30, 160, plr);
 		var source = CreateObjectAbove(Pipe, 176, 292, plr);
-		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-		source_pipe->SetActionTargets(source, pump);
-		pump->Call(["SetSource", "SetDrain"][i], source_pipe);
+		source->ConnectPipeTo(pump, [PIPE_STATE_Source, PIPE_STATE_Drain][i]);
 		var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-		drain_pipe->AddVertex(208, 48);
-		drain_pipe->SetActionTargets(drain, pump);
-		pump->Call(["SetDrain", "SetSource"][i], drain_pipe);
+		drain->ConnectPipeTo(pump, [PIPE_STATE_Drain, PIPE_STATE_Source][i]);
+		drain->GetConnectedLine()->AddVertex(208, 48);
 	}
 	
 	// Some initial potential energy from water.
@@ -1119,7 +1081,7 @@ global func Test19_OnStart(int plr)
 
 global func Test19_Completed()
 {
-	if (GetMaterial(248, 48) == Material("Water"))
+	if (GetMaterial(248, 97) == Material("Water") && ObjectCount(Find_ID(Pump), Find_Action("Pump")) == 2)
 		return true;
 	return false;
 }
@@ -1130,6 +1092,174 @@ global func Test19_OnFinished()
 	RestoreWaterLevels();
 	// Remove steam engine, pump and the pipes.
 	RemoveAll(Find_Or(Find_ID(Compensator), Find_ID(WindGenerator), Find_ID(Pump), Find_ID(Pipe)));
+	return;
+}
+
+// Test for steam engine fueled by oil barrels.
+global func Test20_OnStart(int plr)
+{
+	// Power source: one steam engine.
+	var engine = CreateObjectAbove(SteamEngine, 100, 160, plr);
+
+	for (var i = 0; i < 3; ++i)
+	{
+		var barrel = CreateObject(Barrel, 1);
+		barrel->CreateContents(Oil, 10);
+		engine->Collect(barrel, true);
+	}
+	
+	// Power consumer: armory.
+	var armory = CreateObjectAbove(Armory, 280, 160, plr);
+	armory->CreateContents(Firestone, 5);
+	armory->CreateContents(Metal, 5);
+	armory->AddToQueue(IronBomb, 5);
+
+	// Log what the test is about.
+	Log("A steam engine fueled by oil barrels.");
+	return true;
+}
+
+global func Test20_Completed()
+{
+	// One wood is being burned as fuel by the steam engine.
+	if (ObjectCount(Find_ID(Barrel), Find_NoContainer()) >= 3 && ObjectCount(Find_ID(IronBomb)) >= 5)
+		return true;
+	return false;
+}
+
+global func Test20_OnFinished()
+{
+	// Remove steam engine, barrels, armory.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Barrel), Find_ID(Armory)));
+	return;
+}
+
+// Test for steam engine fueled by oil field and pump.
+global func Test21_OnStart(int plr)
+{
+	// Oil field
+	DrawMaterialQuad("Oil", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
+
+	// Power source: one steam engine.
+	var engine = CreateObjectAbove(SteamEngine, 70, 160, plr);
+	engine->CreateContents(Oil, 10);
+	
+	// Power consumer: one pump.
+	var pump = CreateObjectAbove(Pump, 124, 160, plr);
+	var source = CreateObjectAbove(Pipe, 176, 292, plr);
+	source->ConnectPipeTo(pump, PIPE_STATE_Source);
+	var drain = CreateObjectAbove(Pipe, 100, 160, plr);
+	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+	drain->ConnectPipeTo(engine);
+	
+	// Power consumer: armory.
+	var armory = CreateObjectAbove(Armory, 255, 160, plr);
+	armory->CreateContents(Firestone, 20);
+	armory->CreateContents(Metal, 20);
+	armory->AddToQueue(IronBomb, 20);
+
+	// Log what the test is about.
+	Log("A steam engine fueled by an oil field via pump.");
+	return true;
+}
+
+global func Test21_Completed()
+{
+	// One wood is being burned as fuel by the steam engine.
+	if (ObjectCount(Find_ID(IronBomb)) >= 20)
+		return true;
+	return false;
+}
+
+global func Test21_OnFinished()
+{
+	// Restore water
+	RestoreWaterLevels();
+	// Remove steam engine, armory, pump.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Armory), Find_ID(Pipe), Find_ID(Pump)));
+	return;
+}
+
+static POWER_SYSTEM_Test22_Time;
+
+// Test of pumping and power system with massive amounts of pumps.
+global func Test22_OnStart(int plr)
+{
+	// Start the script profiler for this test.
+	StartScriptProfiler();
+	POWER_SYSTEM_Test22_Time = GetTime();
+	
+	// Power source: one steam engine.
+	var steam_engine1 = CreateObjectAbove(SteamEngine, 36, 160, plr);
+	steam_engine1->CreateContents(Coal, 12);
+	
+	// Power source: wind generators.
+	SetWindFixed(100);
+	CreateObjectAbove(WindGenerator, 440, 104, plr);
+	CreateObjectAbove(WindGenerator, 460, 104, plr);
+	CreateObjectAbove(WindGenerator, 480, 104, plr);
+	CreateObjectAbove(WindGenerator, 500, 104, plr);	
+
+	// Power connection: one flagpole.
+	CreateObjectAbove(Flagpole, 248, 280, plr);
+
+	// Power consumer: pumps.
+	for (var i = 0; i < 5; i++)
+	{
+		var pump = CreateObjectAbove(Pump, 84 + i * 10, 160, plr);
+		var source = CreateObjectAbove(Pipe, 168 - 2 * i, 292, plr);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
+		var drain = CreateObjectAbove(Pipe, 240 - 2 * i, 100, plr);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+		drain->GetConnectedLine()->AddVertex(208, 48);
+	}
+	
+	// Power source: pumps.
+	for (var i = 0; i < 5; i++)
+	{
+		var pump = CreateObjectAbove(Pump, 228 + i * 10, 160, plr);
+		var source = CreateObjectAbove(Pipe, 256 + 2 * i, 100, plr);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
+		source->GetConnectedLine()->AddVertex(288, 24);
+		source->GetConnectedLine()->AddVertex(288, 114);
+		source->GetConnectedLine()->AddVertex(282, 120);
+		var drain = CreateObjectAbove(Pipe, 184 + 2 * i, 292, plr);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+	}
+
+	// Power storage: compensators.
+	CreateObjectAbove(Compensator, 20, 224, plr);
+	CreateObjectAbove(Compensator, 45, 224, plr);
+	CreateObjectAbove(Compensator, 70, 224, plr);
+	CreateObjectAbove(Compensator, 95, 224, plr);
+	CreateObjectAbove(Compensator, 20, 312, plr);
+	CreateObjectAbove(Compensator, 45, 312, plr);
+	CreateObjectAbove(Compensator, 70, 312, plr);
+	CreateObjectAbove(Compensator, 95, 312, plr);
+
+	// Log what the test is about.
+	Log("Massive amount of pumps to test the performance of pumps and the power system.");
+	return true;
+}
+
+global func Test22_Completed()
+{
+	if (GetTime() - POWER_SYSTEM_Test22_Time > 50000)
+		return true;
+	return false;
+}
+
+global func Test22_OnFinished()
+{
+	// Stop the script profiler for this test and log the total time.
+	var time = GetTime() - POWER_SYSTEM_Test22_Time;
+	Log("The test ran for %d ms and these functions have been consuming an amount of time:", time);
+	StopScriptProfiler();
+	// Restore water levels.
+	RestoreWaterLevels();	
+	// Remove all the structures.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(WindGenerator)));
+	RemoveAll(Find_Or(Find_ID(Pump), Find_ID(Pipe), Find_ID(Compensator), Find_ID(Flagpole)));
 	return;
 }
 

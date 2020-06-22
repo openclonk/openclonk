@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,10 +17,9 @@
 #ifndef INC_StdMesh
 #define INC_StdMesh
 
-#include <StdMeshMath.h>
-#include <StdMeshMaterial.h>
-
-#include <string>
+#include "C4ForbidLibraryCompilation.h"
+#include "lib/StdMeshMaterial.h"
+#include "lib/StdMeshMath.h"
 
 class StdMeshBone
 {
@@ -28,7 +27,7 @@ class StdMeshBone
 	friend class StdMeshSkeletonLoader;
 	friend class StdMeshXML;
 public:
-	StdMeshBone() {}
+	StdMeshBone() = default;
 
 	unsigned int Index; // Index in master bone table
 	int ID; // Bone ID
@@ -45,8 +44,8 @@ private:
 	StdMeshBone* Parent; // Parent bone
 	std::vector<StdMeshBone*> Children; // Children. Not owned.
 
-	StdMeshBone(const StdMeshBone&); // non-copyable
-	StdMeshBone& operator=(const StdMeshBone&); // non-assignable
+	StdMeshBone(const StdMeshBone&) = delete;
+	StdMeshBone& operator=(const StdMeshBone&) = delete;
 };
 
 class StdMeshVertexBoneAssignment
@@ -87,8 +86,9 @@ class StdMeshAnimation
 	friend class StdMeshSkeleton;
 	friend class StdMeshSkeletonLoader;
 	friend class StdMeshInstance;
+	friend class StdMeshInstanceAnimationNode;
 public:
-	StdMeshAnimation() {}
+	StdMeshAnimation() = default;
 	StdMeshAnimation(const StdMeshAnimation& other);
 	~StdMeshAnimation();
 
@@ -133,8 +133,8 @@ public:
 private:
 	void AddMasterBone(StdMeshBone* bone);
 
-	StdMeshSkeleton(const StdMeshSkeleton& other); // non-copyable
-	StdMeshSkeleton& operator=(const StdMeshSkeleton& other); // non-assignable
+	StdMeshSkeleton(const StdMeshSkeleton& other) = delete;
+	StdMeshSkeleton& operator=(const StdMeshSkeleton& other) = delete;
 
 	std::vector<StdMeshBone*> Bones; // Master Bone Table
 
@@ -145,6 +145,11 @@ struct StdMeshBox
 {
 	float x1, y1, z1;
 	float x2, y2, z2;
+
+	StdMeshVector GetCenter() const
+	{
+		return StdMeshVector{ (x2 + x1) / 2.0f, (y2 + y1) / 2.0f, (z2 + z1) / 2.0f };
+	}
 };
 
 class StdSubMesh
@@ -169,14 +174,14 @@ public:
 	size_t GetOffsetInIBO() const { return index_buffer_offset; }
 
 private:
-	StdSubMesh();
+	StdSubMesh() = default;
 
 	std::vector<Vertex> Vertices; // Empty if we use shared vertices
 	std::vector<StdMeshFace> Faces;
-	size_t vertex_buffer_offset;
-	size_t index_buffer_offset;
+	size_t vertex_buffer_offset{0};
+	size_t index_buffer_offset{0};
 
-	const StdMeshMaterial* Material;
+	const StdMeshMaterial* Material{nullptr};
 };
 
 class StdMesh
@@ -213,15 +218,15 @@ public:
 
 private:
 #ifndef USE_CONSOLE
-	GLuint vbo;
-	GLuint ibo;
-	unsigned int vaoid;
+	GLuint vbo{0};
+	GLuint ibo{0};
+	unsigned int vaoid{0};
 	void UpdateVBO();
 	void UpdateIBO();
 #endif
 
-	StdMesh(const StdMesh& other); // non-copyable
-	StdMesh& operator=(const StdMesh& other); // non-assignable
+	StdMesh(const StdMesh& other) = delete;
+	StdMesh& operator=(const StdMesh& other) = delete;
 
 	std::vector<Vertex> SharedVertices;
 
@@ -255,7 +260,7 @@ public:
 	// Get face of instance. The instance faces are the same as the mesh faces,
 	// with the exception that they are differently ordered, depending on the
 	// current FaceOrdering. See FaceOrdering in StdMeshInstance.
-	const StdMeshFace* GetFaces() const { return Faces.size() > 0 ? &Faces[0] : 0; }
+	const StdMeshFace* GetFaces() const { return Faces.size() > 0 ? &Faces[0] : nullptr; }
 	size_t GetNumFaces() const { return Faces.size(); }
 	const StdSubMesh &GetSubMesh() const { return *base; }
 
@@ -298,9 +303,92 @@ protected:
 	// TODO: GLuint texenv_list; // NoSave, texture environment setup could be stored in a display list (w/ and w/o ClrMod). What about PlayerColor?
 
 private:
-	StdSubMeshInstance(const StdSubMeshInstance& other); // noncopyable
-	StdSubMeshInstance& operator=(const StdSubMeshInstance& other); // noncopyable
+	StdSubMeshInstance(const StdSubMeshInstance& other) = delete;
+	StdSubMeshInstance& operator=(const StdSubMeshInstance& other) = delete;
 };
+
+
+// Provider for animation position or weight.
+class StdMeshInstanceValueProvider
+{
+public:
+	StdMeshInstanceValueProvider(): Value(Fix0) {}
+	virtual ~StdMeshInstanceValueProvider() = default;
+
+	// Return false if the corresponding node is to be removed or true
+	// otherwise.
+	virtual bool Execute() = 0;
+
+	C4Real Value; // Current provider value
+};
+
+// A node in the animation tree
+// Can be either a leaf node, or interpolation between two other nodes
+class StdMeshInstanceAnimationNode
+{
+	friend class StdMeshInstance;
+	friend class StdMeshUpdate;
+	friend class StdMeshAnimationUpdate;
+public:
+	typedef StdMeshInstanceAnimationNode AnimationNode;
+	typedef StdMeshInstanceValueProvider ValueProvider;
+	enum NodeType { LeafNode, CustomNode, LinearInterpolationNode };
+
+	StdMeshInstanceAnimationNode();
+	StdMeshInstanceAnimationNode(const StdMeshAnimation* animation, ValueProvider* position);
+	StdMeshInstanceAnimationNode(const StdMeshBone* bone, const StdMeshTransformation& trans);
+	StdMeshInstanceAnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight);
+	~StdMeshInstanceAnimationNode();
+
+	bool GetBoneTransform(unsigned int bone, StdMeshTransformation& transformation);
+
+	int GetSlot() const { return Slot; }
+	unsigned int GetNumber() const { return Number; }
+	NodeType GetType() const { return Type; }
+	AnimationNode* GetParent() { return Parent; }
+
+	const StdMeshAnimation* GetAnimation() const { assert(Type == LeafNode); return Leaf.Animation; }
+	ValueProvider* GetPositionProvider() { assert(Type == LeafNode); return Leaf.Position; }
+	C4Real GetPosition() const { assert(Type == LeafNode); return Leaf.Position->Value; }
+
+	AnimationNode* GetLeftChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildLeft; }
+	AnimationNode* GetRightChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildRight; }
+	ValueProvider* GetWeightProvider() { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight; }
+	C4Real GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
+
+	void CompileFunc(StdCompiler* pComp, const StdMesh *Mesh);
+	void DenumeratePointers();
+	void ClearPointers(class C4Object* pObj);
+
+protected:
+	int Slot;
+	unsigned int Number;
+	NodeType Type{LeafNode};
+	AnimationNode* Parent{nullptr}; // NoSave
+
+	union
+	{
+		struct
+		{
+			const StdMeshAnimation* Animation;
+			ValueProvider* Position;
+		} Leaf;
+
+		struct
+		{
+			unsigned int BoneIndex;
+			StdMeshTransformation* Transformation;
+		} Custom;
+
+		struct
+		{
+			AnimationNode* ChildLeft;
+			AnimationNode* ChildRight;
+			ValueProvider* Weight;
+		} LinearInterpolation;
+	};
+};
+
 
 class StdMeshInstance
 {
@@ -308,6 +396,7 @@ class StdMeshInstance
 	friend class StdMeshAnimationUpdate;
 	friend class StdMeshUpdate;
 public:
+	typedef StdMeshInstanceAnimationNode AnimationNode;
 	StdMeshInstance(const StdMesh& mesh, float completion = 1.0f);
 	~StdMeshInstance();
 
@@ -319,19 +408,7 @@ public:
 		AM_MatchSkeleton = 1 << 1
 	};
 
-	// Provider for animation position or weight.
-	class ValueProvider
-	{
-	public:
-		ValueProvider(): Value(Fix0) {}
-		virtual ~ValueProvider() {}
-
-		// Return false if the corresponding node is to be removed or true
-		// otherwise.
-		virtual bool Execute() = 0;
-
-		C4Real Value; // Current provider value
-	};
+	typedef StdMeshInstanceValueProvider ValueProvider;
 
 	// Serializable value providers need to be registered with SerializeableValueProvider::Register.
 	// They also need to implement a default constructor and a compile func
@@ -360,7 +437,7 @@ public:
 			{
 				assert(IDs);
 				IDs->erase(std::find(IDs->begin(), IDs->end(), this));
-				if (!IDs->size()) { delete IDs; IDs = NULL; }
+				if (!IDs->size()) { delete IDs; IDs = nullptr; }
 			}
 
 		public:
@@ -382,90 +459,25 @@ public:
 
 		static const IDBase* Lookup(const char* name)
 		{
-			if(!IDs) return NULL;
-			for(unsigned int i = 0; i < IDs->size(); ++i)
-				if(strcmp((*IDs)[i]->name, name) == 0)
-					return (*IDs)[i];
-			return NULL;
+			if(!IDs) return nullptr;
+			for(auto & ID : *IDs)
+				if(strcmp(ID->name, name) == 0)
+					return ID;
+			return nullptr;
 		}
 
 		static const IDBase* Lookup(const std::type_info& type)
 		{
-			if(!IDs) return NULL;
-			for(unsigned int i = 0; i < IDs->size(); ++i)
-				if((*IDs)[i]->type == type)
-					return (*IDs)[i];
-			return NULL;
+			if(!IDs) return nullptr;
+			for(auto & ID : *IDs)
+				if(ID->type == type)
+					return ID;
+			return nullptr;
 		}
 
 		virtual void CompileFunc(StdCompiler* pComp);
 		virtual void DenumeratePointers() {}
 		virtual void ClearPointers(class C4Object* pObj) {}
-	};
-
-	// A node in the animation tree
-	// Can be either a leaf node, or interpolation between two other nodes
-	class AnimationNode
-	{
-		friend class StdMeshInstance;
-		friend class StdMeshUpdate;
-		friend class StdMeshAnimationUpdate;
-	public:
-		enum NodeType { LeafNode, CustomNode, LinearInterpolationNode };
-
-		AnimationNode();
-		AnimationNode(const StdMeshAnimation* animation, ValueProvider* position);
-		AnimationNode(const StdMeshBone* bone, const StdMeshTransformation& trans);
-		AnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight);
-		~AnimationNode();
-
-		bool GetBoneTransform(unsigned int bone, StdMeshTransformation& transformation);
-
-		int GetSlot() const { return Slot; }
-		unsigned int GetNumber() const { return Number; }
-		NodeType GetType() const { return Type; }
-		AnimationNode* GetParent() { return Parent; }
-
-		const StdMeshAnimation* GetAnimation() const { assert(Type == LeafNode); return Leaf.Animation; }
-		ValueProvider* GetPositionProvider() { assert(Type == LeafNode); return Leaf.Position; }
-		C4Real GetPosition() const { assert(Type == LeafNode); return Leaf.Position->Value; }
-
-		AnimationNode* GetLeftChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildLeft; }
-		AnimationNode* GetRightChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildRight; }
-		ValueProvider* GetWeightProvider() { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight; }
-		C4Real GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
-
-		void CompileFunc(StdCompiler* pComp, const StdMesh *Mesh);
-		void DenumeratePointers();
-		void ClearPointers(class C4Object* pObj);
-
-	protected:
-		int Slot;
-		unsigned int Number;
-		NodeType Type;
-		AnimationNode* Parent; // NoSave
-
-		union
-		{
-			struct
-			{
-				const StdMeshAnimation* Animation;
-				ValueProvider* Position;
-			} Leaf;
-
-			struct
-			{
-				unsigned int BoneIndex;
-				StdMeshTransformation* Transformation;
-			} Custom;
-
-			struct
-			{
-				AnimationNode* ChildLeft;
-				AnimationNode* ChildRight;
-				ValueProvider* Weight;
-			} LinearInterpolation;
-		};
 	};
 
 	class AttachedMesh
@@ -477,7 +489,7 @@ public:
 		class Denumerator
 		{
 		public:
-			virtual ~Denumerator() {}
+			virtual ~Denumerator() = default;
 
 			virtual void CompileFunc(StdCompiler* pComp, AttachedMesh* attach) = 0;
 			virtual void DenumeratePointers(AttachedMesh* attach) {}
@@ -494,11 +506,11 @@ public:
 		             unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform, uint32_t flags);
 		~AttachedMesh();
 
-		uint32_t Number;
-		StdMeshInstance* Parent; // NoSave (set by parent)
-		StdMeshInstance* Child;
-		bool OwnChild; // NoSave
-		Denumerator* ChildDenumerator;
+		uint32_t Number{0};
+		StdMeshInstance* Parent{nullptr}; // NoSave (set by parent)
+		StdMeshInstance* Child{nullptr};
+		bool OwnChild{true}; // NoSave
+		Denumerator* ChildDenumerator{nullptr};
 
 		bool SetParentBone(const StdStrBuf& bone);
 		bool SetChildBone(const StdStrBuf& bone);
@@ -514,14 +526,14 @@ public:
 		unsigned int GetChildBone() const { return ChildBone; }
 
 	private:
-		unsigned int ParentBone;
-		unsigned int ChildBone;
+		unsigned int ParentBone{0};
+		unsigned int ChildBone{0};
 		StdMeshMatrix AttachTrans;
 		uint32_t Flags;
 
 		// Cache final attach transformation, updated in UpdateBoneTransform
 		StdMeshMatrix FinalTrans; // NoSave
-		bool FinalTransformDirty; // NoSave; Whether FinalTrans is up to date or not
+		bool FinalTransformDirty{false}; // NoSave; Whether FinalTrans is up to date or not
 
 		std::vector<int> MatchedBoneInParentSkeleton; // Only filled if AM_MatchSkeleton is set
 
@@ -659,8 +671,8 @@ protected:
 	unsigned int vaoid;
 #endif
 private:
-	StdMeshInstance(const StdMeshInstance& other); // noncopyable
-	StdMeshInstance& operator=(const StdMeshInstance& other); // noncopyable
+	StdMeshInstance(const StdMeshInstance& other) = delete;
+	StdMeshInstance& operator=(const StdMeshInstance& other) = delete;
 };
 
 inline void CompileNewFuncCtx(StdMeshInstance::SerializableValueProvider *&pStruct, StdCompiler *pComp, const StdMeshInstance::SerializableValueProvider::IDBase& rID)

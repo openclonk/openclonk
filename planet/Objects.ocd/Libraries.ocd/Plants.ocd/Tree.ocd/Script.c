@@ -36,9 +36,11 @@ private func Construction()
 {
 	_inherited(...);
 
-	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
-	if (!GetGrowthValue() && !IsBurnedTree()) StartGrowth(5);
-	if (IsBurnedTree()) RemoveTimer("Seed");
+	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0, 359),0, 1, 0));
+	if (!GetGrowthValue() && !IsBurnedTree()) 
+		StartGrowth(5, RandomX(900, 1050));
+	if (IsBurnedTree())
+		RemoveTimer("Seed");
 
 	lib_tree_attach = CreateArray();
 }
@@ -66,7 +68,7 @@ public func CreateObjectInTreetop(id to_create, int tries, bool no_overlap_check
 	if (!IsStanding()) return nil;
 	if (!tries) tries = 20;
 
-	var pos = { x=0, y=0 }, overlap, width, height, area;
+	var pos = { x = 0, y = 0 }, overlap, width, height, area;
 	do {
 		GetTreetopPosition(pos);
 		overlap = false;
@@ -88,7 +90,7 @@ public func CreateObjectInTreetop(id to_create, int tries, bool no_overlap_check
 			if (overlap) continue;
 			break;
 		}
-	} while(--tries);
+	} while (--tries);
 	if (overlap) return nil;
 
 	var attach = CreateObject(to_create, pos.x, pos.y, GetOwner());
@@ -144,11 +146,12 @@ local lib_tree_burned;
 private func Damage(int change, int cause)
 {
 	// do not grow for a few seconds
-	var g = GetGrowthValue();
-	if(g)
+	var growth = GetGrowthValue();
+	if (growth)
 	{
+		var max_size = GetGrowthMaxSize();
 		StopGrowth();
-		ScheduleCall(this, "RestartGrowth", 36 * 10, 0, g);
+		ScheduleCall(this, "RestartGrowth", 36 * 10, 0, growth, max_size);
 	}
 	// Max damage reached: burn or fall down
 	if (GetDamage() > MaxDamage())
@@ -167,6 +170,7 @@ private func Damage(int change, int cause)
 				burned->SetR(GetR());
 				burned->Incinerate(OnFire());
 				burned->SetPosition(GetX(), GetY());
+				burned->SetProperty("MeshTransformation", GetProperty("MeshTransformation"));
 				return RemoveObject();
 			}
 			// Something went wrong. Better Burst into ashes!
@@ -181,12 +185,14 @@ private func Damage(int change, int cause)
 }
 
 // Restarts the growing of the tree (for example after taking damage)
-private func RestartGrowth(int old_value)
+private func RestartGrowth(int old_value, int old_size)
 {
-	var g = GetGrowthValue(); // safety
-	if(g) StopGrowth();
-	g = Max(g, old_value);
-	StartGrowth(g);
+	// Safety.
+	var g = GetGrowthValue();
+	var max_size = GetGrowthMaxSize();
+	if (g) 
+		StopGrowth();
+	return StartGrowth(Max(g, old_value), Max(max_size, old_size));
 }
 
 // Visual chopping effect
@@ -219,13 +225,13 @@ public func BurstIntoAshes()
 	var r = GetR();
 	var size = GetCon() * 110 / 100;
 	
-	for(var cnt = 0; cnt < 10; ++cnt)
+	for (var cnt = 0; cnt < 10; ++cnt)
 	{
 		var distance = Random(size/2);
 		var x = Sin(r, distance);
 		var y = -Cos(r, distance);
 		
-		for(var mirror = -1; mirror <= 1; mirror += 2)
+		for (var mirror = -1; mirror <= 1; mirror += 2)
 		{
 			CreateParticle("Dust", x * mirror, y * mirror, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 2);
 			CastPXS("Ashes", 5, 30, x * mirror, y * mirror);
@@ -256,7 +262,7 @@ public func ChopDown()
 	if (Stuck())
 	{
 		var i = 5;
-		while(Stuck() && i)
+		while (Stuck() && i)
 		{
 			SetPosition(GetX(), GetY()-1);
 			i--;
@@ -310,4 +316,16 @@ private func FxTreeFallTimer(object target, proplist effect)
 		target->SetRDir(0);
 		return -1;
 	}
+}
+
+private func DoSeed()
+{
+	var plant = _inherited(...);
+
+	if (plant)
+	{
+		plant->RemoveInTunnel();
+	}
+
+	return plant;
 }

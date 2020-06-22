@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,8 +16,7 @@
 #ifndef C4NETWORK2IRC_H
 #define C4NETWORK2IRC_H
 
-#include "C4NetIO.h"
-#include <time.h>
+#include "network/C4NetIO.h"
 
 enum C4Network2IRCMessageType
 {
@@ -36,7 +35,7 @@ class C4Network2IRCMessage
 	friend class C4Network2IRCClient;
 public:
 	C4Network2IRCMessage(C4Network2IRCMessageType enType, const char *szSource, const char *szTarget, const char *szData)
-			: iTimestamp(time(NULL)), eType(enType), Source(szSource), Target(szTarget), Data(szData), Next(0)
+			: iTimestamp(time(nullptr)), eType(enType), Source(szSource), Target(szTarget), Data(szData), Next(nullptr)
 	{ }
 
 private:
@@ -124,28 +123,28 @@ class C4Network2IRCClient : public C4NetIOTCP, private C4NetIO::CBClass
 {
 public:
 	C4Network2IRCClient();
-	~C4Network2IRCClient();
+	~C4Network2IRCClient() override;
 
 private:
 
 	// Connection information
 	C4NetIO::addr_t ServerAddr, PeerAddr;
-	bool fConnecting, fConnected;
+	bool fConnecting{false}, fConnected{false};
 
 	// Status information
 	StdCopyStrBuf Nick, RealName, Password;
 	StdCopyStrBuf AutoJoin;
-	C4Network2IRCChannel *pChannels;
+	C4Network2IRCChannel *pChannels{nullptr};
 
 	// User mode/prefix map
 	StdCopyStrBuf Prefixes;
 
 	// Message log
-	C4Network2IRCMessage *pLog, *pLogLastRead, *pLogEnd;
-	int32_t iLogLength, iUnreadLogLength;
+	C4Network2IRCMessage *pLog{nullptr}, *pLogLastRead, *pLogEnd{nullptr};
+	int32_t iLogLength{0}, iUnreadLogLength{0};
 
 	// Event queue for notify
-	class C4InteractiveThread *pNotify;
+	class C4InteractiveThread *pNotify{nullptr};
 
 	// Critical section for data
 	CStdCSec CSec;
@@ -153,13 +152,13 @@ private:
 private:
 
 	// Overridden
-	virtual void PackPacket(const C4NetIOPacket &rPacket, StdBuf &rOutBuf);
-	virtual size_t UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &addr);
+	void PackPacket(const C4NetIOPacket &rPacket, StdBuf &rOutBuf) override;
+	size_t UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &addr) override;
 
 	// Callbacks
-	bool OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO::addr_t &AddrConnect, const addr_t *pOwnAddr, C4NetIO *pNetIO);
-	void OnDisconn(const C4NetIO::addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason);
-	void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO);
+	bool OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO::addr_t &AddrConnect, const addr_t *pOwnAddr, C4NetIO *pNetIO) override;
+	void OnDisconn(const C4NetIO::addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason) override;
+	void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO) override;
 
 public:
 
@@ -177,11 +176,11 @@ public:
 
 	using C4NetIOTCP::Connect;
 	// Simple network communication
-	bool Connect(const char *szServer, const char *szNick, const char *szRealName, const char *szPassword = NULL, const char *szChannel = NULL);
+	bool Connect(const char *szServer, const char *szNick, const char *szRealName, const char *szPassword = nullptr, const char *szChannel = nullptr);
 	using C4NetIOTCP::Close;
-	bool Close();
+	bool Close() override;
 	using C4NetIOTCP::Send;
-	bool Send(const char *szCommand, const char *szParameters = NULL);
+	bool Send(const char *szCommand, const char *szParameters = nullptr);
 
 	// Notfiy interface
 	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }

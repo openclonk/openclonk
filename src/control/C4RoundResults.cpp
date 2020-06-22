@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,15 +15,15 @@
  */
 // Round result information to be displayed in game over dialog
 
-#include <C4Include.h>
-#include <C4RoundResults.h>
+#include "C4Include.h"
+#include "control/C4RoundResults.h"
 
-#include <C4Player.h>
-#include <C4Game.h>
-#include <C4Object.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4DefList.h>
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 // *** C4RoundResultsPlayer
 
@@ -139,20 +139,20 @@ void C4RoundResultsPlayers::Clear()
 {
 	while (iPlayerCount) delete ppPlayers[--iPlayerCount];
 	delete [] ppPlayers;
-	ppPlayers = NULL;
+	ppPlayers = nullptr;
 	iPlayerCapacity = 0;
 }
 
 void C4RoundResultsPlayers::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler) Clear();
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing) Clear();
 	int32_t iTemp = iPlayerCount;
 	pComp->Value(mkNamingCountAdapt<int32_t>(iTemp, "Player"));
 	if (iTemp < 0 || iTemp > C4MaxPlayer)
 		{ pComp->excCorrupt("player count out of range"); return; }
 	// Grow list, if necessary
-	if (fCompiler && iTemp > iPlayerCapacity)
+	if (deserializing && iTemp > iPlayerCapacity)
 	{
 		GrowList(iTemp - iPlayerCapacity);
 		iPlayerCount = iTemp;
@@ -169,7 +169,7 @@ C4RoundResultsPlayer *C4RoundResultsPlayers::GetByIndex(int32_t idx) const
 	if (idx>=0 && idx<iPlayerCount)
 		return ppPlayers[idx];
 	else
-		return NULL;
+		return nullptr;
 }
 
 C4RoundResultsPlayer *C4RoundResultsPlayers::GetByID(int32_t id) const
@@ -177,7 +177,7 @@ C4RoundResultsPlayer *C4RoundResultsPlayers::GetByID(int32_t id) const
 	for (int32_t idx=0; idx<iPlayerCount; ++idx)
 		if (ppPlayers[idx]->GetID() == id)
 			return ppPlayers[idx];
-	return NULL;
+	return nullptr;
 }
 
 void C4RoundResultsPlayers::GrowList(size_t iByVal)
@@ -248,6 +248,7 @@ void C4RoundResults::Clear()
 	sNetResult.Clear();
 	eNetResult = NR_None;
 	fHideSettlementScore=false;
+	Statistics.Clear();
 }
 
 void C4RoundResults::Init()
@@ -259,8 +260,8 @@ void C4RoundResults::Init()
 
 void C4RoundResults::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler) Clear();
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing) Clear();
 	pComp->Value(mkNamingAdapt(Goals, "Goals", C4IDList()));
 	pComp->Value(mkNamingAdapt(iPlayingTime, "PlayingTime", 0u));
 	pComp->Value(mkNamingAdapt(fHideSettlementScore, "HideSettlementScore", Game.C4S.Game.IsMelee()));
@@ -288,7 +289,7 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 	{
 		// determine if the goal is fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 		bool fFulfilled = false;;
-		C4Object *pObj = C4Id2Def(idGoal) ? ::Objects.Find(::Definitions.ID2Def(idGoal)) : NULL;
+		C4Object *pObj = C4Id2Def(idGoal) ? ::Objects.Find(::Definitions.ID2Def(idGoal)) : nullptr;
 		if (pObj)
 		{
 			// Check fulfilled per player, this enables the possibility of rivalry.
@@ -307,6 +308,19 @@ void C4RoundResults::EvaluateGame()
 	int32_t iFirstLocalPlayer = pFirstLocalPlayer ? pFirstLocalPlayer->Number : NO_OWNER;
 	EvaluateGoals(Goals, FulfilledGoals, iFirstLocalPlayer);
 	iPlayingTime = Game.Time;
+
+	// collect statistics
+	try
+	{
+		C4AulParSet Pars;
+		auto stats = ::ScriptEngine.GetPropList()->Call(PSF_CollectStatistics, &Pars);
+		if (stats != C4VNull)
+			Statistics = stats.ToJSON();
+	}
+	catch (C4JSONSerializationError& e)
+	{
+		DebugLogF("ERROR: cannot serialize CollectStatistics() result: %s", e.what());
+	}
 }
 
 void C4RoundResults::EvaluateNetwork(C4RoundResults::NetResult eNetResult, const char *szResultMsg)

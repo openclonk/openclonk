@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,125 +15,66 @@
  */
 // Miscellaneous script engine bits
 
-#include <C4Include.h>
-#include <C4Aul.h>
-#include <C4AulExec.h>
-#include <C4AulDebug.h>
+#include "C4Include.h"
+#include "script/C4Aul.h"
 
-#include <C4Config.h>
-#include <C4Def.h>
-#include <C4Log.h>
-#include <C4Components.h>
-#include <C4LangStringTable.h>
+#include "c4group/C4Components.h"
+#include "c4group/C4LangStringTable.h"
+#include "script/C4AulDebug.h"
+#include "script/C4AulExec.h"
+#include "script/C4Effect.h"
+#include "script/C4ScriptHost.h"
 
-C4AulError::C4AulError(): shown(false) {}
+const char *C4AulWarningMessages[] = {
+#define DIAG(id, text, enabled) text,
+#include "C4AulWarnings.h"
+#undef DIAG
+	nullptr
+};
+const char *C4AulWarningIDs[] = {
+#define DIAG(id, text, enabled) #id,
+#include "C4AulWarnings.h"
+#undef DIAG
+	nullptr
+};
 
-void C4AulError::show()
+static_assert(std::extent<decltype(C4AulWarningMessages), 0>::value - 1 == static_cast<size_t>(C4AulWarningId::WarningCount), "Warning message count doesn't match warning count");
+static_assert(std::extent<decltype(C4AulWarningIDs), 0>::value - 1 == static_cast<size_t>(C4AulWarningId::WarningCount), "Warning ID count doesn't match warning count");
+
+static class DefaultErrorHandler : public C4AulErrorHandler
 {
-	shown = true;
-	// simply log error message
-	if (sMessage)
-		DebugLog(sMessage.getData());
-}
+public:
+	void OnError(const char *msg) override
+	{
+		DebugLogF("ERROR: %s", msg);
+		++::ScriptEngine.errCnt;
+	}
+	void OnWarning(const char *msg) override
+	{
+		DebugLogF("WARNING: %s", msg);
+		++::ScriptEngine.warnCnt;
+	}
+} DefaultErrorHandler;
 
 const char *C4AulError::what() const noexcept
 {
 	return sMessage ? sMessage.getData() : "(unknown error)";
 }
 
-C4AulScript::C4AulScript()
-{
-	// not compiled
-	State = ASS_NONE;
-
-	// prepare lists
-	Prev = Next = NULL;
-	Engine = NULL;
-}
-
-C4AulScript::~C4AulScript()
-{
-	// clear
-	Clear();
-	// unreg
-	Unreg();
-}
-
-
-void C4AulScript::Unreg()
-{
-	// remove from list
-	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
-	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
-	Prev = Next = NULL;
-	Engine = NULL;
-}
-
-
-void C4AulScript::Clear()
-{
-	// reset flags
-	State = ASS_NONE;
-}
-
-
-void C4AulScript::Reg2List(C4AulScriptEngine *pEngine)
-{
-	// already regged? (def reloaded)
-	if (Engine) return;
-	// reg to list
-	if ((Engine = pEngine))
-	{
-		if ((Prev = Engine->ChildL))
-			Prev->Next = this;
-		else
-			Engine->Child0 = this;
-		Engine->ChildL = this;
-	}
-	else
-		Prev = NULL;
-	Next = NULL;
-}
-
-std::string C4AulScript::Translate(const std::string &text) const
-{
-	try
-	{
-		if (stringTable)
-			return stringTable->Translate(text);
-	}
-	catch (C4LangStringTable::NoSuchTranslation &)
-	{
-		// Ignore, soldier on
-	}
-	if (Engine && Engine != this)
-		return Engine->Translate(text);
-	throw C4LangStringTable::NoSuchTranslation(text);
-}
-
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		GlobalPropList(C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("Global"))),
-		warnCnt(0), errCnt(0), lineCnt(0)
+	C4PropListStaticMember(nullptr, nullptr, ::Strings.RegString("Global")),
+	ErrorHandler(&DefaultErrorHandler)
 {
-	// /me r b engine
-	Engine = this;
-	ScriptName.Ref(C4CFN_System);
-
 	GlobalNamedNames.Reset();
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
-	Child0 = ChildL = NULL;
-	RegisterGlobalConstant("Global", GlobalPropList);
-}
-
-C4PropListStatic * C4AulScriptEngine::GetPropList()
-{
-	return GlobalPropList._getPropList()->IsStatic();
+	Child0 = ChildL = nullptr;
+	RegisterGlobalConstant("Global", C4VPropList(this));
 }
 
 C4AulScriptEngine::~C4AulScriptEngine()
@@ -151,9 +92,7 @@ void C4AulScriptEngine::Clear()
 		if (Child0->Delete()) delete Child0;
 		else Child0->Unreg();
 	// clear own stuff
-	GlobalPropList._getPropList()->Clear();
-	// clear inherited
-	C4AulScript::Clear();
+	C4PropListStaticMember::Clear();
 	// reset values
 	warnCnt = errCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too
@@ -162,10 +101,23 @@ void C4AulScriptEngine::Clear()
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
-	RegisterGlobalConstant("Global", GlobalPropList);
+	RegisterGlobalConstant("Global", C4VPropList(this));
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
+	delete pGlobalEffects; pGlobalEffects=nullptr;
 	UserFiles.clear();
+	// Delete all global proplists made static (breaks
+	// cyclic references).
+	for (C4Value& value: OwnedPropLists)
+	{
+		C4PropList* plist = value.getPropList();
+		if (plist)
+		{
+			if (plist->Delete()) delete plist;
+			else plist->Clear();
+		}
+	}
+	OwnedPropLists.clear();
 }
 
 void C4AulScriptEngine::RegisterGlobalConstant(const char *szName, const C4Value &rValue)
@@ -190,21 +142,60 @@ bool C4AulScriptEngine::GetGlobalConstant(const char *szName, C4Value *pTargetVa
 	return true;
 }
 
-bool C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
+void C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 {
 	GlobalNamed.Denumerate(numbers);
 	// runtime data only: don't denumerate consts
-	GameScript.ScenPropList.Denumerate(numbers);
-	return true;
+	GameScript.Denumerate(numbers);
+	C4PropListStaticMember::Denumerate(numbers);
+	if (pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 }
 
-void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
+static void GlobalEffectsMergeCompileFunc(StdCompiler *pComp, C4Effect * & pEffects, const char * name, C4PropList * pForObj, C4ValueNumbers * numbers)
 {
-	assert(UserFiles.empty()); // user files must not be kept open
-	C4ValueMapData GlobalNamedDefault;
-	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
-	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
-	pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList._getPropList(), numbers), "Scenario"));
+	C4Effect *pOldEffect, *pNextOldEffect=pEffects;
+	pEffects = nullptr;
+	try
+	{
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pEffects, name), pForObj, numbers));
+	}
+	catch (...)
+	{
+		delete pNextOldEffect;
+		throw;
+	}
+	while ((pOldEffect=pNextOldEffect))
+	{
+		pNextOldEffect = pOldEffect->pNext;
+		pOldEffect->Register(&pEffects, Abs(pOldEffect->iPriority));
+	}
+}
+
+void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, bool fScenarioSection, C4ValueNumbers * numbers)
+{
+	if (!fScenarioSection)
+	{
+		assert(UserFiles.empty()); // user files must not be kept open
+		C4ValueMapData GlobalNamedDefault;
+		GlobalNamedDefault.SetNameList(&GlobalNamedNames);
+		pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
+		pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList._getPropList(), numbers), "Scenario"));
+	}
+	if (pComp->isDeserializer() && pGlobalEffects)
+	{
+		// loading scenario section or game re-init: Merge effects
+		// Must keep old effects here even if they're dead, because the LoadScenarioSection call typically came from execution of a global effect
+		// and otherwise dead pointers would remain on the stack
+		GlobalEffectsMergeCompileFunc(pComp, pGlobalEffects, "Effects", this, numbers);
+		GlobalEffectsMergeCompileFunc(pComp, GameScript.pScenarioEffects, "ScenarioEffects", GameScript.ScenPropList._getPropList(), numbers);
+	}
+	else
+	{
+		// Otherwise, just compile effects
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), this, numbers));
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(GameScript.pScenarioEffects, "ScenarioEffects"), GameScript.ScenPropList._getPropList(), numbers));
+	}
+	pComp->Value(mkNamingAdapt(*numbers, "Values"));
 }
 
 std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
@@ -228,7 +219,7 @@ std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 	}
 	delete a;
 	functions.sort(sort_alpha);
-	if (!functions.empty() && !global_functions.empty()) functions.push_back(0); // separator
+	if (!functions.empty() && !global_functions.empty()) functions.push_back(nullptr); // separator
 	global_functions.sort(sort_alpha);
 	functions.splice(functions.end(), global_functions);
 	return functions;
@@ -243,7 +234,7 @@ int32_t C4AulScriptEngine::CreateUserFile()
 		if ((*i).GetHandle() >= last_handle)
 			last_handle = (*i).GetHandle()+1;
 	// Create new user file
-	UserFiles.push_back(C4AulUserFile(last_handle));
+	UserFiles.emplace_back(last_handle);
 	return last_handle;
 }
 
@@ -261,20 +252,32 @@ void C4AulScriptEngine::CloseUserFile(int32_t handle)
 C4AulUserFile *C4AulScriptEngine::GetUserFile(int32_t handle)
 {
 	// get user file given by handle
-	for (std::list<C4AulUserFile>::iterator i = UserFiles.begin(); i != UserFiles.end(); ++i)
-		if ((*i).GetHandle() == handle)
+	for (auto & UserFile : UserFiles)
+		if (UserFile.GetHandle() == handle)
 		{
-			return &*i;
+			return &UserFile;
 		}
 	// not found
-	return NULL;
+	return nullptr;
+}
+
+void C4AulScriptEngine::RegisterErrorHandler(C4AulErrorHandler *handler)
+{
+	assert(ErrorHandler == &DefaultErrorHandler);
+	ErrorHandler = handler;
+}
+
+void C4AulScriptEngine::UnregisterErrorHandler(C4AulErrorHandler *handler)
+{
+	assert(ErrorHandler == handler);
+	ErrorHandler = &DefaultErrorHandler;
 }
 
 /*--- C4AulFuncMap ---*/
 
-C4AulFuncMap::C4AulFuncMap(): FuncCnt(0)
+C4AulFuncMap::C4AulFuncMap()
 {
-	memset(Funcs, 0, sizeof (C4AulFunc *) * HashSize);
+	memset(Funcs, 0, sizeof(Funcs));
 }
 
 C4AulFuncMap::~C4AulFuncMap()
@@ -291,11 +294,11 @@ unsigned int C4AulFuncMap::Hash(const char * name)
 	return h;
 }
 
-C4AulFunc * C4AulFuncMap::GetFirstFunc(C4String * Name)
+C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
 {
-	if (!Name) return NULL;
-	C4AulFunc * Func = Funcs[Hash(Name->GetCStr()) % HashSize];
-	while (Func && Name->GetCStr() != Func->GetName())
+	if (!Name) return nullptr;
+	C4AulFunc * Func = Funcs[Hash(Name) % HashSize];
+	while (Func && !SEqual(Name, Func->GetName()))
 		Func = Func->MapNext;
 	return Func;
 }
@@ -329,4 +332,9 @@ void C4AulFuncMap::Remove(C4AulFunc * func)
 	}
 	*pFunc = (*pFunc)->MapNext;
 	--FuncCnt;
+}
+
+C4AulErrorHandler::~C4AulErrorHandler()
+{
+	::ScriptEngine.UnregisterErrorHandler(this);
 }

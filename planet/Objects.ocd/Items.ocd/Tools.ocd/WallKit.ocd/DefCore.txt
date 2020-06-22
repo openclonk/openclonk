@@ -1,6 +1,6 @@
 [DefCore]
 id=WallKit
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=12
 Height=4
@@ -10,8 +10,7 @@ VertexX=-5,5,0
 VertexY=0,0,0
 VertexCNAT=1,2,16
 VertexFriction=30,30,30
-Value=8
+Value=20
 Mass=12
-Components=Metal=2
 Rotate=1
 Picture=0,20,64,64

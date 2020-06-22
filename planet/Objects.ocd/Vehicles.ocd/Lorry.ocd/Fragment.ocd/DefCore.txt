@@ -1,6 +1,6 @@
 [DefCore]
 id=LorryFragment
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=8
 Height=8
@@ -12,3 +12,4 @@ VertexFriction=20
 Mass=10
 Rotate=1
 StretchGrowth=1
+HideInCreator=true

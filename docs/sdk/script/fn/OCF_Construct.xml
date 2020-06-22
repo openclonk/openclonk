@@ -7,7 +7,7 @@
     <title>OCF_Construct</title>
     <category>Objects</category>
     <subcat>OCF</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Object character flag: construction site</desc>
     <remark>For more information and examples regarding these constants see <emlink href="definition/ocf.html">object character flags</emlink>.</remark>

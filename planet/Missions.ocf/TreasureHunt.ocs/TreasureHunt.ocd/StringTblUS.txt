@@ -2,6 +2,6 @@ Name=Oil hunt
 Name2=Treasure hunt
 MsgSideGoal=Side goal: %d of %d gold bars found.
 MsgGoalFulfilled=Goal fulfilled.
-MsgGoalUnFulfilled=Find the treasure and deliver it to Dagobert to get oil for your plane.
+MsgGoalUnFulfilled=Find the treasure and deliver it to Scrooge to get oil for your plane.
 MsgGoalOil=Find a new oil barrel.
 MsgGotOil=Bring the oil barrel to the plane.

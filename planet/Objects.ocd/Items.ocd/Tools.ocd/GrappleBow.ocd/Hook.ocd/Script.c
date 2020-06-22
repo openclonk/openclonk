@@ -16,14 +16,16 @@ public func GetRope() { return rope; }
 
 public func New(object new_clonk, object new_rope)
 {
-	SetObjDrawTransform(0, 1, 0, 0, 0, 0, 0); // Hide
+	// Hook graphics are handled by rope.
+	this.Visibility = VIS_None;
 	clonk = new_clonk;
 	rope = new_rope;
 }
 
 public func Launch(int angle, int str, object shooter, object bow)
 {
-	SetObjDrawTransform(0, 1, 0, 0, 0, 0, 0); // Hide
+	// Hook graphics are handled by rope.
+	this.Visibility = VIS_None;
 	Exit();
 
 	pull = false;
@@ -114,7 +116,7 @@ public func Hit()
 
 public func FxInFlightStart(object target, proplist effect, int temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.x = target->GetX();
 	effect.y = target->GetY();
 }
@@ -148,7 +150,7 @@ public func FxInFlightTimer(object target, proplist effect, int time)
 
 public func Entrance(object container)
 {
-	if(container->GetID() == GrappleBow) return;
+	if (container->GetID() == GrappleBow) return;
 	if (rope)
 		rope->BreakRope();
 	RemoveObject();
@@ -167,8 +169,10 @@ public func OnRopeBreak()
 
 /*-- Grapple rope controls --*/
 
-public func FxIntGrappleControlControl(object target, proplist effect, int ctrl, int x, int y, int strength, repeat, release)
+public func FxIntGrappleControlControl(object target, proplist effect, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
+	if (status == CONS_Moved) return false;
+	var release = status == CONS_Up;
 	// Cancel this effect if clonk is now attached to something.
 	if (target->GetProcedure() == "ATTACH") 
 	{
@@ -318,13 +322,13 @@ public func FxIntGrappleControlTimer(object target, proplist effect, int time)
 		}
 		var angle = rope->GetClonkAngle();
 		var off = rope->GetClonkOff();
-		target->SetMeshTransformation(Trans_Translate(-off[0] * 10 + 3000 * (1 - 2 * target->GetDir()), -off[1] * 10), 2);
-    	target->SetMeshTransformation(Trans_RotX(angle, 500, 11000), 3);
+		target->SetMeshTransformation(Trans_Translate(-off[0] * 10 + 3000 * (1 - 2 * target->GetDir()), -off[1] * 10), CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
+    	target->SetMeshTransformation(Trans_RotX(angle, 500, 11000), CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
 	}
 	else if (effect.ani_mode)
 	{
-		target->SetMeshTransformation(0, 2);
-		target->SetMeshTransformation(0, 3);
+		target->SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
+		target->SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
 		target->StopAnimation(target->GetRootAnimation(10));
 		if (!target->GetHandAction())
 			target->SetHandAction(0);
@@ -358,8 +362,8 @@ public func FxIntGrappleControlStop(object target, proplist effect, int reason, 
 	if (tmp) 
 		return FX_OK;
 	target->SetTurnType(0);
-	target->SetMeshTransformation(0, 2);
- 	target->SetMeshTransformation(0, 3);
+	target->SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
+ 	target->SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
 	target->StopAnimation(target->GetRootAnimation(10));
 	if (!target->GetHandAction())
 		target->SetHandAction(0);

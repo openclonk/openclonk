@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,13 +17,11 @@
 
 /* Main program entry point */
 
-#include <C4Include.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "game/C4Application.h"
 
-#include <C4Log.h>
-#include <C4Game.h>
-#include <C4Version.h>
-#include "C4Network2.h"
+#include "C4Version.h"
+#include "network/C4Network2.h"
 
 #ifdef _WIN32
 #include <shellapi.h>
@@ -76,9 +74,9 @@ int WINAPI WinMain (HINSTANCE hInst,
 	LPWSTR *curwarg = wargv;
 	while(argc--)
 	{
-		int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, NULL, 0, 0, 0);
-		char *utf8arg = new char[arglen ? arglen : 1];
-		WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, utf8arg, arglen, 0, 0);
+		int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, nullptr, 0, nullptr, nullptr);
+		auto *utf8arg = new char[arglen ? arglen : 1];
+		WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, utf8arg, arglen, nullptr, nullptr);
 		argv.push_back(utf8arg);
 		++curwarg;
 	}
@@ -107,7 +105,7 @@ int WINAPI WinMain (HINSTANCE hInst,
 
 int main()
 {
-	return WinMain(GetModuleHandle(NULL), 0, 0, 0);
+	return WinMain(GetModuleHandle(nullptr), nullptr, nullptr, 0);
 }
 
 #else // _WIN32
@@ -119,8 +117,12 @@ int main()
 #include <sys/types.h>
 #endif
 
-#ifdef HAVE_SIGNAL_H
+#ifdef HAVE_BACKWARD
+#include <backward-cpp/backward.hpp>
+
+#elif defined(HAVE_SIGNAL_H)
 #include <signal.h>
+
 #ifdef HAVE_EXECINFO_H
 #include <execinfo.h>
 #endif
@@ -199,7 +201,7 @@ static void restart(char * argv[])
 	for (int fd = 4; fd < open_max; fd++)
 		fcntl (fd, F_SETFD, FD_CLOEXEC);
 	// Execute the new engine
-	execlp(argv[0], argv[0], static_cast<char *>(0));
+	execlp(argv[0], argv[0], static_cast<char *>(nullptr));
 }
 
 int main (int argc, char * argv[])
@@ -209,22 +211,24 @@ int main (int argc, char * argv[])
 		printf("Do not run %s as root!\n", argc ? argv[0] : "this program");
 		return C4XRV_Failure;
 	}
-#ifdef HAVE_SIGNAL_H
+#ifdef HAVE_BACKWARD
+	backward::SignalHandling sh;
+#elif defined(HAVE_SIGNAL_H)
 	struct sigaction sa;
 	sa.sa_sigaction = crash_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_SIGINFO;
 	// Quit the program when asked
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGTERM, &sa, NULL);
-	sigaction(SIGHUP, &sa, NULL);
+	sigaction(SIGINT, &sa, nullptr);
+	sigaction(SIGTERM, &sa, nullptr);
+	sigaction(SIGHUP, &sa, nullptr);
 	// Set up debugging facilities
 	sa.sa_flags |= SA_RESETHAND;
-	sigaction(SIGBUS, &sa, NULL);
-	sigaction(SIGILL, &sa, NULL);
-	sigaction(SIGSEGV, &sa, NULL);
-	sigaction(SIGABRT, &sa, NULL);
-	sigaction(SIGFPE, &sa, NULL);
+	sigaction(SIGBUS, &sa, nullptr);
+	sigaction(SIGILL, &sa, nullptr);
+	sigaction(SIGSEGV, &sa, nullptr);
+	sigaction(SIGABRT, &sa, nullptr);
+	sigaction(SIGFPE, &sa, nullptr);
 #endif
 
 	// Init application

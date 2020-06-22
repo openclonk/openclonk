@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,7 +20,7 @@
 #ifndef INC_C4Facet
 #define INC_C4Facet
 
-#include <C4Draw.h>
+#include "graphics/C4BltTransform.h"
 
 const int32_t C4FCT_None   = 0,
 
@@ -68,9 +68,7 @@ public:
 		Set(1,0,0,0,1,0,0,0,1);
 	}
 
-	~C4DrawTransform()
-	{
-	}
+	~C4DrawTransform() = default;
 
 	// do transform at given offset - doesn't init FlipDir (for temp use only)
 	void SetTransformAt(C4DrawTransform &rCopy, float iOffX, float iOffY);
@@ -132,7 +130,7 @@ public:
 	void DrawX(C4Surface * sfcTarget, float iX, float iY, float iWdt, float iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0) const;
 	void DrawXFloat(C4Surface * sfcTarget, float fX, float fY, float fWdt, float fHgt) const;
 	void DrawValue(C4Facet &cgo, int32_t iValue, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center);
-	void DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center, int32_t *piUsedWidth=NULL);
+	void DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center, int32_t *piUsedWidth=nullptr);
 	void Draw(C4Facet &cgo, bool fAspect=true, int32_t iPhaseX=0, int32_t iPhaseY=0, bool fTransparent=true);
 	void DrawFullScreen(C4Facet &cgo);
 	void DrawT(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform); // draw with transformation (if pTransform is assigned)
@@ -156,6 +154,44 @@ public:
 	{ return iHeight * Wdt / (Hgt ? Hgt : 1); }
 	int32_t GetHeightByWidth(int32_t iWidth) // calc height so it matches facet aspect to width
 	{ return iWidth * Hgt / (Wdt ? Wdt : 1); }
+};
+
+class C4TargetFacet: public C4Facet
+{
+public:
+	C4TargetFacet() { Default(); }
+	~C4TargetFacet() = default;
+public:
+	float TargetX,TargetY,Zoom;
+
+	// Reference values for parallax computations. This is similar to
+	// a scrolling position. In most cases these are the same as TargetX
+	// and TargetY, however for full map screenshots, which are composed
+	// of several individual screenshots, these are kept fixed while
+	// TargetX/TargetY are varied to cover the full map. This prevents
+	// duplicate parallax objects in fullscreen map screenshots. If
+	// TargetX/TargetY are different from ParRefX/ParRefY it can be thought
+	// of as drawing only a part of a window/viewport at a given fixed
+	// scroll position.
+	// See bug #1042.
+	float ParRefX, ParRefY;
+public:
+	void Default() { TargetX=TargetY=0; Zoom=1; ParRefX=ParRefY=0; C4Facet::Default(); }
+	void Clear() { Surface=nullptr; }
+
+	void Set(const C4Facet &cpy) { TargetX=TargetY=0; Zoom=1; ParRefX=ParRefY=0; C4Facet::Set(cpy); }
+	void Set(const C4TargetFacet &cpy) { *this = cpy; }
+	void Set(class C4Surface *nsfc, float nx, float ny, float nwdt, float nhgt, float ntx=0, float nty=0, float Zoom=1);
+	void Set(class C4Surface *nsfc, const C4Rect & r, float ntx=0, float nty=0, float Zoom=1);
+	void Set(class C4Surface *nsfc, float nx, float ny, float nwdt, float nhgt, float ntx, float nty, float Zoom, float prx, float pry);
+
+public:
+	C4TargetFacet &operator = (const C4Facet& rhs)
+	{
+		Set(rhs.Surface,rhs.X,rhs.Y,rhs.Wdt,rhs.Hgt);
+		return *this;
+	}
+	void SetRect(C4TargetRect &rSrc);
 };
 
 #endif // INC_C4Facet

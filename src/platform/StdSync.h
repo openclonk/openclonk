@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,7 +19,7 @@
 #define INC_StdSync
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 
 class CStdCSec
 {
@@ -38,7 +38,7 @@ public:
 class CStdEvent
 {
 public:
-	CStdEvent(bool fManualReset) { hEvent = CreateEvent(NULL, fManualReset, false, NULL); }
+	CStdEvent(bool fManualReset) { hEvent = CreateEvent(nullptr, fManualReset, false, nullptr); }
 	~CStdEvent() { CloseHandle(hEvent); }
 
 protected:
@@ -56,16 +56,6 @@ public:
 #else
 // Value to specify infinite wait.
 #define INFINITE (~0u)
-
-#if defined __GNUC__ && ((__GNUC__ >= 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ >= 5))
-inline long InterlockedIncrement(long * p) { return __sync_add_and_fetch(p, 1); }
-inline long InterlockedDecrement(long * p) { return __sync_sub_and_fetch(p, 1); }
-#else
-// Defined in Standard.cpp
-long InterlockedIncrement(long *);
-long InterlockedDecrement(long *);
-#define NEED_FALLBACK_ATOMIC_FUNCS 1
-#endif
 
 #if defined(HAVE_PTHREAD)
 #include <pthread.h>
@@ -95,8 +85,8 @@ class CStdEvent
 public:
 	CStdEvent(bool fManualReset) : fManualReset(fManualReset), fSet(false)
 	{
-		pthread_cond_init(&cond, NULL);
-		pthread_mutex_init(&mutex, NULL);
+		pthread_cond_init(&cond, nullptr);
+		pthread_mutex_init(&mutex, nullptr);
 	}
 	~CStdEvent()
 	{
@@ -186,7 +176,7 @@ protected:
 
 public:
 	void Clear()
-	{ if (sec) sec->Leave(); sec = NULL; }
+	{ if (sec) sec->Leave(); sec = nullptr; }
 };
 
 class CStdCSecExCallback
@@ -194,33 +184,32 @@ class CStdCSecExCallback
 public:
 	// is called with CSec exlusive locked!
 	virtual void OnShareFree(class CStdCSecEx *pCSec) = 0;
-	virtual ~CStdCSecExCallback() {}
+	virtual ~CStdCSecExCallback() = default;
 };
 
 class CStdCSecEx : public CStdCSec
 {
 public:
 	CStdCSecEx()
-			: lShareCnt(0), ShareFreeEvent(false), pCallbClass(NULL)
+			: ShareFreeEvent(false)
 	{ }
 	CStdCSecEx(CStdCSecExCallback *pCallb)
 			: lShareCnt(0), ShareFreeEvent(false), pCallbClass(pCallb)
 	{ }
-	~CStdCSecEx()
-	{ }
+	~CStdCSecEx() override = default;
 
 protected:
 	// share counter
-	long lShareCnt;
+	long lShareCnt{0};
 	// event: exclusive access permitted
 	CStdEvent ShareFreeEvent;
 	// callback
-	CStdCSecExCallback *pCallbClass;
+	CStdCSecExCallback *pCallbClass{nullptr};
 
 public:
 
 	// (cycles forever if shared locked by calling thread!)
-	void Enter()
+	void Enter() override
 	{
 		// lock
 		CStdCSec::Enter();
@@ -238,7 +227,7 @@ public:
 		}
 	}
 
-	void Leave()
+	void Leave() override
 	{
 		// set event
 		ShareFreeEvent.Set();
@@ -287,7 +276,7 @@ protected:
 
 public:
 	void Clear()
-	{ if (sec) sec->LeaveShared(); sec = NULL; }
+	{ if (sec) sec->LeaveShared(); sec = nullptr; }
 };
 
 /* Debug helper class: Set current thread in Set(); assert that it's still the same thread in Check(); */

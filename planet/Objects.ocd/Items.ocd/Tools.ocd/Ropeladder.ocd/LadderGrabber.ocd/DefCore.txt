@@ -1,6 +1,6 @@
 [DefCore]
 id=Ropeladder_Grabber
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Picture=20,0,64,64
 Width=30
@@ -8,3 +8,4 @@ Height=30
 Offset=-15,-15
 Vertices=1
 VertexY=0
+HideInCreator=true

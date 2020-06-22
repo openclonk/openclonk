@@ -6,7 +6,7 @@ func Attack_Start(chopping_clonk)
 {
 	this.hero = chopping_clonk;
 	g_attack_started = true;
-	SetPlayerZoomByViewRange(NO_OWNER, 200,100, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(chopping_clonk);
 	MessageBox_last_pos = true; // force first message right side of screen
 	MessageBoxAll("$Attack1$", this.hero, true); // tree down
@@ -19,7 +19,7 @@ func Attack_1()
 	var plane_x = [1700, 1750, 1800];
 	var plane_y = [90, 110, 80];
 	this.planes = CreateArray(n_planes);
-	for (var i=0; i<n_planes; ++i)
+	for (var i = 0; i<n_planes; ++i)
 	{
 		var plane = CreateObjectAbove(Airplane, plane_x[i], plane_y[i]);
 		var pilot = CreateObjectAbove(Clonk, plane_x[i], plane_y[i]);
@@ -29,12 +29,13 @@ func Attack_1()
 		pilot->SetColor(0xff101010);
 		pilot->SetDir(DIR_Left);
 		//plane->FaceLeft();
+		plane->PlaneMount(pilot);
 		plane->StartInstantFlight(260, 15);
 		plane->SetXDir(-15);
 		plane->MakeInvincible();
 		this.planes[i] = plane;
 	}
-	//SetPlayerZoomByViewRange(NO_OWNER, 600,500, PLRZOOM_Set | PLRZOOM_LimitMax);
+	//SetPlayerZoomByViewRange(NO_OWNER, 600, 500, PLRZOOM_Set | PLRZOOM_LimitMax);
 	//SetViewTarget(this.planes[0]);
 	return ScheduleNext(35);
 }
@@ -54,7 +55,7 @@ func Attack_3()
 func Attack_4()
 {
 	SetViewTarget(this.planes[0]);
-	SetPlayerZoomByViewRange(NO_OWNER, 600,500, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 600, 500, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return ScheduleNext(50);
 }
 
@@ -62,7 +63,7 @@ func Attack_5()
 {
 	if (this.planes[0]->GetX() > 880) return ScheduleSame(5);
 	MessageBoxAll("$Attack3$", npc_lara, true); // oh god!
-	for (var i=0; i<3; ++i)
+	for (var i = 0; i<3; ++i)
 	{
 		this.planes[i]->StartInstantFlight(270, 15);
 		this.planes[i]->SetXDir(-15);
@@ -137,7 +138,7 @@ func Attack_DropBomb(int plane_idx, int delay)
 	if (delay) return ScheduleCall(this, this.Attack_DropBomb, delay, 1, plane_idx);
 	var plane = this.planes[plane_idx];
 	if (!plane) return;
-	for (var i=0; i<3; ++i)
+	for (var i = 0; i<3; ++i)
 	{
 		var bomb = plane->CreateObjectAbove(IronBomb, 0, 12);
 		if (!bomb) return;
@@ -150,7 +151,7 @@ func Attack_DropBomb(int plane_idx, int delay)
 
 func Attack_7()
 {
-	for (var i=0; i<3; ++i)
+	for (var i = 0; i<3; ++i)
 	{
 		this.planes[i]->StartInstantFlight(60, 15);
 	}
@@ -166,17 +167,17 @@ func Attack_8()
 		npc.ActMap = Clonk.ActMap;
 		npc->SetAction("Walk");
 	}
-	npc_newton->SetCommand("MoveTo", 0, 422, 342);
-	npc_lara->SetCommand("MoveTo", 0, 455, 358);
-	npc_lisa->SetCommand("MoveTo", 0, 474, 358);
-	npc_woody->SetCommand("MoveTo", 0, 493, 358);
+	npc_newton->SetCommand("MoveTo", nil, 422, 342);
+	npc_lara->SetCommand("MoveTo", nil, 455, 358);
+	npc_lisa->SetCommand("MoveTo", nil, 474, 358);
+	npc_woody->SetCommand("MoveTo", nil, 493, 358);
 	return ScheduleNext(150);
 }
 
 func Attack_9()
 {
 	Attack_ClonkDirs();
-	SetPlayerZoomByViewRange(NO_OWNER, 200,100, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(npc_newton);
 	return ScheduleNext(40);
 }
@@ -222,7 +223,7 @@ func Attack_Stop()
 {
 	g_attack_done = true;
 	// Remove AI planes
-	for (var i=0; i<3; ++i)
+	for (var i = 0; i<3; ++i)
 	{
 		if (this.planes[i]) this.planes[i]->RemoveObject();
 	}
@@ -230,6 +231,6 @@ func Attack_Stop()
 	Dialogue->FindByTarget(npc_newton)->AddAttention();
 	g_goal->SetStageNewton();
 	// revert to regular zoom
-	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

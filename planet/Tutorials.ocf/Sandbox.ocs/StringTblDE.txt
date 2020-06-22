@@ -1,0 +1,36 @@
+# Scenario options
+MapSize=Map size
+DescMapSize=Select the shape and the size of the map.
+MapSizeBasicSmall=Small
+MapSizeBasicNormal=Normal
+MapSizeBasicLarge=Large
+MapSizeWideSmall=Wide and small
+MapSizeWideNormal=Wide and normal
+MapSizeWideLarge=Wide and large
+MapSizeNarrowSmall=Narrow and small
+MapSizeNarrowNormal=Narrow and normal
+MapSizeNarrowLarge=Narrow and large
+
+MapType=Map type
+DescMapType=The type of map, determines landscape and materials.
+MapTypeEmpty=Empty (draw the map yourself in god mode).
+MapTypeFlatland=Flat lands.
+MapTypeHills=Hilly terrain.
+MapTypeMountains=Large mountains.
+
+MapClimate=Map climate
+DescMapClimate=The climate on the map.
+MapClimateTemperate=Temperate.
+MapClimateCold=Cold/Snowy/Icy.
+
+Goal=Goal
+DescGoal=Choose a goal.
+NoGoal=No goals.
+GoalWealth=Gain wealth.
+GoalExpansion=Base expansion.
+
+GodMode=God mode
+DescGodMode=Enable god mode for host or all players.
+GodModeOff=No god mode.
+GodModeHost=Host has god mode.
+GodModeAll=Everyone has god mode.

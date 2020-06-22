@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,12 +16,13 @@
 // generic user interface
 // room for textual deconvolution
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4Application.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Application.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
 
 namespace C4GUI
 {
@@ -102,10 +103,10 @@ namespace C4GUI
 	{
 		// register same op for all shift states; distinction will be done in handling proc
 		C4CustomKey::CodeList KeyList;
-		KeyList.push_back(C4KeyCodeEx(key));
-		KeyList.push_back(C4KeyCodeEx(key, KEYS_Shift));
-		KeyList.push_back(C4KeyCodeEx(key, KEYS_Control));
-		KeyList.push_back(C4KeyCodeEx(key, C4KeyShiftState(KEYS_Shift | KEYS_Control)));
+		KeyList.emplace_back(key);
+		KeyList.emplace_back(key, KEYS_Shift);
+		KeyList.emplace_back(key, KEYS_Control);
+		KeyList.emplace_back(key, C4KeyShiftState(KEYS_Shift | KEYS_Control));
 		return new C4KeyBinding(KeyList, szName, KEYSCOPE_Gui, new ControlKeyCBExPassKey<Edit, CursorOperation>(*this, op, &Edit::KeyCursorOp), eKeyPrio);
 	}
 
@@ -199,7 +200,7 @@ namespace C4GUI
 		{
 			int32_t w, h; char strMask[2] = { cPasswordMask, 0 };
 			pFont->GetTextExtent(strMask, w, h, false);
-			return Clamp<int32_t>((iControlXPos + w/2) / w, 0, SLen(Text));
+			return Clamp<int32_t>((iControlXPos + w/2) / std::max<int32_t>(1, w), 0, SLen(Text));
 		}
 		int32_t i = 0;
 		for (int32_t iLastW = 0, w,h; Text[i]; ++i)
@@ -290,11 +291,10 @@ namespace C4GUI
 		// get selected range
 		int32_t iSelBegin = std::min(iSelectionStart, iSelectionEnd), iSelEnd = std::max(iSelectionStart, iSelectionEnd);
 		if (iSelBegin == iSelEnd) return false;
-		StdStrBuf buf;
 		// allocate a global memory object for the text.
-		buf.Append(Text+iSelBegin, iSelEnd-iSelBegin);
+		std::string buf(Text+iSelBegin, iSelEnd-iSelBegin);
 		if (cPasswordMask)
-			memset(buf.getMData(), cPasswordMask, buf.getLength());
+			buf.assign(buf.size(), cPasswordMask);
 
 		return Application.Copy(buf);
 	}
@@ -314,7 +314,7 @@ namespace C4GUI
 		bool fSuccess = false;
 		// check clipboard contents
 		if(!Application.IsClipboardFull()) return false;
-		StdStrBuf text(Application.Paste());
+		StdCopyStrBuf text(Application.Paste().c_str());
 		char * szText = text.getMData();
 		if (text)
 		{
@@ -524,7 +524,7 @@ namespace C4GUI
 			iCursorPos = iSelectionStart;
 #ifndef _WIN32
 			// Insert primary selection
-			InsertText(Application.Paste(false).getData(), true);
+			InsertText(Application.Paste(false).c_str(), true);
 #endif
 			break;
 		};
@@ -650,7 +650,7 @@ namespace C4GUI
 	ContextMenu *Edit::OnContext(C4GUI::Element *pListItem, int32_t iX, int32_t iY)
 	{
 		// safety: no text?
-		if (!Text) return NULL;
+		if (!Text) return nullptr;
 		// create context menu
 		ContextMenu *pCtx = new ContextMenu();
 		// fill with any valid items
@@ -704,13 +704,13 @@ namespace C4GUI
 			pPrevFocusCtrl = pDlg->GetFocus();
 			pDlg->SetFocus(this, false);
 		}
-		else pPrevFocusCtrl=NULL;
+		else pPrevFocusCtrl=nullptr;
 		// key binding for rename abort
 		C4CustomKey::CodeList keys;
-		keys.push_back(C4KeyCodeEx(K_ESCAPE));
+		keys.emplace_back(K_ESCAPE);
 		if (Config.Controls.GamepadGuiControl)
 		{
-			keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+			ControllerKeys::Cancel(keys);
 		}
 		pKeyAbort = new C4KeyBinding(keys, "GUIRenameEditAbort", KEYSCOPE_Gui,
 		                             new ControlKeyCB<RenameEdit>(*this, &RenameEdit::KeyAbort), C4CustomKey::PRIO_FocusCtrl);

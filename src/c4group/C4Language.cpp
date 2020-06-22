@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -22,20 +22,28 @@
 
 */
 
-#include <C4Include.h>
-#include <C4Language.h>
+#include "C4Include.h"
+#include "c4group/C4Language.h"
 
-#include <C4Application.h>
-#include <C4Components.h>
-#include <C4Log.h>
-#include <C4Config.h>
-#include <C4Game.h>
+#include "game/C4Application.h"
+#include "c4group/C4Components.h"
+
+template<size_t iBufferSize>
+static bool GetRelativePath(const char *strPath, const char *strRelativeTo, char(&strBuffer)[iBufferSize])
+{
+	// Specified path is relative to base path
+	// Copy relative section
+	const char *szCpy;
+	SCopy(szCpy = GetRelativePathS(strPath, strRelativeTo), strBuffer, iBufferSize);
+	// return whether it was made relative
+	return szCpy != strPath;
+}
 
 C4Language Languages;
 
 C4Language::C4Language()
 {
-	Infos = NULL;
+	Infos = nullptr;
 	PackGroupLocation[0] = 0;
 }
 
@@ -119,7 +127,7 @@ void C4Language::Clear()
 		delete Infos;
 		Infos = pNext;
 	}
-	Infos = NULL;
+	Infos = nullptr;
 }
 
 int C4Language::GetPackCount()
@@ -257,7 +265,7 @@ namespace
 		// the beginning or end of a line, respectively, and it seems
 		// like in some implementations they only match the beginning
 		// or end of the whole string. See also #1127.
-		static re::regex line_pattern("(?:\n|^)([^=]+)=(.*?)\r?(?=\n|$)", static_cast<re::regex::flag_type>(re::regex_constants::optimize | re::regex_constants::ECMAScript));
+		static std::regex line_pattern("(?:\n|^)([^=]+)=(.*?)\r?(?=\n|$)", static_cast<std::regex::flag_type>(std::regex_constants::optimize | std::regex_constants::ECMAScript));
 
 		assert(stringtbl);
 		if (!stringtbl)
@@ -269,7 +277,7 @@ namespace
 		const char *begin = stringtbl;
 		const char *end = begin + std::char_traits<char>::length(begin);
 
-		for (auto it = re::cregex_iterator(begin, end, line_pattern); it != re::cregex_iterator(); ++it)
+		for (auto it = std::cregex_iterator(begin, end, line_pattern); it != std::cregex_iterator(); ++it)
 		{
 			assert(it->size() == 3);
 			if (it->size() != 3)
@@ -309,7 +317,7 @@ void C4Language::LoadInfos(C4Group &hGroup)
 		// of the same code - the system always loads the first string table found for a given code
 		if (!FindInfo(GetFilenameOnly(strEntry) + SLen(GetFilenameOnly(strEntry)) - 2))
 			// Load language string table
-			if (hGroup.LoadEntry(strEntry, &strTable, 0, 1))
+			if (hGroup.LoadEntry(strEntry, &strTable, nullptr, 1))
 			{
 				// New language info
 				C4LanguageInfo *pInfo = new C4LanguageInfo;
@@ -339,7 +347,7 @@ C4LanguageInfo* C4Language::GetInfo(int iIndex)
 			return pInfo;
 		else
 			iIndex--;
-	return NULL;
+	return nullptr;
 }
 
 C4LanguageInfo* C4Language::FindInfo(const char *strCode)
@@ -347,7 +355,7 @@ C4LanguageInfo* C4Language::FindInfo(const char *strCode)
 	for (C4LanguageInfo *pInfo = Infos; pInfo; pInfo = pInfo->Next)
 		if (SEqualNoCase(pInfo->Code, strCode, 2))
 			return pInfo;
-	return NULL;
+	return nullptr;
 }
 
 bool C4Language::LoadLanguage(const char *strLanguages)

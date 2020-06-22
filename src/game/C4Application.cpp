@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,43 +17,37 @@
 
 /* Main class to initialize configuration and execute the game */
 
-#include <C4Include.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "game/C4Application.h"
 
-#include <C4Version.h>
+#include "C4Version.h"
+#include "editor/C4Console.h"
+#include "game/C4FullScreen.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "graphics/StdPNG.h"
+#include "gui/C4GameLobby.h"
+#include "gui/C4GfxErrorDlg.h"
+#include "gui/C4MessageInput.h"
 #ifdef _WIN32
-#include <C4UpdateDlg.h>
+#include "gui/C4UpdateDlg.h"
 #endif
-#include "C4Game.h"
-#include <C4GfxErrorDlg.h>
-#include "C4GraphicsSystem.h"
-#include "C4GraphicsResource.h"
-#include "C4MessageInput.h"
-#include <C4FullScreen.h>
-#include <C4Language.h>
-#include <C4Console.h>
-#include <C4Startup.h>
-#include <C4Log.h>
-#include <C4GamePadCon.h>
-#include <C4GameLobby.h>
-#include <C4Network2.h>
-#include <C4Network2IRC.h>
-#include <C4Particles.h>
-#include <StdPNG.h>
+#include "gui/C4Startup.h"
+#include "landscape/C4Particles.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2IRC.h"
+#include "platform/C4GamePadCon.h"
+#include "C4Licenses.h"
 
 #include <getopt.h>
 
 static C4Network2IRCClient ApplicationIRCClient;
+const std::string C4Application::Revision{ C4REVISION };
 
 C4Application::C4Application():
-		isEditor(false),
-		IRCClient(ApplicationIRCClient),
-		QuitAfterGame(false),
-		CheckForUpdates(false),
-		restartAtEnd(false),
-		pGamePadControl(NULL),
-		AppState(C4AS_None),
-		pGameTimer(NULL)
+		IRCClient(ApplicationIRCClient)
 {
 }
 
@@ -99,14 +93,12 @@ bool C4Application::DoInit(int argc, char * argv[])
 	// Open log
 	OpenLog();
 
-	Revision.Ref(C4REVISION);
-
 	// Engine header message
 	Log(C4ENGINECAPTION);
-	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
-	LogF("ExePath: \"%s\"", Config.General.ExePath.getData());
-	LogF("SystemDataPath: \"%s\"", Config.General.SystemDataPath);
-	LogF("UserDataPath: \"%s\"", Config.General.UserDataPath);
+	LogF("Version: %s %s (%s - %s)", C4VERSION, C4_OS, GetRevision(), C4REVISION_TS);
+	LogF(R"(ExePath: "%s")", Config.General.ExePath.getData());
+	LogF(R"(SystemDataPath: "%s")", Config.General.SystemDataPath);
+	LogF(R"(UserDataPath: "%s")", Config.General.UserDataPath);
 
 	// Init C4Group
 	C4Group_SetProcessCallback(&ProcessCallback);
@@ -148,8 +140,8 @@ bool C4Application::DoInit(int argc, char * argv[])
 #if defined(WIN32) && defined(WITH_AUTOMATIC_UPDATE)
 	// Windows: handle incoming updates directly, even before starting up the gui
 	//          because updates will be applied in the console anyway.
-	if (Application.IncomingUpdate)
-		if (C4UpdateDlg::ApplyUpdate(Application.IncomingUpdate.getData(), false, NULL))
+	if (!Application.IncomingUpdate.empty())
+		if (C4UpdateDlg::ApplyUpdate(Application.IncomingUpdate.c_str(), false, nullptr))
 			return true;
 #endif
 
@@ -201,7 +193,7 @@ void C4Application::ClearCommandLine()
 
 void C4Application::ParseCommandLine(int argc, char * argv[])
 {
-
+	argv0 = argv[0];
 	StdStrBuf CmdLine("Command line:");
 	for(int i = 0; i < argc; ++i) {
 		CmdLine.Append(" ");
@@ -213,7 +205,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 	Game.NetworkActive = false;
 	isEditor = 2;
 	int c;
-	while (1)
+	while (true)
 	{
 
 		static struct option long_options[] =
@@ -230,35 +222,37 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"nosignup", no_argument, &Config.Network.MasterServerSignUp, 0},
 			{"signup", no_argument, &Config.Network.MasterServerSignUp, 1},
 			
-			{"debugrecread", required_argument, 0, 'K'},
-			{"debugrecwrite", required_argument, 0, 'w'},
+			{"debugrecread", required_argument, nullptr, 'K'},
+			{"debugrecwrite", required_argument, nullptr, 'w'},
 
-			{"client", required_argument, 0, 'c'},
-			{"host", no_argument, 0, 'h'},
-			{"debughost", required_argument, 0, 'H'},
-			{"debugpass", required_argument, 0, 'P'},
-			{"debug", required_argument, 0, 'D'},
-			{"data", required_argument, 0, 'd'},
-			{"startup", required_argument, 0, 's'},
-			{"stream", required_argument, 0, 'e'},
-			{"recdump", required_argument, 0, 'R'},
-			{"comment", required_argument, 0, 'm'},
-			{"pass", required_argument, 0, 'p'},
-			{"udpport", required_argument, 0, 'u'},
-			{"tcpport", required_argument, 0, 't'},
-			{"join", required_argument, 0, 'j'},
-			{"language", required_argument, 0, 'L'},
-			{"scenpar", required_argument, 0, 'S'},
+			{"client", required_argument, nullptr, 'c'},
+			{"host", no_argument, nullptr, 'h'},
+			{"debughost", required_argument, nullptr, 'H'},
+			{"debugpass", required_argument, nullptr, 'P'},
+			{"debug", required_argument, nullptr, 'D'},
+			{"data", required_argument, nullptr, 'd'},
+			{"startup", required_argument, nullptr, 's'},
+			{"stream", required_argument, nullptr, 'e'},
+			{"recdump", required_argument, nullptr, 'R'},
+			{"comment", required_argument, nullptr, 'm'},
+			{"pass", required_argument, nullptr, 'p'},
+			{"udpport", required_argument, nullptr, 'u'},
+			{"tcpport", required_argument, nullptr, 't'},
+			{"join", required_argument, nullptr, 'j'},
+			{"language", required_argument, nullptr, 'L'},
+			{"scenpar", required_argument, nullptr, 'S'},
 
-			{"observe", no_argument, 0, 'o'},
-			{"nonetwork", no_argument, 0, 'N'},
-			{"network", no_argument, 0, 'n'},
-			{"record", no_argument, 0, 'r'},
+			{"observe", no_argument, nullptr, 'o'},
+			{"nonetwork", no_argument, nullptr, 'N'},
+			{"network", no_argument, nullptr, 'n'},
+			{"record", no_argument, nullptr, 'r'},
 
-			{"lobby", required_argument, 0, 'l'},
+			{"lobby", optional_argument, nullptr, 'l'},
 
 			{"debug-opengl", no_argument, &Config.Graphics.DebugOpenGL, 1},
-			{0, 0, 0, 0}
+			{"config", required_argument, nullptr, 0},
+			{"show-licenses", no_argument, nullptr, 0},
+			{nullptr, 0, nullptr, 0}
 		};
 		int option_index = 0;
 		c = getopt_long (argc, argv, "abc:d:f:",
@@ -280,6 +274,15 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 				Game.NetworkActive = true;
 				Config.Network.MasterServerSignUp = true;
 			}
+			// Legal stuff
+			if (SEqualNoCase(long_options[option_index].name, "show-licenses"))
+			{
+				std::string sep{"\n=================================\n"};
+				for (const auto& license : OCLicenses)
+					Log((sep + license.path + ": " + license.name + sep + license.content + "\n").c_str());
+				Quit();
+			}
+			// Config: Already handled earlier.
 			break;
 		// Lobby
 		case 'l':
@@ -323,7 +326,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		case 'n': Game.NetworkActive = true; break;
 		case 'N': Game.NetworkActive = false; break;
 		// Language override by parameter
-		case 'L': SCopy(optarg, Config.General.LanguageEx, CFG_MaxString);
+		case 'L': SCopy(optarg, Config.General.LanguageEx, CFG_MaxString); break;
 		// port overrides
 		case 't': Config.Network.PortTCP = atoi(optarg); break;
 		case 'u': Config.Network.PortUDP = atoi(optarg); break;
@@ -420,13 +423,13 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		// Key file
 		if (SEqualNoCase(GetExtension(szParameter),"c4k"))
 		{
-			Application.IncomingKeyfile.Copy(szParameter);
+			Application.IncomingKeyfile = szParameter;
 			continue;
 		}
 		// Update file
 		if (SEqualNoCase(GetExtension(szParameter),"ocu"))
 		{
-			Application.IncomingUpdate.Copy(szParameter);
+			Application.IncomingUpdate = szParameter;
 			continue;
 		}
 		// record stream
@@ -435,10 +438,10 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			Game.RecordStream.Copy(szParameter);
 		}
 		// Direct join by URL
-		if (SEqual2NoCase(szParameter, "clonk:"))
+		if (SEqual2NoCase(szParameter, "clonk:") || SEqual2NoCase(szParameter, "openclonk:"))
 		{
 			// Store address
-			SCopy(szParameter + 6, Game.DirectJoinAddress, _MAX_PATH);
+			SCopy(SAdvancePast(szParameter, ':'), Game.DirectJoinAddress, _MAX_PATH);
 			SClearFrontBack(Game.DirectJoinAddress, '/');
 			// Special case: if the target address is "update" then this is used for update initiation by url
 			if (SEqualNoCase(Game.DirectJoinAddress, "update"))
@@ -458,8 +461,8 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 	SReplaceChar(Game.ScenarioFilename, AltDirectorySeparator, DirectorySeparator);
 	SReplaceChar(Game.PlayerFilenames, AltDirectorySeparator, DirectorySeparator);
 	SReplaceChar(Game.DefinitionFilenames, AltDirectorySeparator, DirectorySeparator);
-	Application.IncomingKeyfile.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
-	Application.IncomingUpdate.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+	std::replace(begin(IncomingKeyfile), end(IncomingKeyfile), AltDirectorySeparator, DirectorySeparator);
+	std::replace(begin(IncomingUpdate), end(IncomingUpdate), AltDirectorySeparator, DirectorySeparator);
 	Game.RecordStream.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
 #endif
 
@@ -582,12 +585,12 @@ bool C4Application::ProcessCallback(const char *szMessage, int iProcess)
 void C4Application::Clear()
 {
 	Game.Clear();
-	NextMission.Clear();
+	NextMission.clear();
 	// stop timer
 	if (pGameTimer)
 	{
 		Remove(pGameTimer);
-		delete pGameTimer; pGameTimer = NULL;
+		delete pGameTimer; pGameTimer = nullptr;
 	}
 	// quit irc
 	IRCClient.Close();
@@ -600,13 +603,15 @@ void C4Application::Clear()
 	Languages.Clear();
 	Languages.ClearLanguage();
 	// gamepad clear
-	if (pGamePadControl) { delete pGamePadControl; pGamePadControl=NULL; }
+	if (pGamePadControl) { delete pGamePadControl; pGamePadControl=nullptr; }
 	// music system clear
 	MusicSystem.Clear();
 	SoundSystem.Clear();
 	RestoreVideoMode();
+	// clear editcursor holding graphics before clearing draw
+	::Console.EditCursor.Clear();
 	// Clear direct draw (late, because it's needed for e.g. Log)
-	if (pDraw) { delete pDraw; pDraw=NULL; }
+	if (pDraw) { delete pDraw; pDraw=nullptr; }
 	// Close window
 	FullScreen.Clear();
 	Console.Clear();
@@ -650,7 +655,7 @@ void C4Application::OpenGame(const char * scenario)
 void C4Application::QuitGame()
 {
 	// reinit desired? Do restart
-	if (!QuitAfterGame || NextMission)
+	if (!QuitAfterGame || !NextMission.empty())
 	{
 		AppState = C4AS_AfterGame;
 	}
@@ -677,12 +682,17 @@ void C4Application::GameTick()
 	case C4AS_Startup:
 		SoundSystem.Execute();
 		MusicSystem.Execute();
+		if (pGamePadControl) pGamePadControl->Execute();
 		// wait for the user to start a game
 		break;
 	case C4AS_StartGame:
 		// immediate progress to next state; OpenGame will enter HandleMessage-loops in startup and lobby!
 		C4Startup::CloseStartup();
 		AppState = C4AS_Game;
+#ifdef WITH_QT_EDITOR
+		// Notify console
+		if (isEditor) ::Console.OnStartGame();
+#endif
 		// first-time game initialization
 		if (!Game.Init())
 		{
@@ -695,20 +705,28 @@ void C4Application::GameTick()
 		}
 		if(Config.Graphics.Windowed == 2 && FullScreenMode())
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
+		if (!isEditor)
+			pWindow->GrabMouse(true);
+		// Gamepad events have to be polled here so that the controller
+		// connection state is always up-to-date before players are
+		// joining.
+		if (pGamePadControl) pGamePadControl->Execute();
 		break;
 	case C4AS_AfterGame:
 		// stop game
 		Game.Clear();
-		if(Config.Graphics.Windowed == 2 && !NextMission && !isEditor)
+		if(Config.Graphics.Windowed == 2 && NextMission.empty() && !isEditor)
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
+		if (!isEditor)
+			pWindow->GrabMouse(false);
 		AppState = C4AS_PreInit;
 		// if a next mission is desired, set to start it
-		if (NextMission)
+		if (!NextMission.empty())
 		{
-			Game.SetScenarioFilename(NextMission.getData());
+			Game.SetScenarioFilename(NextMission.c_str());
 			Game.fLobby = Game.NetworkActive;
 			Game.fObserve = false;
-			NextMission.Clear();
+			NextMission.clear();
 		}
 		break;
 	case C4AS_Game:
@@ -823,12 +841,12 @@ void C4Application::SetNextMission(const char *szMissionFilename)
 	// set next mission if any is desired
 	if (szMissionFilename)
 	{
-		NextMission.Copy(szMissionFilename);
+		NextMission = szMissionFilename;
 		// scenarios tend to use the wrong slash
-		SReplaceChar(NextMission.getMData(), AltDirectorySeparator, DirectorySeparator);
+		std::replace(begin(NextMission), end(NextMission), AltDirectorySeparator, DirectorySeparator);
 	}
 	else
-		NextMission.Clear();
+		NextMission.clear();
 }
 
 void C4Application::NextTick()
@@ -852,7 +870,7 @@ bool C4Application::FullScreenMode()
 
 C4ApplicationGameTimer::C4ApplicationGameTimer()
 		: CStdMultimediaTimerProc(26),
-		tLastGameTick(C4TimeMilliseconds::NegativeInfinity), iGameTickDelay(28), iExtraGameTickDelay(0)
+		tLastGameTick(C4TimeMilliseconds::NegativeInfinity)
 {
 }
 

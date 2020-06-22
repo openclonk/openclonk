@@ -1,43 +1,46 @@
-/*-- Sproutberry --*/
+/**
+	Sproutberry
+	Fresh from nature's garden.
+*/
 
-protected func Hit()
-{
-	Sound("Hits::SoftHit1");
-}
+#include Library_Edible
+
+/*-- Engine Callbacks --*/
 
 public func Construction()
 {
 	this.MeshTransformation = Trans_Scale(1500, 1500, 1500);
 }
 
-/* Eating */
-
-protected func ControlUse(object clonk, int iX, int iY)
+func Hit()
 {
-	clonk->Eat(this);
-	return true;
+	Sound("Hits::SoftHit1");
 }
-
-public func NutritionalValue() { return 5; }
-
-local Name = "$Name$";
-local Description = "$Description$";
-local Collectible = 1;
-
 
 // sproutberries are extremely unstable and likely to grow a new plant if not carried
 func Departure(object what)
 {
-	if(!GetEffect("SproutCheck", this))
+	if (!GetEffect("SproutCheck", this))
 		AddEffect("SproutCheck", this, 1, 10, this);
 }
+
+func SaveScenarioObject(props, ...)
+{
+	// Do not save berries that are still attached to bushes
+	if (Contained())
+		if (Contained()->GetID() == SproutBerryBush_Sprout)
+			return false;
+	return inherited(props, ...);
+}
+
+/*-- Sprouting --*/
 
 func FxSproutCheckTimer(target, effect, time)
 {
 	var c = Contained();
-	if(c)
+	if (c)
 	{
-		if(c->GetCategory() & C4D_Living)
+		if (c->GetCategory() & C4D_Living)
 		{
 			return -1;
 		}
@@ -45,9 +48,9 @@ func FxSproutCheckTimer(target, effect, time)
 	
 	// can only create a new bush after some time
 	// or faster if burried!
-	if(time < 35 * 30) return;
-	if(!GBackSolid(0, -1))
-		if(time < 35 * 60) return;
+	if (time < 35 * 30) return;
+	if (!GBackSolid(0, -1))
+		if (time < 35 * 60) return;
 	
 	// okay, create a bush or just remove
 	this.Collectible = 0;
@@ -56,20 +59,20 @@ func FxSproutCheckTimer(target, effect, time)
 	AddEffect("Shrink", this, 1, 2, this);
 	
 	var y = -10;
-	for(;y < 10; ++y)
+	for (;y < 10; ++y)
 	{
-		if(GBackSolid(0, y+1)) break;
+		if (GBackSolid(0, y + 1)) break;
 	}
 	
 	// no fitting ground found :/
-	if((!GBackSolid(0, y+1)) || GBackSolid(0, y))
+	if ((!GBackSolid(0, y + 1)) || GBackSolid(0, y))
 	{
 		return -1;
 	}
 	
 	// already a bush here?
-	var b;
-	if(b = FindObject(Find_Distance(20 + Random(10)), Find_ID(SproutBerryBush)))
+	var b = FindObject(Find_Distance(20 + Random(10)), Find_ID(SproutBerryBush));
+	if (b)
 	{
 		// extra fertilizer
 		b.saved_water += SproutBerryBush_water_per_berry * 2;
@@ -92,7 +95,7 @@ func FxSproutCheckTimer(target, effect, time)
 func FxBushSuitableTimer(target, effect, time)
 {
 	// bush could not grow yet :(
-	if(target.sprout_count == 0)
+	if (target.sprout_count == 0)
 	{
 		target->Die();
 	}
@@ -103,7 +106,7 @@ func FxBushSuitableTimer(target, effect, time)
 
 func FxShrinkStart(target, effect, temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.size = 1000;
 	effect.color_sub = 0;
 }
@@ -113,7 +116,7 @@ func FxShrinkTimer(target, effect, time)
 	effect.size -= 10;
 	
 	// if contained we do not need a visual effect before removing..
-	if((effect.size <= 0) || Contained())
+	if ((effect.size <= 0) || Contained())
 	{
 		RemoveObject();
 		return -1;
@@ -121,19 +124,27 @@ func FxShrinkTimer(target, effect, time)
 	
 	SetObjDrawTransform(1000, 0, 0, 0, effect.size, 1000 - effect.size);
 	
-	if(effect.color_sub < 255)
+	if (effect.color_sub < 255)
 	{
 		effect.color_sub = Min(effect.color_sub + 5, 255);
 		SetClrModulation(RGB(255 - effect.color_sub / 3, 255 - effect.color_sub / 2, 255 - effect.color_sub));
 	}
 }
 
-// Scenario saving
-func SaveScenarioObject(props, ...)
+/*-- Display --*/
+
+public func GetCarryMode()
 {
-	// Do not save berries that are still attached to bushes
-	if (Contained())
-		if (Contained()->GetID() == SproutBerryBush_Sprout)
-			return false;
-	return inherited(props, ...);
+	return CARRY_Hand;
 }
+
+public func GetCarryBone()
+{
+	return "Main";
+}
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$";
+local Collectible = true;

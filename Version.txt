@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2009-2015, The OpenClonk Team and contributors
+# Copyright (c) 2009-2018, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -22,7 +22,7 @@ SET(C4PROJECT_URL       "http://${C4PROJECT_DOMAIN}.${C4PROJECT_TLD}")
 SET(C4ENGINENAME        "OpenClonk")
 SET(C4ENGINENICK        "openclonk")
 
-SET(C4XVER1             8)
+SET(C4XVER1             9)
 SET(C4XVER2             0)
 
 # Set this variable to any string for pre-release versions, like "alpha" or

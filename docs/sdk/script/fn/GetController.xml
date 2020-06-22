@@ -7,7 +7,7 @@
     <title>GetController</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Determines which player is currently controlling an object or has last controlled it. With crew members this is usually the owning player. With vehicles it is the owner of the clonk that has last grabbed or pushed it. Objects that are collected by living things automatically change their owner to the owner of the new container. If an object changes its owner (see <funclink>SetOwner</funclink>()), the controller is automatically set to the new owner.</desc>
     <remark>The controller value is not affected by temporary control e.g. through <funclink>SetCursor</funclink>.</remark>

@@ -75,9 +75,9 @@ func GoodSpot(int x, int y)
 
 /* Plant / Tree libraries */
 
-private func SeedChance() {	return 200; }
-private func SeedArea() { return 200; }
-private func SeedAmount() { return 5; }
+local plant_seed_chance = 50;
+local plant_seed_area = 200;
+local plant_seed_amount = 5;
 
 private func Construction()
 {
@@ -103,13 +103,13 @@ private func Construction()
 
 private func Growing()
 {
-	if(GetCon() >= Min(RandomX(80, 500), 100))
+	if (GetCon() >= Min(RandomX(80, 500), 100))
 		return RemoveTimer("Growing");
 
-	if(!Random(4)) return;
+	if (!Random(4)) return;
 
 	var top = ((-36) * GetCon()) / 100;
-	if(GBackSolid(0, Min(-5, top))) return;
+	if (GBackSolid(0, Min(-5, top))) return;
 	DoCon(1);
 }
 
@@ -143,17 +143,15 @@ private func MaxDamage()
 // called from the plant library
 private func Seed()
 {
-	if(GetCon() < 20) return;
+	if (GetCon() < 20) return;
 
 	var size = SeedArea();
-	var amount = SeedAmount();
-	var chance = SeedChance();
-	// Place a plant if we are lucky, in principle there can be more than seed amount.
-	if (!Random(chance))
+	// Place a plant if we are lucky
+	if (CheckSeedChance())
 	{
 		// select random angle at which we can throw the seed
 		var angle = RandomX(100, 140);
-		if(!Random(2)) angle = 360 - angle;
+		if (!Random(2)) angle = 360 - angle;
 		
 		var okay = false, x, y;
 		for (var i = 0; i < 3; ++i) // three is the magic number of tries
@@ -176,6 +174,7 @@ private func Seed()
 			{
 				var distance = Distance(GetX() + x, GetY() + y, neighbour[0]->GetX(), neighbour[0]->GetY());
 				var len = GetLength(neighbour);
+				var amount = SeedAmount();
 				var c = (size * distance * amount) / (len * len * len);
 				if (!Random(c))
 					continue;
@@ -198,12 +197,13 @@ private func Seed()
 			if (this.Confinement)
 				plant->KeepArea(this.Confinement);
 		}
+		return plant;
 	}
-	return plant;
 }
 
 local Name = "$Name$";
 local Touchable = 0;
 local BlastIncinerate = 2;
 local ContactIncinerate = 6;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
+local Components = {Wood = 4};

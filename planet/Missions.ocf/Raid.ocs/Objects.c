@@ -1,26 +1,20 @@
 /* Automatically created objects file */
 
-static g_chemical, g_cabin, g_sawmill, g_workshop, g_windmill, g_flagpole, npc_newton, npc_lara, npc_lisa, npc_woody, npc_rocky, npc_mave, npc_pyrit, npc_clonko, npc_matthi, npc_dora;
+static g_chemical, g_cabin, g_sawmill, g_workshop, g_windmill, g_flagpole, npc_newton, npc_lara, npc_lisa, npc_woody, npc_rocky, npc_mave, npc_pyrit, npc_clonko, npc_matthi, npc_dora, g_guidepost1, g_guidepost2;
 
 func InitializeObjects()
 {
 	var Time001 = CreateObject(Time);
 	Time001->SetTime(600);
 	Time001->SetCycleSpeed(20);
-	
-	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
-	Rule_BaseRespawn001->SetInventoryTransfer(true);
-	Rule_BaseRespawn001->SetFreeCrew(true);
 
 	CreateObject(Rule_NoPowerNeed);
 
 	CreateObject(Rule_TeamAccount);
 
-	CreateObject(Rule_Restart);
-
 	CreateObjectAbove(EnvPack_Scarecrow, 1218, 440);
 
-	CreateObjectAbove(EnvPack_Guidepost, 835, 369);
+	g_guidepost1 = CreateObjectAbove(EnvPack_Guidepost, 835, 369);
 
 	CreateObject(EnvPack_TreeTrunks, 808, 368);
 
@@ -41,7 +35,7 @@ func InitializeObjects()
 	Tree_Coniferous002->SetR(30);
 	CreateObjectAbove(Tree_Coniferous, 1219, 441);
 
-	CreateObjectAbove(EnvPack_Guidepost, 2054, 521);
+	g_guidepost2 = CreateObjectAbove(EnvPack_Guidepost, 2054, 521);
 
 	CreateObjectAbove(Trunk, 2631, 589);
 
@@ -145,7 +139,7 @@ func InitializeObjects()
 	StoneDoor001->SetComDir(COMD_Down);
 
 	var SpinWheel001 = CreateObjectAbove(SpinWheel, 571, 1263);
-	SpinWheel001->SetStoneDoor(StoneDoor001);
+	SpinWheel001->SetSwitchTarget(StoneDoor001);
 
 	g_windmill = CreateObjectAbove(Windmill, 665, 351);
 	g_windmill->SetCategory(C4D_StaticBack);
@@ -170,9 +164,6 @@ func InitializeObjects()
 	Lorry002->SetR(6);
 	Lorry002->SetRDir(7);
 
-	var Catapult001 = CreateObjectAbove(Catapult, 2795, 608);
-	Catapult001->SetRDir(-5);
-	Catapult001->SetObjectLayer(Catapult001);
 	npc_newton = CreateObjectAbove(Clonk, 226, 321);
 	npc_newton->SetColor(0xffff);
 	npc_newton->SetName("Newton");
@@ -239,6 +230,10 @@ func InitializeObjects()
 	npc_dora->SetName("Dora");
 	npc_dora->SetObjectLayer(npc_dora);
 	npc_dora->SetSkin(3);
+
+	var Catapult001 = CreateObjectAbove(Catapult, 2795, 608);
+	Catapult001->SetRDir(-5);
+	Catapult001->SetObjectLayer(npc_pyrit);
 
 	CreateObjectAbove(Fish, 1889, 728);
 	CreateObjectAbove(Fish, 1879, 726);
@@ -423,13 +418,17 @@ func InitializeObjects()
 
 	var MetalBarrel001 = CreateObjectAbove(MetalBarrel, 395, 1271);
 	MetalBarrel001->SetColor(0xff000000);
+	MetalBarrel001->PutLiquid("Oil");
 	var MetalBarrel002 = CreateObject(MetalBarrel, 421, 1268);
 	MetalBarrel002->SetR(-104);
 	MetalBarrel002->SetColor(0xff000000);
+	MetalBarrel002->PutLiquid("Oil");
 	var MetalBarrel003 = CreateObjectAbove(MetalBarrel, 411, 1271);
 	MetalBarrel003->SetColor(0xff000000);
+	MetalBarrel003->PutLiquid("Oil");
 	var MetalBarrel004 = CreateObjectAbove(MetalBarrel, 385, 1271);
 	MetalBarrel004->SetColor(0xff000000);
+	MetalBarrel004->PutLiquid("Oil");
 
 	var PowderKeg001 = CreateObject(PowderKeg, 378, 1268);
 	PowderKeg001->SetR(99);

@@ -7,3 +7,4 @@ Offset=-10,-10
 BlitMode=1
 Oversize=1
 StretchGrowth=1
+HideInCreator=true

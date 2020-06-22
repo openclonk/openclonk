@@ -18,6 +18,7 @@ public func Construction()
 {
 	inherited(...);
 	SetGraphics(nil, Piranha);
+	SetGraphics(nil, Piranha, 1, GFXOV_MODE_Picture);
 	SetMeshMaterial("PiranhaSmall");
 }
 
@@ -60,12 +61,12 @@ private func InitFuzzyRules()
 	brain->AddSet("hunger", "high", [[25, 0], [100, 1], [100, 1]]);
 	
 	// RULES
-	brain->AddRule(brain->Or(brain->And("hunger=high", "food=right"), brain->And("food_range=far", "friend=right")), "swim=right");
-	brain->AddRule(brain->Or(brain->And("hunger=high", "food=left"), brain->And("food_range=far", "friend=left")), "swim=left");
-	brain->AddRule(brain->Not("food_range=far"), "speed=fast");
-	brain->AddRule(brain->Or("wall_range=close", "hunger=low"), "speed=slow");
-	brain->AddRule(brain->And("left_wall=close", brain->Not("right_wall=close")), "swim=sharp_right");
-	brain->AddRule("right_wall=close", "swim=sharp_left");
+	brain->AddRule(brain->Or(brain->And("hunger = high", "food = right"), brain->And("food_range = far", "friend = right")), "swim = right");
+	brain->AddRule(brain->Or(brain->And("hunger = high", "food = left"), brain->And("food_range = far", "friend = left")), "swim = left");
+	brain->AddRule(brain->Not("food_range = far"), "speed = fast");
+	brain->AddRule(brain->Or("wall_range = close", "hunger = low"), "speed = slow");
+	brain->AddRule(brain->And("left_wall = close", brain->Not("right_wall = close")), "swim = sharp_right");
+	brain->AddRule("right_wall = close", "swim = sharp_left");
 }
 
 
@@ -79,14 +80,9 @@ private func UpdateVision()
 
 private func BiteEffect()
 {
-	Sound("Animals::Fish::Munch*", nil, nil, nil, nil, nil, 100);
+	Sound("Animals::Fish::Munch*", {pitch = 100});
 }
 
 local Name = "$Name$";
 local Description = "$Description$";
 local MaxEnergy = 25000;
-
-public func Definition(def)
-{
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
-}

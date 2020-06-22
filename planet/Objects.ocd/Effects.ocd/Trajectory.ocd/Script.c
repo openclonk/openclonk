@@ -35,6 +35,11 @@ public func Create(object obj, int x, int y, int xdir, int ydir, int color, int 
 {
 	if (this != Trajectory)
 		return;
+		
+	// Do not create trajectories for script players, this will only cause lag.
+	var controller = obj->GetController();
+	if (controller == NO_OWNER || GetPlayerType(controller) == C4PT_Script)
+		return;
 	
 	// Delete old trajectory.
 	Trajectory->Remove(obj);
@@ -49,7 +54,7 @@ public func Create(object obj, int x, int y, int xdir, int ydir, int color, int 
 	spacing *= 10000;
 	
 	// Create new helper object
-	var trajectory = CreateObject(Trajectory, obj->GetX(), obj->GetY(), obj->GetController());
+	var trajectory = CreateObject(Trajectory, obj->GetX(), obj->GetY(), controller);
 	trajectory->SetAction("Attach", obj);
 	
 	// Parrticle setup.

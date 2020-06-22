@@ -44,6 +44,8 @@ func Initialize()
 	Scoreboard->SetTitle("King of the Hill");
 	//CalculatePosition();
 	ScheduleCall(this, "PostInitialize", 3);
+	// Assure relaunching is enabled and infinite.
+	GetRelaunchRule()->SetDefaultRelaunchCount(nil);
 	return _inherited(...);
 }
 
@@ -54,37 +56,37 @@ func PostInitialize()
 
 func Init()
 {
-	location=CreateObjectAbove(KingOfTheHill_Location, 0, 5, NO_OWNER);
+	location = CreateObjectAbove(KingOfTheHill_Location, 0, 5, NO_OWNER);
 	location->SetKotH(this);
 }
 
 func Destruction()
 {
-	if(location) location->RemoveObject();
+	if (location) location->RemoveObject();
 }
 
 func SearchPosition()
 {
-	var a=0, b=LandscapeHeight();
+	var a = 0, b = LandscapeHeight();
 
 	var lastX;
 	var lastY;
 	
-	while(Abs(a - b) > 10)
+	while (Abs(a - b) > 10)
 	{
 		var m=(a + b) / 2;
 		
-		var block=PathFree2(0, m, LandscapeWidth(), m);
+		var block = PathFree2(0, m, LandscapeWidth(), m);
 		
-		if(!block)
+		if (!block)
 		{
-			a=m;
+			a = m;
 		}
 		else
 		{
-			b=m;
-			lastX=block[0];
-			lastY=block[1];
+			b = m;
+			lastX = block[0];
+			lastY = block[1];
 		}
 	}
 	
@@ -99,7 +101,7 @@ public func GetPointLimit()
 
 public func SetPointLimit(int x)
 {
-	point_limit=x;
+	point_limit = x;
 }
 
 public func GetRadius()
@@ -109,7 +111,7 @@ public func GetRadius()
 
 public func SetRadius(int to)
 {
-	radius=to;
+	radius = to;
 }
 
 func DoPoint(int player, int count)
@@ -136,12 +138,13 @@ public func IsFulfilled()
 
 func OnClonkDeath(object clonk, int killer)
 {	
+	_inherited(clonk, killer, ...);
 	if (clonk->GetAlive()) return;
 		
 	if (GetPlayerName(clonk->GetOwner()))
 		++player_deaths[clonk->GetOwner()];
 	 
-	if(GetPlayerName(clonk->GetOwner()))
+	if (GetPlayerName(clonk->GetOwner()))
 	if (killer == clonk->GetOwner() || killer == NO_OWNER)
 	{
 		// shame on the king who kills himself
@@ -154,7 +157,7 @@ func OnClonkDeath(object clonk, int killer)
 		{
 			// non-king suicide
 			player_suicides[clonk->GetOwner()]++;
-			if(player_suicides[clonk->GetOwner()] % 2 == 0)
+			if (player_suicides[clonk->GetOwner()] % 2 == 0)
 			{
 				DoPoint(clonk->GetOwner(),-1);
 			}
@@ -179,13 +182,13 @@ func OnClonkDeath(object clonk, int killer)
 	return;
 }
 
-func GetAdditionalPlayerRelaunchString(object clonk, int plr, int killed_by)
+public func GetAdditionalPlayerRelaunchString(object clonk, int plr, int killed_by)
 {
-	if(!Hostile(killed_by, plr)) return;
-	if(!location->GetKing()) return;
-	if(location->GetKing()->GetOwner() != killed_by) return;
-	if(!GetEffect("NewKing", GetCursor(killed_by))) return;
-	var msg=Format("$IsNowKing$", GetTaggedPlayerName(killed_by));
+	if (!Hostile(killed_by, plr)) return;
+	if (!location->GetKing()) return;
+	if (location->GetKing()->GetOwner() != killed_by) return;
+	if (!GetEffect("NewKing", GetCursor(killed_by))) return;
+	var msg = Format("$IsNowKing$", GetTaggedPlayerName(killed_by));
 	return msg;
 }
 
@@ -213,33 +216,33 @@ private func CheckForWinner()
 
 public func GetDescription(int plr)
 {
-	var teams=GetTeamPoints();
+	var teams = GetTeamPoints();
 	var lines=[];
 	
-	for(var i=0;i<GetLength(teams);++i)
+	for (var i = 0;i<GetLength(teams);++i)
 	{
 		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
 	}
 	
-	var msg=Format("$MsgGoalDesc$", GetPointLimit());
-	for(var i=0;i<GetLength(lines);++i)
-		msg=Format("%s|%s", msg, lines[i]);
+	var msg = Format("$MsgGoalDesc$", GetPointLimit());
+	for (var i = 0;i<GetLength(lines);++i)
+		msg = Format("%s|%s", msg, lines[i]);
 	return msg;
 }
 
 public func Activate(int byplr)
 {
-	var teams=GetTeamPoints();
+	var teams = GetTeamPoints();
 	var lines=[];
 	
-	for(var i=0;i<GetLength(teams);++i)
+	for (var i = 0;i<GetLength(teams);++i)
 	{
 		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
 	}
 	
-	var msg=Format("$MsgGoalDesc$", GetPointLimit());
-	for(var i=0;i<GetLength(lines);++i)
-		msg=Format("%s|%s", msg, lines[i]);
+	var msg = Format("$MsgGoalDesc$", GetPointLimit());
+	for (var i = 0;i<GetLength(lines);++i)
+		msg = Format("%s|%s", msg, lines[i]);
 	return MessageWindow(msg, byplr);
 }
 
@@ -247,15 +250,15 @@ public func Activate(int byplr)
 private func GetTeamList()
 {
 	var teams=[];
-	for(var i = 0; i < GetPlayerCount(); i++)
+	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		var p=GetPlayerByIndex(i);
-		var t=GetPlayerTeam(p);
+		var p = GetPlayerByIndex(i);
+		var t = GetPlayerTeam(p);
 		
 		var found = false;
-		for(var x=0;x<GetLength(teams);++x)
-			if(teams[x] == t) {found = true; break;}
-		if(found) continue;
+		for (var x = 0;x<GetLength(teams);++x)
+			if (teams[x] == t) {found = true; break;}
+		if (found) continue;
 		teams[GetLength(teams)]=t;
 	}
 	return teams;
@@ -264,28 +267,28 @@ private func GetTeamList()
 private func GetTeamPoints()
 {
 	
-	var teams=GetTeamList();
+	var teams = GetTeamList();
 	var ret=[];
 	
-	for(var i=0;i<GetLength(teams);++i)
+	for (var i = 0;i<GetLength(teams);++i)
 	{
 		var t = teams[i];
 		var p = 0;
 		var names = "";
-		for(var d=0;d<GetPlayerCount();++d)
+		for (var d = 0;d<GetPlayerCount();++d)
 		{
-			var p=GetPlayerByIndex(d);
-			if(GetPlayerTeam(p) != t) continue;
+			var p = GetPlayerByIndex(d);
+			if (GetPlayerTeam(p) != t) continue;
 			
 			p += player_points[p];
 
 			var comma = ", ";
-			if(GetLength(names) == 0) comma = "";
+			if (GetLength(names) == 0) comma = "";
 			names = Format("%s%s%s", names, comma, GetTaggedPlayerName(p));
 		}
 		
 
-		ret[GetLength(ret)]={nr=t, points=p, player_names=names};
+		ret[GetLength(ret)]={nr = t, points = p, player_names = names};
 	}
 	return ret;
 }

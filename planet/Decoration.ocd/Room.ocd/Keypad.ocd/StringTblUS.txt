@@ -1,0 +1,28 @@
+Name=Keypad
+Description=Enter the correct code to trigger an event.
+
+MsgEnterCode=Enter code:
+MsgEnterNewCode=New code:
+MsgConfirmCode=Confirm code:
+MsgNoCode=<c ffff00>Keypad has no code!</c>
+MsgCorrectCode=<c 00ff00>Correct code!</c>
+MsgWrongCode=<c ff0000>Wrong code!</c>
+MsgCodeReset=<c 00ff00>Code has been reset!</c>
+MsgCodeConfirmed=<c 00ff00>Code confirmed, reset now.</c>
+
+TooltipDigit=Enter digit.
+TooltipCheck=Check the entered code.
+TooltipClose=Close the keypad.
+TooltipClearLast=Delete the last digit.
+TooltipClearCode=Clear the entered code.
+TooltipResetCode=Reset the keypad code.
+
+KeypadCode=Code
+OnCorrectCodeAction=Action 'correct code'
+OnWrongCodeAction=Action 'wrong code'
+HelpKeypadCode=Enter the keypad code the player must type in (must be digits only).
+HelpKeypadTarget=Target door that will be opened when the correct has been entered.
+HelpOnCorrectCodeAction=Action to be executed when the correct code has been entered.
+HelpOnWrongCodeAction=Action to be executed when a wrong code has been entered.
+WarningKeypadCodeNonDigit=WARNING: keypad code (%s) contains some non-digit characters, code will not be set.
+WarningKeypadCodeLong=WARNING: keypad code is too long, only %s will be set.

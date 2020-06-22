@@ -2,14 +2,14 @@
 
 #appendto Dynamite
 
-local fast;
-
 func Initialize()
 {
-	fast=0;
-	_inherited();
+	this.fast = 0;
+	_inherited(...);
 }
 
-func MakeFast(int f) { fast=f; }
-
-func FuseTime() { return 140 - fast; }
+func MakeFast(int f)
+{
+	this.fast = f;
+	this.FuseTime = 140 - this.fast;
+}

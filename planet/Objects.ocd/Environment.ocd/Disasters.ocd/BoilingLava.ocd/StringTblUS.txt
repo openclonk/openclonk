@@ -1,2 +1,12 @@
-Name=Boiling Laval
+Name=Boiling Lava
 Description=Causes Lava on the map to boil
+Intensity=Intensity
+IntensityHelp=How many bubbles are created per frame. 0 deactivates the boiling.
+Area=Aea
+AreaHelp=In which area bubbles are created.
+FullMap=Full map
+Rect=Rectangle
+SetBoilingIntensity=Set boiling intensity
+SetBoilingIntensityHelp=Sets the intensity of a boiling lava / acid object.
+Boiler=Boiler object
+BoilerTargetHelp=The modified 'Boiling Lava' / 'Boiling Acid' object.

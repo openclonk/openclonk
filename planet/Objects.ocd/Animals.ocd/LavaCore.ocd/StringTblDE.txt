@@ -1,0 +1,2 @@
+Name=Lavakern
+Description=The lava high life. Has a hard shell on which a clonk may stand, but dangerous due to spitting out lava.

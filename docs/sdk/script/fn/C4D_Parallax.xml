@@ -7,7 +7,7 @@
     <title>C4D_Parallax</title>
     <category>Objects</category>
     <subcat>Category</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int </rtype></syntax>
     <desc>Object category: the object moves parallax with respect to the landscape. This means that the apparent object position changes depending on the scroll position of the viewport. This can be used to have objects apparently moving in the far background or to create status overlays.<br/>Parallax deviation from the normal location is specified in percent and stored in an array in the <emlink href="definition/properties.html#Parallaxity"><code>Parallaxity</code> property</emlink> of the object (<code>Parallaxity[0]</code> for horizontal, <code>Parallaxity[1]</code> for vertical deviation). This means for normal location these two values should be 100. A value of 0 will lock the object to the viewport. For parallax background object use values between 0 and 100. Object positions can also be negative values. Those objects will then be aligned with the right or bottom edge of the screen respectively.</desc>
     <examples>

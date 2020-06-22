@@ -1,0 +1,3 @@
+TeamAttackers=Angreifer
+TeamDefenders=Verteidiger
+MsgWave=Angriff!

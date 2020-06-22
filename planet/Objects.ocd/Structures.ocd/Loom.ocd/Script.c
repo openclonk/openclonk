@@ -8,7 +8,7 @@
 local animWork;
 local meshAttach;
 
-public func LampPosition(id def) { return [GetCalcDir()*11,2]; }
+public func LampPosition(id def) { return [GetCalcDir()*11, 2]; }
 
 func Initialize()
 {
@@ -22,6 +22,8 @@ func Construction(object creator)
 	return _inherited(creator, ...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 /*-- Production --*/
 
 public func IsProduct(id product_id)
@@ -29,12 +31,12 @@ public func IsProduct(id product_id)
 	return product_id->~IsLoomProduct();
 }
 
-private func ProductionTime(id toProduce) { return 140; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 140; }
 public func PowerNeed() { return 40; }
 
 private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 {
-	if(effect.paused == true) return 1;
+	if (effect.paused == true) return 1;
 
 	var tickAmount = 50;
 	var animSpot = GetAnimationPosition(animWork);
@@ -43,7 +45,7 @@ private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 	var animLength = GetAnimationLength("Working") - 50;
 	
 	//loop anim
-	if(animSpot + tickAmount > animLength){
+	if (animSpot + tickAmount > animLength){
 		SetAnimationPosition(animWork, Anim_Const(animSpot + tickAmount - animLength));
 	}
 	//otherwise, advance animation
@@ -54,31 +56,32 @@ local workEffect;
 
 public func OnProductionStart(id product)
 {
-	workEffect = AddEffect("IntWorkAnim", this, 1,1,this);
-	return _inherited(...);
+	workEffect = AddEffect("IntWorkAnim", this, 1, 1, this);
+	return _inherited(product, ...);
 }
 
 public func OnProductionHold(id product)
 {
 	workEffect.paused = true;
-	return _inherited(...);
+	return _inherited(product, ...);
 }
 
 public func OnProductionContinued(id product)
 {
 	workEffect.paused = false;
-	return _inherited(...);
+	return _inherited(product, ...);
 }
 
 public func OnProductionFinish(id product)
 {
 	RemoveEffect(nil, this, workEffect);
-	return _inherited(...);
+	return _inherited(product, ...);
 }
 
 func Definition(def){
-	SetProperty("MeshTransformation", Trans_Rotate(25, 0,1,0), def);
-	SetProperty("PictureTransformation", Trans_Rotate(65,0,1,0), def);
+	SetProperty("MeshTransformation", Trans_Rotate(25, 0, 1, 0), def);
+	SetProperty("PictureTransformation", Trans_Rotate(65, 0, 1, 0), def);
+	return _inherited(def, ...);
 }
 
 local ActMap = {
@@ -90,7 +93,7 @@ local ActMap = {
 		FlipDir = 1,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		NextAction = "Wait",
 	},
 };
@@ -99,4 +102,6 @@ local Name = "$Name$";
 local Description ="$Description$";
 local ContainBlast = true;
 local BlastIncinerate = 100;
+local FireproofContainer = true;
 local HitPoints = 70;
+local Components = {Wood = 3, Metal = 1, Rock = 1};

@@ -31,6 +31,8 @@ protected func Construction()
 	return;
 }
 
+public func IsHammerBuildable() { return true; }
+
 protected func Initialize()
 {
 	// First initialize the libraries (especially the flag library).
@@ -116,7 +118,7 @@ public func Wind2Turn()
 	wheel->SetRDir(current_wind * 90, MinRevolutionTime());
 	// Make some sounds.
 	if (Abs(current_wind) >= 10 && Random(15 - Abs(current_wind / 10)) < 5)
-		Sound(["Hits::Materials::Wood::WoodCreak?","Structures::HingeCreak?"][Random(2)], false, nil, nil, nil, 75);
+		Sound(["Hits::Materials::Wood::WoodCreak?","Structures::HingeCreak?"][Random(2)], {custom_falloff_distance = 75});
 	return;
 }
 
@@ -129,7 +131,7 @@ public func HasInteractionMenu() { return true; }
 // Show hint about efficiency in the interaction menu.
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	var prod_menu =
 	{
 		title = "$Efficiency$",
@@ -169,10 +171,13 @@ public func GetInfoMenuEntries()
 protected func Definition(def) 
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000, 0, 7000), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(30, 0, 1, 0)), def);
+	return _inherited(def, ...);
 }
 
 local Name = "$Name$";
 local Description = "$Description$";
-local BlastIncinerate = 60;
+local BlastIncinerate = 20;
 local ContactIncinerate = 5;
+local NoBurnDecay = true;
 local HitPoints = 50;
+local Components = {Wood = 3, Metal = 1};

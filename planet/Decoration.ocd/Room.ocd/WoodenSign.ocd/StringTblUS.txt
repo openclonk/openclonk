@@ -1,0 +1,4 @@
+Name=Wooden Sign
+Description=Contains important information.
+Inscription=Inscription
+InscriptionHelp=Text that can be read by interacting with the wooden sign.

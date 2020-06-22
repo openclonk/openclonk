@@ -1,5 +1,5 @@
-NoPlrKnowledge=Keine Baupl‰ne vorhanden
+NoPlrKnowledge=Keine Baupl√§ne vorhanden
 Construction=Konstruktion
 Production=Produktion
 Name=Waffenschmiede
-Description=Zur Herstellung von kleinen und groﬂen Waffen.
+Description=Zur Herstellung von kleinen und gro√üen Waffen.

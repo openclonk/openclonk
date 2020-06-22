@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,10 +13,17 @@
  * for the above references.
  */
 
-#include <C4FacetEx.h>
+#include "C4ForbidLibraryCompilation.h"
+#include "graphics/C4FacetEx.h"
+#include "lib/C4Random.h"
 
-#include <StdScheduler.h>
+#include "platform/StdScheduler.h"
 
+#include <pcg/pcg_random.hpp>
+#ifndef USE_CONSOLE
+#include <epoxy/gl.h>
+#endif
+#include "graphics/C4Shader.h"
 
 #ifndef INC_C4Particles
 #define INC_C4Particles
@@ -28,6 +35,7 @@ enum C4ParticleValueProviderID
 	C4PV_Random,
 	C4PV_KeyFrames,
 	C4PV_Sin,
+	C4PV_Cos,
 	C4PV_Direction,
 	C4PV_Step,
 	C4PV_Speed,
@@ -121,6 +129,8 @@ private:
 		float maxValue; // for Step & Sin
 	};
 
+	pcg32 rng; // for Random
+
 	size_t keyFrameCount;
 	std::vector<float> keyFrames;
 
@@ -147,16 +157,15 @@ public:
 	bool IsConstant() const { return isConstant; }
 	bool IsRandom() const { return valueFunction == &C4ParticleValueProvider::Random; }
 	C4ParticleValueProvider() :
-		startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrameCount(0), valueFunction(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT)
+		startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrameCount(0), valueFunction(nullptr), isConstant(true), floatValueToChange(nullptr), typeOfValueToChange(VAL_TYPE_FLOAT)
 	{ }
 	~C4ParticleValueProvider()
 	{
-		for (std::vector<C4ParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
-			delete *iter;
+		for (auto &child : childrenValueProviders)
+			delete child;
 	}
 	C4ParticleValueProvider(const C4ParticleValueProvider &other) { *this = other; }
 	C4ParticleValueProvider & operator= (const C4ParticleValueProvider &other);
-	void RollRandom();
 
 	// divides by denominator
 	void Floatify(float denominator);
@@ -170,7 +179,7 @@ private:
 	void UpdatePointerValue(C4Particle *particle, C4ParticleValueProvider *parent);
 	void UpdateChildren(C4Particle *particle);
 	void FloatifyParameterValue(float C4ParticleValueProvider::*value, float denominator, size_t keyFrameIndex = 0);
-	void SetParameterValue(int type, const C4Value &value, float C4ParticleValueProvider::*floatVal, int C4ParticleValueProvider::*intVal = 0, size_t keyFrameIndex = 0);
+	void SetParameterValue(int type, const C4Value &value, float C4ParticleValueProvider::*floatVal, int C4ParticleValueProvider::*intVal = nullptr, size_t keyFrameIndex = 0);
 
 	void SetType(C4ParticleValueProviderID what = C4PV_Const);
 	float Linear(C4Particle *forParticle);
@@ -178,6 +187,7 @@ private:
 	float Random(C4Particle *forParticle);
 	float KeyFrames(C4Particle *forParticle);
 	float Sin(C4Particle *forParticle);
+	float Cos(C4Particle *forParticle);
 	float Direction(C4Particle *forParticle);
 	float Step(C4Particle *forParticle);
 	float Speed(C4Particle *forParticle);
@@ -350,7 +360,7 @@ private:
 	void DeleteAndReplaceParticle(size_t indexToReplace, size_t indexFrom);
 
 public:
-	C4ParticleChunk() : sourceDefinition(0), blitMode(0), attachment(C4ATTACH_None), particleCount(0), drawingDataVertexBufferObject(0), drawingDataVertexArraysObject(0)
+	C4ParticleChunk() : sourceDefinition(nullptr), blitMode(0), attachment(C4ATTACH_None), particleCount(0), drawingDataVertexBufferObject(0), drawingDataVertexArraysObject(0)
 	{
 
 	}
@@ -392,7 +402,7 @@ private:
 	CStdCSec accessMutex;
 
 public:
-	C4ParticleList(C4Object *obj = 0) : targetObject(obj), lastAccessedChunk(0)
+	C4ParticleList(C4Object *obj = nullptr) : targetObject(obj), lastAccessedChunk(nullptr)
 	{
 
 	}
@@ -423,9 +433,9 @@ private:
 	// pointers to the last and first element of linked list of particle definitions
 	C4ParticleDef *first, *last;
 public:
-	C4ParticleSystemDefinitionList() : first(0), last(0) {}
+	C4ParticleSystemDefinitionList() : first(nullptr), last(nullptr) {}
 	void Clear();
-	C4ParticleDef *GetDef(const char *name, C4ParticleDef *exclude=0);
+	C4ParticleDef *GetDef(const char *name, C4ParticleDef *exclude=nullptr);
 
 	friend class C4ParticleDef;
 };
@@ -437,7 +447,7 @@ class C4ParticleSystem
 	class CalculationThread : public StdThread
 	{
 	protected:
-		virtual void Execute();
+		void Execute() override;
 	public:
 		CalculationThread() { StdThread::Start(); }
 	};
@@ -448,6 +458,7 @@ private:
 	GLuint ibo;
 	size_t ibo_size;
 	std::list<C4ParticleList> particleLists;
+	void PreparePrimitiveRestartIndices(uint32_t forSize);
 
 	CStdCSec particleListAccessMutex;
 	CStdEvent frameCounterAdvancedEvent;
@@ -478,7 +489,7 @@ public:
 	void DrawGlobalParticles(C4TargetFacet cgo)
 	{
 #ifndef USE_CONSOLE
-		if (globalParticles) globalParticles->Draw(cgo, 0);
+		if (globalParticles) globalParticles->Draw(cgo, nullptr);
 #endif
 	} 
 
@@ -487,24 +498,24 @@ public:
 #ifndef USE_CONSOLE
 		return globalParticles;
 #else
-		return 0;
+		return nullptr;
 #endif
 	}
 
-	C4ParticleList *GetNewParticleList(C4Object *forTarget = 0);
+	C4ParticleList *GetNewParticleList(C4Object *forTarget = nullptr);
 	// releases up to 2 lists
-	void ReleaseParticleList(C4ParticleList *first, C4ParticleList *second = 0);
+	void ReleaseParticleList(C4ParticleList *first, C4ParticleList *second = nullptr);
 
 	// interface for particle definitions
 	C4ParticleSystemDefinitionList definitions;
 
 #ifndef USE_CONSOLE
-	// usually, the following methods are used for drawing
-	GLuint GetIBO() const { return ibo; }
-	void PreparePrimitiveRestartIndices(uint32_t forSize);
+	// Returns the IBO ID that contains the PRI data.
+	// This makes sure that the IBO contains enough indices for at least 'forParticleAmount' particles.
+	GLuint GetIBO(size_t forParticleAmount);
 
 	// creates a new particle
-	void Create(C4ParticleDef *of_def, C4ParticleValueProvider &x, C4ParticleValueProvider &y, C4ParticleValueProvider &speedX, C4ParticleValueProvider &speedY, C4ParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);
+	void Create(C4ParticleDef *of_def, C4ParticleValueProvider &x, C4ParticleValueProvider &y, C4ParticleValueProvider &speedX, C4ParticleValueProvider &speedY, C4ParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=nullptr);
 
 #endif
 	

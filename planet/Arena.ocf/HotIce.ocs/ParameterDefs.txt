@@ -1,8 +1,36 @@
 [ParameterDef]
+Name=$Theme$
+Description=$DescTheme$
+ID=Theme
+Default=1
+
+	[Options]
+
+		[Option]
+		Name=$HotIce$
+		Description=$DescHotIce$
+		Value=1
+
+		[Option]
+		Name=$RandomIce$
+		Description=$DescRandomIce$
+		Value=0
+
+		[Option]
+		Name=$MiamiIce$
+		Description=$DescMiamiIce$
+		Value=2
+
+		[Option]
+		Name=$EciToh$
+		Description=$DescEciToh$
+		Value=3
+
+[ParameterDef]
 Name=$MapType$
 Description=$DescMapType$
 ID=MapType
-Default=0
+Default=1
 
 	[Options]
 		
@@ -20,7 +48,7 @@ Default=0
 Name=$Weapons$
 Description=$DescWeapons$
 ID=Weapons
-Default=0
+Default=1
 
 	[Options]
 		
@@ -33,3 +61,53 @@ Default=0
 		Name=$WeaponsExplosive$
 		Description=$DescWeaponsExplosive$
 		Value=1
+
+[ParameterDef]
+Name=$SpawnType$
+Description=$DescSpawn$
+ID=SpawnType
+Default=0
+
+	[Options]
+
+		[Option]
+		Name=$ClassicSpawn$
+		Description=$DescClassicSpawn$
+		Value=0
+
+		[Option]
+		Name=$BalloonSpawn$
+		Description=$DescBalloonSpawn$
+		Value=1
+
+[ParameterDef]
+Name=$Rounds$
+Description=$DescRounds$
+ID=Rounds
+Default=7
+
+	[Options]
+		
+		[Option]
+		Name=1
+		Value=1
+		
+		[Option]
+		Name=2
+		Value=2
+		
+		[Option]
+		Name=3
+		Value=3
+		
+		[Option]
+		Name=5
+		Value=5
+		
+		[Option]
+		Name=7
+		Value=7
+		
+		[Option]
+		Name=11
+		Value=11

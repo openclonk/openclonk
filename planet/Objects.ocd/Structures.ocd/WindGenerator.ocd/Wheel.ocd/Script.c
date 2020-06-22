@@ -42,7 +42,7 @@ local ActMap = {
 		Procedure = DFA_ATTACH,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		NextAction = "Hold",
 	}
 };

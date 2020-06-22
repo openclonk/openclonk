@@ -9,18 +9,8 @@ public func Intro_Init(int for_plr)
 	this.homeless = Dialogue->FindByName("Homeless")->GetDialogueTarget();
 	this.plr_clonk = GetCrew(for_plr);
 	
-	this.head->PushActionSpeed("Walk", 38);
-	this.plr_clonk->PushActionSpeed("Walk", 38);
-	if (this.head.ActMap == this.head.Prototype.ActMap)
-		this.head.ActMap = new this.head.ActMap {};
-	if (this.head.ActMap.Walk == this.head.Prototype.ActMap.Walk)	
-		this.head.ActMap.Walk = new this.head.ActMap.Walk {};
-	this.head.ActMap.Walk.Speed = 38;
-	if (this.plr_clonk.ActMap == this.plr_clonk.Prototype.ActMap)
-		this.plr_clonk.ActMap = new this.plr_clonk.ActMap {};
-	if (this.plr_clonk.ActMap.Walk == this.plr_clonk.Prototype.ActMap.Walk)	
-		this.plr_clonk.ActMap.Walk = new this.plr_clonk.ActMap.Walk {};
-	this.plr_clonk.ActMap.Walk.Speed = 38;
+	this.head->PushActionSpeed("Walk", 190, "Intro");
+	this.plr_clonk->PushActionSpeed("Walk", 190, "Intro");
 	return true;
 }
 
@@ -99,8 +89,8 @@ public func Intro_10()
 public func Intro_Stop()
 {
 	GameCall("OnIntroSequenceFinished", this.plr);
-	this.plr_clonk.ActMap.Walk.Speed = Clonk.ActMap.Walk.Speed;
-	this.head.ActMap.Walk.Speed = Clonk.ActMap.Walk.Speed;
+	this.plr_clonk->PopActionSpeed("Walk", "Intro");
+	this.head->PopActionSpeed("Walk", "Intro");
 	SetPlayerZoomByViewRange(this.for_plr, 400, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	return true;
 }

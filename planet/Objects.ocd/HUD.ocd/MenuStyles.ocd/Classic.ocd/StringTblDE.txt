@@ -1,2 +1,2 @@
 Name=Classic
-Description=Imitiert ein Interface ähnlich des klassischen Menüs.
+Description=Imitiert ein Interface Ã¤hnlich des klassischen MenÃ¼s.

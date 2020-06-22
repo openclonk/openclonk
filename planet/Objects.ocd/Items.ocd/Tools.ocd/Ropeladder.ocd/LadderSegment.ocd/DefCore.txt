@@ -1,6 +1,6 @@
 [DefCore]
 id=Ropeladder_Segment
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=5
 Height=8
@@ -9,3 +9,4 @@ Vertices=2
 VertexX=0,0
 VertexY=-5,5
 Picture=0,0,50,80
+HideInCreator=true

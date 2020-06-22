@@ -1,0 +1,27 @@
+material WoodenSign 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            scene_blend one zero
+
+            alpha_rejection greater_equal 128
+            alpha_to_coverage on
+            cull_hardware none
+
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.09375 0.09375 0.09375 0.0 52.25
+            emissive 0.0 0.0 0.0 0.0
+
+            texture_unit 
+            {
+                texture WoodenSign.jpg
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}

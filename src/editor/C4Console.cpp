@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,29 +17,26 @@
 
 /* Handles engine execution in developer mode */
 
-#include <C4Include.h>
-#include <C4Console.h>
+#include "C4Include.h"
+#include "editor/C4Console.h"
 
-#include <C4Application.h>
-#include <C4Def.h>
-#include <C4GameSave.h>
-#include <C4Game.h>
-#include <C4MessageInput.h>
-#include <C4Version.h>
-#include <C4Language.h>
-#include <C4Player.h>
-#include <C4Landscape.h>
-#include <C4GraphicsSystem.h>
-#include <C4Viewport.h>
-#include <C4ScriptHost.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
+#include "C4Version.h"
+#include "control/C4GameControl.h"
+#include "control/C4GameSave.h"
+#include "game/C4Application.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "gui/C4MessageInput.h"
+#include "landscape/C4Landscape.h"
+#include "object/C4Def.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "script/C4ScriptHost.h"
 
-#include <StdFile.h>
-#include <StdRegistry.h>
+#include "platform/StdRegistry.h"
 
 #define FILE_SELECT_FILTER_FOR_C4S "OpenClonk Scenario\0"         \
-                                   "*.ocs;*.ocf;Scenario.txt\0" \
+                                   "*.ocs *.ocf Scenario.txt\0" \
                                    "\0"
 
 using namespace OpenFileFlags;
@@ -52,17 +49,17 @@ C4Console::C4Console(): C4ConsoleGUI()
 	fGameOpen=false;
 
 #ifdef USE_WIN32_WINDOWS
-	hWindow=NULL;
+	hWindow=nullptr;
 #endif
 }
 
-C4Console::~C4Console()
-{
-}
+C4Console::~C4Console() = default;
 
 C4Window * C4Console::Init(C4AbstractApp * pApp)
 {
-	return C4ConsoleGUI::CreateConsoleWindow(pApp);
+	if (!C4ConsoleGUI::CreateConsoleWindow(pApp))
+		return nullptr;
+	return this;
 }
 
 bool C4Console::In(const char *szText)
@@ -76,9 +73,11 @@ bool C4Console::In(const char *szText)
 		return true;
 	}
 	// begins with '#'? then it's a message. Route via ProcessInput to allow #/sound
-	if (*szText == '#')
+	// Also, in the lobby, everything written here is still a message
+	bool is_chat_command = (*szText == '#');
+	if (is_chat_command || (::Network.isEnabled() && !::Network.Status.isPastLobby()))
 	{
-		::MessageInput.ProcessInput(szText + 1);
+		::MessageInput.ProcessInput(szText + is_chat_command);
 		return true;
 	}
 	// editing enabled?
@@ -149,16 +148,41 @@ bool C4Console::SaveGame(const char * path)
 	return fOkay;
 }
 
-bool C4Console::SaveScenario(const char * path)
+bool C4Console::SaveScenario(const char * path, bool export_packed)
 {
-	// Network hosts only
-	if (::Network.isEnabled() && !::Network.isHost())
-		{ Message(LoadResStr("IDS_GAME_NOCLIENTSAVE")); return false; }
-
-	// Open new scenario file
-	if (path)
+	C4Group *save_target_group = &Game.ScenarioFile;
+	C4Group export_group;
+	if (export_packed)
 	{
-		// Close current scenario file
+		// Export to packed file: Delete existing
+		if (FileExists(path))
+		{
+			if (ItemIdentical(Game.ScenarioFilename, path) || !EraseItem(path))
+			{
+				Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"), path).getData());
+				return false;
+			}
+		}
+		// Write into new, packed copy
+		if (!C4Group_PackDirectoryTo(Game.ScenarioFilename, path) || !export_group.Open(path))
+		{
+			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"), path).getData());
+			return false;
+		}
+		save_target_group = &export_group;
+	}
+	else if (path)
+	{
+		// When trying to save into a subfolder of the existing scenario, the copy function
+		// below will try to recursively copy everything until it blows the stack. There is
+		// really no good reason to do this, so we just disallow it here.
+		if (SEqual2(path, Game.ScenarioFilename))
+		{
+			Message(LoadResStr("IDS_CNS_RECURSIVESAVEASERROR"));
+			return false;
+		}
+		// Open new scenario file
+		// Close current scenario file to allow re-opening at new path
 		Game.ScenarioFile.Close();
 		// Copy current scenario file to target
 		if (!C4Group_CopyItem(Game.ScenarioFilename,path))
@@ -166,21 +190,31 @@ bool C4Console::SaveScenario(const char * path)
 			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),path).getData());
 			return false;
 		}
-		SCopy(path, Game.ScenarioFilename);
+		// Re-open at new path (unless exporting, in which case the export is just a copy)
+		SCopy(path, Game.ScenarioFilename, _MAX_PATH);
 		SetCaptionToFilename(Game.ScenarioFilename);
 		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
 		{
-			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),Game.ScenarioFilename).getData());
+			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"), Game.ScenarioFilename).getData());
+			return false;
+		}
+	}
+	else
+	{
+		// Do not save to temp network file
+		if (Game.TempScenarioFile && ItemIdentical(Game.TempScenarioFile.getData(), Game.ScenarioFilename))
+		{
+			Message(LoadResStr("IDS_CNS_NONETREFSAVE"));
 			return false;
 		}
 	}
 
 	// Can't save to child groups
-	if (Game.ScenarioFile.GetMother() && Game.ScenarioFile.GetMother()->IsPacked())
+	if (save_target_group->GetMother() && save_target_group->GetMother()->IsPacked())
 	{
 		StdStrBuf str;
 		str.Format(LoadResStr("IDS_CNS_NOCHILDSAVE"),
-		           GetFilename(Game.ScenarioFile.GetName()));
+		           GetFilename(save_target_group->GetName()));
 		Message(str.getData());
 		return false;
 	}
@@ -189,16 +223,23 @@ bool C4Console::SaveScenario(const char * path)
 	SetCursor(C4ConsoleGUI::CURSOR_Wait);
 
 	bool fOkay=true;
-	C4GameSave *pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.Mode==C4LSC_Exact, false);
-	if (!pGameSave->Save(Game.ScenarioFile, false))
+	C4GameSave *pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.GetMode() == LandscapeMode::Exact, false);
+	if (!pGameSave->Save(*save_target_group, false))
 		{ Out("Game::Save failed"); fOkay=false; }
 	delete pGameSave;
 
 	// Close and reopen scenario file to fix file changes
-	if (!Game.ScenarioFile.Close())
-		{ Out("ScenarioFile::Close failed"); fOkay=false; }
-	if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
-		{ Out("ScenarioFile::Open failed"); fOkay=false; }
+	if (!export_packed)
+	{
+		if (!Game.ScenarioFile.Close())
+		{
+			Out("ScenarioFile::Close failed"); fOkay = false;
+		}
+		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
+		{
+			Out("ScenarioFile::Open failed"); fOkay = false;
+		}
+	}
 
 	SetCursor(C4ConsoleGUI::CURSOR_Normal);
 
@@ -208,7 +249,7 @@ bool C4Console::SaveScenario(const char * path)
 		StdStrBuf str(LoadResStr("IDS_CNS_SCRIPTCREATEDOBJECTS"));
 		str += LoadResStr("IDS_CNS_WARNDOUBLE");
 		Message(str.getData());
-		Game.fScriptCreatedObjects=false;
+		Game.fScriptCreatedObjects = false;
 	}
 
 	// Status report
@@ -222,24 +263,30 @@ bool C4Console::FileSave()
 {
 	// Save game
 	// FIXME: What about editing a savegame inplace? (Game.C4S.Head.SaveGame)
-	return SaveScenario(NULL);
+	return SaveScenario(nullptr);
 }
 
-bool C4Console::FileSaveAs(bool fSaveGame)
+bool C4Console::FileSaveAs(bool fSaveGame, bool export_packed)
 {
 	// Do save-as dialog
 	StdCopyStrBuf filename("");
 	filename.Copy(Game.ScenarioFile.GetName());
+	if (export_packed)
+	{
+		RemoveExtension(&filename);
+		filename.Append("_packed.ocs");
+	}
 	if (!FileSelect(&filename,
 	                "OpenClonk Scenario\0*.ocs\0\0",
 	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
 	                true)) return false;
 	DefaultExtension(&filename,"ocs");
+	if (!export_packed) ::Config.Developer.AddRecentlyEditedScenario(filename.getData());
 	if (fSaveGame)
 		// Save game
 		return SaveGame(filename.getData());
 	else
-		return SaveScenario(filename.getData());
+		return SaveScenario(filename.getData(), export_packed);
 }
 
 bool C4Console::Message(const char *szMessage, bool fQuery)
@@ -248,17 +295,48 @@ bool C4Console::Message(const char *szMessage, bool fQuery)
 	return C4ConsoleGUI::Message(szMessage, fQuery);
 }
 
-bool C4Console::FileOpen()
+bool C4Console::FileNew()
+{
+	StdCopyStrBuf filename;
+#ifdef WITH_QT_EDITOR
+	bool host_in_network = false;
+	if (!C4ConsoleGUI::CreateNewScenario(&filename, &host_in_network)) return false;
+	Application.ClearCommandLine();
+	::Config.Developer.AddRecentlyEditedScenario(filename.getData());
+	if (host_in_network)
+	{
+		Game.NetworkActive = true;
+		Game.fLobby = true;
+	}
+	Application.OpenGame(filename.getData());
+	return true;
+#endif
+	// Not implemented
+	return false;
+
+}
+
+bool C4Console::FileOpen(const char *filename, bool host_in_network)
 {
 	// Get scenario file name
 	StdCopyStrBuf c4sfile("");
-	if (!FileSelect(&c4sfile,
-	                FILE_SELECT_FILTER_FOR_C4S,
-	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
-		return false;
+	if (!filename)
+	{
+		if (!FileSelect(&c4sfile,
+			FILE_SELECT_FILTER_FOR_C4S,
+			OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
+			return false;
+		filename = c4sfile.getData();
+	}
 	Application.ClearCommandLine();
+	::Config.Developer.AddRecentlyEditedScenario(filename);
+	if (host_in_network)
+	{
+		Game.NetworkActive = true;
+		Game.fLobby = true;
+	}
 	// Open game
-	Application.OpenGame(c4sfile.getData());
+	Application.OpenGame(filename);
 	return true;
 }
 
@@ -295,6 +373,7 @@ bool C4Console::FileOpenWPlrs()
 	{
 		SAddModule(Game.PlayerFilenames, c4pfile.getData());
 	}
+	::Config.Developer.AddRecentlyEditedScenario(c4sfile.getData());
 	// Open game
 	Application.OpenGame(c4sfile.getData());
 	return true;
@@ -326,26 +405,30 @@ bool C4Console::FileRecord()
 void C4Console::ClearPointers(C4Object *pObj)
 {
 	EditCursor.ClearPointers(pObj);
+	C4ConsoleGUI::ClearPointers(pObj);
 }
 
 void C4Console::Default()
 {
 	EditCursor.Default();
-	PropertyDlgObject = 0;
+	PropertyDlgObject = nullptr;
 	ToolsDlg.Default();
 }
 
 void C4Console::Clear()
 {
+	if (pSurface) delete pSurface;
+	pSurface = nullptr;
+
 	C4Window::Clear();
+	C4ConsoleGUI::DeleteConsoleWindow();
+
 	EditCursor.Clear();
 	ToolsDlg.Clear();
 	PropertyDlgClose();
 	ClearViewportMenu();
 	ClearPlayerMenu();
 	ClearNetMenu();
-	if (pSurface) delete pSurface;
-	pSurface = 0;
 #ifndef _WIN32
 	Application.Quit();
 #endif
@@ -353,6 +436,7 @@ void C4Console::Clear()
 
 void C4Console::Close()
 {
+	C4ConsoleGUI::CloseConsoleWindow();
 	Application.Quit();
 }
 
@@ -371,6 +455,7 @@ void C4Console::HelpAbout()
 
 void C4Console::ViewportNew()
 {
+	if (!fGameOpen) return;
 	::Viewports.CreateViewport(NO_OWNER);
 }
 
@@ -467,13 +552,16 @@ void C4Console::UpdateNetMenu()
 	// Host
 	StdStrBuf str;
 	str.Format(LoadResStr("IDS_MNU_NETHOST"),Game.Clients.getLocalName(),Game.Clients.getLocalID());
-	AddNetMenuItemForPlayer(IDM_NET_CLIENT1+Game.Clients.getLocalID(), str);
+	AddNetMenuItemForPlayer(Game.Clients.getLocalID(), str.getData(), C4ConsoleGUI::CO_None);
 	// Clients
-	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(nullptr); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 	{
-		str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT" : "IDS_MNU_NETCLIENTDE"),
+		if (pClient->isHost()) continue;
+		str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT_DEACTIVATE" : "IDS_MNU_NETCLIENT_ACTIVATE"),
 		           pClient->getName(), pClient->getID());
-		AddNetMenuItemForPlayer(IDM_NET_CLIENT1+pClient->getID(), str);
+		AddNetMenuItemForPlayer(pClient->getID(), str.getData(), pClient->isActivated() ? C4ConsoleGUI::CO_Deactivate : C4ConsoleGUI::CO_Activate);
+		str.Format(LoadResStr("IDS_NET_KICKCLIENTEX"), pClient->getName(), pClient->getID());
+		AddNetMenuItemForPlayer(pClient->getID(), str.getData(), C4ConsoleGUI::CO_Kick);
 	}
 	return;
 }
@@ -492,6 +580,7 @@ void C4Console::SetCaptionToFilename(const char* szFilename)
 
 void C4Console::Execute()
 {
+	C4ConsoleGUI::Execute();
 	EditCursor.Execute();
 	ObjectListDlg.Execute();
 	UpdateStatusBars();
@@ -513,6 +602,8 @@ void C4Console::InitGame()
 	EnableControls(fGameOpen);
 	UpdatePlayerMenu();
 	UpdateViewportMenu();
+	// Initial neutral viewport unless started with players
+	if (!Game.PlayerInfos.GetStartupCount()) ::Viewports.CreateViewport(NO_OWNER);
 }
 
 void C4Console::CloseGame()
@@ -536,11 +627,11 @@ std::list<const char *> C4Console::GetScriptSuggestions(C4PropList *target, Rece
 	const std::list<StdCopyStrBuf> &mru = recent_script_input[section];
 	if (!mru.empty())
 	{
-		functions.insert(functions.begin(), NULL);
+		functions.insert(functions.begin(), nullptr);
 		// add pointers into string buffer list
 		// do not iterate with for (auto i : mru) because this would copy the buffer and add stack pointers
-		for (auto i = mru.begin(); i != mru.end(); ++i)
-			functions.insert(functions.begin(), i->getData());
+		for (const auto & i : mru)
+			functions.insert(functions.begin(), i.getData());
 	}
 	return functions;
 }
@@ -551,13 +642,13 @@ void C4Console::RegisterRecentInput(const char *input, RecentScriptInputLists se
 	// remove previous copy (i.e.: Same input just gets pushed to top)
 	mru.remove(StdCopyStrBuf(input));
 	// register to list
-	mru.push_back(StdCopyStrBuf(input));
+	mru.emplace_back(input);
 	// limit history length
 	if (static_cast<int32_t>(mru.size()) > ::Config.Developer.MaxScriptMRU)
 		mru.erase(mru.begin());
 }
 
-#if !(defined(USE_WIN32_WINDOWS) || defined(USE_COCOA) || defined(USE_GTK))
+#if !(defined(USE_WIN32_WINDOWS) || defined(WITH_QT_EDITOR))
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
 	public: State(C4ConsoleGUI *console): Super(console) {}
@@ -570,49 +661,54 @@ class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
 };
 void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player*, StdStrBuf&, bool) {}
 void C4ConsoleGUI::AddMenuItemForPlayer(C4Player*, StdStrBuf&) {}
-void C4ConsoleGUI::AddNetMenuItemForPlayer(int, StdStrBuf&) {}
+void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t, const char *, C4ConsoleGUI::ClientOperation) {}
 void C4ConsoleGUI::AddNetMenu() {}
 void C4ConsoleGUI::ToolsDlgClose() {}
-bool C4ConsoleGUI::ClearLog() {return 0;}
+bool C4ConsoleGUI::ClearLog() {return false;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}
 void C4ConsoleGUI::ClearViewportMenu() {}
-C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp * pApp)
+bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp * pApp)
 {
 	C4Rect r(0, 0, 400, 350);
-	return C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r);
+	if (!C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r))
+		return false;
+	return true;
 }
+void C4ConsoleGUI::DeleteConsoleWindow() {}
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
-bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}
-bool C4ConsoleGUI::FileSelect(StdStrBuf *, char const*, DWORD, bool) {return 0;}
-bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
+bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return false;}
+bool C4ConsoleGUI::FileSelect(StdStrBuf *, char const*, DWORD, bool) {return false;}
+bool C4ConsoleGUI::Message(char const*, bool) {return false;}
 void C4ConsoleGUI::Out(char const*) {}
-bool C4ConsoleGUI::PropertyDlgOpen() {return 0;}
+bool C4ConsoleGUI::PropertyDlgOpen() {return false;}
 void C4ConsoleGUI::PropertyDlgClose() {}
-void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &, bool) {}
+void C4ConsoleGUI::PropertyDlgUpdate(class C4EditCursorSelection &, bool) {}
 void C4ConsoleGUI::RecordingEnabled() {}
 void C4ConsoleGUI::SetCaptionToFileName(char const*) {}
 void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor) {}
 void C4ConsoleGUI::SetInputFunctions(std::list<const char*>&) {}
 void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf&) {}
 void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg*) {}
-bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg*) {return 0;}
+bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg*) {return false;}
 void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg*, char const*) {}
 void C4ConsoleGUI::ToolsDlgSelectTexture(C4ToolsDlg*, char const*) {}
 void C4ConsoleGUI::ToolsDlgSelectBackMaterial(C4ToolsDlg*, char const*) {}
 void C4ConsoleGUI::ToolsDlgSelectBackTexture(C4ToolsDlg*, char const*) {}
-bool C4ConsoleGUI::UpdateModeCtrls(int) {return 0;}
+bool C4ConsoleGUI::UpdateModeCtrls(int) {return false;}
 void C4ToolsDlg::EnableControls() {}
 void C4ToolsDlg::InitGradeCtrl() {}
 void C4ToolsDlg::NeedPreviewUpdate() {}
-bool C4ToolsDlg::PopMaterial() {return 0;}
-bool C4ToolsDlg::PopTextures() {return 0;}
+bool C4ToolsDlg::PopMaterial() {return false;}
+bool C4ToolsDlg::PopTextures() {return false;}
 void C4ToolsDlg::UpdateIFTControls() {}
 void C4ToolsDlg::UpdateLandscapeModeCtrls() {}
 void C4ToolsDlg::UpdateTextures() {}
 void C4ToolsDlg::UpdateToolCtrls() {}
-bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
-bool C4Viewport::TogglePlayerLock() {return 0;}
-#include "C4ConsoleGUICommon.h"
+#if !defined(USE_COCOA)
+bool C4Viewport::ScrollBarsByViewPosition() {return false;}
+bool C4Viewport::TogglePlayerLock() {return false;}
+#endif
+#include "editor/C4ConsoleGUICommon.h"
 #endif

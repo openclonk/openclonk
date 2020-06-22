@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,8 @@
 #ifndef INC_StdSurface2
 #define INC_StdSurface2
 
-#include <StdColors.h>
-#include <C4Rect.h>
-
-#include <list>
+#include "C4ForbidLibraryCompilation.h"
+#include "lib/C4Rect.h"
 
 // blitting modes
 #define C4GFXBLIT_NORMAL          0 // regular blit
@@ -55,8 +53,8 @@ const int C4SF_Unlocked = 4;
 class C4Surface
 {
 private:
-	C4Surface(const C4Surface &cpy); // do NOT copy
-	C4Surface &operator = (const C4Surface &rCpy);  // do NOT copy
+	C4Surface(const C4Surface &cpy) = delete;
+	C4Surface &operator = (const C4Surface &rCpy) = delete;
 
 public:
 	C4Surface();
@@ -68,19 +66,18 @@ public:
 	int Scale; // scale of image; divide coordinates by this value to get the "original" image size
 	int PrimarySurfaceLockPitch; BYTE *PrimarySurfaceLockBits; // lock data if primary surface is locked
 	int iTexSize; // size of textures
-	int iTexX, iTexY;     // number of textures in x/y-direction
 	int ClipX,ClipY,ClipX2,ClipY2;
-	bool fIsBackground; // background surfaces fill unused pixels with black, rather than transparency - must be set prior to loading
+	bool fIsBackground{false}; // background surfaces fill unused pixels with black, rather than transparency - must be set prior to loading
 #ifdef _DEBUG
-	int *dbg_idx;
+	unsigned int dbg_idx;
 #endif
 #ifndef USE_CONSOLE
 	unsigned int Format;                // used color format in textures
 	CStdGLCtx * pCtx;
 #endif
-	std::vector<C4TexRef> textures;              // textures
+	std::unique_ptr<C4TexRef> texture;
 	C4Surface *pMainSfc;          // main surface for simple ColorByOwner-surfaces
-	C4Surface *pNormalSfc;        // normal map; can be NULL
+	C4Surface *pNormalSfc;        // normal map; can be nullptr
 	DWORD ClrByOwnerClr;          // current color to be used for ColorByOwner-blits
 
 	void MoveFrom(C4Surface *psfcFrom); // grab data from other surface - invalidates other surface
@@ -91,8 +88,6 @@ protected:
 	bool Attached;
 	bool fPrimary;
 
-	bool IsSingleSurface() const { return iTexX*iTexY==1; } // return whether surface is not split
-
 public:
 	void SetBackground() { fIsBackground = true; }
 	int IsLocked() const { return Locked; }
@@ -100,22 +95,9 @@ public:
 	void ClearBoxDw(int iX, int iY, int iWdt, int iHgt);
 	bool Unlock();
 	bool Lock();
-	bool GetTexAt(C4TexRef **ppTexRef, int &rX, int &rY) // get texture and adjust x/y
-	{
-		if (textures.empty()) return false;
-		if (rX < 0 || rY < 0 || rX >= Wdt || rY >= Hgt) return false;
-		if (IsSingleSurface())
-		{
-			*ppTexRef = &textures[0];
-			return true;
-		}
-		return GetTexAtImpl(ppTexRef, rX, rY);
-	}
-	bool GetLockTexAt(C4TexRef **ppTexRef, int &rX, int &rY);  // get texture; ensure it's locked and adjust x/y
 	DWORD GetPixDw(int iX, int iY, bool fApplyModulation);  // get 32bit-px
 	bool IsPixTransparent(int iX, int iY);  // is pixel's alpha value <= 0x7f?
 	bool SetPixDw(int iX, int iY, DWORD dwCol);       // set pix in surface only
-	bool SetPixAlpha(int iX, int iY, BYTE byAlpha);   // adjust alpha value of pixel
 	bool BltPix(int iX, int iY, C4Surface *sfcSource, int iSrcX, int iSrcY, bool fTransparency); // blit pixel from source to this surface (assumes clipped coordinates!)
 	bool Create(int iWdt, int iHgt, int iFlags = 0);
 	bool Copy(C4Surface &fromSfc);
@@ -126,7 +108,7 @@ public:
 #endif
 	// Only for surfaces which map to a window
 	bool UpdateSize(int wdt, int hgt);
-	bool PageFlip(C4Rect *pSrcRt=NULL, C4Rect *pDstRt=NULL);
+	bool PageFlip(C4Rect *pSrcRt=nullptr, C4Rect *pDstRt=nullptr);
 
 	void Clear();
 	void Default();
@@ -149,15 +131,10 @@ public:
 	bool GetSurfaceSize(int &irX, int &irY); // get surface size
 	void SetClr(DWORD toClr) { ClrByOwnerClr=toClr; }
 	DWORD GetClr() { return ClrByOwnerClr; }
-	bool CopyBytes(BYTE *pImageData); // assumes an array of wdt*hgt*bitdepth/8 and copies data directly from it
 private:
 	void MapBytes(BYTE *bpMap);
 	bool ReadBytes(BYTE **lpbpData, void *bpTarget, int iSize);
-	bool CreateTextures(int iFlags); // create ppTex-array
-	void FreeTextures();      // free ppTex-array if existant
 	
-	bool GetTexAtImpl(C4TexRef **ppTexRef, int &rX, int &rY);
-
 	friend class C4Draw;
 	friend class C4Pattern;
 	friend class CStdGL;
@@ -165,8 +142,8 @@ private:
 
 typedef struct _LOCKED_RECT
 {
-	int                 Pitch;
-	unsigned char *     pBits;
+	int                                  Pitch;
+	std::unique_ptr<unsigned char[]>     pBits;
 } LOCKED_RECT;
 
 // one texture encapsulation
@@ -186,15 +163,15 @@ public:
 	C4TexRef(int iSizeX, int iSizeY, int iFlags);   // create texture with given size
 	~C4TexRef();           // release texture
 	bool Lock();          // lock texture
-	// Lock a part of the rect, discarding the content
-	// Note: Calling Lock afterwards without an Unlock first is undefined
+						  // Lock a part of the rect, discarding the content
+						  // Note: Calling Lock afterwards without an Unlock first is undefined
 	bool LockForUpdate(C4Rect &rtUpdate);
 	void Unlock();        // unlock texture
 	bool ClearRect(C4Rect &rtClear); // clear rect in texture to transparent
 	bool FillBlack(); // fill complete texture in black
 	void SetPix(int iX, int iY, DWORD v)
 	{
-		*((DWORD *) (((BYTE *) texLock.pBits) + (iY - LockSize.y) * texLock.Pitch + (iX - LockSize.x) * 4)) = v;
+		*((DWORD *)(((BYTE *)texLock.pBits.get()) + (iY - LockSize.y) * texLock.Pitch + (iX - LockSize.x) * 4)) = v;
 	}
 private:
 	void CreateTexture();

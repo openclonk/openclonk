@@ -23,10 +23,10 @@ local ActMap=
 	{
 		Prototype = Action,
 		Name="Attach",
-		Procedure=DFA_ATTACH,
+		Procedure = DFA_ATTACH,
 		NextAction="Be",
-		Length=1,
-		FacetBase=1,
+		Length = 1,
+		FacetBase = 1,
 		AbortCall = "AttachTargetLost"
 	}
 };
@@ -43,13 +43,11 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	size = data.size ?? 1000;
 	image = data.image ?? Rock;
 	
-	if(timeout_time)
+	if (timeout_time)
 	{
 		var e = AddEffect("TimeOut", this, 1, BoundBy(timeout_time/2, 5, 35), this);
 		e.t = timeout_time;
 	}
-		
-	AddEffect("LifeCheck", to, 1, 0, this);
 	
 	SetAction("Attach", to);
 	var x = -offset.x;
@@ -62,18 +60,11 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	Update();
 }
 
-func FxLifeCheckStop(target, effect, cause, temp)
-{
-	if(temp) return;
-	if(this)
-		this->RemoveObject();
-}
-
 func FxTimeOutTimer(target, effect, time)
 {
 	effect.t -= effect.Interval;
-	if(effect.t > 0) return 1;
-	if(!GetEffect("FadeOut", this))
+	if (effect.t > 0) return 1;
+	if (!GetEffect("FadeOut", this))
 		FadeOut();
 	return 1;
 }
@@ -85,7 +76,7 @@ func FadeOut()
 
 func FxFadeOutTimer(target, effect, time)
 {
-	if(la <= 20) return Close();
+	if (la <= 20) return Close();
 	la -= 15;
 	SetClrModulation(RGBa(lr, lg, lb, la));
 }
@@ -94,8 +85,8 @@ func Update()
 {
 	var p = (current * 100) / maximum;
 	var charge = (255 * p) / 100;
-	var clr;
-	if(clr = image->~GetBarColor(p))
+	var clr = image->~GetBarColor(p);
+	if (clr)
 	{
 		lr = clr.r;
 		lg = clr.g;
@@ -127,9 +118,9 @@ func SetValue(int to)
 {
 	current = BoundBy(to, 0, maximum);;
 	var e = GetEffect("TimeOut", this);
-	if(e)
+	if (e)
 		e.t = timeout_time;
-	if(GetEffect("FadeOut", this))
+	if (GetEffect("FadeOut", this))
 		RemoveEffect("FadeOut", this);
 	Update();
 }
@@ -145,7 +136,7 @@ func Initialize()
 
 func SetParallax(f)
 {
-	if(f)
+	if (f)
 	{
 		SetCategory(GetCategory() | C4D_Parallax);
 		this.Parallaxity = [0, 0];
@@ -160,7 +151,7 @@ func SetParallax(f)
 
 func SetPlane(int to)
 {
-	if(to == nil) return;
+	if (to == nil) return;
 	this.Plane = to;
 	return true;
 }

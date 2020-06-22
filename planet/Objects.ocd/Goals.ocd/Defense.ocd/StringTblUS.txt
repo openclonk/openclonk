@@ -1,0 +1,17 @@
+Name=Defense
+Description=Survive as many attack waves as possible, each wave and eliminated enemy earns you points. You need to survive %d waves (<c cd7f32>bronze</c>), %d waves (<c c0c0c0>silver</c>) or %d waves (<c ffd700>gold</c>) for the star achievement. 
+
+PlayerAttackers=Attackers
+
+MsgWaveCleared=Wave %d done!|<c ffff00>+%d</c>{{Icon_Wealth}}|                                                                           |
+WaveFallBack=Lots of rockets
+
+MsgEvaluationData=You completed %d waves and scored %d points.
+
+MsgCurrentWave=<c ffff00>Current wave (%d):</c>\n
+MsgNextWave=<c ffff00>Next wave:</c>\n
+MsgNoEnemies=No enemies
+MsgFinishedWave=<c ffff00>Finished wave:</c> %d (your highest wave is %d).
+MsgCurrentScore=<c ffff00>Current score:</c> %d (your high score is %d).
+
+MsgScoreboard=Defense: %d points

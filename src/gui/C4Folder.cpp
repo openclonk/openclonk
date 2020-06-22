@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,11 +16,11 @@
 
 /* Core component of a folder */
 
-#include <C4Include.h>
-#include <C4Folder.h>
+#include "C4Include.h"
+#include "gui/C4Folder.h"
 
-#include <C4Group.h>
-#include <C4Components.h>
+#include "c4group/C4Group.h"
+#include "c4group/C4Components.h"
 
 
 //================= C4FolderHead ====================
@@ -51,7 +51,7 @@ bool C4Folder::Load(C4Group &hGroup)
 {
 	char *pSource;
 	// Load
-	if (!hGroup.LoadEntry(C4CFN_FolderCore, &pSource, NULL, 1)) return false;
+	if (!hGroup.LoadEntry(C4CFN_FolderCore, &pSource, nullptr, 1)) return false;
 	// Compile
 	if (!Compile(pSource)) { delete [] pSource; return false; }
 	delete [] pSource;

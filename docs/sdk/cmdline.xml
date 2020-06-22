@@ -56,7 +56,7 @@
       <dd>
         <text>Searches for a network game on the specified address and joins it. No local scenario (*.ocs) should be specified. Implies --network.</text>
       </dd>
-      <dt id="clonkp">clonk://&lt;<em>Address</em>&gt;/</dt>
+      <dt id="clonkp">[open]clonk://&lt;<em>Address</em>&gt;/</dt>
       <dd>
         <text>Same as --join if an address is specified. If "update" is specified as an address, this will cause the engine to perform an update check instead.</text>
       </dd>

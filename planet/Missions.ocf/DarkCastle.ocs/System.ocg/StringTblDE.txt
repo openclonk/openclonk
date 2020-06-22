@@ -1,5 +1,5 @@
-MsgIntro1=Endlich sind wir bei Hörxs Schloss angekommen. Jetzt brauchen wir nur noch einen Platz zum Landen.
-MsgIntro2=Eindringlinge! Schießt sie ab!
+MsgIntro1=Endlich sind wir bei HÃ¶rxs Schloss angekommen. Jetzt brauchen wir nur noch einen Platz zum Landen.
+MsgIntro2=Eindringlinge! SchieÃŸt sie ab!
 MsgIntro3=Aaaaah wir sind getroffen.
-MsgIntro4=Verdammter Hörx und seine Artillerie. Sieht so aus als müssten wir einen anderen Weg in sein Schloss suchen.
-DeathOfBrutus=Bitte komm zurück.
+MsgIntro4=Verdammter HÃ¶rx und seine Artillerie. Sieht so aus als mÃ¼ssten wir einen anderen Weg in sein Schloss suchen.
+DeathOfBrutus=Bitte komm zurÃ¼ck.

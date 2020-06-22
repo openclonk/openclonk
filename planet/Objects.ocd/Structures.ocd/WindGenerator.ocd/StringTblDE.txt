@@ -1,8 +1,8 @@
 Name=Windrad
 Description=Erzeugt Strom bei Wind.
 Efficiency=Wirkungsgrad
-EfficiencyUnknown=Der Wirkungsgrad kann noch nicht geschätzt werden.
+EfficiencyUnknown=Der Wirkungsgrad kann noch nicht geschÃ¤tzt werden.
 EfficiencyGood=Die Lage des Windrads ist sehr gut.
-EfficiencyMedium=Die Lage des Windrads könnte besser sein.
+EfficiencyMedium=Die Lage des Windrads kÃ¶nnte besser sein.
 EfficiencyBad=Die Lage des Windrads ist sehr schlecht.
-EfficiencyGeneral=Der Wirkungsgrad ist höher, wenn in direkter Umgebung der Windmühle mehr freier Himmel ist.
+EfficiencyGeneral=Der Wirkungsgrad ist hÃ¶her, wenn in direkter Umgebung der WindmÃ¼hle mehr freier Himmel ist.

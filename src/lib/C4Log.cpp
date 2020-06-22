@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,21 +17,18 @@
 
 /* Log file handling */
 
-#include <C4Include.h>
-#include <C4Log.h>
+#include "C4Include.h"
+#include "lib/C4Log.h"
 
-#include <C4AulDebug.h>
-#include <C4Console.h>
-#include <C4GameLobby.h>
-#include <C4Game.h>
-#include <C4LogBuf.h>
-#include <C4Language.h>
-#include <C4Network2.h>
-#include <C4GraphicsSystem.h>
-#include <C4Config.h>
-#include <C4Components.h>
-#include <C4Window.h>
-#include <C4Shader.h>
+#include "c4group/C4Components.h"
+#include "editor/C4Console.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4Shader.h"
+#include "gui/C4GameLobby.h"
+#include "lib/C4LogBuf.h"
+#include "network/C4Network2.h"
+#include "platform/C4Window.h"
+#include "script/C4AulDebug.h"
 
 #ifdef HAVE_SYS_FILE_H
 #include <sys/file.h>
@@ -41,8 +38,8 @@
 #include <share.h>
 #endif
 
-FILE *C4LogFile=NULL;
-FILE *C4ShaderLogFile = NULL;
+FILE *C4LogFile=nullptr;
+FILE *C4ShaderLogFile = nullptr;
 time_t C4LogStartTime;
 StdStrBuf sLogFileName;
 
@@ -55,12 +52,18 @@ bool OpenLog()
 #ifdef _WIN32
 	while (!(C4LogFile = _fsopen(Config.AtUserDataPath(sLogFileName.getData()), "wt", _SH_DENYWR)))
 #elif defined(HAVE_SYS_FILE_H)
-	while (!(C4LogFile = fopen(Config.AtUserDataPath(sLogFileName.getData()), "wb")) || flock(fileno(C4LogFile),LOCK_EX|LOCK_NB))
+	int fd = 0;
+	while (!(fd = open(Config.AtUserDataPath(sLogFileName.getData()), O_WRONLY | O_CREAT, 0644)) || flock(fd, LOCK_EX|LOCK_NB))
 #else
 	while (!(C4LogFile = fopen(Config.AtUserDataPath(sLogFileName.getData()), "wb")))
 #endif
 	{
-		if(C4LogFile) fclose(C4LogFile); // Already locked by another instance?
+		// Already locked by another instance?
+#if !defined(_WIN32) && defined(HAVE_SYS_FILE_H)
+		if (fd) close(fd);
+#else
+		if (C4LogFile) fclose(C4LogFile);
+#endif
 		// If the file does not yet exist, the directory is r/o
 		// don't go on then, or we have an infinite loop
 		if (access(Config.AtUserDataPath(sLogFileName.getData()), 0))
@@ -68,6 +71,10 @@ bool OpenLog()
 		// try different name
 		sLogFileName.Format(C4CFN_LogEx, iLog++);
 	}
+#if !defined(_WIN32) && defined(HAVE_SYS_FILE_H)
+	ftruncate(fd, 0);
+	C4LogFile = fdopen(fd, "wb");
+#endif
 	// save start time
 	time(&C4LogStartTime);
 	return true;
@@ -87,7 +94,7 @@ bool OpenExtraLogs()
 		{
 			DebugLog("Couldn't lock shader log file, closing.");
 			fclose(C4ShaderLogFile);
-			C4ShaderLogFile = NULL;
+			C4ShaderLogFile = nullptr;
 		}
 #else
 		C4ShaderLogFile = fopen(Config.AtUserDataPath(C4CFN_LogShader), "wb");
@@ -100,8 +107,10 @@ bool OpenExtraLogs()
 bool CloseLog()
 {
 	// close
-	if (C4ShaderLogFile) fclose(C4ShaderLogFile); C4ShaderLogFile = NULL;
-	if (C4LogFile) fclose(C4LogFile); C4LogFile = NULL;
+	if (C4ShaderLogFile) fclose(C4ShaderLogFile);
+	C4ShaderLogFile = nullptr;
+	if (C4LogFile) fclose(C4LogFile);
+	C4LogFile = nullptr;
 	// ok
 	return true;
 }
@@ -167,13 +176,16 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		if (fConsole)
 		{
 #if defined(_WIN32)
-			// debug: output to VC console
-			OutputDebugString(TimeMessage.GetWideChar());
+			// debug: output to VC console when running with debugger
+			// Otherwise, print to stdout to allow capturing the log.
+			if (IsDebuggerPresent())
+				OutputDebugString(TimeMessage.GetWideChar());
+			else
 #endif
-#if !defined(_WIN32) || defined(USE_CONSOLE)
-			fputs(TimeMessage.getData(),stdout);
-			fflush(stdout);
-#endif
+			{
+				fputs(TimeMessage.getData(),stdout);
+				fflush(stdout);
+			}
 		}
 
 	}

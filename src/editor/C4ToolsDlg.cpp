@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,12 +17,13 @@
 
 /* Drawing tools dialog for landscape editing in console mode */
 
-#include <C4Include.h>
-#include <C4ToolsDlg.h>
-#include <C4Console.h>
-#include <C4Texture.h>
-#include <C4Landscape.h>
-#include <C4GameControl.h>
+#include "C4Include.h"
+#include "editor/C4ToolsDlg.h"
+
+#include "control/C4GameControl.h"
+#include "editor/C4Console.h"
+#include "landscape/C4Texture.h"
+#include "landscape/C4Landscape.h"
 
 bool C4ToolsDlg::Open()
 {
@@ -61,7 +62,7 @@ void C4ToolsDlg::SetMaterial(const char *szMaterial)
 	SCopy(szMaterial,Material,C4M_MaxName);
 	AssertValidTexture();
 	EnableControls();
-	if (::Landscape.Mode==C4LSC_Static) UpdateTextures();
+	if (::Landscape.GetMode() == LandscapeMode::Static) UpdateTextures();
 	NeedPreviewUpdate();
 	if (ModeBack && SEqual(szMaterial, C4TLS_MatSky))
 		SelectBackMaterial(C4TLS_MatSky);
@@ -109,7 +110,7 @@ void C4ToolsDlg::SetBackMaterial(const char *szMaterial)
 	SCopy(szMaterial,BackMaterial,C4M_MaxName);
 	AssertValidBackTexture();
 	EnableControls();
-	if (::Landscape.Mode==C4LSC_Static) UpdateTextures();
+	if (::Landscape.GetMode() == LandscapeMode::Static) UpdateTextures();
 }
 
 void C4ToolsDlg::SetBackTexture(const char *szTexture)
@@ -130,7 +131,7 @@ void C4ToolsDlg::SetBackTexture(const char *szTexture)
 bool C4ToolsDlg::SetIFT(bool fIFT)
 {
 	ModeBack = false;
-	if (fIFT) ModeIFT = 1; else ModeIFT=0;
+	if (fIFT) ModeIFT = true; else ModeIFT=false;
 
 	// Keep sensible default values in BackMaterial / BackTexture
 	if (ModeIFT == 0)
@@ -145,7 +146,7 @@ bool C4ToolsDlg::SetIFT(bool fIFT)
 		{
 			BYTE bg_index = ::TextureMap.DefaultBkgMatTex(index);
 			const C4TexMapEntry* entry = ::TextureMap.GetEntry(bg_index);
-			if (entry != NULL)
+			if (entry != nullptr)
 			{
 				SCopy(entry->GetMaterialName(), BackMaterial, C4M_MaxName);
 				SCopy(entry->GetTextureName(), BackTexture, C4M_MaxName);
@@ -177,30 +178,32 @@ bool C4ToolsDlg::ChangeGrade(int32_t iChange)
 	return true;
 }
 
-bool C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
+bool C4ToolsDlg::SetLandscapeMode(LandscapeMode mode, bool flat_chunk_shapes, bool fThroughControl)
 {
-	int32_t iLastMode=::Landscape.Mode;
+	auto last_mode = ::Landscape.GetMode();
+	auto last_flat_chunk_shapes = ::Game.C4S.Landscape.FlatChunkShapes;
 	// Exact to static: confirm data loss warning
-	if (iLastMode==C4LSC_Exact)
-		if (iMode==C4LSC_Static)
+	if (last_mode == LandscapeMode::Exact)
+		if (mode == LandscapeMode::Static)
 			if (!fThroughControl)
-				if (!Console.Message(LoadResStr("IDS_CNS_EXACTTOSTATIC"),true))
+				if (!Console.Message(LoadResStr("IDS_CNS_EXACTTOSTATIC"), true))
 					return false;
 	// send as control
 	if (!fThroughControl)
 	{
-		::Control.DoInput(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_SetMode, iMode), CDT_Decide);
+		::Control.DoInput(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_SetMode, mode, flat_chunk_shapes ? 1 : 0), CDT_Decide);
 		return true;
 	}
 	// Set landscape mode
-	::Landscape.SetMode(iMode);
+	::Game.C4S.Landscape.FlatChunkShapes = flat_chunk_shapes;
+	::Landscape.SetMode(mode);
 	// Exact to static: redraw landscape from map
-	if (iLastMode==C4LSC_Exact)
-		if (iMode==C4LSC_Static)
+	if (last_mode == LandscapeMode::Exact || (last_flat_chunk_shapes != flat_chunk_shapes))
+		if (mode == LandscapeMode::Static)
 			::Landscape.MapToLandscape();
 	// Assert valid tool
-	if (iMode!=C4LSC_Exact)
-		if (SelectedTool==C4TLS_Fill)
+	if (mode != LandscapeMode::Exact)
+		if (SelectedTool == C4TLS_Fill)
 			SetTool(C4TLS_Brush, false);
 	// Update controls
 	UpdateLandscapeModeCtrls();
@@ -212,8 +215,9 @@ bool C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
 
 void C4ToolsDlg::AssertValidTexture()
 {
+#ifndef WITH_QT_EDITOR // Qt Editor textures are always valid, because MatTex entries are selected directly
 	// Static map mode only
-	if (::Landscape.Mode!=C4LSC_Static) return;
+	if (::Landscape.GetMode() != LandscapeMode::Static) return;
 	// Ignore if sky
 	if (SEqual(Material,C4TLS_MatSky)) return;
 	// Current material-texture valid
@@ -226,12 +230,13 @@ void C4ToolsDlg::AssertValidTexture()
 			{ SelectTexture(szTexture); return; }
 	}
 	// No valid texture found
+#endif
 }
 
 void C4ToolsDlg::AssertValidBackTexture()
 {
 	// Static map mode only
-	if (::Landscape.Mode!=C4LSC_Static) return;
+	if (::Landscape.GetMode() != LandscapeMode::Static) return;
 	// Ignore if not enabled
 	if (!ModeBack) return;
 	// Ignore if sky
@@ -248,30 +253,30 @@ void C4ToolsDlg::AssertValidBackTexture()
 	// No valid texture found
 }
 
-bool C4ToolsDlg::SelectTexture(const char *szTexture)
+bool C4ToolsDlg::SelectTexture(const char *szTexture, bool by_console_gui)
 {
-	Console.ToolsDlgSelectTexture(this, szTexture);
+	if (!by_console_gui) Console.ToolsDlgSelectTexture(this, szTexture);
 	SetTexture(szTexture);
 	return true;
 }
 
-bool C4ToolsDlg::SelectMaterial(const char *szMaterial)
+bool C4ToolsDlg::SelectMaterial(const char *szMaterial, bool by_console_gui)
 {
-	Console.ToolsDlgSelectMaterial(this, szMaterial);
+	if (!by_console_gui) Console.ToolsDlgSelectMaterial(this, szMaterial);
 	SetMaterial(szMaterial);
 	return true;
 }
 
-bool C4ToolsDlg::SelectBackTexture(const char *szTexture)
+bool C4ToolsDlg::SelectBackTexture(const char *szTexture, bool by_console_gui)
 {
-	Console.ToolsDlgSelectBackTexture(this, szTexture);
+	if (!by_console_gui) Console.ToolsDlgSelectBackTexture(this, szTexture);
 	SetBackTexture(szTexture);
 	return true;
 }
 
-bool C4ToolsDlg::SelectBackMaterial(const char *szMaterial)
+bool C4ToolsDlg::SelectBackMaterial(const char *szMaterial, bool by_console_gui)
 {
-	Console.ToolsDlgSelectBackMaterial(this, szMaterial);
+	if (!by_console_gui) Console.ToolsDlgSelectBackMaterial(this, szMaterial);
 	SetBackMaterial(szMaterial);
 	return true;
 }

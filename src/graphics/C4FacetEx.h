@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,50 +20,12 @@
 #ifndef INC_C4FacetEx
 #define INC_C4FacetEx
 
-#include <C4Facet.h>
-#include <C4Surface.h>
+#include "graphics/C4Facet.h"
+#include "graphics/C4Surface.h"
 
 const int C4FCT_Full   = -1,
           C4FCT_Height = -2,
           C4FCT_Width  = -3;
-
-class C4TargetFacet: public C4Facet
-{
-public:
-	C4TargetFacet() { Default(); }
-	~C4TargetFacet() { }
-public:
-	float TargetX,TargetY,Zoom;
-
-	// Reference values for parallax computations. This is similar to
-	// a scrolling position. In most cases these are the same as TargetX
-	// and TargetY, however for full map screenshots, which are composed
-	// of several individual screenshots, these are kept fixed while
-	// TargetX/TargetY are varied to cover the full map. This prevents
-	// duplicate parallax objects in fullscreen map screenshots. If
-	// TargetX/TargetY are different from ParRefX/ParRefY it can be thought
-	// of as drawing only a part of a window/viewport at a given fixed
-	// scroll position.
-	// See bug #1042.
-	float ParRefX, ParRefY;
-public:
-	void Default() { TargetX=TargetY=0; Zoom=1; ParRefX=ParRefY=0; C4Facet::Default(); }
-	void Clear() { Surface=NULL; }
-
-	void Set(const C4Facet &cpy) { TargetX=TargetY=0; Zoom=1; ParRefX=ParRefY=0; C4Facet::Set(cpy); }
-	void Set(const C4TargetFacet &cpy) { *this = cpy; }
-	void Set(class C4Surface *nsfc, float nx, float ny, float nwdt, float nhgt, float ntx=0, float nty=0, float Zoom=1);
-	void Set(class C4Surface *nsfc, const C4Rect & r, float ntx=0, float nty=0, float Zoom=1);
-	void Set(class C4Surface *nsfc, float nx, float ny, float nwdt, float nhgt, float ntx, float nty, float Zoom, float prx, float pry);
-
-public:
-	C4TargetFacet &operator = (const C4Facet& rhs)
-	{
-		Set(rhs.Surface,rhs.X,rhs.Y,rhs.Wdt,rhs.Hgt);
-		return *this;
-	}
-	void SetRect(C4TargetRect &rSrc);
-};
 
 // facet that can hold its own surface
 class C4FacetSurface : public C4Facet
@@ -106,9 +68,9 @@ public:
 class C4FacetID : public C4FacetSurface
 {
 public:
-	int32_t idSourceGroup;
+	int32_t idSourceGroup{0};
 
-	C4FacetID() : C4FacetSurface(), idSourceGroup(0) { } // ctor
+	C4FacetID() : C4FacetSurface() { } // ctor
 
 	void Default() { C4FacetSurface::Default(); idSourceGroup = 0; } // default to std values
 	void Clear() { C4FacetSurface::Clear(); idSourceGroup = 0; } // clear all data in class

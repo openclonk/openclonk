@@ -6,7 +6,7 @@
   <func>
     <title>GetPathLength</title>
     <category>Landscape</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -29,6 +29,11 @@
           <type>int</type>
           <name>endy</name>
           <desc>Y coordinate of end position. Always global coordinate.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>depth</name>
+          <desc>Determines search depth of the pathfinder algorithm (range from 1 - 10 with default 1). Warning: higher values may slow down the game. See also the PathFinder entry in the <emlink href="definition/properties.html">DefCore</emlink>.</desc>
         </param>
       </params>
     </syntax>

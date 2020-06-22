@@ -13,14 +13,15 @@ protected func Initialize()
 	var goal = CreateObject(Goal_KingOfTheHill, 555, 250, NO_OWNER);
 	goal->SetRadius(80);
 	goal->SetPointLimit(6);
-	AddEffect("BlessTheKing",goal,100,1,nil);
+	AddEffect("BlessTheKing",goal, 100, 1, nil);
 	// Objects fade after 7 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
 	CreateObject(Rule_KillLogs);
-	CreateObject(Rule_Gravestones);
+	CreateObject(Rule_Gravestones)->SetFadeOut(3 * 36);
+	GetRelaunchRule()->SetLastWeaponUse(false);
 	
 	//make lava collapse
-	CreateObjectAbove(Firestone,625,480);
+	CreateObjectAbove(Firestone, 625, 480);
 
 	// Chests with weapons.
 	CreateObjectAbove(Chest, 320, 80, NO_OWNER)->MakeInvincible();
@@ -49,7 +50,7 @@ protected func Initialize()
 	brick->MoveVertical(0, LandscapeHeight(), 6);
 	AddEffect("LavaBrickReset", brick, 100, 10);
 	
-	AddEffect("DeathByFire",nil,100,2,nil);
+	AddEffect("DeathByFire",nil, 100, 2, nil);
 	return;
 }
 
@@ -72,7 +73,7 @@ global func FxBlessTheKingTimer(object target, effect fx, int timer)
 		if (!fx.koth_location) return FX_OK;
 	}
 	var king = fx.koth_location->GetKing(); 
-	if(king == nil) return 1;
+	if (king == nil) return 1;
 
 	var item = king->GetHandItem(0);
 	if (item) item->~MakeKingSize();
@@ -89,7 +90,7 @@ global func FxDeathByFireStart(object target, effect fx, bool temp)
 
 global func FxDeathByFireTimer(object target, effect fx, int timer)
 {
-	for(var obj in FindObjects(Find_InRect(55,0,50,70), Find_Category(C4D_Object | C4D_Living)))
+	for (var obj in FindObjects(Find_InRect(55, 0, 50, 70), Find_Category(C4D_Object | C4D_Living)))
 	{
 		if (obj->GetAlive())
 			obj->Kill();
@@ -100,12 +101,12 @@ global func FxDeathByFireTimer(object target, effect fx, int timer)
 		}
 	}
 
-	CreateParticle("Fire", PV_Random(55, 90), PV_Random(0, 40), PV_Random(-1, 1), PV_Random(0, 20), PV_Random(10, 40), fx.particles, 20);
+	CreateParticle("Fire", PV_Random(55, 95), PV_Random(0, 40), PV_Random(-1, 1), PV_Random(0, 20), PV_Random(10, 40), fx.particles, 20);
 }
 
 global func FxLavaBrickResetTimer(object target, effect, int timer)
 {
-	if(target->GetY() < 10)
+	if (target->GetY() < 10)
 		target->SetPosition(target->GetX(),LandscapeHeight()-10);
 	return 1;
 }
@@ -113,12 +114,12 @@ global func FxLavaBrickResetTimer(object target, effect, int timer)
 // Refill/fill chests.
 global func FxIntFillChestsStart(object target, effect, int temporary)
 {
-	if(temporary) return 1;
+	if (temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));
-	var w_list = [Bow, Musket, Shield, Sword, Club, Javelin, Bow, Musket, Shield, Sword, Club, Javelin, DynamiteBox];
+	var w_list = [Bow, Blunderbuss, Shield, Sword, Club, Javelin, Bow, Blunderbuss, Shield, Sword, Club, Javelin, DynamiteBox];
 	
-	for(var chest in chests)
-		for(var i=0; i<4; ++i)
+	for (var chest in chests)
+		for (var i = 0; i<4; ++i)
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
 }
@@ -127,8 +128,8 @@ global func FxIntFillChestsTimer()
 {
 	SetTemperature(100); 
 	var chests = FindObjects(Find_ID(Chest));
-	var w_list = [IronBomb, Rock, IronBomb, Firestone, Firestone, Bow, Musket, Sword, Javelin];
-	for(var chest in chests)
+	var w_list = [IronBomb, Rock, IronBomb, Firestone, Firestone, Bow, Blunderbuss, Sword, Javelin];
+	for (var chest in chests)
 		if (chest->ContentsCount() < 5 )
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
@@ -141,37 +142,15 @@ global func CreateChestContents(id obj_id)
 	var obj = CreateObjectAbove(obj_id);
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
-	if (obj_id == Musket)
-		obj->CreateContents(LeadShot);
+	if (obj_id == Blunderbuss)
+		obj->CreateContents(LeadBullet);
 	obj->Enter(this);
 	return;
 }
 
-protected func InitializePlayer(int plr)
+public func RelaunchPosition()
 {
-	return JoinPlayer(plr);
+	return [[420, 200],[300, 440],[130, 176],[140, 368],[700, 192],[670, 336],[750, 440],[440, 392],[45, 256]];
 }
 
-// GameCall from RelaunchContainer.
-protected func RelaunchPlayer(int plr)
-{
-	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
-	JoinPlayer(plr);
-	return;
-}
-
-protected func JoinPlayer(int plr)
-{
-	var clonk = GetCrew(plr);
-	clonk->DoEnergy(100000);
-	var position = [[420,200],[300,440],[130,176],[140,368],[700,192],[670,336],[750,440],[440,392],[45,256]];
-	var r=Random(GetLength(position));
-	var x = position[r][0], y = position[r][1];
-	var relaunch = CreateObjectAbove(RelaunchContainer, x, y, clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	return;
-}
-
-func RelaunchWeaponList() { return [Bow, Shield, Sword, Javelin, Musket, Club]; }
+func RelaunchWeaponList() { return [Bow, Shield, Sword, Javelin, Blunderbuss, Club]; }

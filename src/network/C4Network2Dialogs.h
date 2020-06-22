@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,10 @@
 #ifndef INC_C4Network2Dialogs
 #define INC_C4Network2Dialogs
 
-#include "C4Gui.h"
+#include "gui/C4Gui.h"
 
-#include "C4Scenario.h"
-#include "C4Network2Res.h"
+#include "landscape/C4Scenario.h"
+#include "network/C4Network2Res.h"
 
 class C4Graph;
 
@@ -32,10 +32,10 @@ protected:
 	int iClientID; // ID of client info is shown about
 
 protected:
-	virtual void UpdateText(); // compose message text
+	void UpdateText() override; // compose message text
 	virtual int GetUpdateInterval() { return 500; } // update every 0.5 seconds
 
-	virtual const char *GetID() { return "ClientDialog"; }
+	const char *GetID() override { return "ClientDialog"; }
 
 public:
 	C4Network2ClientDlg(int iForClientID); // ctor
@@ -77,13 +77,13 @@ private:
 
 public:
 	C4Network2ResDlg(const C4Rect &rcBounds, bool fActive);
-	~C4Network2ResDlg() { Deactivate(); }
+	~C4Network2ResDlg() override { Deactivate(); }
 
 	// enable/disable updates by timer calls
 	void Activate(); void Deactivate();
 
 	// update by resources
-	void OnSec1Timer() { Update(); }
+	void OnSec1Timer() override { Update(); }
 	void Update();
 };
 
@@ -126,7 +126,7 @@ private:
 	public:
 		ClientListItem(class C4Network2ClientListBox *pForDlg, int iClientID); // ctor
 
-		virtual void Update(); // update data
+		void Update() override; // update data
 		const C4Client *GetClient() const; // get client by associated ID
 
 		void OnButtonActivate(C4GUI::Control *pButton);
@@ -142,14 +142,14 @@ private:
 		// subcomponents
 		C4GUI::Label *pDesc;       // connection description
 		C4GUI::Label *pPing;       // connection ping
-		C4GUI::IconButton *pReconnectBtn, *pDisconnectBtn; // buttons to restore/destroy connection
+		C4GUI::IconButton *pDisconnectBtn; // button to destroy connection
 
 	public:
 		ConnectionListItem(class C4Network2ClientListBox *pForDlg, int32_t iClientID, int32_t iConnectionID); // ctor
 
-		virtual void Update(); // update data
+		void Update() override; // update data
 		C4Network2IOConnection *GetConnection() const; // get connection by connection ID
-		virtual int32_t GetConnectionID() const { return iConnID; }
+		int32_t GetConnectionID() const override { return iConnID; }
 
 		void OnButtonReconnect(C4GUI::Control *pButton);
 		void OnButtonDisconnect(C4GUI::Control *pButton);
@@ -162,10 +162,10 @@ private:
 
 public:
 	C4Network2ClientListBox(C4Rect &rcBounds, bool fStartup);
-	~C4Network2ClientListBox();
+	~C4Network2ClientListBox() override;
 
 	// update by client list
-	void OnSec1Timer() { Update(); }
+	void OnSec1Timer() override { Update(); }
 	void Update();
 
 	bool IsStartup() { return fStartup; }
@@ -183,12 +183,12 @@ private:
 
 	static C4Network2ClientListDlg *pInstance; // singleton-instance
 
-	virtual const char *GetID() { return "ClientListDialog"; }
+	const char *GetID() override { return "ClientListDialog"; }
 public:
 	C4Network2ClientListDlg();
-	~C4Network2ClientListDlg();
+	~C4Network2ClientListDlg() override;
 
-	void OnSec1Timer() { Update(); }
+	void OnSec1Timer() override { Update(); }
 	void Update();
 	void OnSound(class C4Client *singer); // mark the specified client
 
@@ -200,16 +200,16 @@ public:
 class C4Network2StartWaitDlg : public C4GUI::Dialog
 {
 private:
-	C4Network2ClientListBox *pClientListBox;
+	C4Network2ClientListBox *pClientListBox{nullptr};
 
 	enum { DialogWidth = 250, DialogHeight = 300 };
 
 protected:
-	virtual const char *GetID() { return "NetStartWaitDialog"; }
+	const char *GetID() override { return "NetStartWaitDialog"; }
 
 public:
 	C4Network2StartWaitDlg();
-	~C4Network2StartWaitDlg() { }
+	~C4Network2StartWaitDlg() override = default;
 };
 
 // button area for some game options during lobby and scenario selection time
@@ -221,7 +221,7 @@ private:
 
 public:
 	C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, bool fHost, bool fLobby);
-	~C4GameOptionButtons() {}
+	~C4GameOptionButtons() override = default;
 
 	void SetCountdown(bool fToVal);
 protected:
@@ -244,11 +244,11 @@ protected:
 	const C4Graph *pDisplayGraph;
 	bool fOwnGraph;
 
-	virtual void DrawElement(C4TargetFacet &cgo); // draw the chart
+	void DrawElement(C4TargetFacet &cgo) override; // draw the chart
 
 public:
 	C4Chart(C4Rect &rcBounds);
-	virtual ~C4Chart();
+	~C4Chart() override;
 
 	void SetGraph(const C4Graph *pNewGraph, bool fOwn) { pDisplayGraph = pNewGraph; fOwnGraph = fOwn; }
 };
@@ -257,7 +257,7 @@ public:
 class C4ChartDialog : public C4GUI::Dialog
 {
 private:
-	C4GUI::Tabular *pChartTabular;
+	C4GUI::Tabular *pChartTabular{nullptr};
 
 	// singleton-stuff
 	static C4ChartDialog *pChartDlg;
@@ -267,13 +267,13 @@ private:
 	void AddChart(const StdStrBuf &rszName);
 
 protected:
-	virtual const char *GetID() { return "ChartDialog"; }
+	const char *GetID() override { return "ChartDialog"; }
 
 public:
 	C4ChartDialog();
 
 	// singleton-stuff
-	~C4ChartDialog() { if (pChartDlg==this) pChartDlg = NULL; }
+	~C4ChartDialog() override { if (pChartDlg==this) pChartDlg = nullptr; }
 	static void Toggle();
 };
 

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,20 +17,18 @@
 
 /* Holds crew member information */
 
-#include <C4Include.h>
-#include <C4ObjectInfo.h>
+#include "C4Include.h"
+#include "object/C4ObjectInfo.h"
 
-#include <C4DefList.h>
-#include <C4Random.h>
-#include <C4Components.h>
-#include <C4Game.h>
-#include <C4Config.h>
-#include <C4Application.h>
-#include <C4RankSystem.h>
-#include <C4Log.h>
-#include <C4Player.h>
-#include <C4GraphicsResource.h>
-#include <C4PlayerList.h>
+#include "c4group/C4Components.h"
+#include "game/C4Application.h"
+#include "graphics/C4GraphicsResource.h"
+#include "lib/C4Random.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "player/C4RankSystem.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -48,27 +46,29 @@ C4ObjectInfo::~C4ObjectInfo()
 
 void C4ObjectInfo::Default()
 {
-	WasInAction=false;
-	InAction=false;
-	InActionTime=0;
-	HasDied=false;
-	ControlCount=0;
-	Filename[0]=0;
-	Next=NULL;
-	pDef = NULL;
+	WasInAction = false;
+	InAction = false;
+	InActionTime = 0;
+	HasDied = false;
+	ControlCount = 0;
+	Filename[0] = 0;
+	Next = nullptr;
+	pDef = nullptr;
 }
 
 bool C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname)
 {
-
 	// New version
-	if (SEqualNoCase(GetExtension(szEntryname),"oci"))
+	if (SEqualNoCase(GetExtension(szEntryname), "oci")) // TODO: Define file extensions in a static constant
 	{
 		C4Group hChild;
 		if (hChild.OpenAsChild(&hMother,szEntryname))
 		{
 			if (!C4ObjectInfo::Load(hChild))
-				{ hChild.Close(); return false; }
+			{
+				hChild.Close();
+				return false;
+			}
 			// resolve definition, if possible
 			// only works in game, but is not needed in frontend or startup editing anyway
 			pDef = C4Id2Def(id);
@@ -83,10 +83,9 @@ bool C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname)
 bool C4ObjectInfo::Load(C4Group &hGroup)
 {
 	// Store group file name
-	SCopy(GetFilename(hGroup.GetName()),Filename,_MAX_FNAME);
+	SCopy(GetFilename(hGroup.GetName()), Filename, _MAX_FNAME);
 	// Load core
-	if (!C4ObjectInfoCore::Load(hGroup)) return false;
-	return true;
+	return C4ObjectInfoCore::Load(hGroup);
 }
 
 bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
@@ -95,22 +94,30 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 	char szTempGroup[_MAX_PATH+1];
 	SCopy(Name, szTempGroup, _MAX_PATH);
 	MakeFilenameFromTitle(szTempGroup);
-	SAppend(".oci",szTempGroup, _MAX_PATH);
+	SAppend(".oci", szTempGroup, _MAX_PATH); // TODO: File extension again, this time with a dot
 	if (!SEqualNoCase(Filename, szTempGroup))
 	{
 		if (!Filename[0])
 		{
-			// first time creation of file - make sure it's not a duplicate
+			// First time creation of file - make sure it's not a duplicate
 			SCopy(szTempGroup, Filename, _MAX_PATH);
 			while (hGroup.FindEntry(Filename))
 			{
-				// if a crew info of that name exists already, rename!
+				// If a crew info of that name exists already, rename!
 				RemoveExtension(Filename);
-				int32_t iFinNum = GetTrailingNumber(Filename), iLen = SLen(Filename);
-				while (iLen && Inside(Filename[iLen-1], '0', '9')) --iLen;
-				if (iLen>_MAX_PATH-22) { LogF("Error generating unique filename for %s(%s): Path overflow", Name, hGroup.GetFullName().getData()); break; }
+				int32_t iFinNum = GetTrailingNumber(Filename);
+				int32_t iLen = SLen(Filename);
+				while (iLen && Inside(Filename[iLen-1], '0', '9'))
+				{
+					--iLen;
+				}
+				if (iLen > _MAX_PATH-22)
+				{
+					LogF("Error generating unique filename for %s(%s): Path overflow", Name, hGroup.GetFullName().getData());
+					break;
+				}
 				snprintf(Filename+iLen, 22, "%d", iFinNum+1);
-				EnforceExtension(Filename, "oci");
+				EnforceExtension(Filename, "oci"); // TODO: File extension again
 			}
 		}
 		else
@@ -119,10 +126,12 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 			if (!hGroup.FindEntry(szTempGroup))
 			{
 				if (hGroup.Rename(Filename, szTempGroup))
+				{
 					SCopy(szTempGroup, Filename, _MAX_PATH);
+				}
 				else
 				{
-					// could not rename. Not fatal; just use old file
+					// Could not rename. Not fatal; just use old file
 					LogF("Error adjusting crew info for %s into %s: Rename error from %s to %s!", Name, hGroup.GetFullName().getData(), Filename, szTempGroup);
 				}
 			}
@@ -131,8 +140,10 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 	// Open group
 	C4Group hTemp;
 	if (!hTemp.OpenAsChild(&hGroup, Filename, false, true))
+	{
 		return false;
-	// custom rank image present?
+	}
+	// Custom rank image present?
 	if (pDefs && !fStoreTiny)
 	{
 		C4Def *pDef = pDefs->ID2Def(id);
@@ -156,7 +167,10 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 
 	// Save info to temp group
 	if (!C4ObjectInfoCore::Save(hTemp, pDefs))
-		{ hTemp.Close(); return false; }
+	{
+		hTemp.Close();
+		return false;
+	}
 	// Close temp group
 	hTemp.Close();
 	// Success
@@ -166,40 +180,52 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 void C4ObjectInfo::Evaluate()
 {
 	Retire();
-	if (WasInAction) Rounds++;
+	if (WasInAction)
+	{
+		Rounds++;
+	}
 }
 
 void C4ObjectInfo::Clear()
 {
-	pDef=NULL;
+	pDef = nullptr;
 }
 
 void C4ObjectInfo::Recruit()
 {
-	// already recruited?
-	if (InAction) return;
-	WasInAction=true;
-	InAction=true;
-	InActionTime=Game.Time;
-	// rank name overload by def?
-	C4Def *pDef=::Definitions.ID2Def(id);
-	if (pDef) if (pDef->pRankNames)
+	// Already recruited?
+	if (InAction)
+	{
+		return;
+	}
+	WasInAction = true;
+	InAction = true;
+	InActionTime = Game.Time;
+	// Rank name overload by def?
+	C4Def *pDef = ::Definitions.ID2Def(id);
+	if (pDef && pDef->pRankNames)
+	{
+		StdStrBuf sRank(pDef->pRankNames->GetRankName(Rank, true));
+		if (sRank)
 		{
-			StdStrBuf sRank(pDef->pRankNames->GetRankName(Rank, true));
-			if (sRank) sRankName.Copy(sRank);
+			sRankName.Copy(sRank);
 		}
+	}
 }
 
 void C4ObjectInfo::Retire()
 {
-	// not recruited?
-	if (!InAction) return;
+	// Not recruited?
+	if (!InAction)
+	{
+		return;
+	}
 	// retire
-	InAction=false;
-	TotalPlayingTime+=(Game.Time-InActionTime);
+	InAction = false;
+	TotalPlayingTime += (Game.Time - InActionTime);
 }
 
 void C4ObjectInfo::SetBirthday()
 {
-	Birthday=time(NULL);
+	Birthday = time(nullptr);
 }

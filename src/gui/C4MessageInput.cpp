@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,27 +15,25 @@
  */
 // handles input dialogs, last-message-buffer, MessageBoard-commands
 
-#include <C4Include.h>
-#include <C4MessageInput.h>
+#include "C4Include.h"
+#include "gui/C4MessageInput.h"
 
-#include <C4Game.h>
-#include <C4Object.h>
-#include <C4Gui.h>
-#include <C4Console.h>
-#include <C4Application.h>
-#include <C4Log.h>
-#include <C4Player.h>
-#include <C4GameLobby.h>
-#include <C4GraphicsSystem.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
-#include <C4GraphicsResource.h>
+#include "control/C4GameControl.h"
+#include "editor/C4Console.h"
+#include "game/C4Application.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4Gui.h"
+#include "gui/C4GameLobby.h"
+#include "object/C4Object.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 // --------------------------------------------------
 // C4ChatInputDialog
 
 // singleton
-C4ChatInputDialog *C4ChatInputDialog::pInstance = NULL;
+C4ChatInputDialog *C4ChatInputDialog::pInstance = nullptr;
 
 // helper func: Determine whether input text is good for a chat-style-layout dialog
 bool IsSmallInputQuery(const char *szInputQuery)
@@ -49,7 +47,7 @@ bool IsSmallInputQuery(const char *szInputQuery)
 }
 
 C4ChatInputDialog::C4ChatInputDialog(bool fObjInput, C4Object *pScriptTarget, bool fUppercase, bool fTeam, int32_t iPlr, const StdStrBuf &rsInputQuery)
-		: C4GUI::InputDialog(fObjInput ? rsInputQuery.getData() : LoadResStrNoAmp("IDS_CTL_CHAT"), NULL, C4GUI::Ico_None, NULL, !fObjInput || IsSmallInputQuery(rsInputQuery.getData())),
+		: C4GUI::InputDialog(fObjInput ? rsInputQuery.getData() : LoadResStrNoAmp("IDS_CTL_CHAT"), nullptr, C4GUI::Ico_None, nullptr, !fObjInput || IsSmallInputQuery(rsInputQuery.getData())),
 		fObjInput(fObjInput), fUppercase(fUppercase), pTarget(pScriptTarget), iPlr(iPlr), BackIndex(-1), fProcessed(false)
 {
 	// singleton-var
@@ -79,7 +77,7 @@ C4ChatInputDialog::~C4ChatInputDialog()
 	delete pKeyPlrControl;
 	delete pKeyGamepadControl;
 	delete pKeyBackClose;
-	if (this==pInstance) pInstance=NULL;
+	if (this==pInstance) pInstance=nullptr;
 }
 
 void C4ChatInputDialog::OnChatCancel()
@@ -116,8 +114,8 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 	// no double processing
 	if (fProcessed) return C4GUI::Edit::IR_CloseDlg;
 	// get edit text
-	C4GUI::Edit *pEdt = reinterpret_cast<C4GUI::Edit *>(edt);
-	char *szInputText = const_cast<char *>(pEdt->GetText());
+	auto *pEdt = reinterpret_cast<C4GUI::Edit *>(edt);
+	auto *szInputText = const_cast<char *>(pEdt->GetText());
 	// Store to back buffer
 	::MessageInput.StoreBackBuffer(szInputText);
 	// script queried input?
@@ -169,7 +167,7 @@ bool C4ChatInputDialog::KeyHistoryUpDown(bool fUp)
 bool C4ChatInputDialog::KeyPlrControl(const C4KeyCodeEx &key)
 {
 	// Control pressed while doing this key: Reroute this key as a player-control
-	Game.DoKeyboardInput(WORD(key.Key), KEYEV_Down, !!(key.dwShift & KEYS_Alt), false, !!(key.dwShift & KEYS_Shift), key.IsRepeated(), NULL, true);
+	Game.DoKeyboardInput(WORD(key.Key), KEYEV_Down, !!(key.dwShift & KEYS_Alt), false, !!(key.dwShift & KEYS_Shift), key.IsRepeated(), nullptr, true);
 	// mark as processed, so it won't get any double processing
 	return true;
 }
@@ -179,7 +177,7 @@ bool C4ChatInputDialog::KeyGamepadControlDown(const C4KeyCodeEx &key)
 	// filter gamepad control
 	if (!Key_IsGamepad(key.Key)) return false;
 	// forward it
-	Game.DoKeyboardInput(key.Key, KEYEV_Down, false, false, false, key.IsRepeated(), NULL, true);
+	Game.DoKeyboardInput(key.Key, KEYEV_Down, false, false, false, key.IsRepeated(), nullptr, true);
 	return true;
 }
 
@@ -188,7 +186,7 @@ bool C4ChatInputDialog::KeyGamepadControlUp(const C4KeyCodeEx &key)
 	// filter gamepad control
 	if (!Key_IsGamepad(key.Key)) return false;
 	// forward it
-	Game.DoKeyboardInput(key.Key, KEYEV_Up, false, false, false, key.IsRepeated(), NULL, true);
+	Game.DoKeyboardInput(key.Key, KEYEV_Up, false, false, false, key.IsRepeated(), nullptr, true);
 	return true;
 }
 
@@ -197,7 +195,7 @@ bool C4ChatInputDialog::KeyGamepadControlPressed(const C4KeyCodeEx &key)
 	// filter gamepad control
 	if (!Key_IsGamepad(key.Key)) return false;
 	// forward it
-	Game.DoKeyboardInput(key.Key, KEYEV_Pressed, false, false, false, key.IsRepeated(), NULL, true);
+	Game.DoKeyboardInput(key.Key, KEYEV_Pressed, false, false, false, key.IsRepeated(), nullptr, true);
 	return true;
 }
 
@@ -249,7 +247,7 @@ bool C4MessageInput::Init()
 void C4MessageInput::Default()
 {
 	// clear backlog
-	for (int32_t cnt=0; cnt<C4MSGB_BackBufferMax; cnt++) BackBuffer[cnt][0]=0;
+	for (auto & cnt : BackBuffer) cnt[0]=0;
 }
 
 void C4MessageInput::Clear()
@@ -287,7 +285,7 @@ bool C4MessageInput::KeyStartTypeIn(bool fTeam)
 	// fullscreen only
 	if (Application.isEditor) return false;
 	// OK, start typing
-	return StartTypeIn(false, NULL, false, fTeam);
+	return StartTypeIn(false, nullptr, false, fTeam);
 }
 
 bool C4MessageInput::ToggleTypeIn()
@@ -315,7 +313,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 	// helper variables
 	char OSTR[402]; // cba
 	C4ControlMessageType eMsgType;
-	const char *szMsg = NULL;
+	const char *szMsg = nullptr;
 	int32_t iToPlayer = -1;
 
 	// Starts with '^', "team:" or "/team ": Team message
@@ -415,7 +413,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 			SCopy(szMsg, szMessage, std::min<ptrdiff_t>(C4MaxMessage, szEnd - szMsg + 1));
 		}
 		// get sending player (if any)
-		C4Player *pPlr = Game.IsRunning ? ::Players.GetLocalByIndex(0) : NULL;
+		C4Player *pPlr = Game.IsRunning ? ::Players.GetLocalByIndex(0) : nullptr;
 		// send
 		::Control.DoInput(CID_Message,
 		                  new C4ControlMessage(eMsgType, szMessage, pPlr ? pPlr->Number : -1, iToPlayer),
@@ -460,7 +458,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	{
 		// get player name from input text
 		int iSepPos = SCharPos(' ', pCmdPar, 0);
-		C4PlayerInfo *pNfo=NULL;
+		C4PlayerInfo *pNfo=nullptr;
 		int32_t idLocalClient = -1;
 		if (::Network.Clients.GetLocal()) idLocalClient = ::Network.Clients.GetLocal()->getID();
 		if (iSepPos>0)
@@ -478,7 +476,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		else
 			// no player name: Set local player
 			pNfo = Game.PlayerInfos.GetPrimaryInfoByClientID(idLocalClient);
-		C4ClientPlayerInfos *pCltNfo=NULL;
+		C4ClientPlayerInfos *pCltNfo=nullptr;
 		if (pNfo) pCltNfo = Game.PlayerInfos.GetClientInfoByPlayerID(pNfo->GetID());
 		if (!pCltNfo)
 		{
@@ -626,7 +624,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if (SEqual2(pCmdPar, "password ") || SEqual(pCmdPar, "password"))
 		{
 			if (!::Network.isEnabled() || !::Network.isHost()) return false;
-			::Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : NULL);
+			::Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : nullptr);
 			if (pLobby) pLobby->UpdatePassword();
 			return true;
 		}
@@ -733,7 +731,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			return false;
 		}
 		// what to do?
-		C4ControlClientUpdate *pCtrl = NULL;
+		C4ControlClientUpdate *pCtrl = nullptr;
 		if (szCmdName[0] == 'a') // activate
 			pCtrl = new C4ControlClientUpdate(pClient->getID(), CUT_Activate, true);
 		else if (szCmdName[0] == 'd' && !Game.Parameters.isLeague()) // deactivate
@@ -766,7 +764,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	if (SEqual(szCmdName, "screenshot"))
 	{
 		double zoom = atof(pCmdPar);
-		if (zoom<=0) return false;
+		if (zoom<=0) zoom = 2;
 		::GraphicsSystem.SaveScreenshot(true, zoom);
 		return true;
 	}
@@ -779,9 +777,9 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		// try writing main file (usually {SCENARIO}/TODO.txt); if access is not possible, e.g. because scenario is packed, write to alternate file
 		const char *todo_filenames[] = { ::Config.Developer.TodoFilename, ::Config.Developer.AltTodoFilename };
 		bool success = false;
-		for (int i = 0; i < static_cast<int>(std::extent<decltype(todo_filenames)>::value); ++i)
+		for (auto & i : todo_filenames)
 		{
-			StdCopyStrBuf todo_filename(todo_filenames[i]);
+			StdCopyStrBuf todo_filename(i);
 			todo_filename.Replace("{USERPATH}", Config.General.UserDataPath);
 			int replacements = todo_filename.Replace("{SCENARIO}", Game.ScenarioFile.GetFullName().getData());
 			// sanity checks for writing scenario TODO file
@@ -848,7 +846,7 @@ C4MessageBoardCommand *C4MessageInput::GetCommand(const char *strName)
 	for (C4MessageBoardCommand *pCmd = pCommands; pCmd; pCmd = pCmd->Next)
 		if (SEqual(pCmd->Name, strName))
 			return pCmd;
-	return NULL;
+	return nullptr;
 }
 
 void C4MessageInput::ClearPointers(C4Object *pObj)
@@ -881,13 +879,13 @@ void C4MessageInput::StoreBackBuffer(const char *szMessage)
 
 const char *C4MessageInput::GetBackBuffer(int32_t iIndex)
 {
-	if (!Inside<int32_t>(iIndex, 0, C4MSGB_BackBufferMax-1)) return NULL;
+	if (!Inside<int32_t>(iIndex, 0, C4MSGB_BackBufferMax-1)) return nullptr;
 	return BackBuffer[iIndex];
 }
 
 C4MessageBoardCommand::C4MessageBoardCommand()
 {
-	Name[0] = '\0'; Script[0] = '\0'; Next = NULL;
+	Name[0] = '\0'; Script[0] = '\0'; Next = nullptr;
 }
 
 void C4MessageBoardQuery::CompileFunc(StdCompiler *pComp)

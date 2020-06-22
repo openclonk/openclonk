@@ -19,6 +19,8 @@ public func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 public func Initialize()
 {
 	this.SpinAnimation = PlayAnimation("work", 10, Anim_Const(0));
@@ -60,19 +62,14 @@ public func CollectTrees()
 {
 	if (GetCon() < 100)
 		return;
-	// Only take one tree at a time
-	if (!ContentsCount(Wood))
-		FindTrees();
-}
-
-// Automatically search for trees in front of sawmill. Temporary solution?
-private func FindTrees()
-{
 	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")), Find_Func("GetComponent", Wood));
+	// If there is no tree in front of the sawmill try to get one from the cable car network.
 	if (!tree)
-		return;
-	
-	return Saw(tree);
+		RequestTree();
+	// Only take one tree at a time.
+	if (!ContentsCount(Wood) && tree)
+		Saw(tree);
+	return;
 }
 
 // Returns whether the object is made purely out of wood.
@@ -91,7 +88,7 @@ public func HasInteractionMenu() { return true; }
 // Show a helpful hint to the player. The hint is colored and titled the same as the production menu for more visual coherence.
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	var prod_menu =
 	{
 		title = "$Production$",
@@ -127,7 +124,6 @@ public func Saw(object target)
 {
 	if (target->Contained() != this)
 		target->Enter(this);
-	var output = target->GetComponent(Wood);
 	target->Split2Components();
 	AddEffect("WoodProduction", this, 100, 3, this);
 	// Refresh interaction menus to show the wood count.
@@ -135,7 +131,7 @@ public func Saw(object target)
 	return true;
 }
 
-private func ProductionTime() { return 100; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 100; }
 private func PowerNeed() { return 20; }
 
 private func FxWoodProductionStart(object t, proplist effect, int temp)
@@ -158,7 +154,7 @@ private func FxWoodProductionTimer(object t, proplist effect, int time)
 	}
 
 	if (!(time%20))
-		Smoke(10 * GetCalcDir(),10,10);
+		Smoke(10 * GetCalcDir(),10, 10);
 
 	if (!running)
 	{
@@ -215,7 +211,7 @@ public func EjectWood()
 	if (!wood) return;
 
 	wood->Exit(-25 * GetCalcDir(), -8, 30 - Random(59), -2 * GetCalcDir(), 1);
-	Sound("Pop");
+	Sound("Structures::EjectionPop");
 	
 	// Refresh interaction menus to show the wood count.
 	UpdateInteractionMenus(this.GetInfoMenuEntries);
@@ -244,8 +240,8 @@ private func SpinOn(int diff)
 		rotate = 0;
 		SetMeshMaterial("SawmillBlade.Spin", 2);
 		running = true;
-		Sound("Structures::SawmillRipcut", nil, nil, nil, +1);
-		Sound("Sawmill::EngineLoop", nil, nil, nil, +1);
+		Sound("Structures::SawmillRipcut", {loop_count = +1});
+		Sound("Sawmill::EngineLoop", {loop_count = +1});
 	}
 
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(-20, 0, 1, 0), Trans_Rotate(rotate, 1, 0, 0)));
@@ -260,14 +256,14 @@ private func SpinOff(int call)
 		running = false;
 		spin = 50;
 		SetMeshMaterial("SawmillBlade", 2);
-		Sound("Structures::SawmillRipcut", nil, nil, nil, -1);
+		Sound("Structures::SawmillRipcut", {loop_count = -1});
 		SetProperty("MeshTransformation", Trans_Rotate(-20, 0, 1, 0));
 	}
 	if (call == 1) spin = 75;
 	if (call == 2)
 	{
 		spin = 100;
-		Sound("Sawmill::EngineLoop", nil, nil, nil, -1);
+		Sound("Sawmill::EngineLoop", {loop_count = -1});
 		Sound("Sawmill::EngineStop");
 	}
 	if (call == 3) spin = 150;
@@ -280,8 +276,98 @@ private func SpinOff(int call)
 
 	SetAnimationPosition(this.SpinAnimation, Anim_Linear(GetAnimationPosition(this.SpinAnimation), 0, GetAnimationLength("work"), spin, ANIM_Loop));
 
-	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call+1);
+	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call + 1);
 }
+
+
+/*-- Cable Network --*/
+
+local cable_station;
+
+public func AcceptsCableStationConnection() { return true; }
+
+public func IsNoCableStationConnected() { return !cable_station; }
+
+public func ConnectCableStation(object station)
+{
+	cable_station = station;
+}
+
+private func RequestTree()
+{
+	if (!cable_station)
+		return;
+	// Find a collectible tree on the network.
+	var collectible_tree = cable_station->FindObjectOnNetworkCables(Find_And(Find_Func("IsTree"), Find_Not(Find_Property("is_being_cable_car_collected"))));
+	if (!collectible_tree)
+		return;
+	// Find an available hoist in the network.
+	var hoist = cable_station->FindCableCar(Find_And(Find_Not(Find_Func("GetAttachedVehicle")), Find_Not(Find_Property("is_busy_collecting_tree"))));
+	if (!hoist)
+		return;
+	hoist->CreateEffect(Sawmill.FxCableCarCollectTree, 100, 1, collectible_tree, cable_station);
+	return;
+}
+
+local FxCableCarCollectTree = new Effect
+{
+	Construction = func(array collectible_tree, object sawmill_station)
+	{
+		this.tree = collectible_tree[0];
+		this.station_1 = collectible_tree[1];
+		this.station_2 = collectible_tree[2];
+		this.station_sawmill = sawmill_station;
+		this.tree.is_being_cable_car_collected = true;
+		Target.is_busy_collecting_tree = true;
+		Target->SetDestination(this.station_1);
+		return FX_OK;
+	},
+	Timer = func()
+	{
+		if (!this.station_1 || !this.station_2 || !this.station_sawmill)
+			return FX_Execute_Kill;
+		if (IsValueInArray(this.station_1->GetIdleCars(), Target))
+			Target->SetDestination(this.station_2);
+		if (IsValueInArray(this.station_2->GetIdleCars(), Target))
+			Target->SetDestination(this.station_sawmill);	
+		var tree = Target->FindObject(Target->Find_AtPoint(), Find_InArray([this.tree]));
+		if (tree && !tree.has_been_picked_up)
+		{
+			this.tree.has_been_picked_up = true;
+			this.tree->CreateEffect(Sawmill.FxCableCarRotateTree, 100, 1);
+			Target->PickupVehicle(this.tree);
+		}
+		if (IsValueInArray(this.station_sawmill->GetIdleCars(), Target))
+			return FX_Execute_Kill;
+		return FX_OK;
+	},
+	Destruction = func()
+	{
+		//this.tree.is_being_cable_car_collected = false;
+		Target.is_busy_collecting_tree = false;
+		Target->DropVehicle();
+	}
+};
+
+local FxCableCarRotateTree = new Effect
+{
+	Construction = func(int rotate_goal)
+	{
+		this.rotate_goal = 90;
+		if (Target->GetR() < 0)
+			this.rotate_goal = -90;
+	},
+	Timer = func()
+	{
+		var step = 3;
+		var dr = this.rotate_goal - Target->GetR();
+		if (Inside(dr, -step, step))
+			return FX_Execute_Kill;
+		Target->SetR(Target->GetR() + BoundBy(dr, -step, step));	
+		return FX_OK;	
+	}
+};
+
 
 /*-- Properties --*/
 
@@ -302,10 +388,13 @@ local ActMap = {
 func Definition(def) 
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000, 0, 7000), Trans_Rotate(-20, 1, 0, 0),Trans_Rotate(30, 0, 1, 0)), def);
+	return _inherited(def, ...);
 }
 local Name = "$Name$";
 local Description = "$Description$";
 local SpinStep = 30;
 local ContainBlast = true;
 local BlastIncinerate = 100;
+local FireproofContainer = true;
 local HitPoints = 70;
+local Components = {Rock = 4, Wood = 1};

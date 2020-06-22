@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,9 +18,9 @@
 #ifndef INC_C4StartupNetDlg
 #define INC_C4StartupNetDlg
 
-#include "C4Startup.h"
-#include "C4Network2Discover.h"
-#include "C4Network2Reference.h"
+#include "gui/C4Startup.h"
+#include "network/C4Network2Discover.h"
+#include "network/C4Network2Reference.h"
 
 // -----------------------------------------------
 
@@ -29,14 +29,14 @@ const int C4NetRefRequestTimeout = 12; // seconds after which the reference requ
 const int C4NetReferenceTimeout = 42; // seconds after which references are removed from the list (C4NetRefRequestTimeout + C4NetMasterServerQueryInterval)
 const int C4NetErrorRefTimeout = 10; // seconds after which failed reference requestsare removed
 const int C4NetGameDiscoveryInterval = 30; // seconds
-const int C4NetMinRefreshInterval = 8; // seconds; minimum time between refreshes
+const int C4NetMinRefreshInterval = 1; // seconds; minimum time between refreshes
 
 
 class C4StartupNetListEntry : public C4GUI::Window
 {
 public:
 	C4StartupNetListEntry(C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBefore, class C4StartupNetDlg *pNetDlg);
-	~C4StartupNetListEntry();
+	~C4StartupNetListEntry() override;
 
 	enum QueryType // where the game ref is coming from
 	{
@@ -96,8 +96,8 @@ private:
 	void UpdateText(); // strings to labels
 
 protected:
-	virtual int32_t GetListItemTopSpacing() { return fIsCollapsed ? 5 : 10; }
-	virtual void DrawElement(C4TargetFacet &cgo);
+	int32_t GetListItemTopSpacing() override { return fIsCollapsed ? 5 : 10; }
+	void DrawElement(C4TargetFacet &cgo) override;
 
 	C4GUI::Element* GetNextLower(int32_t sortOrder); // returns the element before which this element should be inserted
 
@@ -109,9 +109,9 @@ public:
 	bool Execute(); // update stuff - if false is returned, the item is to be removed
 	bool OnReference(); // like Execute(), but only called if some reference was received
 	void UpdateCollapsed(bool fToCollapseValue);
-	void SetVisibility(bool fToValue);
+	void SetVisibility(bool fToValue) override;
 
-	const char *GetError() { return fError ? sError.getData() : NULL; } // return error message, if any is set
+	const char *GetError() { return fError ? sError.getData() : nullptr; } // return error message, if any is set
 	C4Network2Reference *GrabReference(); // grab the reference so it won't be deleted when this item is removed
 	C4Network2Reference *GetReference() const { return pRef; } // have a look at the reference
 	bool IsSameHost(const C4Network2Reference *pRef2); // check whether the reference was created by the same host as this one
@@ -127,7 +127,7 @@ class C4StartupNetDlg : public C4StartupDlg, private C4InteractiveThread::Callba
 {
 public:
 	C4StartupNetDlg(); // ctor
-	~C4StartupNetDlg(); // dtor
+	~C4StartupNetDlg() override; // dtor
 
 private:
 	enum DlgMode { SNDM_GameList=0, SNDM_Chat=1 };
@@ -143,32 +143,32 @@ private:
 	C4GUI::Edit *pJoinAddressEdt;
 	C4GUI::Edit *pSearchFieldEdt;
 	class C4ChatControl *pChatCtrl;
-	C4GUI::WoodenLabel *pChatTitleLabel;
-	C4StartupNetListEntry *pMasterserverClient; // set if masterserver query is enabled: Checks clonk.de for new games
-	bool fIsCollapsed; // set if the number of games in the list requires them to be displayed in a condensed format
-	bool fUpdatingList; // set during list update - prevent selection update calls
+	C4GUI::WoodenLabel *pChatTitleLabel{nullptr};
+	C4StartupNetListEntry *pMasterserverClient{nullptr}; // set if masterserver query is enabled: Checks clonk.de for new games
+	bool fIsCollapsed{false}; // set if the number of games in the list requires them to be displayed in a condensed format
+	bool fUpdatingList{false}; // set during list update - prevent selection update calls
 	StdCopyStrBuf UpdateURL; // set if update button is visible: Version to be updated to
 
 	C4Network2IODiscoverClient DiscoverClient; // disocver client to search for local hosts
-	int iGameDiscoverInterval;                 // next time until a game discovery is started
-	time_t tLastRefresh;                       // time of last refresh
+	int iGameDiscoverInterval{0};                 // next time until a game discovery is started
+	time_t tLastRefresh{0};                       // time of last refresh
 
 
 protected:
-	virtual bool HasBackground() { return false; }
-	virtual void DrawElement(C4TargetFacet &cgo);
+	bool HasBackground() override { return false; }
+	void DrawElement(C4TargetFacet &cgo) override;
 
-	virtual C4GUI::Control *GetDefaultControl(); // get Auto-Focus control
+	C4GUI::Control *GetDefaultControl() override; // get Auto-Focus control
 	C4GUI::Control *GetDlgModeFocusControl(); // get control to be focused when main tabular sheet changes
 
-	virtual bool OnEnter() { DoOK(); return true; }
-	virtual bool OnEscape() { DoBack(); return true; }
+	bool OnEnter() override { DoOK(); return true; }
+	bool OnEscape() override { DoBack(); return true; }
 	bool KeyBack() { return DoBack(); }
 	bool KeyRefresh() { DoRefresh(); return true; }
 	bool KeyForward() { DoOK(); return true; }
 
-	virtual void OnShown();             // callback when shown: Start searching for games
-	virtual void OnClosed(bool fOK);    // callback when dlg got closed: Return to main screen
+	void OnShown() override;             // callback when shown: Start searching for games
+	void OnClosed(bool fOK) override;    // callback when dlg got closed: Return to main screen
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(); }
 	void OnRefreshBtn(C4GUI::Control *btn) { DoRefresh(); }
 	void OnCreateGameBtn(C4GUI::Control *btn) { CreateGame(); }
@@ -200,12 +200,12 @@ private:
 
 	// set during update information retrieval
 	C4Network2UpdateClient pUpdateClient;
-	bool fUpdateCheckPending;
+	bool fUpdateCheckPending{false};
 
 	DlgMode GetDlgMode();
 
 	// callback from C4Network2ReferenceClient
-	virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData);
+	void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) override;
 
 public:
 	bool DoOK(); // join currently selected item
@@ -215,7 +215,7 @@ public:
 
 	void OnReferenceEntryAdd(C4StartupNetListEntry *pEntry);
 
-	void OnSec1Timer(); // idle proc: update list
+	void OnSec1Timer() override; // idle proc: update list
 
 	void CheckVersionUpdate(); // check if a new update is available and make an update button visible if yes
 };

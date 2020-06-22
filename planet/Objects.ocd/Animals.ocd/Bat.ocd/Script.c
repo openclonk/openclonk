@@ -38,7 +38,7 @@ private func Place(int amount, proplist rectangle, proplist settings)
 	
 	while ((amount > 0) && (--max_tries > 0))
 	{
-		var spot = FindLocation(loc_bkg, Loc_Space(20), loc_area);
+		var spot = FindLocation(loc_bkg, Loc_Space(10), loc_area);
 		if (!spot)
 			continue;
 		
@@ -157,7 +157,8 @@ private func FxCoreBehaviorTimer(object target, proplist effect, int time)
 
 		if (Distance(GetX(), GetY(), effect.attack_target->GetX(), effect.attack_target->GetY()) < 10)
 		{
-			BitePrey(effect.attack_target);
+			if (!effect.attack_target->Contained())	
+				BitePrey(effect.attack_target);
 			effect.attack_target = nil;
 			SetRandomDirection();
 		}
@@ -476,28 +477,20 @@ private func Death()
 	// Remove behavior effect and play dead animation.
 	RemoveEffect("CoreBehaviour", this);
 	SetAction("Dead");
-	// Set border bound to zero when dead.
+	// Set border bound to zero when dead, also disable contactcalls.
 	this.BorderBound = 0;
+	this.ContactCalls = false;
 	
-	// Decay the dead bat.	
-	AddTimer(this.Decaying, 100);
-	return;
-}
-
-private func Decaying()
-{
-	if (GetCon() < 20) 
-		return RemoveObject(); 
-	DoCon(-1);
-	return;
+	Decay();
 }
 
 
 /*-- Reproduction --*/
 
-private func ReproductionAreaSize() { return 1200; }
-private func ReproductionRate() { return 200; }
-private func MaxAnimalCount() { return 10; }
+// Overloading animal library default values
+local animal_reproduction_area_size = 1200;
+local animal_reproduction_rate = 50;
+local animal_max_count = 10;
 
 // Only bats with full health reproduce.
 private func SpecialReproductionCondition()
@@ -515,9 +508,9 @@ public func Birth(object parent)
 
 /*-- Properties --*/
 
-private func Definition(proplist def)
+public func Definition(proplist def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Rotate(-65, 0, 1, 0), Trans_Rotate(-35, 0, 0, 1));
+	def.PictureTransformation = Trans_Mul(Trans_Translate(3000, 0, 0), Trans_Rotate(-65, 0, 1, 0), Trans_Rotate(-35, 0, 0, 1));
 	return _inherited(def, ...);
 }
 
@@ -526,9 +519,10 @@ local Description = "$Description$";
 
 local MaxEnergy = 20000;
 local MaxBreath = 180;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local ContactIncinerate = 10;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;
 
 local ActMap = {
 	Hang = {
@@ -561,7 +555,7 @@ local ActMap = {
 		Procedure = DFA_NONE,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		Directions = 2,
 		FlipDir = 1,
 		NextAction = "Hold",

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,12 +17,9 @@
 #ifndef INC_StdMeshMaterial
 #define INC_StdMeshMaterial
 
-#include <StdBuf.h>
-#include <C4Surface.h>
-#include <C4Shader.h>
+#include "graphics/C4Shader.h"
+#include "graphics/C4Surface.h"
 
-#include <vector>
-#include <map>
 #include <tuple>
 
 // TODO: Support more features of OGRE material scripts
@@ -34,9 +31,9 @@ class StdMeshMaterialError: public std::exception
 {
 public:
 	StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line);
-	virtual ~StdMeshMaterialError() throw() {}
+	~StdMeshMaterialError() throw() override = default;
 
-	virtual const char* what() const throw() { return Buf.getData(); }
+	const char* what() const throw() override { return Buf.getData(); }
 
 protected:
 	StdCopyStrBuf Buf;
@@ -91,7 +88,7 @@ private:
 	void CopyDeep(const StdMeshMaterialShaderParameter& other);
 	void Move(StdMeshMaterialShaderParameter &&other);
 
-	Type type;
+	Type type{FLOAT4};
 
 	union {
 		Auto a;
@@ -133,7 +130,7 @@ public:
 	virtual C4Surface* LoadTexture(const char* filename) = 0;
 	virtual StdStrBuf LoadShaderCode(const char* filename) = 0;
 	virtual void AddShaderSlices(C4Shader& shader, int ssc) = 0; // add default shader slices
-	virtual ~StdMeshMaterialLoader() {}
+	virtual ~StdMeshMaterialLoader() = default;
 };
 
 // This is just a container class to hold the shader code; the C4Shader
@@ -345,21 +342,21 @@ public:
 	bool HasTexCoordAnimation() const { return !Transformations.empty(); }
 
 	StdCopyStrBuf Name;
-	float Duration; // Duration of texture animation, if any.
+	float Duration{0.0f}; // Duration of texture animation, if any.
 
-	TexAddressModeType TexAddressMode;
+	TexAddressModeType TexAddressMode{AM_Wrap};
 	float TexBorderColor[4];
 	FilteringType Filtering[3]; // min, max, mipmap
 
-	BlendOpExType ColorOpEx;
+	BlendOpExType ColorOpEx{BOX_Modulate};
 	BlendOpSourceType ColorOpSources[2];
-	float ColorOpManualFactor;
+	float ColorOpManualFactor{0.0f};
 	float ColorOpManualColor1[3];
 	float ColorOpManualColor2[3];
 
-	BlendOpExType AlphaOpEx;
+	BlendOpExType AlphaOpEx{BOX_Modulate};
 	BlendOpSourceType AlphaOpSources[2];
-	float AlphaOpManualFactor;
+	float AlphaOpManualFactor{0.0f};
 	float AlphaOpManualAlpha1;
 	float AlphaOpManualAlpha2;
 
@@ -420,10 +417,10 @@ public:
 	float Emissive[4];
 	float Shininess;
 
-	bool DepthCheck;
-	bool DepthWrite;
+	bool DepthCheck{true};
+	bool DepthWrite{true};
 
-	CullHardwareType CullHardware;
+	CullHardwareType CullHardware{CH_Clockwise};
 	SceneBlendType SceneBlendFactors[2];
 	DepthFunctionType AlphaRejectionFunction;
 	float AlphaRejectionValue;
@@ -488,7 +485,7 @@ public:
 
 	// Filled in by gfx implementation: Whether this technique is available on
 	// the hardware and gfx engine (DX/GL) we are running on
-	bool Available;
+	bool Available{false};
 };
 
 class StdMeshMaterial
@@ -501,20 +498,20 @@ public:
 
 	// Location the Material was loaded from
 	StdCopyStrBuf FileName;
-	unsigned int Line;
+	unsigned int Line{0};
 
 	// Material name
 	StdCopyStrBuf Name;
 
 	// Not currently used in Clonk, but don't fail when we see this in a
 	// Material script:
-	bool ReceiveShadows;
+	bool ReceiveShadows{true};
 
 	// Available techniques
 	std::vector<StdMeshMaterialTechnique> Techniques;
 
 	// Filled in by gfx implementation: Best technique to use
-	int BestTechniqueIndex; // Don't use a pointer into the Technique vector to save us from implementing a copyctor
+	int BestTechniqueIndex{-1}; // Don't use a pointer into the Technique vector to save us from implementing a copyctor
 };
 
 class StdMeshMatManager
@@ -524,12 +521,17 @@ private:
 	typedef std::map<StdCopyStrBuf, StdMeshMaterial> MaterialMap;
 
 public:
+	enum ShaderLoadFlag {
+		SMM_AcceptExisting = 1,
+		SMM_ForceReload = 2
+	};
+
 	class Iterator
 	{
 		friend class StdMeshMatManager;
 	public:
 		Iterator(const MaterialMap::iterator& iter): iter_(iter) {}
-		Iterator(const Iterator& iter): iter_(iter.iter_) {}
+		Iterator(const Iterator& iter) = default;
 
 		Iterator operator=(const Iterator& iter) { iter_ = iter.iter_; return *this; }
 		Iterator& operator++() { ++iter_; return *this; }
@@ -547,20 +549,22 @@ public:
 	void Clear();
 
 	// Parse a material script file, and add the materials to the manager.
-	// filename may be NULL if the source is not a file. It will only be used
+	// filename may be nullptr if the source is not a file. It will only be used
 	// for error messages.
 	// Throws StdMeshMaterialError.
-	void Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader);
+	// Returns a set of all loaded materials.
+	std::set<StdCopyStrBuf> Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader);
 
-	// Get material by name. NULL if there is no such material with this name.
+	// Get material by name. nullptr if there is no such material with this name.
 	const StdMeshMaterial* GetMaterial(const char* material_name) const;
 
 	Iterator Begin() { return Iterator(Materials.begin()); }
 	Iterator End() { return Iterator(Materials.end()); }
+	void Remove(const StdStrBuf& name, class StdMeshMaterialUpdate* update);
 	Iterator Remove(const Iterator& iter, class StdMeshMaterialUpdate* update);
 
-	const StdMeshMaterialShader* AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, bool success_if_exists); // if pass_if_exists is TRUE, the function returns the existing shader, otherwise returns NULL.
-	const StdMeshMaterialProgram* AddProgram(const char* name, StdMeshMaterialLoader& loader, const StdMeshMaterialPass::ShaderInstance& fragment_shader, const StdMeshMaterialPass::ShaderInstance& vertex_shader, const StdMeshMaterialPass::ShaderInstance& geometry_shader); // returns NULL if shader code cannot be compiled
+	const StdMeshMaterialShader* AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, uint32_t load_flags); // if load_flags & SMM_AcceptExisting, the function returns the existing shader, otherwise returns nullptr.
+	const StdMeshMaterialProgram* AddProgram(const char* name, StdMeshMaterialLoader& loader, const StdMeshMaterialPass::ShaderInstance& fragment_shader, const StdMeshMaterialPass::ShaderInstance& vertex_shader, const StdMeshMaterialPass::ShaderInstance& geometry_shader); // returns nullptr if shader code cannot be compiled
 
 	const StdMeshMaterialShader* GetFragmentShader(const char* name) const;
 	const StdMeshMaterialShader* GetVertexShader(const char* name) const;

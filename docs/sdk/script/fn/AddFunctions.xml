@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>AddFunctions</title>
+    <category>Script</category>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>nil</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>functions</name>
+          <desc>These functions will be added. Each item may come from a different source.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>override</name>
+          <optional />
+          <desc>Overriding an existing function in the target context is not allowed and will lead to a <funclink>FatalError</funclink> if this is set to <code>false</code> (default). This is not checked beforehand, but only when the function is being added, so other functions may have already been added, but you receive an error only on the first function that already exists.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds several functions to the calling context, by calling <funclink>AddFunction</funclink> on each item in the array.</desc>
+    <remark>When using this function be sure that you know what you are doing. Replacing functions can have unintended side effects.</remark>
+    <examples>
+      <example>
+        <code>
+  // Make a specific rock explode if it hits with high velocity!
+  var boom = <funclink>CreateObject</funclink>(Rock);
+  boom-><funclink>AddFunctions</funclink>([Firestone.Hit, Firestone.Hit2, Firestone.Fuse], true);
+        </code>
+        <text>This script makes a rock behave like a firestone. Note that Rock already has a function Hit(), therefore the override parameter is set to true, or the function reports an error.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>AddFunction</funclink>
+      <funclink>GetFunctionName</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2019-04</date>
+</funcs>

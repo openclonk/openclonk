@@ -164,7 +164,7 @@ func Dlg_Newton_117(object clonk)
 func Dlg_Newton_118(object clonk)
 {
 	MessageBox("$Newton118$ $Newton119$", clonk, dlg_target); // excellent! go east, take shovel
-	for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var crew = GetCrew(plr);
@@ -259,7 +259,7 @@ func Dlg_Newton_Init(object clonk)
 	if (!hammer) hammer = clonk->CreateContents(Hammer);
 	hammer.GetCarryTransform = Dialogue.Inventory_GetCarryTransform;
 	var h_scale = 2000;
-	hammer.ExtraTransform = Trans_Scale(h_scale,h_scale,h_scale);
+	hammer.ExtraTransform = Trans_Scale(h_scale, h_scale, h_scale);
 	// Hammer is heavy. Clonk moves slowly.
 	clonk.ActMap = { Prototype = Clonk.ActMap, Walk = { Prototype = Clonk.ActMap.Walk } };
 	clonk.ActMap.Walk.Speed /= 3;
@@ -271,11 +271,12 @@ func Dlg_Newton_Init(object clonk)
 
 func FxNewtonHammeringTimer(object c, proplist fx, int time)
 {
-	if (FrameCounter() < this.anim_continue_frame || c.has_sequence) { fx.phase=false; return FX_OK; }
+	if (FrameCounter() < this.anim_continue_frame || c.has_sequence) { fx.phase = false; return FX_OK; }
 	var len = c->GetAnimationLength("StrikePickaxe");
 	var a = len*70/100;
 	var b = len*94/100;
-	if (fx.phase = !fx.phase)
+	fx.phase = !fx.phase;
+	if (fx.phase)
 	{
 		if ((!Random(5) && GetPlayerCount()) || this.was_walk_interrupted)
 		{
@@ -289,18 +290,18 @@ func FxNewtonHammeringTimer(object c, proplist fx, int time)
 		else
 		{
 			// No movement: Swing hammer
-			this.anim = c->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(a,a,b, Newton_Hammer_SwingTime, ANIM_Remove));
+			this.anim = c->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(a, a, b, Newton_Hammer_SwingTime, ANIM_Remove));
 		}
 	}
 	else
 	{
 		// Hammer backswing
-		this.anim = c->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(b,b,a, Newton_Hammer_SwingTime, ANIM_Remove));
+		this.anim = c->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(b, b, a, Newton_Hammer_SwingTime, ANIM_Remove));
 		c->Sound("Objects::Pickaxe::Clang?");
 		var x = (c->GetDir()*2-1) * 9;
 		var y = -16;
-		c->CreateParticle("Dust", x,y, PV_Random(-10, 10), PV_Random(-10, 20), PV_Random(10, 20), new Particles_Dust() { R=120, G=100, B=80 }, 10);
-		if (Random(3)) c->CreateParticle("StarSpark", x,y, PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(10, 20), Particles_Glimmer(), Random(10)+3);
+		c->CreateParticle("Dust", x, y, PV_Random(-10, 10), PV_Random(-10, 20), PV_Random(10, 20), new Particles_Dust() { R = 120, G = 100, B = 80 }, 10);
+		if (Random(3)) c->CreateParticle("StarSpark", x, y, PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(10, 20), Particles_Glimmer(), Random(10)+3);
 	}
 	return FX_OK;
 }

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,10 @@
 /* Basic classes for rectangles and vertex outlines */
 
 #include "C4Include.h"
-#include "C4Rect.h"
-#include "C4FacetEx.h"
-#include "StdCompiler.h"
-#include "StdAdaptors.h"
+#include "lib/C4Rect.h"
+#include "graphics/C4FacetEx.h"
+#include "lib/StdCompiler.h"
+#include "lib/StdAdaptors.h"
 
 void C4Rect::Default()
 {

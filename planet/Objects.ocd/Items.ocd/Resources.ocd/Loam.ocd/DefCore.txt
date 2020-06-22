@@ -1,6 +1,6 @@
 [DefCore]
 id=Loam
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=8
 Height=8
@@ -10,7 +10,6 @@ Vertices=2
 VertexX=0,0
 VertexY=3,-3
 VertexFriction=40,40
-Components=Earth=2
 Value=5
 Mass=10
 Rotate=1

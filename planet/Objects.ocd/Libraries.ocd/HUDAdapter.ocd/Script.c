@@ -4,7 +4,7 @@
 	Clonk-side scripts for the HUD. This object basically redirects the
 	engine callbacks for the clonk to the HUD. All crew members that
 	are to be shown in the HUD have to include this object and return
-	_inherited(); if they overload one of the callbacks used here.
+	_inherited(...); if they overload one of the callbacks used here.
 
 	This adapter redirects to the per player HUD controller and also
 	directly to the per clonk HUD selector.
@@ -26,11 +26,16 @@ public func IsHUDAdapter()
 private func GetHUDController()
 {
 	var plr = GetOwner();
-	if (GetPlayerType(plr) != C4PT_User) return nil;
+	// During runtime join, plr isn't a valid player in the joining client yet
+	// when this function is called from OnSynchronized(). This code previously
+	// checked player validity before returning a cached HUD object which would
+	// cause a desync.
 	if (HUDcontroller) return HUDcontroller;
-	HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+	if (GetPlayerType(plr) != C4PT_User) return nil;
+	var controllerDef = Library_HUDController->GetGUIControllerID();
+	HUDcontroller = FindObject(Find_ID(controllerDef), Find_Owner(plr));
 	if (!HUDcontroller)
-		HUDcontroller = CreateObject(GUI_Controller, AbsX(0), AbsY(0), plr);
+		HUDcontroller = CreateObject(controllerDef, AbsX(0), AbsY(0), plr);
 	return HUDcontroller;
 }
 
@@ -100,7 +105,7 @@ private func OnEnergyChange(int change, int cause, int caused_by)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewHealthChange(this, change, cause, caused_by);
-	return _inherited(...);
+	return _inherited(change, cause, caused_by, ...);
 
 }
 private func OnBreathChange(int change)

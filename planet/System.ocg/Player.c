@@ -1,12 +1,12 @@
-/*--
-		Player.c
-		Authors: timi, Maikel, Joern, Zapper, Randrian
-
-		Player and team related functions.
---*/
-
+/**
+	Player.c
+	Player and team related functions.
+	
+	@author timi, Maikel, Joern, Zapper, Randrian
+*/
 
 // Returns the player number of plr_name, or none if there is no such player. (written by timi for CR/CE/CP)
+// documented in /docs/sdk/script/fn
 global func GetPlayerByName(string plr_name)
 {
 	// Loop through all players.
@@ -35,6 +35,7 @@ global func GetTeamByName(string team_name)
 }
 
 // Returns the name of a player, including color markup using the player color.
+// documented in /docs/sdk/script/fn
 global func GetTaggedPlayerName(int plr)
 {
 	var plr_name = GetPlayerName(plr);
@@ -116,6 +117,7 @@ global func GetPlayerByID(int plr_id)
 }
 
 // Adds value to the account of iPlayer.
+// documented in /docs/sdk/script/fn
 global func DoWealth(int plr, int value)
 {
 	return SetWealth(plr, value + GetWealth(plr));
@@ -124,8 +126,10 @@ global func DoWealth(int plr, int value)
 // checks whether two players are allied - that means they are not hostile and neither of them is NO_OWNER
 global func IsAllied(int plr1, int plr2, bool check_one_way_only /* whether to check the hostility only in one direction */)
 {
-	if(plr1 == NO_OWNER) return false;
-	if(plr2 == NO_OWNER) return false;
+	if (plr1 == NO_OWNER)
+		return false;
+	if (plr2 == NO_OWNER)
+		return false;
 	return !Hostile(plr1, plr2, check_one_way_only);
 }
 
@@ -139,7 +143,7 @@ global func MessageWindow(string msg, int for_plr, id icon, string caption)
 	if (!caption)
 		caption = GetName();
 	// Create msg window as regular text
-	CustomMessage(Format("<c ffff00>%s</c>: %s", caption, msg), nil, for_plr, 0,150, nil, GetDefaultMenuDecoration(), icon, MSG_HCenter);
+	CustomMessage(Format("<c ffff00>%s</c>: %s", caption, msg), nil, for_plr, 0, 150, nil, GetDefaultMenuDecoration(), icon, MSG_HCenter);
 	return true;
 }
 
@@ -151,7 +155,8 @@ global func GetDefaultMenuDecoration()
 }
 
 // Find a base of the given player. Use index to search through all bases.
-global func FindBase (int iPlr, int iIndex)
+// documented in /docs/sdk/script/fn
+global func FindBase(int plr, int index)
 {
-	return FindObjects(Find_Owner(iPlr), Find_Func("IsBase"))[iIndex];
+	return FindObjects(Find_Owner(plr), Find_Func("IsBase"))[index];
 }

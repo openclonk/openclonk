@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -50,7 +50,7 @@ public:
 	C4LogBuffer(int iSize, int iMaxLines, int iLBWidth, const char *szIndentChars="    ", bool fDynamicGrow = false, bool fMarkup = true); // ctor
 	~C4LogBuffer();           // dtor
 
-	void AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, CStdFont *pFirstLineFont=NULL);           // append message line to buffer; overwriting old lines if necessary
+	void AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, CStdFont *pFirstLineFont=nullptr);           // append message line to buffer; overwriting old lines if necessary
 	const char *GetLine(int iLineIndex, CStdFont **ppFont, DWORD *pdwClr, bool *pNewParagraph) const; // get indexed line - negative indices -n return last-n'th-line
 	void Clear();                              // clear all lines
 

@@ -1,7 +1,7 @@
 [Head]
 Icon=9
 Title=Tutorial08
-Version=6,0
+Version=8,0
 MaxPlayer=1
 Difficulty=8
 

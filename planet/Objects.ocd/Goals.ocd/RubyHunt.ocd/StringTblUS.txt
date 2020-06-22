@@ -1,4 +1,4 @@
-Name=Sell gems
+Name=Ruby hunt
 
 #Goal window
 MsgGoalFulfilled=A ruby has been delivered.

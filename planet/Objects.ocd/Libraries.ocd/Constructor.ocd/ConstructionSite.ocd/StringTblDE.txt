@@ -1,7 +1,0 @@
-TxtTransfer=Baumaterial einsetzen
-TxtAbort=Konstruktion abbrechen
-TxtNoAbortDesc=Die Baustelle kann nicht abgerissen werden.
-TxtAbortDesc=Reißt die Baustelle ab. Das eingesetzte Baumaterial wird zurückgegeben.
-TxtConstruction=Baustelle: %s
-TxtNoConstructionHere=Der Untergrund eignet sich nicht mehr zur Konstruktion!
-TxtMissingMaterial=Fehlendes Material

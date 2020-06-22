@@ -1,5 +1,0 @@
-Name=Cable Crossing
-SetStation=Bahnhof einrichten
-SetStationDesc=Diese Kreuzung zu einem Bahnhof umschalten
-UnsetStation=Bahnhof abschalten
-UnsetStationDesc=Diese Kreuzung von einem Bahnhof auf eine Kreuzung zurückschalten

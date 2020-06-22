@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,8 +19,8 @@
 #ifndef INC_C4DownloadDlg
 #define INC_C4DownloadDlg
 
-#include "C4Gui.h"
-#include "C4Network2Reference.h" // includes HTTP client
+#include "gui/C4Gui.h"
+#include "network/C4Network2Reference.h" // includes HTTP client
 
 // dialog to download a file
 class C4DownloadDlg : public C4GUI::Dialog
@@ -39,7 +39,7 @@ private:
 
 protected:
 	C4DownloadDlg(const char *szDLType);
-	virtual ~C4DownloadDlg();
+	~C4DownloadDlg() override;
 
 private:
 	// updates the displayed status text and progress bar - repositions elements if necessary
@@ -47,10 +47,10 @@ private:
 
 protected:
 	// idle proc: Continue download; close when finished
-	virtual void OnIdle();
+	void OnIdle() override;
 
 	// user presses cancel button: Abort download
-	virtual void UserClose(bool fOK);
+	void UserClose(bool fOK) override;
 
 	// downloads the specified file to the specified location. Returns whether successful
 	bool ShowModal(C4GUI::Screen *pScreen, const char *szURL, const char *szSaveAsFilename);
@@ -59,7 +59,7 @@ protected:
 
 public:
 	// download file showing download dialog; display error if download failed
-	static bool DownloadFile(const char *szDLType, C4GUI::Screen *pScreen, const char *szURL, const char *szSaveAsFilename, const char *szNotFoundMessage = NULL);
+	static bool DownloadFile(const char *szDLType, C4GUI::Screen *pScreen, const char *szURL, const char *szSaveAsFilename, const char *szNotFoundMessage = nullptr);
 };
 
 

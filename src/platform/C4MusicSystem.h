@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,8 @@
 #ifndef INC_C4MusicSystem
 #define INC_C4MusicSystem
 
-#include <C4Group.h>
-#include <C4SoundIncludes.h>
+#include "c4group/C4Group.h"
+#include "platform/C4SoundIncludes.h"
 
 class C4MusicFileInfoNode;
 class C4MusicFile;
@@ -39,9 +39,9 @@ public:
 	void UpdateVolume(); // compute volume from game + config data
 	void Execute(bool force_buffer_checks = false);
 	void NotifySuccess();
-	bool Init(const char * PlayList = NULL);
+	bool Init(const char * PlayList = nullptr);
 	bool InitForScenario(C4Group & hGroup);
-	bool Play(const char *szSongname = NULL, bool fLoop = false, int fadetime_ms = 0, double max_resume_time = 0.0, bool allow_break = false);
+	bool Play(const char *szSongname = nullptr, bool fLoop = false, int fadetime_ms = 0, double max_resume_time = 0.0, bool allow_break = false);
 	bool Play(C4MusicFile *NewFile, bool fLoop, double max_resume_time);
 	bool Stop();
 	void FadeOut(int fadeout_ms);
@@ -52,19 +52,19 @@ public:
 
 protected:
 	// song list
-	C4MusicFile* Songs;
-	int SongCount, ASongCount, SCounter;
+	C4MusicFile* Songs{nullptr};
+	int SongCount{0}, ASongCount, SCounter;
 
 	// play
-	C4MusicFile *PlayMusicFile;
-	int Volume; bool Loop;
+	C4MusicFile *PlayMusicFile{nullptr};
+	int Volume{100}; bool Loop;
 
 	// fading between two songs
-	C4MusicFile *FadeMusicFile, *upcoming_music_file;
+	C4MusicFile *FadeMusicFile{nullptr}, *upcoming_music_file{nullptr};
 	C4TimeMilliseconds FadeTimeStart, FadeTimeEnd;
 
 	// Wait time until next song
-	bool is_waiting;
+	bool is_waiting{false};
 	C4TimeMilliseconds wait_time_end;
 
 	void LoadDir(const char *szPath); // load some music files (by wildcard / directory)
@@ -82,8 +82,8 @@ protected:
 	void DeinitializeMOD();
 #if AUDIO_TK == AUDIO_TK_OPENAL
 private:
-	ALCdevice* alcDevice;
-	ALCcontext* alcContext;
+	ALCdevice* alcDevice{nullptr};
+	ALCcontext* alcContext{nullptr};
 public:
 	void SelectContext();
 	ALCcontext *GetContext() const { return alcContext; }
@@ -94,10 +94,10 @@ public:
 
 private:
 	// scenario-defined music level
-	int32_t game_music_level;
+	int32_t game_music_level{100};
 	// current play list
 	StdCopyStrBuf playlist;
-	bool playlist_valid;
+	bool playlist_valid{false};
 	// Set to nonzero to allow pauses between songs
 	int32_t music_break_min, music_break_max, music_break_chance;
 	// Maximum time (in seconds) last position in a song is remembered until it would just be restarted from the beginning
@@ -125,7 +125,7 @@ enum MusicType { MUSICTYPE_MID, MUSICTYPE_MOD, MUSICTYPE_MP3, MUSICTYPE_OGG, MUS
 class C4MusicFileInfoNode // We need this for the MoreMusic.txt stuff
 {
 public:
-	C4MusicFileInfoNode() { next=NULL; str=NULL; };
+	C4MusicFileInfoNode() { next=nullptr; str=nullptr; };
 	~C4MusicFileInfoNode() { if (str) delete [] str; }
 	char* str;
 	MusicType type;

@@ -2,8 +2,6 @@
 		QuickBuy
 --*/
 
-static g_quickbuy_items;
-
 global func PlayerControl(int plr, int ctrl)
 {
 	if (ctrl >= CON_QuickBuy0 && ctrl <= CON_QuickBuy9)

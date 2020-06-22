@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,11 +18,19 @@
 #ifndef INC_C4Shader
 #define INC_C4Shader
 
-#include "StdBuf.h"
-#include "StdMeshMath.h"
-#include "C4Surface.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "lib/StdMeshMath.h"
+#include "graphics/C4Surface.h"
 
+#ifdef _WIN32
+#include "platform/C4windowswrapper.h"
+#endif
+
+#ifndef USE_CONSOLE
 #include <epoxy/gl.h>
+#endif
+
+#include <stack>
 
 // Shader version
 const int C4Shader_Version = 150; // GLSL 1.50 / OpenGL 3.2
@@ -53,6 +61,7 @@ const int C4Shader_Vertex_PositionPos = 80;
 class C4Shader
 {
 	friend class C4ShaderCall;
+	friend class C4ScriptUniform;
 public:
 	C4Shader();
 	~C4Shader();
@@ -66,20 +75,27 @@ private:
 		int Position;
 		StdCopyStrBuf Text;
 		StdCopyStrBuf Source;
+		int SourceLine;
 		int SourceTime;
 	};
 	typedef std::list<ShaderSlice> ShaderSliceList;
 	ShaderSliceList VertexSlices, FragmentSlices;
+	std::vector<std::string> SourceFiles;
+	std::vector<std::string> Categories;
+	std::set<int> ScriptShaders;
+
+	int GetSourceFileId(const char *file) const;
 
 	// Last refresh check
 	C4TimeMilliseconds LastRefresh;
+	bool ScriptSlicesLoaded = false;
 
 	// Used texture coordinates
-	int iTexCoords;
+	int iTexCoords{0};
 
 #ifndef USE_CONSOLE
 	// shaders
-	GLuint hProg;
+	GLuint hProg{0};
 	// shader variables
 	struct Variable { int address; const char* name; };
 	std::vector<Variable> Uniforms;
@@ -131,11 +147,12 @@ public:
 	// Shader is composed from various slices
 	void AddDefine(const char* name);
 	void AddVertexSlice(int iPos, const char *szText);
-	void AddFragmentSlice(int iPos, const char *szText, const char *szSource = "", int iFileTime = 0);
+	void AddFragmentSlice(int iPos, const char *szText);
 	void AddVertexSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
 	void AddFragmentSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
 	bool LoadFragmentSlices(C4GroupSet *pGroupSet, const char *szFile);
 	bool LoadVertexSlices(C4GroupSet *pGroupSet, const char *szFile);
+	void SetScriptCategories(const std::vector<std::string>& categories);
 
 	// Assemble and link the shader. Should be called again after new slices are added.
 	bool Init(const char *szWhat, const char **szUniforms, const char **szAttributes);
@@ -145,10 +162,13 @@ public:
 	void Clear();
 
 private:
-	void AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int iFileTime);
+	void AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int line, int iFileTime);
 	void AddSlices(ShaderSliceList& slices, const char *szWhat, const char *szText, const char *szSource, int iFileTime);
 	bool LoadSlices(ShaderSliceList& slices, C4GroupSet *pGroupSet, const char *szFile);
 	int ParsePosition(const char *szWhat, const char **ppPos);
+
+	void LoadScriptSlices();
+	void LoadScriptSlice(int id);
 
 	StdStrBuf Build(const ShaderSliceList &Slices, bool fDebug = false);
 
@@ -164,6 +184,7 @@ public:
 #ifndef USE_CONSOLE
 class C4ShaderCall
 {
+	friend class C4ScriptUniform;
 public:
 	C4ShaderCall(const C4Shader *pShader)
 		: fStarted(false), pShader(pShader), iUnits(0)
@@ -189,6 +210,34 @@ public:
 		if (pShader->HaveUniform(iUniform))
 			glUniform1i(pShader->GetUniform(iUniform), iX);
 	}
+	void SetUniform2i(int iUniform, int iX, int iY) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2i(pShader->GetUniform(iUniform), iX, iY);
+	}
+	void SetUniform3i(int iUniform, int iX, int iY, int iZ) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3i(pShader->GetUniform(iUniform), iX, iY, iZ);
+	}
+	void SetUniform4i(int iUniform, int iX, int iY, int iZ, int iW) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4i(pShader->GetUniform(iUniform), iX, iY, iZ, iW);
+	}
+	void SetUniform1ui(int iUniform, unsigned int iX) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform1ui(pShader->GetUniform(iUniform), iX);
+	}
+	void Setuniform2ui(int iUniform, unsigned int iX, unsigned int iY) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2ui(pShader->GetUniform(iUniform), iX, iY);
+	}
+	void Setuniform3ui(int iUniform, unsigned int iX, unsigned int iY, unsigned int iZ) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3ui(pShader->GetUniform(iUniform), iX, iY, iZ);
+	}
+	void Setuniform4ui(int iUniform, unsigned int iX, unsigned int iY, unsigned int iZ, unsigned int iW) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4ui(pShader->GetUniform(iUniform), iX, iY, iZ, iW);
+	}
 	void SetUniform1f(int iUniform, float gX) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniform1f(pShader->GetUniform(iUniform), gX);
@@ -197,9 +246,45 @@ public:
 		if (pShader->HaveUniform(iUniform))
 			glUniform2f(pShader->GetUniform(iUniform), gX, gY);
 	}
+	void SetUniform3f(int iUniform, float gX, float gY, float gZ) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3f(pShader->GetUniform(iUniform), gX, gY, gZ);
+	}
+	void SetUniform4f(int iUniform, float gX, float gY, float gZ, float gW) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4f(pShader->GetUniform(iUniform), gX, gY, gZ, gW);
+	}
 	void SetUniform1iv(int iUniform, int iLength, const int *pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniform1iv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform2iv(int iUniform, int iLength, const int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2iv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform3iv(int iUniform, int iLength, const int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3iv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform4iv(int iUniform, int iLength, const int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4iv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform1uiv(int iUniform, int iLength, const unsigned int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform1uiv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform2uiv(int iUniform, int iLength, const unsigned int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2uiv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform3uiv(int iUniform, int iLength, const unsigned int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3uiv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform4uiv(int iUniform, int iLength, const unsigned int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4uiv(pShader->GetUniform(iUniform), iLength, pVals);
 	}
 	void SetUniform1fv(int iUniform, int iLength, const float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
@@ -287,5 +372,82 @@ class C4ShaderCall {
 	C4ShaderCall(const C4Shader *) {};
 };
 #endif
+
+class C4ScriptShader
+{
+	friend class C4Shader;
+	friend class C4ShaderCall;
+
+public:
+	enum ShaderType
+	{
+		VertexShader, // Note: Reloading is currently only implemented for fragment shaders.
+		FragmentShader,
+	};
+private:
+	struct ShaderInstance
+	{
+		ShaderType type;
+		std::string source;
+	};
+
+	// Map of shader names -> ids. The indirection is there as each C4Shader
+	// may load script shaders from multiple categories.
+	std::map<std::string, std::set<int>> categories;
+	// Map of ids -> script-loaded shaders.
+	std::map<int, ShaderInstance> shaders;
+	int NextID = 0;
+	uint32_t LastUpdate = 0;
+
+protected: // Interface for C4Shader friend class
+	std::set<int> GetShaderIDs(const std::vector<std::string>& cats);
+
+public: // Interface for script
+	// Adds a shader, returns its id for removal.
+	int Add(const std::string& shaderName, ShaderType type, const std::string& source);
+	// Removes a shader, returning true on success.
+	bool Remove(int id);
+};
+
+extern C4ScriptShader ScriptShader;
+
+class C4ScriptUniform
+{
+	friend class C4Shader;
+
+	struct Uniform
+	{
+#ifndef USE_CONSOLE
+		GLenum type;
+		union
+		{
+			int intVec[4];
+			// TODO: Support for other uniform types.
+		};
+#endif
+	};
+
+	typedef std::map<std::string, Uniform> UniformMap;
+	std::stack<UniformMap> uniformStack;
+
+public:
+	class Popper
+	{
+		C4ScriptUniform* p;
+		size_t size;
+	public:
+		Popper(C4ScriptUniform* p) : p(p), size(p->uniformStack.size()) { }
+		~Popper() { assert(size == p->uniformStack.size()); p->uniformStack.pop(); }
+	};
+
+	// Remove all uniforms.
+	void Clear();
+	// Walk the proplist `proplist.Uniforms` and add uniforms. Automatically pops when the return value is destroyed.
+	std::unique_ptr<Popper> Push(C4PropList* proplist);
+	// Apply uniforms to a shader call.
+	void Apply(C4ShaderCall& call);
+
+	C4ScriptUniform() { Clear(); }
+};
 
 #endif // INC_C4Shader

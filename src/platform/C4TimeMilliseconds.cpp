@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,13 +14,13 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4TimeMilliseconds.h"
+#include "C4Include.h"
+#include "platform/C4TimeMilliseconds.h"
 #include <limits>
 
 #ifdef _WIN32
 
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <mmsystem.h>
 
 C4TimeMilliseconds C4TimeMilliseconds::Now()
@@ -69,12 +69,7 @@ StdCopyStrBuf C4TimeMilliseconds::AsString() const
 	return StdCopyStrBuf(string);
 }
 
-C4TimeMilliseconds& C4TimeMilliseconds::operator=(const C4TimeMilliseconds& rhs)
-{
-	time = rhs.time;
-	inf = rhs.inf;
-	return *this;
-}
+C4TimeMilliseconds& C4TimeMilliseconds::operator=(const C4TimeMilliseconds& rhs) = default;
 
 bool operator==( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs )
 {
@@ -89,7 +84,7 @@ bool operator<( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs )
 	{
 		return lhs.inf < rhs.inf;
 	}
-	return int32_t(lhs.time - rhs.time) < 0;
+	return lhs.time < rhs.time;
 }
 
 int32_t operator-(const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs)

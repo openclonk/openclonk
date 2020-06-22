@@ -25,8 +25,17 @@ protected func Construction()
 	lib_structure.repair_materials = [];
 	// Total value of the components - used to calculate the required material for repairing.
 	lib_structure.total_component_value = nil;
+	// Make a writable copy of the editor action.
+	if (this.EditorActions == GetID().EditorActions)
+		MakePropertyWritable("EditorActions");
 	return _inherited(...);
 }
+
+// This object is a structure.
+public func IsStructure() { return true; }
+
+
+/*-- Damage Handling --*/
 
 public func GetHitPoints()
 {
@@ -44,19 +53,49 @@ public func Damage(int change, int cause, int cause_plr)
 	if (this && this.HitPoints != nil)
 	{
 		if (GetDamage() >= this.HitPoints)
-		{		
-			// Destruction callback is made by the engine.
-			return RemoveObject();
+		{
+			// Remove contents from the building depending on the type of damage.
+			EjectContentsOnDestruction(cause, cause_plr);
+			// Handle detruction with a custom callback? If not, remove the object.
+			if (!this->~OnNoHitPointsRemaining(cause, cause_plr))
+			{
+				// Destruction callback is made by the engine.
+				return RemoveObject();
+			}
 		}
-		
 		// Update all interaction menus with the new hitpoints.
 		UpdateInteractionMenus(this.GetDamageMenuEntries);
 	}
 	return _inherited(change, cause, cause_plr, ...);
 }
 
-// This object is a structure.
-public func IsStructure() { return true; }
+private func EjectContentsOnDestruction(int cause, int by_player)
+{
+	// Exit all objects in this structure.
+	for (var obj in FindObjects(Find_Container(this)))
+	{
+		// For a non-blast destruction just place the objects at the bottom of the structure.
+		var angle = Random(360);
+		var x = RandomX(GetLeft(), GetRight());
+		var y = GetBottom();
+		var dx = 0;
+		var dy = 0;
+		var dr = 0;
+		// Scatter objects around if the destruction is caused by a blast.
+		if (cause == FX_Call_DmgBlast)
+		{
+			var speed = RandomX(3, 4);
+			x = RandomX(-4, 4);
+			y = RandomX(-4, 4);
+			dx = Cos(angle, speed);
+			dy = Sin(angle, speed);
+			dr = RandomX(-20, 20);
+		}
+		obj->Exit(x, y, Random(360), dx, dy, dr);
+		obj->SetController(by_player);	
+	}
+	return;
+}
 
 
 /*-- Basement Handling --*/
@@ -64,6 +103,13 @@ public func IsStructure() { return true; }
 public func SetBasement(object to_basement)
 {
 	lib_structure.basement = to_basement;
+	if (this.EditorActions)
+	{
+		if (lib_structure.basement)
+			this.EditorActions.basement = nil;
+		else
+			this.EditorActions.basement = new GetID().EditorActions.basement {};
+	}
 	return;
 }
 
@@ -76,6 +122,14 @@ public func GetBasement()
 public func IsStructureWithoutBasement()
 {
 	return IsStructure() && !(lib_structure && lib_structure.basement);
+}
+
+public func AddBasement()
+{
+	var offset = this->~GetBasementOffset() ?? [0, 0];
+	var basement = CreateObject(this->~GetBasementID() ?? Basement, offset[0], GetBottom() + 4 + offset[1]);
+	basement->SetParent(this);
+	return;
 }
 
 
@@ -118,10 +172,10 @@ public func CalcDefValue()
 {
 	var value = 0;
 	var comp, index = 0;
-	while (comp = GetComponent(nil, index++, nil, this))
+	while (comp = this->GetComponent(nil, index++))
 	{
 		var comp_value = comp->GetValue();
-		var comp_amount = GetComponent(comp, nil, nil, this);
+		var comp_amount = this->GetComponent(comp);
 		value += comp_value * comp_amount;
 	}
 	return value;
@@ -190,8 +244,9 @@ public func GetRepairMaterials()
 	{
 		material_value += material.count * material.id->GetValue();
 	}
+	// Multiply by 1000 to prevent issues with rounding.
+	var remaining_damage_value = 1000 * total_component_value * GetDamage() / GetHitPoints() - 1000 * material_value;
 	
-	var remaining_damage_value = total_component_value * GetDamage() / GetHitPoints() - material_value;
 	if (remaining_damage_value <= 0)
 	{
 		return lib_structure.repair_materials;
@@ -205,6 +260,7 @@ public func GetRepairMaterials()
 		
 		var current_offset = 0;
 		var component, i = 0;
+		var found = false;
 		while (component = GetComponent(nil, i++))
 		{
 			var count = GetComponent(component);
@@ -214,11 +270,16 @@ public func GetRepairMaterials()
 			
 			if (random_sample <= current_offset)
 			{
-				remaining_damage_value -= value;
+				remaining_damage_value -= 1000 * value;
 				AddRepairMaterial(component);
+				found = true;
 				break;
 			}
 		}
+		
+		// Failsafe. No components?
+		if (!found)
+			break;
 	}
 	
 	return lib_structure.repair_materials;
@@ -238,7 +299,7 @@ public func RejectInteractionMenu(object clonk)
 // Show damage and allow a player to repair the building when damaged.
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];		
+	var menus = _inherited(clonk, ...) ?? [];		
 	var damage_menu =
 	{
 		title = "$Damage$",
@@ -256,7 +317,7 @@ public func GetInteractionMenus(object clonk)
 // Returns the contents of the "damage" section in the interaction menu.
 public func GetDamageMenuEntries()
 {
-	var is_invincible = this.HitPoints == nil;
+	var is_invincible = this.HitPoints == nil || this->IsInvincible();
 	var damage_text = "$Invincible$";
 	var color = RGB(0, 150, 0);
 	
@@ -280,8 +341,8 @@ public func GetDamageMenuEntries()
 		Bottom = "2em",
 		right =
 		{
-			Left = "2em",
-			Right = "100% - 0.5em",
+			Left = "2em + 0.2em",
+			Right = "100% - 0.2em",
 			bottom = {Top = "50%", Margin = "0.1em", BackgroundColor = RGB(0, 0, 0)},
 			top = {Text = damage_text, Style = GUI_TextHCenter}
 		},
@@ -291,19 +352,18 @@ public func GetDamageMenuEntries()
 			Symbol = Hammer
 		}
 	};
+	// Show hit points.
+	var percent = "100%";	
 	if (!is_invincible)
-	{
-		// Show HitPoints.
-		var percent = Format("%d%%", 100 * GetRemainingHitPoints() / GetHitPoints());
-		menu.right.bottom.fill = {BackgroundColor = color, Right = percent, Margin = "0.1em"};
+		percent = Format("%d%%", 100 * GetRemainingHitPoints() / GetHitPoints());
+	menu.right.bottom.fill = {BackgroundColor = color, Right = percent, Margin = "0.1em"};	
 		
-		if (GetDamage() == 0)
-		{
-			// Cross out hammer symbol.
-			menu.symbol.overlay = {Margin = "0.25em", Symbol = Icon_Cancel};
-		}
-	}
-	
+	// Cross out hammer symbol.
+	if (is_invincible || GetDamage() == 0)
+	{
+		menu.symbol.overlay = {Margin = "0.25em", Symbol = Icon_Cancel};
+	}	
+		
 	return [{symbol = Hammer, extra_data = "repair", custom = menu}];
 }
 
@@ -315,7 +375,7 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 	if (!hammer)
 	{
 		PlayerMessage(cursor->GetOwner(), "$YouNeedAHammer$");
-		Sound("UI::Click2", nil, nil, cursor->GetOwner());
+		Sound("UI::Click2", {player = cursor->GetOwner()});
 		return;
 	}
 	
@@ -340,7 +400,7 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 	if (total_repair_value == 0)
 	{
 		PlayerMessage(cursor->GetOwner(), "$YouNeedMaterials$");
-		Sound("UI::Click2", nil, nil, cursor->GetOwner());
+		Sound("UI::Click2", {player = cursor->GetOwner()});
 		return;
 	}
 	
@@ -366,8 +426,8 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 public func OnRepairMenuHover(id symbol, string action, desc_menu_target, menu_id)
 {
 	var text = "$NoRepairNecessary$";
-	
-	if (GetDamage() > 0)
+	var is_invincible = this.HitPoints == nil || this->IsInvincible();
+	if (!is_invincible && GetDamage() > 0)
 	{
 		var materials = GetRepairMaterials();
 		text = "$RepairRequires$";
@@ -388,4 +448,34 @@ public func OnRepairMenuHover(id symbol, string action, desc_menu_target, menu_i
 	}
 	
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
+}
+
+public func Flip()
+{
+	// Mirror structure
+	if (this->~NoConstructionFlip())
+		return false;
+	return SetDir(1 - GetDir());
+}
+
+private func FlipVertices()
+{
+	// Flips all vertices around the Y = 0 axis, this can be used to flip the vertices of asymmetric structures.
+	for (var cnt = 0; cnt < GetVertexNum(); cnt++)
+	{
+		SetVertex(cnt, VTX_X, -GetVertex(cnt, VTX_X));
+		SetVertex(cnt, VTX_Y, GetVertex(cnt, VTX_Y));
+	}
+	return;
+}
+
+
+public func Definition(def, ...)
+{
+	if (!def.EditorProps) def.EditorProps = {};
+	if (!def.EditorActions) def.EditorActions = {};
+	def.EditorActions.basement = { Name = "$Basement$", EditorHelp = "$BasementHelp$", Command = "AddBasement()" };
+	if (!def->~NoConstructionFlip())
+		def.EditorActions.flip = { Name = "$Flip$", EditorHelp = "$FlipHelp$", Command = "Flip()" };
+	return _inherited(def, ...);
 }

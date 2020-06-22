@@ -14,17 +14,19 @@ protected func Initialize()
 	
 	// Goal: Capture the flag, with bases in both hideouts.
 	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
-	goal->SetFlagBase(1, 120, 502);
-	goal->SetFlagBase(2, LandscapeWidth() - 120, 502);
+	goal->SetFlagBase(1, 120, 506);
+	goal->SetFlagBase(2, LandscapeWidth() - 120, 506);
 	
 	// Rules
-	CreateObject(Rule_Restart);
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetAllowPlayerRestart(true);
+	relaunch_rule->SetRespawnDelay(8);
+	relaunch_rule->SetLastWeaponUse(false);
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
-	
+		
 	var lwidth = LandscapeWidth();
-	
 	// Doors and spinwheels.
 	var gate, wheel;
 	gate = CreateObjectAbove(StoneDoor, 364, 448, NO_OWNER);
@@ -38,7 +40,7 @@ protected func Initialize()
 	DrawMaterialQuad("Tunnel-brickback", 688, 542, 688, 544, 696, 544, 696, 542);
 	gate->DoDamage(80);		// Middle doors even easier
 	wheel = CreateObjectAbove(SpinWheel, 660, 552, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	
 	gate = CreateObjectAbove(StoneDoor, lwidth - 364, 448, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", lwidth - 361, 446, lwidth - 361, 448, lwidth - 365, 448, lwidth - 365, 446);
@@ -51,25 +53,25 @@ protected func Initialize()
 	DrawMaterialQuad("Tunnel-brickback", lwidth - 689, 542, lwidth - 689, 544, lwidth - 697, 544, lwidth - 697, 542);
 	gate->DoDamage(80);		// Middle doors even easier
 	wheel = CreateObjectAbove(SpinWheel, lwidth - 660, 552, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	
 	// Chests with weapons.
 	var chest;
 	chest = CreateObjectAbove(Chest, 110, 592, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36, nil, nil, true);
 	chest = CreateObjectAbove(Chest, 25, 464, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36, nil, nil, false);
 	chest = CreateObjectAbove(Chest, 730, 408, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
 	chest = CreateObjectAbove(Chest, lwidth - 110, 592, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36, nil, nil, true);
 	chest = CreateObjectAbove(Chest, lwidth - 25, 464, NO_OWNER);
 	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36, nil, nil, false);
 	chest = CreateObjectAbove(Chest, lwidth - 730, 408, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
@@ -97,16 +99,6 @@ protected func Initialize()
 protected func InitializePlayer(int plr)
 {
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct);
-	return;
-}
-
-// Gamecall from CTF goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
-{
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObjectAbove(RelaunchContainer, clonk->GetX(), clonk->GetY(), clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	relaunch->SetRelaunchTime(8, true);
 	return;
 }
 
@@ -157,40 +149,42 @@ global func FxFillBaseChestStart(object target, effect, int temporary, bool supp
 	if (temporary) 
 		return 1;
 		
-	effect.supply_type=supply;
-	if(effect.supply_type) 
-		var w_list = [Firestone, Dynamite, Ropeladder, ShieldGem];
+	effect.supply_type = supply;
+	var w_list;
+	if (effect.supply_type) 
+		w_list = [Firestone, Dynamite, Ropeladder, ShieldGem];
 	else
-		var w_list = [Bow, Sword, Javelin, PyreGem];
-	for(var i=0; i<4; i++)
+		w_list = [Bow, Sword, Javelin, PyreGem];
+	for (var i = 0; i<4; i++)
 		target->CreateChestContents(w_list[i]);
 	return 1;
 }
 global func FxFillBaseChestTimer(object target, effect)
 {
-	if(effect.supply_type)
+	var w_list, maxcount;
+	if (effect.supply_type)
 	{ 
-		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder, SlowGem, ShieldGem];
-		var maxcount = [2,2,1,2,1,2,1];
+		w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder, SlowGem, ShieldGem];
+		maxcount = [2, 2, 1, 2, 1, 2, 1];
 	}
 	else
 	{
-		var w_list = [Sword, Javelin, Musket, ShieldGem, PyreGem];
-		var maxcount = [1,2,1,1,1];
+		w_list = [Sword, Javelin, Blunderbuss, ShieldGem, PyreGem];
+		maxcount = [1, 2, 1, 1, 1];
 	}
 	
 	var contents;
-	for(var i=0; i<target->GetLength(w_list); i++)
-		contents+=target->ContentsCount(w_list[i]);
-	if(contents > 5) return 1;
+	for (var i = 0; i<target->GetLength(w_list); i++)
+		contents += target->ContentsCount(w_list[i]);
+	if (contents > 5) return 1;
 	
-	for(var i=0; i<2 ; i++)
+	for (var i = 0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (target->ContentsCount(w_list[r]) < maxcount[r])
 		{
 			target->CreateChestContents(w_list[r]);
-			i=3;
+			i = 3;
 		}
 	}
 	return 1;
@@ -209,21 +203,21 @@ global func FxFillOtherChestStart(object target, effect, int temporary)
 global func FxFillOtherChestTimer(object target)
 {
 	var w_list = [Shield ,Sword, Club, Bow, Dynamite, Firestone, SlowGem, ShieldGem, PyreGem];
-	var maxcount = [2,1,1,1,2,2,1,2,2];
+	var maxcount = [2, 1, 1, 1, 2, 2, 1, 2, 2];
 
 	
 	var contents;
-	for(var i=0; i<target->GetLength(w_list); i++)
-		contents+=target->ContentsCount(w_list[i]);
-	if(contents > 6) return 1;
+	for (var i = 0; i<target->GetLength(w_list); i++)
+		contents += target->ContentsCount(w_list[i]);
+	if (contents > 6) return 1;
 	
-	for(var i=0; i<2 ; i++)
+	for (var i = 0; i<2 ; i++)
 	{
 		var r = Random(GetLength(w_list));
 		if (target->ContentsCount(w_list[r]) < maxcount[r])
 		{
 			target->CreateChestContents(w_list[r]);
-			i=3;
+			i = 3;
 		}
 	}
 	return 1;
@@ -234,13 +228,13 @@ global func FxFillSpecialChestTimer(object target)
 	if (Random(2)) return 1;
 	
 	var w_list = [PyreGem, ShieldGem, SlowGem];
-	var r=Random(3);
+	var r = Random(3);
 	if (target->ContentsCount() < 4)
 		target->CreateChestContents(w_list[r]);
 	
 	var w_list = [GrappleBow, DynamiteBox, Boompack];
-	var r=Random(3);
-	for(var i=0; i < GetLength(w_list); i++)
+	var r = Random(3);
+	for (var i = 0; i < GetLength(w_list); i++)
 		if (FindObject(Find_ID(w_list[i]))) return 1;
 	target->CreateChestContents(w_list[r]);
 	return 1;
@@ -254,10 +248,10 @@ global func CreateChestContents(id obj_id)
 		
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
-	if (obj_id == Musket)
-		obj->CreateContents(LeadShot);
+	if (obj_id == Blunderbuss)
+		obj->CreateContents(LeadBullet);
 	if (obj_id == GrappleBow)
-		AddEffect("NotTooLong",obj,100,36);
+		AddEffect("NotTooLong",obj, 100, 36);
 	
 	obj->Enter(this);
 	
@@ -270,16 +264,16 @@ global func FxNotTooLongTimer(object target, effect)
 {	if (!(target->Contained())) return 1;
 	if (target->Contained()->GetID() == Clonk) effect.inClonk_time++;
 	if (effect.inClonk_time > 40) return target->RemoveObject();
-	else if (effect.inClonk_time > 35) target->Message("@<c ff%x%x>%d",(41-effect.inClonk_time)*50,(41-effect.inClonk_time)*50,41-effect.inClonk_time);
+	else if (effect.inClonk_time > 35) target->Message("@<c ff%x%x>%d",(41-effect.inClonk_time)*50,(41-effect.inClonk_time)*50, 41-effect.inClonk_time);
 }
 
 func OnClonkDeath(object clonk, int killed_by)
 {
 	// create a magic healing gem on Clonk death
-	if(Hostile(clonk->GetOwner(), killed_by))
+	if (Hostile(clonk->GetOwner(), killed_by))
 	{
-		var gem=clonk->CreateObjectAbove(LifeGem, 0, 0, killed_by);
-		if(GetPlayerTeam(killed_by) == 1)
+		var gem = clonk->CreateObjectAbove(LifeGem, 0, 0, killed_by);
+		if (GetPlayerTeam(killed_by) == 1)
 			gem->SetGraphics("E");
 	}
 	return _inherited(clonk, killed_by);

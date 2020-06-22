@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,7 +20,7 @@
 #ifndef INC_C4RankSystem
 #define INC_C4RankSystem
 
-#include "C4InputValidation.h"
+#include "lib/C4InputValidation.h"
 
 class C4RankSystem
 {
@@ -34,10 +34,10 @@ protected:
 	char Register[256+1];
 	char RankName[C4MaxName+1];
 	int RankBase;
-	char **pszRankNames;      // loaded rank names for non-registry ranks
-	char *szRankNames;        // loaded rank-name buffer
+	char **pszRankNames{nullptr};      // loaded rank names for non-registry ranks
+	char *szRankNames{nullptr};        // loaded rank-name buffer
 	int iRankNum;             // number of ranks for loaded rank-names
-	char **pszRankExtensions; // rank extensions (e.g. "%s First class") for even more ranks!
+	char **pszRankExtensions{nullptr}; // rank extensions (e.g. "%s First class") for even more ranks!
 	int iRankExtNum;          // number of rank extensions
 public:
 	void Default();
@@ -50,7 +50,7 @@ public:
 	bool Check(int iRank, const char  *szDefRankName);
 	int32_t GetExtendedRankNum() const { return iRankExtNum; }
 	int32_t GetBaseRankNum() const { return iRankNum; }
-	static bool DrawRankSymbol(C4FacetSurface *fctSymbol, int32_t iRank, C4Facet *pfctRankSymbols, int32_t iRankSymbolCount, bool fOwnSurface, int32_t iXOff=0, C4Facet *cgoDrawDirect=NULL); // create facet from rank symbol for definition - use custom rank facets if present
+	static bool DrawRankSymbol(C4FacetSurface *fctSymbol, int32_t iRank, C4Facet *pfctRankSymbols, int32_t iRankSymbolCount, bool fOwnSurface, int32_t iXOff=0, C4Facet *cgoDrawDirect=nullptr); // create facet from rank symbol for definition - use custom rank facets if present
 };
 
 extern C4RankSystem DefaultRanks;

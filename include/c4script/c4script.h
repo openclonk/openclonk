@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2012-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2012-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -22,6 +22,9 @@ extern "C" {
 
 int c4s_runfile(const char *filename);
 int c4s_runstring(const char *script);
+
+int c4s_checkfile(const char *filename);
+int c4s_checkstring(const char *script);
 
 #ifdef __cplusplus
 }

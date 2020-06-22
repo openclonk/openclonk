@@ -1,15 +1,12 @@
-/*--
-		Explode.c
-		Authors: Newton
-		
-		Everything about the explosion.
-		TODO: documentation.
---*/
+/**
+	Explode.c
+	Everything about the explosion.
+	
+	@author Newton
+*/
 
-/*--
-Particle definitions used by the explosion effect.
-They will be initialized lazily whenever the first blast goes off.
---*/
+// Particle definitions used by the explosion effect.
+// They will be initialized lazily whenever the first blast goes off.
 static ExplosionParticles_Smoke;
 static ExplosionParticles_Blast;
 static ExplosionParticles_BlastSmooth;
@@ -27,10 +24,10 @@ global func ExplosionParticles_Init()
 		DampingX = PV_Random(900, 930, 5),
 		ForceY=-1,
 		ForceX = PV_Wind(20, PV_Random(-2, 2)),
-		Rotation=PV_Random(0,360,0),
-		R=PV_KeyFrames(0, 0, 255, 260, 64, 1000, 64),
-		G=PV_KeyFrames(0, 0, 128,  260, 64, 1000, 64),
-		B=PV_KeyFrames(0, 0, 0, 260, 108, 1000, 108),
+		Rotation = PV_Random(0, 360, 0),
+		R = PV_KeyFrames(0, 0, 255, 260, 64, 1000, 64),
+		G = PV_KeyFrames(0, 0, 128,  260, 64, 1000, 64),
+		B = PV_KeyFrames(0, 0, 0, 260, 108, 1000, 108),
 	    Alpha = PV_KeyFrames(0, 0, 0, 100, 20, 500, 20, 1000, 0)
 	};
 	
@@ -39,8 +36,8 @@ global func ExplosionParticles_Init()
 		Size = PV_KeyFrames(0, 0, 0, 260, 25, 1000, 40),
 		DampingY = PV_Random(890, 920, 0),
 		DampingX = PV_Random(900, 930, 0),
-		ForceY = PV_Random(-8,-2,0),
-		ForceX = PV_Random(-5,5,0),
+		ForceY = PV_Random(-8,-2, 0),
+		ForceX = PV_Random(-5, 5, 0),
 		R = 255,
 		G = PV_Random(64, 120, 0),
 		Rotation = PV_Random(0, 360, 0),
@@ -98,25 +95,26 @@ global func ExplosionParticles_Init()
 	{
 		Size = PV_Linear(2, 0),
 	    ForceY = GetGravity(),
-		DampingY = PV_Linear(1000,700),
-		DampingX = PV_Linear(1000,700),
+		DampingY = PV_Linear(1000, 700),
+		DampingX = PV_Linear(1000, 700),
 		Stretch = PV_Speed(1000, 500),
 		Rotation = PV_Direction(),
 		OnCollision = PC_Die(),
 		CollisionVertex = 500,
 	    R = 255,
-	    G = PV_Linear(128,32),
+	    G = PV_Linear(128, 32),
 	    B = PV_Random(0, 128, 2),
-	    Alpha = PV_Random(255,0,3),
+	    Alpha = PV_Random(255, 0, 3),
 		BlitMode = GFX_BLIT_Additive,
 	};
 }
 
 /*-- Explosion --*/
 
+// documented in /docs/sdk/script/fn
 global func Explode(int level, bool silent, int damage_level)
 {
-	if(!this) FatalError("Function Explode must be called from object context");
+	if (!this) FatalError("Function Explode must be called from object context");
 	
 	// Special: Implode
 	if (level <= 0) return RemoveObject();
@@ -197,7 +195,8 @@ global func ExplosionEffect(...)
 /*-- Blast objects & shockwaves --*/
 
 // Damage and hurl objects away.
-global func BlastObjects(int x, int y, int level, object container, int cause_plr, int damage_level, object layer, object no_blast)
+// documented in /docs/sdk/script/fn
+global func BlastObjects(int x, int y, int level, object container, int cause_plr, int damage_level, object layer, object prev_container)
 {
 	var obj;
 	
@@ -221,7 +220,7 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 			container->BlastObject(damage_level, cause_plr);
 			if (!container)
 				return true; // Container could be removed in the meanwhile.
-			for (obj in FindObjects(Find_Container(container), Find_Layer(layer), Find_Exclude(no_blast)))
+			for (obj in FindObjects(Find_Container(container), Find_Layer(layer), Find_Exclude(prev_container)))
 				if (obj)
 					obj->BlastObject(damage_level, cause_plr);
 		}
@@ -231,14 +230,24 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 		// Object is outside.
 		var at_rect = Find_AtRect(l_x - 5, l_y - 5, 10, 10);
 		// Damage objects at point of explosion.
-		for (var obj in FindObjects(at_rect, Find_NoContainer(), Find_Layer(layer), Find_Exclude(no_blast)))
+		for (var obj in FindObjects(at_rect, Find_NoContainer(), Find_Layer(layer), Find_Exclude(prev_container)))
 			if (obj) obj->BlastObject(damage_level, cause_plr);
 			
 		// Damage objects in radius.
-		for (var obj in FindObjects(Find_Distance(level, l_x, l_y), Find_Not(at_rect), Find_NoContainer(), Find_Layer(layer), Find_Exclude(no_blast)))
+		for (var obj in FindObjects(Find_Distance(level, l_x, l_y), Find_Not(at_rect), Find_NoContainer(), Find_Layer(layer), Find_Exclude(prev_container)))
 			if (obj) obj->BlastObject(damage_level / 2, cause_plr);
 
-		DoShockwave(x, y, level, cause_plr, layer);
+		
+		// Perform the shockwave at the location where the top level container previously was.
+		// This ensures reliable flint jumps for explosives that explode inside a crew member.
+		var off_x = 0, off_y = 0;
+		if (prev_container)
+		{	
+			var max_offset = 300;
+			off_x = BoundBy(-prev_container->GetXDir(100), -max_offset, max_offset);
+			off_y = BoundBy(-prev_container->GetYDir(100), -max_offset, max_offset);			
+		}
+		DoShockwave(x, y, level, cause_plr, layer, off_x, off_y);
 	}
 	// Done.
 	return true;
@@ -262,7 +271,8 @@ global func BlastObject(int level, int caused_by)
 	return;
 }
 
-global func DoShockwave(int x, int y, int level, int cause_plr, object layer)
+// documented in /docs/sdk/script/fn
+global func DoShockwave(int x, int y, int level, int cause_plr, object layer, int off_x, int off_y)
 {
 	// Zero-size shockwave
 	if (level <= 0) return;
@@ -277,14 +287,14 @@ global func DoShockwave(int x, int y, int level, int cause_plr, object layer)
 
 	// Hurl objects in explosion radius.
 	var shockwave_objs = FindObjects(Find_Distance(level, l_x, l_y), Find_NoContainer(), Find_Layer(layer),
-		Find_Or(Find_Category(C4D_Object|C4D_Living|C4D_Vehicle), Find_Func("CanBeHitByShockwaves", cause_plr)), Find_Func("DoShockwaveCheck", x, y, cause_plr));
+		Find_Or(Find_Category(C4D_Object | C4D_Living | C4D_Vehicle), Find_Func("CanBeHitByShockwaves", cause_plr)), Find_Func("DoShockwaveCheck", x, y, cause_plr));
 	var cnt = GetLength(shockwave_objs);
 	if (cnt)
 	{
 		// The hurl energy is distributed over the objects.
-		//Log("Shockwave objs %v (%d)", shockwave_objs, cnt);
 		var shock_speed = Sqrt(2 * level * level / BoundBy(cnt, 2, 12));
 		for (var obj in shockwave_objs)
+		{
 			if (obj) // Test obj, cause OnShockwaveHit could have removed objects.
 			{
 				var cat = obj->GetCategory();
@@ -302,8 +312,9 @@ global func DoShockwave(int x, int y, int level, int cause_plr, object layer)
 					mass_mul = 80;
 				}
 				mass_fact = BoundBy(obj->GetMass() * mass_mul / 1000, 4, mass_fact);
-				var dx = 100 * (obj->GetX() - x) + Random(51) - 25;
-				var dy = 100 * (obj->GetY() - y) + Random(51) - 25;
+				// Determine difference between object and explosion center, take into account the offset.
+				var dx = 100 * (obj->GetX() - x) - off_x + Random(51) - 25;
+				var dy = 100 * (obj->GetY() - y) - off_y + Random(51) - 25;
 				var vx, vy;
 				if (dx)
 					vx = Abs(dx) / dx * (100 * level - Abs(dx)) * shock_speed / level / mass_fact;
@@ -317,10 +328,11 @@ global func DoShockwave(int x, int y, int level, int cause_plr, object layer)
 					if (ovy * vy > 0)
 						vy = (Sqrt(vy * vy + ovy * ovy) - Abs(vy)) * Abs(vy) / vy;
 				}
-				//Log("%v v(%v %v)   d(%v %v)  m=%v  l=%v  s=%v", obj, vx,vy, dx,dy, mass_fact, level, shock_speed);
 				obj->Fling(vx, vy, 100, true);
 			}
+		}
 	}
+	return;
 }
 
 global func DoShockwaveCheck(int x, int y, int cause_plr)
@@ -361,6 +373,7 @@ strength falls off linearly by distance from 100% to 0% when the player is 700 p
 @param y_off y offset in relative coordinates from the calling object
 @param range range of clonk to explosion at which shaking falls off to 0%
 */
+// documented in /docs/sdk/script/fn
 global func ShakeViewport(int level, int x_off, int y_off, range)
 {
 	if (level <= 0)
@@ -382,7 +395,7 @@ global func FxShakeViewportEffect(string new_name)
 
 global func FxShakeViewportStart(object target, effect e, int temporary, level, xpos, ypos, range)
 {
-	if(temporary != 0) return;
+	if (temporary != 0) return;
 	
 	e.shakers = CreateArray();
 	e.shakers[0] = { x = xpos, y = ypos, strength = level, time = 0, range = range };
@@ -395,6 +408,8 @@ global func FxShakeViewportAdd(object target, effect e, string new_name, int new
 
 global func FxShakeViewportTimer(object target, effect e, int time)
 {
+	var maxShakeStrength = 500;
+
 	// shake for all players
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
@@ -404,34 +419,41 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 			continue;
 
 		var totalShakeStrength = 0;
-		for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+		for (var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
 		{
+			// ignore shakers if the offset is too high already
+			if (totalShakeStrength > maxShakeStrength)
+			{
+				continue;
+			}
 			var shaker = e.shakers[shakerIndex];
 			var shakerTime = time - shaker.time;
 
 			// shake strength lowers as a function of the distance
 			var distance = Distance(cursor->GetX(), cursor->GetY(), shaker.x, shaker.y);
 			var maxDistance = shaker.range;
-			var level = shaker.strength * BoundBy(100-100*distance/maxDistance,0,100)/100;
+			var level = shaker.strength * BoundBy(100-100*distance/maxDistance, 0, 100)/100;
 
 			// calculate total shake strength by adding up all shake positions in the player's vicinity
-			totalShakeStrength += level / Max(1,shakerTime*2/3) - shakerTime**2 / 400;
+			totalShakeStrength += level / Max(1, shakerTime*2/3) - shakerTime**2 / 400;
 		}
+		// limit the strength, just to be sure
+		totalShakeStrength = Min(maxShakeStrength, totalShakeStrength);
 		SetViewOffset(plr, Sin(time * 100, totalShakeStrength), Cos(time * 100, totalShakeStrength));
 	}
 
 	// remove shakers that are done shaking
-	for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+	for (var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
 	{
 		var shaker = e.shakers[shakerIndex];
 		var shakerTime = time - shaker.time;
-		if (shaker.strength / Max(1,shakerTime*2/3) - shakerTime**2 / 400 <= 0)
+		if (shaker.strength / Max(1, shakerTime*2/3) - shakerTime**2 / 400 <= 0)
 			e.shakers[shakerIndex] = nil;
 	}
 	RemoveHoles(e.shakers);
 	
 	// no shakers left: remove this effect
-	if(GetLength(e.shakers) == 0)
+	if (GetLength(e.shakers) == 0)
 	{
 		return -1;
 	}
@@ -471,7 +493,7 @@ global func FxSmokeTrailStart(object target, proplist e, int temp, int color)
 		G = PV_Linear(255, 64),
 		B = PV_Linear(255, 64),
 		Alpha = PV_KeyFrames(0, 0, alpha/4, 200, alpha, 1000, 0),
-		Rotation = PV_Random(-45,45),
+		Rotation = PV_Random(-45, 45),
 		ForceX = PV_Wind(20),
 		ForceY = PV_Gravity(-10),
 	};
@@ -495,9 +517,9 @@ global func FxSmokeTrailTimer(object target, effect e, int fxtime)
 	
 	var str = e.curr_strength;
 	
-	var initial_speed = 100 * (strength+20)/6;
+	var initial_speed = 100 * (strength + 20)/6;
 	var speed = initial_speed * str / strength;
-	var angle = e.angle + RandomX(-20,20);
+	var angle = e.angle + RandomX(-20, 20);
 	var x_dir = Sin(angle, speed);
 	var y_dir = -Cos(angle , speed);
 	
@@ -510,7 +532,7 @@ global func FxSmokeTrailTimer(object target, effect e, int fxtime)
 	e.particles_smoke.Size = PV_KeyFrames(0, 0, str / 2, 1000, str);
 	e.particles_blast.Size = PV_KeyFrames(0, 0, 0, 200, str / 3, 1000, 0);
 
-	CreateParticle("SmokeThick", e.x/100, e.y/100, RandomX(-1,1), RandomX(-1,1), 50, e.particles_smoke,1);
+	CreateParticle("SmokeThick", e.x/100, e.y/100, RandomX(-1, 1), RandomX(-1, 1), 50, e.particles_smoke, 1);
 		
 	// then calc next position
 	e.x += x_dir;
@@ -551,30 +573,30 @@ global func Fireworks(int color, int x, int y)
 		R = (color >> 16) & 0xff,
 		G = (color >>  8) & 0xff,
 		B = (color >>  0) & 0xff,
-		DampingY = PV_Linear(950,800),
-		DampingX = PV_Linear(950,800),
+		DampingY = PV_Linear(950, 800),
+		DampingX = PV_Linear(950, 800),
 		Stretch = PV_Speed(3000, 500),
 		Size = PV_Linear(2, 1),
 		ForceY = PV_Gravity(50),
 		Rotation = PV_Direction(),
 		OnCollision = PC_Die(),
 		CollisionVertex = 500,
-		Alpha = PV_Random(255,0,3),
+		Alpha = PV_Random(255, 0, 3),
 		BlitMode = GFX_BLIT_Additive,
 	};
 	
 	var start_angle = Random(360);
 	
 	var num = 25;
-	for(var i=0; i<num; ++i)
+	for (var i = 0; i<num; ++i)
 	{
-		for(var j=0; j<num; ++j)
+		for (var j = 0; j<num; ++j)
 		{
 			var speed = 1000;
 			var angle = start_angle + i*360/num + Random(15) + j*15;
 			var speed3d = Cos(j*90/num - Random(15),speed);
 			var xdir = Sin(angle, speed3d/10);
-			var ydir = -Cos(angle,speed3d/10);
+			var ydir = -Cos(angle, speed3d/10);
 		
 			CreateParticle("MagicFire", x, y, xdir, ydir, PV_Random(50, 200), glimmer, 1);
 		}

@@ -1,0 +1,2 @@
+Name=Lavacore Shell
+Description=Protects the lava core.

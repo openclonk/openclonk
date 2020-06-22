@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,16 +13,13 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include <C4Client.h>
+#include "C4Include.h"
+#include "network/C4Client.h"
 
-#include <C4Application.h>
-#include <C4Config.h>
-#include <C4Network2Client.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
+#include "control/C4GameControl.h"
+#include "game/C4Application.h"
+#include "network/C4Network2Client.h"
+#include "player/C4PlayerList.h"
 
 #ifndef HAVE_WINSOCK
 #include <netdb.h>
@@ -32,18 +29,11 @@
 // *** C4ClientCore
 
 C4ClientCore::C4ClientCore()
-		: iID(-1),
-		fActivated(false),
-		fObserver(false),
-		fLobbyReady(false)
 {
 	Name.Ref(""); CUID.Ref(""); Nick.Ref("");
 }
 
-C4ClientCore::~C4ClientCore()
-{
-
-}
+C4ClientCore::~C4ClientCore() = default;
 
 void C4ClientCore::SetLocal(int32_t inID, bool fnActivated, bool fnObserver)
 {
@@ -113,13 +103,10 @@ void C4ClientCore::CompileFunc(StdCompiler *pComp)
 
 // *** C4Client
 
-C4Client::C4Client()
-		: fLocal(false), pNetClient(NULL), fIsIgnored(false), last_lobby_ready_change(0)
-{
-}
+C4Client::C4Client() = default;
 
 C4Client::C4Client(const C4ClientCore &Core)
-		: Core(Core), fLocal(false), pNetClient(NULL), fIsIgnored(false), pNext(NULL), last_lobby_ready_change(0)
+		: Core(Core), pNext(nullptr)
 {
 
 }
@@ -145,7 +132,7 @@ void C4Client::SetLobbyReady(bool fnLobbyReady, time_t *time_since_last_change)
 	// Keep track of times
 	if (time_since_last_change)
 	{
-		time_t now = time(NULL);
+		time_t now = time(nullptr);
 		*time_since_last_change = now - last_lobby_ready_change;
 		last_lobby_ready_change = now;
 	}
@@ -167,17 +154,13 @@ void C4Client::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(Core);
 	// Assume this is a non-local client
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 		fLocal = false;
 }
 
 // *** C4ClientList
 
-C4ClientList::C4ClientList()
-		: pFirst(NULL), pLocal(NULL), pNetClients(NULL)
-{
-
-}
+C4ClientList::C4ClientList() = default;
 
 C4ClientList::~C4ClientList()
 {
@@ -202,7 +185,7 @@ void C4ClientList::Add(C4Client *pClient)
 	// already in list?
 	assert(!getClientByID(pClient->getID()));
 	// find insert position
-	C4Client *pPos = pFirst, *pPrev = NULL;
+	C4Client *pPos = pFirst, *pPrev = nullptr;
 	for (; pPos; pPrev = pPos, pPos = pPos->pNext)
 		if (pPos->getID() > pClient->getID())
 			break;
@@ -219,7 +202,7 @@ C4Client *C4ClientList::getClientByID(int32_t iID) const
 	for (C4Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (pClient->getID() == iID)
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 C4Client *C4ClientList::getNextClientByID(int32_t iAfterID) const
@@ -227,7 +210,7 @@ C4Client *C4ClientList::getNextClientByID(int32_t iAfterID) const
 	for (C4Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (pClient->getID() > iAfterID)
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 C4Client *C4ClientList::getClientByName(const char *szName) const
@@ -235,7 +218,7 @@ C4Client *C4ClientList::getClientByName(const char *szName) const
 	for (C4Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (SEqual(pClient->getName(), szName))
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 int32_t C4ClientList::getClientCnt() const
@@ -244,6 +227,17 @@ int32_t C4ClientList::getClientCnt() const
 	for (C4Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		iCnt++;
 	return iCnt;
+}
+
+StdStrBuf C4ClientList::GetAllClientNames() const
+{
+	StdStrBuf result;
+	for (C4Client *pClient = pFirst; pClient; pClient = pClient->pNext)
+	{
+		if (result.getSize()) result.Append(", ");
+		result.Append(pClient->getName());
+	}
+	return result;
 }
 
 bool C4ClientList::Init(int32_t iLocalClientID)
@@ -269,7 +263,7 @@ void C4ClientList::ClearNetwork()
 {
 	// clear the list (should remove links)
 	C4Network2ClientList *pOldNetClients = pNetClients;
-	pNetClients = NULL;
+	pNetClients = nullptr;
 	if (pOldNetClients) pOldNetClients->Clear();
 }
 
@@ -288,7 +282,7 @@ bool C4ClientList::Remove(C4Client *pClient, bool fTemporary)
 		// unlink
 		pPrev->pNext = pClient->pNext;
 	}
-	if (pClient == pLocal) pLocal = NULL;
+	if (pClient == pLocal) pLocal = nullptr;
 	if (!fTemporary)
 	{
 		pClient->Remove();
@@ -304,7 +298,7 @@ C4Client *C4ClientList::Add(const C4ClientCore &Core)
 {
 	// client with same ID in list?
 	if (getClientByID(Core.getID()))
-		{ Log("ClientList: Duplicated client ID!"); return NULL; }
+		{ Log("ClientList: Duplicated client ID!"); return nullptr; }
 	// create, add
 	C4Client *pClient = new C4Client(Core);
 	Add(pClient);
@@ -339,7 +333,7 @@ void C4ClientList::SetLocalID(int32_t iID)
 void C4ClientList::CtrlRemove(const C4Client *pClient, const char *szReason)
 {
 	// host only
-	if (!pLocal || !pLocal->isHost()) return;
+	if (!pLocal || !pLocal->isHost() || !pClient) return;
 	// Net client? flag
 	if (pClient->getNetClient())
 		pClient->getNetClient()->SetStatus(NCS_Remove);
@@ -399,13 +393,13 @@ C4ClientList &C4ClientList::operator =(const C4ClientList &List)
 void C4ClientList::CompileFunc(StdCompiler *pComp)
 {
 	// Clear existing data
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler) Clear();
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing) Clear();
 	// Client count
 	uint32_t iClientCnt = getClientCnt();
 	pComp->Value(mkNamingCountAdapt(iClientCnt, "Client"));
 	// Compile all clients
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 		for (uint32_t i = 0; i < iClientCnt; i++)
 		{
 			C4Client *pClient = new C4Client();

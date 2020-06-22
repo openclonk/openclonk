@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -32,7 +32,15 @@
 
 #define C4XVER1               @C4XVER1@
 #define C4XVER2               @C4XVER2@
+#cmakedefine01 C4REVISION_DIRTY
+#if C4REVISION_DIRTY
+#define C4REVISION            "@C4REVISION@+"
+#define C4REVISION_TS         __DATE__ " " __TIME__
+#else
 #define C4REVISION            "@C4REVISION@"
+#define C4REVISION_TS         "@C4REVISION_TS@"
+#endif
+#define C4REVISION_BRANCH     "@C4REVISION_BRANCH@"
 
 // Build Options
 #ifdef _DEBUG

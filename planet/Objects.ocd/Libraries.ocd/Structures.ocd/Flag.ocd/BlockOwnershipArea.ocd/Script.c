@@ -36,9 +36,9 @@ public func BlockRectangle(proplist rect)
 
 public func HasCoordinatesInControlArea(int x, int y)
 {
-	if (!Inside(x, lib_block_area.rectangle.x, lib_block_area.rectangle.x + lib_block_area.rectangle.w))
+	if (!Inside(x, lib_block_area.rectangle.x, lib_block_area.rectangle.x + lib_block_area.rectangle.wdt))
 		return false;
-	if (!Inside(y, lib_block_area.rectangle.y, lib_block_area.rectangle.y + lib_block_area.rectangle.h))
+	if (!Inside(y, lib_block_area.rectangle.y, lib_block_area.rectangle.y + lib_block_area.rectangle.hgt))
 		return false;
 	return true;
 }
@@ -74,27 +74,27 @@ public func UpdateMarkers()
 {
 	var step_size = 30;
 	var min_amount = 3;
-	var x_amount = Max(min_amount, lib_block_area.rectangle.w / step_size);
-	var y_amount = Max(min_amount, lib_block_area.rectangle.h / step_size);
+	var x_amount = Max(min_amount, lib_block_area.rectangle.wdt / step_size);
+	var y_amount = Max(min_amount, lib_block_area.rectangle.hgt / step_size);
 	var marker_positions = [];
 	// Construct sides.
 	for (var index = 1; index < x_amount; index++)
 	{
-		var x = lib_block_area.rectangle.x - GetX() + index * lib_block_area.rectangle.w / x_amount;
+		var x = lib_block_area.rectangle.x - GetX() + index * lib_block_area.rectangle.wdt / x_amount;
 		PushBack(marker_positions, {x = x, y = lib_block_area.rectangle.y - GetY(), r = 0});
-		PushBack(marker_positions, {x = x, y = lib_block_area.rectangle.y + lib_block_area.rectangle.h - GetY(), r = 180});
+		PushBack(marker_positions, {x = x, y = lib_block_area.rectangle.y + lib_block_area.rectangle.hgt - GetY(), r = 180});
 	}
 	for (var index = 1; index < y_amount; index++)
 	{
-		var y = lib_block_area.rectangle.y - GetY() + index * lib_block_area.rectangle.h / y_amount;
+		var y = lib_block_area.rectangle.y - GetY() + index * lib_block_area.rectangle.hgt / y_amount;
 		PushBack(marker_positions, {x = lib_block_area.rectangle.x - GetX(), y = y, r = -90});
-		PushBack(marker_positions, {x = lib_block_area.rectangle.x + lib_block_area.rectangle.w - GetX(), y = y, r = 90});	
+		PushBack(marker_positions, {x = lib_block_area.rectangle.x + lib_block_area.rectangle.wdt - GetX(), y = y, r = 90});	
 	}
 	// Construct edges.
 	PushBack(marker_positions, {x = lib_block_area.rectangle.x - GetX(), y = lib_block_area.rectangle.y - GetY(), r = -45});
-	PushBack(marker_positions, {x = lib_block_area.rectangle.x + lib_block_area.rectangle.w - GetX(), y = lib_block_area.rectangle.y - GetY(), r = 45});
-	PushBack(marker_positions, {x = lib_block_area.rectangle.x - GetX() - GetX(), y = lib_block_area.rectangle.y + lib_block_area.rectangle.h - GetY(), r = -135});
-	PushBack(marker_positions, {x = lib_block_area.rectangle.x + lib_block_area.rectangle.w - GetX(), y = lib_block_area.rectangle.y + lib_block_area.rectangle.h - GetY(), r = 135});
+	PushBack(marker_positions, {x = lib_block_area.rectangle.x + lib_block_area.rectangle.wdt - GetX(), y = lib_block_area.rectangle.y - GetY(), r = 45});
+	PushBack(marker_positions, {x = lib_block_area.rectangle.x - GetX() - GetX(), y = lib_block_area.rectangle.y + lib_block_area.rectangle.hgt - GetY(), r = -135});
+	PushBack(marker_positions, {x = lib_block_area.rectangle.x + lib_block_area.rectangle.wdt - GetX(), y = lib_block_area.rectangle.y + lib_block_area.rectangle.hgt - GetY(), r = 135});
 	for (var marker_pos in marker_positions)
 	{
 		var other_flag = GetFlagpoleForPosition(marker_pos.x + GetX(), marker_pos.y + GetY());

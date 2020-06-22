@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -39,21 +39,21 @@ public:
 		NegativeInfinity = -1,
 		NoInfinity = 0,
 		PositiveInfinity = 1
-};
+	};
 
 private:
-	uint32_t time;
-	Infinity inf;
+	uint32_t time{0};
+	Infinity inf{NoInfinity};
 
 public:
 	
 	static C4TimeMilliseconds Now();
 
-	C4TimeMilliseconds() : time(0), inf(NoInfinity) { }
-	C4TimeMilliseconds(uint32_t millis) : time(millis), inf(NoInfinity) { }
-	C4TimeMilliseconds(C4TimeMilliseconds::Infinity infinity) : time(0), inf(infinity) { }
-	C4TimeMilliseconds(const C4TimeMilliseconds& rhs) : time(rhs.time), inf(rhs.inf) { }
-	~C4TimeMilliseconds() { }
+	C4TimeMilliseconds() = default;
+	C4TimeMilliseconds(uint32_t millis) : time(millis) { }
+	C4TimeMilliseconds(C4TimeMilliseconds::Infinity infinity) : inf(infinity) { }
+	C4TimeMilliseconds(const C4TimeMilliseconds& rhs)  = default;
+	~C4TimeMilliseconds() = default;
 
 	/* Returns the stored time. Do not use this for comparisons because this method always
 	   returns the stored time, independent of whether this variable is actually infinite. */

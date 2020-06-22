@@ -6,7 +6,7 @@
   <const>
     <title>this</title>
     <category>Objects</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>object</rtype></syntax>
     <desc>Returns a pointer to the object in the scope of which the script is currently being executed.</desc>
     <remark>The parameter brackets can be omitted.</remark>

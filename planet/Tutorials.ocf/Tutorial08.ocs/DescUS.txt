@@ -4,4 +4,4 @@ You were sent to the mine where the villagers of Wipfville get their metal suppl
 
 Goal: Salvage the lorry from the flooded mine.
 
-Tutorial explains: Pump and liquids, elevator, wall kits.
+Tutorial explains: pump and liquids, elevator, wall kits.

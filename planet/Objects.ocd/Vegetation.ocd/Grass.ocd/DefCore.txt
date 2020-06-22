@@ -1,6 +1,6 @@
 [DefCore]
 id=Grass
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack|C4D_Background
 Width=12
 Height=7

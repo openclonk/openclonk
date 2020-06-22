@@ -14,7 +14,7 @@
  */
 
 #include "C4Include.h"
-#include "C4Random.h"
+#include "lib/C4Random.h"
 #include "mape/cpp-handles/random-handle.h"
 
 extern "C" {

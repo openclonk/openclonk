@@ -1,135 +1,81 @@
 #include AI
 
-static g_statue;
-
-func AddAI(object clonk)
+public func SetEnemyData(object clonk, proplist data)
 {
-	var fx = AI->AddAI(clonk);
+	var fx = clonk->~GetAI();
 	if (fx)
 	{
-		clonk.ExecuteAI = CustomAI.Execute;
-		fx.ai = CustomAI;
-		fx.ignore_allies = true;
-	}
-	return fx;
-}
-
-func SetEnemyData(object clonk, proplist data)
-{
-	var fx = GetEffect("AI", clonk);
-	if (fx)
-	{
-		if (data.Siege) fx.is_siege = true;
+		if (data.Siege)
+			fx.is_siege = true;
 		return true;
 	}
 	return false;
 }
 
-func FindTarget(fx)
+public func FindTarget(effect fx)
 {
 	// Attack doors and statue unless an enemy clonk is closer than these objectives
 	var objective;
-	     if (g_doorleft  && GetX()<=g_doorleft ->GetX()+5) objective = g_doorleft.dummy_target;
-	else if (g_doorright && GetX()>=g_doorright->GetX()-5) objective = g_doorright.dummy_target;
-	else objective = g_statue;
+	if (g_doorleft && fx.Target->GetX() <= g_doorleft->GetX() + 5)
+		objective = g_doorleft.dummy_target;
+	else if (g_doorright && fx.Target->GetX() >= g_doorright->GetX()-5)
+		 objective = g_doorright.dummy_target;
+	else
+		objective = g_statue;
 	var target = inherited(fx, ...);
 	if (objective)
-		if (fx.is_siege || !target || ObjectDistance(target) > ObjectDistance(objective))
+		if (fx.is_siege || !target || fx.Target->ObjectDistance(target) > fx.Target->ObjectDistance(objective))
 			target = objective;
 	return target;
 }
 
-private func FindInventoryWeapon(fx)
-{
-	// Extra weapons
-	if (fx.weapon = FindContents(PowderKeg)) { fx.strategy = CustomAI.ExecuteBomber; return true; }
-	if (fx.weapon = FindContents(Club)) { fx.strategy = CustomAI.ExecuteClub; return true; }
-	if (inherited(fx, ...)) return true;
-	// no weapon :(
-	return false;
-}
-
-private func ExecuteBomber(fx)
-{
-	// Still carrying the bomb?
-	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
-	// Are we in range?
-	if (ObjectDistance(fx.target) < 20)
-	{
-		// Suicide!
-		fx.weapon->GoBoom();
-		Kill();
-	}
-	else
-	{
-		// Not in range. Walk there.
-		if (!GetCommand() || !Random(10)) SetCommand("MoveTo", fx.target);
-	}
-	return true;
-}
-
-private func ExecuteClub(fx)
-{
-	// Still carrying the melee weapon?
-	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
-	// Are we in range?
-	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
-	var dx = tx-x, dy = ty-y;
-	if (Abs(dx) <= 10 && PathFree(x,y,tx,ty))
-	{
-		if (Abs(dy) >= 15)
-		{
-			// Clonk is above or below us - wait
-			if (dx<-5) SetComDir(COMD_Left); else if (dx>5) SetComDir(COMD_Right); else SetComDir(COMD_None);
-			return true;
-		}
-		if (!CheckHandsAction(fx)) return true;
-		// Stop here
-		SetCommand("None"); SetComDir(COMD_None);
-		// cooldown?
-		if (!fx.weapon->CanStrikeWithWeapon(this))
-		{
-			//Message("MeleeWAIT %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
-			// While waiting for the cooldown, we try to evade...
-			ExecuteEvade(fx,dx,dy);
-			return true;
-		}
-		// OK, attack! Prefer upwards strike
-		dy -= 16;
-		fx.weapon->ControlUseStart(this, dx,dy);
-		fx.weapon->ControlUseHolding(this, dx,dy);
-		fx.weapon->ControlUseStop(this, dx,dy);
-		return true;
-	}
-	// Not in range. Walk there.
-	if (!GetCommand() || !Random(10)) SetCommand("MoveTo", fx.target);
-	//Message("Melee %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
-	return true;
-}
-
-private func CheckVehicleAmmo(fx, object catapult)
+private func CheckVehicleAmmo(effect fx, object catapult)
 {
 	// Ammo is auto-refilled
 	return true;
 }
 
-func Execute(proplist fx, int time)
+private func ExecuteBomber(effect fx)
+{
+	// Still carrying the bomb?
+	if (fx.weapon->Contained() != fx.Target)
+	{
+		fx.weapon = nil;
+		return false;
+	}
+	// Are we in range?
+	if (fx.Target->ObjectDistance(fx.target) < 20)
+	{
+		// Suicide!
+		fx.weapon->GoBoom();
+		fx.Target->Kill();
+	}
+	else
+	{
+		// Not in range. Walk there.
+		if (!fx.Target->GetCommand() || !Random(10))
+			fx.Target->SetCommand("MoveTo", fx.target);
+	}
+	return true;
+}
+
+func Execute(effect fx, int time)
 {
 	// Execution: No defensive AI. All enemies move towards target
 	var target = fx.target ?? g_statue;
 	if (!Random(10) && target)
 	{
 		var tx = target->GetX();
-		if (Abs(tx-GetX())>30)
+		if (Abs(tx-fx.Target->GetX())>30)
 		{
-			SetCommand("MoveTo", nil, BoundBy(GetX(), tx-30, tx+30), target->GetY());
+			fx.Target->SetCommand("MoveTo", nil, BoundBy(fx.Target->GetX(), tx - 30, tx + 30), target->GetY());
 			return true;
 		}
 	}
 	return inherited(fx, time, ...);
 }
 
-func ExecuteIdle(proplist fx)
+func ExecuteIdle(effect fx)
 {
 	// Idle execution overridden by Execute
 	return true;
@@ -167,10 +113,11 @@ func Inventory_GetCarryTransform()
 func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 {
 	// Create enemy (usually a Clonk)
-	var x = xmin+Random(xrange);
-	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY), clonk;
+	var x = xmin + Random(xrange);
+	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x, y, ENEMY), clonk;
 	if (!obj) return nil;
 	obj->SetController(ENEMY);
+	obj->MakeCrewMember(ENEMY);
 	// Enemy visuals
 	if (enemy.Skin)
 	{
@@ -183,7 +130,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 			obj->SetSkin(enemy.Skin);
 	}
 	if (GetType(enemy.Backpack)) obj->~RemoveBackpack();
-	if (enemy.Scale) obj->SetMeshTransformation(Trans_Scale(enemy.Scale[0], enemy.Scale[1], enemy.Scale[2]), 6);
+	if (enemy.Scale) obj->SetMeshTransformation(Trans_Scale(enemy.Scale[0], enemy.Scale[1], enemy.Scale[2]), CLONK_MESH_TRANSFORM_SLOT_Scale);
 	if (enemy.Name) obj->SetName(enemy.Name);
 	obj->SetColor(enemy.Color);
 	// Physical properties
@@ -203,14 +150,13 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 		obj.FlySpeed = obj.FlySpeed * enemy.Speed / 100;
 	}
 	obj.MaxContentsCount = 1;
-	obj->MakeInvincibleToFriendlyFire();
 	// Reward for killing enemy
 	obj.Bounty = enemy.Bounty;
 	// Vehicles
 	var vehicle;
 	if (enemy.Vehicle)
 	{
-		vehicle = CreateObjectAbove(enemy.Vehicle, x,y);
+		vehicle = CreateObjectAbove(enemy.Vehicle, x, y);
 		obj->SetAction("Push", vehicle);
 	}
 	// Enemy inventory
@@ -238,7 +184,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 		}
 	}
 	// Flying AI
-	if (obj->~IsFlyingEnemy())
+	if (obj->~HasNoNeedForAI())
 	{
 		// Flying enemies all init themselves to fly at the statue at the moment
 	}
@@ -247,12 +193,12 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 		// Init AI: Run towards statue
 		CustomAI->AddAI(obj);
 		CustomAI->SetMaxAggroDistance(obj, LandscapeWidth());
-		var fx = GetEffect("AI", obj);
+		var fx = obj.ai;
 		if (fx) fx.vehicle = vehicle;
 		if (g_statue)
 		{
 			CustomAI->SetHome(obj, g_statue->GetX(), g_statue->GetY(), Random(2));
-			CustomAI->SetGuardRange(obj, 0,0,LandscapeWidth(),LandscapeHeight()); // nowhere to run!
+			CustomAI->SetGuardRange(obj, 0, 0, LandscapeWidth(),LandscapeHeight()); // nowhere to run!
 			CustomAI->SetEnemyData(obj, enemy);
 			//	CustomAI->SetGuardRange(obj, g_statue->GetX()-200, g_statue->GetY()-50, 400, 100);
 		}

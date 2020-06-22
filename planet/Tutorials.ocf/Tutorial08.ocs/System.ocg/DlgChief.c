@@ -11,14 +11,29 @@ public func Dlg_Chief_Init(object clonk)
 public func Dlg_Chief_1(object clonk)
 {
 	var found_lorry = false;
-	for (var lorry in FindObjects(Find_ID(Lorry), Find_InRect(AbsX(0), AbsY(160), 280, 40)))
-		if (ObjectCount(Find_ID(Metal), Find_Container(lorry)) >= 32)
+	for (var lorry in FindObjects(Find_ID(Lorry), Find_InRect(AbsX(0), AbsY(120), 320, 72)))
+		if (lorry.is_metal_lorry)
 			found_lorry = true;
+
+	var made_lorry_progress = false;
+	var elevator_case = FindObject(Find_ID(ElevatorCase), Find_AtRect(AbsX(282), AbsY(160), 20, 720));
+	if (elevator_case)
+	{
+		for (var lorry in elevator_case->FindObjects(Find_ID(Lorry), Find_AtPoint()))
+			if (lorry.is_metal_lorry)
+				made_lorry_progress = true;
+	}
 
 	if (found_lorry)
 	{
 		MessageBox("$DlgChiefLorry$", clonk, clonk);
 		SetDialogueProgress(8);
+	}
+	else if (made_lorry_progress)
+	{
+		MessageBox("$DlgChiefLorryUp$", clonk, dlg_target);
+		StopDialogue();
+		SetDialogueProgress(1);
 	}
 	else	
 	{	

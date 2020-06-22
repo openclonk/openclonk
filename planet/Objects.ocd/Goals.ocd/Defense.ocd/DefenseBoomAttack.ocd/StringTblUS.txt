@@ -1,0 +1,9 @@
+Name=Boom Attack
+Description=Angry rocket that attacks you! Might be ridden by enemies as well.
+FlySpeed=Flight speed
+FlySpeedHelp=How fast the rocket flies.
+Rider=Rider
+RiderHelp=Clonk which rides on the rocket and attacks the player.
+None=None
+NoRiderHelp=The rocket is launched without a clonk.
+ClonkRiderHelp=The rocket is launched with a clonk riding on top.

@@ -1,0 +1,13 @@
+[DefCore]
+id=RoomDoor
+Version=8,0
+Category=C4D_None
+Width=16
+Height=24
+Offset=-8,-12
+Vertices=4
+VertexX=-8,8,-8,8
+VertexY=11,11,-11,-11
+VertexFriction=100,100,100,100
+Entrance=-8,-12,16,24
+ClosedContainer=2

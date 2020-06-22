@@ -14,12 +14,13 @@
  */
 
 #include "C4Include.h"
-#include <C4MapScript.h>
-#include <C4MapCreatorS2.h>
-#include <C4ScriptHost.h>
-#include <C4DefList.h>
-#include <C4Def.h>
-#include <C4Aul.h>
+#include "landscape/C4MapScript.h"
+#include "landscape/C4MapCreatorS2.h"
+#include "script/C4ScriptHost.h"
+#include "object/C4DefList.h"
+#include "object/C4Def.h"
+#include "script/C4Aul.h"
+#include "lib/StdMeshLoader.h"
 
 #include "mape/cpp-handles/material-handle.h"
 #include "mape/cpp-handles/texture-handle.h"
@@ -46,7 +47,7 @@ bool HasAlgoScript(C4MCNode* node)
 class FakeSkeletonLoader: public StdMeshSkeletonLoader
 {
 public:
-	virtual StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const { return NULL; }
+	virtual StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const { return nullptr; }
 };
 
 }
@@ -83,7 +84,7 @@ void c4_mapgen_handle_set_map_library(C4GroupHandle* group_handle)
 	libmap->SetName(libmap->id.ToString());
 	libmap->Category = C4D_StaticBack;
 	FakeSkeletonLoader loader;
-	if(!libmap->Load(*HANDLE_TO_GROUP(group_handle), loader, C4D_Load_Script, NULL, NULL))
+	if(!libmap->Load(*HANDLE_TO_GROUP(group_handle), loader, C4D_Load_Script, nullptr, nullptr))
 	{
 		fprintf(stderr, "Failed to load Library_Map script\n");
 		delete libmap;
@@ -114,12 +115,12 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 		landscape.MapPlayerExtend = 0;
 
 		c4_log_handle_clear();
-		::MapScript.LoadData(filename, source, NULL);
+		::MapScript.LoadData(filename, source, nullptr);
 		// If InitializeMap() returns false, the map creator wants to
 		// call a fallback in the scenario script. This crashes if no
 		// scenario script is loaded, so simply load an empty script
 		// here:
-		::GameScript.LoadData("Script.c", "", NULL);
+		::GameScript.LoadData("Script.c", "", nullptr);
 
 		const char* parse_error = c4_log_handle_get_first_log_message();
 		if(parse_error)
@@ -133,16 +134,13 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 
 		// Generate map, fail if return error occurs
 		c4_log_handle_clear();
-		CSurface8* out_ptr_fg = NULL;
-		CSurface8* out_ptr_bg = NULL;
+		std::unique_ptr<CSurface8> out_ptr_fg, out_ptr_bg;
 		const bool result = ::MapScript.InitializeMap(
 			&landscape,
 			HANDLE_TO_TEXTURE_MAP(texture_map),
 			HANDLE_TO_MATERIAL_MAP(material_map),
 			1,
 			&out_ptr_fg, &out_ptr_bg);
-		std::auto_ptr<CSurface8> out(out_ptr_fg);
-		delete out_ptr_bg; // We don't show the background map... maybe should include a toggle to switch between fg and bg...
 
 		// Don't show any map if there was a script runtime error
 		const char* runtime_error = c4_log_handle_get_first_log_message();
@@ -153,12 +151,12 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 			throw std::runtime_error("No InitializeMap() function present in the script, or it returns false");
 
 		C4MapgenHandle* handle = new C4MapgenHandle;
-		handle->width = out->Wdt;
-		handle->height = out->Hgt;
-		handle->rowstride = out->Wdt;
-		handle->error_message = NULL;
-		handle->data = out->Bits;
-		out->ReleaseBuffer();
+		handle->width = out_ptr_fg->Wdt;
+		handle->height = out_ptr_fg->Hgt;
+		handle->rowstride = out_ptr_fg->Wdt;
+		handle->error_message = nullptr;
+		handle->data = out_ptr_fg->Bits;
+		out_ptr_fg->ReleaseBuffer();
 
 		return handle;
 	}
@@ -168,7 +166,7 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 		handle->width = 0;
 		handle->height = 0;
 		handle->error_message.Copy(ex.what());
-		handle->data = NULL;
+		handle->data = nullptr;
 		return handle;
 	}
 }
@@ -194,12 +192,12 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		C4MCParser parser(&mapgen);
 		parser.ParseMemFile(source, filename);
 
-		C4MCMap* map = mapgen.GetMap(NULL);
+		C4MCMap* map = mapgen.GetMap(nullptr);
 		if(!map) throw std::runtime_error("No map definition in source file");
 
 		// Setup the script engine if there is an algo=script overlay in the
 		// Landscape.txt file
-		if(HasAlgoScript(mapgen.GetMap(NULL)))
+		if(HasAlgoScript(mapgen.GetMap(nullptr)))
 		{
 			// Re-initialize script engine. Otherwise, we get a warning when the user
 			// changes the value of a constant, since it is defined already from the
@@ -207,7 +205,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 			c4_mapgen_handle_deinit_script_engine();
 			c4_mapgen_handle_init_script_engine();
 
-			if(script_path == NULL)
+			if(script_path == nullptr)
 				throw std::runtime_error("For algo=script overlays to work, save the file first at the location of the Script.c file");
 
 			gchar* dirname = g_path_get_dirname(script_path);
@@ -224,7 +222,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 
 			// get scripts
 			File.ResetSearch();
-			if(!File.FindNextEntry(basename, (char*)NULL))
+			if(!File.FindNextEntry(basename, (char*)nullptr))
 			{
 				g_free(dirname);
 				g_free(basename);
@@ -233,7 +231,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 			}
 
 			c4_log_handle_clear();
-			GameScript.Load(File, basename, NULL, NULL);
+			GameScript.Load(File, basename, nullptr, nullptr);
 			g_free(dirname);
 			g_free(basename);
 
@@ -250,7 +248,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 
 		c4_log_handle_clear();
 		int32_t out_width, out_height;
-		BYTE* array = mapgen.RenderBuf(NULL, out_width, out_height);
+		BYTE* array = mapgen.RenderBuf(nullptr, out_width, out_height);
 
 		// Don't show any map if there was a script runtime error
 		const char* runtime_error = c4_log_handle_get_first_log_message();
@@ -264,7 +262,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		handle->width = map_width;
 		handle->height = map_height;
 		handle->rowstride = out_width;
-		handle->error_message = NULL;
+		handle->error_message = nullptr;
 		handle->data = array;
 		return handle;
 	}
@@ -274,7 +272,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		handle->width = 0;
 		handle->height = 0;
 		handle->error_message.Copy(err.Msg);
-		handle->data = NULL;
+		handle->data = nullptr;
 		return handle;
 	}
 	catch(const std::exception& ex)
@@ -283,7 +281,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		handle->width = 0;
 		handle->height = 0;
 		handle->error_message.Copy(ex.what());
-		handle->data = NULL;
+		handle->data = nullptr;
 		return handle;
 	}
 }
@@ -301,26 +299,26 @@ const unsigned char* c4_mapgen_handle_get_map(C4MapgenHandle* mapgen)
 
 unsigned int c4_mapgen_handle_get_width(C4MapgenHandle* mapgen)
 {
-	assert(mapgen->data != NULL);
+	assert(mapgen->data != nullptr);
 	return mapgen->width;
 }
 
 unsigned int c4_mapgen_handle_get_height(C4MapgenHandle* mapgen)
 {
-	assert(mapgen->data != NULL);
+	assert(mapgen->data != nullptr);
 	return mapgen->height;
 }
 
 unsigned int c4_mapgen_handle_get_rowstride(C4MapgenHandle* mapgen)
 {
-	assert(mapgen->data != NULL);
+	assert(mapgen->data != nullptr);
 	return mapgen->rowstride;
 }
 
 const char* c4_mapgen_handle_get_error(C4MapgenHandle* mapgen)
 {
-	if(mapgen->data != NULL)
-		return NULL;
+	if(mapgen->data != nullptr)
+		return nullptr;
 	return mapgen->error_message.getData();
 }
 

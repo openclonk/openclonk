@@ -8,8 +8,6 @@
 local Name = "$Name$";
 local Description = "$Description$";
 
-static const InteractionMenu_SideBarSize = 40; // in tenth-em
-
 static const InteractionMenu_Contents = 2;
 static const InteractionMenu_Custom = 4;
 
@@ -43,7 +41,8 @@ local current_objects;
 			callback_target: object to which the callback is made, ususally the target object (except for contents menus)
 			menu_object: MenuStyle_Grid object, used to add/remove entries later
 			entry_index_count: used to generate unique IDs for the entries
-			entries_callback: (callback) function that can be used to retrieve a list of entries for that menu (at any point - it might also be called later)
+			entries_callback: (callback) function that can be used to retrieve a list of entries for that menu (at any point - it might also be called later).
+				The function is called in the object that the menu was opened for and passes the player's Clonk as the first argument. 
 				This callback should return an array of entries shown in the menu, the entries are proplists with the following attributes:
 				symbol: icon of the item
 				extra_data: custom user data (internal: in case of inventory menus this is a proplist containing some extra data (f.e. the one object for unstackable objects))
@@ -51,6 +50,10 @@ local current_objects;
 				custom (optional): completely custom menu entry that is passed to the grid menu - allows for custom design
 				unique_index: generated from entry_index_count (not set by user)
 				fx: (optional) effect that gets a "OnMenuOpened(int menu_id, object menu_target, int subwindow_id)" callback once which can be used to update a specific entry only
+			entries_callback_parameter (optional):
+				Passed as second argument to entries_callback. Can be used for custom information.
+			entries_callback_target (optional):
+				By default the object for which the menu is opened, can be changed for more involved constructions.
 			entries: last result of the callback function described above
 				additional properties that are added are:
 				ID: (menu) id of the entry as returned by the menu_object - can be used for updating
@@ -81,7 +84,7 @@ func Construction()
 {
 	current_objects = [];
 	current_menus = [];
-	current_description_box = {target=nil};
+	current_description_box = {target = nil};
 }
 
 func Destruction()
@@ -100,10 +103,13 @@ func Destruction()
 	var i = ContentsCount(), obj = nil;
 	while (obj = Contents(--i))
 		obj->RemoveObject(false);
+	// Remove check objects effect.
+	if (cursor)
+		RemoveEffect("IntCheckObjects", cursor);
 }
 
 // used as a static function
-func CreateFor(object cursor)
+func CreateFor(object cursor, id style_def, array settings)
 {
 	var obj = CreateObject(GUI_ObjectInteractionMenu, AbsX(0), AbsY(0), cursor->GetOwner());
 	obj.Visibility = VIS_Owner;
@@ -121,16 +127,42 @@ func CreateFor(object cursor)
 	{
 		obj.minimized = false;
 	}
-	
-	obj->Init(cursor);
+	if (settings != nil)
+	{
+		obj.Settings = settings;
+		for (var setting in settings)
+			obj[setting[0]] = setting[1];
+	}
+	obj->Init(cursor, style_def);
 	cursor->SetMenu(obj);
 	return obj;
 }
 
+// Reopen the menu with a certain settings value set (arbitrarily defined)
+// All previous settings will be kept
+public func ReopenWithSetting(string setting_name, value)
+{
+	var last_cursor = this.cursor;
+	var settings = [];
+	if (this.Settings != nil)
+		var settings = this.Settings[:];
+	var i;
+	for (i = 0; i < GetLength(settings); i++)
+		if (settings[i][0] == setting_name)
+			break;
+	settings[i] = [setting_name, value];
+	var style_def = this.style_def;
+	RemoveObject();
+	GUI_ObjectInteractionMenu->CreateFor(last_cursor, style_def, settings);
+}
 
-func Init(object cursor)
+
+public func Init(object cursor, id style_def)
 {
 	this.cursor = cursor;
+	this.style_def = style_def;
+	this.style_def->Init(this);
+	//this.Uncollapsed = uncollapsed;
 	var checking_effect = AddEffect("IntCheckObjects", cursor, 1, 10, this);
 	// Notify the Clonk. This can be used to create custom entries in the objects list via helper objects. For example the "Your Environment" tab.
 	// Note that the cursor is NOT informed when the menu is closed again. Helper objects can be attached to the livetime of this menu by, f.e., effects.
@@ -156,7 +188,7 @@ func FxIntCheckObjectsTimer(target, effect fx)
 		container_restriction = Find_Or(Find_Container(container), Find_InArray([container]));
 	}
 	
-	var new_objects = FindObjects(Find_AtRect(target->GetX() - 5, target->GetY() - 10, 10, 20), container_restriction, Find_Layer(target->GetObjectLayer()),
+	var new_objects = FindObjects(Find_AtRect(target->GetX() - 5, target->GetY() - 10, 10, 21), container_restriction, Find_Layer(target->GetObjectLayer()),
 		// Find all containers and objects with a custom menu.
 		Find_Or(Find_Func("IsContainer"), Find_Func("HasInteractionMenu")),
 		// Do not show objects with an extra slot though - even if they are containers. They count as items here and can be accessed via the surroundings tab.
@@ -282,28 +314,13 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	current_menus[slot].menu_object = main.Target;
 	// Now, the sidebar.
 	var sidebar = CreateSideBar(slot);
-	
-	var sidebar_size_em = ToEmString(InteractionMenu_SideBarSize);
-	var part_menu =
-	{
-		Left = "0%", Right = "50%-3em",
-		Bottom = "100%-7em",
-		sidebar = sidebar, main = main,
-		Target = current_menus[slot].menu_object,
-		ID = 1
-	};
-	
-	if (slot == 1)
-	{
-		part_menu.Left = "50%-1em";
-		part_menu.Right = "100%-2em";
-	}
-	
+
+	var part_menu = this.style_def->CreatePartMenu(this, slot, current_menus[slot].menu_object, sidebar, main);
+
 	if (this.minimized)
 	{
 		part_menu.Bottom = nil; // maximum height
 	}
-	
 
 	// need to open a completely new menu?
 	if (!current_main_menu_id)
@@ -317,91 +334,9 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 		if (!current_center_column_target)
 			current_center_column_target = CreateDummy();
 		
-		var root_menu =
-		{
-			_one_part = part_menu,
-			Target = this,
-			Decoration = GUI_MenuDeco,
-			BackgroundColor = RGB(0, 0, 0),
-			minimize_button = 
-			{
-				Bottom = "100%",
-				Top = "100% - 2em",
-				Left = "100% - 2em",
-				Tooltip = "$Minimize$",
-				Symbol = Icon_Arrow,
-				GraphicsName = "Down",
-				BackgroundColor = {Std = nil, OnHover = 0x50ffff00},
-				OnMouseIn = GuiAction_SetTag("OnHover"),
-				OnMouseOut = GuiAction_SetTag("Std"),
-				OnClick = GuiAction_Call(this, "OnToggleMinimizeClicked")
-			},
-			center_column =
-			{
-				Left = "50%-3em",
-				Right = "50%-1em",
-				Top = "1.75em",
-				Bottom = "100%-7em",
-				Style = GUI_VerticalLayout,
-				move_all_left =
-				{
-					Target = current_center_column_target,
-					ID = 10 + 0,
-					Right = "2em", Bottom = "3em",
-					Style = GUI_TextHCenter | GUI_TextVCenter,
-					Symbol = Icon_MoveItems, GraphicsName = "Left",
-					Tooltip = "",
-					BackgroundColor ={Std = 0, Hover = 0x50ffff00},
-					OnMouseIn = GuiAction_SetTag("Hover"),
-					OnMouseOut = GuiAction_SetTag("Std"),
-					OnClick = GuiAction_Call(this, "OnMoveAllToClicked", 0)
-				},
-				move_all_right =
-				{
-					Target = current_center_column_target,
-					ID = 10 + 1,
-					Right = "2em", Bottom = "3em",
-					Style = GUI_TextHCenter | GUI_TextVCenter,
-					Symbol = Icon_MoveItems,
-					Tooltip = "",
-					BackgroundColor ={Std = 0, Hover = 0x50ffff00},
-					OnMouseIn = GuiAction_SetTag("Hover"),
-					OnMouseOut = GuiAction_SetTag("Std"),
-					OnClick = GuiAction_Call(this, "OnMoveAllToClicked", 1)
-				}
-			},
-			description_box =
-			{
-				Top = "100%-5em",
-				Right = "100% - 2em",
-				Margin = [sidebar_size_em, "0em"],
-				BackgroundColor = RGB(25, 25, 25),
-				symbol_part =
-				{
-					Right = "5em",
-					Symbol = nil,
-					Margin = "0.5em",
-					ID = 1,
-					Target = current_description_box.symbol_target
-				},
-				desc_part =
-				{
-					Left = "5em",
-					Margin = "0.5em",
-					ID = 1,
-					Target = current_description_box.target,
-					real_contents = // nested one more time so it can dynamically be replaced without messing up the layout
-					{
-						ID = 1,
-						Target = current_description_box.desc_target
-					}
-				}
-			}
-		};
-		
-		// Allow the menu to be closed with a clickable button.
-		var close_button = GuiAddCloseButton(root_menu, this, "Close");
-		
+		var root_menu = this.style_def->CreateRootMenu(this, current_center_column_target, current_description_box);
+		root_menu._one_part = part_menu;
+
 		// Special setup for a minimized menu.
 		if (this.minimized)
 		{
@@ -500,9 +435,9 @@ public func OnToggleMinimizeClicked()
 	config.minimized = !(GetProperty("minimized", config) ?? false);
 	
 	// Reopen with new layout..
-	var cursor = this.cursor;
+	var last_cursor = this.cursor;
 	RemoveObject();
-	GUI_ObjectInteractionMenu->CreateFor(cursor);
+	GUI_ObjectInteractionMenu->CreateFor(last_cursor);
 }
 
 // Tries to put all items from the other menu's target into the target of menu menu_id. Returns nil.
@@ -526,26 +461,16 @@ public func OnMoveAllToClicked(int menu_id)
 	var index = 0, obj;
 	while (obj = other->Contents(index++)) PushBack(contents, obj);
 	
-	// Now try transferring each item once.
-	var transfered = 0;
-	for (obj in contents)
-	{
-		// Sanity, can actually happen if an item merges with others during the transfer etc.
-		if (!obj || !target) continue;
-		
-		var collected = target->Collect(obj, true);
-		if (collected)
-			++transfered;
-	}
+	var transfered = TransferObjectsFromToSimple(contents, other, target);
 	
 	if (transfered > 0)
 	{
-		Sound("Hits::SoftTouch*", true, nil, GetOwner());
+		PlaySoundTransfer();
 		return;
 	}
 	else
 	{
-		Sound("Objects::Balloon::Pop", true, nil, GetOwner());
+		PlaySoundError();
 		return;
 	}
 }
@@ -555,22 +480,9 @@ public func OnMoveAllToClicked(int menu_id)
 func CreateSideBar(int slot)
 {
 	var other_menu = current_menus[1 - slot];
-	
-	var em_size = ToEmString(InteractionMenu_SideBarSize);
-	var sidebar =
-	{
-		Priority = 10,
-		Right = em_size,
-		Style = GUI_VerticalLayout,
-		Target = current_menus[slot].menu_object,
-		ID = 2
-	};
-	if (slot == 1)
-	{
-		sidebar.Left = Format("100%% %s", ToEmString(-InteractionMenu_SideBarSize));
-		sidebar.Right = "100%";
-	}
-	
+
+	var sidebar = this.style_def->CreateSideBar(this, slot, current_menus[slot].menu_object);
+
 	// Now show the current_objects list as entries.
 	// If there is a forced-open menu, also add it to bottom of sidebar..
 	var sidebar_items = nil;
@@ -581,43 +493,11 @@ func CreateSideBar(int slot)
 	}
 	else
 		sidebar_items = current_objects;
-		
+
 	for (var obj in sidebar_items)
 	{
-		var background_color = nil;
-		var symbol = {Std = Icon_Menu_RectangleRounded, OnHover = Icon_Menu_RectangleBrightRounded};
-		// figure out whether the object is already selected
-		// if so, highlight the entry
-		if (current_menus[slot].target == obj)
-		{
-			background_color = RGBa(255, 255, 0, 10);
-			symbol = Icon_Menu_RectangleBrightRounded;
-		}
-		var priority = 10000 - obj.Plane;
-		// Cross-out the entry?
-		var deactivation_symbol = nil;
-		if (other_menu && other_menu.target == obj)
-			deactivation_symbol = Icon_Cancel;
-		// Always show Clonk at top.
-		if (obj == cursor) priority = 1;
-		var entry = 
-		{
-			// The object is added as the target of the entry, so it can easily be identified later.
-			// For example, to apply show the grey haze to indicate that it cannot be clicked.
-			Target = obj,
-			Right = em_size, Bottom = em_size,
-			Symbol = symbol,
-			Priority = priority,
-			Style = GUI_TextBottom | GUI_TextHCenter,
-			BackgroundColor = background_color,
-			OnMouseIn = GuiAction_SetTag("OnHover"),
-			OnMouseOut = GuiAction_SetTag("Std"),
-			OnClick = GuiAction_Call(this, "OnSidebarEntrySelected", {slot = slot, obj = obj}),
-			Text = obj->GetName(),
-			obj_symbol = {Symbol = obj, Margin = "0.25em", Priority = 1},
-			obj_symbol_deactivated = {Symbol = deactivation_symbol, Margin = "0.5em", Priority = 2, Target = obj, ID = 1 + slot}
-		};
-		
+		var entry = this.style_def->CreateSideBarItem(this, slot, obj, current_menus[slot].target == obj, other_menu && other_menu.target == obj, obj == cursor);
+
 		GuiAddSubwindow(entry, sidebar);
 	}
 	return sidebar;
@@ -650,37 +530,13 @@ func OnSidebarEntrySelected(data, int player, int ID, int subwindowID, object ta
 */
 func CreateMainMenu(object obj, int slot)
 {
-	var big_menu =
-	{
-		Target = CreateDummy(),
-		Priority = 5,
-		Right = Format("100%% %s", ToEmString(-InteractionMenu_SideBarSize)),
-		container =
-		{
-			Top = "1em",
-			Style = GUI_VerticalLayout,
-			BackgroundColor = RGB(25, 25, 25),
-		},
-		headline = 
-		{
-			Bottom = "1em",
-			Text = obj->GetName(),
-			Style = GUI_TextHCenter | GUI_TextVCenter,
-			BackgroundColor = 0xff000000
-		}
-		
-	};
+	var big_menu = this.style_def->CreateMainMenu(this, slot, CreateDummy(), obj);
+
 	var container = big_menu.container;
-	
-	if (slot == 0)
-	{
-		big_menu.Left = ToEmString(InteractionMenu_SideBarSize);
-		big_menu.Right = "100%";
-	}
-	
+
 	// Do virtually nothing if the building/object is not ready to be interacted with. This can be caused by several things.
 	var error_message = obj->~RejectInteractionMenu(cursor);
-	
+
 	if (error_message)
 	{
 		if (GetType(error_message) != C4V_String)
@@ -690,7 +546,7 @@ func CreateMainMenu(object obj, int slot)
 		current_menus[slot].menus = [];
 		return big_menu;
 	}
-	
+
 	var menus = obj->~GetInteractionMenus(cursor) ?? [];
 	// get all interaction info from the object and put it into a menu
 	// contents first
@@ -704,78 +560,52 @@ func CreateMainMenu(object obj, int slot)
 			entries_callback = nil,
 			callback = "OnContentsSelection",
 			callback_target = this,
-			decoration = GUI_MenuDecoInventoryHeader,
+			BackgroundColor = RGB(0, 50, 0),
 			Priority = 10
 		};
 		PushBack(menus, info);
 	}
-	
+
 	current_menus[slot].menus = menus;
-	
+
 	// now generate the actual menus from the information-list
 	for (var i = 0; i < GetLength(menus); ++i)
 	{
 		var menu = menus[i];
+
+		// Everything not flagged is a custom entry
 		if (!menu.flag)
+		{
 			menu.flag = InteractionMenu_Custom;
+		}
+		// If a callback is given, try to get entries
 		if (menu.entries_callback)
-			menu.entries = obj->Call(menu.entries_callback, cursor);
+		{
+			var call_from = menu.entries_callback_target ?? obj;
+			menu.entries = call_from->Call(menu.entries_callback, cursor, menu.entries_callback_parameter);
+		}
+		// Empty entries should not be there
 		if (menu.entries == nil)
 		{
 			FatalError(Format("An interaction menu did not return valid entries. %s -> %v() (object %v)", obj->GetName(), menu.entries_callback, obj));
 			continue;
 		}
-		menu.menu_object = CreateObject(MenuStyle_Grid);
-		
-		menu.menu_object.Top = "+1em";
-		menu.menu_object.Priority = 2;
-		menu.menu_object->SetPermanent();
-		menu.menu_object->SetFitChildren();
-		menu.menu_object->SetMouseOverCallback(this, "OnMenuEntryHover");
-		for (var e = 0; e < GetLength(menu.entries); ++e)
-		{
-			var entry = menu.entries[e];
-			entry.unique_index = ++menu.entry_index_count;
-			// This also allows the interaction-menu user to supply a custom entry with custom layout f.e.
-			var added_entry = menu.menu_object->AddItem(entry.symbol, entry.text, entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = i }, entry["custom"]);
-			// Remember the menu entry's ID (e.g. for passing it to an update effect after the menu has been opened).
-			entry.ID = added_entry.ID;
-		}
-		
-		var all =
-		{
-			Priority = menu.Priority ?? i,
-			Style = GUI_FitChildren,
-			title_bar = 
-			{
-				Priority = 1,
-				Style = GUI_TextVCenter | GUI_TextHCenter,
-				Bottom = "+1em",
-				Text = menu.title,
-				BackgroundColor = 0xa0000000,
-				//Decoration = menu.decoration
-				hline = {Bottom = "0.05em", BackgroundColor = RGB(100, 100, 100)}
-			},
-			Margin = [nil, nil, nil, "0.25em"],
-			real_menu = menu.menu_object,
-			spacer = {Left = "0em", Right = "0em", Bottom = "3em"} // guarantees a minimum height
-		};
-		if (menu.flag == InteractionMenu_Contents)
-			all.BackgroundColor = RGB(0, 50, 0);
-		else if (menu.BackgroundColor)
-				all.BackgroundColor = menu.BackgroundColor;
-		else if (menu.decoration)
-			menu.menu_object.BackgroundColor = menu.decoration->FrameDecorationBackClr();
+
+		var all = this.style_def->CreateMainMenuItem(this, slot, obj, menu, cursor, i);
+		if (!all)
+			continue;
+
 		GuiAddSubwindow(all, container);
 	}
-	
+
 	// add refreshing effects for all of the contents menus
 	for (var i = 0; i < GetLength(menus); ++i)
 	{
-		if (!(menus[i].flag & InteractionMenu_Contents)) continue;
+		if (!(menus[i].flag & InteractionMenu_Contents))
+			continue;
 		AddEffect("IntRefreshContentsMenu", this, 1, 1, this, nil, obj, slot, i);
 	}
-	
+
 	return big_menu;
 }
 
@@ -791,7 +621,7 @@ func GetEntryInformation(proplist menu_info, int entry_index)
 		entry = possible;
 		break;
 	}
-	return {menu=menu, entry=entry};
+	return {menu = menu, entry = entry};
 }
 
 func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
@@ -810,37 +640,43 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 	if (!info.menu.callback_target || !info.menu.callback_hover)
 	{
 		var text = Format("%s:|%s", info.entry.symbol->GetName(), info.entry.symbol.Description);
-		var obj = nil;
-		if (info.entry.extra_data && info.entry.extra_data.objects)
-		{
-			for (var possible in info.entry.extra_data.objects)
-			{
-				if (possible == nil) continue;
-				obj = possible;
-				break;
-			}
-		}
+
 		// For contents menus, we can sometimes present additional information about objects.
-		if (info.menu.flag == InteractionMenu_Contents && obj)
+		if (info.menu.flag == InteractionMenu_Contents)
 		{
-			var additional = nil;
-			if (obj->Contents())
+			// Get the first valid object of the clicked stack.
+			var obj = nil;
+			if (info.entry.extra_data && info.entry.extra_data.objects)
 			{
-				additional = "$Contains$ ";
-				var i = 0, count = obj->ContentsCount();
-				// This currently justs lists contents one after the other.
-				// Items are not stacked, which should be enough for everything we have ingame right now. If this is filed into the bugtracker at some point, fix here.
-				for (;i < count;++i)
+				for (var possible in info.entry.extra_data.objects)
 				{
-					if (i > 0)
-						additional = Format("%s, ", additional);
-					additional = Format("%s%s", additional, obj->Contents(i)->GetName());
+					if (possible == nil) continue;
+					obj = possible;
+					break;
 				}
 			}
-			if (additional != nil)
-				text = Format("%s||%s", text, additional);
+			// ..and use that object to fetch some more information.
+			if (obj)
+			{
+				var additional = nil;
+				if (obj->Contents())
+				{
+					additional = "$Contains$ ";
+					var i = 0, count = obj->ContentsCount();
+					// This currently justs lists contents one after the other.
+					// Items are not stacked, which should be enough for everything we have ingame right now. If this is filed into the bugtracker at some point, fix here.
+					for (;i < count;++i)
+					{
+						if (i > 0)
+							additional = Format("%s, ", additional);
+						additional = Format("%s%s", additional, obj->Contents(i)->GetName());
+					}
+				}
+				if (additional != nil)
+					text = Format("%s||%s", text, additional);
+			}
 		}
-		
+
 		GuiUpdateText(text, current_main_menu_id, 1, current_description_box.desc_target);
 	}
 	else
@@ -853,24 +689,25 @@ func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
 {
 	var info = GetEntryInformation(menu_info, entry_index);
 	if (!info.entry) return;
-	
+
 	var callback_target;
 	if (!(callback_target = info.menu.callback_target)) return;
 	if (!info.menu.callback) return; // The menu can actually decide to handle user interaction itself and not provide a callback.
 	var result = callback_target->Call(info.menu.callback, info.entry.symbol, info.entry.extra_data, cursor);
-	
+
 	// todo: trigger refresh for special value of result?
 }
 
 private func OnContentsSelection(symbol, extra_data)
 {
+	if (!extra_data || !current_menus[extra_data.slot]) return;
 	var target = current_menus[extra_data.slot].target;
 	if (!target) return;
 	// no target to swap to?
 	if (!current_menus[1 - extra_data.slot]) return;
 	var other_target = current_menus[1 - extra_data.slot].target;
 	if (!other_target) return;
-	
+
 	// Only if the object wants to be interacted with (hostility etc.)
 	if (other_target->~RejectInteractionMenu(cursor)) return;
 	
@@ -880,10 +717,10 @@ private func OnContentsSelection(symbol, extra_data)
 		cursor->~PlaySoundDoubt(true, nil, cursor->GetOwner());
 		return;
 	}
-	
+
 	var transfer_only_one = GetPlayerControlState(GetOwner(), CON_ModifierMenu1) == 0; // Transfer ONE object of the stack?
 	var to_transfer = nil;
-	
+
 	if (transfer_only_one)
 	{
 		for (var possible in extra_data.objects)
@@ -897,7 +734,40 @@ private func OnContentsSelection(symbol, extra_data)
 	{
 		to_transfer = extra_data.objects;
 	}
+
+	var successful_transfers = TransferObjectsFromTo(to_transfer, target, other_target);
 	
+	// Did we at least transfer one item?
+	if (successful_transfers > 0)
+	{
+		PlaySoundTransfer();
+		return true;
+	}
+	else
+	{
+		PlaySoundTransferIncomplete();
+		return false;
+	}
+}
+
+func TransferObjectsFromToSimple(array to_transfer, object source, object destination)
+{
+	// Now try transferring each item once.
+	var successful_transfers = 0;
+	for (var obj in to_transfer)
+	{
+		// Sanity, can actually happen if an item merges with others during the transfer etc.
+		if (!obj || !destination) continue;
+		
+		var handled = destination->Collect(obj, true);
+		if (handled)
+			++successful_transfers;
+	}
+	return successful_transfers;
+}
+
+func TransferObjectsFromTo(array to_transfer, object source, object destination)
+{
 	var successful_transfers = 0;
 	
 	// Try to transfer all the previously selected items.
@@ -905,17 +775,20 @@ private func OnContentsSelection(symbol, extra_data)
 	{
 		if (!obj) continue;
 		// Our target might have disappeared (e.g. a construction site completing after the first item).
-		if (!other_target) break;
+		if (!destination) break;
 		
-		var handled = false;
 		// Does the object not want to leave the other container anyway?
-		if (!obj->Contained() || !obj->~QueryRejectDeparture(target))
+		if (!obj->Contained() || !obj->~QueryRejectDeparture(source))
 		{
+			var handled = false;
+
 			// If stackable, always try to grab a full stack.
 			// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
+			// TODO: 200 stacks of 1 arrow would each merge into the stacks that are already in the target
+			//       when they enter the target. For this reason that special case is, imo, not needed here.    
 			if (obj->~IsStackable())
 			{
-				var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
+				var others = FindObjects(Find_Container(source), Find_ID(obj->GetID()), Find_Exclude(obj));
 				for (var other in others) 
 				{
 					if (obj->IsFullStack()) break;
@@ -924,26 +797,17 @@ private func OnContentsSelection(symbol, extra_data)
 			}
 			
 			// More special handling for Stackable items..
-			handled = obj->~TryPutInto(other_target);
+			handled = obj->~MergeWithStacksIn(destination);
 			// Try to normally collect the object otherwise.
-			if (!handled && other_target && obj)
-				handled = other_target->Collect(obj, true);
+			if (!handled && destination && obj)
+				handled = destination->Collect(obj, true);
+
+			if (handled)
+				successful_transfers += 1;
 		}
-		if (handled)
-			successful_transfers += 1;
 	}
-	
-	// Did we at least transfer one item?
-	if (successful_transfers > 0)
-	{
-		Sound("Hits::SoftTouch*", true, nil, GetOwner());
-		return true;
-	}
-	else
-	{
-		Sound("Hits::Materials::Wood::DullWoodHit*", true, nil, GetOwner());
-		return false;
-	}
+
+	return successful_transfers;
 }
 
 func FxIntRefreshContentsMenuStart(object target, proplist effect, temp, object obj, int slot, int menu_index)
@@ -955,10 +819,15 @@ func FxIntRefreshContentsMenuStart(object target, proplist effect, temp, object 
 	effect.last_inventory = [];
 }
 
-func FxIntRefreshContentsMenuTimer(target, effect, time)
+func FxIntRefreshContentsMenuTimer(object target, effect, int time)
 {
-	if (!effect.obj) return -1;
-	if (!current_menus[effect.slot]) return -1;
+	// Remove effect if menu is gone or menu at slot and index is not a contents menu.
+	if (!effect.obj)
+		return FX_Execute_Kill;
+	if (!current_menus[effect.slot] || !current_menus[effect.slot].menus[effect.menu_index])
+		return FX_Execute_Kill;
+	if (!(current_menus[effect.slot].menus[effect.menu_index].flag & InteractionMenu_Contents))
+		return FX_Execute_Kill;
 	// Helper object used to track extra-slot objects. When this object is removed, the tracking stops.
 	var extra_slot_keep_alive = current_menus[effect.slot].menu_object;
 	// The fast interval is only used for the very first check to ensure a fast startup.
@@ -968,9 +837,15 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 	var obj, i = 0;
 	while (obj = effect.obj->Contents(i++))
 	{
+		// Ignore objects that do not want to be shown as contents
+		if (obj->~RejectInteractionMenuContentEntry(cursor, effect.obj))
+		{
+			continue;
+		}
+
 		var symbol = obj;
 		var extra_data = {slot = effect.slot, menu_index = effect.menu_index, objects = []};
-		
+
 		// check if already exists (and then stack!)
 		var found = false;
 		// Never stack containers with (different) contents, though.
@@ -980,7 +855,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 		{
 			var j = 0, e = nil;
 			var found_tracker = false;
-			while (e = GetEffect(nil, obj, j++))
+			while (e = GetEffect("ExtraSlotTracker", obj, j++))
 			{
 				if (e.keep_alive != extra_slot_keep_alive) continue;
 				found_tracker = true;
@@ -988,9 +863,10 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 			}
 			if (!found_tracker)
 			{
-				var e = AddEffect("ExtraSlotTracker", obj, 1, 30 + Random(60), this);
+				var e = AddEffect("ExtraSlotTracker", obj, 1, 30 + Random(60), nil, GetID());
 				e.keep_alive = extra_slot_keep_alive;
 				e.callback_effect = effect;
+				e.obj = effect.obj;
 			}
 		}
 		// How many objects are this object?!
@@ -1010,6 +886,8 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 			// This object has a custom symbol (because it's a container)? Then the normal text would not be displayed.
 			if (inv.custom != nil)
 			{
+				if (inv.custom.top == nil)
+					inv.custom.top = {};
 				inv.custom.top.Text = inv.text;
 				inv.custom.top.Style = inv.custom.top.Style | GUI_TextRight | GUI_TextBottom;
 			}
@@ -1022,27 +900,26 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 		if (!found)
 		{
 			PushBack(extra_data.objects, obj);
-			
-			// Do we need a custom entry when the object has contents?
-			var custom = nil;
+
+			// Use a default grid-menu entry as the base.
+			var custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
+			custom.BackgroundColor = {Std = 0, OnHover = RGB(0, 100, 0)};
 			if (is_container)
 			{
-				// Use a default grid-menu entry as the base.
-				custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
-				// Pack it into a larger frame to allow for another button below.
-				// The entries with contents are sorted to the back of the inventory menu. This makes for a nicer layout.
-				custom = {Right = custom.Right, Bottom = "4em", top = custom, Priority = 10000 + obj->GetValue()};
+				// Pack the custom entry into a larger frame to allow for another button below.
+				// The priority offset makes sure that double-height items are at the front.
+				custom = {Right = custom.Right, Bottom = "4em", top = custom, Priority = -10000 + obj->GetValue()};
 				// Then add a little container-symbol (that can be clicked).
 				custom.bottom =
 				{
 					Top = "2em",
-					BackgroundColor = {Std = 0, Selected = RGBa(255, 100, 100, 100)},
+					BackgroundColor = {Std = 0, Selected = RGB(0, 100, 0)},
 					OnMouseIn = GuiAction_SetTag("Selected"),
 					OnMouseOut = GuiAction_SetTag("Std"),
 					OnClick = GuiAction_Call(this, "OnExtraSlotClicked", {slot = effect.slot, objects = extra_data.objects, ID = obj->GetID()}),
 					container = 
 					{
-						Symbol = Chest,
+						Symbol = Icon_ExtraSlot,
 						Priority = 1
 					}
 				};
@@ -1082,15 +959,10 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 			var overlay = obj->~GetInventoryIconOverlay();
 			if (overlay != nil)
 			{
-				if (!custom)
-				{
-					custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
-					custom.Priority = obj->GetValue();
-					custom.top = {};
-				}
-				custom.top._overlay = overlay;
+				custom.Priority = obj->GetValue();
+				custom.top = { _overlay = overlay };
 			}
-			
+
 			// Add to menu!
 			var text = nil;
 			if (object_amount > 1)
@@ -1105,7 +977,50 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				});
 		}
 	}
-	
+
+	// Add a contents counter on top.
+	var contents_count_bar = 
+	{
+		// Too low a value (-5000 doesn't work) and the bar will be at the bottom when
+		// an extra slot item is in the container and the HUD breaks
+		Priority = -10000,
+		Bottom = "1em",
+		Style = GUI_NoCrop,
+		text = 
+		{
+			Priority = 3,
+			Style = GUI_TextRight | GUI_TextVCenter,
+			Bottom = "1em"
+		}
+	};
+
+	if (effect.obj.MaxContentsCount)
+	{
+		var count = effect.obj->ContentsCount();
+		var max = effect.obj.MaxContentsCount;
+		contents_count_bar.text.Text = Format("<c eeeeee>%3d / %3d</c>", count, max);
+		contents_count_bar.Bottom = "0.5em";
+		contents_count_bar.bar =
+		{
+			Priority = 2,
+			BackgroundColor = RGB(0, 100, 0),
+			Right = ToPercentString(1000 * count / max, 10),
+			Bottom = "50%"
+		};
+		contents_count_bar.background =
+		{
+			Priority = 1,
+			BackgroundColor = RGBa(0, 0, 0, 100),
+			Bottom = "50%"
+		};
+	}
+	else
+	{
+		contents_count_bar.text.Text = Format("<c eeeeee>%3d</c>", effect.obj->ContentsCount());
+	}
+
+	PushBack(inventory, {symbol = nil, text = nil, custom = contents_count_bar});
+
 	// Check if nothing changed. If so, we don't need to update.
 	if (GetLength(inventory) == GetLength(effect.last_inventory))
 	{
@@ -1117,18 +1032,19 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 			same = false;
 			break;
 		}
-		if (same) return 1;
+		if (same)
+			return FX_OK;
 	}
-	
+
 	effect.last_inventory = inventory[:];
 	DoMenuRefresh(effect.slot, effect.menu_index, inventory);
-	return 1;
+	return FX_OK;
 }
 
 func FxExtraSlotTrackerTimer(object target, proplist effect, int time)
 {
-	if (!effect.keep_alive) return -1;
-	return 1;
+	if (!effect.keep_alive)
+		return -1;
 }
 
 // This is called by the extra-slot library.
@@ -1166,21 +1082,41 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 	var menu = current_menus[slot].menus[menu_index];
 	var current_entries = menu.entries;
 	if (!new_entries && menu.entries_callback)
-		new_entries = current_menus[slot].target->Call(menu.entries_callback, this.cursor);
+	{
+		var call_from = menu.entries_callback_target ?? current_menus[slot].target;
+		new_entries = call_from->Call(menu.entries_callback, this.cursor, menu.entries_callback_parameter);
+	}
 	
 	// step 0.1: update all items where the symbol and extra_data did not change but other things (f.e. the text)
 	// this is done to maintain a consistent order that would be shuffled constantly if the entry was removed and re-added at the end
 	for (var c = 0; c < GetLength(current_entries); ++c)
 	{
 		var old_entry = current_entries[c];
+		if (!old_entry) continue;
+		
 		var found = false;
 		var symbol_equal_index = -1;
 		for (var ni = 0; ni < GetLength(new_entries); ++ni)
 		{
 			var new_entry = new_entries[ni];
+			if (!new_entry) continue;
+			
 			if (!EntriesEqual(new_entry, old_entry))
 			{
-				if ((new_entry.symbol == old_entry.symbol) && (new_entry.extra_data == old_entry.extra_data) && (new_entry.fx == old_entry.fx))
+				// Exception for the inventory menus.. extra_data includes all the found objects, but they are allowed to differ here.
+				// So we check for equality excluding the objects.
+				var extra1 = new_entry.extra_data;
+				if (GetType(extra1) == C4V_PropList) extra1 = new extra1 {objects = nil};
+				var extra2 = old_entry.extra_data;
+				if (GetType(extra2) == C4V_PropList) extra2 = new extra2 {objects = nil};
+				// We also allow the symbols to change as long as the actual ID stays intact.
+				var symbol1 = new_entry.symbol;
+				var symbol2 = old_entry.symbol;
+				var symbols_equal = symbol1 == symbol2;
+				if (!symbols_equal && symbol1 && symbol2 && GetType(symbol1) == C4V_C4Object && GetType(symbol2) == C4V_C4Object)
+					symbols_equal = symbol1->~GetID() == symbol2->~GetID();
+
+				if (symbols_equal && DeepEqual(extra1, extra2) && DeepEqual(new_entry.custom, old_entry.custom) && (new_entry.fx == old_entry.fx))
 					symbol_equal_index = ni;
 				continue;
 			}
@@ -1257,8 +1193,8 @@ func EntriesEqual(proplist entry_a, proplist entry_b)
 {
 	return entry_a.symbol == entry_b.symbol
 	&& entry_a.text == entry_b.text
-	&& entry_a.extra_data == entry_b.extra_data
-	&& entry_a.custom == entry_b.custom;
+	&& DeepEqual(entry_a.extra_data, entry_b.extra_data)
+	&& DeepEqual(entry_a.custom, entry_b.custom);
 }
 
 func CreateDummy()
@@ -1291,7 +1227,10 @@ func UpdateInteractionMenuFor(object target, callbacks)
 				for (var menu_index = 0; menu_index < GetLength(current_menu.menus); ++menu_index)
 				{
 					var menu = current_menu.menus[menu_index];
-					if (menu.entries_callback != callback) continue;
+					if (menu.entries_callback != callback)
+					{
+						continue;
+					}
 					DoMenuRefresh(slot, menu_index);
 				}
 			}
@@ -1310,4 +1249,38 @@ global func UpdateInteractionMenus(callbacks)
 	if (callbacks && GetType(callbacks) != C4V_Array) callbacks = [callbacks];
 	for (var interaction_menu in FindObjects(Find_ID(GUI_ObjectInteractionMenu)))
 		interaction_menu->UpdateInteractionMenuFor(this, callbacks);
+}
+
+// Sounds
+
+func PlaySoundTransfer()
+{
+	Sound("Hits::SoftTouch*", true, nil, GetOwner());
+}
+
+func PlaySoundTransferIncomplete()
+{
+	Sound("Hits::Materials::Wood::DullWoodHit*", true, nil, GetOwner());
+}
+
+func PlaySoundError()
+{
+	Sound("Objects::Balloon::Pop", true, nil, GetOwner());
+}
+
+// Overloadable functions for customization
+
+func SidebarIconStandard()
+{
+	return Icon_Menu_RectangleRounded;
+}
+
+func SidebarIconOnHover()
+{
+	return Icon_Menu_RectangleBrightRounded;
+}
+
+func SidebarIconSelected()
+{
+	return Icon_Menu_RectangleBrightRounded;
 }

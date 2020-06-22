@@ -1,0 +1,2 @@
+Name=Key
+Description=Use to open something.

@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2011-2013, The OpenClonk Team and contributors
+# Copyright (c) 2011-2016, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -26,6 +26,13 @@ ENDIF (READLINE_INCLUDE_DIR)
 
 FIND_PATH(READLINE_INCLUDE_DIR readline.h PATH_SUFFIXES readline)
 
+# Unmodified readline depends on symbols from termcap without explicitly
+# linking to it. Several distributions patch this to make it link against
+# terminfo from ncurses or another termcap library, but some don't. To avoid
+# having to run link tests, we'll just look for and use any termcap providing
+# library.
+FIND_LIBRARY(TERMCAP_LIBRARY NAMES tinfo termcap ncursesw ncurses cursesw curses)
+
 SET(READLINE_NAMES readline libreadline)
 FIND_LIBRARY(READLINE_LIBRARY NAMES ${READLINE_NAMES} )
 
@@ -35,10 +42,13 @@ INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(READLINE DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR)
 
 IF(READLINE_FOUND)
-	SET( READLINE_LIBRARIES ${READLINE_LIBRARY} )
+	if(TERMCAP_LIBRARY)
+		set(READLINE_LIBRARIES ${READLINE_LIBRARY} ${TERMCAP_LIBRARY})
+	else()
+		set(READLINE_LIBRARIES ${READLINE_LIBRARY})
+	endif()
 ELSE(READLINE_FOUND)
 	SET( READLINE_LIBRARIES )
 ENDIF(READLINE_FOUND)
 	
-MARK_AS_ADVANCED( READLINE_LIBRARY READLINE_INCLUDE_DIR )
-
+MARK_AS_ADVANCED( READLINE_LIBRARY TERMINFO_LIBRARY READLINE_INCLUDE_DIR )

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -43,11 +43,13 @@
 
 */
 
-#include <C4Include.h>
-#include <C4PathFinder.h>
+#include "C4Include.h"
+#include "landscape/C4PathFinder.h"
 
-#include <C4FacetEx.h>
-#include <C4GraphicsSystem.h>
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4FacetEx.h"
+#include "lib/StdColors.h"
 
 const int32_t C4PF_MaxDepth        = 35,
               C4PF_MaxCrawl        = 800,
@@ -55,7 +57,7 @@ const int32_t C4PF_MaxDepth        = 35,
               C4PF_Threshold       = 10,
               C4PF_Direction_Left  = -1,
               C4PF_Direction_Right = +1,
-              C4PF_Direction_None  = 0,
+//              C4PF_Direction_None  = 0,
               C4PF_Ray_Launch      = 0,
               C4PF_Ray_Crawl       = 1,
               C4PF_Ray_Still       = 2,
@@ -101,7 +103,7 @@ protected:
 	bool CrawlTargetFree(int32_t iX, int32_t iY, int32_t iAttach, int32_t iDirection);
 	bool PointFree(int32_t iX, int32_t iY);
 	bool Crawl();
-	bool PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t iToY, C4TransferZone **ppZone = NULL);
+	bool PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t iToY, C4TransferZone **ppZone = nullptr);
 };
 
 C4PathFinderRay::C4PathFinderRay()
@@ -120,10 +122,10 @@ void C4PathFinderRay::Default()
 	X=Y=X2=Y2=TargetX=TargetY=0;
 	Direction=0;
 	Depth=0;
-	UseZone=NULL;
-	From=NULL;
-	Next=NULL;
-	pPathFinder=NULL;
+	UseZone=nullptr;
+	From=nullptr;
+	Next=nullptr;
+	pPathFinder=nullptr;
 	CrawlStartX=CrawlStartY=CrawlAttach=0;
 }
 
@@ -134,7 +136,7 @@ void C4PathFinderRay::Clear()
 
 bool C4PathFinderRay::Execute()
 {
-	C4TransferZone *pZone = NULL;
+	C4TransferZone *pZone = nullptr;
 	int32_t iX,iY,iLastX,iLastY;
 	switch (Status)
 	{
@@ -544,11 +546,11 @@ C4PathFinder::~C4PathFinder()
 
 void C4PathFinder::Default()
 {
-	PointFree=NULL;
-	SetWaypoint=NULL;
-	FirstRay=NULL;
+	PointFree=nullptr;
+	SetWaypoint=nullptr;
+	FirstRay=nullptr;
 	Success=false;
-	TransferZones=NULL;
+	TransferZones=nullptr;
 	TransferZonesEnabled=true;
 	Level=1;
 }
@@ -557,7 +559,7 @@ void C4PathFinder::Clear()
 {
 	C4PathFinderRay *pRay,*pNext;
 	for (pRay=FirstRay; pRay; pRay=pNext) { pNext=pRay->Next; delete pRay; }
-	FirstRay=NULL;
+	FirstRay=nullptr;
 }
 
 void C4PathFinder::Init(PointFreeFn fnPointFree, C4TransferZones* pTransferZones)
@@ -632,8 +634,8 @@ bool C4PathFinder::Find(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iT
 	if (!PointFree(iFromX,iFromY) || !PointFree(iToX,iToY)) return false;
 
 	// Add the first two rays
-	if (!AddRay(iFromX,iFromY,iToX,iToY,0,C4PF_Direction_Left,NULL)) return false;
-	if (!AddRay(iFromX,iFromY,iToX,iToY,0,C4PF_Direction_Right,NULL)) return false;
+	if (!AddRay(iFromX,iFromY,iToX,iToY,0,C4PF_Direction_Left,nullptr)) return false;
+	if (!AddRay(iFromX,iFromY,iToX,iToY,0,C4PF_Direction_Right,nullptr)) return false;
 
 	// Run
 	Run();

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,14 +18,14 @@
 
 #ifndef NOAULDEBUG
 
-#include "C4NetIO.h"
+#include "network/C4NetIO.h"
 
 // manages a debugging interface
 class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass
 {
 public:
 	C4AulDebug();
-	~C4AulDebug();
+	~C4AulDebug() override;
 	static bool InitDebug(const char *szPassword, const char *szHost);
 	bool Listen(uint16_t iPort, bool fWait);
 	static inline C4AulDebug *GetDebugger() { return pDebug; }
@@ -57,13 +57,13 @@ private:
 private:
 
 	// Overridden
-	virtual void PackPacket(const C4NetIOPacket &rPacket, StdBuf &rOutBuf);
-	virtual size_t UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &addr);
+	void PackPacket(const C4NetIOPacket &rPacket, StdBuf &rOutBuf) override;
+	size_t UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &addr) override;
 
 	// Callbacks
-	bool OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO::addr_t &AddrConnect, const addr_t *pOwnAddr, C4NetIO *pNetIO);
-	void OnDisconn(const C4NetIO::addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason);
-	void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO);
+	bool OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO::addr_t &AddrConnect, const addr_t *pOwnAddr, C4NetIO *pNetIO) override;
+	void OnDisconn(const C4NetIO::addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason) override;
+	void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO) override;
 
 public:
 	bool isConnected() const { return fConnected; }
@@ -72,9 +72,9 @@ public:
 	bool SetAllowed(const char *szHost);
 	void SetEngine(class C4AulExec *pnExec) { pExec = pnExec; }
 
-	bool Init(uint16_t iPort);
-	virtual bool Close();
-	virtual bool Close(const addr_t &addr);
+	bool Init(uint16_t iPort) override;
+	bool Close() override;
+	bool Close(const addr_t &addr) override;
 	
 	void ControlScriptEvaluated(const char* script, const char* result);
 
@@ -94,7 +94,7 @@ private:
 
 	ProcessLineResult ProcessLine(const StdStrBuf &Line);
 
-	bool SendLine(const char *szType, const char *szData = NULL);
+	bool SendLine(const char *szType, const char *szData = nullptr);
 };
 
 #endif

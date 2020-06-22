@@ -1,0 +1,22 @@
+# Goal Description
+MsgGoalName=Stelle die Energieversorgung wieder her
+MsgGoalDescription=Stelle die Energieversorgung wieder her und baue ein Flugzeug.
+
+# Dialogue options
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=&Lernrunde wiederholen
+MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
+
+# Tutorial messages
+MsgTutorialTakeElevator=Es gibt gerade noch genug Energie, um den Fahrstuhl zu versorgen. Fahr mit ihm in die Himmelsinsel über dir hinauf, dann nimm aus der sich dort befindenden Werkstatt einen Hammer. Um den Fahrstuhl zu rufen, drücke [%s], während du dich nahe dem Fahrstuhlschacht befindest.
+MsgTutorialBuildCompensator=Auf dieser Insel können wir einen Kompensator bauen, baue einen unterirdisch an der angegebenen Stelle. Kompensatoren können überflüssige Energie speichern, was nützlich ist, wenn du Windräder verwendest.
+MsgTutorialBuyMetal=Gut, nun kannst du links ein Stück Kohle ausgraben und der Baustelle hinzufügen. Die Dorfbewohner erlauben dir, Metall bei ihrer Flagge zu kaufen. In manchen Runden kannst du einige Dinge bei Flaggenposten kaufen, dazu musst du nur das Interaktionsmenü mittels Drücken von [%s] öffnen und im \"Einkaufen\" - Bereich auf das gewünschte Symbol klicken.
+MsgTutorialPowerOverview=Da nun der Kompensator fertiggestellt wurde, speichert er jegliche überflüssige Energie. Energie in verbundenen Bereichen wird geteilt, eine Übersicht kann an Flaggenposten im \"Energieübersicht\" - Bereich gefunden werden.
+MsgTutorialEnterCatapult=Nun ist es Zeit, dass du auf die sich im Osten befindliche Insel gerätst, um eine Dampfmaschine als Reserveenergieversorgung zu bauen. Dafür können wir Katapulte verwenden, mit denen du entweder ein Objekt oder dich selbst verschießen kannst. Stehe vor dem Katapult und drücke [%s], dann drücke [%s], um zwischen Betreten und Anfassen zu wählen, und lass dann [%s] los.
+MsgTutorialLaunchCatapult=Um zu sehen, wohin das Katapult zielt, kannst du mittels [F5/F6] oder [%s/%s] herauszoomen. Halte dann [%s] gedrückt, um das Zielen zu starten, und lass los, um dich selbst zu schießen. Wenn möglich, wird die Flugbahn durch deinen Mauscursor verlaufen.
+MsgTutorialBuildSteamEngine=Gut, wie du siehst, können Katapulte als Transportmittel verwendet werden! Verwende deinen Hammer, um unterirdisch am angegebenen Ort eine Dampfmaschine zu bauen. Dampfmaschinen verbrennen Brennstoff wie Kohle, Holz oder Öl, um Energie auf Nachfrage zu produzieren, was wir benötigen, um die Schiffswerft mit Energie zu versorgen.
+MsgTutorialTransportMaterials=Diese Baustelle benötigt Stein und Metall, um Steine zu bekommen, kannst du aus dem Chemielabor etwas Dynamit holen und den Flecken Erde auf dieser Insel sprengen. Für das Metall müssen wir Zugriff auf eine Flagge erhalten, um welches zu kaufen. Verwende das Katapult auf dieser Insel, um auf die unterste Insel zu gelangen, und verwende den Lift, um wieder hinaufzukommen.
+MsgTutorialShootCoalAndMetal=Die Dampfmaschine benötigt auch etwas Kohle, um Energie zu produzieren, grabe etwas Kohle aus und fasse das Katapult mit [%s] an. Wähle das Stück Kohle in deinem Inventar aus und schieße es auf dieselbe Weise auf die im Osten gelegene Insel, wie du auch dich hinübergeschossen hast. Kaufe dann 3 Stück Metall und schieße dich auf die Insel hinüber.
+MsgTutorialFinishSteamEngine=Gut, baue nun die Dampfmaschine fertig und fülle sie mit etwas Kohle. Katapultiere dich dann auf die Insel mit der Schiffswerft und baue das Flugzeug.
+MsgTutorialCompleted=Du wirst langsam zum Experten. Es wird Zeit, im nächsten Tutorial ein paar Clunker zu verdienen!

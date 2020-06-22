@@ -2,7 +2,7 @@ Flooded Veins
 
 You stumble upon an abandoned settlement beneath the Forest of Orgos in your quest for more gold. Legends tell a story of even more  valuable materials named gems which may be found here. Might this abandoned settlement be a failed attempt to find these gems? Set up an expedition to explore the flooded caves around and to discover possible gem veins.
 
-Goal: Sell gems
+Goal: Sell gems.
 
 Hints:
 - The flooded caves may be drained using pumps, you can get rid off the excess water where you entered the cave.

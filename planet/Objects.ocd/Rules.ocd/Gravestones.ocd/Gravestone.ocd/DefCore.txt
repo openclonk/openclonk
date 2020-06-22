@@ -1,6 +1,6 @@
 [DefCore]
 id=Clonk_Grave
-Version=6,0
+Version=8,0
 Category=C4D_None
 Width=8
 Height=12
@@ -10,4 +10,3 @@ VertexX=0,0
 VertexY=-5,5
 VertexFriction=40,100
 Mass=10
-Components=Rock=1

@@ -1,7 +1,6 @@
 #appendto Sequence
 
 static g_intro_sky_moving;
-static npc_tuesday;
 
 func Intro_Start()
 {
@@ -27,11 +26,10 @@ func Intro_Start()
 	this.pilot->SetObjectLayer(this.pilot);
 	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0)); // Hat is seen in the cockpit!
 
-	this.plane.FxIntPlaneTimer = this.Intro_PlaneTimer;
-	RemoveEffect("IntPlane", this.plane);
-	AddEffect("IntPlane",this.plane,1,1,this.plane);
+	this.plane->PlaneMount(this.pilot);
+	this.plane->CreateEffect(FxFloatPlane, 1, 1);
 	this.plane->FaceRight();
-	this.plane->StartInstantFlight(90, 0);
+	this.plane->StartInstantFlight(90, 15);
 	g_intro_sky_moving = true;
 	
 
@@ -40,30 +38,24 @@ func Intro_Start()
 	return ScheduleNext(100, 1);
 }
 
-func Intro_PlaneTimer(...)
+local FxFloatPlane = new Effect
 {
-	// Plane flight overload: Just move sky and have plane do turbulent movement during initial part of intro
-	var rv = Call(Airplane.FxIntPlaneTimer, ...);
-	if (g_intro_sky_moving)
+	Timer = func(int time)
 	{
-		if (!Random(4)) this.rdir = BoundBy((80+Random(21)-GetR())/5,-1,1);
-		SetXDir(); SetYDir(GetR()*2-GetY()+Random(5),10);
+		if (g_intro_sky_moving)
+		{
+			var rdir = BoundBy((80 + Random(21) - Target->GetR()) / 5, -1, 1);
+			Target->SetR(Target->GetR() + rdir);
+			Target->SetXDir(0);
+			Target->SetYDir(Target->GetR() * 2 - Target->GetY() + Random(5), 10);
+		}
 	}
-	//propellor
-	var change = GetAnimationPosition(this.propanim) + 15 * 3;
-	if(change > GetAnimationLength("Propellor"))
-		change = (GetAnimationPosition(this.propanim) + 15 * 3) - GetAnimationLength("Propellor");
-	if(change < 0)
-		change = (GetAnimationLength("Propellor") - 15 * 3);
-
-	SetAnimationPosition(this.propanim, Anim_Const(change));
-	return rv;
-}
+};
 
 func Intro_JoinPlayer(int plr)
 {
 	if (g_intro_done) return false; // too late for join - just join on island
-	for(var index = 0, crew; crew = GetCrew(plr, index); ++index) crew->Enter(this);
+	for (var index = 0, crew; crew = GetCrew(plr, index); ++index) crew->Enter(this);
 	return true;
 }
 
@@ -129,10 +121,10 @@ func Intro_10()
 	this.plane.rdir = 0;
 	this.plane->StartInstantFlight(this.plane->GetR(), 15);
 	MessageBoxAll("$Intro10$", GetHero(), true); // aaaah
-	for (var i=0,plr; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0, plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
-		for(var index = 0, crew; crew = GetCrew(plr, index); ++index)
+		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
 		{
 			crew->Exit();
 			crew->SetPosition(this.plane->GetX()+10, this.plane->GetY());
@@ -151,11 +143,11 @@ func Intro_11()
 	SetWind(0);
 	SetSkyParallax(0, 20, 20, 0, 0);
 	GameCall("PostIntroInitialize");
-	for (var i=0,plr; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0, plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
 		GameCall("InitializePlayer", plr);
-		for(var index = 0, crew; crew = GetCrew(plr, index); ++index)
+		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
 		{
 			crew->SetPosition(g_tuesday_pos[0],-100);
 			crew->SetXDir(-10); crew->SetYDir(-30);
@@ -169,12 +161,12 @@ func Intro_11()
 func Intro_20()
 {
 	MessageBoxAll("$Intro20$", GetHero(), true); // ouch
-	for (var i=0,plr; i<GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0, plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
-		for(var index = 0, crew; crew = GetCrew(plr, index); ++index)
+		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
 		{
-			crew->SetCommand("MoveTo", nil, g_tuesday_pos[0]-15+Random(20), g_tuesday_pos[1]);
+			crew->SetCommand("MoveTo", nil, g_tuesday_pos[0]-15 + Random(20), g_tuesday_pos[1]);
 		}
 	}
 	return ScheduleNext(300);
@@ -243,7 +235,7 @@ func Intro_30()
 
 func Intro_31()
 {
-	MessageBoxAll("$Intro31$", npc_tuesday, true); // go east and finish it with metal+gems
+	MessageBoxAll("$Intro31$", npc_tuesday, true); // go east and finish it with metal + gems
 	return ScheduleNext(400);
 }
 

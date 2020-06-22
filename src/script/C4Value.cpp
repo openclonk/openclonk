@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,18 +14,18 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Value.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
 
-#include <C4AulExec.h>
-#include <C4DefList.h>
-#include <C4StringTable.h>
-#include <C4ValueArray.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
-#include <C4Object.h>
-#include <C4Log.h>
-#include <C4Effect.h>
+#include "game/C4GameScript.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
+#include "script/C4AulExec.h"
+#include "script/C4Effect.h"
+#include "script/C4StringTable.h"
+#include "script/C4ValueArray.h"
 
 const C4Value C4VNull;
 
@@ -67,22 +67,22 @@ C4Value::C4Value(C4Effect * p): C4Value(static_cast<C4PropList *>(p)) {}
 
 C4Object * C4Value::getObj() const
 {
-	return CheckConversion(C4V_Object) ? Data.PropList->GetObject() : NULL;
+	return CheckConversion(C4V_Object) ? Data.PropList->GetObject() : nullptr;
 }
 
 C4Object * C4Value::_getObj() const
 {
-	return Data.PropList ? Data.PropList->GetObject() : NULL;
+	return Data.PropList ? Data.PropList->GetObject() : nullptr;
 }
 
 C4Def * C4Value::getDef() const
 {
-	return CheckConversion(C4V_Def) ? Data.PropList->GetDef() : NULL;
+	return CheckConversion(C4V_Def) ? Data.PropList->GetDef() : nullptr;
 }
 
 C4Def * C4Value::_getDef() const
 {
-	return Data.PropList ? Data.PropList->GetDef() : NULL;
+	return Data.PropList ? Data.PropList->GetDef() : nullptr;
 }
 
 C4Value C4VObj(C4Object *pObj) { return C4Value(static_cast<C4PropList*>(pObj)); }
@@ -128,7 +128,7 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 }
 
 // Humanreadable debug output
-StdStrBuf C4Value::GetDataString(int depth) const
+StdStrBuf C4Value::GetDataString(int depth, const C4PropListStatic *ignore_reference_parent) const
 {
 	// ouput by type info
 	switch (GetType())
@@ -146,15 +146,17 @@ StdStrBuf C4Value::GetDataString(int depth) const
 			return FormatString("Object(%d)", Obj->Number);
 		const C4PropListStatic * Def = Data.PropList->IsStatic();
 		if (Def)
-			return Def->GetDataString();
+			if (!ignore_reference_parent || Def->GetParent() != ignore_reference_parent)
+				return Def->GetDataString();
+		C4Effect * fx = Data.PropList->GetEffect();
 		StdStrBuf DataString;
-		DataString = "{";
-		Data.PropList->AppendDataString(&DataString, ", ", depth);
+		DataString = (fx ? "effect {" : "{");
+		Data.PropList->AppendDataString(&DataString, ", ", depth, Def && ignore_reference_parent);
 		DataString.AppendChar('}');
 		return DataString;
 	}
 	case C4V_String:
-		return (Data.Str && Data.Str->GetCStr()) ? FormatString("\"%s\"", Data.Str->GetCStr()) : StdStrBuf("(nullstring)");
+		return (Data.Str && Data.Str->GetCStr()) ? FormatString(R"("%s")", Data.Str->GetCStr()) : StdStrBuf("(nullstring)");
 	case C4V_Array:
 	{
 		if (depth <= 0 && Data.Array->GetSize())
@@ -177,6 +179,64 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		return StdStrBuf("nil");
 	default:
 		return StdStrBuf("-unknown type- ");
+	}
+}
+
+// JSON serialization.
+// Only plain data values can be serialized. Throws a C4JSONSerializationError
+// when encountering values that cannot be represented in JSON or when the
+// maximum depth is reached.
+StdStrBuf C4Value::ToJSON(int depth, const C4PropListStatic *ignore_reference_parent) const
+{
+	// ouput by type info
+	switch (GetType())
+	{
+	case C4V_Int:
+		return FormatString("%ld", static_cast<long>(Data.Int));
+	case C4V_Bool:
+		return StdStrBuf(Data ? "true" : "false");
+	case C4V_PropList:
+	{
+		const C4PropListStatic * Def = Data.PropList->IsStatic();
+		if (Def)
+			if (!ignore_reference_parent || Def->GetParent() != ignore_reference_parent)
+				return Def->ToJSON();
+		return Data.PropList->ToJSON(depth, Def && ignore_reference_parent);
+	}
+	case C4V_String:
+		if (Data.Str && Data.Str->GetCStr())
+		{
+			StdStrBuf str = Data.Str->GetData();
+			str.EscapeString();
+			str.Replace("\n", R"(\n)");
+			return FormatString(R"("%s")", str.getData());
+		}
+		else
+		{
+			return StdStrBuf("null");
+		}
+	case C4V_Array:
+	{
+		if (depth <= 0 && Data.Array->GetSize())
+		{
+			throw C4JSONSerializationError("maximum depth reached");
+		}
+		StdStrBuf DataString;
+		DataString = "[";
+		for (int32_t i = 0; i < Data.Array->GetSize(); i++)
+		{
+			if (i) DataString.Append(",");
+			DataString.Append(std::move(Data.Array->GetItem(i).ToJSON(depth - 1)));
+		}
+		DataString.AppendChar(']');
+		return DataString;
+	}
+	case C4V_Function:
+		throw C4JSONSerializationError("cannot serialize function");
+	case C4V_Nil:
+		return StdStrBuf("null");
+	default:
+		throw C4JSONSerializationError("unknown type");
 	}
 }
 
@@ -220,8 +280,8 @@ void C4Value::Denumerate(class C4ValueNumbers * numbers)
 
 void C4ValueNumbers::Denumerate()
 {
-	for (std::vector<C4Value>::iterator i = LoadedValues.begin(); i != LoadedValues.end(); ++i)
-		i->Denumerate(this);
+	for (auto & LoadedValue : LoadedValues)
+		LoadedValue.Denumerate(this);
 }
 
 uint32_t C4ValueNumbers::GetNumberForValue(C4Value * v)
@@ -240,9 +300,9 @@ uint32_t C4ValueNumbers::GetNumberForValue(C4Value * v)
 void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	// Type
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	char cC4VID;
-	if (!fCompiler)
+	if (!deserializing)
 	{
 		assert(Type != C4V_Nil || !Data);
 		switch (Type)
@@ -289,10 +349,10 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		break;
 
 	case 'E':
-		if (!fCompiler)
+		if (!deserializing)
 			iTmp = numbers->GetNumberForValue(this);
 		pComp->Value(iTmp);
-		if (fCompiler)
+		if (deserializing)
 		{
 			Data.Int = iTmp; // must be denumerated later
 			Type = C4V_Enum;
@@ -300,10 +360,10 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		break;
 
 	case 'O':
-		if (!fCompiler)
+		if (!deserializing)
 			iTmp = getPropList()->GetPropListNumbered()->Number;
 		pComp->Value(iTmp);
-		if (fCompiler)
+		if (deserializing)
 		{
 			Data.Int = iTmp; // must be denumerated later
 			Type = C4V_C4ObjectEnum;
@@ -312,7 +372,7 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 
 	case 'D':
 	{
-		if (!pComp->isCompiler())
+		if (!pComp->isDeserializer())
 		{
 			const C4PropList * p = getPropList();
 			if (getFunction())
@@ -355,33 +415,33 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	case 's':
 	{
 		StdStrBuf s;
-		if (!fCompiler)
+		if (!deserializing)
 			s = Data.Str->GetData();
 		pComp->Value(s);
-		if (fCompiler)
+		if (deserializing)
 			SetString(::Strings.RegString(s));
 		break;
 	}
 
 	// FIXME: remove these three once Game.txt were re-saved with current version
 	case 'c':
-		if (fCompiler)
+		if (deserializing)
 			Set(GameScript.ScenPropList);
 		break;
 
 	case 't':
-		if (fCompiler)
+		if (deserializing)
 			Set(GameScript.ScenPrototype);
 		break;
 
 	case 'g':
-		if (fCompiler)
+		if (deserializing)
 			SetPropList(ScriptEngine.GetPropList());
 		break;
 
 	case 'n':
 	case 'A': // compat with OC 5.1
-		if (fCompiler)
+		if (deserializing)
 			Set0();
 		// doesn't have a value, so nothing to store
 		break;
@@ -396,13 +456,13 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 void C4ValueNumbers::CompileValue(StdCompiler * pComp, C4Value * v)
 {
 	// Type
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	char cC4VID;
 	switch(v->GetType())
 	{
 	case C4V_PropList: cC4VID = 'p'; break;
 	case C4V_Array:    cC4VID = 'a'; break;
-	default: assert(fCompiler); break;
+	default: assert(deserializing); break;
 	}
 	pComp->Character(cC4VID);
 	pComp->Separator(StdCompiler::SEP_START);
@@ -412,14 +472,14 @@ void C4ValueNumbers::CompileValue(StdCompiler * pComp, C4Value * v)
 		{
 			C4PropList * p = v->_getPropList();
 			pComp->Value(mkParAdapt(mkPtrAdaptNoNull(p), this));
-			if (fCompiler) v->SetPropList(p);
+			if (deserializing) v->SetPropList(p);
 		}
 		break;
 	case 'a':
 		{
 			C4ValueArray * a = v->_getArray();
 			pComp->Value(mkParAdapt(mkPtrAdaptNoNull(a), this));
-			if (fCompiler) v->SetArray(a);
+			if (deserializing) v->SetArray(a);
 		}
 		break;
 	default:
@@ -431,9 +491,9 @@ void C4ValueNumbers::CompileValue(StdCompiler * pComp, C4Value * v)
 
 void C4ValueNumbers::CompileFunc(StdCompiler * pComp)
 {
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	bool fNaming = pComp->hasNaming();
-	if (fCompiler)
+	if (deserializing)
 	{
 		uint32_t iSize;
 		if (!fNaming) pComp->Value(iSize);
@@ -446,7 +506,7 @@ void C4ValueNumbers::CompileFunc(StdCompiler * pComp)
 			// Read entries
 			try
 			{
-				LoadedValues.push_back(C4Value());
+				LoadedValues.emplace_back();
 				CompileValue(pComp, &LoadedValues.back());
 			}
 			catch (StdCompiler::NotFoundException *pEx)
@@ -536,7 +596,7 @@ bool C4Value::operator == (const C4Value& Value2) const
 			return s;
 		}
 	};
-	static Seen *top = NULL;
+	static Seen *top = nullptr;
 	Seen here(top, this, &Value2);
 	
 	bool recursion = top && top->recursion(&here);
@@ -558,6 +618,18 @@ bool C4Value::operator == (const C4Value& Value2) const
 bool C4Value::operator != (const C4Value& Value2) const
 {
 	return !(*this == Value2);
+}
+
+C4V_Type C4Value::GetTypeEx() const
+{
+	// Return type including types derived from prop list types (such as C4V_Def)
+	if (Type == C4V_PropList)
+	{
+		if (FnCnvEffect()) return C4V_Effect;
+		if (FnCnvObject()) return C4V_Object;
+		if (FnCnvDef()) return C4V_Def;
+	}
+	return Type;
 }
 
 void C4Value::LogDeletedObjectWarning(C4PropList * p)

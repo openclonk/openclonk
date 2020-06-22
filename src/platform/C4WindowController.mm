@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,29 +13,26 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4ViewportWindow.h>
-#include <C4FullScreen.h>
-#include <C4Landscape.h>
-
+#define GL_SILENCE_DEPRECATION
 #include <epoxy/gl.h>
+#import <AppKit/AppKit.h>
 
-#import "C4WindowController.h"
-#import "C4DrawGLMac.h"
-#import "C4EditorWindowController.h"
-#import "C4AppDelegate.h"
-#import "AppKit/NSOpenGL.h"
+#include "C4Include.h"
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "editor/C4ViewportWindow.h"
+#include "game/C4FullScreen.h"
+#include "landscape/C4Landscape.h"
 
-static SInt32 osVersion()
+#import "platform/C4WindowController.h"
+#import "graphics/C4DrawGLMac.h"
+#import "editor/C4EditorWindowController.h"
+#import "platform/C4AppDelegate.h"
+
+bool lionAndBeyond()
 {
-	SInt32 ver;
-	Gestalt(gestaltSystemVersion, &ver);
-	return ver;
+    return NSAppKitVersionNumber >= NSAppKitVersionNumber10_7;
 }
-
-bool lionAndBeyond() {return osVersion() >= 0x1070;}
 
 #ifdef USE_COCOA
 
@@ -47,7 +44,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 @end
 
 @implementation ClonkScreenfillingWindow
-- (BOOL) canBecomeKeyWindow;
+- (BOOL) canBecomeKeyWindow
 {
 	return YES; // a resounding one
 }
@@ -84,7 +81,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 {
 	return
 		[self isFullScreen] ||
-		(lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask);
+		(lionAndBeyond() && (self.window.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
 - (void) setFullscreen:(BOOL)fullscreen
@@ -99,7 +96,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 		if (![self isFullScreen])
 		{
 			NSRect fullscreenRect = NSScreen.mainScreen.frame;
-			fullscreenWindow = [[ClonkScreenfillingWindow alloc] initWithContentRect:fullscreenRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES];
+			fullscreenWindow = [[ClonkScreenfillingWindow alloc] initWithContentRect:fullscreenRect styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:YES];
 			[fullscreenWindow setLevel:NSMainMenuWindowLevel+1];
 			[fullscreenWindow setOpaque:YES];
 			[fullscreenWindow setHidesOnDeactivate:YES];
@@ -241,20 +238,13 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 
 // C4ViewportWindow
 
+#if !defined(WITH_QT_EDITOR)
 bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;
 	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
-	[scrollView.horizontalScroller setToLandscapeCoordinate:GetViewX() size:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
-	[scrollView.verticalScroller setToLandscapeCoordinate:GetViewY() size:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
-	return true;
-}
-
-bool C4Viewport::ViewPositionByScrollBars()
-{
-	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
-	SetViewX([scrollView.horizontalScroller landscapeCoordinateForSize:GBackWdt viewportSize:ViewWdt zoom:GetZoom()]);
-	SetViewY([scrollView.verticalScroller landscapeCoordinateForSize:GBackHgt viewportSize:ViewHgt zoom:GetZoom()]);
+	[scrollView.horizontalScroller setToLandscapeCoordinate:GetViewX() size:Landscape.GetWidth() viewportSize:ViewWdt zoom:GetZoom()];
+	[scrollView.verticalScroller setToLandscapeCoordinate:GetViewY() size:Landscape.GetHeight() viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
 }
 
@@ -282,6 +272,15 @@ bool C4Viewport::TogglePlayerLock()
 			[scrollView setAutohidesScrollers:YES];
 		}
 	}
+	return true;
+}
+#endif
+
+bool C4Viewport::ViewPositionByScrollBars()
+{
+	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
+	SetViewX([scrollView.horizontalScroller landscapeCoordinateForSize:Landscape.GetWidth() viewportSize:ViewWdt zoom:GetZoom()]);
+	SetViewY([scrollView.verticalScroller landscapeCoordinateForSize:Landscape.GetHeight() viewportSize:ViewHgt zoom:GetZoom()]);
 	return true;
 }
 

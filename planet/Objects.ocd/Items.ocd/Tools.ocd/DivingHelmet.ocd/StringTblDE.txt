@@ -1,0 +1,12 @@
+Name=Taucherhelm
+Description=Ermöglicht es dem Clonk unter Wasser zu atmen, solange der Helm an eine funktionstüchtige Pumpe angeschlossen ist. [Benutzen] drücken zum Aufsetzen.
+
+MsgConnectedPipe=Rohr angeschlossen.
+MsgPipeProhibited=Es können keine Zuflussrohre an den Taucherhelm angeschlossen werden.
+MsgHasPipe=Der Taucherhelm hat schon ein Rohr.
+
+MenuPipeControl=Leitungen
+MsgCutPipe=Rohr trennen
+MsgConnectPipe=Rohr anschließen
+DescCutPipe=Entfernt das angeschlossene Rohr.
+DescConnectPipe=Schließt ein Rohr an.

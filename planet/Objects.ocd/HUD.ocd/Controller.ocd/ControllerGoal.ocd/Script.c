@@ -19,7 +19,7 @@ local goal_gui_id;
 local goal_info_id;
 local goals;
 
-/* Wealth Showing / Hiding */
+/*-- Wealth Showing / Hiding --*/
 
 public func ShiftGoal()
 {
@@ -52,12 +52,10 @@ public func UnshiftGoal()
 	GuiUpdate(update, goal_gui_id);
 }
 
-/* Creation */
+/*-- Creation --*/
 
 public func Construction()
 {
-	var plr = GetOwner();
-
 	var y_begin = GUI_Controller_Goal_IconMargin;
 	var y_end = y_begin + GUI_Controller_Goal_IconSize;
 	// Also take into account the margin and size of the wealth HUD if shown
@@ -100,7 +98,7 @@ private func Destruction()
 	_inherited(...);
 }
 
-/* Callbacks */
+/*-- Callbacks --*/
 
 // Callback from the goal library: display this goal.
 public func OnGoalUpdate(object goal)
@@ -114,24 +112,23 @@ public func OnGoalUpdate(object goal)
 
 		return _inherited(goal, ...);
 	}
-	var goal_picture_def;
-	var update_req = goal_gui_menu.Symbol != goal->GetID();
-	if (goal->~GetPictureDefinition())
-	{
-		goal_picture_def = goal->GetPictureDefinition();
-		update_req = goal_gui_menu.Symbol != goal_picture_def;
-	}
-	var goal_picture = goal->~GetPictureName() ?? goal->GetGraphics();
+
+	// Get current goal display settings
+	var symbol = GetGoalSymbol(goal);
+	var graphics = GetGoalGraphicsName(goal);
+	var text = goal->~GetShortDescription(GetOwner());
+
+	// Determine changes
+	var update_symbol = goal_gui_menu.Symbol != symbol;
+	var update_graphics = goal_gui_menu.GraphicsName != graphics;
+	var update_text = goal_gui_menu.text.Text != text;
 
 	// Only update if something has changed.
-	if (update_req || goal_gui_menu.GraphicsName != goal_picture || goal_gui_menu.text.Text != goal->~GetShortDescription(GetOwner()))
+	if (update_symbol || update_graphics || update_text)
 	{
-		goal_gui_menu.text.Text = goal->~GetShortDescription(GetOwner());
-		if (goal_picture_def)
-			goal_gui_menu.Symbol = goal_picture_def;
-		else
-			goal_gui_menu.Symbol = goal->GetID();
-		goal_gui_menu.GraphicsName = goal_picture;
+		goal_gui_menu.text.Text = text;
+		goal_gui_menu.Symbol = symbol;
+		goal_gui_menu.GraphicsName = graphics;
 
 		goal_gui_menu.Player = GetOwner();
 		goal_gui_menu.Style = GUI_Multiple;
@@ -225,8 +222,8 @@ private func GoalSubMenu(object goal, int nr, int size)
 	if (size == nil)
 		size = 4;
 
-	var symbol = goal->~GetPictureDefinition() ?? goal->GetID();
-	var graphics = goal->~GetPictureName() ?? goal->GetGraphics();
+	var symbol = GetGoalSymbol(goal);
+	var graphics = GetGoalGraphicsName(goal);
 	// Create the goal submenu with id counting upwards from 2.
 	var prop_goal = 
 	{
@@ -263,24 +260,25 @@ private func GoalSubMenu(object goal, int nr, int size)
 public func OnCloseButtonClick()
 {
 	CloseGoalWindow();
-	return;
 }
 
 public func OnGoalGUIHover(object goal)
 {
-	if (!goal) return;
-	// change text to the current goal.
-	GuiUpdateText(goal->~GetDescription(GetOwner()), goal_info_id, 1, this);
+	if (!goal)
+		return;
+	// Change text to the current goal.
+	var text = Format("<c ff0000>%s:</c> %s", goal->GetName(), goal->~GetDescription(GetOwner()));
+	GuiUpdateText(text, goal_info_id, 1, this);
 }
 
 private func OnGoalWindowUpdate(object goal)
 {
-	if (!goal)
+	if (!goal || !goal_info_id)
 		return;
-	if (!goal_info_id)
-		return;
+
 	var index = GetIndexOf(goals, goal);
 	if (index == -1) return;
+
 	var menu = GoalSubMenu(goal, index);
 	// Update only very selectively. (To e.g. not reset the background/tag)
 	var update = 
@@ -290,4 +288,14 @@ private func OnGoalWindowUpdate(object goal)
 		fulfilled = menu.fulfilled,
 	};
 	GuiUpdate(update, goal_info_id, menu.ID, menu.Target);
+}
+
+private func GetGoalSymbol(object goal)
+{
+	return goal->~GetPictureDefinition(GetOwner()) ?? goal->GetID();
+}
+
+private func GetGoalGraphicsName(object goal)
+{
+	return goal->~GetPictureName(GetOwner()) ?? goal->GetGraphics(GetOwner());
 }

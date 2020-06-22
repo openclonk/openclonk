@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,17 +13,20 @@
  * for the above references.
  */
  
-#include <C4Include.h>
-#include <C4DrawGL.h>
-#include <C4Window.h>
-#include <C4Version.h>
-#include <C4Application.h>
-#include <C4Rect.h>
-#include <C4FullScreen.h>
+#define GL_SILENCE_DEPRECATION
+#include "C4Include.h"
+#include "graphics/C4DrawGL.h"
+#include "platform/C4Window.h"
+#include "C4Version.h"
+#include "game/C4Application.h"
+#include "lib/C4Rect.h"
+#include "game/C4FullScreen.h"
+#include "editor/C4Console.h"
+#include "editor/C4ViewportWindow.h"
 
 #import <AppKit/AppKit.h>
-#import <C4WindowController.h>
-#import <C4DrawGLMac.h>
+#import "platform/C4WindowController.h"
+#import "graphics/C4DrawGLMac.h"
 
 #ifdef USE_COCOA
 
@@ -36,6 +39,7 @@ C4Window::C4Window ():
 
 C4Window::~C4Window () {}
 
+#ifndef WITH_QT_EDITOR
 static NSString* windowXibNameForWindowKind(C4Window::WindowKind kind)
 {
 	switch (kind)
@@ -51,10 +55,17 @@ static NSString* windowXibNameForWindowKind(C4Window::WindowKind kind)
 		return nil;
 	}
 }
+#endif
 
 C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	Active = true;
+    
+#ifdef WITH_QT_EDITOR
+    // embed into editor: Viewport widget creation handled by C4ConsoleQt
+    ::Console.AddViewport(static_cast<C4ViewportWindow *>(this));
+    return this;
+#else
 
 	// Create window
 	C4WindowController* controller = [C4WindowController new];
@@ -69,6 +80,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 	SetTitle(Title);
 	eKind = windowKind;
 	return this;
+#endif
 }
 
 void C4Window::Clear()
@@ -136,6 +148,11 @@ void C4Window::SetSize(unsigned int cx, unsigned int cy)
 	[controller setContentSize:NSMakeSize(cx, cy)];
 }
 
+void C4Window::GrabMouse(bool grab)
+{
+	// TODO
+}
+
 void C4Window::RequestUpdate()
 {
 	[ctrler.openGLView display];
@@ -195,8 +212,15 @@ C4KeyCode K_C = 8 + CocoaKeycodeOffset;
 C4KeyCode K_V = 9 + CocoaKeycodeOffset;
 C4KeyCode K_X = 7 + CocoaKeycodeOffset;
 C4KeyCode K_A = 0 + CocoaKeycodeOffset;
-int MK_SHIFT = NSShiftKeyMask;
-int MK_CONTROL = NSControlKeyMask;
-int MK_ALT = NSAlternateKeyMask;
+C4KeyCode K_S = 1 + CocoaKeycodeOffset;
+
+// FIXME
+C4KeyCode K_PRINT = -100;
+C4KeyCode K_CENTER = -101;
+C4KeyCode K_NUM = -102;
+
+int MK_SHIFT = NSEventModifierFlagShift;
+int MK_CONTROL = NSEventModifierFlagControl;
+int MK_ALT = NSEventModifierFlagOption;
 
 #endif

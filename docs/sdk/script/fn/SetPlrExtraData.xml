@@ -6,7 +6,7 @@
   <func>
     <title>SetPlrExtraData</title>
     <category>Player</category>
-    <version>5.1 OC<extversion>5.2 OC</extversion></version>
+    <version>1.0 OC<extversion>2.0 OC</extversion></version>
     <syntax>
       <rtype>any</rtype>
       <params>

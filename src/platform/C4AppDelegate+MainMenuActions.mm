@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,16 +13,17 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Console.h>
-#include <C4Viewport.h>
-#include <C4GraphicsSystem.h>
-
+#define GL_SILENCE_DEPRECATION
 #include <epoxy/gl.h>
 
-#import "C4AppDelegate+MainMenuActions.h"
-#import "C4DrawGLMac.h"
-#import "C4EditorWindowController.h"
+#include "C4Include.h"
+#include "editor/C4Console.h"
+#include "game/C4Viewport.h"
+#include "game/C4GraphicsSystem.h"
+
+#import "platform/C4AppDelegate+MainMenuActions.h"
+#import "graphics/C4DrawGLMac.h"
+#import "editor/C4EditorWindowController.h"
 
 @implementation C4AppDelegate (MainMenuActions)
 
@@ -78,12 +79,12 @@
 	Console.PlayerJoin();
 }
 
-- (IBAction) openPropTools:(id)sender;
+- (IBAction) openPropTools:(id)sender
 {
 	Console.EditCursor.OpenPropTools();
 }
 
-- (IBAction) showAbout:(id)sender;
+- (IBAction) showAbout:(id)sender
 {
 	Console.HelpAbout();
 }
@@ -117,7 +118,7 @@
 	[editorWindowController.toolSelector selectSegmentWithTag:[sender tag]];
 }
 
-- (IBAction) suggestQuitting:(id)sender;
+- (IBAction) suggestQuitting:(id)sender
 {
 	if (!Application.isEditor && Game.IsRunning)
 	{
@@ -181,7 +182,7 @@
 	return YES;
 }
 
-- (IBAction) visitWebsite:(id)sender;
+- (IBAction) visitWebsite:(id)sender
 {
 	OpenURL("http://wiki.openclonk.org");
 }
@@ -192,12 +193,12 @@
 	Game.DoKeyboardInput(key, KEYEV_Up,   false, false, false, false, NULL);
 }
 
-- (IBAction) makeScreenshot:(id)sender;
+- (IBAction) makeScreenshot:(id)sender
 {
 	::GraphicsSystem.SaveScreenshotKey(false);
 }
 
-- (IBAction) makeScreenshotOfWholeMap:(id)sender;
+- (IBAction) makeScreenshotOfWholeMap:(id)sender
 {
 	::GraphicsSystem.SaveScreenshotKey(true);
 }

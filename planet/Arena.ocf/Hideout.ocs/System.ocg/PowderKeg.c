@@ -13,9 +13,10 @@ protected func FxNoRemovalStop(object target, effect, int reason)
 	if (reason == 3)
 	{
 		var container = target->Contained();
-		if (!container)
-			return 1;
-		container->CreateContents(PowderKeg);		
+		if (container)
+		{
+			container->CreateContents(PowderKeg);
+		}	
 	}
 	return 1;
 }

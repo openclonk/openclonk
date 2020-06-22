@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -23,15 +23,15 @@
 class C4ComponentHost
 {
 public:
-	C4ComponentHost() { }
+	C4ComponentHost() = default;
 	virtual ~C4ComponentHost() { Clear(); }
 	const char *GetFilePath() const { return FilePath.getData(); }
 	void Clear() { Data.Clear(); OnLoad(); }
 	const char *GetData() const { return Data.getData(); }
 	const StdStrBuf & GetDataBuf() const { return Data; }
 	size_t GetDataSize() const { return Data.getLength(); }
-	bool Load(C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
-	bool Load(C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);
+	bool Load(C4Group &hGroup, const char *szFilename, const char *szLanguage=nullptr);
+	bool Load(C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=nullptr);
 	bool GetLanguageString(const char *szLanguage, StdStrBuf &rTarget);
 protected:
 	// The component host's Data has changed. This callback can be used by

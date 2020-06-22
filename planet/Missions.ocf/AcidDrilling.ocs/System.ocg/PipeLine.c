@@ -1,5 +1,5 @@
-// Max distance for pipe line
+// Max distance for pipe line.
 
 #appendto PipeLine
 
-local LineMaxDistance = 500;
+local PipeMaxLength = 600;

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2019, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,12 +17,13 @@
 
 /* Functions mapped by C4Script */
 
-#include <C4Include.h>
-#include <C4AulDefFunc.h>
+#include "C4Include.h"
 
-#include <C4AulExec.h>
-#include <C4Random.h>
-#include <C4Version.h>
+#include "C4Version.h"
+#include "lib/C4Random.h"
+#include "script/C4AulExec.h"
+#include "script/C4AulDefFunc.h"
+#include "script/C4ScriptLibraries.h"
 
 //========================== Some Support Functions =======================================
 
@@ -113,9 +114,7 @@ C4AulDefFunc::C4AulDefFunc(C4PropListStatic * Parent, C4ScriptFnDef* pDef):
 	Parent->SetPropertyByS(Name, C4VFunction(this));
 }
 
-C4AulDefFunc::~C4AulDefFunc()
-{
-}
+C4AulDefFunc::~C4AulDefFunc() = default;
 
 C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 {
@@ -176,6 +175,11 @@ static C4ValueArray *FnTrans_Rotate(C4PropList * _this, long angle, long rx, lon
 	long n = long(sqrt(double(sqrt_val)));
 	if (n * n < sqrt_val) n++;
 	else if (n * n > sqrt_val) n--;
+	
+	if (n == 0)
+	{
+		throw C4AulExecError("cannot rotate around a null vector");
+	}
 
 	rx = (1000 * rx) / n;
 	ry = (1000 * ry) / n;
@@ -251,6 +255,8 @@ static C4Value FnTrans_Mul(C4PropList * _this, C4Value *pars)
 
 #undef MAKE_AND_RETURN_ARRAY
 
+/* PropLists */
+
 static C4PropList * FnCreatePropList(C4PropList * _this, C4PropList * prototype)
 {
 	return C4PropList::New(prototype);
@@ -298,6 +304,20 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 	return r;
 }
 
+static C4PropList * FnGetPrototype(C4PropList * _this, C4PropList * p)
+{
+	if (!p) p = _this;
+	if (!p) throw NeedNonGlobalContext("GetPrototype");
+	return p->GetPrototype();
+}
+
+static void FnSetPrototype(C4PropList * _this, C4PropList * prototype, C4PropList * p)
+{
+	if (!p) p = _this;
+	if (!p) throw NeedNonGlobalContext("GetPrototype");
+	p->SetProperty(P_Prototype, C4Value(prototype));
+}
+
 static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 {
 	if (!_this) _this = ::ScriptEngine.GetPropList();
@@ -325,6 +345,263 @@ static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 	return fn->Exec(_this, &ParSet, true);
 }
 
+static C4String *FnGetName(C4PropList * _this, bool truename)
+{
+	if (!_this)
+		throw NeedNonGlobalContext("GetName");
+	else if(truename)
+		return _this->IsStatic() ? _this->IsStatic()->GetParentKeyName() : nullptr;
+	else
+		return String(_this->GetName());
+}
+
+/* Effects */
+
+static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4PropList * pTarget,
+                           int iPrio, int iTimerInterval, C4PropList * pCmdTarget, C4Def * idCmdTarget,
+                           const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
+{
+	// safety
+	if (pTarget && !pTarget->Status) return C4Value();
+	if (!szEffect || !*szEffect->GetCStr() || !iPrio) return C4Value();
+	// create effect
+	C4PropList * p = pCmdTarget;
+	if (!p) p = idCmdTarget;
+	if (!p) p = ::ScriptEngine.GetPropList();
+	C4Effect * pEffect = C4Effect::New(pTarget, FnGetEffectsFor(pTarget),
+			szEffect, iPrio, iTimerInterval, p, Val1, Val2, Val3, Val4);
+	// return effect - may be 0 if the effect has been denied by another effect
+	if (!pEffect) return C4Value();
+	return C4VPropList(pEffect);
+}
+
+static C4Effect * FnCreateEffect(C4PropList * _this, C4PropList * prototype, int iPrio, int iTimerInterval,
+                              const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
+{
+	if (!prototype || !(prototype->GetName()[0])) throw C4AulExecError("CreateEffect needs a prototype with a name");
+	if (!iPrio) throw C4AulExecError("CreateEffect needs a nonzero priority");
+	// create effect
+	C4Effect * pEffect = C4Effect::New(_this, FnGetEffectsFor(_this), prototype, iPrio, iTimerInterval,
+	                                   Val1, Val2, Val3, Val4);
+	// return effect - may be 0 if the effect has been denied by another effect
+	return pEffect;
+}
+
+static C4Effect * FnGetEffect(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, int index, int iMaxPriority)
+{
+	const char *szEffect = FnStringPar(psEffectName);
+	// get effects
+	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
+	if (!pEffect) return nullptr;
+	// name/wildcard given: find effect by name and index
+	if (szEffect && *szEffect)
+		return pEffect->Get(szEffect, index, iMaxPriority);
+	return nullptr;
+}
+
+static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, C4Effect * pEffect2, bool fDoNoCalls)
+{
+	// evaluate parameters
+	const char *szEffect = FnStringPar(psEffectName);
+	// if the user passed an effect, it can be used straight-away
+	C4Effect *pEffect = pEffect2;
+	// otherwise, the correct effect will be searched in the target's effects or in the global ones
+	if (!pEffect)
+	{
+		pEffect = *FnGetEffectsFor(pTarget);
+		// the object has no effects attached, nothing to look for
+		if (!pEffect) return false;
+		// name/wildcard given: find effect by name
+		if (szEffect && *szEffect)
+			pEffect = pEffect->Get(szEffect, 0);
+	}
+
+	// neither passed nor found - nothing to remove!
+	if (!pEffect) return false;
+
+	// kill it
+	if (fDoNoCalls)
+		pEffect->SetDead();
+	else
+		pEffect->Kill();
+	// done, success
+	return true;
+}
+
+static C4Value FnCheckEffect(C4PropList * _this, C4String * psEffectName, C4PropList * pTarget,
+                             int iPrio, int iTimerInterval,
+                             const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
+{
+	const char *szEffect = FnStringPar(psEffectName);
+	// safety
+	if (pTarget && !pTarget->Status) return C4Value();
+	if (!szEffect || !*szEffect) return C4Value();
+	// get effects
+	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
+	if (!pEffect) return C4Value();
+	// let them check
+	C4Effect * r = pEffect->Check(szEffect, iPrio, iTimerInterval, Val1, Val2, Val3, Val4);
+	if (r == (C4Effect *)C4Fx_Effect_Deny) return C4VInt(C4Fx_Effect_Deny);
+	if (r == (C4Effect *)C4Fx_Effect_Annul) return C4VInt(C4Fx_Effect_Annul);
+	return C4VPropList(r);
+}
+
+static long FnGetEffectCount(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, long iMaxPriority)
+{
+	// evaluate parameters
+	const char *szEffect = FnStringPar(psEffectName);
+	// get effects
+	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
+	if (!pEffect) return false;
+	// count effects
+	if (!*szEffect) szEffect = nullptr;
+	return pEffect->GetCount(szEffect, iMaxPriority);
+}
+
+static C4Value FnEffectCall(C4PropList * _this, C4Value * Pars)
+{
+	// evaluate parameters
+	C4PropList *pTarget = Pars[0].getPropList();
+	C4Effect * pEffect = Pars[1].getPropList() ? Pars[1].getPropList()->GetEffect() : nullptr;
+	const char *szCallFn = FnStringPar(Pars[2].getStr());
+	// safety
+	if (pTarget && !pTarget->Status) return C4Value();
+	if (!szCallFn || !*szCallFn) return C4Value();
+	if (!pEffect) return C4Value();
+	// do call
+	return pEffect->DoCall(pTarget, szCallFn, Pars[3], Pars[4], Pars[5], Pars[6], Pars[7], Pars[8], Pars[9]);
+}
+
+/* Regex */
+
+static const long
+	Regex_CaseInsensitive = (1 << 0),
+	Regex_FirstOnly       = (1 << 1);
+
+static std::regex_constants::syntax_option_type C4IntToSyntaxOption(long flags)
+{
+	std::regex_constants::syntax_option_type out = std::regex::ECMAScript;
+	if (flags & Regex_CaseInsensitive)
+		out |= std::regex::icase;
+	return out;
+}
+
+static std::regex_constants::match_flag_type C4IntToMatchFlag(long flags)
+{
+	std::regex_constants::match_flag_type out = std::regex_constants::match_default;
+	if (flags & Regex_FirstOnly)
+		out |= std::regex_constants::format_first_only;
+	return out;
+}
+
+static Nillable<C4String *> FnRegexReplace(C4PropList * _this, C4String *source, C4String *regex, C4String *replacement, long flags)
+{
+	if (!source || !regex || !replacement) return C4Void();
+	try
+	{
+		std::regex re(regex->GetCStr(), C4IntToSyntaxOption(flags));
+		std::string out = std::regex_replace(source->GetCStr(), re, replacement->GetCStr(), C4IntToMatchFlag(flags));
+		return ::Strings.RegString(out.c_str());
+	}
+	catch (const std::regex_error& e)
+	{
+		throw C4AulExecError(FormatString("RegexReplace: %s", e.what()).getData());
+	}
+}
+
+
+static Nillable<C4ValueArray *> FnRegexSearch(C4PropList * _this, C4String *source, C4String *regex, long flags)
+{
+	if (!source || !regex) return C4Void();
+	try
+	{
+		std::regex re(regex->GetCStr(), C4IntToSyntaxOption(flags));
+		C4ValueArray *out = new C4ValueArray();
+		const auto &data = source->GetData();
+		size_t pos = 0;
+		std::cmatch m;
+		long i = 0;
+		// std::regex_iterator would be the better way to do this, but is is broken in libc++ (see LLVM bug #21597).
+		while (pos <= data.getLength() && std::regex_search(data.getData() + pos, data.getData() + data.getLength(), m, re))
+		{
+			int char_pos = GetCharacterCount(std::string(data.getData(), pos + m.position()).c_str());
+			(*out)[i++] = C4VInt(char_pos);
+			if (flags & Regex_FirstOnly) break;
+			pos += m.position() + std::max<size_t>(m.length(), 1);
+		}
+		return out;
+	}
+	catch (const std::regex_error& e)
+	{
+		throw C4AulExecError(FormatString("RegexSearch: %s", e.what()).getData());
+	}
+}
+
+static Nillable<C4ValueArray *> FnRegexMatch(C4PropList * _this, C4String *source, C4String *regex, long flags)
+{
+	if (!source || !regex) return C4Void();
+	try
+	{
+		std::regex re(regex->GetCStr(), C4IntToSyntaxOption(flags));
+		C4ValueArray *out = new C4ValueArray();
+		const auto &data = source->GetData();
+		size_t pos = 0;
+		std::cmatch m;
+		long i = 0;
+		while (pos <= data.getLength() && std::regex_search(data.getData() + pos, data.getData() + data.getLength(), m, re))
+		{
+			C4ValueArray *match = new C4ValueArray(m.size());
+			long j = 0;
+			for (auto sm : m)
+			{
+				(*match)[j++] = C4VString(String(sm.str().c_str()));
+			}
+			(*out)[i++] = C4VArray(match);
+			if (flags & Regex_FirstOnly) break;
+			pos += m.position() + std::max<size_t>(m.length(), 1);
+		}
+		return out;
+	}
+	catch (const std::regex_error& e)
+	{
+		throw C4AulExecError(FormatString("RegexMatch: %s", e.what()).getData());
+	}
+}
+
+static Nillable<C4ValueArray *> FnRegexSplit(C4PropList * _this, C4String *source, C4String *regex, long flags)
+{
+	if (!source || !regex) return C4Void();
+	try
+	{
+		std::regex re(regex->GetCStr(), C4IntToSyntaxOption(flags));
+		C4ValueArray *out = new C4ValueArray();
+		const auto &data = source->GetData();
+		size_t pos = 0;
+		std::cmatch m;
+		long i = 0;
+		while (pos <= data.getLength() && std::regex_search(data.getData() + pos, data.getData() + data.getLength(), m, re))
+		{
+			// As we're advancing by one character for zero-length matches, always
+			// include at least one character here.
+			std::string substr(data.getData() + pos, std::max<size_t>(m.position(), 1));
+			(*out)[i++] = C4VString(String(substr.c_str()));
+			if (flags & Regex_FirstOnly) break;
+			pos += m.position() + std::max<size_t>(m.length(), 1);
+		}
+		if (pos <= data.getLength())
+		{
+			std::string substr(data.getData() + pos, data.getLength() - pos);
+			(*out)[i++] = C4VString(String(substr.c_str()));
+		}
+		return out;
+	}
+	catch (const std::regex_error& e)
+	{
+		throw C4AulExecError(FormatString("RegexSplit: %s", e.what()).getData());
+	}
+}
+
+
 static C4Value FnLog(C4PropList * _this, C4Value * Pars)
 {
 	Log(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9).getData());
@@ -340,6 +617,16 @@ static C4Value FnDebugLog(C4PropList * _this, C4Value * Pars)
 static C4Value FnFormat(C4PropList * _this, C4Value * Pars)
 {
 	return C4VString(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9));
+}
+
+// Parse a string into an integer. Returns nil if the conversion fails.
+static Nillable<int32_t> FnParseInt(C4PropList *_this, C4String *str)
+{
+	const char *cstr = str->GetCStr();
+	const char *end = nullptr;
+	int32_t result = StrToI32(cstr, 10, &end);
+	if (end == cstr || *end != '\0') return C4Void();
+	return result;
 }
 
 static long FnAbs(C4PropList * _this, long iVal)
@@ -374,37 +661,9 @@ static long FnSqrt(C4PropList * _this, long iValue)
 
 static long FnAngle(C4PropList * _this, long iX1, long iY1, long iX2, long iY2, long iPrec)
 {
-	long iAngle;
-
 	// Standard prec
 	if (!iPrec) iPrec = 1;
-
-	long dx=iX2-iX1,dy=iY2-iY1;
-	if (!dx)
-	{
-		if (dy>0) return 180 * iPrec;
-		else return 0;
-	}
-	if (!dy)
-	{
-		if (dx>0) return 90 * iPrec;
-		else return 270 * iPrec;
-	}
-
-	iAngle = static_cast<long>(180.0 * iPrec * atan2(static_cast<double>(Abs(dy)), static_cast<double>(Abs(dx))) / M_PI);
-
-	if (iX2>iX1 )
-	{
-		if (iY2<iY1) iAngle = (90 * iPrec) - iAngle;
-		else iAngle = (90 * iPrec) + iAngle;
-	}
-	else
-	{
-		if (iY2<iY1) iAngle = (270 * iPrec) + iAngle;
-		else iAngle = (270 * iPrec) - iAngle;
-	}
-
-	return iAngle;
+	return Angle(iX1, iY1, iX2, iY2, iPrec);
 }
 
 static long FnArcSin(C4PropList * _this, long iVal, long iRadius)
@@ -503,11 +762,6 @@ static long FnRandom(C4PropList * _this, long iRange)
 	return Random(iRange);
 }
 
-static long FnAsyncRandom(C4PropList * _this, long iRange)
-{
-	return SafeRandom(iRange);
-}
-
 static int FnGetType(C4PropList * _this, const C4Value & Value)
 {
 	// dynamic types
@@ -557,9 +811,21 @@ static bool FnDeepEqual(C4PropList * _this, const C4Value & v1, const C4Value & 
 
 static void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
 {
-	// safety
-	if (iNewSize<0 || iNewSize > C4ValueArray::MaxSize)
-		throw C4AulExecError(FormatString("SetLength: invalid array size (%d)", iNewSize).getData());
+	if (!pArray)
+	{
+		throw C4AulExecError(strprintf(R"(call to "%s" parameter %d: passed %s, but expected %s)",
+			"SetLength", 1, GetC4VName(C4V_Nil), GetC4VName(C4V_Array))
+			.c_str()
+		);
+	}
+
+	if (iNewSize < 0 || iNewSize > C4ValueArray::MaxSize)
+	{
+		throw C4AulExecError(strprintf(R"(call to "SetLength": parameter 2: invalid array size (expected value between 0 and %d, but got %d)",
+			C4ValueArray::MaxSize, iNewSize)
+			.c_str()
+		);
+	}
 
 	// set new size
 	pArray->SetSize(iNewSize);
@@ -579,9 +845,50 @@ static Nillable<long> FnGetChar(C4PropList * _this, C4String *pString, long iInd
 	return c;
 }
 
-static C4Value Fneval(C4PropList * _this, C4String *strScript)
+static C4String *FnStringToIdentifier(C4PropList * _this, C4String *pString)
 {
-	return ::AulExec.DirectExec(_this, FnStringPar(strScript), "eval", true);
+	// Change an arbitrary string so that it becomes an identifier
+	const char *text = FnStringPar(pString);
+	if (!text) return nullptr;
+	StdStrBuf result;
+	bool had_valid = false, had_invalid = false;
+	const char *ptext = text, *t0 = text;
+	uint32_t c = GetNextCharacter(&text);
+	while (c)
+	{
+		if (isalnum(c) || c == '_')
+		{
+			// Starting with a digit? Needs to prepend a character
+			if (isdigit(c) && !had_valid)
+			{
+				result.Append("_");
+				had_invalid = true;
+			}
+			// Valid character: Append to result string if a modification had to be done
+			if (had_invalid) result.Append(ptext, text - ptext);
+			had_valid = true;
+		}
+		else
+		{
+			// Invalid character. Make sure result is created from previous valid characters
+			if (!had_invalid)
+			{
+				result.Copy(t0, ptext - t0);
+				had_invalid = true;
+			}
+		}
+		ptext = text;
+		c = GetNextCharacter(&text);
+	}
+	// Make sure no empty string is returned
+	if (!had_valid) return ::Strings.RegString("_");
+	// Return either modified string or the original if no modifications were needed
+	return had_invalid ? ::Strings.RegString(result) : pString;
+}
+
+static C4Value Fneval(C4PropList * _this, C4String *strScript, bool dont_pass_errors)
+{
+	return ::AulExec.DirectExec(_this, FnStringPar(strScript), "eval", !dont_pass_errors);
 }
 
 static bool FnLocateFunc(C4PropList * _this, C4String *funcname, C4PropList * p)
@@ -619,7 +926,7 @@ static bool FnLocateFunc(C4PropList * _this, C4String *funcname, C4PropList * p)
 				LogF("%s%s (%s:%d)", szPrefix, pFunc->GetName(), pSFunc->pOrgScript->ScriptName.getData(), (int)iLine);
 			}
 			// next func in overload chain
-			pFunc = pSFunc ? pSFunc->OwnerOverloaded : NULL;
+			pFunc = pSFunc ? pSFunc->OwnerOverloaded : nullptr;
 			szPrefix = "overloads ";
 		}
 	}
@@ -647,9 +954,9 @@ static long FnWildcardMatch(C4PropList * _this, C4String *psString, C4String *ps
 	return SWildcardMatchEx(FnStringPar(psString), FnStringPar(psWildcard));
 }
 
-static bool FnFatalError(C4PropList * _this, C4String *pErrorMsg)
+static C4Value FnFatalError(C4PropList * _this, C4Value * Pars)
 {
-	throw C4AulExecError(FormatString("script: %s", pErrorMsg ? pErrorMsg->GetCStr() : "(no error)").getData());
+	throw C4AulExecError(FormatString("script: %s", FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9).getData()).getData());
 }
 
 static bool FnStartCallTrace(C4PropList * _this)
@@ -661,11 +968,11 @@ static bool FnStartCallTrace(C4PropList * _this)
 static bool FnStartScriptProfiler(C4PropList * _this, C4Def * pDef)
 {
 	// get script to profile
-	C4AulScript *pScript;
+	C4ScriptHost *pScript;
 	if (pDef)
 		pScript = &pDef->Script;
 	else
-		pScript = &::ScriptEngine;
+		pScript = nullptr;
 	// profile it
 	C4AulProfiler::StartProfiling(pScript);
 	return true;
@@ -696,9 +1003,27 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4PropList * _this, int val
 	return C4Void();
 }
 
+static Nillable<C4String *> FnReplaceString(C4PropList * _this, C4String *source, C4String *from, C4String *to)
+{
+	if (!from) return source;
+	if (!source) return C4Void();
+	const char *szto = to ? to->GetCStr() : "";
+	const char *szfrom = from->GetCStr();
+	StdStrBuf s(source->GetData(), true);
+	if (s.Replace(szfrom, szto))
+	{
+		return ::Strings.RegString(s.getData());
+	}
+	else
+	{
+		return source;
+	}
+}
+
 static bool FnSortArray(C4PropList * _this, C4ValueArray *pArray, bool descending)
 {
 	if (!pArray) throw C4AulExecError("SortArray: no array given");
+	if (pArray->IsFrozen()) throw C4AulExecError("array sort: array is readonly");
 	// sort array by its members
 	pArray->Sort(descending);
 	return true;
@@ -708,6 +1033,7 @@ static bool FnSortArrayByProperty(C4PropList * _this, C4ValueArray *pArray, C4St
 {
 	if (!pArray) throw C4AulExecError("SortArrayByProperty: no array given");
 	if (!prop_name) throw C4AulExecError("SortArrayByProperty: no property name given");
+	if (pArray->IsFrozen()) throw C4AulExecError("array sort: array is readonly");
 	// sort array by property
 	if (!pArray->SortByProperty(prop_name, descending)) throw C4AulExecError("SortArrayByProperty: not all array elements are proplists");
 	return true;
@@ -717,6 +1043,7 @@ static bool FnSortArrayByArrayElement(C4PropList * _this, C4ValueArray *pArray, 
 {
 	if (!pArray) throw C4AulExecError("SortArrayByArrayElement: no array given");
 	if (element_index<0) throw C4AulExecError("SortArrayByArrayElement: element index must be >=0");
+	if (pArray->IsFrozen()) throw C4AulExecError("array sort: array is readonly");
 	// sort array by array element
 	if (!pArray->SortByArrayElement(element_index, descending)) throw C4AulExecError("SortArrayByArrayElement: not all array elements are arrays of sufficient length");
 	return true;
@@ -728,7 +1055,7 @@ static bool FnFileWrite(C4PropList * _this, int32_t file_handle, C4String *data)
 	C4AulUserFile *file = ::ScriptEngine.GetUserFile(file_handle);
 	if (!file) throw C4AulExecError("FileWrite: invalid file handle");
 	// prepare string to write
-	if (!data) return false; // write NULL? No.
+	if (!data) return false; // write nullptr? No.
 	// write it
 	file->Write(data->GetCStr(), data->GetData().getLength());
 	return true;
@@ -738,6 +1065,36 @@ static bool FnFileWrite(C4PropList * _this, int32_t file_handle, C4String *data)
 
 C4ScriptConstDef C4ScriptConstMap[]=
 {
+	{ "FX_OK"                     ,C4V_Int,      C4Fx_OK                    }, // generic standard behaviour for all effect callbacks
+	{ "FX_Effect_Deny"            ,C4V_Int,      C4Fx_Effect_Deny           }, // delete effect
+	{ "FX_Effect_Annul"           ,C4V_Int,      C4Fx_Effect_Annul          }, // delete effect, because it has annulled a countereffect
+	{ "FX_Effect_AnnulDoCalls"    ,C4V_Int,      C4Fx_Effect_AnnulCalls     }, // delete effect, because it has annulled a countereffect; temp readd countereffect
+	{ "FX_Execute_Kill"           ,C4V_Int,      C4Fx_Execute_Kill          }, // execute callback: Remove effect now
+	{ "FX_Stop_Deny"              ,C4V_Int,      C4Fx_Stop_Deny             }, // deny effect removal
+	{ "FX_Start_Deny"             ,C4V_Int,      C4Fx_Start_Deny            }, // deny effect start
+
+	{ "FX_Call_Normal"            ,C4V_Int,      C4FxCall_Normal            }, // normal call; effect is being added or removed
+	{ "FX_Call_Temp"              ,C4V_Int,      C4FxCall_Temp              }, // temp call; effect is being added or removed in responce to a lower-level effect change
+	{ "FX_Call_TempAddForRemoval" ,C4V_Int,      C4FxCall_TempAddForRemoval }, // temp call; effect is being added because it had been temp removed and is now removed forever
+	{ "FX_Call_RemoveClear"       ,C4V_Int,      C4FxCall_RemoveClear       }, // effect is being removed because object is being removed
+	{ "FX_Call_RemoveDeath"       ,C4V_Int,      C4FxCall_RemoveDeath       }, // effect is being removed because object died - return -1 to avoid removal
+	{ "FX_Call_DmgScript"         ,C4V_Int,      C4FxCall_DmgScript         }, // damage through script call
+	{ "FX_Call_DmgBlast"          ,C4V_Int,      C4FxCall_DmgBlast          }, // damage through blast
+	{ "FX_Call_DmgFire"           ,C4V_Int,      C4FxCall_DmgFire           }, // damage through fire
+	{ "FX_Call_DmgChop"           ,C4V_Int,      C4FxCall_DmgChop           }, // damage through chopping
+	{ "FX_Call_Energy"            ,C4V_Int,      32                         }, // bitmask for generic energy loss
+	{ "FX_Call_EngScript"         ,C4V_Int,      C4FxCall_EngScript         }, // energy loss through script call
+	{ "FX_Call_EngBlast"          ,C4V_Int,      C4FxCall_EngBlast          }, // energy loss through blast
+	{ "FX_Call_EngObjHit"         ,C4V_Int,      C4FxCall_EngObjHit         }, // energy loss through object hitting the living
+	{ "FX_Call_EngFire"           ,C4V_Int,      C4FxCall_EngFire           }, // energy loss through fire
+	{ "FX_Call_EngBaseRefresh"    ,C4V_Int,      C4FxCall_EngBaseRefresh    }, // energy reload in base (also by base object, but that's normally not called)
+	{ "FX_Call_EngAsphyxiation"   ,C4V_Int,      C4FxCall_EngAsphyxiation   }, // energy loss through asphyxiaction
+	{ "FX_Call_EngCorrosion"      ,C4V_Int,      C4FxCall_EngCorrosion      }, // energy loss through corrosion (acid)
+	{ "FX_Call_EngGetPunched"     ,C4V_Int,      C4FxCall_EngGetPunched     }, // energy loss from punch
+
+	{ "Regex_CaseInsensitive"     ,C4V_Int,      Regex_CaseInsensitive      },
+	{ "Regex_FirstOnly"           ,C4V_Int,      Regex_FirstOnly            },
+
 	{ "C4V_Nil",         C4V_Int, C4V_Nil},
 	{ "C4V_Int",         C4V_Int, C4V_Int},
 	{ "C4V_Bool",        C4V_Int, C4V_Bool},
@@ -752,22 +1109,25 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4X_Ver1",        C4V_Int, C4XVER1},
 	{ "C4X_Ver2",        C4V_Int, C4XVER2},
 
-	{ NULL, C4V_Nil, 0}
+	{ nullptr, C4V_Nil, 0}
 };
 
 C4ScriptFnDef C4ScriptFnMap[]=
 {
-	{ "Call",          1, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
-	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
-	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
-	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
-	{ "Trans_Mul",     1, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnTrans_Mul},
+	{ "Call",          true, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
+	{ "EffectCall",    true, C4V_Any,    { C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnEffectCall    },
+	{ "Log",           true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
+	{ "DebugLog",      true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
+	{ "FatalError",    true, C4V_Nil,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFatalError },
+	{ "Format",        true, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
+	{ "Trans_Mul",     true, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnTrans_Mul},
 
-	{ NULL,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0          }
+	{ nullptr,            false, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, nullptr          }
 };
 
 void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 {
+	C4ScriptLibrary::InstantiateAllLibraries(pEngine);
 	// add all def constants (all Int)
 	for (C4ScriptConstDef *pCDef = &C4ScriptConstMap[0]; pCDef->Identifier; pCDef++)
 	{
@@ -780,6 +1140,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
 		new C4AulDefFunc(p, pDef);
 #define F(f) ::AddFunc(p, #f, Fn##f)
+	F(ParseInt);
 	F(Abs);
 	F(Min);
 	F(Max);
@@ -791,14 +1152,26 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(BoundBy);
 	F(Inside);
 	F(Random);
-	F(AsyncRandom);
 
 	F(CreateArray);
 	F(CreatePropList);
 	F(GetProperties);
 	F(GetProperty);
 	F(SetProperty);
+	F(GetPrototype);
+	F(SetPrototype);
 	F(ResetProperty);
+	F(GetName);
+	F(AddEffect);
+	F(CreateEffect);
+	F(CheckEffect);
+	F(RemoveEffect);
+	F(GetEffect);
+	F(GetEffectCount);
+	F(RegexReplace);
+	F(RegexSearch);
+	F(RegexMatch);
+	F(RegexSplit);
 	F(Distance);
 	F(Angle);
 	F(GetChar);
@@ -809,7 +1182,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetLength);
 	F(GetIndexOf);
 	F(DeepEqual);
-	F(FatalError);
 	F(StartCallTrace);
 	F(StartScriptProfiler);
 	F(StopScriptProfiler);
@@ -822,9 +1194,10 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(Trans_Rotate);
 	F(LocateFunc);
 	F(FileWrite);
-
 	F(eval);
+	F(StringToIdentifier);
 	F(GetConstantNameByValue);
+	F(ReplaceString);
 
 	::AddFunc(p, "Translate", C4AulExec::FnTranslate);
 	::AddFunc(p, "LogCallStack", C4AulExec::FnLogCallStack);

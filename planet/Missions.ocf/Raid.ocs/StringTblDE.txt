@@ -1,0 +1,3 @@
+Post1=Links: Clunkertal|Rechts Kiefernwald, Schlangensee, Wipfstadt
+Post2=Links: Schlangensee, Kiefernwald, Clunkertal|Rechts: Wipfstadt
+

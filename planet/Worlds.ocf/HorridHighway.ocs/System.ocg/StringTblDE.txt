@@ -1,0 +1,5 @@
+# Intro sequence messages
+MsgWelcomeHorridHighway=Hallo %s, willkommen in der Scheußliche Straße.
+MsgHighwayBroken=Oh nein! Die Straße ist mal wieder zerstört. Diese verfluchte Meteore.
+MsgFixHighway=Ich lasse dich hier, so bald du die Straße für unsere Züge repariert hast bekommst du viele Rohstoffe.
+MsgRunLocomotives=Du kannst mich mit dem Schalter wissen lassen dass du bereit bist, dann werde ich die Züge rüber schicken.

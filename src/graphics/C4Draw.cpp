@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,20 +17,19 @@
 
 /* NewGfx interfaces */
 #include "C4Include.h"
-#include <C4Draw.h>
+#include "C4ForbidLibraryCompilation.h"
+#include "graphics/C4Draw.h"
 
-#include "C4App.h"
-#include <C4FontLoader.h>
-#include <C4Window.h>
-#include <C4DrawGL.h>
-#include <C4DrawT.h>
-#include <C4Markup.h>
-#include "C4Rect.h"
-#include <C4Config.h>
-#include "StdMesh.h"
-#include <CSurface8.h>
-
-#include <stdio.h>
+#include "graphics/C4DrawGL.h"
+#include "graphics/C4DrawT.h"
+#include "graphics/C4FontLoader.h"
+#include "graphics/CSurface8.h"
+#include "lib/C4Markup.h"
+#include "lib/C4Rect.h"
+#include "lib/StdColors.h"
+#include "lib/StdMesh.h"
+#include "platform/C4App.h"
+#include "platform/C4Window.h"
 
 // Instruct Optimus laptops to use nVidia GPU instead of integrated GPU
 #if defined(_WIN32) && !defined(USE_CONSOLE)
@@ -40,12 +39,7 @@ extern "C" {
 #endif
 
 // Global access pointer
-C4Draw *pDraw=NULL;
-
-inline DWORD GetTextShadowClr(DWORD dwTxtClr)
-{
-	return RGBA(((dwTxtClr >>  0) % 256) / 3, ((dwTxtClr >>  8) % 256) / 3, ((dwTxtClr >> 16) % 256) / 3, (dwTxtClr >> 24) % 256);
-}
+C4Draw *pDraw=nullptr;
 
 void C4BltTransform::SetRotate(float iAngle, float fOffX, float fOffY) // set by angle and rotation offset
 {
@@ -109,7 +103,7 @@ C4Pattern& C4Pattern::operator=(const C4Pattern& nPattern)
 	}
 	else
 	{
-		CachedPattern = 0;
+		CachedPattern = nullptr;
 	}
 	Wdt = nPattern.Wdt;
 	Hgt = nPattern.Hgt;
@@ -144,8 +138,8 @@ bool C4Pattern::Set(C4Surface * sfcSource, int iZoom)
 C4Pattern::C4Pattern()
 {
 	// disable
-	sfcPattern32=NULL;
-	CachedPattern = 0;
+	sfcPattern32=nullptr;
+	CachedPattern = nullptr;
 	Zoom=0;
 }
 
@@ -157,9 +151,9 @@ void C4Pattern::Clear()
 		// unlock it
 		sfcPattern32->Unlock();
 		// clear field
-		sfcPattern32=NULL;
+		sfcPattern32=nullptr;
 	}
-	delete[] CachedPattern; CachedPattern = 0;
+	delete[] CachedPattern; CachedPattern = nullptr;
 }
 
 DWORD C4Pattern::PatternClr(unsigned int iX, unsigned int iY) const
@@ -174,16 +168,17 @@ DWORD C4Pattern::PatternClr(unsigned int iX, unsigned int iY) const
 
 void C4Draw::Default()
 {
-	RenderTarget=NULL;
+	RenderTarget=nullptr;
 	ClipAll=false;
 	Active=false;
 	BlitModulated=false;
 	dwBlitMode = 0;
 	ResetGamma();
-	pFoW = NULL;
+	pFoW = nullptr;
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
-	MeshTransform = NULL;
+	MeshTransform = nullptr;
 	fUsePerspective = false;
+	scriptUniform.Clear();
 }
 
 void C4Draw::Clear()
@@ -290,14 +285,14 @@ void C4Draw::Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 
 			if(bufcnt == BUF_SIZE)
 			{
-				PerformMultiPix(sfcTarget, vertices, BUF_SIZE, NULL);
+				PerformMultiPix(sfcTarget, vertices, BUF_SIZE, nullptr);
 				bufcnt = 0;
 			}
 		}
 
 	}
 	if(bufcnt > 0)
-		PerformMultiPix(sfcTarget, vertices, bufcnt, NULL);
+		PerformMultiPix(sfcTarget, vertices, bufcnt, nullptr);
 	delete[] vertices;
 	// unlock
 	if (!fRender) sfcTarget->Unlock();
@@ -338,9 +333,6 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 		return Blit8(sfcSource, int(fx), int(fy), int(fwdt), int(fhgt), sfcTarget, int(tx), int(ty), int(twdt), int(thgt), fSrcColKey, pTransform);
 	}
 
-	// calc stretch
-	float scaleX = twdt/fwdt;
-	float scaleY = thgt/fhgt;
 	// bound
 	if (ClipAll) return true;
 	// inside screen?
@@ -348,7 +340,7 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	// prepare rendering to surface
 	if (!PrepareRendering(sfcTarget)) return false;
 	// texture present?
-	if (sfcSource->textures.empty())
+	if (!sfcSource->texture)
 	{
 		// primary surface?
 		if (sfcSource->fPrimary)
@@ -360,83 +352,44 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	}
 	// blit with basesfc?
 	bool fBaseSfc=false;
-	if (sfcSource->pMainSfc) if (!sfcSource->pMainSfc->textures.empty()) fBaseSfc = true;
-	// get involved texture offsets
-	int iTexSizeX=sfcSource->iTexSize;
-	int iTexSizeY=sfcSource->iTexSize;
-	int iTexX=std::max(int(fx/iTexSizeX), 0);
-	int iTexY=std::max(int(fy/iTexSizeY), 0);
-	int iTexX2=std::min((int)(fx+fwdt-1)/iTexSizeX +1, sfcSource->iTexX);
-	int iTexY2=std::min((int)(fy+fhgt-1)/iTexSizeY +1, sfcSource->iTexY);
-	// blit from all these textures
-	for (int iY=iTexY; iY<iTexY2; ++iY)
+	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->texture) fBaseSfc = true;
+
+	C4TexRef *pTex = sfcSource->texture.get();
+	// set up blit data
+	C4BltVertex vertices[6];
+	vertices[0].ftx = tx; vertices[0].fty = ty;
+	vertices[1].ftx = tx + twdt; vertices[1].fty = ty;
+	vertices[2].ftx = tx + twdt; vertices[2].fty = ty + thgt;
+	vertices[3].ftx = tx; vertices[3].fty = ty + thgt;
+	vertices[0].tx = fx / pTex->iSizeX; vertices[0].ty = fy / pTex->iSizeY;
+	vertices[1].tx = (fx + fwdt) / pTex->iSizeX; vertices[1].ty = fy / pTex->iSizeY;
+	vertices[2].tx = (fx + fwdt) / pTex->iSizeX; vertices[2].ty = (fy + fhgt) / pTex->iSizeY;
+	vertices[3].tx = fx / pTex->iSizeX; vertices[3].ty = (fy + fhgt) / pTex->iSizeY;
+	DwTo4UB(0xffffffff, vertices[0].color);
+	DwTo4UB(0xffffffff, vertices[1].color);
+	DwTo4UB(0xffffffff, vertices[2].color);
+	DwTo4UB(0xffffffff, vertices[3].color);
+
+	// duplicate vertices
+	vertices[4] = vertices[0]; vertices[5] = vertices[2];
+
+	C4TexRef * pBaseTex = pTex;
+	// is there a base-surface to be blitted first?
+	if (fBaseSfc)
 	{
-		for (int iX=iTexX; iX<iTexX2; ++iX)
-		{
-			C4TexRef *pTex = &sfcSource->textures[iY * sfcSource->iTexX + iX];
-			// get current blitting offset in texture
-			int iBlitX=sfcSource->iTexSize*iX;
-			int iBlitY=sfcSource->iTexSize*iY;
-			// size changed? recalc dependant, relevant (!) values
-			if (iTexSizeX != pTex->iSizeX)
-			{
-				iTexSizeX = pTex->iSizeX;
-			}
-			if (iTexSizeY != pTex->iSizeY)
-			{
-				iTexSizeY = pTex->iSizeY;
-			}
-
-			// get new texture source bounds
-			FLOAT_RECT fTexBlt;
-			fTexBlt.left  = std::max<float>(fx - iBlitX, 0);
-			fTexBlt.top   = std::max<float>(fy - iBlitY, 0);
-			fTexBlt.right = std::min<float>(fx + fwdt - (float)iBlitX, (float)iTexSizeX);
-			fTexBlt.bottom= std::min<float>(fy + fhgt - (float)iBlitY, (float)iTexSizeY);
-			// get new dest bounds
-			FLOAT_RECT tTexBlt;
-			tTexBlt.left  = (fTexBlt.left  + iBlitX - fx) * scaleX + tx;
-			tTexBlt.top   = (fTexBlt.top   + iBlitY - fy) * scaleY + ty;
-			tTexBlt.right = (fTexBlt.right + iBlitX - fx) * scaleX + tx;
-			tTexBlt.bottom= (fTexBlt.bottom+ iBlitY - fy) * scaleY + ty;
-
-			// set up blit data as rect
-			C4BltVertex vertices[6];
-			vertices[0].ftx = tTexBlt.left;  vertices[0].fty = tTexBlt.top;
-			vertices[1].ftx = tTexBlt.right; vertices[1].fty = tTexBlt.top;
-			vertices[2].ftx = tTexBlt.right; vertices[2].fty = tTexBlt.bottom;
-			vertices[3].ftx = tTexBlt.left;  vertices[3].fty = tTexBlt.bottom;
-			vertices[0].tx = fTexBlt.left / iTexSizeX;  vertices[0].ty = fTexBlt.top / iTexSizeY;
-			vertices[1].tx = fTexBlt.right / iTexSizeX; vertices[1].ty = fTexBlt.top / iTexSizeY;
-			vertices[2].tx = fTexBlt.right / iTexSizeX; vertices[2].ty = fTexBlt.bottom / iTexSizeY;
-			vertices[3].tx = fTexBlt.left / iTexSizeX;  vertices[3].ty = fTexBlt.bottom / iTexSizeY;
-			DwTo4UB(0xffffffff, vertices[0].color);
-			DwTo4UB(0xffffffff, vertices[1].color);
-			DwTo4UB(0xffffffff, vertices[2].color);
-			DwTo4UB(0xffffffff, vertices[3].color);
-
-			// duplicate vertices
-			vertices[4] = vertices[0]; vertices[5] = vertices[2];
-
-			C4TexRef * pBaseTex = pTex;
-			// is there a base-surface to be blitted first?
-			if (fBaseSfc)
-			{
-				// then get this surface as same offset as from other surface
-				// assuming this is only valid as long as there's no texture management,
-				// organizing partially used textures together!
-				pBaseTex = &sfcSource->pMainSfc->textures[iY * sfcSource->iTexX + iX];
-			}
-
-			C4TexRef* pNormalTex = NULL;
-			if (sfcSource->pNormalSfc)
-				pNormalTex = &sfcSource->pNormalSfc->textures[iY * sfcSource->iTexX + iX];
-
-			// ClrByOwner is always fully opaque
-			const DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
-			PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : NULL, pNormalTex, dwOverlayClrMod, NULL);
-		}
+		// then get this surface as same offset as from other surface
+		// assuming this is only valid as long as there's no texture management,
+		// organizing partially used textures together!
+		pBaseTex = sfcSource->pMainSfc->texture.get();
 	}
+
+	C4TexRef* pNormalTex = nullptr;
+	if (sfcSource->pNormalSfc)
+		pNormalTex = sfcSource->pNormalSfc->texture.get();
+
+	// ClrByOwner is always fully opaque
+	const DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
+	PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : nullptr, pNormalTex, dwOverlayClrMod, nullptr);
 	// success
 	return true;
 }
@@ -481,8 +434,8 @@ bool C4Draw::Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
 	Transform *=* pTransform;
 	C4BltTransform TransformBack;
 	TransformBack.SetAsInv(Transform);
-	float ttx0=(float)tx, tty0=(float)ty, ttx1=(float)(tx+twdt), tty1=(float)(ty+thgt);
-	float ttx2=(float)ttx0, tty2=(float)tty1, ttx3=(float)ttx1, tty3=(float)tty0;
+	auto ttx0=(float)tx, tty0=(float)ty, ttx1=(float)(tx+twdt), tty1=(float)(ty+thgt);
+	auto ttx2=(float)ttx0, tty2=(float)tty1, ttx3=(float)ttx1, tty3=(float)tty0;
 	pTransform->TransformPoint(ttx0, tty0);
 	pTransform->TransformPoint(ttx1, tty1);
 	pTransform->TransformPoint(ttx2, tty2);
@@ -566,7 +519,7 @@ bool C4Draw::BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, 
 	{
 		if (!sfcSurface) return false;
 		C4Surface *pSfcBase = sfcSurface->pMainSfc;
-		sfcSurface->pMainSfc = NULL;
+		sfcSurface->pMainSfc = nullptr;
 		Blit(sfcSurface, 0.0f, 0.0f, (float)sfcSurface->Wdt, (float)sfcSurface->Hgt, sfcTarget, float(tx), float(ty), float(sfcSurface->Wdt), float(sfcSurface->Hgt), false);
 		sfcSurface->pMainSfc = pSfcBase;
 		return true;
@@ -577,8 +530,7 @@ bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, floa
 {
 	// Only direct rendering from single, tileable, texture
 	if (!sfcTarget->IsRenderTarget()) return false;
-	if (!sfcSurface->IsSingleSurface()) return false;
-	if ((sfcSurface->textures[0].iFlags & C4SF_Tileable) == 0) return false;
+	if ((sfcSurface->texture->iFlags & C4SF_Tileable) == 0) return false;
 
 	// source surface dimensions
 	const float sourceWdt = sfcSurface->Wdt;
@@ -602,7 +554,7 @@ bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, floa
 	vertices[4] = vertices[0]; vertices[5] = vertices[2];
 
 	// Draw
-	PerformMultiTris(sfcTarget, vertices, 6, NULL, &sfcSurface->textures[0], NULL, NULL, 0, shader_call);
+	PerformMultiTris(sfcTarget, vertices, 6, nullptr, sfcSurface->texture.get(), nullptr, nullptr, 0, shader_call);
 	return true;
 }
 
@@ -650,7 +602,7 @@ void C4Draw::DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwClr)
 	vtx.ftx = tx;
 	vtx.fty = ty;
 	DwTo4UB(dwClr, vtx.color);
-	PerformMultiPix(sfcDest, &vtx, 1, NULL);
+	PerformMultiPix(sfcDest, &vtx, 1, nullptr);
 }
 
 void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
@@ -660,10 +612,27 @@ void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, flo
 	vertices[1].ftx = x2; vertices[1].fty = y2;
 	DwTo4UB(dwClr, vertices[0].color);
 	DwTo4UB(dwClr, vertices[1].color);
-	PerformMultiLines(sfcTarget, vertices, 2, width, NULL);
+	PerformMultiLines(sfcTarget, vertices, 2, width, nullptr);
 }
 
-void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr) // make these parameters float...?
+void C4Draw::DrawCircleDw(C4Surface * sfcTarget, float cx, float cy, float r, DWORD dwClr, float width)
+{
+	// Draw as line segments
+	int32_t num_lines = 12 + int32_t(r / 10);
+	std::unique_ptr<C4BltVertex[]> vertices(new C4BltVertex[num_lines * 2]);
+	for (int32_t i = 0; i < num_lines; ++i)
+	{
+		float ang = float(i) * 2 * M_PI / num_lines;
+		int32_t iv = i * 2 + 1;
+		vertices[iv].ftx = cx + sin(ang) * r;
+		vertices[iv].fty = cy + cos(ang) * r;
+		DwTo4UB(dwClr, vertices[iv].color);
+		vertices[(iv + 1) % (num_lines * 2)] = vertices[iv];
+	}
+	PerformMultiLines(sfcTarget, vertices.get(), num_lines * 2, width, nullptr);
+}
+
+void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr, float width) // make these parameters float...?
 {
 	C4BltVertex vertices[8];
 	vertices[0].ftx = x1; vertices[0].fty = y1;
@@ -675,10 +644,10 @@ void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DW
 	vertices[6] = vertices[5];
 	vertices[7] = vertices[0];
 
-	for(int i = 0; i < 8; ++i)
-		DwTo4UB(dwClr, vertices[i].color);
+	for(auto & vertex : vertices)
+		DwTo4UB(dwClr, vertex.color);
 
-	PerformMultiLines(sfcDest, vertices, 8, 1.0f, NULL);
+	PerformMultiLines(sfcDest, vertices, 8, width, nullptr);
 }
 
 void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, C4ShaderCall* shader_call)
@@ -694,7 +663,7 @@ void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD
 	DwTo4UB(dwClr4, vertices[3].color);
 	vertices[4] = vertices[0];
 	vertices[5] = vertices[2];
-	PerformMultiTris(sfcTarget, vertices, 6, NULL, NULL, NULL, NULL, 0, shader_call);
+	PerformMultiTris(sfcTarget, vertices, 6, nullptr, nullptr, nullptr, nullptr, 0, shader_call);
 }
 
 void C4Draw::DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal)
@@ -775,19 +744,19 @@ void C4Draw::SetGamma(float r, float g, float b, int32_t iRampIndex)
 	// Recalculate resulting gamma. Note that we flip gamma direction here,
 	// because higher gammaOut means darker.
 	gammaOut[0] = gammaOut[1] = gammaOut[2] = 1.0f;
-	for (int i = 0; i < C4MaxGammaRamps; i++) {
-		gammaOut[0] /= gamma[i][0];
-		gammaOut[1] /= gamma[i][1];
-		gammaOut[2] /= gamma[i][2];
+	for (auto & i : gamma) {
+		gammaOut[0] /= i[0];
+		gammaOut[1] /= i[1];
+		gammaOut[2] /= i[2];
 	}
 }
 
 void C4Draw::ResetGamma()
 {
-	for (int i = 0; i < C4MaxGammaRamps; i++) {
-		gamma[i][0] = 1.0f;
-		gamma[i][1] = 1.0f;
-		gamma[i][2] = 1.0f;
+	for (auto & i : gamma) {
+		i[0] = 1.0f;
+		i[1] = 1.0f;
+		i[2] = 1.0f;
 	}
 	gammaOut[0] = 1.0f;
 	gammaOut[1] = 1.0f;
@@ -843,7 +812,7 @@ bool C4Draw::Init(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, 
 
 	pApp->pWindow->pSurface = new C4Surface(pApp, pApp->pWindow);
 
-	if (!CreatePrimarySurfaces(iXRes, iYRes, iMonitor))
+	if (!RestoreDeviceObjects())
 		return false;
 
 	if (!CreatePrimaryClipper(iXRes, iYRes))
@@ -881,6 +850,6 @@ void C4Draw::DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, 
 	}
 	else
 	{
-		DrawBoxFade(sfcDest, float(iX1), float(iY1), float(iX2 - iX1 + 1), float(iY2 - iY1 + 1), dwClr, dwClr, dwClr, dwClr, NULL);
+		DrawBoxFade(sfcDest, float(iX1), float(iY1), float(iX2 - iX1 + 1), float(iY2 - iY1 + 1), dwClr, dwClr, dwClr, dwClr, nullptr);
 	}
 }

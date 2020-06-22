@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,10 +14,11 @@
  */
 
 #include "C4Include.h"
-#include <StdMesh.h>
-#include <StdMeshMaterial.h>
-#include <StdMeshUpdate.h>
-#include <StdMeshLoader.h>
+#include "lib/StdMeshUpdate.h"
+
+#include "lib/StdMesh.h"
+#include "lib/StdMeshMaterial.h"
+#include "lib/StdMeshLoader.h"
 
 StdMeshMaterialUpdate::StdMeshMaterialUpdate(StdMeshMatManager& manager):
 	MaterialManager(manager)
@@ -26,16 +27,16 @@ StdMeshMaterialUpdate::StdMeshMaterialUpdate(StdMeshMatManager& manager):
 
 void StdMeshMaterialUpdate::Update(StdMesh* mesh) const
 {
-	for(std::vector<StdSubMesh>::iterator iter = mesh->SubMeshes.begin(); iter != mesh->SubMeshes.end(); ++iter)
+	for(auto & SubMesh : mesh->SubMeshes)
 	{
-		std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator mat_iter = Materials.find(iter->Material);
+		auto mat_iter = Materials.find(SubMesh.Material);
 		if(mat_iter != Materials.end())
 		{
 			const StdMeshMaterial* new_material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
 
 			if(new_material)
 			{
-				iter->Material = new_material;
+				SubMesh.Material = new_material;
 			}
 			else
 			{
@@ -44,7 +45,7 @@ void StdMeshMaterialUpdate::Update(StdMesh* mesh) const
 				// going - next time the scenario will be started the mesh will fail
 				// to load because the material cannot be found.
 				MaterialManager.Materials[mat_iter->second.Name] = mat_iter->second; // TODO: could be moved
-				iter->Material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
+				SubMesh.Material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
 			}
 		}
 	}
@@ -70,8 +71,8 @@ void StdMeshMaterialUpdate::Update(StdMeshInstance* instance) const
 void StdMeshMaterialUpdate::Cancel() const
 {
 	// Reset all materials in manager
-	for(std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator iter = Materials.begin(); iter != Materials.end(); ++iter)
-		MaterialManager.Materials[iter->second.Name] = iter->second; // TODO: could be moved
+	for(const auto & Material : Materials)
+		MaterialManager.Materials[Material.second.Name] = Material.second; // TODO: could be moved
 }
 
 void StdMeshMaterialUpdate::Add(const StdMeshMaterial* material)
@@ -96,8 +97,8 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 	instance->BoneTransforms = std::vector<StdMeshMatrix>(new_mesh.GetSkeleton().GetNumBones(), StdMeshMatrix::Identity());
 	instance->BoneTransformsDirty = true;
 
-	for (unsigned int i = 0; i < instance->SubMeshInstances.size(); ++i)
-		delete instance->SubMeshInstances[i];
+	for (auto & SubMeshInstance : instance->SubMeshInstances)
+		delete SubMeshInstance;
 	instance->SubMeshInstances.resize(new_mesh.GetNumSubMeshes());
 	for (unsigned int i = 0; i < instance->SubMeshInstances.size(); ++i)
 	{
@@ -139,8 +140,8 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 		}
 	}
 
-	for(unsigned int i = 0; i < Removal.size(); ++i)
-		instance->DetachMesh(Removal[i]);
+	for(unsigned int i : Removal)
+		instance->DetachMesh(i);
 
 	// Update custom nodes in the animation tree. Leaf nodes which refer to an animation that
 	// does not exist anymore are removed.
@@ -197,9 +198,9 @@ StdMeshAnimationUpdate::StdMeshAnimationUpdate(const StdMeshSkeletonLoader& skel
 	for(StdMeshSkeletonLoader::skeleton_iterator iter = skeleton_loader.skeletons_begin(); iter != skeleton_loader.skeletons_end(); ++iter)
 	{
 		const StdMeshSkeleton& skeleton = *iter->second;
-		for (std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = skeleton.Animations.begin(); iter != skeleton.Animations.end(); ++iter)
+		for (const auto & Animation : skeleton.Animations)
 		{
-			AnimationNames[&iter->second] = iter->first;
+			AnimationNames[&Animation.second] = Animation.first;
 		}
 	}
 }

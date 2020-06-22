@@ -1,29 +1,29 @@
 /*--- Flint ---*/
 
-local e;
+local has_graphics_e;
 
 protected func Initialize()
 {
-	if(Random(2))
+	if (Random(2))
 	{
 		SetGraphics("E");
-		e=true;	
+		has_graphics_e = true;	
 	}
 	else
 	{
 		SetGraphics("");
-		e=false;
+		has_graphics_e = false;
 	}
 	
-	if(this->GetX() < 920)
+	if (this->GetX() < 920)
 	{
 		SetGraphics("E");
-		e=true;
+		has_graphics_e = true;
 	}
-	else if(this->GetX() > 1280)
+	else if (this->GetX() > 1280)
 	{
 		SetGraphics("");
-		e=false;
+		has_graphics_e = false;
 	}
 	 
 	SetR(Random(360));
@@ -31,23 +31,23 @@ protected func Initialize()
 
 protected func Departure()
 {
-	SetRDir(RandomX(-15,15));
+	SetRDir(RandomX(-15, 15));
 }
 
 func Hit()
 {
-
-	AddEffect("GemSlowField",nil,100,1,nil,nil,GetX(),GetY(),e);
+	AddEffect("GemSlowField", nil, 100, 1, nil, nil, GetX(), GetY(), has_graphics_e);
 	RemoveObject();
 }
-global func FxGemSlowFieldStart(object target, effect, int temporary, x, y, e)
+
+global func FxGemSlowFieldStart(object target, proplist effect, int temporary, int x, int y, bool e)
 {
 	if (temporary) 
 		return 1;
-	effect.x=x;
-	effect.var1=y;
-	effect.var2=e;
-	
+
+	effect.x = x;
+	effect.y = y;
+
 	effect.particles =
 	{
 		Prototype = Particles_Spark(),
@@ -59,7 +59,7 @@ global func FxGemSlowFieldStart(object target, effect, int temporary, x, y, e)
 		OnCollision = PC_Die(),
 		CollisionVertex = 1000
 	};
-	
+
 	if (e)
 	{
 		effect.particles.R = PV_Random(190, 210);
@@ -67,32 +67,43 @@ global func FxGemSlowFieldStart(object target, effect, int temporary, x, y, e)
 		effect.particles.B = PV_Random(20, 40);
 	}
 }
-global func FxGemSlowFieldTimer(object target, effect, int time)
+
+global func FxGemSlowFieldTimer(object target, proplist effect, int time)
 {
-	var x=effect.x;
-	var y=effect.var1;
-	var e=effect.var2;
-	if(time > (150)) return -1;
-	for(var i=0; i<40; i++)
+	var x = effect.x;
+	var y = effect.y;
+
+	if (time > 150) return FX_Execute_Kill;
+	
+	var radius = 62;
+	
+	for (var i = 0; i < 40; i++)
 	{
-		var r=Random(360);
-		var d=Min(Random(20)+Random(130),62);
-		if(!PathFree(x,y,x + Sin(r,d), y - Cos(r,d))) continue;
-		CreateParticle("MagicFire", x + Sin(r,d), y - Cos(r,d), PV_Random(-2, 2), PV_Random(0, 4), PV_Random(10, 40), effect.particles, 2);
+		var r = Random(360);
+		var d = Min(Random(20) + Random(130), radius);
+		var xoff = +Sin(r, d);
+		var yoff = -Cos(r, d); 
+		
+		if (!PathFree(x, y, x + xoff, y + yoff)) continue;
+		CreateParticle("MagicFire", x + xoff, y + yoff, PV_Random(-2, 2), PV_Random(0, 4), PV_Random(10, 40), effect.particles, 2);
 	}
-	for(var obj in FindObjects(Find_Distance(62,x,y)))
+
+	for (var obj in FindObjects(Find_Distance(radius, x, y)))
 	{
-		if(!PathFree(x,y,obj->GetX(),obj->GetY())) continue;
-		if(Distance(0,0,obj->GetXDir(),obj->GetYDir()) < 16 ) continue;
-		var speed=Distance(0,0,obj->GetXDir(),obj->GetYDir());
-		var dir = Angle(0,0,obj->GetXDir(),obj->GetYDir());
-		obj->SetXDir(obj->GetXDir(100) + Sin(-dir,speed*3) ,100);
-		obj->SetYDir(obj->GetYDir(100) + Cos(-dir,speed*3) -10,100);
-		obj->SetYDir(obj->GetYDir()-5);
+		if (!PathFree(x, y, obj->GetX(), obj->GetY())) continue;
+		
+		var speed = Distance(0, 0, obj->GetXDir(), obj->GetYDir());
+		if (speed < 16 ) continue;
+
+		var angle = Angle(0, 0, obj->GetXDir(), obj->GetYDir());
+		obj->SetXDir(obj->GetXDir(100) + Sin(-angle, speed * 3), 100);
+		obj->SetYDir(obj->GetYDir(100) + Cos(-angle, speed * 3) - 10, 100);
+		obj->SetYDir(obj->GetYDir() - 5);
 	}
+
 	return 1;
 }
 
-local Collectible = 1;
+local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";

@@ -4,7 +4,7 @@
 
 public func Dlg_Lookout_Init(object clonk)
 {
-	clonk->CreateContents(Musket);
+	clonk->CreateContents(Blunderbuss);
 	return true;
 }
 

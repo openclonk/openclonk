@@ -5,6 +5,7 @@ deps
 *.o
 /openclonk
 /openclonk-server
+/netpuncher
 /c4group
 /c4script
 *.a
@@ -17,7 +18,7 @@ C4Version.h
 Makefile
 C4Include.h.gch
 intermediate
-build*
+/build*
 CMakeScripts
 CMakeFiles
 CMakeCache.txt
@@ -29,16 +30,20 @@ CPackSourceConfig.cmake
 editor-icons.h
 oc-icon.h
 NativeToolsExport.cmake
+engine-resource.c
+tests/CTestTestfile.cmake
 
 # Documentation
 *.pyc
-docs/online
-docs/chm
-docs/sdk-de
-docs/sdk/content.xml
-docs/*.mo
-docs/doku.pot
-docs/Functions.txt
+node_modules
+/docs/online
+/docs/chm
+/docs/sdk-de
+/docs/sdk/content.xml
+/docs/*.mo
+/docs/doku.pot
+/docs/Functions.txt
+/docs/lunr.js
 
 # Visual studio files
 openclonk.opensdf
@@ -55,6 +60,10 @@ planet/fmod.dll
 planet/cmake_install.cmake
 planet/clonk.sln
 planet/clonk.ilk
+*.ipdb
+*.iobj
+openclonk.VC.db
+openclonk.VC.VC.opendb
 
 build
 planet/clonk.app
@@ -75,6 +84,23 @@ openclonk.ilk
 *.vcxproj
 *.vcxproj.filters
 /ipch
+.vs/
+c4group_autogen/
+c4script_autogen/
+libc4script_autogen/
+libmisc_autogen/
+libopenclonk_autogen/
+mape_autogen/
+netpuncher_autogen/
+openclonk-server_autogen/
+openclonk_autogen/
+tests/aul_test
+tests/aul_test_autogen/
+tests/gmock_autogen/
+tests/gtest_autogen/
+tests/tests
+tests/tests_autogen/
+thirdparty/blake2/blake2_autogen/
 
 # Temporary files created by Microsoft Visual Studio
 *.ncb
@@ -115,6 +141,7 @@ openclonk.layout
 openclonk.sdf
 openclonk.cbp
 tests/openclonk_unittest.cbp
+tests/openclonk_unittest.sln
 
 # MacOSX saved searches
 *.savedSearch
@@ -124,10 +151,19 @@ WindowsGamesExplorer.xml
 
 # Mape
 ./mape
+/mape
 mape-icons.h
+mape-resource.c
 
-
-tests/openclonk_unittest.sln
 
 # Packed groups created directly in root path
 /*.oc*
+
+# QMake stuff
+*_automoc.cpp
+moc_*.cpp
+qrc_resource.cpp
+ui_C4ConsoleQt*.h
+resource.qrc.depends
+*.exp
+qt.conf

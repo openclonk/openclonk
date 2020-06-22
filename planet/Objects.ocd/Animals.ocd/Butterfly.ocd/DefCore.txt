@@ -1,8 +1,7 @@
 [DefCore]
 id=Butterfly
-Version=6,0
+Version=8,0
 Category=C4D_Living
-ContactCalls=1
 Width=6
 Height=4
 Offset=-3,-2

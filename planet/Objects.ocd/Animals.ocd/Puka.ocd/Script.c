@@ -57,6 +57,8 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	return animal;
 }
 
+public func IsAnimal() { return true; }
+
 public func Construction()
 {
 	turn_angle = 0;
@@ -70,8 +72,6 @@ public func Construction()
 	SetComDir(COMD_Stop);
 	if (Random(2)) SetDir(DIR_Left);
 	else SetDir(DIR_Right);
-	
-	SetCreatureControlled();
 	
 	// Two spot layouts are available.
 	if (!Random(2))
@@ -348,7 +348,7 @@ private func UpdateEnemy()
 	
 	var x = GetX();
 	var y = GetY();
-	for (var obj in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Sort_Distance()))
+	for (var obj in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()), Sort_Distance()))
 	{
 		if (!PathFree(x, y, obj->GetX(), obj->GetY())) continue;
 		enemy = obj;
@@ -377,7 +377,7 @@ private func DoElectroCircle()
 	};
 	
 	// Punish all close enemies (not allied animals, though).
-	for (var obj in FindObjects(Find_Distance(30), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Find_Exclude(this)))
+	for (var obj in FindObjects(Find_Distance(30), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()), Find_Exclude(this)))
 	{
 		var delta_x = 3 * (obj->GetX() - GetX());
 		var delta_y = 3 * (obj->GetY() - GetY());
@@ -645,7 +645,7 @@ private func EndShockWater()
 	if (GetDir() == DIR_Right) x *= -1;
 	var y = 15;
 	
-	for (var obj in FindObjects(Find_Distance(120), Find_OCF(OCF_Alive), Find_Hostile(this->GetOwner())))
+	for (var obj in FindObjects(Find_Distance(120), Find_OCF(OCF_Alive), Find_AnimalHostile(this->GetOwner())))
 	{
 		if (!obj->GBackLiquid()) continue;
 		var angle = Angle(GetX(), GetY(), obj->GetX(), obj->GetY());
@@ -690,16 +690,16 @@ private func FxSparkleTimer(object target, effect fx, int time)
 
 private func CheckTurn()
 {
-	if(GetXDir() < 0) if(GetDir() != DIR_Left) SetDir(DIR_Left);
-	else if(GetXDir() > 0) if(GetDir() != DIR_Right) SetDir(DIR_Right);
+	if (GetXDir() < 0) if (GetDir() != DIR_Left) SetDir(DIR_Left);
+	else if (GetXDir() > 0) if (GetDir() != DIR_Right) SetDir(DIR_Right);
 	
 	var t = false;
-	if(turn_angle == 0 && GetDir() == DIR_Left) t = true;
-	else if(turn_angle == 180 && GetDir() == DIR_Right) t = true;
+	if (turn_angle == 0 && GetDir() == DIR_Left) t = true;
+	else if (turn_angle == 180 && GetDir() == DIR_Right) t = true;
 	
-	if(t)
+	if (t)
 	{
-		if(!GetEffect("IntTurning", this))
+		if (!GetEffect("IntTurning", this))
 			AddEffect("IntTurning", this, 1, 1, this);
 	}
 }
@@ -714,12 +714,12 @@ private func Turn(int dir, bool move)
 			dir = DIR_Left;
 	}
 	
-	if(move)
+	if (move)
 	{
-		if(dir == DIR_Left) SetComDir(COMD_Left);
+		if (dir == DIR_Left) SetComDir(COMD_Left);
 		else SetComDir(COMD_Right);
 	}
-	if(GetDir() == dir) return;
+	if (GetDir() == dir) return;
 	SetXDir(0);
 	SetDir(dir);
 	CheckTurn();
@@ -727,23 +727,23 @@ private func Turn(int dir, bool move)
 
 private func FxIntTurningStart(object target, effect fx, temp)
 {
-	if(temp)
+	if (temp)
 		return true;
 }
 
 private func FxIntTurningTimer(object target, effect fx, int time)
 {
-	if(GetDir() == DIR_Left)
+	if (GetDir() == DIR_Left)
 		turn_angle += 15;
 	else turn_angle -= 15;
 
-	if(turn_angle < 0 || turn_angle > 180)
+	if (turn_angle < 0 || turn_angle > 180)
 	{
 		turn_angle = BoundBy(turn_angle, 0, 180);
-		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
+		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30, 0, 1, 0);
 		return -1;
 	}
-	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
+	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30, 0, 1, 0);
 	return 1;
 }
 
@@ -752,8 +752,14 @@ public func RejectLightningStrike() { return true; }
 
 local MaxEnergy = 30000;
 local MaxBreath = 10000;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local BorderBound = C4D_Border_Sides;
+local ContactCalls = true;
+
+public func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(5500, 1000, 0), Trans_Scale(1600), Trans_Rotate(-5, 1, 0, 0), Trans_Rotate(60, 0, 1, 0));
+}
 
 local ActMap = {
 Walk = {

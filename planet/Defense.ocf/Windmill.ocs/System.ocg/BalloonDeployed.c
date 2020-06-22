@@ -19,7 +19,7 @@ private func Deflate()
 		SetComDir(COMD_None);
 		if (this.rider)
 		{
-			var fx = GetEffect("AI", this.rider);
+			var fx = this.rider->~GetAI();
 			if (!fx) return;
 			// Tell rider to get a new target
 			fx.target = nil;
@@ -32,7 +32,7 @@ public func OnProjectileHit()
 {
 	if (this.rider)
 	{
-		var fx = GetEffect("AI", this.rider);
+		var fx = this.rider->~GetAI();
 		if (!fx) return;
 		fx.parachute_lost = true; // rider must get a new target as soon as he lands
 	}

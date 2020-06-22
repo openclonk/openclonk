@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,29 +17,28 @@
 
 /* The command stack controls an object's complex and independent behavior */
 
-#include <C4Include.h>
-#include <C4Command.h>
+#include "C4Include.h"
+#include "object/C4Command.h"
 
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4ObjectCom.h>
-#include <C4ObjectInfo.h>
-#include <C4Random.h>
-#include <C4GameMessage.h>
-#include <C4ObjectMenu.h>
-#include <C4Player.h>
-#include <C4SoundSystem.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
+#include "gui/C4GameMessage.h"
+#include "landscape/C4Landscape.h"
+#include "lib/C4Random.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectCom.h"
+#include "object/C4ObjectInfo.h"
+#include "object/C4ObjectMenu.h"
+#include "platform/C4SoundSystem.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 const int32_t MoveToRange=5,LetGoRange1=7,LetGoRange2=30,DigRange=1;
 const int32_t FollowRange=6,PushToRange=10,DigOutPositionRange=15;
 const int32_t PathRange=20,MaxPathRange=1000;
 const int32_t JumpAngle=35,JumpLowAngle=80,JumpAngleRange=10,JumpHighAngle=0;
 const int32_t FlightAngleRange=60;
-const int32_t DigOutDirectRange=130;
 const int32_t LetGoHangleAngle=110;
 
 StdEnumAdapt<int32_t>::Entry EnumAdaptCommandEntries[C4CMD_Last - C4CMD_First + 2];
@@ -119,7 +118,7 @@ bool InitEnumAdaptCommandEntries()
 		EnumAdaptCommandEntries[i - C4CMD_First].Name = CommandName(i);
 		EnumAdaptCommandEntries[i - C4CMD_First].Val = i;
 	}
-	EnumAdaptCommandEntries[C4CMD_Last - C4CMD_First + 1].Name = NULL;
+	EnumAdaptCommandEntries[C4CMD_Last - C4CMD_First + 1].Name = nullptr;
 	return true;
 }
 const bool InitEnumAdaptCommandEntriesDummy = InitEnumAdaptCommandEntries();
@@ -143,7 +142,7 @@ bool FreeMoveTo(C4Object *cObj)
 void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShapeHgt)
 {
 	// Above solid (always)
-	int32_t iY=std::min(rY, GBackHgt);
+	int32_t iY=std::min(rY, ::Landscape.GetHeight());
 	while ((iY>=0) && GBackSolid(rX,iY)) iY--;
 	if (iY>=0) rY=iY;
 	// No-free-move adjustments (i.e. if walking)
@@ -152,8 +151,8 @@ void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShape
 		// Drop down to bottom of free space
 		if (!GBackSemiSolid(rX,rY))
 		{
-			for (iY=rY; (iY<GBackHgt) && !GBackSemiSolid(rX,iY+1); iY++) {}
-			if (iY<GBackHgt) rY=iY;
+			for (iY=rY; (iY<::Landscape.GetHeight()) && !GBackSemiSolid(rX,iY+1); iY++) {}
+			if (iY<::Landscape.GetHeight()) rY=iY;
 		}
 		// Vertical shape offset above solid
 		if (GBackSolid(rX,rY+1) || GBackSolid(rX,rY+5))
@@ -208,20 +207,20 @@ C4Command::~C4Command()
 void C4Command::Default()
 {
 	Command=C4CMD_None;
-	cObj=NULL;
+	cObj=nullptr;
 	Evaluated=false;
 	PathChecked=false;
 	Finished=false;
 	Tx=C4VNull;
 	Ty=0;
-	Target=Target2=NULL;
+	Target=Target2=nullptr;
 	Data.Set0();
 	UpdateInterval=0;
 	Failures=0;
 	Retries=0;
 	Permit=0;
-	Text=NULL;
-	Next=NULL;
+	Text=nullptr;
+	Next=nullptr;
 	iExec=0;
 	BaseMode=C4CMD_Mode_SilentSub;
 }
@@ -235,7 +234,7 @@ struct ObjectAddWaypoint
 
 		// Transfer waypoint
 		if (TransferTarget)
-			return cObj->AddCommand(C4CMD_Transfer,TransferTarget,iX,iY,0,NULL,false);
+			return cObj->AddCommand(C4CMD_Transfer,TransferTarget,iX,iY,0,nullptr,false);
 
 		// Solid offset
 		AdjustSolidOffset(iX,iY,cObj->Shape.Wdt/2,cObj->Shape.Hgt/2);
@@ -246,7 +245,7 @@ struct ObjectAddWaypoint
 		if (cObj->Command && (cObj->Command->Command==C4CMD_Transfer)) iUpdate=0;
 		// Add waypoint
 		assert(cObj->Command);
-		if (!cObj->AddCommand(C4CMD_MoveTo,NULL,iX,iY,iUpdate,NULL,false,cObj->Command->Data)) return false;
+		if (!cObj->AddCommand(C4CMD_MoveTo,nullptr,iX,iY,iUpdate,nullptr,false,cObj->Command->Data)) return false;
 
 		return true;
 	}
@@ -268,7 +267,7 @@ void C4Command::MoveTo()
 
 	// Contained: exit
 	if (cObj->Contained)
-		{ cObj->AddCommand(C4CMD_Exit,NULL,0,0,50); return; }
+		{ cObj->AddCommand(C4CMD_Exit,nullptr,0,0,50); return; }
 
 	// Check path (crew members or specific only)
 	if ((cObj->OCF & OCF_CrewMember) || cObj->Def->Pathfinder)
@@ -303,7 +302,7 @@ void C4Command::MoveTo()
 			{
 				// Re-evaluate this command because vehicle control might have blocked evaluation
 				Evaluated=false;
-				cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return;
+				cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0,50); return;
 			}
 
 	// Special by procedure
@@ -316,8 +315,8 @@ void C4Command::MoveTo()
 			if (cObj->Action.Target)
 				{ cx=cObj->Action.Target->GetX(); cy=cObj->Action.Target->GetY(); }
 		break;
-		// dig, bridge: stop
-	case DFA_DIG: case DFA_BRIDGE:
+		// dig: stop
+	case DFA_DIG:
 		ObjectComStop(cObj);
 		break;
 	}
@@ -441,6 +440,9 @@ void C4Command::MoveTo()
 	break;
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_FLIGHT:
+		// Try to move into right direction
+		if (cx<Tx._getInt()-iTargetRange) cObj->Action.ComDir=COMD_Right;
+		if (cx>Tx._getInt()+iTargetRange) cObj->Action.ComDir=COMD_Left;
 		// Flight control
 		if (FlightControl()) return;
 		break;
@@ -459,11 +461,11 @@ void C4Command::Dig()
 
 	// Grabbing: let go
 	if (cObj->GetProcedure()==DFA_PUSH)
-		{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
+		{ cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0,50); return; }
 
 	// If contained: exit
 	if (cObj->Contained)
-		{ cObj->AddCommand(C4CMD_Exit,NULL,0,0,50); return; }
+		{ cObj->AddCommand(C4CMD_Exit,nullptr,0,0,50); return; }
 
 	// Scaling or hangling: let go
 	if ((cObj->GetProcedure()==DFA_SCALE) || (cObj->GetProcedure()==DFA_HANGLE))
@@ -519,7 +521,7 @@ void C4Command::Follow()
 		if (!cObj->Def->CrewMember)
 			{ Finish(); return; }
 		// Exit/enter
-		if (cObj->Contained) cObj->AddCommand(C4CMD_Exit,NULL,0,0,50);
+		if (cObj->Contained) cObj->AddCommand(C4CMD_Exit,nullptr,0,0,50);
 		else cObj->AddCommand(C4CMD_Enter,Target->Contained,0,0,50);
 		return;
 	}
@@ -554,7 +556,7 @@ void C4Command::Follow()
 	}
 	else // Else, move to target
 	{
-		cObj->AddCommand(C4CMD_MoveTo,NULL,Target->GetX(),Target->GetY(),10);
+		cObj->AddCommand(C4CMD_MoveTo,nullptr,Target->GetX(),Target->GetY(),10);
 	}
 
 }
@@ -576,12 +578,12 @@ void C4Command::Enter()
 	if (cObj->GetProcedure()==DFA_PUSH)
 		if (cObj->Action.Target)
 			if (cObj->Action.Target->GetPropertyInt(P_Touchable) == 2 || !(Data.getInt() & C4CMD_Enter_PushTarget))
-				{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
+				{ cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0,50); return; }
 
 	// Pushing target: let go
 	if (cObj->GetProcedure()==DFA_PUSH)
 		if (cObj->Action.Target==Target)
-			{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
+			{ cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0,50); return; }
 
 	// Grabbing overrides position for target
 	int32_t cx,cy;
@@ -620,7 +622,7 @@ void C4Command::Enter()
 	{
 		int32_t ex,ey,ewdt,ehgt;
 		if (Target->GetEntranceArea(ex,ey,ewdt,ehgt))
-			cObj->AddCommand(C4CMD_MoveTo,NULL,ex+ewdt/2,ey+ehgt/2,50, NULL, true, C4VInt((Data.getInt() & C4CMD_Enter_PushTarget) ? C4CMD_MoveTo_PushTarget : 0));
+			cObj->AddCommand(C4CMD_MoveTo,nullptr,ex+ewdt/2,ey+ehgt/2,50, nullptr, true, C4VInt((Data.getInt() & C4CMD_Enter_PushTarget) ? C4CMD_MoveTo_PushTarget : 0));
 	}
 
 }
@@ -675,7 +677,7 @@ void C4Command::Grab()
 	if (cObj->GetProcedure()==DFA_DIG) ObjectComStop(cObj);
 	// Grabbing: let go
 	if (cObj->GetProcedure()==DFA_PUSH)
-		{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
+		{ cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0,50); return; }
 	// No target
 	if (!Target) { Finish(); return; }
 	// At target object: grab
@@ -692,7 +694,7 @@ void C4Command::Grab()
 	// Else, move to object
 	else
 	{
-		cObj->AddCommand(C4CMD_MoveTo,NULL,Target->GetX()+Tx._getInt(),Target->GetY()+Ty,50);
+		cObj->AddCommand(C4CMD_MoveTo,nullptr,Target->GetX()+Tx._getInt(),Target->GetY()+Ty,50);
 	}
 }
 
@@ -719,7 +721,7 @@ void C4Command::PushTo()
 			{
 				cObj->Action.ComDir=COMD_Stop;
 				cObj->AddCommand(C4CMD_UnGrab);
-				cObj->AddCommand(C4CMD_Wait,NULL,0,0,10);
+				cObj->AddCommand(C4CMD_Wait,nullptr,0,0,10);
 				Finish(true); return;
 			}
 	}
@@ -737,9 +739,9 @@ void C4Command::PushTo()
 
 	// Move to target position / enter target object
 	if (Target2)
-		{ cObj->AddCommand(C4CMD_Enter,Target2,0,0,40, NULL, true, C4Value(C4CMD_Enter_PushTarget)); return; }
+		{ cObj->AddCommand(C4CMD_Enter,Target2,0,0,40, nullptr, true, C4Value(C4CMD_Enter_PushTarget)); return; }
 	else
-		{ cObj->AddCommand(C4CMD_MoveTo,NULL,Tx,Ty,40, NULL, true, C4Value(C4CMD_MoveTo_PushTarget)); return; }
+		{ cObj->AddCommand(C4CMD_MoveTo,nullptr,Tx,Ty,40, nullptr, true, C4Value(C4CMD_MoveTo_PushTarget)); return; }
 
 }
 
@@ -774,7 +776,7 @@ void C4Command::Throw()
 
 		// Grabbing: let go
 		if (cObj->GetProcedure()==DFA_PUSH)
-			{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
+			{ cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0,50); return; }
 
 		// Preferred throwing direction
 		int32_t iDir=+1; if (cObj->GetX() > Tx._getInt()) iDir=-1;
@@ -799,7 +801,7 @@ void C4Command::Throw()
 		}
 
 		// Move to target position
-		cObj->AddCommand(C4CMD_MoveTo,NULL,iTx,iTy,20);
+		cObj->AddCommand(C4CMD_MoveTo,nullptr,iTx,iTy,20);
 
 		return;
 	}
@@ -859,7 +861,7 @@ void C4Command::Drop()
 	{
 		// Grabbing: let go
 		if (cObj->GetProcedure()==DFA_PUSH)
-			{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
+			{ cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0,50); return; }
 		// At target position: drop
 		if (Inside<int32_t>(cObj->GetX() - Tx._getInt(), -iMoveToRange, +iMoveToRange) && Inside<int32_t>(cObj->GetY()-Ty,-15,+15))
 		{
@@ -869,7 +871,7 @@ void C4Command::Drop()
 			return;
 		}
 		// Move to target position
-		cObj->AddCommand(C4CMD_MoveTo,NULL,Tx._getInt(),Ty,20);
+		cObj->AddCommand(C4CMD_MoveTo,nullptr,Tx._getInt(),Ty,20);
 		return;
 	}
 
@@ -895,12 +897,16 @@ void C4Command::Drop()
 
 void C4Command::Jump()
 {
-	// Already in air and target position given
-	if (cObj->GetProcedure()==DFA_FLIGHT && Tx._getInt())
+	// Already in air?
+	if (cObj->GetProcedure()==DFA_FLIGHT)
 	{
-		if (cObj->GetX()<Tx._getInt()) cObj->Action.ComDir=COMD_Right;
-		else if (cObj->GetX()>Tx._getInt()) cObj->Action.ComDir=COMD_Left;
-		else cObj->Action.ComDir=COMD_Stop;
+		// Check whether target position is given
+		if (Tx._getInt())
+		{
+			if (cObj->GetX()<Tx._getInt()) cObj->Action.ComDir=COMD_Right;
+			else if (cObj->GetX()>Tx._getInt()) cObj->Action.ComDir=COMD_Left;
+			else cObj->Action.ComDir=COMD_Stop;
+		}
 	}
 	else
 	{
@@ -973,7 +979,7 @@ void C4Command::Get()
 	{
 		// Get-count specified: decrease count and continue with next object
 		if (Tx._getInt() > 1)
-			{ Target = NULL; Tx--; return; }
+			{ Target = nullptr; Tx--; return; }
 		// We're done
 		else
 			{ cObj->Action.ComDir=COMD_Stop; Finish(true); return; }
@@ -982,7 +988,7 @@ void C4Command::Get()
 	// Grabbing other than target container: let go
 	if (cObj->GetProcedure()==DFA_PUSH)
 		if (cObj->Action.Target!=Target->Contained)
-			{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
+			{ cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0,50); return; }
 
 	// Target in solid: dig out
 	if (!Target->Contained && (Target->OCF & OCF_InSolid))
@@ -1002,9 +1008,9 @@ void C4Command::Get()
 		// Move to closest free position (if not in dig-direct range)
 		if (!Inside(cObj->GetX()-iX,-DigOutPositionRange,+DigOutPositionRange)
 		    || !Inside(cObj->GetY()-iY,-DigOutPositionRange,+DigOutPositionRange))
-			{ cObj->AddCommand(C4CMD_MoveTo,NULL,iX,iY,50); return; }
+			{ cObj->AddCommand(C4CMD_MoveTo,nullptr,iX,iY,50); return; }
 		// DigTo
-		cObj->AddCommand(C4CMD_Dig,NULL,Target->GetX(),Target->GetY()+4,50); return;
+		cObj->AddCommand(C4CMD_Dig,nullptr,Target->GetX(),Target->GetY()+4,50); return;
 	}
 
 	// Digging: stop
@@ -1025,7 +1031,7 @@ void C4Command::Get()
 
 		// Leave own container
 		if (cObj->Contained)
-			{ cObj->AddCommand(C4CMD_Exit,NULL,0,0,50); return; }
+			{ cObj->AddCommand(C4CMD_Exit,nullptr,0,0,50); return; }
 
 		// Target container has grab get: grab target container
 		if (Target->Contained->Def->GrabPutGet & C4D_Grab_Get)
@@ -1054,7 +1060,7 @@ void C4Command::Get()
 	// Target outside
 
 	// Leave own container
-	if (cObj->Contained) { cObj->AddCommand(C4CMD_Exit,NULL,0,0,50); return; }
+	if (cObj->Contained) { cObj->AddCommand(C4CMD_Exit,nullptr,0,0,50); return; }
 
 	// Outside
 	if (!cObj->Contained)
@@ -1082,14 +1088,14 @@ void C4Command::Get()
 					if (PathFree(iSideX,cObj->GetY(),Target->GetX(),Target->GetY()))
 					{
 						// Side-move jump
-						cObj->AddCommand(C4CMD_Jump,NULL,Tx._getInt(),Ty);
+						cObj->AddCommand(C4CMD_Jump,nullptr,Tx._getInt(),Ty);
 						// FIXME: Drop stuff if full here
-						cObj->AddCommand(C4CMD_MoveTo,NULL,iSideX,cObj->GetY(),50);
+						cObj->AddCommand(C4CMD_MoveTo,nullptr,iSideX,cObj->GetY(),50);
 					}
 				}
 			// Move to target (random offset for difficult pickups)
 			// ...avoid offsets into solid which would lead to high above surface locations!
-			cObj->AddCommand(C4CMD_MoveTo,NULL,Target->GetX()+Random(15)-7,Target->GetY(),25,NULL);
+			cObj->AddCommand(C4CMD_MoveTo,nullptr,Target->GetX()+Random(15)-7,Target->GetY(),25,nullptr);
 		}
 
 	}
@@ -1144,7 +1150,7 @@ void C4Command::Activate()
 			// Activate object to exit
 			Target->Controller = cObj->Controller;
 			Target->SetCommand(C4CMD_Exit);
-			Target = 0;
+			Target = nullptr;
 		}
 
 		Finish(true); return;
@@ -1152,7 +1158,7 @@ void C4Command::Activate()
 
 	// Leave own container
 	if (cObj->Contained)
-		{ cObj->AddCommand(C4CMD_Exit,NULL,0,0,50); return; }
+		{ cObj->AddCommand(C4CMD_Exit,nullptr,0,0,50); return; }
 
 	// Target container has entrance: enter
 	if (Target2->OCF & OCF_Entrance)
@@ -1188,7 +1194,7 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 	{
 		// Put-count specified: decrease count and continue with next object
 		if (Tx._getInt() > 1)
-			{ Target2 = NULL; Tx--; return; }
+			{ Target2 = nullptr; Tx--; return; }
 		// We're done
 		else
 			{ Finish(true); return; }
@@ -1214,11 +1220,11 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 	if (cObj->GetProcedure()==DFA_DIG) ObjectComStop(cObj);
 
 	// Grabbing other than target: let go
-	C4Object *pGrabbing=NULL;
+	C4Object *pGrabbing=nullptr;
 	if (cObj->GetProcedure()==DFA_PUSH)
 		pGrabbing = cObj->Action.Target;
 	if (pGrabbing && (pGrabbing!=Target))
-		{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
+		{ cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0,50); return; }
 
 	// Inside target container
 	if (cObj->Contained == Target)
@@ -1231,7 +1237,7 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 
 	// Leave own container
 	if (cObj->Contained)
-		{ cObj->AddCommand(C4CMD_Exit,NULL,0,0,50); return; }
+		{ cObj->AddCommand(C4CMD_Exit,nullptr,0,0,50); return; }
 
 	// Target has collection: throw in if not fragile, not grabbing target and throwing position found
 	if (Target->OCF & OCF_Collection)
@@ -1264,7 +1270,7 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 				// Putting failed
 				{ Finish(); return; }
 			// Let go (if we grabbed the target because of this command)
-			if (Ty) cObj->AddCommand(C4CMD_UnGrab,NULL,0,0);
+			if (Ty) cObj->AddCommand(C4CMD_UnGrab,nullptr,0,0);
 			return;
 		}
 		// Grab target and let go after putting
@@ -1281,9 +1287,9 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 
 void C4Command::ClearPointers(C4Object *pObj)
 {
-	if (cObj==pObj) cObj=NULL;
-	if (Target==pObj) Target=NULL;
-	if (Target2==pObj) Target2=NULL;
+	if (cObj==pObj) cObj=nullptr;
+	if (Target==pObj) Target=nullptr;
+	if (Target2==pObj) Target2=nullptr;
 }
 
 void C4Command::Execute()
@@ -1300,7 +1306,7 @@ void C4Command::Execute()
 	{
 		// Retry
 		if (Retries>0)
-			{ Failures=0; Retries--; cObj->AddCommand(C4CMD_Retry,NULL,0,0,10); return; }
+			{ Failures=0; Retries--; cObj->AddCommand(C4CMD_Retry,nullptr,0,0,10); return; }
 		// Too many failures
 		else
 			{ Finish(); return; }
@@ -1396,7 +1402,7 @@ bool C4Command::InitEvaluation()
 	case C4CMD_MoveTo:
 	{
 		// Target coordinates by Target
-		if (Target) { Tx+=Target->GetX(); Ty+=Target->GetY(); Target=NULL; }
+		if (Target) { Tx+=Target->GetX(); Ty+=Target->GetY(); Target=nullptr; }
 		// Adjust coordinates
 		int32_t iTx = Tx._getInt();
 		if (~Data.getInt() & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,FreeMoveTo(cObj),cObj->Shape.Hgt);
@@ -1450,14 +1456,15 @@ bool C4Command::InitEvaluation()
 void C4Command::Clear()
 {
 	Command=C4CMD_None;
-	cObj=NULL;
+	cObj=nullptr;
 	Evaluated=false;
 	PathChecked=false;
 	Tx=C4VNull;
 	Ty=0;
-	Target=Target2=NULL;
+	Target=Target2=nullptr;
 	UpdateInterval=0;
-	if (Text) Text->DecRef(); Text=NULL;
+	if (Text) Text->DecRef();
+	Text=nullptr;
 	BaseMode=C4CMD_Mode_SilentSub;
 }
 
@@ -1515,7 +1522,7 @@ bool C4Command::JumpControl() // Called by DFA_WALK
 				for (iTopFree=0; (iTopFree<50) && !GBackSolid(cx,cy+cObj->Shape.GetY()-iTopFree); ++iTopFree) {}
 				if (iTopFree>=15)
 				{
-					cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
+					cObj->AddCommand(C4CMD_Jump,nullptr,Tx,Ty); return true;
 				}
 			}
 
@@ -1533,8 +1540,8 @@ bool C4Command::JumpControl() // Called by DFA_WALK
 				// Path free from side move target to jump target
 				if (PathFree(iSideX,iSideY,Tx._getInt(),Ty))
 				{
-					cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty);
-					cObj->AddCommand(C4CMD_MoveTo,NULL,iSideX,iSideY,50);
+					cObj->AddCommand(C4CMD_Jump,nullptr,Tx,Ty);
+					cObj->AddCommand(C4CMD_MoveTo,nullptr,iSideX,iSideY,50);
 					return true;
 				}
 			}
@@ -1548,12 +1555,12 @@ bool C4Command::JumpControl() // Called by DFA_WALK
 		if (cObj->t_contact & CNAT_Right)
 			if (Inside(iAngle-JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
 			{
-				cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
+				cObj->AddCommand(C4CMD_Jump,nullptr,Tx,Ty); return true;
 			}
 		if (cObj->t_contact & CNAT_Left)
 			if (Inside(iAngle+JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
 			{
-				cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
+				cObj->AddCommand(C4CMD_Jump,nullptr,Tx,Ty); return true;
 			}
 	}
 
@@ -1576,7 +1583,7 @@ void C4Command::Transfer()
 	if (!Inside<int32_t>(cObj->GetX()-pZone->X,-5,pZone->Wdt-1+5))
 	{
 		if (!pZone->GetEntryPoint(iEntryX,iEntryY,cObj->GetX(),cObj->GetY())) { Finish(); return; }
-		cObj->AddCommand(C4CMD_MoveTo,NULL,iEntryX,iEntryY,25);
+		cObj->AddCommand(C4CMD_MoveTo,nullptr,iEntryX,iEntryY,25);
 		return;
 	}
 
@@ -1613,14 +1620,14 @@ void C4Command::Attack()
 		if (cObj->Contained!=Target->Contained)
 		{
 			// Exit
-			if (cObj->Contained) cObj->AddCommand(C4CMD_Exit,NULL,0,0,10);
+			if (cObj->Contained) cObj->AddCommand(C4CMD_Exit,nullptr,0,0,10);
 			// Enter
 			else cObj->AddCommand(C4CMD_Enter,Target->Contained,0,0,10);
 			return;
 		}
 
 		// Move to target
-		cObj->AddCommand(C4CMD_MoveTo,NULL,Target->GetX(),Target->GetY(),10);
+		cObj->AddCommand(C4CMD_MoveTo,nullptr,Target->GetX(),Target->GetY(),10);
 		return;
 
 	}
@@ -1667,7 +1674,7 @@ void C4Command::Acquire()
 		{ Finish(); return; }
 
 	// Find available material
-	C4Object *pMaterial=NULL;
+	C4Object *pMaterial=nullptr;
 	// Next closest
 	while ((pMaterial = Game.FindObject(Data.getDef(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,pMaterial)))
 		// Object is not in container to be ignored
@@ -1689,7 +1696,7 @@ void C4Command::Acquire()
 	// No available material found: buy material
 	// This command will fail immediately if buying at bases is not possible
 	// - but the command should be created anyway because it might be overloaded
-	cObj->AddCommand(C4CMD_Buy,NULL,0,0,100,NULL,true,Data,false,0,0,C4CMD_Mode_Sub);
+	cObj->AddCommand(C4CMD_Buy,nullptr,0,0,100,nullptr,true,Data,false,0,nullptr,C4CMD_Mode_Sub);
 
 }
 
@@ -1882,7 +1889,7 @@ void C4Command::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	}
 	// Text
 	StdStrBuf TextBuf;
-	if (pComp->isDecompiler())
+	if (pComp->isSerializer())
 	{
 		if (Text)
 			TextBuf.Ref(Text->GetData());
@@ -1890,12 +1897,12 @@ void C4Command::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			TextBuf.Ref("0");
 	}
 	pComp->Value(mkParAdapt(TextBuf, StdCompiler::RCT_All));
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		if (Text)
 			Text->DecRef();
 		if (TextBuf == "0")
-			{ Text = NULL; }
+			{ Text = nullptr; }
 		else
 			{ Text = Strings.RegString(TextBuf); Text->IncRef(); }
 	}

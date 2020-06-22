@@ -1,0 +1,15 @@
+[DefCore]
+id=ChippyFlint
+Version=6,0
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=4
+VertexX=-5,5, 0, 0
+VertexY=0,0, -5, 5,
+VertexFriction=20
+Value=5
+Mass=10
+Projectile=1
+Fragile=1

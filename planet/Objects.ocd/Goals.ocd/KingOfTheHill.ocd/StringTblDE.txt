@@ -1,4 +1,4 @@
 Name=King of the Hill
 
 MsgGoalDesc=Das Ziel sind %d Punkte.
-IsNowKing=%s ist der neue König!
+IsNowKing=%s ist der neue KÃ¶nig!

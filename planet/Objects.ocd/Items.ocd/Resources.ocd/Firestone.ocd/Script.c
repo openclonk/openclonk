@@ -3,7 +3,7 @@
 protected func Construction()
 {
 	var graphic = Random(3);
-	if(graphic)
+	if (graphic)
 		SetGraphics(Format("%d",graphic));
 	return true;
 }
@@ -27,6 +27,8 @@ func Hit2()
 }
 
 public func HasExplosionOnImpact() { return true; }
+
+public func IsExplosive() { return true; }
 
 local Collectible = 1;
 local Name = "$Name$";

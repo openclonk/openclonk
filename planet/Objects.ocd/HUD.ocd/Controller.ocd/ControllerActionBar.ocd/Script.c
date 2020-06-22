@@ -20,9 +20,11 @@ local current_interaction;
 local actionbar_gui_menu;
 local actionbar_gui_id;
 
-/* Creation / Destruction */
+/* GUI creation */
 
-private func Construction()
+// For custom HUD graphics overload the following function as deemed fit.
+
+func AssembleActionBar()
 {
 	// Calculate margin + width of crew portraits
 	var icon_margin = GUI_Controller_CrewBar_CursorMargin +
@@ -32,7 +34,7 @@ private func Construction()
 	                  GUI_Controller_CrewBar_IconMargin;
 	var icon_size = icon_margin + GUI_Controller_CrewBar_IconSize;
 
-	actionbar_gui_menu =
+	return
 	{
 		Target = this,
 		Player = NO_OWNER, // will be shown only if there is an interaction possible, e.g. standing in front of a vehicle
@@ -94,6 +96,15 @@ private func Construction()
 			Priority = 6
 		}
 	};
+}
+
+/* Creation / Destruction */
+
+private func Construction()
+{
+
+	actionbar_gui_menu = AssembleActionBar();
+
 	actionbar_gui_id = GuiOpen(actionbar_gui_menu);
 
 	EnableInteractionUpdating(true);

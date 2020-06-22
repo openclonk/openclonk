@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,14 +15,15 @@
 
 /* A convenient way to (de)serialize object pointers */
 
-#include <C4Include.h>
-#include <C4ObjectPtr.h>
-#include <C4Object.h>
-#include <C4GameObjects.h>
+#include "C4Include.h"
+#include "object/C4ObjectPtr.h"
+
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
 
 #include <limits>
 
-const C4ObjectPtr C4ObjectPtr::Null(0);
+const C4ObjectPtr C4ObjectPtr::Null(nullptr);
 
 void C4ObjectPtr::CompileFunc(StdCompiler* pComp)
 {
@@ -30,10 +31,12 @@ void C4ObjectPtr::CompileFunc(StdCompiler* pComp)
 	assert(fDenumerated);
 
 	int32_t nptr = 0;
-	if (!pComp->isCompiler() && data.ptr)
+	if (!pComp->isDeserializer() && data.ptr)
+	{
 		nptr = data.ptr->Number;
+	}
 	pComp->Value(nptr);
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		data.nptr = nptr;
 #ifndef NDEBUG

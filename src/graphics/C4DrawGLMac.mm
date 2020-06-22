@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,24 +13,26 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4GraphicsSystem.h>
-#include <C4MouseControl.h>
-#include <C4Gui.h>
-#include <C4Game.h>
-#include <C4Viewport.h>
-#include <C4ViewportWindow.h>
-#include <C4Console.h>
-#include <C4FullScreen.h>
-#include <C4PlayerList.h>
-#include <C4Gui.h>
-#include <C4Landscape.h>
+#define GL_SILENCE_DEPRECATION
+#include <epoxy/gl.h>
+#include "C4Include.h"
+#include "game/C4GraphicsSystem.h"
+#include "gui/C4MouseControl.h"
+#include "gui/C4Gui.h"
+#include "game/C4Game.h"
+#include "game/C4Viewport.h"
+#include "editor/C4ViewportWindow.h"
+#include "editor/C4Console.h"
+#include "game/C4FullScreen.h"
+#include "player/C4PlayerList.h"
+#include "gui/C4Gui.h"
+#include "landscape/C4Landscape.h"
 
-#include <C4DrawGL.h>
+#include "graphics/C4DrawGL.h"
 
-#import "C4DrawGLMac.h"
-#import "C4WindowController.h"
-#import "C4AppDelegate+MainMenuActions.h"
+#import "graphics/C4DrawGLMac.h"
+#import "platform/C4WindowController.h"
+#import "platform/C4AppDelegate+MainMenuActions.h"
 
 #ifdef USE_COCOA
 
@@ -144,28 +146,28 @@
 int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 {
 	*modifierFlags = [event modifierFlags]; // should be compatible since MK_* constants mirror the NS* constants
-	if ([event modifierFlags] & NSCommandKeyMask)
+	if ([event modifierFlags] & NSEventModifierFlagCommand)
 	{
 		// treat cmd and ctrl the same
-		*modifierFlags |= NSControlKeyMask;
+		*modifierFlags |= NSEventModifierFlagControl;
 	}
 	switch (event.type)
 	{
-		case NSLeftMouseDown:
+		case NSEventTypeLeftMouseDown:
 			return [event clickCount] > 1 ? C4MC_Button_LeftDouble : C4MC_Button_LeftDown;
-		case NSLeftMouseUp:
+		case NSEventTypeLeftMouseUp:
 			return C4MC_Button_LeftUp;
-		case NSRightMouseDown:
+		case NSEventTypeRightMouseDown:
 			return [event clickCount] > 1 ? C4MC_Button_RightDouble : C4MC_Button_RightDown;
-		case NSRightMouseUp:
+		case NSEventTypeRightMouseUp:
 			return C4MC_Button_RightUp;
-		case NSLeftMouseDragged: case NSRightMouseDragged:
+		case NSEventTypeLeftMouseDragged: case NSEventTypeRightMouseDragged:
 			return C4MC_Button_None; // sending mouse downs all the time when dragging is not the right thing to do
-		case NSOtherMouseDown:
+		case NSEventTypeOtherMouseDown:
 			return C4MC_Button_MiddleDown;
-		case NSOtherMouseUp:
+		case NSEventTypeOtherMouseUp:
 			return C4MC_Button_MiddleUp;
-		case NSScrollWheel:
+		case NSEventTypeScrollWheel:
 			return C4MC_Button_Wheel;
 		default:
 			break;
@@ -211,7 +213,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	if (::MouseControl.IsViewport(viewport) && Console.EditCursor.GetMode() == C4CNS_ModePlay)
 	{	
 		DWORD keyMask = flags;
-		if ([event type] == NSScrollWheel)
+		if ([event type] == NSEventTypeScrollWheel)
 		{
 			// TODO: We could evaluate the full smooth scrolling
 			// information, but zoom and inventory scrolling don't
@@ -229,7 +231,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 		switch (button)
 		{
 		case C4MC_Button_LeftDown:
-			Console.EditCursor.Move(viewport->GetViewX()+x/viewport->GetZoom(), viewport->GetViewY()+y/viewport->GetZoom(), flags);
+			Console.EditCursor.Move(viewport->GetViewX()+x/viewport->GetZoom(), viewport->GetViewY()+y/viewport->GetZoom(), viewport->GetZoom(), flags);
 			Console.EditCursor.LeftButtonDown(flags);
 			break;
 		case C4MC_Button_LeftUp:
@@ -242,7 +244,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 			Console.EditCursor.RightButtonUp(flags);
 			break;
 		case C4MC_Button_None:
-			Console.EditCursor.Move(viewport->GetViewX()+x/viewport->GetZoom(),viewport->GetViewY()+y/viewport->GetZoom(), flags);
+			Console.EditCursor.Move(viewport->GetViewX()+x/viewport->GetZoom(),viewport->GetViewY()+y/viewport->GetZoom(), viewport->GetZoom(), flags);
 			break;
 		}
 	}
@@ -251,7 +253,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 
 - (void) magnifyWithEvent:(NSEvent *)event
 {
-	if (Game.IsRunning && (event.modifierFlags & NSAlternateKeyMask) == 0)
+	if (Game.IsRunning && (event.modifierFlags & NSEventModifierFlagOption) == 0)
 	{
 		C4Viewport* viewport = self.controller.viewport;
 		if (viewport)
@@ -298,9 +300,9 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	Game.DoKeyboardInput(
 		[event keyCode]+CocoaKeycodeOffset, // offset keycode by some value to distinguish between those special key defines
 		type,
-		[event modifierFlags] & NSAlternateKeyMask,
-		([event modifierFlags] & NSControlKeyMask) || ([event modifierFlags] & NSCommandKeyMask),
-		[event modifierFlags] & NSShiftKeyMask,
+		[event modifierFlags] & NSEventModifierFlagOption,
+		([event modifierFlags] & NSEventModifierFlagControl) || ([event modifierFlags] & NSEventModifierFlagCommand),
+		[event modifierFlags] & NSEventModifierFlagShift,
 		false, NULL
 	);
 
@@ -332,13 +334,13 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	C4KeyCode key = (C4KeyCode)([event keyCode] + CocoaKeycodeOffset);
 	int modifier = 0;
 	if (key == K_SHIFT_L || key == K_SHIFT_R)
-		modifier = NSShiftKeyMask;
+		modifier = NSEventModifierFlagShift;
 	if (key == K_CONTROL_L || key == K_CONTROL_R)
-		modifier = NSControlKeyMask;
+		modifier = NSEventModifierFlagControl;
 	if (key == K_COMMAND_L || key == K_COMMAND_R)
-		modifier = NSCommandKeyMask;
+		modifier = NSEventModifierFlagCommand;
 	if (key == K_ALT_L || key == K_ALT_R)
-		modifier = NSAlternateKeyMask;
+		modifier = NSEventModifierFlagOption;
 
 	if (modifier != 0)
 	{
@@ -397,7 +399,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	if (Application.isEditor && viewport && !viewport->GetPlayerLock())
 	{
 		NSScrollView* scrollView = self.controller.scrollView;
-		NSPoint p = NSMakePoint(2*-[event deltaX]/abs(GBackWdt-viewport->ViewWdt), 2*-[event deltaY]/abs(GBackHgt-viewport->ViewHgt));
+		NSPoint p = NSMakePoint(2*-[event deltaX]/abs(::Landscape.GetWidth()-viewport->ViewWdt), 2*-[event deltaY]/abs(::Landscape.GetHeight()-viewport->ViewHgt));
 		[scrollView.horizontalScroller setDoubleValue:scrollView.horizontalScroller.doubleValue+p.x];
 		[scrollView.verticalScroller setDoubleValue:scrollView.verticalScroller.doubleValue+p.y];
 		viewport->ViewPositionByScrollBars();
@@ -571,7 +573,7 @@ void CStdGLCtx::Clear(bool multisample_change)
 	}
 }
 
-void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples, int) const
 {
 	[C4OpenGLView enumerateMultiSamples:samples];
 }
@@ -593,6 +595,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	if (controller && controller.openGLView)
 	{
 		[controller.openGLView setContext:ctx];
+		[ctx setView:controller.openGLView];
 	}
 
 	this_context = contexts.insert(contexts.end(), this);

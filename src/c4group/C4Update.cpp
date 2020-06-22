@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,17 +13,17 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include "C4Update.h"
+#include "C4Include.h"
+#include "c4group/C4Update.h"
+
 #include "C4Version.h"
-#include "C4Components.h"
-#include "C4Group.h"
-#include "C4Log.h"
+#include "c4group/C4Components.h"
+#include "c4group/C4Group.h"
 
 C4Config *GetCfg();
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <direct.h>
 #endif
 
@@ -528,7 +528,7 @@ bool C4UpdatePackage::DoGrpUpdate(C4Group *pUpdateData, C4GroupEx *pGrpTo)
 {
 	char *pData;
 	// sort entries
-	if (pUpdateData->LoadEntry(C4CFN_UpdateEntries, &pData, NULL, 1))
+	if (pUpdateData->LoadEntry(C4CFN_UpdateEntries, &pData, nullptr, 1))
 	{
 		// delete all entries that do not appear in the entries list
 		char strItemName[_MAX_FNAME+1], strItemName2[_MAX_FNAME+1];
@@ -693,7 +693,7 @@ extern char C4Group_TempPath[_MAX_PATH+1];
 
 bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bool *fModified)
 {
-	// (CAUTION: pGrp1 may be NULL - that means that there is no counterpart for Grp2
+	// (CAUTION: pGrp1 may be nullptr - that means that there is no counterpart for Grp2
 	//           in the base group)
 
 	// compare headers
@@ -706,7 +706,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 	strItemName[0] = strItemName2[0] = 0;
 	pGrp2->ResetSearch(); if (!*fModified) pGrp1->ResetSearch();
 	int iChangedEntries = 0;
-	while (pGrp2->FindNextEntry("*", strItemName, NULL, !! strItemName[0]))
+	while (pGrp2->FindNextEntry("*", strItemName, nullptr, !! strItemName[0]))
 	{
 		// add to entry list
 		if (!!EntryList) EntryList.AppendChar('|');
@@ -714,7 +714,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 		// no modification detected yet? then check order
 		if (!*fModified)
 		{
-			if (!pGrp1->FindNextEntry("*", strItemName2, NULL, !! strItemName2[0]))
+			if (!pGrp1->FindNextEntry("*", strItemName2, nullptr, !! strItemName2[0]))
 				*fModified = true;
 			else if (!SEqual(strItemName, strItemName2))
 				*fModified = true;
@@ -729,7 +729,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 			// open in Grp1
 			C4Group *pChildGrp1 = new C4GroupEx();
 			if (!pGrp1 || !pChildGrp1->OpenAsChild(pGrp1, strItemName))
-				{ delete pChildGrp1; pChildGrp1 = NULL; }
+				{ delete pChildGrp1; pChildGrp1 = nullptr; }
 			// open group for update data
 			C4GroupEx UpdGroup; char strTempGroupName[_MAX_FNAME + 1];
 			strTempGroupName[0] = 0;

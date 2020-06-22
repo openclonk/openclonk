@@ -63,6 +63,8 @@ func FxIntBridgeStart(object clonk, effect fx, int temp, int x, int y)
 		R = 200, G = 150, B = 50,
 		Size = PV_KeyFrames(0, 0, 1, 100, 3, 1000, 2),
 	};
+	// Let the player know the clonk is about to do stuff
+	clonk->PlayAnimation("Dig", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, clonk->GetAnimationLength("Dig"), 35, ANIM_Loop), Anim_Const(1000));
 	return FX_OK;
 }
 
@@ -97,7 +99,7 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 	var line_len = speed * dt / 100;
 	var last_x = fx.LastX;
 	var last_y = fx.LastY;
-	var dx = x-last_x, dy=y-last_y;
+	var dx = x-last_x, dy = y-last_y;
 	var d = Distance(dx, dy);
 	// Quantize angle as a multiple of 30 degrees.
 	var quant = 30;
@@ -109,7 +111,7 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 	// Don't use up loam if the mouse position is reached...
 	// wait for the mouse being moved and then continue bridging
 	// into that direction
-	if(d <= 1) return FX_OK;
+	if (d <= 1) return FX_OK;
 
 	// Calculate offset edges of rectangle (which are meant to be added to a side's midpoint).
 	var off_x = Sin(angle + 90, line_wdt);
@@ -233,11 +235,14 @@ public func GetInventoryIconOverlay()
 	{
 		Bottom = "0.75em", Margin = ["0.1em", "0.25em"],
 		BackgroundColor = RGB(0, 0, 0),
-		inner = 
+		margin = 
 		{
 			Margin = "0.05em",
-			BackgroundColor = RGB(200, 150, 0),
-			Right = Format("%d%%", percentage),
+			bar = 
+			{
+				BackgroundColor = RGB(200, 150, 0),
+				Right = Format("%d%%", percentage),
+			}
 		}
 	};
 	
@@ -245,10 +250,15 @@ public func GetInventoryIconOverlay()
 }
 
 public func IsFoundryProduct() { return true; }
-public func GetLiquidNeed() { return ["Water", 60]; }
+public func GetSubstituteComponent(id component) // Can be made from earth or sand
+{
+	if (component == Earth)
+		return Sand;
+}
 
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
 local BridgeLength = 37; // bridge length in pixels
 local Plane = 470;
+local Components = {Earth = 2, Water = 60};

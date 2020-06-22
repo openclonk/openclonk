@@ -1,0 +1,109 @@
+TooltipObjectspawn=Spawn objects
+TooltipLandscapeBrush=Draw landscape
+TooltipMarker=Marker
+TooltipMapGen=Map generator
+TooltipTweaks=Cheats and other cool stuff
+TooltipGodsHand=This object will be place with God's hand (to change select a different object in the menu).
+
+OSCatProductionResources=Resources
+OSCatFoodstuff=Nutrition
+OSCatLiquids=Liquids
+OSCatTools=Tools
+OSCatWeapons=Weapons
+OSCatExplosives=Explosives
+OSCatVehicles=Vehicles
+OSCatAnimals=Animals
+OSCatPlants=Plants
+OSCatGodTools=God's tools
+
+OSHintTarget=Hint! You can select here where to create the objects. Set to \"God's hand\" to select which object you want to create with God's hand.
+
+OSTargetClonk=Target: Clonk/Inventory
+OSTargetGodsHand=Target: God's hand
+OSTargetClonkTT=The object will be placed into the clonks inventory if possible.
+OSTargetGodsHandTT=The object can now be placed with God's hand.
+
+MatEarth=Earth
+MatEarthSpongy=Earth (spongy)
+MatEarthRoot=Earth (root)
+MatSand=Sand
+MatSandDry=Dry sand
+MatIce=Ice
+MatIce2=Ice (different)
+MatSnow=Snow
+MatRock=Rock
+MatRockSmooth=Rock (smooth)
+MatGranite=Granite
+MatOre=Ore
+MatGold=Gold
+MatCoal=Coal
+MatFirestone=Firestone
+MatRuby=Ruby
+MatAmethyst=Amethyst
+MatAshes=Ashes
+MatBrick=Brick
+MatBrickSoft=Brick (soft)
+MatEverrock=Everrock
+MatWater=Water
+MatAcid=Acid
+MatLava=Lava
+MatDuroLava=Magma
+MatOil=Oil
+MatTunnel=Tunnel (background)
+MatTunnelBrick=Brick tunnel (background)
+
+MatBgSky=Sky
+MatBgTunnel=Tunnel
+MatBgBricks=Brick
+
+MBMaterialFg=Material
+MBMaterialBg=Background material
+MBBrushSize=Brush size
+MBBrushMode=Brush mode
+
+MBBrushModeBrush=Brush
+MBBrushModeQuad=Square
+MBBrushModeErase=Eraser
+
+MarkerNotSet=Marker not set
+PlaceMarker=Set marker
+RemoveMarker=Remove marker
+GoToMarker=Teleport
+
+MapGenButtonGenerate=Generate map!
+MapGenSizeWidth=map width
+MapGenSizeHeight=map height
+MapGenMapType=map type
+MapGenGoal=game goal
+
+MapGenTPEmpty=Empty
+MapGenTPFlatland=Flatland
+MapGenTPHills=Hills
+MapGenTPMountains=Mountains
+
+MapGenGoalNone=No goal
+MapGenGoalMining=Mining
+MapGenGoalExpansion=Expansion
+
+TweakInvincible=Invincibility (God-Mode)
+OptActivate=Activate
+OptDeactivate=Deactivate
+TweakInvincible_Activated=%s is now invincible
+TweakInvincible_Deactivated=%s is not invincible
+
+TweakSkinChoose=Choose skin
+OptSkin1=Adventurere
+OptSkin2=Steampunk
+OptSkin3=Alchemist
+OptSkin4=Farmer
+
+# Goal
+MsgGoalName=Sandbox
+MsgGoalDescription=You did not select any goal, so you can just experiment and have fun! The host can enable and disable god mode by the message board command /godmode off/host/all.
+
+# Message board
+MessageBoardOnlyHost=Only the host can change god mode settings.
+MessageBoardModeOff=God mode is now off.
+MessageBoardModeHost=The host has now god mode.
+MessageBoardModeAll=All players now have god mode.
+MessageBoardInvalidPar=Wrong parameter, valid is /godmode off/host/all.

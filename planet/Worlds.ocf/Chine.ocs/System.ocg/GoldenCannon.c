@@ -7,4 +7,5 @@ public func Construction()
 {
 	_inherited(...);
 	SetMeshMaterial("GoldenCannon", 0);
+	MakeInvincible();
 }

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -93,7 +93,6 @@ const uint32_t
 	OCF_Collection = 1<<14,
 
 	OCF_HitSpeed4 = 1<<16,
-	OCF_AttractLightning = 1<<17,
 	OCF_NotContained = 1<<18,
 	OCF_CrewMember = 1<<19,
 	OCF_InLiquid = 1<<20,

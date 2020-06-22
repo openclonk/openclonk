@@ -26,7 +26,7 @@ protected func Initialize()
 	InitAI();
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorials.ocf\\Tutorial05.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial05.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -36,7 +36,7 @@ protected func OnGoalsFulfilled()
 	// Achievement: Tutorial completed.
 	GainScenarioAchievement("TutorialCompleted", 3);	
 	// Dialogue options -> next round.
-	SetNextMission("Tutorials.ocf\\Tutorial07.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial06.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }
@@ -69,10 +69,10 @@ private func InitCave()
 	CreateObjectAbove(Torch, 500, 474)->AttachToWall(true);
 	CreateObjectAbove(Torch, 506, 628)->AttachToWall(true);
 	CreateObjectAbove(Torch, 728, 696)->AttachToWall(true);
-	// A hidden chest with a musket.
+	// A hidden chest with a blunderbuss.
 	var chest = CreateObjectAbove(Chest, 10, 526);
-	var musket = chest->CreateContents(Musket);
-	musket->CreateContents(LeadShot);
+	var blunderbuss = chest->CreateContents(Blunderbuss);
+	blunderbuss->CreateContents(LeadBullet);
 	return;
 }
 
@@ -196,10 +196,6 @@ protected func InitializePlayer(int plr)
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
 	effect.to_x = 300;
 	effect.to_y = 374;
-	
-	// Add an effect to the clonk to track the goal.
-	var goal_effect = AddEffect("TrackGoal", nil, 100, 2);
-	goal_effect.plr = plr;
 
 	// Standard player zoom for tutorials.
 	SetPlayerViewLock(plr, true);
@@ -242,7 +238,7 @@ global func FxTutorialTalkedToVillageHeadStop(object target, proplist effect, in
 {
 	if (temp)
 		return FX_OK;
-	var use = GetPlayerControlAssignment(effect.plr, CON_Use, true);
+	var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
 	guide->AddGuideMessage(Format("$MsgTutorialNotHelpful$", use));
 	guide->ShowGuideMessage();
 	var new_effect = AddEffect("TutorialDestroyedStrawMen", nil, 100, 5);
@@ -295,7 +291,7 @@ global func FxTutorialKilledSecondRobberTimer(object target, proplist effect)
 {
 	if (!FindObject(Find_OCF(OCF_CrewMember), Find_Property("second_robber")))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true);
+		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialKilledSecond$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialKilledLastRobbers", nil, 100, 5);
@@ -380,7 +376,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
-		Rule_BaseRespawn->TransferInventory(target, clonk);
+		Rule_Relaunch->TransferInventory(target, clonk);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");

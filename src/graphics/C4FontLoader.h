@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,11 +18,11 @@
 #ifndef INC_STDFONT
 #define INC_STDFONT
 
-#include <C4Markup.h>
-#include <C4Facet.h>
-#include <StdBuf.h>
-#include <stdio.h>
-#include <map>
+#include "C4ForbidLibraryCompilation.h"
+#include "lib/C4Markup.h"
+#include "graphics/C4Facet.h"
+#include "graphics/C4Surface.h"
+#include "graphics/C4FontLoaderCustomImages.h"
 
 // Font rendering flags
 #define STDFONT_CENTERED    0x0001
@@ -49,11 +49,7 @@ public:
 	// enum of different fonts used in the clonk engine
 	enum FontType { C4FT_Log, C4FT_MainSmall, C4FT_Main, C4FT_Caption, C4FT_Title };
 
-	C4FontLoader()
-#ifndef USE_CONSOLE
-		: pLastUsedFont(NULL), LastUsedGrpID(0)
-#endif
-	{ } // ctor
+	C4FontLoader() = default; // ctor
 	~C4FontLoader() { Clear(); } // dtor
 
 	void Clear();                   // clear loaded fonts
@@ -63,9 +59,9 @@ public:
 
 protected:
 #ifndef USE_CONSOLE
-	CStdVectorFont * pLastUsedFont; // cache
+	CStdVectorFont * pLastUsedFont{nullptr}; // cache
 	StdCopyStrBuf LastUsedName;
-	int32_t LastUsedGrpID;
+	int32_t LastUsedGrpID{0};
 
 	CStdVectorFont * CreateFont(StdBuf & Data);
 	CStdVectorFont * CreateFont(const char *szFaceName);
@@ -79,18 +75,7 @@ extern C4FontLoader FontLoader;
 class CStdFont
 {
 public:
-	// callback class to allow custom images
-	class CustomImages
-	{
-	protected:
-		virtual bool DrawFontImage(const char* szImageTag, C4Facet& cgo, C4DrawTransform* transform) = 0;
-		virtual float GetFontImageAspect(const char* szImageTag) = 0;
-
-		friend class CStdFont;
-	public:
-		virtual ~CustomImages() { }
-	};
-
+	typedef CStdFontCustomImages CustomImages;
 	int id;                // used by the engine to keep track of where the font came from
 
 protected:
@@ -98,8 +83,7 @@ protected:
 	DWORD dwDefFontHeight; // configured font size (in points)
 	char szFontName[80+1]; // used font name (or surface file name)
 
-	C4Surface **psfcFontData; // font recource surfaces - additional surfaces created as needed
-	int iNumFontSfcs;       // number of created font surfaces
+	std::vector<std::unique_ptr<C4Surface>> psfcFontData; // font resource surfaces - additional surfaces created as needed
 	int iSfcSizes;          // size for font surfaces
 	int iFontZoom;          // zoom of font in texture
 
@@ -141,7 +125,7 @@ public:
 	inline int GetLineHeight() const
 	{
 #ifdef USE_CONSOLE
-		return 0;
+		return 1;
 #else
 		return iLineHgt;
 #endif
@@ -155,6 +139,7 @@ public:
 	// Sometimes, only the width of a text is needed
 	int32_t GetTextWidth(const char *szText, bool fCheckMarkup = true) { int32_t x, y; GetTextExtent(szText, x, y, fCheckMarkup); return x; }
 	// insert line breaks into a message and return overall height - uses and regards '|' as line breaks
+	std::tuple<std::string, int> BreakMessage(const char *szMsg, int iWdt, bool fCheckMarkup, float fZoom=1.0f);
 	int BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOutLen, bool fCheckMarkup, float fZoom=1.0f);
 	int BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fCheckMarkup, float fZoom=1.0f);
 	// get message break and pos after message break - does not regard any manual line breaks!

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,18 +14,16 @@
  */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 
 #ifndef USE_CONSOLE
 
-#include "C4FoWDrawStrategy.h"
-#include "C4FoWLight.h"
-#include "C4FoWRegion.h"
-#include "C4DrawGL.h"
+#include "landscape/fow/C4FoWDrawStrategy.h"
+#include "landscape/fow/C4FoWLight.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "graphics/C4DrawGL.h"
 
-C4FoWDrawTriangulator::C4FoWDrawTriangulator():
-  mode(M_Fan), cur_vertices(0), begin_vertices(0)
-{
-}
+C4FoWDrawTriangulator::C4FoWDrawTriangulator() = default;
 
 void C4FoWDrawTriangulator::Fan()
 {
@@ -109,25 +107,33 @@ void C4FoWDrawTriangulator::Reset()
 }
 
 C4FoWDrawLightTextureStrategy::C4FoWDrawLightTextureStrategy(const C4FoWLight* light)
- : light(light), region(NULL), vbo_size(0), ibo_size(0)
+ : light(light), region(nullptr), vbo_size(0), ibo_size(0)
 {
-	glGenBuffers(2, bo);
-	vaoids[0] = pGL->GenVAOID();
-	vaoids[1] = pGL->GenVAOID();
-	vaoids[2] = pGL->GenVAOID();
+	bo[0] = bo[1] = 0u;
 }
 
 C4FoWDrawLightTextureStrategy::~C4FoWDrawLightTextureStrategy()
 {
-	glDeleteBuffers(2, bo);
-	pGL->FreeVAOID(vaoids[2]);
-	pGL->FreeVAOID(vaoids[1]);
-	pGL->FreeVAOID(vaoids[0]);
+	if (bo[0])
+	{
+		glDeleteBuffers(2, bo);
+		pGL->FreeVAOID(vaoids[2]);
+		pGL->FreeVAOID(vaoids[1]);
+		pGL->FreeVAOID(vaoids[0]);
+	}
 }
 
 void C4FoWDrawLightTextureStrategy::Begin(const C4FoWRegion* regionPar)
 {
 	region = regionPar;
+	if (!bo[0])
+	{
+		// lazy-init buffer objects
+		glGenBuffers(2, bo);
+		vaoids[0] = pGL->GenVAOID();
+		vaoids[1] = pGL->GenVAOID();
+		vaoids[2] = pGL->GenVAOID();
+	}
 }
 
 void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
@@ -196,7 +202,7 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
 
 	// Render 1st pass
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, nullptr);
 
 	// Prepare state for 2nd pass
 	//glBlendFunc(GL_ONE, GL_ONE);
@@ -215,7 +221,7 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	}
 	
 	// Render 2nd pass
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, nullptr);
 
 	// Prepare state for 3rd pass (color pass)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -237,7 +243,7 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	}
 	
 	// Render 3rd pass
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, nullptr);
 
 	// Reset GL state
 	glBindVertexArray(0);
@@ -334,7 +340,7 @@ void C4FoWDrawLightTextureStrategy::DrawLightVertex(float x, float y)
 }
 
 C4FoWDrawWireframeStrategy::C4FoWDrawWireframeStrategy(const C4FoWLight* light, const C4TargetFacet *screen) :
-  light(light), screen(screen), vbo_size(0), ibo_size(0)
+  screen(screen), vbo_size(0), ibo_size(0)
 {
 	glGenBuffers(2, bo);
 	vaoid = pGL->GenVAOID();
@@ -404,7 +410,7 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 	const float y_offset[] = { 0.0f, 0.0f };
 	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
 
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, nullptr);
 
 	// Reset GL state
 	glBindVertexArray(0);

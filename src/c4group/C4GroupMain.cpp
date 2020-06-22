@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,14 +16,15 @@
 
 /* C4Group command line executable */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
-#include <C4Group.h>
-#include <C4Version.h>
-#include <C4Update.h>
-#include <StdRegistry.h>
+#include "c4group/C4Group.h"
+#include "C4Version.h"
+#include "c4group/C4Update.h"
+#include "platform/StdRegistry.h"
+#include "C4Licenses.h"
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 
 int globalArgC;
@@ -43,7 +44,7 @@ bool EraseItemSafe(const char *szFilename)
 	return false;
 }
 
-void DisplayGroup(const C4Group &grp, const char *filter = NULL)
+void DisplayGroup(C4Group &grp, const char *filter = nullptr)
 {
 	const C4GroupHeader &head = grp.GetHeader();
 	
@@ -52,24 +53,27 @@ void DisplayGroup(const C4Group &grp, const char *filter = NULL)
 	uint32_t crc = 0;
 	bool crc_valid = GetFileCRC(grp.GetFullName().getData(), &crc);
 	if (crc_valid)
-		printf("CRC: %u (%X)\n", crc, crc);
+		printf("File CRC: %u (%X) ", crc, crc);
 	else
-		printf("CRC: <error accessing file>\n");
+		printf("File CRC: <error accessing file> ");
+
+	uint32_t contents_crc = grp.EntryCRC32();
+	printf("Contents CRC: %u (%X)\n", contents_crc, contents_crc);
 
 	// Find maximum file name length (matching filter)
 	size_t max_fn_len = 0;
-	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != NULL; entry = entry->Next)
+	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != nullptr; entry = entry->Next)
 	{
-		if (filter == NULL || WildcardMatch(filter, entry->FileName))
+		if (filter == nullptr || WildcardMatch(filter, entry->FileName))
 			max_fn_len = std::max(max_fn_len, strlen(entry->FileName));
 	}
 
 	// List files
 	size_t file_count = 0;
 	size_t byte_count = 0;
-	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != NULL; entry = entry->Next)
+	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != nullptr; entry = entry->Next)
 	{
-		if (filter != NULL && !WildcardMatch(filter, entry->FileName))
+		if (filter != nullptr && !WildcardMatch(filter, entry->FileName))
 			continue;
 
 		printf("%*s %8u Bytes",
@@ -153,7 +157,7 @@ bool ProcessGroup(const char *FilenamePar)
 						// Sort
 					case 's':
 						// First sort parameter overrides default Clonk sort list
-						C4Group_SetSortList(NULL);
+						C4Group_SetSortList(nullptr);
 						// Missing argument
 						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
 						{
@@ -308,7 +312,7 @@ bool ProcessGroup(const char *FilenamePar)
 							if(iArg + 1 < argc)
 							{
 								errno = 0;
-								pid = strtoul(argv[iArg+1], NULL, 10);
+								pid = strtoul(argv[iArg+1], nullptr, 10);
 								if(errno == 0)
 									have_pid = true;
 								else
@@ -373,7 +377,7 @@ int RegisterShellExtensions()
 	wchar_t strCommand[2048+1];
 	char strClass[128];
 	int i;
-	GetModuleFileNameW(NULL, strModule, 2048);
+	GetModuleFileNameW(nullptr, strModule, 2048);
 	// Groups
 	const char *strClasses =
 	  "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
@@ -436,7 +440,7 @@ int main(int argc, char *argv[])
 {
 #ifndef WIN32
 	// Always line buffer mode, even if the output is not sent to a terminal
-	setvbuf(stdout, NULL, _IOLBF, 0);
+	setvbuf(stdout, nullptr, _IOLBF, 0);
 #endif
 	// Scan options
 	fQuiet = true;
@@ -466,6 +470,16 @@ int main(int argc, char *argv[])
 				break;
 				// Execute at end
 			case 'x': SCopy(argv[i] + 3, strExecuteAtEnd, _MAX_PATH); break;
+				// Show licenses
+			case 'L':
+			{
+				fQuiet = false;
+				std::string sep{"\n=================================\n"};
+				for (const auto& license : OCLicenses)
+					if (license.path.substr(0, 7) != "planet/")
+						Log((sep + license.path + ": " + license.name + sep + license.content + "\n").c_str());
+				return 0;
+			}
 				// Unknown
 			default:
 				fprintf(stderr, "Unknown option %s\n", argv[i]);
@@ -541,6 +555,7 @@ int main(int argc, char *argv[])
 		printf("Options:  -v Verbose -r Recursive\n");
 		printf("          -i Register shell -u Unregister shell\n");
 		printf("          -x:<command> Execute shell command when done\n");
+		printf("          -L Show licenses and exit\n");
 		printf("\n");
 		printf("Examples: c4group pack.ocg -x\n");
 		printf("          c4group update.ocu -g ver1.ocf ver2.ocf New_Version\n");
@@ -559,7 +574,7 @@ int main(int argc, char *argv[])
 
 		PROCESS_INFORMATION procInfo;
 
-		CreateProcessW(GetWideChar(strExecuteAtEnd), NULL, NULL, NULL, false, 0, NULL, NULL, &startInfo, &procInfo);
+		CreateProcessW(GetWideChar(strExecuteAtEnd), nullptr, nullptr, nullptr, false, 0, nullptr, nullptr, &startInfo, &procInfo);
 #else
 		switch (fork())
 		{
@@ -569,7 +584,7 @@ int main(int argc, char *argv[])
 			break;
 			// Child process
 		case 0:
-			execl(strExecuteAtEnd, strExecuteAtEnd, static_cast<char *>(0)); // currently no parameters are passed to the executed program
+			execl(strExecuteAtEnd, strExecuteAtEnd, static_cast<char *>(nullptr)); // currently no parameters are passed to the executed program
 			exit(1);
 			// Parent process
 		default:

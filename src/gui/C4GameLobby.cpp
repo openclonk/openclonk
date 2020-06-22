@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,20 +15,20 @@
  */
 // the ingame-lobby
 
-#include <C4Include.h>
-#include <C4GameLobby.h>
+#include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "gui/C4GameLobby.h"
 
-#include <C4Application.h>
-#include <C4Components.h>
-#include "C4Network2Dialogs.h"
-#include "C4GameOptions.h"
-#include "C4ChatDlg.h"
-#include "C4PlayerInfoListBox.h"
-#include <C4MessageInput.h>
-#include <C4Game.h>
-#include <C4Network2.h>
-#include "C4GraphicsResource.h"
-#include "C4GameControl.h"
+#include "c4group/C4Components.h"
+#include "control/C4GameControl.h"
+#include "game/C4Application.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4ChatDlg.h"
+#include "gui/C4GameOptions.h"
+#include "gui/C4MessageInput.h"
+#include "gui/C4PlayerInfoListBox.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Dialogs.h"
 
 namespace C4GameLobby
 {
@@ -67,7 +67,7 @@ namespace C4GameLobby
 		SetBounds(rcBounds);
 		C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 		AddElement(pDescBox = new C4GUI::TextWindow(caMain.GetAll(), 0, 0, 0, 100, 4096, "", true));
-		pDescBox->SetDecoration(false, false, NULL, true);
+		pDescBox->SetDecoration(false, false, nullptr, true);
 		// initial update to set current data
 		if (fActive) Activate();
 	}
@@ -131,8 +131,8 @@ namespace C4GameLobby
 			                          (const char *) LoadResStr("IDS_DLG_LOBBY"):
 			                          FormatString("%s - %s", Game.ScenarioTitle.getData(), LoadResStr("IDS_DLG_LOBBY")).getData(),
 			                          Game.ScenarioTitle.getData()),
-			pPlayerList(NULL), pResList(NULL), pChatBox(NULL), pRightTabLbl(NULL), pRightTab(NULL),
-			pEdt(NULL), btnRun(NULL), btnPlayers(NULL), btnResources(NULL), btnTeams(NULL), btnChat(NULL)
+			pPlayerList(nullptr), pResList(nullptr), pChatBox(nullptr), pRightTabLbl(nullptr), pRightTab(nullptr),
+			pEdt(nullptr), btnRun(nullptr), btnPlayers(nullptr), btnResources(nullptr), btnTeams(nullptr), btnChat(nullptr)
 	{
 		// key bindings
 		pKeyHistoryUp  = new C4KeyBinding(C4KeyCodeEx(K_UP  ), "LobbyChatHistoryUp"  , KEYSCOPE_Gui, new C4GUI::DlgKeyCBEx<MainDlg, bool>(*this, true , &MainDlg::KeyHistoryUpDown), C4CustomKey::PRIO_CtrlOverride);
@@ -191,7 +191,7 @@ namespace C4GameLobby
 		if (fHost)
 		{
 			btnRun = new C4GUI::CallbackButton<MainDlg>(LoadResStr("IDS_DLG_GAMEGO"), caBottom.GetFromRight(100), &MainDlg::OnRunBtn);
-			checkReady = NULL;
+			checkReady = nullptr;
 		}
 		else
 		{
@@ -310,7 +310,7 @@ namespace C4GameLobby
 		// changing away from countdown?
 		if (eCountdownState == CDS_Countdown)
 		{
-			StopSoundEffect("Structures::Elevator::Moving", NULL);
+			StopSoundEffect("Structures::Elevator::Moving", nullptr);
 			if (eToState != CDS_Start) StartSoundEffect("Liquids::Pshshsh");
 		}
 		// change to game start?
@@ -407,12 +407,34 @@ namespace C4GameLobby
 	{
 		// network savegame resumes: Warn if not all players have been associated
 		if (Game.C4S.Head.SaveGame)
+		{
 			if (Game.PlayerInfos.FindUnassociatedRestoreInfo(Game.RestorePlayerInfos))
 			{
 				StdStrBuf sMsg; sMsg.Ref(LoadResStr("IDS_MSG_NOTALLSAVEGAMEPLAYERSHAVE"));
 				if (!GetScreen()->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_MSG_FREESAVEGAMEPLRS"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_SavegamePlayer, &Config.Startup.HideMsgPlrNoTakeOver))
 					return;
 			}
+
+			// warning about desync bug #1965
+			int i=0; C4ClientPlayerInfos *pkInfo;
+			while ((pkInfo = Game.PlayerInfos.GetIndexedInfo(i++))) {
+				C4PlayerInfo *pPlrInfo; int32_t iInfo=0;
+				while ((pPlrInfo = pkInfo->GetPlayerInfo(iInfo++)))
+					if (!pPlrInfo->GetAssociatedSavegamePlayerID())
+					{
+						bool ignore = GetScreen()->ShowMessageModal(
+							LoadResStr("IDS_DLG_NETRESUME"),
+							LoadResStr("IDS_MSG_FREESAVEGAMEPLRS"),
+							C4GUI::MessageDialog::btnYesNo,
+							C4GUI::Ico_Error
+						);
+						if (ignore)
+							break;
+						else
+							return;
+					}
+			}
+		}
 		// validate countdown time
 		iCountdownTime = ValidatedCountdownTime(iCountdownTime);
 		// either direct start...
@@ -764,14 +786,17 @@ namespace C4GameLobby
 		// countdown done
 		if (!iStartTimer)
 		{
+#ifdef USE_CONSOLE
 			// Dedicated server: if there are not enough players for this game, abort and quit the application
-			if (!::Network.GetLobby() && (Game.PlayerInfos.GetPlayerCount() < Game.C4S.GetMinPlayer()))
+			if (Game.PlayerInfos.GetPlayerCount() < Game.C4S.GetMinPlayer()
+				|| ::Network.Clients.Count() <= 2)
 			{
 				Log(LoadResStr("IDS_MSG_NOTENOUGHPLAYERSFORTHISRO")); // it would also be nice to send this message to all clients...
 				Application.Quit();
 			}
 			// Start the game
 			else
+#endif // USE_CONSOLE
 				::Network.Start();
 		}
 	}

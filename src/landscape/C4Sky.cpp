@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,14 +17,15 @@
 
 /* Small member of the landscape class to handle the sky background */
 
-#include <C4Include.h>
-#include <C4Sky.h>
+#include "C4Include.h"
+#include "landscape/C4Sky.h"
 
-#include <C4Game.h>
-#include <C4Random.h>
-#include <C4Components.h>
-#include <C4Weather.h>
-#include <C4GraphicsResource.h>
+#include "c4group/C4Components.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "landscape/C4Weather.h"
+#include "lib/C4Random.h"
+#include "lib/StdColors.h"
 
 void C4Sky::SetFadePalette(int32_t *ipColors)
 {
@@ -42,10 +43,8 @@ void C4Sky::SetFadePalette(int32_t *ipColors)
 	}
 }
 
-bool C4Sky::Init(bool fSavegame)
+bool C4Sky::Init(bool fSavegame, std::string names)
 {
-	int32_t skylistn;
-
 	// reset scrolling pos+speed
 	// not in savegame, because it will have been loaded from game data there
 	if (!fSavegame)
@@ -55,25 +54,32 @@ bool C4Sky::Init(bool fSavegame)
 
 	// Check for sky bitmap in scenario file
 	Surface = new C4Surface();
-	bool loaded = !!Surface->LoadAny(Game.ScenarioFile,C4CFN_Sky,true,true, C4SF_Tileable | C4SF_MipMap);
+	bool loaded = false;
+	if (names.empty())
+	{
+		loaded = !!Surface->LoadAny(Game.ScenarioFile,C4CFN_Sky,true,true, C4SF_Tileable | C4SF_MipMap);
+	}
 
 	// Else, evaluate scenario core landscape sky default list
 	if (!loaded)
 	{
-		// Scan list sections
-		SReplaceChar(Game.C4S.Landscape.SkyDef,',',';'); // modifying the C4S here...!
-		skylistn=SCharCount(';',Game.C4S.Landscape.SkyDef)+1;
-		char str[402];
-		SCopySegment(Game.C4S.Landscape.SkyDef,SeededRandom(Game.RandomSeed,skylistn),str,';');
-		SClearFrontBack(str);
+		if (names.empty()) names = Game.C4S.Landscape.SkyDef;
+		static std::regex separator(R"([,;\s]+)");
+		std::vector<std::string> parts;
+		std::copy(
+				std::sregex_token_iterator(names.begin(), names.end(), separator, -1),
+				std::sregex_token_iterator(),
+				std::back_inserter(parts));
+
+		auto name = parts.at(SeededRandom(Game.RandomSeed, parts.size()));
 		// Sky tile specified, try load
-		if (*str && !SEqual(str,"Default"))
+		if (name != "Default")
 		{
 			// Check for sky tile in scenario file
-			loaded = !!Surface->LoadAny(Game.ScenarioFile,str,true,true, C4SF_Tileable | C4SF_MipMap);
+			loaded = !!Surface->LoadAny(Game.ScenarioFile, name.c_str(), true, true, C4SF_Tileable | C4SF_MipMap);
 			if (!loaded)
 			{
-				loaded = !!Surface->LoadAny(::GraphicsResource.Files, str, true, false, C4SF_Tileable | C4SF_MipMap);
+				loaded = !!Surface->LoadAny(::GraphicsResource.Files, name.c_str(), true, false, C4SF_Tileable | C4SF_MipMap);
 			}
 		}
 	}
@@ -105,14 +111,14 @@ bool C4Sky::Init(bool fSavegame)
 	{
 		SetFadePalette(Game.C4S.Landscape.SkyDefFade);
 		delete Surface;
-		Surface = 0;
+		Surface = nullptr;
 	}
 
 	// Load sky shaders: regular sprite shaders with OC_SKY define
-	const char* const SkyDefines[] = { "OC_SKY", NULL };
-	if (!pDraw->PrepareSpriteShader(Shader, "Sky", Surface ? C4SSC_BASE : 0, &::GraphicsResource.Files, SkyDefines, NULL))
+	const char* const SkyDefines[] = { "OC_SKY", nullptr };
+	if (!pDraw->PrepareSpriteShader(Shader, "Sky", Surface ? C4SSC_BASE : 0, &::GraphicsResource.Files, SkyDefines, nullptr))
 		return false;
-	if (!pDraw->PrepareSpriteShader(ShaderLight, "SkyLight", (Surface ? C4SSC_BASE : 0) | C4SSC_LIGHT, &::GraphicsResource.Files, SkyDefines, NULL))
+	if (!pDraw->PrepareSpriteShader(ShaderLight, "SkyLight", (Surface ? C4SSC_BASE : 0) | C4SSC_LIGHT, &::GraphicsResource.Files, SkyDefines, nullptr))
 		return false;
 
 	// no sky - using fade in newgfx
@@ -136,7 +142,7 @@ bool C4Sky::Init(bool fSavegame)
 void C4Sky::Default()
 {
 	Width=Height=0;
-	Surface=NULL;
+	Surface=nullptr;
 	x=y=xdir=ydir=0;
 	Modulation=0xffffffff;
 	ParX=ParY=10;
@@ -154,7 +160,7 @@ void C4Sky::Clear()
 {
 	Shader.Clear();
 	ShaderLight.Clear();
-	delete Surface; Surface=NULL;
+	delete Surface; Surface=nullptr;
 	Modulation=0xffffffff;
 }
 
@@ -214,7 +220,7 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 
 DWORD C4Sky::GetSkyFadeClr(int32_t iY)
 {
-	int32_t iPos2=(iY*256)/GBackHgt; int32_t iPos1=256-iPos2;
+	int32_t iPos2=(iY*256)/::Landscape.GetHeight(); int32_t iPos1=256-iPos2;
 	return (((((FadeClr1&0xff00ff)*iPos1 + (FadeClr2&0xff00ff)*iPos2) & 0xff00ff00)
 	         | (((FadeClr1&0x00ff00)*iPos1 + (FadeClr2&0x00ff00)*iPos2) & 0x00ff0000))>>8)
 	       | (FadeClr1 & 0xff000000);

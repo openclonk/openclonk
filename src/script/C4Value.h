@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,8 +16,8 @@
 #ifndef INC_C4Value
 #define INC_C4Value
 
-#include "C4StringTable.h"
-#include <C4ObjectPtr.h>
+#include "object/C4ObjectPtr.h"
+#include "script/C4StringTable.h"
 
 // C4Value type
 enum C4V_Type
@@ -61,53 +61,62 @@ union C4V_Data
 	C4V_Data &operator = (void *p) { assert(!p); Ptr = p; return *this; }
 };
 
+class C4JSONSerializationError : public std::exception
+{
+	std::string msg;
+public:
+	C4JSONSerializationError(const std::string& msg) : msg(msg) {}
+	const char* what() const noexcept override { return msg.c_str(); }
+};
+
 class C4Value
 {
 public:
 
-	C4Value() : NextRef(NULL), Type(C4V_Nil) { Data = 0; }
+	C4Value() { Data = nullptr; }
 
-	C4Value(const C4Value &nValue) : Data(nValue.Data), NextRef(NULL), Type(nValue.Type)
+	C4Value(const C4Value &nValue) : Data(nValue.Data), Type(nValue.Type)
 	{ AddDataRef(); }
+	C4Value(C4Value && nValue) noexcept;
 
-	explicit C4Value(bool data): NextRef(NULL), Type(C4V_Bool)
+	explicit C4Value(bool data): Type(C4V_Bool)
 	{ Data.Int = data; }
-	explicit C4Value(int data):  NextRef(NULL), Type(C4V_Int)
+	explicit C4Value(int data):  Type(C4V_Int)
 	{ Data.Int = data; }
-	explicit C4Value(long data): NextRef(NULL), Type(C4V_Int)
+	explicit C4Value(long data): Type(C4V_Int)
 	{ Data.Int = int32_t(data); }
 	explicit C4Value(C4PropListStatic *p);
 	explicit C4Value(C4Def *p);
 	explicit C4Value(C4Object *pObj);
 	explicit C4Value(C4Effect *p);
-	explicit C4Value(C4String *pStr): NextRef(NULL), Type(pStr ? C4V_String : C4V_Nil)
+	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Nil)
 	{ Data.Str = pStr; AddDataRef(); }
-	explicit C4Value(const char * s): NextRef(NULL), Type(s ? C4V_String : C4V_Nil)
-	{ Data.Str = s ? ::Strings.RegString(s) : NULL; AddDataRef(); }
-	explicit C4Value(const StdStrBuf & s): NextRef(NULL), Type(s.isNull() ? C4V_Nil : C4V_String)
-	{ Data.Str = s.isNull() ? NULL: ::Strings.RegString(s); AddDataRef(); }
-	explicit C4Value(C4ValueArray *pArray): NextRef(NULL), Type(pArray ? C4V_Array : C4V_Nil)
+	explicit C4Value(const char * s): Type(s ? C4V_String : C4V_Nil)
+	{ Data.Str = s ? ::Strings.RegString(s) : nullptr; AddDataRef(); }
+	explicit C4Value(const StdStrBuf & s): Type(s.isNull() ? C4V_Nil : C4V_String)
+	{ Data.Str = s.isNull() ? nullptr: ::Strings.RegString(s); AddDataRef(); }
+	explicit C4Value(C4ValueArray *pArray): Type(pArray ? C4V_Array : C4V_Nil)
 	{ Data.Array = pArray; AddDataRef(); }
-	explicit C4Value(C4AulFunc * pFn): NextRef(NULL), Type(pFn ? C4V_Function : C4V_Nil)
+	explicit C4Value(C4AulFunc * pFn): Type(pFn ? C4V_Function : C4V_Nil)
 	{ Data.Fn = pFn; AddDataRef(); }
-	explicit C4Value(C4PropList *p): NextRef(NULL), Type(p ? C4V_PropList : C4V_Nil)
+	explicit C4Value(C4PropList *p): Type(p ? C4V_PropList : C4V_Nil)
 	{ Data.PropList = p; AddDataRef(); }
 	C4Value(C4ObjectPtr p): C4Value(p.operator C4Object *()) {}
 	template<typename T> C4Value(Nillable<T> v): C4Value(v.IsNil() ? C4Value() : C4Value(v.operator T())) {}
 
 	C4Value& operator = (const C4Value& nValue) { Set(nValue); return *this; }
 
-	~C4Value() { DelDataRef(Data, Type, NextRef); }
+	~C4Value() { DelDataRef(Data, Type); }
 
 	// Checked getters
 	int32_t getInt() const { return CheckConversion(C4V_Int) ? Data.Int : 0; }
-	bool getBool() const { return CheckConversion(C4V_Bool) ? !! Data : 0; }
+	bool getBool() const { return CheckConversion(C4V_Bool) ? !! Data : false; }
 	C4Object * getObj() const;
 	C4Def * getDef() const;
-	C4PropList * getPropList() const { return CheckConversion(C4V_PropList) ? Data.PropList : NULL; }
-	C4String * getStr() const { return CheckConversion(C4V_String) ? Data.Str : NULL; }
-	C4ValueArray * getArray() const { return CheckConversion(C4V_Array) ? Data.Array : NULL; }
-	C4AulFunc * getFunction() const { return CheckConversion(C4V_Function) ? Data.Fn : NULL; }
+	C4PropList * getPropList() const { return CheckConversion(C4V_PropList) ? Data.PropList : nullptr; }
+	C4String * getStr() const { return CheckConversion(C4V_String) ? Data.Str : nullptr; }
+	C4ValueArray * getArray() const { return CheckConversion(C4V_Array) ? Data.Array : nullptr; }
+	C4AulFunc * getFunction() const { return CheckConversion(C4V_Function) ? Data.Fn : nullptr; }
 
 	// Unchecked getters
 	int32_t _getInt() const { return Data.Int; }
@@ -120,7 +129,7 @@ public:
 	C4PropList *_getPropList() const { return Data.PropList; }
 
 	bool operator ! () const { return !GetData(); }
-	inline operator const void* () const { return GetData() ? this : 0; }  // To allow use of C4Value in conditions
+	inline operator const void* () const { return GetData() ? this : nullptr; }  // To allow use of C4Value in conditions
 
 	void Set(const C4Value &nValue) { Set(nValue.Data, nValue.Type); }
 
@@ -130,6 +139,7 @@ public:
 	void SetArray(C4ValueArray * Array) { C4V_Data d; d.Array = Array; Set(d, C4V_Array); }
 	void SetFunction(C4AulFunc * Fn) { C4V_Data d; d.Fn = Fn; Set(d, C4V_Function); }
 	void SetPropList(C4PropList * PropList) { C4V_Data d; d.PropList = PropList; Set(d, C4V_PropList); }
+	void SetObjectEnum(int i) { C4V_Data d; d.Int = i; Set(d, C4V_C4ObjectEnum); }
 	void Set0();
 
 	bool operator == (const C4Value& Value2) const;
@@ -141,13 +151,6 @@ public:
 	// Change and set Type to int in case it was nil or bool before
 	// Use with care: These don't handle int32_t overflow
 	C4Value & operator += (int32_t by) { Data.Int += by; Type=C4V_Int; return *this; }
-	C4Value & operator -= (int32_t by) { Data.Int -= by; Type=C4V_Int; return *this; }
-	C4Value & operator *= (int32_t by) { Data.Int *= by; Type=C4V_Int; return *this; }
-	C4Value & operator /= (int32_t by) { Data.Int /= by; Type=C4V_Int; return *this; }
-	C4Value & operator %= (int32_t by) { Data.Int %= by; Type=C4V_Int; return *this; }
-	C4Value & operator &= (int32_t by) { Data.Int &= by; Type=C4V_Int; return *this; }
-	C4Value & operator ^= (int32_t by) { Data.Int ^= by; Type=C4V_Int; return *this; }
-	C4Value & operator |= (int32_t by) { Data.Int |= by; Type=C4V_Int; return *this; }
 	C4Value & operator ++ ()           { Data.Int++;     Type=C4V_Int; return *this; }
 	C4Value operator ++ (int)          { C4Value old = *this; ++(*this); return old; }
 	C4Value & operator -- ()           { Data.Int--;     Type=C4V_Int; return *this; }
@@ -156,12 +159,14 @@ public:
 	// getters
 	C4V_Data GetData()    const { return Data; }
 	C4V_Type GetType()    const { return Type; }
+	C4V_Type GetTypeEx()  const; // Return type including types derived from prop list types (such as C4V_Def)
 
 	const char *GetTypeName() const { return GetC4VName(GetType()); }
 
 	void Denumerate(C4ValueNumbers *);
 
-	StdStrBuf GetDataString(int depth = 1) const;
+	StdStrBuf GetDataString(int depth = 10, const class C4PropListStatic *ignore_reference_parent = nullptr) const;
+	StdStrBuf ToJSON(int depth = 10, const class C4PropListStatic *ignore_reference_parent = nullptr) const;
 
 	ALWAYS_INLINE bool CheckParConversion(C4V_Type vtToType) const // convert to dest type
 	{
@@ -211,16 +216,13 @@ private:
 	// data
 	C4V_Data Data;
 
-	// proplist reference list
-	C4Value * NextRef;
-
 	// data type
-	C4V_Type Type;
+	C4V_Type Type{C4V_Nil};
 
 	void Set(C4V_Data nData, C4V_Type nType);
 
 	void AddDataRef();
-	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef);
+	void DelDataRef(C4V_Data Data, C4V_Type Type);
 
 	bool FnCnvObject() const;
 	bool FnCnvDef() const;
@@ -251,7 +253,7 @@ extern const C4Value C4VNull;
 class C4ValueNumbers
 {
 public:
-	C4ValueNumbers() {}
+	C4ValueNumbers() = default;
 	uint32_t GetNumberForValue(C4Value * v);
 	const C4Value & GetValue(uint32_t);
 	void Denumerate();
@@ -268,9 +270,9 @@ private:
  in common situations because the Type of the new value is known. In any case,
  inlining them does speed up the script engine on at least one artificial benchmark. */
 
-#include "C4ValueArray.h"
-#include "C4PropList.h"
-#include "C4AulFunc.h"
+#include "script/C4ValueArray.h"
+#include "script/C4PropList.h"
+#include "script/C4AulFunc.h"
 
 ALWAYS_INLINE void C4Value::AddDataRef()
 {
@@ -295,14 +297,14 @@ ALWAYS_INLINE void C4Value::AddDataRef()
 	}
 }
 
-ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef)
+ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type)
 {
 	assert(Type < C4V_Any);
 	assert(Type != C4V_Nil || !Data);
 	// clean up
 	switch (Type)
 	{
-	case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
+	case C4V_PropList: Data.PropList->DelRef(this); break;
 	case C4V_String: Data.Str->DecRef(); break;
 	case C4V_Array: Data.Array->DecRef(); break;
 	case C4V_Function: Data.Fn->DecRef(); break;
@@ -317,7 +319,6 @@ ALWAYS_INLINE void C4Value::Set(C4V_Data nData, C4V_Type nType)
 
 	C4V_Data oData = Data;
 	C4V_Type oType = Type;
-	C4Value * oNextRef = NextRef;
 
 	// change
 	Data = nData;
@@ -325,7 +326,7 @@ ALWAYS_INLINE void C4Value::Set(C4V_Data nData, C4V_Type nType)
 
 	// hold new data & clean up old
 	AddDataRef();
-	DelDataRef(oData, oType, oNextRef);
+	DelDataRef(oData, oType);
 }
 
 ALWAYS_INLINE void C4Value::Set0()
@@ -334,11 +335,22 @@ ALWAYS_INLINE void C4Value::Set0()
 	C4V_Type oType = Type;
 
 	// change
-	Data = 0;
+	Data = nullptr;
 	Type = C4V_Nil;
 
 	// clean up (save even if Data was 0 before)
-	DelDataRef(oData, oType, NextRef);
+	DelDataRef(oData, oType);
+}
+
+ALWAYS_INLINE C4Value::C4Value(C4Value && nValue) noexcept:
+		Data(nValue.Data), Type(nValue.Type)
+{
+	if (Type == C4V_PropList)
+	{
+		Data.PropList->AddRef(this);
+		Data.PropList->DelRef(&nValue);
+	}
+	nValue.Type = C4V_Nil; nValue.Data = nullptr;
 }
 
 #endif

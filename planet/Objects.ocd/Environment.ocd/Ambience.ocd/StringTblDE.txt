@@ -1,2 +1,17 @@
 Name=Ambiente
 Description=Regelt die Geraeuschkulisse.
+Ambience=Ambiente
+FixedEnv=Ambiente
+FixedEnvHelp=Setzt ein Ambiente fuer die Geraeuschkulisse.
+Automatic=Automatisch
+AutomaticEnvHelp=Wechselt die Geraeuschkulisse automatisch pro Spieler je nach Umgebung des kontrollierten Clonks.
+SetShader=Shader setzen
+SetShaderHelp=Schaltet einen globalen Shader an oder aus.
+Shader=Shader
+None=Keiner
+Grayscale=Graustufen
+Psycho=Psycho
+Status=Status
+SetEnvironment=Ambiente setzen
+SetEnvironmentHelp=Setzt ein Ambiente fuer die Geraeuschkulisse.
+Environment=Umgebung

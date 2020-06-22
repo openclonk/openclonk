@@ -12,13 +12,39 @@ local current_objects;
 // Overload contents callback for the interaction menu.
 public func Contents(int index)
 {
+	RefreshIfNecessary();
+	if (index < 0 || index >= GetLength(current_objects)) return nil;
+	return current_objects[index];
+}
+
+public func ContentsCount(id definition)
+{
+	RefreshIfNecessary();
+	
+	if (definition == nil)
+	{
+		return GetLength(current_objects);
+	}
+	else
+	{
+		var count = 0;
+		for (var index = 0; index < GetLength(current_objects); ++index)
+			if (current_objects[index] && current_objects[index]->GetID() == definition)
+			{
+				count += 1;
+			}
+		
+		return count;
+	}
+}
+
+private func RefreshIfNecessary()
+{
 	if (last_search_frame != FrameCounter())
 	{
 		current_objects = GetPossibleObjects();
 		last_search_frame = FrameCounter();
 	}
-	if (index < 0 || index >= GetLength(current_objects)) return nil;
-	return current_objects[index];
 }
 
 private func GetPossibleObjects(id limit_definition)
@@ -68,7 +94,9 @@ public func Collect(object obj)
 	{
 		// Special treatment for objects that the Clonk holds. Just use the appropriate library function.
 		if (container->~IsClonk() && !obj->~IsCarryHeavy())
+		{
 			container->DropInventoryItem(container->GetItemPos(obj));
+		}
 		else
 		{
 			// Otherwise, just force-drop it at the clonks's bottom.
@@ -117,7 +145,7 @@ private func GetSurroundingMessageObjects(clonk)
 private func AddSurroundingObjectMessages(object clonk)
 {
 	var message_objects = GetSurroundingMessageObjects(clonk);
-	var menu_entries = [], i=0;
+	var menu_entries = [], i = 0;
 	for (var obj in message_objects)
 	{
 		var entry = {Symbol = Clonk, Bottom = "2em",
@@ -158,10 +186,10 @@ local ActMap =
 	{
 		Prototype = Action,
 		Name="Attach",
-		Procedure=DFA_ATTACH,
+		Procedure = DFA_ATTACH,
 		NextAction="Hold",
-		Length=1,
-		FacetBase=1,
+		Length = 1,
+		FacetBase = 1,
 		AbortCall = "AttachTargetLost"
 	}
 };

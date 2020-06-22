@@ -6,6 +6,7 @@
 */
 
 #include Library_ElevatorControl
+#include Library_Destructible
 
 local drive_anim;
 local tremble_anim;
@@ -89,6 +90,9 @@ public func FxDumpContentsStart(object target, proplist effect, int temp, int di
 	if (effect.dump_dir == DIR_Right)
 		rdir = effect.dump_strength;
 	SetRDir(rdir);
+	// Start dump sounds together.
+	Sound("Objects::Lorry::Dump1", false, 100, nil, +1);
+	Sound("Objects::Lorry::Dump2", false, 100, nil, +1);
 	return FX_OK;
 }
 
@@ -116,6 +120,11 @@ public func FxDumpContentsTimer(object target, proplist effect, int time)
 				// Assume the controller of the lorry is also the one dumping the contents.
 				random_content->SetController(GetController());
 				AddEffect("BlockCollectionByLorry", random_content, 100, 8, this);
+				if (random_content->~IsLiquid())
+				{
+					random_content->SetPosition(GetX(), GetY());
+					random_content->Disperse(GetR() + 10 * Sign(GetR()));
+				}
 			}		
 		}
 	}
@@ -128,6 +137,9 @@ public func FxDumpContentsStop(object target, proplist effect, int reason, bool 
 		return FX_OK;
 	// Stop rotating the lorry.
 	SetRDir(0);
+	// Stop dump sounds.
+	Sound("Objects::Lorry::Dump1", false, 100, nil, -1);
+	Sound("Objects::Lorry::Dump2", false, 100, nil, -1);
 	return FX_OK;
 }
 
@@ -173,10 +185,12 @@ protected func Entrance(object container)
 {
 	// Only in buildings
 	if (container->GetCategory() & (C4D_StaticBack | C4D_Structure))
-		// Not if the building prohibits this action.
-		if (!container->~NoLorryEjection(this))
+		// Only if the building requests this action.
+		if (container->~LorryEjectionOnEntrance(this))
+		{
 			// Empty lorry.
 			container->GrabContents(this);
+		}
 }
 
 
@@ -196,7 +210,7 @@ protected func ContactRight()
 
 public func TurnWheels()
 {
-	// TODO: Use Anim_X(Dir), keep from timer=1
+	// TODO: Use Anim_X(Dir), keep from timer = 1
 	// TODO: Could also use GetAnimationPosition() instead of these local variables...
 	rot_wheels += GetXDir() * 20;
 	while (rot_wheels < 0) 
@@ -214,63 +228,56 @@ public func TurnWheels()
 	if (Abs(GetXDir()) > 1 && !wheel_sound)
 	{
 		if (!wheel_sound) 
-			Sound("Structures::WheelsTurn", false, nil, nil, 1);
+			Sound("Structures::WheelsTurn", {loop_count = 1});
 		wheel_sound = true;
 	}
 	else if (wheel_sound && !GetXDir())
 	{
-		Sound("Structures::WheelsTurn", false, nil, nil, -1);
+		Sound("Structures::WheelsTurn", {loop_count = -1});
 		wheel_sound = false;
 	}
 }
 
-protected func Damage(int change, int cause, int by_player)
+// Custom fragments on callback from destructible library.
+public func OnDestruction(int change, int cause, int by_player)
 {
-	// Only explode the lorry on blast damage.
-	if (cause != FX_Call_DmgBlast)
-		return _inherited(change, cause, by_player, ...);
-	// Explode the lorry when it has taken to much damage.
-	if (GetDamage() > 100)
+	// Only exit objects and parts if this lorry is not contained.
+	if (!Contained())
 	{
-		// Only exit objects and parts if this lorry is not contained.
-		if (!Contained())
+		// First eject the contents in different directions.
+		for (var obj in FindObjects(Find_Container(this)))
 		{
-			// First eject the contents in different directions.
-			for (obj in FindObjects(Find_Container(this)))
-			{
-				var speed = RandomX(3, 5);
-				var angle = Random(360);
-				var dx = Cos(angle, speed);
-				var dy = Sin(angle, speed);
-				obj->Exit(RandomX(-4, 4), RandomX(-4, 4), Random(360), dx, dy, RandomX(-20, 20));
-				obj->SetController(by_player);	
-			}
-	
-			// Toss around some fragments with particles attached.
-			for (var i = 0; i < 6; i++)
-			{
-				var fragment = CreateObject(LorryFragment, RandomX(-4, 4), RandomX(-4, 4), GetOwner());
-				var speed = RandomX(40, 60);
-				var angle = Random(360);
-				var dx = Cos(angle, speed);
-				var dy = Sin(angle, speed);
-				fragment->SetXDir(dx, 10);
-				fragment->SetYDir(dy, 10);
-				fragment->SetR(360);
-				fragment->SetRDir(RandomX(-20, 20));
-				// Set the controller of the fragments to the one causing the blast for kill tracing.
-				fragment->SetController(by_player);
-				// Incinerate the fragments.
-				fragment->Incinerate(100, by_player);
-			}		
+			var speed = RandomX(3, 5);
+			var angle = Random(360);
+			var dx = Cos(angle, speed);
+			var dy = Sin(angle, speed);
+			obj->Exit(RandomX(-4, 4), RandomX(-4, 4), Random(360), dx, dy, RandomX(-20, 20));
+			obj->SetController(by_player);	
 		}
-		// Remove the lorry itself, eject possible contents as they might have entered again.
-		// Or let the engine eject the contents if it is inside a container.
-		return RemoveObject(true);	
-	}
-	return _inherited(change, cause, by_player, ...);
-}
 
+		// Toss around some fragments with particles attached.
+		for (var i = 0; i < 6; i++)
+		{
+			var fragment = CreateObject(LorryFragment, RandomX(-4, 4), RandomX(-4, 4), GetOwner());
+			var speed = RandomX(40, 60);
+			var angle = Random(360);
+			var dx = Cos(angle, speed);
+			var dy = Sin(angle, speed);
+			fragment->SetXDir(dx, 10);
+			fragment->SetYDir(dy, 10);
+			fragment->SetR(360);
+			fragment->SetRDir(RandomX(-20, 20));
+			// Set the controller of the fragments to the one causing the blast for kill tracing.
+			fragment->SetController(by_player);
+			// Incinerate the fragments.
+			fragment->Incinerate(100, by_player);
+		}		
+	}
+	// Remove the lorry itself, eject possible contents as they might have entered again.
+	// Or let the engine eject the contents if it is inside a container.
+	RemoveObject(true);
+	return true;
+}
 
 /*-- Properties --*/
 
@@ -301,4 +308,6 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 1;
 local BorderBound = C4D_Border_Sides;
-
+local ContactCalls = true;
+local Components = {Metal = 2, Wood = 1};
+local HitPoints = 100;

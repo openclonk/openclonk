@@ -1,0 +1,36 @@
+MenuPipeControl=Pipe Control
+
+MsgConnectSource=Connect source
+MsgConnectDrain=Connect drain
+MsgConnectNeutral=Connect pipe
+DescConnectSource=Connects a source pipe.
+DescConnectDrain=Connects a drain pipe.
+DescConnectNeutral=Connects a pipe.
+
+MsgCutSource=Cut off source
+MsgCutDrain=Cut off drain
+MsgCutNeutral=Cut off pipe
+DescCutSource=Removes the source pipe.
+DescCutDrain=Removes the drain pipe.
+DescCutNeutral=Removes the connected pipe.
+
+MsgConnectedTo=(connected to {{%i}})
+MsgConnectedToMultiple=(connected to {{%i}} and {{%i}})
+DescConnectedTo=This pipe is currently connected to {{%i}}.
+DescConnectedToMultiple=This pipe is currently connected to {{%i}} and {{%i}}.
+
+MsgSwapSourceDrain=Swap source and drain
+DescSwapSourceDrain=Swaps the source and drain pipes.
+
+MsgConnectedPipe=Connected pipe.
+MsgPipeAlreadyConnected=This pipe is already connected to %s.
+MsgPipeProhibited=This pipe cannot be connected to %s.
+MsgHasPipes=%s already has all possible pipe connections: %s.
+MsgAirPipeProhibited=Unable to connect air pipe to %s.
+MsgDrainPipeProhibited=Unable to connect drain pipe to %s.
+MsgNeutralPipeProhibited=Unable to connect neutral pipe to %s.
+MsgSourcePipeProhibited=Unable to connect source pipe to %s.
+MsgPipeAir=air pipe
+MsgPipeDrain=drain pipe
+MsgPipeNeutral=neutral pipe
+MsgPipeSource=source pipe

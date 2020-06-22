@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,11 +17,12 @@
 
 /* A facet that can hold its own surface and also target coordinates */
 
-#include <C4Include.h>
-#include <C4FacetEx.h>
+#include "C4Include.h"
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4Draw.h"
 
-#include <C4Rect.h>
-#include <C4Group.h>
+#include "lib/C4Rect.h"
+#include "c4group/C4Group.h"
 
 void C4TargetFacet::Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt, float ntx, float nty, float Zoom)
 {
@@ -57,8 +58,14 @@ bool C4FacetSurface::Create(int iWdt, int iHgt, int iWdt2, int iHgt2)
 	Face.Default();
 	if (!Face.Create(iWdt,iHgt)) return false;
 	// Set facet
-	if (iWdt2==C4FCT_Full) iWdt2=Face.Wdt; if (iWdt2==C4FCT_Height) iWdt2=Face.Hgt; if (iWdt2==C4FCT_Width) iWdt2=Face.Wdt;
-	if (iHgt2==C4FCT_Full) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Height) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Width) iHgt2=Face.Wdt;
+	if (iWdt2 == C4FCT_Full || iWdt2 == C4FCT_Width)
+		iWdt2 = Face.Wdt;
+	else if (iWdt2 == C4FCT_Height)
+		iWdt2 = Face.Hgt;
+	if (iHgt2 == C4FCT_Full || iHgt2 == C4FCT_Height)
+		iHgt2 = Face.Hgt;
+	else if (iHgt2 == C4FCT_Width)
+		iHgt2 = Face.Wdt;
 	Set(&Face,0,0,iWdt2,iHgt2);
 	return true;
 }
@@ -84,7 +91,7 @@ bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHg
 	if (!*szExt)
 	{
 		// no extension: Default to extension that is found as file in group
-		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", NULL };
+		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", nullptr };
 		int i = 0; const char *szExt;
 		while ((szExt = extensions[i++]))
 		{
@@ -95,8 +102,14 @@ bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHg
 	// Load surface
 	if (!Face.Load(hGroup,szFilename,false,fNoErrIfNotFound, iFlags)) return false;
 	// Set facet
-	if (iWdt==C4FCT_Full) iWdt=Face.Wdt; if (iWdt==C4FCT_Height) iWdt=Face.Hgt; if (iWdt==C4FCT_Width) iWdt=Face.Wdt;
-	if (iHgt==C4FCT_Full) iHgt=Face.Hgt; if (iHgt==C4FCT_Height) iHgt=Face.Hgt; if (iHgt==C4FCT_Width) iHgt=Face.Wdt;
+	if (iWdt == C4FCT_Full || iWdt == C4FCT_Width)
+		iWdt = Face.Wdt;
+	else if (iWdt == C4FCT_Height)
+		iWdt = Face.Hgt;
+	if (iHgt == C4FCT_Full || iHgt == C4FCT_Height)
+		iHgt = Face.Hgt;
+	else if (iHgt == C4FCT_Width)
+		iHgt = Face.Wdt;
 	Set(&Face,0,0,iWdt,iHgt);
 	return true;
 }

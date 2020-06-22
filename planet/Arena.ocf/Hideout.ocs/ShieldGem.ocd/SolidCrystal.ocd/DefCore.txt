@@ -1,6 +1,6 @@
 [DefCore]
 id=CrystalShield
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=8
 Height=7
@@ -9,3 +9,4 @@ SolidMask=0,0,8,7
 Value=10
 Mass=10
 Rotate=1
+HideInCreator=true

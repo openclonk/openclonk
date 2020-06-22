@@ -11,10 +11,6 @@ func InitializeObjects()
 	var Grass003 = CreateObjectAbove(Grass, 228, 1180);
 	Grass003->SetClrModulation(0xffa08060);
 
-	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
-	Rule_BaseRespawn001->SetInventoryTransfer(true);
-	Rule_BaseRespawn001->SetFreeCrew(true);
-
 	var Tree_Coniferous_Burned001 = CreateObject(Tree_Coniferous_Burned, 17, 1097);
 	Tree_Coniferous_Burned001->SetR(10);
 	var Tree_Coniferous_Burned002 = CreateObject(Tree_Coniferous_Burned, 43, 1246);
@@ -140,11 +136,11 @@ func InitializeObjects()
 	StoneDoor003->SetComDir(COMD_Down);
 
 	var SpinWheel001 = CreateObjectAbove(SpinWheel, 961, 672);
-	SpinWheel001->SetStoneDoor(StoneDoor001);
+	SpinWheel001->SetSwitchTarget(StoneDoor001);
 	var SpinWheel002 = CreateObjectAbove(SpinWheel, 1367, 527);
-	SpinWheel002->SetStoneDoor(StoneDoor002);
+	SpinWheel002->SetSwitchTarget(StoneDoor002);
 	var SpinWheel003 = CreateObjectAbove(SpinWheel, 1384, 471);
-	SpinWheel003->SetStoneDoor(StoneDoor003);
+	SpinWheel003->SetSwitchTarget(StoneDoor003);
 
 	CreateObject(Column, 1197, 551);
 	CreateObject(Column, 1218, 463);
@@ -272,33 +268,33 @@ func InitializeObjects()
 	var light01 = CreateObject(Rock, 520, 1210);
 	light01->SetCategory(C4D_StaticBack);
 	light01->SetLightRange(100, 100);
-	light01->SetLightColor(RGB(255,144,16));
+	light01->SetLightColor(RGB(255, 144, 16));
 	light01.Visibility = VIS_None;
 
 	// candles
 	for (var candle_shine in FindObjects(Find_ID(EnvPack_Candle_Shine)))
 	{
 		candle_shine->SetLightRange(30, 20);
-		candle_shine->SetLightColor(RGB(255,163,58));
+		candle_shine->SetLightColor(RGB(255, 163, 58));
 	}
 	
 	// large cave mushroom
-	LargeCaveMushroom003->SetLightRange(80,50);
-	LargeCaveMushroom003->SetLightColor(RGB(0,100,0));
-	Object(17)->SetLightRange(80,50);
-	Object(17)->SetLightColor(RGB(0,100,0));
+	LargeCaveMushroom003->SetLightRange(80, 50);
+	LargeCaveMushroom003->SetLightColor(RGB(0, 100, 0));
+	Object(17)->SetLightRange(80, 50);
+	Object(17)->SetLightColor(RGB(0, 100, 0));
 	
 	// small cave mushrooms
 	for (var mushroom in FindObjects(Find_ID(Mushroom), Find_InRect(160, 1240, 200, 60)))
 	{
-		mushroom->SetLightColor(RGB(100,0,0));
-		mushroom->SetLightRange(50,30);
+		mushroom->SetLightColor(RGB(100, 0, 0));
+		mushroom->SetLightRange(50, 30);
 	}
 
-	Object(463)->SetLightRange(50,10);
-	Object(463)->SetLightColor(RGB(100,0,200));
-	Object(13)->SetLightRange(50,10);
-    Object(13)->SetLightColor(RGB(100,200,0));
+	Object(463)->SetLightRange(50, 10);
+	Object(463)->SetLightColor(RGB(100, 0, 200));
+	Object(13)->SetLightRange(50, 10);
+    Object(13)->SetLightColor(RGB(100, 200, 0));
 
 	return true;
 }

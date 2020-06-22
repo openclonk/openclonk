@@ -1,0 +1,3 @@
+NoWall=Too close to the flag.
+Name=Ice wall kit
+Description=You can create ice walls with the ice wall kit. Hold down the [Use] key to see a preview in the direction you are pointing. Let go to build there. Cannot be used close to the flag.

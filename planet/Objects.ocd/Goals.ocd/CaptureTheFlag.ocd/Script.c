@@ -19,6 +19,12 @@ protected func Initialize()
 {
 	score_list = [];
 	
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetRespawnDelay(0);
+	relaunch_rule->SetDefaultRelaunchCount(nil);
+	relaunch_rule->SetAllowPlayerRestart(true);
+	relaunch_rule.FindRelaunchPos = GetID().FindRelaunchPos;
+	
 	// init scoreboard
 	Scoreboard->Init(
 		[
@@ -41,9 +47,9 @@ private func GetScoreGoal()
 
 public func SetFlagBase(int team, int x, int y)
 {
-	var base = CreateObject(Goal_FlagBase, x, y, NO_OWNER);
+	var base = CreateObjectAbove(Goal_FlagBase, x, y, NO_OWNER);
 	base->SetTeam(team);
-	var flag = CreateObject(Goal_Flag, x, y, NO_OWNER);
+	var flag = CreateObjectAbove(Goal_Flag, x, y, NO_OWNER);
 	flag->SetAction("AttachBase", base);
 	flag->SetTeam(team);
 	return;
@@ -75,43 +81,24 @@ private func EliminateOthers(int win_team)
 protected func InitializePlayer(int plr, int x, int y, object base, int team)
 {
 	// Join new clonk.
-	JoinPlayer(plr);
+	GetRelaunchRule()->DoRelaunch(plr, nil, FindRelaunchPos(plr), true);
 	
 	// make scoreboard entry for team
 	Scoreboard->NewEntry(ScoreboardTeamID(team), GetTaggedTeamName(team));
-
-	// Broadcast to scenario.
-	GameCall("OnPlayerRelaunch", plr, false);
-	return _inherited(plr, ...);
+	return _inherited(plr, x, y, base, team, ...);
 }
 
-protected func RelaunchPlayer(int plr)
+public func FindRelaunchPos(int plr)
 {
-	// New clonk.
-	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
-	// Join new clonk.
-	JoinPlayer(plr);
-	// Broadcast to scenario.
-	GameCall("OnPlayerRelaunch", plr, true);
-	return _inherited(plr, ...);
-}
-
-private func JoinPlayer(int plr)
-{
-	var clonk = GetCrew(plr);
-	clonk->DoEnergy(100000);
 	var team = GetPlayerTeam(plr);
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));
 	if (base)
-		clonk->SetPosition(base->GetX(), base->GetY() - 10);
-	return;
+		return [base->GetX(), base->GetY() - 10];
+	return nil;
 }
 
 protected func RemovePlayer(int plr)
 {
-
 	return _inherited(plr, ...);
 }
 

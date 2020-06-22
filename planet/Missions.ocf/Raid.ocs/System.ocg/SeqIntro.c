@@ -4,7 +4,7 @@
 
 func Intro_Start(object hero)
 {
-	SetPlayerZoomByViewRange(NO_OWNER, 200,100, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(hero);
 	return ScheduleNext(5);
 }
@@ -16,12 +16,12 @@ func Intro_JoinPlayer(int plr)
 	{
 		var crew = GetCrew(plr);
 		if (!this.hero) this.hero = crew;
-		var x=300, y=20; // 328
+		var x = 300, y = 20; // 328
 		if (crew != this.hero) x += plr*15 + Random(10);
-		crew->SetPosition(x,y);
+		crew->SetPosition(x, y);
 		crew->SetXDir(10); crew->SetYDir(3);
 		var balloon = crew->CreateContents(Balloon);
-		balloon->ControlUseStart(crew, x+10, y+3);
+		balloon->ControlUseStart(crew, x + 10, y + 3);
 	}
 	return true;
 }
@@ -30,7 +30,7 @@ func Intro_1()
 {
 	MessageBox_last_pos = true; // force first message right side of screen
 	MessageBoxAll("$Intro1$", GetHero(), true); // finally there
-	SetPlayerZoomByViewRange(NO_OWNER, 500,300, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 500, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return ScheduleNext(150);
 }
 
@@ -58,7 +58,7 @@ func Intro_3()
 	Dialogue->SetSpeakerDirs(GetHero(), npc_newton);
 	MessageBoxAll(Format("$Intro2$", GetHero()->GetName()), npc_newton, true); // u got my letter?
 	SetViewTarget(npc_newton);
-	SetPlayerZoomByViewRange(NO_OWNER, 200,100, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return ScheduleNext(180);
 }
 
@@ -107,6 +107,6 @@ func Intro_Stop()
 {
 	npc_newton.has_sequence = false; // continue hammering
 	g_goal = CreateObject(Goal_Raid);
-	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

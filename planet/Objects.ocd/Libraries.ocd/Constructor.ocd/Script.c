@@ -13,18 +13,10 @@ func RejectUse(object clonk)
 	return !clonk->IsWalking();
 }
 
-public func ControlUseStart(object clonk, int x, int y)
+public func ControlUse(object clonk, int x, int y)
 {
 	// Otherwise create a menu with possible structures to build.
 	OpenConstructionMenu(clonk);
-	clonk->CancelUse();
-	return true;
-}
-
-public func HoldingEnabled() { return true; }
-
-public func ControlUseHolding(object clonk, int x, int y)
-{
 	return true;
 }
 
@@ -36,7 +28,7 @@ private func ShowConstructionMaterial(object clonk, object structure)
 	while (comp = structure->GetComponent(nil, index))
 	{
 		var current_amount = structure->GetComponent(comp);
-		var max_amount = GetComponent(comp, nil, nil, structure_id);
+		var max_amount = structure_id->GetComponent(comp);
 		mat_msg = Format("%s %dx{{%i}}", mat_msg, Max(0, max_amount - current_amount), comp);
 		index++;
 	}
@@ -49,11 +41,26 @@ public func GetConstructionPlans(int plr)
 {
 	var construction_plans = [];
 	var construct_id, index = 0;
-	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Structure))
-		construction_plans[index-1] = construct_id;
+	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Structure)) // Structures
+		if (CanBuild(construct_id))
+			construction_plans[GetLength(construction_plans)] = construct_id;
+	index = 0;
+	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Vehicle)) // Vehicles
+		if (CanBuild(construct_id))
+			construction_plans[GetLength(construction_plans)] = construct_id;
+	index = 0;
+	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Object)) // Objects
+		if (CanBuild(construct_id))
+			construction_plans[GetLength(construction_plans)] = construct_id;
 	return construction_plans;
 }
 
+// Checks whether a certain construction plans can be built by this constructor.
+// Overload as seem fit.
+func CanBuild(id construction_plan)
+{
+	return true;
+}
 
 /*-- Construction preview --*/
 
@@ -76,12 +83,12 @@ public func FxControlConstructionPreviewStart(object clonk, effect, int temp, id
 }
 
 // Called by Control2Effect
-public func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (ctrl != CON_Aim)
 	{
 		// CON_Use is accept, but don't remove the preview, this is done on releasing the button.
-		if (ctrl == CON_Use && !release)
+		if (ctrl == CON_Use && status == CONS_Down)
 		{
 			var ok = CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.blocked, effect.preview.direction, effect.preview.stick_to);
 			if (ok)
@@ -98,7 +105,7 @@ public func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, 
 		// (yes, this means that actionbar-hotkeys wont work for it. However clicking the button will.)
 		else if (IsInteractionControl(ctrl))
 		{
-			if (release)
+			if (status == CONS_Up)
 				effect.preview->Flip();
 			return true;
 		}
@@ -134,15 +141,15 @@ public func CreateConstructionSite(object clonk, id structure_id, int x, int y, 
 		return false;
 	if (blocked)
 	{
-		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); 
+		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil, nil, RGB(255, 0, 0)); 
 		return false;
 	}
 	// intersection-check with all other construction sites... bah
 	for (var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
-		if (!(other_site->GetLeftEdge()   > GetX()+x+structure_id->GetDefWidth()/2  ||
+		if (!(other_site->GetLeftEdge()   > GetX()+x + structure_id->GetDefWidth()/2  ||
 		     other_site->GetRightEdge()  < GetX()+x-structure_id->GetDefWidth()/2  ||
-		     other_site->GetTopEdge()    > GetY()+y+structure_id->GetDefHeight()/2 ||
+		     other_site->GetTopEdge()    > GetY()+y + structure_id->GetDefHeight()/2 ||
 		     other_site->GetBottomEdge() < GetY()+y-structure_id->GetDefHeight()/2 ))
 		{
 			CustomMessage(Format("$TxtBlocked$", other_site->GetName()), this, clonk->GetOwner(), nil, nil, RGB(255, 0, 0));
@@ -155,56 +162,23 @@ public func CreateConstructionSite(object clonk, id structure_id, int x, int y, 
 	// Create construction site
 	var site;
 	site = CreateObjectAbove(ConstructionSite, x, y, Contained()->GetOwner());
-	/* note: this is necessary to have the site at the exact position x,y. Otherwise, for reasons I don't know, the
+	/* note: this is necessary to have the site at the exact position x, y. Otherwise, for reasons I don't know, the
 	   ConstructionSite seems to move 2 pixels downwards (on ConstructionSite::Construction() it is still the
 	   original position) which leads to that the CheckConstructionSite function gets different parameters later
 	   when the real construction should be created which of course could mean that it returns something else. (#1012)
 	   - Newton
 	*/
-	site->SetPosition(GetX()+x,GetY()+y);
+	site->SetPosition(GetX()+x, GetY()+y);
 	
 	// Randomize sign rotation
 	site->SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 0, 1, 0), Trans_Rotate(RandomX(-10, 10), 1, 0, 0)));
 	site->PlayAnimation("LeftToRight", 1, Anim_Const(RandomX(0, GetAnimationLength("LeftToRight"))), Anim_Const(500));
 	
 	site->Set(structure_id, dir, stick_to);
-	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
+	//if (!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
-	
-	// check for material
-	var comp, index = 0;
-	var mat;
-	var w = structure_id->GetDefWidth() + 10;
-	var h = structure_id->GetDefHeight() + 10;
 
-	while (comp = GetComponent(nil, index, nil, structure_id))
-	{
-		// find material
-		var count_needed = GetComponent(comp, nil, nil, structure_id);
-		index++;
-		
-		mat = CreateArray();
-		// 1. look for stuff in the clonk
-		mat[0] = FindObjects(Find_ID(comp), Find_Container(clonk));
-		// 2. look for stuff lying around
-		mat[1] = clonk->FindObjects(Find_ID(comp), Find_NoContainer(), Find_InRect(-w/2, -h/2, w,h));
-		// 3. look for stuff in nearby lorries/containers
-		var i = 2;
-		for(var cont in clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h)))
-			mat[i] = FindObjects(Find_ID(comp), Find_Container(cont));
-		// move it
-		for(var mat2 in mat)
-		{
-			for(var o in mat2)
-			{
-				if(count_needed <= 0)
-					break;
-				o->Exit();
-				o->Enter(site);
-				count_needed--;
-			}
-		}
-	}
+	site->TakeConstructionMaterials(clonk);		
 	
 	// Message
 	clonk->Message("$TxtConstructions$", structure_id->GetName());
@@ -232,26 +206,35 @@ public func OpenConstructionMenu(object clonk)
 	var item_size = 4; 
 	
 	// Construction menu proplist.
-	menu =
-	{
-		Target = menu_target,
-		Decoration = GUI_MenuDeco,
-		BackgroundColor = 0xee403020
-	};
-	
+	menu = CreateConstructionMenuBackground(menu_target);
 	menu.structures = CreateStructureGrid(clonk, item_size);
 	menu.struct_info = CreateStructureInfo();
-	menu.separator =
-	{
-		Left = "60%",
-		Right = "60%+0.5em",
-		BackgroundColor = {Std = 0x50888888}	
-	};
+	menu.separator = CreateConstructionMenuSeparator();
 
 	// Menu ID.
 	menu_id = GuiOpen(menu);
 	clonk->SetMenu(menu_id);
 	return;
+}
+
+public func CreateConstructionMenuBackground(object target)
+{
+	return
+	{
+		Target = target,
+		Decoration = GUI_MenuDeco,
+		BackgroundColor = 0xee403020
+	};
+}
+
+public func CreateConstructionMenuSeparator()
+{
+	return 
+	{
+		Left = "60%",
+		Right = "60%+0.5em",
+		BackgroundColor = {Std = 0x50888888}	
+	};
 }
 
 public func CreateStructureGrid(object clonk, int item_size)
@@ -402,8 +385,8 @@ private func GetStructureMaterialsString(id structure)
 {
 	var comp, index = 0;
 	var components = [];
-	while (comp = GetComponent(nil, index++, nil, structure))
-		components[GetLength(components)] = [comp, GetComponent(comp, nil, nil, structure)];
+	while (comp = structure->GetComponent(nil, index++))
+		components[GetLength(components)] = [comp, structure->GetComponent(comp)];
 
 	var materials_string = "Costs: ";
 	for (comp in components)

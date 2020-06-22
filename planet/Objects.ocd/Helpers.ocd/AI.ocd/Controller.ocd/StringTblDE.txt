@@ -1,0 +1,9 @@
+ChooseAI=KI-Auswahl
+NoAI=Ohne KI
+NoAIEditorHelp=Entfernt die KI von diesem Objekt.
+Active=Aktiv
+ActiveHelp=Ob die KI aktiv den Clonk momentan steuert. Eine inaktive KI kann über die Aktion 'KI aktivieren' zum Beispiel in einer Sequenz wieder aktiviert werden.
+SetAIActivated=KI aktivieren
+SetAIActivatedHelp=Aktiviert die Gegner-KI für ein Objekt. Wenn keine KI aktiviert ist, wird sie für das Objekt erstellt.
+Status=Aktiviert
+StatusHelp=Ob die KI aktiviert oder deaktiviert wird.

@@ -1,7 +1,7 @@
 [Head]
 Icon=17
 Title=Boomshire
-Version=7
+Version=8,0
 Difficulty=50
 MaxPlayer=2
 MinPlayer=2

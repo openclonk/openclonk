@@ -7,7 +7,7 @@
     <title>GetColor</title>
     <category>Objects</category>
     <subcat>Display</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Gets the RGB color value of the ColorByOwner areas of an object. These are controlled by <funclink>SetOwner</funclink> or <funclink>SetColor</funclink>.</desc>
     <examples>

@@ -1,15 +1,17 @@
 <Engine and Tools>
 Sven Eberhardt (Sven2)
-Armin Burgmeier (Clonk-Karl)
 Günther Brammer (Günther)
 Nicolas Hake (Isilkor)
+Armin Burgmeier (Clonk-Karl)
+Lukas Werling (Luchs)
 Martin Plicht (Mortimer)
+Julius Michaelis (JCaesar)
 Peter Wortmann (PeterW)
-Julius Michaelis (Caesar)
 
 <Scripting and Content>
 Maikel de Vries (Maikel)
 David Dormagen (Zapper)
+Mark Haßelbusch (Marky)
 Felix Wagner (Clonkonaut)
 Bernhard Bonigl (Boni)
 
@@ -26,11 +28,8 @@ Martin Strohmeier (K-Pone)
 <Administration>
 Tobias Zwick (Newton)
 
-<Thanks to our package maintainers>
-Benedict Etzel (B_E), Philipp Kern (pkern), Kevin Zheng and more
-
 <Special Thanks to Contributors>
-Martin Adam (Win), Florian Graier (Nachtfalter), Mark Haßelbusch (Marky), Merten Ehmig (pluto), Benjamin Herr (Loriel), Armin Schäfer, Pyrit, Philip Holzmann (Batman), Alexander Semeniuk (AlteredARMOR), Andriel, Peewee,   Oliver Schneider (ker), Fabian Pietsch, Manuel Rieke (MrBeast), Felix Riese (Fungiform), Carl-Philip Hänsch (Carli), Sebastian Rühl, Gurkenglas and many more:
-Luchs, Asmageddon, mizipzor, Tim Blume, Apfelclonk, Sven-Hendrik Haase, Lauri Niskanen (Ape), Daniel Theuke (ST-DDT), Russell, Stan, TomyLobo, Clonkine, Koronis, Johannes Nixdorf (mixi), grgecko, Dominik Bayerl, Misty de Meo, Lorenz Schwittmann, hasufell, Jan Heberer, dylanstrategie, Checkmaty, Faby
-
-Also, big thanks to Matthes Bender and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source.
+Contributors for OpenClonk 8.0: George Tokmaji (Fulgen), Martin Adam (Win), Merten Ehmig (pluto), Florian Graier (Nachtfalter), Philip Holzmann (Foaly), Dominik Bayerl (Kanibal), Linus Heckemann (sphalerite), Pyrit, Armin Schäfer, Tushar Maheshwari, jok, Tarte, Philip Kern (pkern), Arne Schauf (NativeException), Matthias Mailänder, marsmoon
+Previous contributors: Tim Blume, Sven-Hendrik Haase, Carl-Philip Hänsch (Carli), Jan Heberer, Benjamin Herr (Loriel), Lauri Niskanen (Ape), Johannes Nixdorf (mixi), Misty de Meo, Fabian Pietsch, Manuel Rieke (MrBeast), Felix Riese (Fungiform), Sebastian Rühl, Oliver Schneider (ker), Lorenz Schwittmann, Alexander Semeniuk (AlteredARMOR), Daniel Theuke (ST-DDT), Andriel, Apfelclonk, Asmageddon, Checkmaty, Clonkine, dylanstrategie, Faby, grgecko, Gurkenglas, hasufell, Koronis, mizipzor, Peewee, Russell, Stan, TomyLobo
+Also thanks to our Linux package maintainers Benedict Etzel (B_E), Linus Heckemann (sphalerite), Philip Kern (pkern), Matthias Mailänder, Julian Ospald (hasufell), Kevin Zheng, and more
+Finally, a big thanks to Matthes Bender and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source.

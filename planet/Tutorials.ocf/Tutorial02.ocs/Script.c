@@ -36,7 +36,7 @@ protected func Initialize()
 	InitAnimals();
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorials.ocf\\Tutorial02.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial02.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -46,7 +46,7 @@ protected func OnGoalsFulfilled()
 	// Achievement: Tutorial completed.
 	GainScenarioAchievement("TutorialCompleted", 3);
 	// Dialogue options -> next round.
-	SetNextMission("Tutorials.ocf\\Tutorial03.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial03.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }
@@ -315,7 +315,7 @@ global func FxTutorialFirestonesTimer()
 
 global func FxTutorialWipfHoleTimer()
 {
-	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_InRect(368, 496, 72, 56));
+	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_InRect(325, 525, 72, 56));
 	if (clonk)
 	{
 		var plr = clonk->GetOwner();
@@ -394,7 +394,8 @@ global func FxTutorialWaitForBridgeTimer(object target, proplist effect, int tim
 {
 	if (time > 2 * 36)
 	{
-		guide->AddGuideMessage("$MsgTutorialMakeLoamBridge$");
+		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		guide->AddGuideMessage(Format("$MsgTutorialMakeLoamBridge$", use));
 		guide->ShowGuideMessage();
 		// Start the controls of the clonk again.
 		EnablePlrControls(effect.plr);
@@ -484,7 +485,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
-		Rule_BaseRespawn->TransferInventory(target, clonk);
+		Rule_Relaunch->TransferInventory(target, clonk);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");

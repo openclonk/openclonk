@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -21,7 +21,7 @@
 #error Include C4Value.h instead of C4AulFunc.h
 #endif
 
-#include <C4StringTable.h>
+#include "script/C4StringTable.h"
 
 #define C4AUL_MAX_Par         10  // max number of parameters
 
@@ -29,7 +29,6 @@ struct C4AulParSet
 {
 	C4Value Par[C4AUL_MAX_Par];
 
-	C4AulParSet() {} // standard-constructor
 	template<class ...T> explicit C4AulParSet(T&& ...pars):
 			Par {C4Value(std::forward<T>(pars))...}
 	{
@@ -46,7 +45,6 @@ struct C4AulParSet
 // base function class
 class C4AulFunc: public C4RefCnt
 {
-	friend class C4AulScript;
 	friend class C4AulScriptEngine;
 	friend class C4AulFuncMap;
 	friend class C4AulParse;
@@ -54,24 +52,24 @@ class C4AulFunc: public C4RefCnt
 public:
 	C4AulFunc(C4PropListStatic * Parent, const char *pName);
 
-	const C4PropListStatic * Parent;
-	const char * GetName() const { return Name ? Name->GetCStr() : 0; }
-	virtual StdStrBuf GetFullName(); // get a fully classified name (C4ID::Name) for debug output
+	C4PropListStatic * Parent;
+	const char * GetName() const { return Name ? Name->GetCStr() : nullptr; }
+	virtual StdStrBuf GetFullName() const; // get a fully classified name (C4ID::Name) for debug output
 
 protected:
 	C4RefCntPointer<C4String> Name; // function name
 	C4AulFunc *MapNext; // map member
-	virtual ~C4AulFunc();
+	~C4AulFunc() override;
 
 public:
-	virtual C4AulScriptFunc *SFunc() { return NULL; } // type check func...
+	virtual C4AulScriptFunc *SFunc() { return nullptr; } // type check func...
 
 	// Wether this function should be visible to players
 	virtual bool GetPublic() const { return false; }
 	virtual int GetParCount() const { return C4AUL_MAX_Par; }
 	virtual const C4V_Type* GetParType() const = 0;
 	virtual C4V_Type GetRetType() const = 0;
-	C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false)
+	C4Value Exec(C4PropList * p = nullptr, C4AulParSet *pPars = nullptr, bool fPassErrors=false)
 	{
 		// Every parameter type allows conversion from nil, so no parameters are always allowed
 		if (!pPars)

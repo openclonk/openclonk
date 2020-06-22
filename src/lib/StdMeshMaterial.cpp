@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,23 +15,14 @@
  */
 
 #include "C4Include.h"
-#include <StdMeshMaterial.h>
-#include <StdMeshUpdate.h>
-#include <C4DrawGL.h>
+#include "C4ForbidLibraryCompilation.h"
+#include "lib/StdMeshMaterial.h"
 
-#include <cctype>
-#include <memory>
-
-// MSVC doesn't define M_PI in math.h unless requested
-#ifdef  _MSC_VER
-#define _USE_MATH_DEFINES
-#endif  /* _MSC_VER */
-#include <math.h>
+#include "lib/StdMeshUpdate.h"
+#include "graphics/C4DrawGL.h"
 
 #ifdef WITH_GLIB
 #include <glib.h>
-#else
-#include <sstream>
 #endif
 
 namespace
@@ -54,7 +45,7 @@ namespace
 
 	const Enumerator<StdMeshMaterialShaderParameter::Auto> ShaderParameterAutoEnumerators[] =
 	{
-		{ NULL, static_cast<StdMeshMaterialShaderParameter::Auto>(0) }
+		{ nullptr, static_cast<StdMeshMaterialShaderParameter::Auto>(0) }
 	};
 
 	const Enumerator<StdMeshMaterialTextureUnit::TexAddressModeType> TexAddressModeEnumerators[] =
@@ -63,7 +54,7 @@ namespace
 		{ "clamp", StdMeshMaterialTextureUnit::AM_Clamp },
 		{ "mirror", StdMeshMaterialTextureUnit::AM_Mirror },
 		{ "border", StdMeshMaterialTextureUnit::AM_Border },
-		{ NULL, static_cast<StdMeshMaterialTextureUnit::TexAddressModeType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialTextureUnit::TexAddressModeType>(0) }
 	};
 
 	const Enumerator<StdMeshMaterialTextureUnit::FilteringType> FilteringEnumerators[] =
@@ -72,7 +63,7 @@ namespace
 		{ "point", StdMeshMaterialTextureUnit::F_Point },
 		{ "linear", StdMeshMaterialTextureUnit::F_Linear },
 		{ "anisotropic", StdMeshMaterialTextureUnit::F_Anisotropic },
-		{ NULL, static_cast<StdMeshMaterialTextureUnit::FilteringType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialTextureUnit::FilteringType>(0) }
 	};
 
 	const EnumeratorShortcut<3, StdMeshMaterialTextureUnit::FilteringType> FilteringShortcuts[] =
@@ -81,7 +72,7 @@ namespace
 		{ "bilinear", { StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Point } },
 		{ "trilinear", { StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Linear } },
 		{ "anisotropic", { StdMeshMaterialTextureUnit::F_Anisotropic, StdMeshMaterialTextureUnit::F_Anisotropic, StdMeshMaterialTextureUnit::F_Linear } },
-		{ NULL, { static_cast<StdMeshMaterialTextureUnit::FilteringType>(0), static_cast<StdMeshMaterialTextureUnit::FilteringType>(0), static_cast<StdMeshMaterialTextureUnit::FilteringType>(0) } }
+		{ nullptr, { static_cast<StdMeshMaterialTextureUnit::FilteringType>(0), static_cast<StdMeshMaterialTextureUnit::FilteringType>(0), static_cast<StdMeshMaterialTextureUnit::FilteringType>(0) } }
 	};
 
 	const Enumerator<StdMeshMaterialTextureUnit::BlendOpType> BlendOpEnumerators[] =
@@ -90,7 +81,7 @@ namespace
 		{ "add", StdMeshMaterialTextureUnit::BO_Add },
 		{ "modulate", StdMeshMaterialTextureUnit::BO_Modulate },
 		{ "alpha_blend", StdMeshMaterialTextureUnit::BO_AlphaBlend },
-		{ NULL, static_cast<StdMeshMaterialTextureUnit::BlendOpType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialTextureUnit::BlendOpType>(0) }
 	};
 
 	const Enumerator<StdMeshMaterialTextureUnit::BlendOpExType> BlendOpExEnumerators[] =
@@ -110,7 +101,7 @@ namespace
 		{ "blend_manual", StdMeshMaterialTextureUnit::BOX_BlendManual },
 		{ "dotproduct", StdMeshMaterialTextureUnit::BOX_Dotproduct },
 		{ "blend_diffuse_colour", StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor },
-		{ NULL, static_cast<StdMeshMaterialTextureUnit::BlendOpExType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialTextureUnit::BlendOpExType>(0) }
 	};
 
 	const Enumerator<StdMeshMaterialTextureUnit::BlendOpSourceType> BlendOpSourceEnumerators[] =
@@ -122,7 +113,7 @@ namespace
 		{ "src_player_color", StdMeshMaterialTextureUnit::BOS_PlayerColor },
 		{ "src_player_colour", StdMeshMaterialTextureUnit::BOS_PlayerColor },
 		{ "src_manual", StdMeshMaterialTextureUnit::BOS_Manual },
-		{ NULL, static_cast<StdMeshMaterialTextureUnit::BlendOpSourceType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialTextureUnit::BlendOpSourceType>(0) }
 	};
 
 	const Enumerator<StdMeshMaterialTextureUnit::Transformation::XFormType> XFormTypeEnumerators[] =
@@ -132,7 +123,7 @@ namespace
 		{ "rotate", StdMeshMaterialTextureUnit::Transformation::XF_ROTATE },
 		{ "scale_x", StdMeshMaterialTextureUnit::Transformation::XF_SCALE_X },
 		{ "scale_y", StdMeshMaterialTextureUnit::Transformation::XF_SCALE_Y },
-		{ NULL, static_cast<StdMeshMaterialTextureUnit::Transformation::XFormType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialTextureUnit::Transformation::XFormType>(0) }
 	};
 
 	const Enumerator<StdMeshMaterialTextureUnit::Transformation::WaveType> WaveTypeEnumerators[] =
@@ -142,7 +133,7 @@ namespace
 		{ "square", StdMeshMaterialTextureUnit::Transformation::W_SQUARE },
 		{ "sawtooth", StdMeshMaterialTextureUnit::Transformation::W_SAWTOOTH },
 		{ "inverse_sawtooth", StdMeshMaterialTextureUnit::Transformation::W_INVERSE_SAWTOOTH },
-		{ NULL, static_cast<StdMeshMaterialTextureUnit::Transformation::WaveType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialTextureUnit::Transformation::WaveType>(0) }
 	};
 
 	const Enumerator<StdMeshMaterialPass::CullHardwareType> CullHardwareEnumerators[] =
@@ -150,7 +141,7 @@ namespace
 		{ "clockwise", StdMeshMaterialPass::CH_Clockwise },
 		{ "anticlockwise", StdMeshMaterialPass::CH_CounterClockwise },
 		{ "none", StdMeshMaterialPass::CH_None },
-		{ NULL, static_cast<StdMeshMaterialPass::CullHardwareType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialPass::CullHardwareType>(0) }
 	};
 
 	const Enumerator<StdMeshMaterialPass::SceneBlendType> SceneBlendEnumerators[] =
@@ -165,7 +156,7 @@ namespace
 		{ "src_alpha", StdMeshMaterialPass::SB_SrcAlpha },
 		{ "one_minus_dest_alpha", StdMeshMaterialPass::SB_OneMinusDestAlpha },
 		{ "one_minus_src_alpha", StdMeshMaterialPass::SB_OneMinusSrcAlpha },
-		{ NULL, static_cast<StdMeshMaterialPass::SceneBlendType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialPass::SceneBlendType>(0) }
 	};
 
 	const EnumeratorShortcut<2, StdMeshMaterialPass::SceneBlendType> SceneBlendShortcuts[] =
@@ -174,7 +165,7 @@ namespace
 		{ "modulate", { StdMeshMaterialPass::SB_DestColor, StdMeshMaterialPass::SB_Zero } },
 		{ "colour_blend", { StdMeshMaterialPass::SB_SrcColor, StdMeshMaterialPass::SB_OneMinusSrcColor } },
 		{ "alpha_blend", { StdMeshMaterialPass::SB_SrcAlpha, StdMeshMaterialPass::SB_OneMinusSrcAlpha } },
-		{ NULL, { static_cast<StdMeshMaterialPass::SceneBlendType>(0), static_cast<StdMeshMaterialPass::SceneBlendType>(0) } }
+		{ nullptr, { static_cast<StdMeshMaterialPass::SceneBlendType>(0), static_cast<StdMeshMaterialPass::SceneBlendType>(0) } }
 	};
 
 	const Enumerator<StdMeshMaterialPass::DepthFunctionType> DepthFunctionEnumerators[] =
@@ -187,7 +178,7 @@ namespace
 		{ "not_equal", StdMeshMaterialPass::DF_NotEqual },
 		{ "greater_equal", StdMeshMaterialPass::DF_GreaterEqual },
 		{ "greater", StdMeshMaterialPass::DF_Greater },
-		{ NULL, static_cast<StdMeshMaterialPass::DepthFunctionType>(0) }
+		{ nullptr, static_cast<StdMeshMaterialPass::DepthFunctionType>(0) }
 	};
 }
 
@@ -245,7 +236,7 @@ public:
 
 	template<typename SubT> void Load(StdMeshMaterialParserCtx& ctx, std::vector<SubT>& vec);
 private:
-	unsigned int CurIndex;
+	unsigned int CurIndex{0u};
 };
 
 StdMeshMaterialParserCtx::StdMeshMaterialParserCtx(StdMeshMatManager& manager, const char* mat_script, const char* filename, StdMeshMaterialLoader& loader):
@@ -484,7 +475,7 @@ void StdMeshMaterialParserCtx::AdvanceEnums(const Enumerator<EnumType>* enumerat
 	else
 	{
 		// Both enumerator and shortcut are possible, determine by look-ahead
-		const Enumerator<EnumType>* cenum2 = NULL;
+		const Enumerator<EnumType>* cenum2 = nullptr;
 		Token tok = Peek(buf);
 		if (tok == TOKEN_IDTF)
 		{
@@ -521,13 +512,10 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 
 void StdMeshMaterialParserCtx::WarningNotSupported(const char* identifier)
 {
-	DebugLogF("%s:%d: Warning: \"%s\" is not supported!", FileName.getData(), Line, identifier);
+	DebugLogF(R"(%s:%d: Warning: "%s" is not supported!)", FileName.getData(), Line, identifier);
 }
 
-StdMeshMaterialSubLoader::StdMeshMaterialSubLoader()
-		: CurIndex(0)
-{
-}
+StdMeshMaterialSubLoader::StdMeshMaterialSubLoader() = default;
 
 template<typename SubT>
 void StdMeshMaterialSubLoader::Load(StdMeshMaterialParserCtx& ctx, std::vector<SubT>& vec)
@@ -559,7 +547,7 @@ void StdMeshMaterialSubLoader::Load(StdMeshMaterialParserCtx& ctx, std::vector<S
 		// Only add new SubSection if no wildcard was given
 		if(indices.size() == size_before)
 		{
-			if(std::strchr(token_name.getData(), '*') == NULL && std::strchr(token_name.getData(), '?') == NULL)
+			if(std::strchr(token_name.getData(), '*') == nullptr && std::strchr(token_name.getData(), '?') == nullptr)
 			{
 				indices.push_back(vec.size());
 				vec.push_back(SubT());
@@ -625,13 +613,10 @@ void LoadShader(StdMeshMaterialParserCtx& ctx, StdMeshMaterialShaderType type)
 	if (token != TOKEN_BRACE_CLOSE)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 
-	ctx.Manager.AddShader(source.getData(), name.getData(), language.getData(), type, code.getData(), false);
+	ctx.Manager.AddShader(source.getData(), name.getData(), language.getData(), type, code.getData(), StdMeshMatManager::SMM_ForceReload);
 }
 
-StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter():
-	type(FLOAT4)
-{
-}
+StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter() = default;
 
 StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter(Type type):
 	type(type)
@@ -733,9 +718,7 @@ void StdMeshMaterialShaderParameter::Move(StdMeshMaterialShaderParameter &&other
 	other.type = FLOAT;
 }
 
-StdMeshMaterialShaderParameters::StdMeshMaterialShaderParameters()
-{
-}
+StdMeshMaterialShaderParameters::StdMeshMaterialShaderParameters() = default;
 
 StdMeshMaterialShaderParameter StdMeshMaterialShaderParameters::LoadConstParameter(StdMeshMaterialParserCtx& ctx)
 {
@@ -779,7 +762,7 @@ StdMeshMaterialShaderParameter StdMeshMaterialShaderParameters::LoadConstParamet
 	}
 	else
 	{
-		ctx.Error(FormatString("Invalid type: \"%s\"", type_name.getData()));
+		ctx.Error(FormatString(R"(Invalid type: "%s")", type_name.getData()));
 		return StdMeshMaterialShaderParameter();
 	}
 }
@@ -830,8 +813,8 @@ StdMeshMaterialShaderParameter& StdMeshMaterialShaderParameters::AddParameter(co
 StdMeshMaterialProgram::StdMeshMaterialProgram(const char* name, const StdMeshMaterialShader* fragment_shader, const StdMeshMaterialShader* vertex_shader, const StdMeshMaterialShader* geometry_shader):
 	Name(name), FragmentShader(fragment_shader), VertexShader(vertex_shader), GeometryShader(geometry_shader)
 {
-	assert(FragmentShader != NULL);
-	assert(VertexShader != NULL);
+	assert(FragmentShader != nullptr);
+	assert(VertexShader != nullptr);
 	// Geometry shader is optional (and not even implemented at the moment!)
 }
 
@@ -839,12 +822,12 @@ bool StdMeshMaterialProgram::AddParameterNames(const StdMeshMaterialShaderParame
 {
 	// TODO: This is O(n^2) -- not optimal!
 	bool added = false;
-	for (unsigned int i = 0; i < parameters.NamedParameters.size(); ++i)
+	for (const auto & NamedParameter : parameters.NamedParameters)
 	{
-		const std::vector<StdCopyStrBuf>::const_iterator iter = std::find(ParameterNames.begin(), ParameterNames.end(), parameters.NamedParameters[i].first);
+		const std::vector<StdCopyStrBuf>::const_iterator iter = std::find(ParameterNames.begin(), ParameterNames.end(), NamedParameter.first);
 		if (iter == ParameterNames.end())
 		{
-			ParameterNames.push_back(parameters.NamedParameters[i].first);
+			ParameterNames.push_back(NamedParameter.first);
 			added = true;
 		}
 	}
@@ -869,6 +852,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	uniformNames[C4SSU_NormalMatrix] = "normalMatrix";
 	uniformNames[C4SSU_ClrMod] = "clrMod";
 	uniformNames[C4SSU_Gamma] = "gamma";
+	uniformNames[C4SSU_Resolution] = "resolution";
 	uniformNames[C4SSU_BaseTex] = "baseTex"; // unused
 	uniformNames[C4SSU_OverlayTex] = "overlayTex"; // unused
 	uniformNames[C4SSU_OverlayClr] = "oc_PlayerColor";
@@ -885,9 +869,10 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	uniformNames[C4SSU_MaterialShininess] = "materialShininess";
 	uniformNames[C4SSU_Bones] = "bones";
 	uniformNames[C4SSU_CullMode] = "cullMode";
+	uniformNames[C4SSU_FrameCounter] = "frameCounter";
 	for (unsigned int i = 0; i < ParameterNames.size(); ++i)
 		uniformNames[C4SSU_Count + i] = ParameterNames[i].getData();
-	uniformNames[C4SSU_Count + ParameterNames.size()] = NULL;
+	uniformNames[C4SSU_Count + ParameterNames.size()] = nullptr;
 	attributeNames.resize(C4SSA_Count + 1);
 	attributeNames[C4SSA_Position] = "oc_Position";
 	attributeNames[C4SSA_Normal] = "oc_Normal";
@@ -897,7 +882,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	attributeNames[C4SSA_BoneIndices1] = "oc_BoneIndices1";
 	attributeNames[C4SSA_BoneWeights0] = "oc_BoneWeights0";
 	attributeNames[C4SSA_BoneWeights1] = "oc_BoneWeights1";
-	attributeNames[C4SSA_Count] = NULL;
+	attributeNames[C4SSA_Count] = nullptr;
 #endif
 	// Compile the shader
 	StdCopyStrBuf name(Name);
@@ -937,7 +922,7 @@ const C4Shader* StdMeshMaterialProgram::GetShader(int ssc) const
 	assert(index < 4);
 	return shaders[index];
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -968,9 +953,8 @@ double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
 }
 
 StdMeshMaterialTextureUnit::Tex::Tex(C4Surface* Surface)
-	: RefCount(1), Surf(Surface), Texture(Surface->textures[0])
+	: RefCount(1), Surf(Surface), Texture(*Surface->texture)
 {
-	assert(!Surface->textures.empty());
 }
 
 StdMeshMaterialTextureUnit::Tex::~Tex()
@@ -1009,9 +993,7 @@ StdMeshMaterialTextureUnit::TexPtr& StdMeshMaterialTextureUnit::TexPtr::operator
 	return *this;
 }
 
-StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
-		Duration(0.0f), TexAddressMode(AM_Wrap), ColorOpEx(BOX_Modulate), ColorOpManualFactor(0.0f),
-		AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f)
+StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit()
 {
 	TexBorderColor[0] = TexBorderColor[1] = TexBorderColor[2] = 0.0f; TexBorderColor[3] = 1.0f;
 	Filtering[0] = Filtering[1] = F_Linear; Filtering[2] = F_Point;
@@ -1029,10 +1011,8 @@ void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, cons
 
 	if (surface->Wdt != surface->Hgt)
 		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is not quadratic");
-	if (surface->iTexX > 1 || surface->iTexY > 1)
-		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is too large");
 
-	Textures.push_back(TexPtr(surface.release()));
+	Textures.emplace_back(surface.release());
 }
 
 void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
@@ -1180,8 +1160,8 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 		{
 			Transformation trans;
 			trans.TransformType = Transformation::T_TRANSFORM;
-			for (int i = 0; i < 16; ++i)
-				trans.Transform.M[i] = ctx.AdvanceFloat();
+			for (float & i : trans.Transform.M)
+				i = ctx.AdvanceFloat();
 			Transformations.push_back(trans);
 		}
 		else if (token_name == "wave_xform")
@@ -1220,9 +1200,9 @@ StdMeshMaterialPass::ProgramInstance::ProgramInstance(const StdMeshMaterialProgr
 
 void StdMeshMaterialPass::ProgramInstance::LoadParameterRefs(const ShaderInstance* instance)
 {
-	for(unsigned int i = 0; i < instance->Parameters.NamedParameters.size(); ++i)
+	for(const auto & NamedParameter : instance->Parameters.NamedParameters)
 	{
-		const int index = Program->GetParameterIndex(instance->Parameters.NamedParameters[i].first.getData());
+		const int index = Program->GetParameterIndex(NamedParameter.first.getData());
 		assert(index != -1);
 
 		const std::vector<ParameterRef>::const_iterator parameter_iter =
@@ -1235,15 +1215,14 @@ void StdMeshMaterialPass::ProgramInstance::LoadParameterRefs(const ShaderInstanc
 		else
 		{
 			ParameterRef ref;
-			ref.Parameter = &instance->Parameters.NamedParameters[i].second;
+			ref.Parameter = &NamedParameter.second;
 			ref.UniformIndex = index;
 			Parameters.push_back(ref);
 		}
 	}
 }
 
-StdMeshMaterialPass::StdMeshMaterialPass():
-	DepthCheck(true), DepthWrite(true), CullHardware(CH_Clockwise)
+StdMeshMaterialPass::StdMeshMaterialPass()
 {
 	Ambient[0]  = Ambient[1]  = Ambient[2]  = 1.0f; Ambient[3]  = 1.0f;
 	Diffuse[0]  = Diffuse[1]  = Diffuse[2]  = 1.0f; Diffuse[3]  = 1.0f;
@@ -1253,7 +1232,7 @@ StdMeshMaterialPass::StdMeshMaterialPass():
 	SceneBlendFactors[0] = SB_One; SceneBlendFactors[1] = SB_Zero;
 	AlphaRejectionFunction = DF_AlwaysPass; AlphaRejectionValue = 0.0f;
 	AlphaToCoverage = false;
-	VertexShader.Shader = FragmentShader.Shader = GeometryShader.Shader = NULL;
+	VertexShader.Shader = FragmentShader.Shader = GeometryShader.Shader = nullptr;
 }
 
 void StdMeshMaterialPass::LoadShaderRef(StdMeshMaterialParserCtx& ctx, StdMeshMaterialShaderType type)
@@ -1287,7 +1266,7 @@ void StdMeshMaterialPass::LoadShaderRef(StdMeshMaterialParserCtx& ctx, StdMeshMa
 		return;
 	}
 
-	if(cur_shader->Shader != NULL)
+	if(cur_shader->Shader != nullptr)
 		ctx.Error(FormatString("There is already a %s shader in this pass", shader_type_name));
 	if(!shader)
 		ctx.Error(FormatString("There is no such %s shader with name %s", shader_type_name, program_name.getData()));
@@ -1443,10 +1422,7 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
-StdMeshMaterialTechnique::StdMeshMaterialTechnique():
-		Available(false)
-{
-}
+StdMeshMaterialTechnique::StdMeshMaterialTechnique() = default;
 
 void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
 {
@@ -1473,16 +1449,13 @@ bool StdMeshMaterialTechnique::IsOpaque() const
 	// non-opaque passes will just depend on the opaque value drawn in
 	// the previous pass; total result will not depend on original
 	// frame buffer value).
-	for(unsigned int i = 0; i < Passes.size(); ++i)
-		if(Passes[i].IsOpaque())
+	for(const auto & Pass : Passes)
+		if(Pass.IsOpaque())
 			return true;
 	return false;
 }
 
-StdMeshMaterial::StdMeshMaterial():
-		Line(0), ReceiveShadows(true), BestTechniqueIndex(-1)
-{
-}
+StdMeshMaterial::StdMeshMaterial() = default;
 
 void StdMeshMaterial::Load(StdMeshMaterialParserCtx& ctx)
 {
@@ -1517,12 +1490,15 @@ void StdMeshMatManager::Clear()
 	GeometryShaders.clear();
 }
 
-void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader)
+std::set<StdCopyStrBuf> StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader)
 {
 	StdMeshMaterialParserCtx ctx(*this, mat_script, filename, loader);
 
 	Token token;
 	StdCopyStrBuf token_name;
+
+	std::set<StdCopyStrBuf> loaded_materials;
+
 	while ((token = ctx.Advance(token_name)) == TOKEN_IDTF)
 	{
 		if (token_name == "material")
@@ -1539,7 +1515,7 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 			// Check if there is a parent given
 			Token next = ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN, TOKEN_COLON);
 			// Read parent name, if any
-			StdMeshMaterial* parent = NULL;
+			StdMeshMaterial* parent = nullptr;
 			if (next == TOKEN_COLON)
 			{
 				// Note that if there is a parent, then it needs to be loaded
@@ -1577,6 +1553,7 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 				ctx.Error(StdCopyStrBuf("No working technique for material '") + material_name + "'");
 			}
 #endif
+			loaded_materials.insert(material_name);
 		}
 		else if (token_name == "vertex_program")
 		{
@@ -1596,48 +1573,59 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 
 	if (token != TOKEN_EOF)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
+
+	return loaded_materials;
 }
 
 const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name) const
 {
 	std::map<StdCopyStrBuf, StdMeshMaterial>::const_iterator iter = Materials.find(StdCopyStrBuf(material_name));
-	if (iter == Materials.end()) return NULL;
+	if (iter == Materials.end()) return nullptr;
 	return &iter->second;
 }
 
 StdMeshMatManager::Iterator StdMeshMatManager::Remove(const Iterator& iter, StdMeshMaterialUpdate* update)
 {
-  if(update) update->Add(&*iter);
-  Iterator next_iter = iter;
-  ++next_iter;
-  Materials.erase(iter.iter_);
-  return next_iter;
+	if(update) update->Add(&*iter);
+	Iterator next_iter = iter;
+	++next_iter;
+	Materials.erase(iter.iter_);
+	return next_iter;
+}
+
+void StdMeshMatManager::Remove(const StdStrBuf &name, StdMeshMaterialUpdate *update)
+{
+	auto it = Materials.find(StdCopyStrBuf(name));
+	if (it == Materials.end())
+		return;
+	if (update) update->Add(&it->second);
+	Materials.erase(it);
 }
 
 const StdMeshMaterialShader* StdMeshMatManager::GetFragmentShader(const char* name) const
 {
 	ShaderMap::const_iterator iter = FragmentShaders.find(StdCopyStrBuf(name));
-	if(iter == FragmentShaders.end()) return NULL;
+	if(iter == FragmentShaders.end()) return nullptr;
 	return iter->second.get();
 }
 
 const StdMeshMaterialShader* StdMeshMatManager::GetVertexShader(const char* name) const
 {
 	ShaderMap::const_iterator iter = VertexShaders.find(StdCopyStrBuf(name));
-	if(iter == VertexShaders.end()) return NULL;
+	if(iter == VertexShaders.end()) return nullptr;
 	return iter->second.get();
 }
 
 const StdMeshMaterialShader* StdMeshMatManager::GetGeometryShader(const char* name) const
 {
 	ShaderMap::const_iterator iter = GeometryShaders.find(StdCopyStrBuf(name));
-	if(iter == GeometryShaders.end()) return NULL;
+	if(iter == GeometryShaders.end()) return nullptr;
 	return iter->second.get();
 }
 
-const StdMeshMaterialShader* StdMeshMatManager::AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, bool success_if_exists)
+const StdMeshMaterialShader* StdMeshMatManager::AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, uint32_t load_flags)
 {
-	ShaderMap* map = NULL;
+	ShaderMap* map = nullptr;
 	switch(type)
 	{
 	case SMMS_FRAGMENT:
@@ -1653,23 +1641,24 @@ const StdMeshMaterialShader* StdMeshMatManager::AddShader(const char* filename, 
 
 	StdCopyStrBuf name_buf(name);
 	ShaderMap::iterator iter = map->find(name_buf);
+	
 	if(iter != map->end())
 	{
 		// Shader exists
-		if(success_if_exists)
+		if ((load_flags & SMM_ForceReload) == SMM_ForceReload)
+			map->erase(iter);
+		else if ((load_flags & SMM_AcceptExisting) == SMM_AcceptExisting)
 			return iter->second.get();
 		else
-			return NULL;
+			return nullptr;
 	}
-	else
-	{
-		std::unique_ptr<StdMeshMaterialShader> shader(new StdMeshMaterialShader(filename, name, language, type, text));
-		std::pair<ShaderMap::iterator, bool> inserted = map->insert(std::make_pair(name_buf, std::move(shader)));
-		assert(inserted.second == true);
-		iter = inserted.first;
 
-		return iter->second.get();
-	}
+	std::unique_ptr<StdMeshMaterialShader> shader(new StdMeshMaterialShader(filename, name, language, type, text));
+	std::pair<ShaderMap::iterator, bool> inserted = map->insert(std::make_pair(name_buf, std::move(shader)));
+	assert(inserted.second == true);
+	iter = inserted.first;
+
+	return iter->second.get();
 }
 
 const StdMeshMaterialProgram* StdMeshMatManager::AddProgram(const char* name, StdMeshMaterialLoader& loader, const StdMeshMaterialPass::ShaderInstance& fragment_shader, const StdMeshMaterialPass::ShaderInstance& vertex_shader, const StdMeshMaterialPass::ShaderInstance& geometry_shader)
@@ -1692,7 +1681,7 @@ const StdMeshMaterialProgram* StdMeshMatManager::AddProgram(const char* name, St
 	// parameters were encountered).
 	if(!inserted_program.IsCompiled() || fragment_added || vertex_added || geometry_added)
 		if(!inserted_program.Compile(loader))
-			return NULL;
+			return nullptr;
 
 	return &inserted_program;
 }

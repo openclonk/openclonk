@@ -18,7 +18,7 @@ func Exit(...)
 		var plane = FindObject(Find_ID(Airplane), Find_AtPoint());
 		if (plane)
 		{
-			ScheduleCall(nil, Global.GameCall, 1,1, "OnPlaneLoaded", plane, this);
+			ScheduleCall(nil, Global.GameCall, 1, 1, "OnPlaneLoaded", plane, this);
 		}
 	}
 	return inherited(...);
@@ -30,8 +30,16 @@ private func AcceptMaterial(int material)
 	return false;
 }
 
-// ..and can also not be emptied.
+// ...and can also not be emptied.
 public func RejectUse()
 {
 	return true;
 }
+
+// ...not even when it hits the ground
+public func Hit()
+{
+	this->PlayBarrelHitSound();
+}
+// (okay, you could still put it into a building and attach a pump)
+

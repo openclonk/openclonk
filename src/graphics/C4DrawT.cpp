@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,15 +14,15 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include <C4DrawT.h>
-#include <StdMeshMaterial.h>
+#include "graphics/C4DrawT.h"
+#include "lib/StdMeshMaterial.h"
 
 CStdNoGfx::CStdNoGfx()
 {
 	Default();
 }
 
-bool CStdNoGfx::CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor)
+bool CStdNoGfx::RestoreDeviceObjects()
 {
 	Log("Graphics disabled.");
 	MaxTexSize = 2147483647;

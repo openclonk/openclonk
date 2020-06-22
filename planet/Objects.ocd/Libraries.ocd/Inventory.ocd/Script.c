@@ -28,14 +28,14 @@ local HandObjects = 1; // Amount of hands to select items
 
 func Construction()
 {
-	if(this.inventory == nil)
+	if (this.inventory == nil)
 		this.inventory = {};
 	this.inventory.objects = [];
 	this.inventory.disableautosort = false;
 	this.inventory.hand_objects = [];
 	this.inventory.force_collection = false;
 
-	for(var i=0; i < HandObjects; i++)
+	for (var i = 0; i < HandObjects; i++)
 		this.inventory.hand_objects[i] = i;
 	return _inherited(...);
 }
@@ -63,31 +63,55 @@ public func GetItems()
 public func GetItemCount()
 {
 	var count = 0;
-	for(var i=0; i < GetLength(this.inventory.objects); i++)
-		if(this.inventory.objects[i])
+	for (var i = 0; i < GetLength(this.inventory.objects); i++)
+		if (this.inventory.objects[i])
 			count++;
 	
 	return count;
 }
 
+// This function was useful back when the clonk had two usable hand items.
+// Feel free to uncomment whenever this obsolete control style is reinvented.
+
 /** Get the 'i'th item in hands.
     These are the items that will be used with use-commands. (Left mouse click, etc...) */
-public func GetHandItem(int i)
+/*public func GetHandItem(int i)
 {
 	// i is valid range
 	if (i >= GetLength(this.inventory.hand_objects))
 		return nil;
-	if (i < 0) return nil;	
+	if (i < 0) return nil;
 	return GetItem(this.inventory.hand_objects[i]);
+}*/
+
+// 0: returns currently selected inventory item
+// 1: returns item in quick slot
+public func GetHandItem(int i)
+{
+	// Range exceeded
+	if (i < 0 || i >= 2) return nil;
+
+	if (i == 0)
+		return GetItem(this.inventory.hand_objects[0]);
+	if (i == 1)
+	{
+		var slot = this->~GetQuickSwitchSlot();
+		if (slot < 0 || slot >= this.MaxContentsCount) return nil;
+		// Don't show the same item twice
+		if (slot == this.inventory.hand_objects[0]) return nil;
+		return GetItem(slot);
+	}
+	// no more than 2 hands
+	return nil;
 }
 
 /** Set the 'hand'th use-item to the 'inv'th slot */
 public func SetHandItemPos(int hand, int inv)
 {
-	// indices are in range?	
-	if(hand >= HandObjects || inv >= MaxContentsCount)
+	// indices are in range?
+	if (hand >= HandObjects || inv >= MaxContentsCount)
 		return nil;
-	if(hand < 0 || inv < 0) return nil;
+	if (hand < 0 || inv < 0) return nil;
 	// no slot change?
 	if (inv == GetHandItemPos(hand)) return nil;
 	// the current hand object needs to be both notified and asked
@@ -104,16 +128,16 @@ public func SetHandItemPos(int hand, int inv)
 	}
 	
 	// changing slots cancels using, if the slot with the used object is contained
-	if(this.control.current_object) // declared in ClonkControl.ocd
+	if (this.control.current_object) // declared in ClonkControl.ocd
 	{
 		var used_slot = GetItemPos(this.control.current_object);
-		if(used_slot != nil)
-			if(used_slot == GetHandItemPos(hand) || used_slot == inv)
-				this->~CancelUseControl(0,0);
+		if (used_slot != nil)
+			if (used_slot == GetHandItemPos(hand) || used_slot == inv)
+				this->~CancelUseControl(0, 0);
 	}
 	
 	// If the item is already selected, we can't hold it in another one too.
-	if(hand2 != nil)
+	if (hand2 != nil)
 	{
 		// switch places
 		this.inventory.hand_objects[hand2] = this.inventory.hand_objects[hand];
@@ -126,12 +150,12 @@ public func SetHandItemPos(int hand, int inv)
 			old_object->~Deselection(this, hand);
 			
 		// notify new hand2 item (which should be old hand-item) that it has been selected
-		var hand_item;
-		if (hand_item = GetHandItem(hand2))
+		var hand_item = GetHandItem(hand2);
+		if (hand_item)
 		{
 			this->~OnSlotFull(hand2);
 			// OnSlotFull might have done something to the item
-			if(GetHandItem(hand2) == hand_item)
+			if (GetHandItem(hand2) == hand_item)
 				hand_item->~Selection(this, hand2);
 		}
 		else
@@ -147,12 +171,12 @@ public func SetHandItemPos(int hand, int inv)
 	}
 	
 	// notify the new item that it was selected
-	var item;
-	if(item = GetItem(inv))
+	var item = GetItem(inv);
+	if (item)
 	{
 		this->~OnSlotFull(hand);
 		// OnSlotFull might have done something to the item
-		if(GetItem(inv) == item)
+		if (GetItem(inv) == item)
 			GetItem(inv)->~Selection(this, hand);
 	}
 	else
@@ -175,8 +199,8 @@ public func GetHandItemPos(int i)
 /** Returns in which hand-slot the inventory-slot is */
 private func GetHandPosByItemPos(int o) // sorry for the horribly long name --boni
 {
-	for(var i=0; i < GetLength(this.inventory.hand_objects); i++)
-		if(this.inventory.hand_objects[i] == o)
+	for (var i = 0; i < GetLength(this.inventory.hand_objects); i++)
+		if (this.inventory.hand_objects[i] == o)
 			return i;
 
 	return nil;
@@ -186,7 +210,7 @@ private func GetHandPosByItemPos(int o) // sorry for the horribly long name --bo
 public func DropInventoryItem(int slot)
 {
 	var obj = GetItem(slot);
-	if(!obj || obj->~QueryRejectDeparture(this))
+	if (!obj || obj->~QueryRejectDeparture(this))
 		return nil;
 	// Notify other libraries of deliberate drop.
 	this->~OnDropped(obj);
@@ -201,7 +225,7 @@ public func GetItemPos(object item)
 		if (item->Contained() == this)
 		{
 			var i = 0;
-			for(var obj in this.inventory.objects)
+			for (var obj in this.inventory.objects)
 			{
 				if (obj == item) return i;
 				++i;
@@ -214,8 +238,8 @@ public func GetItemPos(object item)
 public func Switch2Items(int one, int two)
 {
 	// no valid inventory index: cancel
-	if (!Inside(one,0,MaxContentsCount-1)) return;
-	if (!Inside(two,0,MaxContentsCount-1)) return;
+	if (!Inside(one, 0, MaxContentsCount-1)) return;
+	if (!Inside(two, 0, MaxContentsCount-1)) return;
 
 	// switch them around
 	var temp = this.inventory.objects[one];
@@ -232,14 +256,14 @@ public func Switch2Items(int one, int two)
 	
 	// callbacks: (de)selection
 	if (handone != nil)
-		if (this.inventory.objects[two]) this.inventory.objects[two]->~Deselection(this,one);
+		if (this.inventory.objects[two]) this.inventory.objects[two]->~Deselection(this, one);
 	if (handtwo != nil)
-		if (this.inventory.objects[one]) this.inventory.objects[one]->~Deselection(this,two);
+		if (this.inventory.objects[one]) this.inventory.objects[one]->~Deselection(this, two);
 		
 	if (handone != nil)
-		if (this.inventory.objects[one]) this.inventory.objects[one]->~Selection(this,one);
+		if (this.inventory.objects[one]) this.inventory.objects[one]->~Selection(this, one);
 	if (handtwo != nil)
-		if (this.inventory.objects[two]) this.inventory.objects[two]->~Selection(this,two);
+		if (this.inventory.objects[two]) this.inventory.objects[two]->~Selection(this, two);
 	
 	// callbacks: to self, for HUD
 	if (handone != nil)
@@ -258,6 +282,7 @@ public func Switch2Items(int one, int two)
 	}
 	
 	this->~OnInventoryChange(one, two);
+	this->~UpdateAttach();
 }
 
 
@@ -274,7 +299,7 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 	var success = false;
 	if (pos == nil || item->~IsCarryHeavy())
 	{
-		success = _inherited(item,ignoreOCF);
+		success = _inherited(item, ignoreOCF);
 		this.inventory.force_collection = false;
 		return success;
 	}
@@ -296,7 +321,7 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 				this.inventory.objects[pos] = item;
 				var handpos = GetHandPosByItemPos(pos); 
 				// if the slot was a selected hand slot -> update it
-				if(handpos != nil)
+				if (handpos != nil)
 				{
 					this->~OnSlotFull(handpos);
 				}
@@ -319,8 +344,8 @@ protected func Collection2(object obj)
 	var i;
 	
 	// sort into selected hands if empty
-	for(i = 0; i < HandObjects; i++)
-		if(!GetHandItem(i))
+	for (i = 0; i < HandObjects; i++)
+		if (!GetHandItem(i))
 		{
 			sel = GetHandItemPos(i);
 			this.inventory.objects[sel] = obj;
@@ -329,9 +354,9 @@ protected func Collection2(object obj)
 		}
 		
 	// otherwise, first empty slot
-	if(!success)
+	if (!success)
 	{
-		for(var i = 0; i < MaxContentsCount; ++i)
+		for (var i = 0; i < MaxContentsCount; ++i)
 		{
 			if (!GetItem(i))
 			{
@@ -348,11 +373,11 @@ protected func Collection2(object obj)
 	{
 		var handpos = GetHandPosByItemPos(sel); 
 		// if the slot was a selected hand slot -> update it
-		if(handpos != nil)
+		if (handpos != nil)
 		{
 			this->~OnSlotFull(handpos);
 			// OnSlotFull might have done something to obj
-			if(GetHandItem(handpos) == obj)
+			if (GetHandItem(handpos) == obj)
 				obj->~Selection(this, handpos);
 		}
 	}
@@ -368,7 +393,7 @@ func Ejection(object obj)
 	var i = 0;
 	var success = false;
 	
-	for(var item in this.inventory.objects)
+	for (var item in this.inventory.objects)
     {
 	   if (obj == item)
 	   {
@@ -387,28 +412,29 @@ func Ejection(object obj)
 	{
 		var handpos = GetHandPosByItemPos(i); 
 		// if the slot was a selected hand slot -> update it
-		if(handpos != nil)
+		if (handpos != nil)
 		{
 			this->~OnSlotEmpty(handpos);
 			obj->~Deselection(this, handpos);
 		}
+		this->~UpdateAttach();
 	}
 	
 	// we have over-weight? Put the next unindexed object inside that slot
 	// this happens if the clonk is stuffed full with items he can not
 	// carry via Enter, CreateContents etc.
 	var inventory_count = 0;
-	for(var io in this.inventory.objects)
-		if(io != nil)
+	for (var io in this.inventory.objects)
+		if (io != nil)
 			inventory_count++;
 			
 	if (ContentsCount() > inventory_count && !GetItem(i))
 	{
-		for(var c = 0; c < ContentsCount(); ++c)
+		for (var c = 0; c < ContentsCount(); ++c)
 		{
 			var o = Contents(c);
 			if (!o) continue; // safety in case callbacks delete some objects
-			if(o->~IsCarryHeavy())
+			if (o->~IsCarryHeavy())
 				continue;
 			if (GetItemPos(o) == nil)
 			{
@@ -417,11 +443,11 @@ func Ejection(object obj)
 				
 				var handpos = GetHandPosByItemPos(i); 
 				// if the slot was a selected hand slot -> update it
-				if(handpos != nil)
+				if (handpos != nil)
 				{
 					this->~OnSlotFull(handpos);
 					// OnSlotFull might have done something to o
-					if(GetHandItem(handpos) == o)
+					if (GetHandItem(handpos) == o)
 						o->~Selection(this, handpos);
 				}
 					
@@ -443,22 +469,22 @@ func ContentsDestruction(object obj)
 protected func RejectCollect(id objid, object obj)
 {
 	// collection of that object magically disabled?
-	if(GetEffect("NoCollection", obj)) return true;
+	if (GetEffect("NoCollection", obj)) return true;
 	
 	// Only handle extra-slot objects if the object was not dropped on purpose.
 	if (this.inventory.force_collection)
 	{
 		// try to stuff obj into an object with an extra slot
-		for(var i=0; Contents(i); ++i)
+		for (var i = 0; Contents(i); ++i)
 			if (Contents(i)->~HasExtraSlot())
 				if (!(Contents(i)->Contents(0)))
-					if (Contents(i)->Collect(obj,true))
+					if (Contents(i)->Collect(obj, true))
 						return true;
 						
 		// try to stuff an object in clonk into obj if it has an extra slot
 		if (obj->~HasExtraSlot())
 			if (!(obj->Contents(0)))
-				for(var i=0; Contents(i); ++i)
+				for (var i = 0; Contents(i); ++i)
 					if (obj->Collect(Contents(i),true))
 						return false;
 	}
@@ -470,7 +496,7 @@ protected func RejectCollect(id objid, object obj)
 	if (carry_heavy_obj && carry_heavy_obj->Contained() == this) --contents_count;
 	if (contents_count >= MaxContentsCount) return true;
 	
-	return _inherited(objid,obj,...);
+	return _inherited(objid, obj,...);
 }
 
 public func GrabContents(object source, ...)
@@ -495,4 +521,43 @@ public func GrabContents(object source, ...)
 	}
 	// Grab remaining items
 	return inherited(source, ...);
+}
+
+/* Updates the maximum number of carryable items by this clonk. */
+public func SetMaxContentsCount(int new_count)
+{
+	// Update limit
+	MaxContentsCount = new_count;
+	// Make sure hands aren't beyond inventory
+	if (MaxContentsCount)
+	{
+		for (var i = 0; i < HandObjects; i++)
+		{
+			if (GetHandItemPos(i) >= MaxContentsCount)
+			{
+				var new_slot = 0;
+				while (GetIndexOf(this.inventory.hand_objects, new_slot) >= 0) ++new_slot;
+				if (new_slot >= MaxContentsCount) new_slot = 0;
+				SetHandItemPos(i, new_slot);
+			}
+		}
+	}
+	// Update GUI
+	this->~OnInventoryChange();
+	return true;
+}
+
+/* Objects with inventory (i.e. clonks) do not allow taking out items by
+ * hostile clonks. Actively controlled Clonks never allow taking out items.
+ * Also do not allow for neutral, because that will affect NPCs.
+ */
+public func RejectInteractionMenu(object clonk, ...)
+{
+	var msg = _inherited(clonk, ...);
+	if (clonk != this && !msg)
+	{
+		if (GetOwner() == NO_OWNER || Hostile(GetOwner(), clonk->GetOwner()) || GetCursor(GetOwner()) == this)
+			return Format("$MsgNoInteraction$", GetName());
+	}
+	return msg;
 }

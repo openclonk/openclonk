@@ -1,0 +1,38 @@
+material tod_door_main //: NormalMap
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.06493505090475082 0.06493505090475082 0.06493505090475082 1.0 6.25
+            emissive 0.0 0.0 0.0 1.0
+
+			texture_unit 
+            {
+                texture overlay.png
+                tex_address_mode wrap
+                filtering trilinear
+				colour_op_ex modulate src_texture src_player_colour
+				// take alpha from texture only, ignore player alpha
+				alpha_op_ex source1 src_texture src_player_colour
+            }
+			
+            texture_unit base
+            {
+                texture tod_entrance_base.png
+                tex_address_mode wrap
+                filtering trilinear
+				colour_op_ex blend_current_alpha src_current src_texture
+				// Don't blend alpha, to make sure we have full intensity at the base/overlay border region
+				alpha_op_ex add src_current src_texture
+            }
+			
+			//texture_unit normal
+			//{
+			//}
+        }
+    }
+}

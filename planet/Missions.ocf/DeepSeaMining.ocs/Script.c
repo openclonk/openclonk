@@ -6,8 +6,8 @@
 */
 
 // set in Map.c
-static main_island_x, main_island_y;
-static goal_platform_x, goal_platform_y;
+// main_island_x, main_island_y;
+// goal_platform_x, goal_platform_y;
 
 static const SCEN_TEST = false;
 
@@ -16,29 +16,32 @@ static g_is_initialized, g_is_in_intro, g_intro_done, npc_tuesday, g_tuesday_pos
 protected func PostIntroInitialize()
 {
 	// Construction site on goal platform
-	var goal_site = CreateObjectAbove(ConstructionSite, goal_platform_x+10, goal_platform_y+3);
+	var goal_site = CreateObjectAbove(ConstructionSite, goal_platform_x + 10, goal_platform_y + 3);
 	goal_site->Set(CrystalCommunicator);
 	goal_site->MakeUncancellable();
 	if (SCEN_TEST)
 	{
-		for (var i=0; i<6; ++i)
+		for (var i = 0; i<6; ++i)
 		{
 			goal_site->CreateObjectAbove(Metal,-20);
-			goal_site->CreateObjectAbove(Ruby,0);
-			goal_site->CreateObjectAbove(Amethyst,20);
+			goal_site->CreateObjectAbove(Ruby, 0);
+			goal_site->CreateObjectAbove(Amethyst, 20);
 		}
-		goal_site->CreateContents(Metal,6);
-		goal_site->CreateContents(Ruby,6);
-		goal_site->CreateContents(Amethyst,5);
+		goal_site->CreateContents(Metal, 6);
+		goal_site->CreateContents(Ruby, 6);
+		goal_site->CreateContents(Amethyst, 5);
 	}
 	
 	// Rules
-	var respawn_rule = FindObject(Find_ID(Rule_BaseRespawn));
-	if (respawn_rule)
-	{
-		respawn_rule->SetInventoryTransfer(true);
-		respawn_rule->SetFreeCrew(true);
-	}
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetInventoryTransfer(true);
+	relaunch_rule->SetFreeCrew(true);
+	relaunch_rule->SetRespawnDelay(1);
+	relaunch_rule->SetBaseRespawn(true);
+	relaunch_rule->SetDefaultRelaunchCount(nil);
+	relaunch_rule->SetAllowPlayerRestart(true);
+	relaunch_rule->SetLastClonkRespawn(true);
+	relaunch_rule->SetInitialRelaunch(false);
 	
 	// Initialize different parts of the scenario.
 	InitializeAmbience();
@@ -111,7 +114,7 @@ private func InitEnvironment()
 	// Set infinite wate rreflow from sides
 	var water = Material("Water");
 	for (var x in [0, LandscapeWidth()-1])
-		for (var y=1,y0=0; y<=LandscapeHeight(); ++y)
+		for (var y = 1, y0 = 0; y<=LandscapeHeight(); ++y)
 		{
 			if (GetMaterial(x, y) == water)
 			{
@@ -121,7 +124,7 @@ private func InitEnvironment()
 			else if (y0)
 			{
 				// Water section ends 1px above - apply auto-refill texture
-				DrawMaterialQuad("Water", x, y0, x+1, y0, x+1, y, x, y, "Water");
+				DrawMaterialQuad("Water", x, y0, x + 1, y0, x + 1, y, x, y, "Water");
 				y0 = 0;
 			}
 		}
@@ -234,7 +237,7 @@ private func InitMainIsland()
 	}
 	
 	// If still more material is specified, create a larger settlement: sawmill, chemical lab, tools workshop.
-	// Also fill lorry a bit more with: Barrel (x1), Bucket(x1), Loam(x4), DynamiteBox(x2).
+	// Also fill lorry a bit more with: Barrel (x1), Bucket(x1), Loam(x4), DynamiteBox(x2), DivingHelmet (x1).
 	if (amount >= 3)
 	{
 		pos = FindMainIslandPosition(nil, nil, true);
@@ -250,6 +253,7 @@ private func InitMainIsland()
 		lorry->CreateContents(DynamiteBox, 1);
 		lorry->CreateContents(WallKit, 4);
 		//lorry->CreateContents(Boompack, 1);	
+		lorry->CreateContents(DivingHelmet, 1);
 		
 		lab->CreateContents(Dynamite, 5);
 		lab->CreateContents(DynamiteBox, 1);
@@ -268,15 +272,16 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 	if (sep == nil) 
 		sep = 250;
 
+	var x, y;
 	for (var i = 0; i < 100; i++)
 	{
-		var x = main_island_x + xpos + Random(sep*2+1)-sep;
-		var y = main_island_y / 2 - 220;
+		x = main_island_x + xpos + Random(sep*2 + 1)-sep;
+		y = main_island_y / 2 - 220;
 		
 		while (!GBackSolid(x, y) && y < LandscapeHeight()*3/4)
 			y++;
 		
-		if (GetMaterial(x,y) == Material("Brick")) continue; // not on goal platform
+		if (GetMaterial(x, y) == Material("Brick")) continue; // not on goal platform
 			
 		if (!no_struct || !FindObject(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"), Find_ID(WindGenerator)), Find_Distance(60, x, y)))
 			break;
@@ -291,9 +296,9 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 // Goal fulfilled
 public func OnGoalsFulfilled()
 {
-	SetNextMission("Missions.ocf/TreasureHunt.ocs");
+	SetNextScenario("Missions.ocf/TreasureHunt.ocs");
 	GainScenarioAchievement("Done");
-	GainMissionAccess("S2Sea");
+	GainScenarioAccess("S2Sea");
 	StartSequence("Outro", 0);
 	// Return true to force goal rule to not call GameOver() yet
 	return true;

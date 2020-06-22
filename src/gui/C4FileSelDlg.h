@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,15 +18,15 @@
 #ifndef INC_C4FileSelDlg
 #define INC_C4FileSelDlg
 
-#include <C4Gui.h>
-#include <C4Components.h>
+#include "gui/C4Gui.h"
+#include "c4group/C4Components.h"
 
 // callback handler for file selection dialog
 class C4FileSel_BaseCB
 {
 public:
-	C4FileSel_BaseCB() {}
-	virtual ~C4FileSel_BaseCB() {}
+	C4FileSel_BaseCB() = default;
+	virtual ~C4FileSel_BaseCB() = default;
 
 public:
 	virtual void OnFileSelected(const char *szFilename) = 0;
@@ -42,7 +42,7 @@ private:
 	FileSelFunc SelFunc;
 	int32_t idToken;
 public:
-	virtual void OnFileSelected(const char *szFilename)
+	void OnFileSelected(const char *szFilename) override
 	{ if (pCBClass && SelFunc) (pCBClass->*SelFunc)(szFilename, idToken); }
 
 public:
@@ -58,11 +58,11 @@ public:
 	protected:
 		StdStrBuf sFilename; // full path to file
 
-		virtual bool IsFocusOnClick() { return false; } // do not focus; keep focus on listbox
+		bool IsFocusOnClick() override { return false; } // do not focus; keep focus on listbox
 
 	public:
 		ListItem(const char *szFilename);
-		virtual ~ListItem();
+		~ListItem() override;
 
 		const char *GetFilename() { return sFilename.getData(); }
 
@@ -77,22 +77,22 @@ public:
 	{
 	private:
 		typedef ListItem BaseClass;
-		class C4GUI::Icon *pIco; class C4GUI::Label *pLbl;
+		class C4GUI::Label *pLbl;
 		class C4GUI::CheckBox *pCheck;
 		class C4KeyBinding *pKeyCheck; // space activates/deactivates selected file
 		bool fGrayed;
 
 	protected:
-		void UpdateOwnPos();
+		void UpdateOwnPos() override;
 
 	public:
 		DefaultListItem(const char *szFilename, bool fTruncateExtension, bool fCheckbox, bool fGrayed, C4GUI::Icons eIcon);
-		virtual ~DefaultListItem();
+		~DefaultListItem() override;
 
-		virtual bool IsChecked() const;
-		virtual void SetChecked(bool fChecked);
-		virtual bool IsGrayed() const { return fGrayed; }
-		virtual bool UserToggleCheck();
+		bool IsChecked() const override;
+		void SetChecked(bool fChecked) override;
+		bool IsGrayed() const override { return fGrayed; }
+		bool UserToggleCheck() override;
 	};
 
 private:
@@ -124,11 +124,11 @@ private:
 	void UpdateFileList(); // rebuild file listbox from sPath
 
 protected:
-	virtual void OnShown();
-	virtual void UserClose(bool fOK); // allow OK only if something is sth is selected
-	virtual void OnClosed(bool fOK); // callback when dlg got closed
+	void OnShown() override;
+	void UserClose(bool fOK) override; // allow OK only if something is sth is selected
+	void OnClosed(bool fOK) override; // callback when dlg got closed
 
-	virtual const char *GetFileMask() const { return NULL; }
+	virtual const char *GetFileMask() const { return nullptr; }
 	virtual bool IsMultiSelection() const { return false; } // if true, files are checked/unchecked using checkboxes
 	virtual bool IsItemGrayed(const char *szFilename) const { return false; }
 	virtual void UpdateSelection();
@@ -156,7 +156,7 @@ protected:
 
 public:
 	C4FileSelDlg(const char *szRootPath, const char *szTitle, C4FileSel_BaseCB *pSelCallback, bool fInitElements=true);
-	virtual ~C4FileSelDlg();
+	~C4FileSelDlg() override;
 	void InitElements();
 
 	void SetPath(const char *szNewPath, bool fRefresh=true);
@@ -168,8 +168,8 @@ public:
 class C4PlayerSelDlg : public C4FileSelDlg
 {
 protected:
-	virtual const char *GetFileMask() const { return C4CFN_PlayerFiles; }
-	virtual C4GUI::Icons GetFileItemIcon() const { return C4GUI::Ico_Player; }
+	const char *GetFileMask() const override { return C4CFN_PlayerFiles; }
+	C4GUI::Icons GetFileItemIcon() const override { return C4GUI::Ico_Player; }
 
 public:
 	C4PlayerSelDlg(C4FileSel_BaseCB *pSelCallback);
@@ -182,11 +182,11 @@ private:
 	StdStrBuf sFixedSelection; // initial selection which cannot be deselected
 
 protected:
-	virtual void OnShown();
-	virtual const char *GetFileMask() const { return C4CFN_DefFiles; }
-	virtual bool IsMultiSelection() const { return true; }
-	virtual bool IsItemGrayed(const char *szFilename) const;
-	virtual C4GUI::Icons GetFileItemIcon() const { return C4GUI::Ico_Definition; }
+	void OnShown() override;
+	const char *GetFileMask() const override { return C4CFN_DefFiles; }
+	bool IsMultiSelection() const override { return true; }
+	bool IsItemGrayed(const char *szFilename) const override;
+	C4GUI::Icons GetFileItemIcon() const override { return C4GUI::Ico_Definition; }
 
 public:
 	C4DefinitionSelDlg(C4FileSel_BaseCB *pSelCallback, const char *szFixedSelection);
@@ -211,7 +211,7 @@ private:
 		StdCopyStrBuf sFilenameLabelText;
 
 	protected:
-		void DrawElement(C4TargetFacet &cgo);
+		void DrawElement(C4TargetFacet &cgo) override;
 
 	public:
 		ListItem(const char *szFilename);
@@ -226,31 +226,31 @@ private:
 		std::list<ListItem *> LoadItems; // items to be loaded by this thread
 
 	public:
-		LoaderThread() {}
-		virtual ~LoaderThread() { Stop(); }
+		LoaderThread() = default;
+		~LoaderThread() override { Stop(); }
 
 		void ClearLoadItems(); // stops thread
 		void AddLoadItem(ListItem *pItem); // not to be called when thread is running!
 
 	public:
-		virtual void Execute();
+		void Execute() override;
 	};
 
 private:
 	LoaderThread ImageLoader;
 
 protected:
-	void OnClosed(bool fOK);
-	virtual const char *GetFileMask() const { return C4CFN_ImageFiles; }
-	virtual bool HasNoneItem() const { return true; } // if true, a special <none> item can be selected
-	virtual bool HasPreviewArea() const { return false; } // no preview area. Preview images directly
-	virtual int32_t GetFileSelColWidth() const { return ImagePreviewSize; } // width of each file selection element
+	void OnClosed(bool fOK) override;
+	const char *GetFileMask() const override { return C4CFN_ImageFiles; }
+	bool HasNoneItem() const override { return true; } // if true, a special <none> item can be selected
+	bool HasPreviewArea() const override { return false; } // no preview area. Preview images directly
+	int32_t GetFileSelColWidth() const override { return ImagePreviewSize; } // width of each file selection element
 
-	virtual C4FileSelDlg::ListItem *CreateListItem(const char *szFilename);
-	virtual void BeginFileListUpdate();
-	virtual void EndFileListUpdate();
+	C4FileSelDlg::ListItem *CreateListItem(const char *szFilename) override;
+	void BeginFileListUpdate() override;
+	void EndFileListUpdate() override;
 
-	virtual void OnIdle();
+	void OnIdle() override;
 
 public:
 	C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback);

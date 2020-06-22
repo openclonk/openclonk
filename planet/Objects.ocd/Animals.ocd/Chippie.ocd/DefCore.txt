@@ -1,6 +1,6 @@
 [DefCore]
 id=Chippie
-Version=6,1
+Version=8,0
 Category=C4D_Living
 Width=8
 Height=8
@@ -11,7 +11,6 @@ VertexY=-1,-3,3,-0,-0,-3,-3
 VertexCNAT=0,4,11,1,2,1,2
 VertexFriction=300,300,100,300,300,300,300
 Mass=30
-ContactCalls=1
 NoGet=1
 Float=0
 StretchGrowth=1

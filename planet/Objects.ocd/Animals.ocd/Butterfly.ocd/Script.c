@@ -13,8 +13,8 @@ public func Construction(...)
 {
 	StartGrowth(15);
 	fly_anim_len = GetAnimationLength("Fly");
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(0,0, fly_anim_len, 10, ANIM_Loop));
-	this.MeshTransformation = Trans_Rotate(270,1,1,1);
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(0, 0, fly_anim_len, 10, ANIM_Loop));
+	this.MeshTransformation = Trans_Rotate(270, 1, 1, 1);
 	SetAction("Fly");
 
 	// Make butterflies a bit more colorful.
@@ -56,12 +56,12 @@ private func GetAttraction(proplist coordinates)
 
 private func MissionComplete()
 {
-	if (!attraction) return _inherited();
+	if (!attraction) return _inherited(...);
 	var wait = 20 + Random(80);
 	// Slow animation speed
 	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, fly_anim_len, 20, ANIM_Loop));
 	ScheduleCall(this, "RegularSpeed", wait);
-	SetCommand("Wait", nil,nil,nil,nil, wait);
+	SetCommand("Wait", nil, nil, nil, nil, wait);
 }
 
 private func MissionCompleteFailed()
@@ -78,14 +78,14 @@ private func RegularSpeed()
 private func SleepComplete()
 {
 	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, fly_anim_len/2, 10, ANIM_Hold));
-	_inherited();
+	_inherited(...);
 }
 
 // Restart the animation
 private func WakeUp()
 {
 	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, fly_anim_len, 10, ANIM_Loop));
-	_inherited();
+	_inherited(...);
 }
 
 private func GetRestingPlace(proplist coordinates)
@@ -93,14 +93,12 @@ private func GetRestingPlace(proplist coordinates)
 	// Try to rest in nearby grass
 	for (var grass in FindObjects(Find_Distance(150), Find_ID(Grass), Sort_Distance()))
 	{
-		if (!Random(2)) continue;
-		break;
-	}
-	if (grass)
-	{
-		coordinates.x = grass->GetX() + Random(4) - 2;
-		coordinates.y = grass->GetY() + 2;
-		return true;
+		if (!Random(2))
+		{
+			coordinates.x = grass->GetX() + Random(4) - 2;
+			coordinates.y = grass->GetY() + 2;
+			return true;
+		}
 	}
 	return false;
 }
@@ -150,14 +148,14 @@ private func FxTurningTimer(object target, proplist effect)
 		effect.step = 75;
 		SetDir(DIR_Left);
 	}
-	this.MeshTransformation = Trans_Mul(Trans_Rotate(270,1,1,1), Trans_Rotate(effect.step,0,0,1));
+	this.MeshTransformation = Trans_Mul(Trans_Rotate(270, 1, 1, 1), Trans_Rotate(effect.step, 0, 0, 1));
 	return FX_OK;
 }
 
 private func FxTurningStop(object target, proplist effect, int reason, bool temp)
 {
 	if (temp) return;
-	this.MeshTransformation = Trans_Rotate(270,1,1,1);
+	this.MeshTransformation = Trans_Rotate(270, 1, 1, 1);
 	SetAction("Fly");
 }
 
@@ -214,10 +212,12 @@ local Name = "Butterfly";
 local MaxEnergy = 40000;
 local MaxBreath = 125;
 local Placement = 2;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;
 
-func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
+public func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(400, 600, 0), Trans_Scale(1400), Trans_Rotate(20, 1, 0, 0), Trans_Rotate(40, 0, 1, 0));
 }
 

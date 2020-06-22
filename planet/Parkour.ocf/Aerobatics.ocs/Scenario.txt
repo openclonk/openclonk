@@ -1,7 +1,7 @@
 [Head]
 Icon=28
 Title=Aerobatics
-Version=7,0
+Version=8,0
 Difficulty=80
 
 [Game]

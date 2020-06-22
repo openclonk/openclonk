@@ -1,5 +1,5 @@
-NoPlrKnowledge=Keine Baupläne vorhanden
+NoPlrKnowledge=Keine BauplÃ¤ne vorhanden
 Construction=Konstruktion
 Production=Produktion
 Name=Schiffswerft
-Description=Wird zur Herstellung von Luftschiffen benötigt.
+Description=Wird zur Herstellung von Luftschiffen benÃ¶tigt.

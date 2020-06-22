@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2009-2015, The OpenClonk Team and contributors
+# Copyright (c) 2009-2016, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -23,13 +23,7 @@ git_get_changeset_id(C4REVISION)
 # Get year
 ############################################################################
 
-IF(CMAKE_HOST_UNIX)
-	EXECUTE_PROCESS(COMMAND "date" "+%Y" OUTPUT_VARIABLE DATE)
-ELSEIF(CMAKE_HOST_WIN32)
-	EXECUTE_PROCESS(COMMAND "cscript.exe" "//nologo" "${CMAKE_CURRENT_SOURCE_DIR}/tools/get_current_year.vbs" OUTPUT_VARIABLE DATE)
-ENDIF()
-STRING(REGEX REPLACE "(.+)\n" "\\1" YEARFIXED "${DATE}")
-SET(C4COPYRIGHT_YEAR ${YEARFIXED})
+STRING(TIMESTAMP C4COPYRIGHT_YEAR "%Y")
 
 ############################################################################
 # Build version strings

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -21,8 +21,8 @@
 #define INC_STDREGISTRY
 
 #ifdef _WIN32
-#include "StdCompiler.h"
-#include <C4windowswrapper.h>
+#include "lib/StdCompiler.h"
+#include "platform/C4windowswrapper.h"
 
 StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName);
 bool SetRegistryString(const char *szSubKey, const char *szValueName, const char *szValue);
@@ -53,38 +53,38 @@ public:
 
 	// Construct with root key
 	StdCompilerConfigWrite(HKEY hRoot, const char *szPath);
-	~StdCompilerConfigWrite();
+	~StdCompilerConfigWrite() override;
 
 	// Properties
-	virtual bool hasNaming() { return true; }
-	virtual bool forceWrite() { return true; }
-	virtual bool isRegistry() { return true; }
+	bool hasNaming() override { return true; }
+	bool isRegistry() override { return true; }
 
 	// Naming
-	virtual bool Name(const char *szName);
-	virtual void NameEnd(bool fBreak = false);
-	virtual bool FollowName(const char *szName);
-	virtual bool Default(const char *szName);
+	bool Name(const char *szName) override;
+	void NameEnd(bool fBreak = false) override;
+	bool FollowName(const char *szName) override;
+	bool Default(const char *szName) override;
 
 	// Separators
-	virtual bool Separator(Sep eSep);
+	bool Separator(Sep eSep) override;
 
 	// Data writers
-	virtual void DWord(int32_t &rInt);
-	virtual void DWord(uint32_t &rInt);
-	virtual void Word(int16_t &rShort);
-	virtual void Word(uint16_t &rShort);
-	virtual void Byte(int8_t &rByte);
-	virtual void Byte(uint8_t &rByte);
-	virtual void Boolean(bool &rBool);
-	virtual void Character(char &rChar);
-	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
-	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
-	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
+	void DWord(int32_t &rInt) override;
+	void DWord(uint32_t &rInt) override;
+	void Word(int16_t &rShort) override;
+	void Word(uint16_t &rShort) override;
+	void Byte(int8_t &rByte) override;
+	void Byte(uint8_t &rByte) override;
+	void Boolean(bool &rBool) override;
+	void Character(char &rChar) override;
+	void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) override;
+	void String(char **pszString, RawCompileType eType = RCT_Escaped) override;
+	void String(std::string &str, RawCompileType type = RCT_Escaped) override;
+	void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) override;
 
 	// Passes
-	virtual void Begin();
-	virtual void End();
+	void Begin() override;
+	void End() override;
 
 private:
 
@@ -98,10 +98,12 @@ private:
 		HKEY Handle;
 		Key *Parent;
 	} *pKey;
-	StdStrBuf LastString; // assigned by String, reset by Name/NameEnd - contains last written string. Used for separators within strings.
+
+	// Current string for writing with separators
+	std::string last_written_string;
 
 	// Writing
-	void CreateKey(HKEY hParent = 0);
+	void CreateKey(HKEY hParent = nullptr);
 	void WriteDWord(uint32_t iVal);
 	void WriteString(const char *szStr);
 
@@ -114,37 +116,39 @@ public:
 
 	// Construct with root key
 	StdCompilerConfigRead(HKEY hRoot, const char *szPath);
-	~StdCompilerConfigRead();
+	~StdCompilerConfigRead() override;
 
 	// Properties
-	virtual bool isCompiler() { return true; }
-	virtual bool hasNaming() { return true; }
-	virtual bool isRegistry() { return true; }
+	bool isDeserializer() override { return true; }
+	bool hasNaming() override { return true; }
+	bool isRegistry() override { return true; }
 
 	// Naming
-	virtual bool Name(const char *szName);
-	virtual void NameEnd(bool fBreak = false);
-	virtual bool FollowName(const char *szName);
+	bool Name(const char *szName) override;
+	void NameEnd(bool fBreak = false) override;
+	bool FollowName(const char *szName) override;
 
 	// Separators
-	virtual bool Separator(Sep eSep);
+	bool Separator(Sep eSep) override;
+	void NoSeparator() override;
 
 	// Data writers
-	virtual void DWord(int32_t &rInt);
-	virtual void DWord(uint32_t &rInt);
-	virtual void Word(int16_t &rShort);
-	virtual void Word(uint16_t &rShort);
-	virtual void Byte(int8_t &rByte);
-	virtual void Byte(uint8_t &rByte);
-	virtual void Boolean(bool &rBool);
-	virtual void Character(char &rChar);
-	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
-	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
-	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
+	void DWord(int32_t &rInt) override;
+	void DWord(uint32_t &rInt) override;
+	void Word(int16_t &rShort) override;
+	void Word(uint16_t &rShort) override;
+	void Byte(int8_t &rByte) override;
+	void Byte(uint8_t &rByte) override;
+	void Boolean(bool &rBool) override;
+	void Character(char &rChar) override;
+	void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) override;
+	void String(char **pszString, RawCompileType eType = RCT_Escaped) override;
+	void String(std::string &str, RawCompileType type = RCT_Escaped) override;
+	void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) override;
 
 	// Passes
-	virtual void Begin();
-	virtual void End();
+	void Begin() override;
+	void End() override;
 
 private:
 
@@ -160,11 +164,16 @@ private:
 		bool Virtual;
 		DWORD Type; // for values only
 	} *pKey;
-	StdStrBuf LastString; // assigned by String, reset by Name/NameEnd - contains last read string. Used for separators within strings.
+
+	// Current string for reading with separators
+	std::string last_read_string;
+	bool has_read_string = false;
+	bool has_separator_mismatch = false;
 
 	// Reading
 	uint32_t ReadDWord();
-	StdStrBuf ReadString();
+	void ReadString();
+	void ResetLastString();
 
 };
 

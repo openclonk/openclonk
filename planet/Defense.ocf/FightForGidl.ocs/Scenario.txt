@@ -1,9 +1,14 @@
 [Head]
 Icon=36
 Title=FightForGidl
-Version=7
-Difficulty=120
-NoInitialize=true
+Version=8,0
+Difficulty=20
+MaxPlayerLeague=4
+
+[Definitions]
+Definition2=Decoration.ocd\Clonk.ocd\AltSkins.ocd
+Definition3=Decoration.ocd\Misc.ocd\AltMaterials.ocd
+
 
 [Game]
 Goals=Goal_ProtectTheStatue=1

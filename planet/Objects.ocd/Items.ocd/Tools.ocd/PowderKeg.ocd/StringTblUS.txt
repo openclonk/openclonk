@@ -1,2 +1,3 @@
 Name=Powder Keg
 Description=Ammunition for the cannon.
+RemainingPowder=Remaining powder

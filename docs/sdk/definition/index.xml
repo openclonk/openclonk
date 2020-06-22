@@ -24,12 +24,17 @@
       <dd>
         <text>The object script. See <emlink href="definition/script.html">object scripts</emlink> and <emlink href="lang.html">localization</emlink>.</text>
       </dd>
+      <dt id="Systemocg"><img height="16" src="../../images/icon_system.png" width="16"/>System.ocg</dt>
+      <dd>
+		<text>Definitions can contain a system folder with any number of script files (*.c). These can define or modify global functions, or append to loaded definitions.</text>
+		<text>Scripts for system folders are only loaded from definition groups (i.e. *.ocd folders without DefCore.txt) before OC 9.0.</text>
+      </dd>
 	</dl>
 	<h id="RasterGraphics">Raster Graphics</h>
 	<dl>
-      <dt id="Graphicspng"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics.png</dt>
+      <dt id="Graphicspng"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics.png/Graphics.*.png</dt>
       <dd>
-        <text>Graphics of the object. Base graphics, animation phases and a picture for display in menus are stored in a 32 bit picture with transparency channel (PNG format, 32 bit RGBA color, non interlaced).</text>
+        <text>Graphics of the object. Base graphics, animation phases and a picture for display in menus are stored in a 32 bit picture with transparency channel (PNG format, 32 bit RGBA color, non interlaced). An optional zoom factor for high-resolution graphics can be provided in the '*'-portion of the name.</text>
       </dd>
       <dt id="Overlaypng"><img height="16" src="../../images/icon_image.png" width="16"/>Overlay.png</dt>
       <dd>
@@ -39,7 +44,7 @@
       <dd>
         <text>An optional normal map for the object, where the red, green and blue components in the image correspond to the normal vectors to be used for the lighting of the object. If this file is not present, the normal vector at each pixel points straight into Z direction (outside of the screen).</text>
       </dd>
-      <dt id="Graphicsex"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics*.png/Overlay*.png</dt>
+      <dt id="Graphicsex"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics*.png/Overlay*.png (Graphics*.*.png/Overlay*.*.png)</dt>
       <dd>
         <text>Objects can also contain alternative sets of graphics which can be selected ingame using the script command <funclink>SetGraphics</funclink>(). The name corresponds to the file name portion following "Graphics". The matching overlay is automatically selected. For more information see <funclink>SetGraphics</funclink>().</text>
       </dd>
@@ -89,4 +94,5 @@
   </part>
   <author>Sven2</author><date>2002-04</date>
   <author>matthes</author><date>2004-06</date>
+  <author>Marky</author><date>2019-04</date>
 </doc>

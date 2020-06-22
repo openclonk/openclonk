@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ReplaceString</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>text</name>
+          <desc>Source string in which the replacements occur.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>from</name>
+          <desc>Old substring to be replaced.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>to</name>
+          <desc>New substring by which the old substrings will be replaced.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Returns a string in which all occurrences of a substring (from) got replaced by a different string (to).
+    </desc>
+    <examples>
+      <example>
+        <code><funclink>Log</funclink>(ReplaceString("An apple a day keeps the apple away.", "apple", "banana"));</code>
+        <text>Displays "An banana a day keeps the banana away."</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RegexReplace</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2016-07</date>
+</funcs>

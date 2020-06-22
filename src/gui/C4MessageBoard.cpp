@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,19 +17,20 @@
 
 /* Fullscreen startup log and chat type-in */
 
-#include <C4Include.h>
-#include <C4MessageBoard.h>
+#include "C4Include.h"
+#include "gui/C4MessageBoard.h"
 
-#include <C4Application.h>
-#include <C4LoaderScreen.h>
-#include <C4Gui.h>
-#include <C4Player.h>
-#include <C4GraphicsSystem.h>
-#include <C4GraphicsResource.h>
-#include <C4MessageInput.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4FullScreen.h>
+#include "game/C4Application.h"
+#include "game/C4FullScreen.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4Gui.h"
+#include "gui/C4LoaderScreen.h"
+#include "gui/C4MessageInput.h"
+#include "lib/StdColors.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 const int C4LogSize=30000, C4LogMaxLines=1000;
 
@@ -44,6 +45,7 @@ C4MessageBoard::C4MessageBoard() : LogBuffer(C4LogSize, C4LogMaxLines, 0, "  ", 
 	iBackScroll = -1;
 	ScrollUpBinding = nullptr;
 	ScrollDownBinding = nullptr;
+	iLineHgt = 1; // Prevent unitialized access with USE_CONSOLE
 }
 
 C4MessageBoard::~C4MessageBoard()
@@ -83,7 +85,7 @@ void C4MessageBoard::Execute()
 		if (Delay == -1)
 		{
 			// set delay based on msg length
-			const char *szCurrMsg = LogBuffer.GetLine(std::min(-iBackScroll, -1), NULL, NULL, NULL);
+			const char *szCurrMsg = LogBuffer.GetLine(std::min(-iBackScroll, -1), nullptr, nullptr, nullptr);
 			if (szCurrMsg) Delay = strlen(szCurrMsg); else Delay = 0;
 		}
 		// wait...
@@ -122,8 +124,8 @@ void C4MessageBoard::Init(C4Facet &cgo, bool fStartup)
 	}
 
 	// messageboard
-	ScrollUpBinding.reset(new C4KeyBinding(C4KeyCodeEx(K_UP, KEYS_Shift), "MsgBoardScrollUp", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollUp)));
-	ScrollDownBinding.reset(new C4KeyBinding(C4KeyCodeEx(K_DOWN, KEYS_Shift), "MsgBoardScrollDown", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollDown)));
+	ScrollUpBinding = std::make_unique<C4KeyBinding>(C4KeyCodeEx(K_UP, KEYS_Shift), "MsgBoardScrollUp", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollUp));
+	ScrollDownBinding = std::make_unique<C4KeyBinding>(C4KeyCodeEx(K_DOWN, KEYS_Shift), "MsgBoardScrollDown", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollDown));
 }
 
 void C4MessageBoard::Draw(C4Facet &cgo)
@@ -134,7 +136,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 	if (Startup)
 	{
 		if (::GraphicsSystem.pLoaderScreen)
-			::GraphicsSystem.pLoaderScreen->Draw(cgo, Game.InitProgress, &LogBuffer);
+			::GraphicsSystem.pLoaderScreen->Draw(cgo, C4LoaderScreen::Flag::ALL, Game.InitProgress, &LogBuffer);
 		else
 			// loader not yet loaded: black BG
 			pDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt, cgo.Hgt, 0x00000000);
@@ -157,7 +159,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 	{
 		// get message at pos
 		if (iMsg-iBackScroll >= 0) break;
-		const char *Message = LogBuffer.GetLine(iMsg-iBackScroll, NULL, NULL, NULL);
+		const char *Message = LogBuffer.GetLine(iMsg-iBackScroll, nullptr, nullptr, nullptr);
 		if (!Message || !*Message) continue;
 		// calc target position (y)
 		int iMsgY = cgo.Y + cgo.Hgt + iMsg * iLineHgt + Fader;
@@ -200,7 +202,7 @@ void C4MessageBoard::AddLog(const char *szMessage)
 	// make sure new message will be drawn
 	++iBackScroll;
 	// register message in standard messageboard font
-	LogBuffer.AppendLines(szMessage, &::GraphicsResource.FontRegular, 0, NULL);
+	LogBuffer.AppendLines(szMessage, &::GraphicsResource.FontRegular, 0, nullptr);
 }
 
 void C4MessageBoard::ClearLog()
@@ -215,9 +217,12 @@ void C4MessageBoard::LogNotify()
 	// Reset
 	iBackScroll=0;
 	// Draw
-	Draw(Output);
-	// startup: Draw message board only and do page flip
-	if (Startup) FullScreen.pSurface->PageFlip();
+	if (pDraw)
+	{
+		Draw(Output);
+		// startup: Draw message board only and do page flip
+		if (Startup) FullScreen.pSurface->PageFlip();
+	}
 }
 
 C4Player* C4MessageBoard::GetMessagePlayer(const char *szMessage)
@@ -235,7 +240,7 @@ C4Player* C4MessageBoard::GetMessagePlayer(const char *szMessage)
 		str.CopyUntil(szMessage + 2,':');
 		return ::Players.GetByName(str.getData());
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool C4MessageBoard::ControlScrollUp()

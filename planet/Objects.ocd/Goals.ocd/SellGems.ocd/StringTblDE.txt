@@ -1,4 +1,4 @@
 Name=Edelsteine verkaufen
 #Goal window
 MsgGoalFulfilled=Ihr habt genug Edelsteine verkauft!
-MsgGoalUnfulfilled=Ihr müsst noch %d Edelsteine verkaufen. Im Moment sind noch %d Edelsteine abzubauen und %d Edelsteine einzusammeln.
+MsgGoalUnfulfilled=Ihr mÃ¼sst noch %d Edelsteine verkaufen. Im Moment sind noch %d Edelsteine abzubauen und %d Edelsteine einzusammeln.

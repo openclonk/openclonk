@@ -79,13 +79,15 @@ protected func OnHostilityChange(int plr, int plr2, bool hostility, bool old_hos
 	return;
 }
 
-protected func Activate(int byplr)
+public func Activate(int by_plr)
 {
-	MessageWindow("$Description$", byplr);
-	return;
+	MessageWindow(this.Description, by_plr);
+	return true;
 }
 
 /*-- Proplist --*/
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Visibility = VIS_Editor;
+local EditorPlacementLimit = 1; // Rules are to be placed only once

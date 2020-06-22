@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,14 +16,13 @@
 // generic user interface
 // checkbox
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4FacetEx.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
-
-#include <C4Window.h>
+#include "graphics/C4Draw.h"
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
 
 namespace C4GUI
 {
@@ -32,7 +31,7 @@ namespace C4GUI
 // CheckBox
 
 	CheckBox::CheckBox(const C4Rect &rtBounds, const char *szCaption, bool fChecked)
-			: Control(rtBounds), fChecked(fChecked), fMouseOn(false), fEnabled(true), pFont(NULL)
+			: Control(rtBounds), fChecked(fChecked), fMouseOn(false), fEnabled(true), pFont(nullptr)
 			, dwEnabledClr(C4GUI_CheckboxFontClr), dwDisabledClr(C4GUI_CheckboxDisabledFontClr), cHotkey(0)
 	{
 		if (szCaption)
@@ -42,14 +41,14 @@ namespace C4GUI
 		}
 		// key callbacks: Check/Uncheck on space and primary joy button
 		C4CustomKey::CodeList Keys;
-		Keys.push_back(C4KeyCodeEx(K_SPACE));
+		Keys.emplace_back(K_SPACE);
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
+			ControllerKeys::Ok(Keys);
 		}
 		pKeyCheck = new C4KeyBinding(Keys, "GUICheckboxToggle", KEYSCOPE_Gui,
 		                             new ControlKeyCB<CheckBox>(*this, &CheckBox::KeyCheck), C4CustomKey::PRIO_Ctrl);
-		pCBHandler = NULL;
+		pCBHandler = nullptr;
 	}
 
 	CheckBox::~CheckBox()

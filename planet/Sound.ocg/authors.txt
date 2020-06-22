@@ -5,6 +5,7 @@ Author        Work(s)
 ===============================================================================
 
 ala             - Fire/Spark1&2&3, Objects/Weapons/Musket/Click1&2&3, Clonk/Action/Munch2, Clonk/Movement/DivingLoop1&2&3, Animals/Wipf/Snuff3
+                  Structures/DoorOpen*, Structures/DoorClose*, Hits/BucketHit*, Objects/Lorry/Dump*, UI/UnCash1&2&3, Environment/Vine/Grab1&2
                   Structures/Repair, Structures/FinishBuilding made from following resources:
                       - JoelAudio: https://www.freesound.org/people/JoelAudio/sounds/135860/ - CC-By 3.0
                       - cmusounddesign: https://www.freesound.org/people/cmusounddesign/sounds/84696 - CC-By 3.0
@@ -15,8 +16,10 @@ ala             - Fire/Spark1&2&3, Objects/Weapons/Musket/Click1&2&3, Clonk/Acti
                   Clonk/Skin/Steampunk:
                      Confirm1&2&3&4, Decline1&2&4, Die1&2&3, Doubt1&2&3&4&5, Hurt1&2&3&4&5&6, Laughter1&2&3, Scream1, Shock1&2&4, Singing1&2
                   Animals/Bat:
-                     Chirp, Flutter1&2&3, Noise1&2&3   
-K-Pone          - Objects/Pickaxe/ClangHard1
+                     Chirp, Flutter1&2&3, Noise1&2&3
+                  Animals/Mooq:
+                     Die1-5, DieFat, Hurt1-2, Munch1-4, Snort1-3, Snorting1-2, Spit1-2
+K-Pone          - Objects/Pickaxe/ClangHard1 Fire/Blast3alt Fire/BlastLiquid3alt GlassHit3-4
 Ringwaul        - Monster/Growl1-3, Monster/Die, Wipf/Snuff1-2, Wipf/Aroof, Wipf/Whine, Chest/Open, Chest/Close
                   Winbag/Charge, Winbag/ChargeStop, Winbag/Gust, Pickaxe/Clang1-3
 
@@ -58,7 +61,7 @@ luffy           - SmokeSizzle (https://www.freesound.org/people/luffy/sounds/172
 Pullover        - PropellerLoop (from Milch (EngineLoop))
 daveincamas		- StoneDoor/Chain (http://www.freesound.org/people/daveincamas/sounds/44076/)
 pempi			- Elevator/Start, Elevator/Moving, Elevator/Stop (http://www.freesound.org/people/pempi/sounds/33873/)
-Traveler 		- Pop (http://www.freesound.org/people/Traveler/sounds/16064/)
+Traveler 		- Structures/EjectionPop (http://www.freesound.org/people/Traveler/sounds/16064/)
 Pat 			- Clonk/Roll, Clonk/Rustle1-4, Clonk/RustleLand, (http://www.freesound.org/people/pwausc1/sounds/118259/)
 Stephen Hall 	- Clonk/Dig1-5 (http://www.freesound.org/people/shall555/sounds/72199/)
 sarge4267       - BlastFireworks (http://www.freesound.org/people/soundscalpel.com/sounds/110391)
@@ -74,6 +77,7 @@ Sven2           - Structures/StoneGate/GateMove (adapted from GateHit), IceHit* 
                   CloseViewport (based on WaterBottleBoing by empraetorius (https://freesound.org/people/empraetorius/sounds/201260/)
                   Corrode (based on Pshshsh from Mirors_ http://www.freesound.org/people/Mirors_/sounds/81205/)
                   UI::Select, Clonk::Action::Grab, Clonk::Action::UnGrab
+                  Structures::Switch* (adapted from Structures::DoorOpen and UI::Click)
 Zapper          - Breathing
 zimbot          - Animals/Chippie/EggCrack1-3 (modified) (http://www.freesound.org/people/zimbot/sounds/244480/)
 xerana          - Environemnt/Lightning/Thunder1 (https://www.freesound.org/people/xerana/sounds/199638/ adapted by Maikel)
@@ -83,6 +87,9 @@ jrosin          - Environemnt/Lightning/Thunder4 (https://www.freesound.org/peop
 shaka9          - Environemnt/Lightning/Thunder5 (https://www.freesound.org/people/shaka9/sounds/160514/ adapted by Maikel)
 Harbour11       - UI::Error, UI::Trumpet (both adapted by Sven2; used sound from http://freesound.org/people/Harbour11/sounds/194624/)
 CosmicEmbers    - Objects::LineSnap (cropped/pitch adjusted by Sven2; original from http://freesound.org/people/CosmicEmbers/sounds/161650/)
+daveincamas     - UI::NextWave (http://www.freesound.org/people/daveincamas/sounds/27082/)
+Erdie           - Clonk::Action::GroupAttack.ogg (http://www.freesound.org/people/Erdie/sounds/165614/)
+
 
 The following sounds use two sources:
 
@@ -118,3 +125,4 @@ Kane53126		- Click2 (http://www.freesound.org/people/Kane53126/sounds/257944/)
 Zywx			- MosquitoBuzz (http://www.freesound.org/people/Zywx/sounds/188708/)
 tc630			- Furnace/Start, Furnace/Stop, Furnace/Loop(http://www.freesound.org/people/tc630/sounds/47835/)
 kolczok			- SawmillRipcut (http://freesound.org/people/kolczok/sounds/198988/)
+Maikel          - Fossilize (no external source)

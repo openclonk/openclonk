@@ -21,11 +21,11 @@ public func IsFulfilled()
 	if (!GetPlayerCount() || GetEffect("IntIntro"))
 		return false;
 
-	for(var i = 0; i < GetPlayerCount(); ++i)
+	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i), obj;
-		for(var j = 0; obj = GetCrew(plr, j); ++j)
-			if(ObjectDistance(obj, cabin) > 80)
+		for (var j = 0; obj = GetCrew(plr, j); ++j)
+			if (ObjectDistance(obj, cabin) > 80)
 				return false;
 	}
 
@@ -36,7 +36,7 @@ public func GetDescription(int plr)
 {
 	var message;
 	if (IsFulfilled())
-		message = "$MsgGoalFulfilled$";		
+		message = "$MsgGoalFulfilled$";
 	else
 		message = "$MsgGoalUnFulfilled$";
 	return message;
@@ -53,7 +53,7 @@ public func Activate(int byplr)
 
 public func GetShortDescription(int plr)
 {
-	return "{{WoodenCabin}}"; // TODO
+	return "$GetBack$";
 }
 
 /*-- Proplist --*/

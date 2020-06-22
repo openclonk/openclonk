@@ -1,0 +1,9 @@
+[Teams]
+Active=1
+TeamDistribution=Random
+
+[Team]
+id=1
+
+[Team]
+id=2

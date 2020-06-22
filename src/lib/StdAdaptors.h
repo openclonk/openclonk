@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,8 +16,7 @@
 #ifndef STDADAPTORS_H
 #define STDADAPTORS_H
 
-#include "Standard.h"
-#include "StdCompiler.h"
+#include "lib/StdCompiler.h"
 
 // * Wrappers for C4Compiler-types
 
@@ -102,7 +101,7 @@ struct StdNamingDefaultAdapt
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		// Default check
-		if (pComp->hasNaming() && pComp->isDecompiler() && rValue == rDefault && !fStoreDefault)
+		if (pComp->hasNaming() && pComp->isSerializer() && rValue == rDefault && !fStoreDefault)
 		{
 			if (pComp->Default(szName)) return;
 		}
@@ -111,7 +110,7 @@ struct StdNamingDefaultAdapt
 			// Search named section, set default if not found
 			if (pComp->Name(szName))
 			{
-				if (fPrefillDefault && pComp->isCompiler()) rValue = rDefault; // default prefill if desired
+				if (fPrefillDefault && pComp->isDeserializer()) rValue = rDefault; // default prefill if desired
 				pComp->Value(mkDefaultAdapt(rValue, rDefault));
 			}
 			else
@@ -138,16 +137,16 @@ struct StdDecompileAdapt
 	explicit StdDecompileAdapt(const T &rValue) : rValue(rValue) { }
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
-		assert(pComp->isDecompiler());
+		assert(pComp->isSerializer());
 		pComp->Value(const_cast<T &>(rValue));
 	}
 	
 	// make this work with in combination with StdParameterAdapt
-	template<class P>
-	inline void CompileFunc(StdCompiler* pComp, const P& par) const
+	template<typename ... P>
+	inline void CompileFunc(StdCompiler* pComp, P && ... pars) const
 	{
-		assert(pComp->isDecompiler());
-		pComp->Value(mkParAdapt(const_cast<T &>(rValue), par));
+		assert(pComp->isSerializer());
+		pComp->Value(mkParAdapt(const_cast<T &>(rValue), std::forward<P>(pars)...));
 	}
 };
 template <class T>
@@ -187,10 +186,28 @@ struct StdStringAdapt
 };
 inline StdStringAdapt mkStringAdapt(char *szString, int iMaxLength, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
 { return StdStringAdapt(szString, iMaxLength, eRawType); }
-#define mkStringAdaptM(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1)
-#define mkStringAdaptMA(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_All)
-#define mkStringAdaptMI(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_Idtf)
-#define mkStringAdaptMIE(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_IdtfAllowEmpty)
+template <size_t size> inline StdStringAdapt mkStringAdaptM(char (&szString)[size]) { return mkStringAdapt(szString, size); }
+template <size_t size> inline StdStringAdapt mkStringAdaptMA(char (&szString)[size]) { return mkStringAdapt(szString, size, StdCompiler::RCT_All); }
+template <size_t size> inline StdStringAdapt mkStringAdaptMI(char (&szString)[size]) { return mkStringAdapt(szString, size, StdCompiler::RCT_Idtf); }
+template <size_t size> inline StdStringAdapt mkStringAdaptMIE(char (&szString)[size]) { return mkStringAdapt(szString, size, StdCompiler::RCT_IdtfAllowEmpty); }
+
+// * std::string adaptor
+struct StdStdStringAdapt
+{
+	std::string& string; StdCompiler::RawCompileType eRawType;
+	StdStdStringAdapt(std::string& string, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
+		: string(string), eRawType(eRawType) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		pComp->String(string, eRawType);
+	}
+	inline bool operator == (const char *szDefault) const { return string == szDefault; }
+	inline StdStdStringAdapt &operator = (const char *szDefault) { string = szDefault; return *this; }
+};
+inline StdStdStringAdapt mkStringAdapt(std::string& string, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
+{ return StdStdStringAdapt(string, eRawType); }
+inline StdStdStringAdapt mkStringAdaptA(std::string& string)
+{ return StdStdStringAdapt(string, StdCompiler::RCT_All); }
 
 // * Raw adaptor
 struct StdRawAdapt
@@ -207,7 +224,15 @@ struct StdRawAdapt
 };
 inline StdRawAdapt mkRawAdapt(void *pData, size_t iSize, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
 { return StdRawAdapt(pData, iSize, eRawType); }
-#define mkRawAdaptM(X) mkRawAdapt(&X, sizeof(X))
+template <typename T>
+inline StdRawAdapt mkRawAdaptM(T &val)
+{
+	// GCC 4.x doesn't support std::is_trivially_copyable
+#if !defined(__GNUC__) || __GNUC__ > 4
+	static_assert(std::is_trivially_copyable<T>::value, "StdRawAdapt: type must be trivially copyable");
+#endif
+	return mkRawAdapt(&val, sizeof(val));
+}
 
 // * Integer Adaptor
 // Stores Integer-like datatypes (Enumerations)
@@ -240,10 +265,13 @@ struct StdCastAdapt
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		// Cast
-		assert(sizeof(to_t) == sizeof(T));
-		to_t vVal = *reinterpret_cast<to_t *>(&rValue);
+		static_assert(sizeof(to_t) == sizeof(T), "CastAdapt sanity: sizes match");
+		static_assert(std::is_pod<to_t>::value, "CastAdapt sanity: to-type is POD");
+		static_assert(std::is_pod<T>::value, "CastAdapt sanity: from-type is POD");
+		to_t vVal;
+		std::memcpy(&vVal, &rValue, sizeof(to_t));
 		pComp->Value(vVal);
-		rValue = *reinterpret_cast<T *>(&vVal);
+		std::memcpy(&rValue, &vVal, sizeof(T));
 	}
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
@@ -264,10 +292,10 @@ struct _IdFuncClass
 template <class T, class M = _IdFuncClass<T> >
 struct StdArrayAdapt
 {
-	StdArrayAdapt(T *pArray, int iSize, M map = M())
-			: pArray(pArray), iSize(iSize), map(map)
+	StdArrayAdapt(T *pArray, int iSize, M && map = M())
+			: pArray(pArray), iSize(iSize), map(std::forward<M>(map))
 	{ }
-	T *pArray; int iSize; M map;
+	T *pArray; int iSize; M && map;
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		for (int i = 0; i < iSize; i++)
@@ -306,10 +334,12 @@ struct StdArrayAdapt
 };
 template <class T>
 inline StdArrayAdapt<T> mkArrayAdapt(T *pArray, int iSize) { return StdArrayAdapt<T>(pArray, iSize); }
-#define mkArrayAdaptM(A) mkArrayAdapt(A, sizeof(A) / sizeof(*(A)))
+template <class T, size_t size>
+inline StdArrayAdapt<T> mkArrayAdaptM(T (&array)[size]) { return StdArrayAdapt<T>(array, size); }
 template <class T, class M>
-inline StdArrayAdapt<T, M> mkArrayAdaptMap(T *pArray, int iSize, M map) { return StdArrayAdapt<T, M>(pArray, iSize, map); }
-#define mkArrayAdaptMapM(A, M) mkArrayAdaptMap(A, sizeof(A) / sizeof(*(A)), M)
+inline StdArrayAdapt<T, M> mkArrayAdaptMap(T *pArray, int iSize, M && map) { return StdArrayAdapt<T, M>(pArray, iSize, std::forward<M>(map)); }
+template <class T, class M, size_t size>
+inline StdArrayAdapt<T, M> mkArrayAdaptMapM(T (&array)[size], M && map) { return StdArrayAdapt<T, M>(array, size, std::forward<M>(map)); }
 
 // * Array Adaptor (defaulting)
 // Stores a separated list, sets defaults if a value or separator is missing.
@@ -323,9 +353,9 @@ struct StdArrayDefaultAdapt
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		size_t i, iWrite = iSize;
-		bool fCompiler = pComp->isCompiler();
+		bool deserializing = pComp->isDeserializer();
 		// Decompiling: Omit defaults
-		if (!fCompiler && pComp->hasNaming())
+		if (!deserializing && pComp->hasNaming())
 			while (iWrite > 0 && pArray[iWrite - 1] == rDefault)
 				iWrite--;
 		// Read/write values
@@ -337,7 +367,7 @@ struct StdArrayDefaultAdapt
 			pComp->Value(mkDefaultAdapt(map(pArray[i]), rDefault));
 		}
 		// Fill rest of array
-		if (fCompiler)
+		if (deserializing)
 			for (; i < iSize; i++)
 				pArray[i] = rDefault;
 	}
@@ -358,10 +388,12 @@ struct StdArrayDefaultAdapt
 };
 template <class T, class D>
 inline StdArrayDefaultAdapt<T, D> mkArrayAdapt(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultAdapt<T, D>(pArray, iSize, rDefault); }
-#define mkArrayAdaptDM(A, D) mkArrayAdapt(A, sizeof(A) / sizeof(*(A)), D)
+template <class T, class D, size_t size>
+inline StdArrayDefaultAdapt<T, D> mkArrayAdaptDM(T (&array)[size], const D &rDefault) { return StdArrayDefaultAdapt<T, D>(array, size, rDefault); }
 template <class T, class D, class M>
 inline StdArrayDefaultAdapt<T, D, M> mkArrayAdaptMap(T *pArray, size_t iSize, const D &rDefault, M map) { return StdArrayDefaultAdapt<T, D, M>(pArray, iSize, rDefault, map); }
-#define mkArrayAdaptMapDM(A, D, M) mkArrayAdaptMap(A, sizeof(A) / sizeof(*(A)), D, M)
+template <class T, class D, class M, size_t size>
+inline StdArrayDefaultAdapt<T, D, M> mkArrayAdaptMapDM(T (&array)[size], const D &rDefault, M map) { return StdArrayDefaultAdapt<T, D, M>(array, size, rDefault, map); }
 
 // * Array Adaptor (defaulting to another array)
 // Stores a separated list, sets defaults if a value or separator is missing.
@@ -375,9 +407,9 @@ struct StdArrayDefaultArrayAdapt
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		size_t i, iWrite = iSize;
-		bool fCompiler = pComp->isCompiler();
+		bool deserializing = pComp->isDeserializer();
 		// Decompiling: Omit defaults
-		if (!fCompiler && pComp->hasNaming())
+		if (!deserializing && pComp->hasNaming())
 			while (iWrite > 0 && pArray[iWrite - 1] == rDefault[iWrite - 1])
 				iWrite--;
 		// Read/write values
@@ -389,7 +421,7 @@ struct StdArrayDefaultArrayAdapt
 			pComp->Value(mkDefaultAdapt(map(pArray[i]), rDefault[i]));
 		}
 		// Fill rest of array
-		if (fCompiler)
+		if (deserializing)
 			for (; i < iSize; i++)
 				pArray[i] = rDefault[i];
 	}
@@ -410,10 +442,12 @@ struct StdArrayDefaultArrayAdapt
 };
 template <class T, class D>
 inline StdArrayDefaultArrayAdapt<T, D> mkArrayAdaptDefArr(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultArrayAdapt<T, D>(pArray, iSize, rDefault); }
-#define mkArrayAdaptDMA(A, D) mkArrayAdaptDefArr(A, sizeof(A) / sizeof(*(A)), D)
+template <class T, class D, size_t size>
+inline StdArrayDefaultArrayAdapt<T, D> mkArrayAdaptDMA(T (&array)[size], const D &rDefault) { return StdArrayDefaultArrayAdapt<T, D>(array, size, rDefault); }
 template <class T, class D, class M>
 inline StdArrayDefaultArrayAdapt<T, D, M> mkArrayAdaptDefArrMap(T *pArray, size_t iSize, const D &rDefault, const M &map) { return StdArrayDefaultArrayAdapt<T, D, M>(pArray, iSize, rDefault, map); }
-#define mkArrayAdaptDMAM(A, D, M) mkArrayAdaptDefArrMap(A, sizeof(A) / sizeof(*(A)), D, M)
+template <class T, class D, class M, size_t size>
+inline StdArrayDefaultArrayAdapt<T, D, M> mkArrayAdaptDMAM(T (&array)[size], const D &rDefault, const M &map) { return StdArrayDefaultArrayAdapt<T, D, M>(array, size, rDefault, map); }
 
 // * Insertion Adaptor
 // Compile a value before / after another
@@ -439,51 +473,54 @@ inline StdInsertAdapt<T, I> mkInsertAdapt(T &&rObj, I &&rIns, bool fBefore = tru
 template <class T, class P>
 struct StdParameterAdapt
 {
-	StdParameterAdapt(T &rObj, const P &rPar) : rObj(rObj), Par(rPar) { }
-	T &rObj; const P Par;
+	StdParameterAdapt(T && rObj, P && rPar) : rObj(std::forward<T>(rObj)), Par(std::forward<P>(rPar)) { }
+	T && rObj; P && Par;
 	void CompileFunc(StdCompiler *pComp) const
 	{
-		rObj.CompileFunc(pComp, Par);
+		std::forward<T>(rObj).CompileFunc(pComp, std::forward<P>(Par));
 	}
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rObj == nValue; }
 	template <class D> inline StdParameterAdapt &operator = (const D &nValue) { rObj = nValue; return *this; }
 
 	// getting value
-	inline T &GetObj() { return rObj; }
+	inline T && GetObj() { return std::forward<T>(rObj); }
 };
 template <class T, class P>
-inline StdParameterAdapt<T, P> mkParAdapt(T &&rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
+inline StdParameterAdapt<T, P> mkParAdapt(T && rObj, P && rPar)
+{ return StdParameterAdapt<T, P>(std::forward<T>(rObj), std::forward<P>(rPar)); }
 
 // for mkArrayAdaptMap
 template <class P>
 struct StdParameterAdaptMaker
 {
-	const P Par;
-	StdParameterAdaptMaker(const P &rPar) : Par(rPar) { }
+	P && Par;
+	StdParameterAdaptMaker(P && rPar) : Par(std::forward<P>(rPar)) { }
 	template <class T>
-	StdParameterAdapt<T, P> operator ()(T &rObj) const { return StdParameterAdapt<T, P>(rObj, Par); }
+	StdParameterAdapt<T, P> operator ()(T && rObj) const { return StdParameterAdapt<T, P>(std::forward<T>(rObj), std::forward<P>(Par)); }
 };
 template <class P>
-inline StdParameterAdaptMaker<P> mkParAdaptMaker(const P &rPar) { return StdParameterAdaptMaker<P>(rPar); }
+inline StdParameterAdaptMaker<P> mkParAdaptMaker(P && rPar) { return StdParameterAdaptMaker<P>(std::forward<P>(rPar)); }
 
 // * Parameter Adaptor 2
 // Specify a second and a third parameter for the CompileFunc
 template <class T, class P1, class P2>
 struct StdParameter2Adapt
 {
-	StdParameter2Adapt(T &rObj, const P1 &rPar1, const P2 &rPar2) : rObj(rObj), rPar1(rPar1), rPar2(rPar2) { }
-	T &rObj; const P1 &rPar1; const P2 &rPar2;
+	StdParameter2Adapt(T && rObj, P1 && rPar1, P2 && rPar2) :
+		rObj(std::forward<T>(rObj)), rPar1(std::forward<P1>(rPar1)), rPar2(std::forward<P2>(rPar2)) { }
+	T && rObj; P1 && rPar1; P2 && rPar2;
 	void CompileFunc(StdCompiler *pComp) const
 	{
-		rObj.CompileFunc(pComp, rPar1, rPar2);
+		std::forward<T>(rObj).CompileFunc(pComp, std::forward<P1>(rPar1), std::forward<P2>(rPar2));
 	}
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rObj == nValue; }
 	template <class D> inline StdParameter2Adapt &operator = (const D &nValue) { rObj = nValue; return *this; }
 };
 template <class T, class P1, class P2>
-inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T &rObj, const P1 &rPar1, const P2 &rPar2) { return StdParameter2Adapt<T, P1, P2>(rObj, rPar1, rPar2); }
+inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T && rObj, P1 && rPar1, P2 && rPar2)
+{ return StdParameter2Adapt<T, P1, P2>(std::forward<T>(rObj), std::forward<P1>(rPar1), std::forward<P2>(rPar2)); }
 
 template <class T>
 struct StdBasicPtrAdapt
@@ -514,10 +551,10 @@ struct StdPtrAdapt: StdBasicPtrAdapt<T>
 	}
 
 	// For use with StdParAdapt
-	template<class P>
-	void CompileFunc(StdCompiler *pComp, const P& p)
+	template<typename ... P>
+	void CompileFunc(StdCompiler *pComp, P && ...pars)
 	{
-		StdPtrAdaptCompileFunc(pComp, *this, p);
+		StdPtrAdaptCompileFunc(pComp, *this, std::forward<P>(pars)...);
 	}
 };
 
@@ -543,21 +580,21 @@ struct StdContextPtrAdapt: StdBasicPtrAdapt<T>
 	}
 };
 
-template <class T>
-void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt)
+template <class T, typename ... P>
+void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt, P && ...pars)
 {
-	bool fCompiler = pComp->isCompiler(),
+	bool deserializing = pComp->isDeserializer(),
 		fNaming = pComp->hasNaming();
 	// Compiling? Clear object before
-	if(fCompiler) { delete adapt.rpObj; adapt.rpObj = NULL; }
+	if(deserializing) { delete adapt.rpObj; adapt.rpObj = nullptr; }
 	// Null checks - different with naming support.
 	if(adapt.fAllowNull)
 		if(fNaming)
 		{
 			// Null check: just omit when writing
-			if(!fCompiler && !adapt.rpObj) return;
+			if(!deserializing && !adapt.rpObj) return;
 			// Set up naming
-			if(!pComp->Name(adapt.szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
+			if(!pComp->Name(adapt.szNaming)) { assert(deserializing); pComp->NameEnd(); return; }
 		}
 		else
 		{
@@ -566,72 +603,32 @@ void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt)
 			// Null? Nothing further to do
 			if(fNull) return;
 		}
-	else if(!fCompiler)
+	else if(!deserializing)
 		assert(adapt.rpObj);
 	// Compile value
-	if(fCompiler)
-		StdPtrAdaptCompileNewFunc(adapt, pComp);
+	if(deserializing)
+		StdPtrAdaptCompileNewFunc(adapt, pComp, std::forward<P>(pars)...);
 	else
-		StdPtrAdaptDecompileNewFunc(adapt, pComp);
+		StdPtrAdaptDecompileNewFunc(adapt, pComp, std::forward<P>(pars)...);
 
 	// Close naming
 	if(adapt.fAllowNull && fNaming) pComp->NameEnd();
 }
 
-// TODO: Avoid code duplication with the above function
-template <class T, class P>
-void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt, const P& par)
-{
-	bool fCompiler = pComp->isCompiler(),
-		fNaming = pComp->hasNaming();
-	// Compiling? Clear object before
-	if(fCompiler) { delete adapt.rpObj; adapt.rpObj = NULL; }
-	// Null checks - different with naming support.
-	if(adapt.fAllowNull)
-		if(fNaming)
-		{
-			// Null check: just omit when writing
-			if(!fCompiler && !adapt.rpObj) return;
-			// Set up naming
-			if(!pComp->Name(adapt.szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
-		}
-		else
-		{
-			bool fNull = !! adapt.rpObj;
-			pComp->Value(fNull);
-			// Null? Nothing further to do
-			if(fNull) return;
-		}
-	else if(!fCompiler)
-		assert(adapt.rpObj);
-	// Compile value
-	if(fCompiler)
-		StdPtrAdaptCompileNewFunc(adapt, pComp, par);
-	else
-		StdPtrAdaptDecompileNewFunc(adapt, pComp, par);
 
-	// Close naming
-	if(adapt.fAllowNull && fNaming) pComp->NameEnd();
-}
-
-template <class T>
-void StdPtrAdaptCompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp) { CompileNewFunc(adapt.rpObj, pComp); }
-template <class T, class ContextT>
-void StdPtrAdaptCompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp) { CompileNewFuncCtx(adapt.rpObj, pComp, *adapt.pCtx); }
-template <class T, class P>
-void StdPtrAdaptCompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, const P& par) { CompileNewFunc(adapt.rpObj, pComp, par); }
-template <class T, class ContextT, class P>
-void StdPtrAdaptCompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, const P& par) { CompileNewFuncCtx(adapt.rpObj, pComp, *adapt.pCtx, par); }
-
+template <class T, typename ... P>
+void StdPtrAdaptCompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, P && ...pars) { CompileNewFunc(adapt.rpObj, pComp, std::forward<P>(pars)...); }
+template <class T, class ContextT, typename ... P>
+void StdPtrAdaptCompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, P && ...pars) { CompileNewFuncCtx(adapt.rpObj, pComp, *adapt.pCtx, std::forward<P>(pars)...); }
 
 template <class T>
 void StdPtrAdaptDecompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp) { pComp->Value(mkDecompileAdapt(*adapt.rpObj)); }
 template <class T, class ContextT>
 void StdPtrAdaptDecompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp) { pComp->Value(mkDecompileAdapt(*adapt.rpObj)); }
-template <class T, class P>
-void StdPtrAdaptDecompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, const P& par) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), par)); }
-template <class T, class ContextT, class P>
-void StdPtrAdaptDecompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, const P& par) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), par)); }
+template <class T, typename ... P>
+void StdPtrAdaptDecompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, P && ...pars) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), std::forward<P>(pars)...)); }
+template <class T, class ContextT, typename ... P>
+void StdPtrAdaptDecompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, P && ...pars) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), std::forward<P>(pars)...)); }
 
 template <class T>
 inline StdPtrAdapt<T> mkPtrAdapt(T *&rpObj, bool fAllowNull = true) { return StdPtrAdapt<T>(rpObj, fAllowNull); }
@@ -660,10 +657,10 @@ struct StdSTLContainerAdapt
 	{
 		typedef typename C::value_type T;
 		// Get compiler specs
-		bool fCompiler = pComp->isCompiler();
+		bool deserializing = pComp->isDeserializer();
 		bool fNaming = pComp->hasNaming();
 		// Decompiling?
-		if (!fCompiler)
+		if (!deserializing)
 		{
 			// Write size (binary only)
 			if (!fNaming)
@@ -748,7 +745,7 @@ struct StdIntPackAdapt
 		}
 		T val; uint8_t tmp;
 		// writing?
-		if (!pComp->isCompiler())
+		if (!pComp->isDeserializer())
 		{
 			val = rVal;
 			for (;;)
@@ -819,7 +816,7 @@ struct StdEnumAdapt
 			return;
 		}
 		// writing?
-		if (!pComp->isCompiler())
+		if (!pComp->isDeserializer())
 		{
 			// Find value
 			const Entry *pName = pNames;
@@ -906,7 +903,7 @@ struct StdBitfieldAdapt
 			return;
 		}
 		// writing?
-		if (!pComp->isCompiler())
+		if (!pComp->isDeserializer())
 		{
 			T val = rVal, orig_val = rVal;
 			// Write until value is comsumed
@@ -1000,7 +997,7 @@ struct StdNamingCountAdapt
 	{
 		if (pComp->hasNaming())
 		{
-			if (pComp->isCompiler())
+			if (pComp->isDeserializer())
 				iCount = pComp->NameCount(szName);
 		}
 		else
@@ -1021,13 +1018,13 @@ public:
 	{
 		if (!pComp->isVerbose())
 			pComp->Raw(pData, iSize);
-		char szData[2+1]; bool fCompiler = pComp->isCompiler();
+		char szData[2+1]; bool deserializing = pComp->isDeserializer();
 		for (size_t i = 0; i < iSize; i++)
 		{
 			uint8_t *pByte = reinterpret_cast<uint8_t *>(pData) + i;
-			if (!fCompiler) sprintf(szData, "%02x", *pByte);
+			if (!deserializing) sprintf(szData, "%02x", *pByte);
 			pComp->String(szData, 2, StdCompiler::RCT_Idtf);
-			if (fCompiler)
+			if (deserializing)
 			{
 				unsigned int b;
 				if (sscanf(szData, "%02x", &b) != 1)

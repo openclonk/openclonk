@@ -9,16 +9,17 @@
 
 local is_explicit_skin = false;
 
-private func SeedChance() { return 300; }
-private func SeedArea() { return 120; }
-private func SeedAmount() { return 6; }
+local plant_seed_chance = 33;
+local plant_seed_area = 120;
+local plant_seed_amount = 6;
+local plant_seed_offset = 5;
 
 public func Construction()
 {
 	StartGrowth(1);
 	SetSkin(Random(4));
 	is_explicit_skin = false;
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(RandomX(850,1200)), Trans_Rotate(RandomX(0,359),0,1,0)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(RandomX(850, 1200)), Trans_Rotate(RandomX(0, 359),0, 1, 0)));
 	
 	inherited(...);
 }

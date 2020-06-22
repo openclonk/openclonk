@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,7 +18,7 @@
 #ifndef INC_C4StartupOptionsDlg
 #define INC_C4StartupOptionsDlg
 
-#include "C4Startup.h"
+#include "gui/C4Startup.h"
 
 // startup dialog: Options
 class C4StartupOptionsDlg : public C4StartupDlg
@@ -26,20 +26,20 @@ class C4StartupOptionsDlg : public C4StartupDlg
 	// main dlg stuff -----------------------------------------------------
 public:
 	C4StartupOptionsDlg(); // ctor
-	~C4StartupOptionsDlg(); // dtor
+	~C4StartupOptionsDlg() override; // dtor
 
 private:
 	class C4KeyBinding *pKeyBack;
-	bool fConfigSaved; // set when config has been saved because dlg is closed; prevents double save
-	bool fCanGoBack; // set if dlg has not been recreated yet, in which case going back to a previous dialog is not possible
+	bool fConfigSaved{false}; // set when config has been saved because dlg is closed; prevents double save
+	bool fCanGoBack{true}; // set if dlg has not been recreated yet, in which case going back to a previous dialog is not possible
 	C4GUI::Tabular *pOptionsTabular;
 
 protected:
-	virtual bool OnEnter() { return false; } // Enter ignored
-	virtual bool OnEscape() { DoBack(); return true; }
+	bool OnEnter() override { return false; } // Enter ignored
+	bool OnEscape() override { DoBack(); return true; }
 	bool KeyBack() { DoBack(); return true; }
-	virtual void OnClosed(bool fOK);    // callback when dlg got closed - save config
-	virtual void UserClose(bool fOK)   // callback when the user tried to close the dialog (e.g., by pressing Enter in an edit) - just ignore this and save config instead
+	void OnClosed(bool fOK) override;    // callback when dlg got closed - save config
+	void UserClose(bool fOK) override   // callback when the user tried to close the dialog (e.g., by pressing Enter in an edit) - just ignore this and save config instead
 	{ if (fOK) SaveConfig(false, true); }
 
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(); }
@@ -49,8 +49,8 @@ protected:
 public:
 	void DoBack(); // back to main menu
 	
-	virtual bool SetSubscreen(const char *szToScreen); // go to specified property sheet
-	virtual void OnKeyboardLayoutChanged(); // keyboard layout changed: update keys from scan codes
+	bool SetSubscreen(const char *szToScreen) override; // go to specified property sheet
+	void OnKeyboardLayoutChanged() override; // keyboard layout changed: update keys from scan codes
 
 public:
 	void RecreateDialog(bool fFade);
@@ -61,7 +61,7 @@ private:
 	class SmallButton : public C4GUI::Button
 	{
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo); // draw the button
+		void DrawElement(C4TargetFacet &cgo) override; // draw the button
 
 	public:
 		SmallButton(const char *szText, const C4Rect &rtBounds) // ctor
@@ -94,7 +94,7 @@ private:
 	protected:
 		void OnCheckChange(C4GUI::Element *pCheckBox);
 	public:
-		BoolConfig(const C4Rect &rcBounds, const char *szName, bool *pbVal, int32_t *piVal, bool fInvert=false, int32_t *piRestartChangeCfgVal=NULL);
+		BoolConfig(const C4Rect &rcBounds, const char *szName, bool *pbVal, int32_t *piVal, bool fInvert=false, int32_t *piRestartChangeCfgVal=nullptr);
 	};
 	// editbox below descriptive label sharing one window for common tooltip
 	class EditConfig : public C4GUI::LabeledEdit
@@ -117,11 +117,11 @@ private:
 		C4GUI::Label *pOperationCancelLabel; int32_t iResChangeSwitchTime;
 	public:
 		ResChangeConfirmDlg();
-		~ResChangeConfirmDlg();
-		void OnSec1Timer(); // update timer label
+		~ResChangeConfirmDlg() override;
+		void OnSec1Timer() override; // update timer label
 	protected:
-		virtual bool OnEnter() { return true; } // Pressing Enter does not confirm this dialog, so "blind" users are less likely to accept their change
-		virtual const char *GetID() { return "ResChangeConfirmDialog"; }
+		bool OnEnter() override { return true; } // Pressing Enter does not confirm this dialog, so "blind" users are less likely to accept their change
+		const char *GetID() override { return "ResChangeConfirmDialog"; }
 	};
 
 	void OnWindowedModeComboFill(C4GUI::ComboBox_FillCB *pFiller);
@@ -130,7 +130,7 @@ private:
 	bool OnGfxResComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
-	bool TryNewResolution(int32_t iResX, int32_t iResY);
+	bool TryNewResolution(int32_t iResX, int32_t iResY, int32_t iRefreshRate);
 	StdStrBuf GetGfxResString(int32_t iResX, int32_t iResY); // convert resolution to string to be displayed in resolution choice combobox
 	const char * GetWindowedName(int32_t mode = -1);
 
@@ -156,7 +156,7 @@ private:
 	class KeySelDialog : public C4GUI::MessageDialog
 	{
 	private:
-		class C4KeyBinding *pKeyListener;
+		std::unique_ptr<C4KeyBinding> KeyListeners;
 		C4KeyCodeEx key;
 		const class C4PlayerControlAssignment *assignment;
 		const class C4PlayerControlAssignmentSet *assignment_set;
@@ -165,10 +165,13 @@ private:
 		static C4GUI::Icons GetDlgIcon(const class C4PlayerControlAssignmentSet *assignment_set);
 
 	protected:
-		bool KeyDown(const C4KeyCodeEx &key);
+		bool KeyDown(const C4KeyCodeEx &key) { return KeyPress(key, true); };
+		bool KeyUp(const C4KeyCodeEx &key) { return KeyPress(key, false); };
+		bool KeyPress(const C4KeyCodeEx &key, bool fDown);
+		void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override;
 	public:
 		KeySelDialog(const class C4PlayerControlAssignment *assignment, const class C4PlayerControlAssignmentSet *assignment_set);
-		virtual ~KeySelDialog();
+		~KeySelDialog() override = default;
 
 		C4KeyCodeEx GetKeyCode() { return key; }
 
@@ -187,7 +190,7 @@ private:
 
 			void UpdateAssignmentString();
 		public:
-			virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+			void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override;
 
 			ControlAssignmentLabel(class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, const C4Rect &bounds);
 		};
@@ -196,11 +199,10 @@ private:
 		class ListItem : public C4GUI::Window
 		{
 		private:
-			ControlConfigListBox *parent_list;
 			ControlAssignmentLabel *assignment_label;
 			bool has_extra_spacing; // if true, add a bit of spacing on top of this item to group elements
 
-			virtual int32_t GetListItemTopSpacing() { return C4GUI::Window::GetListItemTopSpacing() + (has_extra_spacing*GetBounds().Hgt/2); }
+			int32_t GetListItemTopSpacing() override { return C4GUI::Window::GetListItemTopSpacing() + (has_extra_spacing*GetBounds().Hgt/2); }
 
 		public:
 			ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, bool first_of_group);
@@ -227,13 +229,12 @@ private:
 		int32_t iSelectedCtrlSet; // keyboard or gamepad set that is currently being configured
 		class C4GUI::IconButton ** ppKeyControlSetBtns; // buttons to select configured control set - array in length of iMaxControlSets
 		class KeySelButton * KeyControlBtns[C4MaxKey];  // buttons to configure individual kbd set buttons
-		C4GamePadOpener *pGamepadOpener; // opened gamepad for configuration
 		C4StartupOptionsDlg *pOptionsDlg;
 		ControlConfigListBox *control_list;
 		class C4GUI::CheckBox *pGUICtrl;
 	public:
 		ControlConfigArea(const C4Rect &rcArea, int32_t iHMargin, int32_t iVMargin, bool fGamepad, C4StartupOptionsDlg *pOptionsDlg);
-		virtual ~ControlConfigArea();
+		~ControlConfigArea() override;
 
 		void UpdateCtrlSet();
 

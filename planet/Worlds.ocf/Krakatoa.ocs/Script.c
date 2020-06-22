@@ -65,6 +65,10 @@ protected func InitializePlayer(int plr)
 
 	// Give the player the elementary base materials.
 	GivePlayerElementaryBaseMaterial(plr);
+
+	// When rejoining, try joining at a flag. The default position may
+	// otherwise be on the wrong side of the volcano.
+	var flag = FindObject(Find_ID(Flagpole));
 	
 	// Give crew some equipment.
 	var index = 0, crew;
@@ -75,6 +79,8 @@ protected func InitializePlayer(int plr)
 		if (index == 2)
 			crew->CreateContents(Axe);
 		crew->CreateContents(Shovel);
+		if (flag)
+			crew->SetPosition(flag->GetX(), flag->GetY());
 	}
 
 	// Initialize the intro sequence if not yet started.
@@ -189,6 +195,13 @@ global func FxEnsureTreesTimer()
 		if (!Random(20))
 			PlaceVegetation(Tree_Coconut, 0, 0, LandscapeWidth(), LandscapeHeight(), 3);
 	return FX_OK;
+}
+
+protected func OnGoalsFulfilled()
+{
+	// Give the remaining players their achievement.
+	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	return false;
 }
 
 
@@ -307,7 +320,7 @@ global func FxBigEruptionTimer(object target, proplist effect, int time)
 		obj->SetXDir(xdir);
 		obj->SetYDir(Sin(ang, lev) + RandomX(-3, 3));
 		obj->SetRDir(-10 + Random(21));
-		obj->DoCon(RandomX(-20,40));
+		obj->DoCon(RandomX(-20, 40));
 	}
 	// Some lava glow and smoke through particles.
 	return FX_OK;

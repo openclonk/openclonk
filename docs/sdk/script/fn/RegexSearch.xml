@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>RegexSearch</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>text</name>
+          <desc>String to search in.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>regex</name>
+          <desc>Regular expression in ECMAScript syntax.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>flags</name>
+          <desc>
+            Bitmask of the following values:
+            <table>
+              <rowh>
+                <col>Constant</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <literal_col>Regex_CaseInsensitive</literal_col>
+                <col>Regular expression is case insensitive.</col>
+              </row>
+              <row>
+                <literal_col>Regex_FirstOnly</literal_col>
+                <col>Stop after first match, returning an array with zero or one elements.</col>
+              </row>
+            </table>
+          </desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Performs a regular expression match, returning an array of match positions.
+    </desc>
+    <examples>
+      <example>
+        <code><funclink>Log</funclink>("%v", RegexSearch("hello world", "l"));</code>
+        <text>Searches for the character l, returning [2, 3, 9].</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RegexReplace</funclink>
+      <funclink>RegexMatch</funclink>
+      <funclink>RegexSplit</funclink>
+    </related>
+  </func>
+  <author>Luchs</author><date>2016-09</date>
+</funcs>

@@ -1,4 +1,4 @@
  Minenrettung 
 
-Die Mine in den Clepalbergen wurde schon vor langer Zeit verlassen. Es hat sich wegen dem eisigen Wetter un dem schwierigen Terrain als zu gefährlich herausgestellt diese Mine weiter zu betreiben. Erst vor kurzem wurde die Mine wieder neu erschlossen, doch es dauerte nicht lange bis die ersten Unfälle passierten. Ein Notruf von drei Minenarbeitern ist empfangen worden. Ihre Stromversorgung für ihren Fahrstuhl ist zusammengebrochen und sie sind nun in der Mine gefangen. Kannst du die Stromversorgung wiederherstellen und die Minenarbeiter retten?
+Die Mine in den Clepalbergen wurde schon vor langer Zeit verlassen. Es hat sich wegen dem eisigen Wetter un dem schwierigen Terrain als zu gefÃ¤hrlich herausgestellt diese Mine weiter zu betreiben. Erst vor kurzem wurde die Mine wieder neu erschlossen, doch es dauerte nicht lange bis die ersten UnfÃ¤lle passierten. Ein Notruf von drei Minenarbeitern ist empfangen worden. Ihre Stromversorgung fÃ¼r ihren Fahrstuhl ist zusammengebrochen und sie sind nun in der Mine gefangen. Kannst du die Stromversorgung wiederherstellen und die Minenarbeiter retten?
 Ziel: Versorge den Fahrstuhl auf dem Berg mit Strom.

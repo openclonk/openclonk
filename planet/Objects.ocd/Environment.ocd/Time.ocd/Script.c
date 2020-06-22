@@ -170,10 +170,15 @@ public func PlaceStars(int lw, int lh)
 	// First remove possible old star objects, to prevent too many.
 	RemoveAll(Find_ID(Stars));
 	
-	// Since stars are almost completely parallax (=in screen coordinates), we only need
-	// to place stars for max. a reasonable maximum resolution, let's say 1920x1200.
-	lw = lw ?? 1920;
-	lh = lh ?? 1200;
+	// Note: The defaults used to be geared just to the (assumed) screen size, because the stars
+	// have parallaxity. This did not work well for two reasons:
+	// 1. Screens have gained a lot of pixels recently, with 4K-and-larger screens getting common.
+	// 2. Even on smaller low-density screens, full map screenshots simulate a way larger viewport.
+	// To be resolably future-proof, I've bumped the maximum screen size to 5K. To fix the second
+	// issue, always create enough stars to fill the whole landscape and also add a 12% margin for
+	// the parallaxity.
+	lw = lw ?? Max(5120, LandscapeWidth())  * 112 / 100;
+	lh = lh ?? Max(2880, LandscapeHeight()) * 112 / 100;
 	
 	// Star Creation.
 	var maxfailedtries = lw * lh / 40000;
@@ -216,15 +221,28 @@ protected func Initialize()
 		CreateObject(Moon);
 	}
 	
+	// Set standard colour of the day
+	daycolour_global = [255, 255, 255];
+	
 	// Set the time to midday (12:00).
-	SetTime(43200); 
+	SetTime(12 * 60);
 	
 	// Add effect that controls time cycle.
 	SetCycleSpeed(30);
 	AddEffect("IntTimeCycle", this, 100, 10, this);
+}
 
-	// Set standard colour of the day
-	daycolour_global = [255, 255, 255];
+public func Destruction()
+{
+	// Only if last object.
+	if (ObjectCount(Find_ID(Time)) > 1) 
+		return;
+	// Remove celestial objects.
+	RemoveAll(Find_Func("IsCelestial"));
+	// Reset sky shading and ambience.
+	SetTime(12 * 60);
+	DoSkyShade();
+	return;
 }
 
 // Cycles through day and night.
@@ -292,9 +310,9 @@ private func DoSkyShade()
 	
 	if (Inside(time, time_set.sunrise_start, time_set.sunrise_end))
 		sunrise = true;
-	else if(Inside(time, time_set.sunrise_end, time_set.sunset_start))
+	else if (Inside(time, time_set.sunrise_end, time_set.sunset_start))
 		day = true;
-	else if(Inside(time, time_set.sunset_start, time_set.sunset_end))
+	else if (Inside(time, time_set.sunset_start, time_set.sunset_end))
 		sunset = true;
 	else
 		night = true;
@@ -311,7 +329,7 @@ private func DoSkyShade()
 	if (!day)
 	{
 		var satellite = FindObject(Find_ID(Moon));
-		if(satellite)
+		if (satellite)
 		{
 			var lightness = satellite->GetMoonLightness();
 			nightcolour = [ 6 * lightness / 100, 8 + 25 * lightness / 100, 15 + 60 * lightness / 100 ];
@@ -390,7 +408,7 @@ public func SaveScenarioObject(props)
 	if (!inherited(props, ...)) 
 		return false;
 	// Save time props.
-	if (GetTime() != 43200) 
+	if (GetTime() != 720) 
 		props->AddCall("Time", this, "SetTime", GetTime());
 	if (GetCycleSpeed() != 30) 
 		props->AddCall("CycleSpeed", this, "SetCycleSpeed", GetCycleSpeed());
@@ -398,6 +416,19 @@ public func SaveScenarioObject(props)
 }
 
 
+/*-- Editor --*/
+
+public func Definition(def)
+{
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.Time = { Name="$Time$", EditorHelp="$TimeHelp$", Type="int", Min = 0, Max = 24*60 - 1, AsyncGet="GetTime", Set="SetTime" };
+	def.EditorProps.CycleSpeed = { Name="$CycleSpeed$", EditorHelp="$CycleSpeedHelp$", Type="int", Min = 0, AsyncGet="GetCycleSpeed", Set="SetCycleSpeed" };
+}
+
+
 /*-- Properties --*/
 
 local Name = "Time";
+local Description = "$Description$";
+local Visibility = VIS_Editor;
+local EditorPlacementLimit = 1;

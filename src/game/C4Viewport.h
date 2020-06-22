@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,10 +20,11 @@
 #ifndef INC_C4Viewport
 #define INC_C4Viewport
 
-#include <C4FacetEx.h>
+#include "graphics/C4FacetEx.h"
 
 class C4ViewportWindow;
 class C4FoWRegion;
+struct ZoomData;
 
 class C4Viewport
 {
@@ -77,6 +78,10 @@ public:
 	/** Return y-position of the center of viewport in landscape coordinates */
 	float GetViewCenterY() { return viewY + ViewHgt/Zoom/2; }
 
+	// Convert window coordinates to game coordinates
+	float WindowToGameX(int32_t win_x) { return GetViewX() + float(win_x) / Zoom; }
+	float WindowToGameY(int32_t win_y) { return GetViewY() + float(win_y) / Zoom; }
+
 	/** Scroll the viewport by x,y */
 	void ScrollView(float byX, float byY);
 	/** Set the view position. */
@@ -113,17 +118,24 @@ protected:
 	void BlitOutput();
 	void AdjustZoomAndPosition();
 public:
+	float GetZoom() const { return Zoom; }
 	void AdjustPosition(bool immediate = false);
 	C4ViewportWindow* GetWindow() {return pWindow.get();}
-	bool UpdateOutputSize();
+	bool UpdateOutputSize(int32_t new_width=0, int32_t new_height=0);
 	bool ViewPositionByScrollBars();
 	bool ScrollBarsByViewPosition();
+
+#ifdef WITH_QT_EDITOR
+	class C4ConsoleQtViewportScrollArea *scrollarea;
+#endif
+
 #ifdef _WIN32
 	friend LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
 	friend class C4ViewportWindow;
 	friend class C4ViewportList;
 	friend class C4GraphicsSystem;
+	friend class C4ConsoleQtViewportView;
 };
 
 class C4ViewportList {
@@ -140,13 +152,13 @@ public:
 	bool CreateViewport(int32_t iPlayer, bool fSilent=false);
 	bool CloseViewport(int32_t iPlayer, bool fSilent);
 	int32_t GetViewportCount();
-	C4Viewport* GetViewport(int32_t iPlayer, C4Viewport* pPrev = NULL);
+	C4Viewport* GetViewport(int32_t iPlayer, C4Viewport* pPrev = nullptr);
 	C4Viewport* GetFirstViewport() { return FirstViewport; }
 	bool CloseViewport(C4Viewport * cvp);
 #ifdef USE_WIN32_WINDOWS
 	C4Viewport* GetViewport(HWND hwnd);
 #endif
-	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius = 0, int32_t *outPlayer = NULL);
+	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius = 0, int32_t *outPlayer = nullptr);
 	bool ViewportNextPlayer();
 
 	bool FreeScroll(C4Vec2D vScrollBy); // key callback: Scroll ownerless viewport by some offset
@@ -155,7 +167,7 @@ public:
 protected:
 	void MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 	void DrawFullscreenBackground();
-	C4Viewport *FirstViewport;
+	C4Viewport *FirstViewport{nullptr};
 	C4Facet ViewportArea;
 	C4RectList BackgroundAreas; // rectangles covering background without viewports in fullscreen
 	friend class C4GUI::Screen;

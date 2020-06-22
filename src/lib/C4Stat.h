@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -36,7 +36,7 @@ public:
 	void ResetPart();
 
 protected:
-	C4Stat* pFirst;
+	C4Stat* pFirst{nullptr};
 
 	void RegisterStat(C4Stat* pStat);
 	void UnRegStat(C4Stat* pStat);

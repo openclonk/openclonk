@@ -6,7 +6,7 @@
   <func>
     <title>GetEffect</title>
     <category>Effects</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -59,7 +59,7 @@ i = <funclink>GetEffectCount</funclink>();
     </examples>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>
-      <funclink>AddEffect</funclink>
+      <funclink>CreateEffect</funclink>
       <funclink>CheckEffect</funclink>
       <funclink>GetEffectCount</funclink>
       <funclink>EffectCall</funclink>

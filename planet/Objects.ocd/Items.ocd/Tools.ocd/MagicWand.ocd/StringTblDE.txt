@@ -1,0 +1,6 @@
+Name=Zauberstab
+Description=Enthaellt verborgene Kraefte.
+NoUseCooldown=Abklingzeit noch nicht verstrichen
+MagicAction=Zauberaktion
+Cooldown=Abklingzeit
+CooldownHelp=Minimalzeit zwischen zwei Zaubern

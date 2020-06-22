@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,17 +16,18 @@
 // dialogs for network information
 
 #include "C4Include.h"
-#include "C4Network2Dialogs.h"
+#include "network/C4Network2Dialogs.h"
 
-#include "C4Network2.h"
-#include "C4Network2Stats.h"
-#include "C4Viewport.h"
-#include "C4GameOptions.h"
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
-#include <C4GraphicsResource.h>
-#include <C4Startup.h>
+#include "control/C4GameControl.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4GameOptions.h"
+#include "gui/C4Startup.h"
+#include "lib/StdColors.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Stats.h"
+#include "player/C4PlayerList.h"
 
 #ifndef HAVE_WINSOCK
 #include <sys/socket.h>
@@ -57,7 +58,7 @@ void C4Network2ClientDlg::UpdateText()
 	}
 	else
 	{
-		// get client (may be NULL for local info)
+		// get client (may be nullptr for local info)
 		C4Network2Client *pNetClient = pClient->getNetClient();
 		// show some info
 		StdCopyStrBuf strInfo;
@@ -93,14 +94,12 @@ void C4Network2ClientDlg::UpdateText()
 				AddLineFmt(LoadResStr("IDS_NET_CLIENT_INFO_CONNECTIONS"),
 				           pNetClient->getMsgConn() == pNetClient->getDataConn() ? "Msg/Data" : "Msg",
 				           ::Network.NetIO.getNetIOName(pNetClient->getMsgConn()->getNetClass()),
-				           inet_ntoa(pNetClient->getMsgConn()->getPeerAddr().sin_addr),
-				           htons(pNetClient->getMsgConn()->getPeerAddr().sin_port),
+						   pNetClient->getMsgConn()->getPeerAddr().ToString().getData(),
 				           pNetClient->getMsgConn()->getPingTime());
 				if (pNetClient->getMsgConn() != pNetClient->getDataConn())
 					AddLineFmt(LoadResStr("IDS_NET_CLIENT_INFO_CONNDATA"),
 					           ::Network.NetIO.getNetIOName(pNetClient->getDataConn()->getNetClass()),
-					           inet_ntoa(pNetClient->getDataConn()->getPeerAddr().sin_addr),
-					           htons(pNetClient->getDataConn()->getPeerAddr().sin_port),
+					           pNetClient->getDataConn()->getPeerAddr().ToString().getData(),
 					           pNetClient->getDataConn()->getPingTime());
 			}
 			else
@@ -116,7 +115,7 @@ void C4Network2ClientDlg::UpdateText()
 // C4Network2ClientListBox::ClientListItem
 
 C4Network2ClientListBox::ClientListItem::ClientListItem(class C4Network2ClientListBox *pForDlg, int iClientID) // ctor
-		: ListItem(pForDlg, iClientID), pStatusIcon(NULL), pName(NULL), pPing(NULL), pActivateBtn(NULL), pKickBtn(NULL), last_sound_time(0)
+		: ListItem(pForDlg, iClientID), pStatusIcon(nullptr), pName(nullptr), pPing(nullptr), pActivateBtn(nullptr), pKickBtn(nullptr), last_sound_time(0)
 {
 	// get associated client
 	const C4Client *pClient = GetClient();
@@ -231,7 +230,7 @@ void C4Network2ClientListBox::ClientListItem::Update()
 	// sound icon?
 	if (last_sound_time)
 	{
-		time_t dt = time(NULL) - last_sound_time;
+		time_t dt = time(nullptr) - last_sound_time;
 		if (dt >= SoundIconShowTime)
 		{
 			// stop showing sound icon
@@ -274,7 +273,7 @@ C4Network2ClientListBox::ClientListItem *C4Network2ClientListBox::GetClientListI
 				return static_cast<ClientListItem *>(list_item2);
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 void C4Network2ClientListBox::ClientListItem::OnButtonActivate(C4GUI::Control *pButton)
@@ -302,7 +301,7 @@ void C4Network2ClientListBox::ClientListItem::OnButtonKick(C4GUI::Control *pButt
 void C4Network2ClientListBox::ClientListItem::SetSoundIcon()
 {
 	// remember time for reset
-	last_sound_time = time(NULL);
+	last_sound_time = time(nullptr);
 	// force icon
 	Update();
 }
@@ -312,7 +311,7 @@ void C4Network2ClientListBox::ClientListItem::SetSoundIcon()
 // C4Network2ClientListBox::ConnectionListItem
 
 C4Network2ClientListBox::ConnectionListItem::ConnectionListItem(class C4Network2ClientListBox *pForDlg, int32_t iClientID, int32_t iConnectionID) // ctor
-		: ListItem(pForDlg, iClientID), iConnID(iConnectionID), pDesc(NULL), pPing(NULL), pReconnectBtn(NULL), pDisconnectBtn(NULL)
+		: ListItem(pForDlg, iClientID), iConnID(iConnectionID), pDesc(nullptr), pPing(nullptr), pDisconnectBtn(nullptr)
 {
 	// get size
 	CStdFont &rUseFont = ::GraphicsResource.TextFont;
@@ -324,14 +323,12 @@ C4Network2ClientListBox::ConnectionListItem::ConnectionListItem(class C4Network2
 	// left indent
 	ca.ExpandLeft(-iIconSize*2);
 	// create subcomponents
-	// reconnect/disconnect buttons
+	// disconnect button
 	if (!Game.Parameters.isLeague())
 	{
 		pDisconnectBtn = new  C4GUI::CallbackButtonEx<C4Network2ClientListBox::ConnectionListItem, C4GUI::IconButton>(C4GUI::Ico_Disconnect, ca.GetFromRight(iIconSize, iIconSize), 0, this, &ConnectionListItem::OnButtonDisconnect);
 		pDisconnectBtn->SetToolTip(LoadResStr("IDS_MENU_DISCONNECT"));
 	}
-	else
-		pDisconnectBtn = NULL;
 	// ping time
 	int32_t sx=40, sy=iIconSize;
 	rUseFont.GetTextExtent("???? ms", sx,sy, true);
@@ -353,10 +350,10 @@ C4Network2IOConnection *C4Network2ClientListBox::ConnectionListItem::GetConnecti
 {
 	// get connection by connection ID
 	C4Network2Client *pNetClient = ::Network.Clients.GetClientByID(iClientID);
-	if (!pNetClient) return NULL;
+	if (!pNetClient) return nullptr;
 	if (iConnID == 0) return pNetClient->getDataConn();
 	if (iConnID == 1) return pNetClient->getMsgConn();
-	return NULL;
+	return nullptr;
 }
 
 void C4Network2ClientListBox::ConnectionListItem::Update()
@@ -383,11 +380,10 @@ void C4Network2ClientListBox::ConnectionListItem::Update()
 	else
 		szConnType = "Data";
 	// display info
-	pDesc->SetText(FormatString("%s: %s (%s:%d l%d)",
+	pDesc->SetText(FormatString("%s: %s (%s l%d)",
 	                            szConnType,
 	                            ::Network.NetIO.getNetIOName(pConn->getNetClass()),
-	                            inet_ntoa(pConn->getPeerAddr().sin_addr),
-	                            htons(pConn->getPeerAddr().sin_port),
+	                            pConn->getPeerAddr().ToString().getData(),
 	                            pConn->getPacketLoss()).getData());
 }
 
@@ -427,7 +423,7 @@ void C4Network2ClientListBox::Update()
 {
 	// sync with client list
 	ListItem *pItem = static_cast<ListItem *>(pClientWindow->GetFirst()), *pNext;
-	const C4Client *pClient = NULL;
+	const C4Client *pClient = nullptr;
 	while ((pClient = Game.Clients.getClient(pClient)))
 	{
 		// skip host in startup board
@@ -446,7 +442,7 @@ void C4Network2ClientListBox::Update()
 			pItem = static_cast<ListItem *>(pItem->GetNext());
 		}
 		else
-			// not present: insert (or add if pItem=NULL)
+			// not present: insert (or add if pItem=nullptr)
 			InsertElement(new ClientListItem(this, pClient->getID()), pItem);
 		// update connections for client
 		// but no connections in startup board
@@ -454,7 +450,7 @@ void C4Network2ClientListBox::Update()
 		// enumerate client connections
 		C4Network2Client *pNetClient = pClient->getNetClient();
 		if (!pNetClient) continue; // local client does not have connections
-		C4Network2IOConnection *pLastConn = NULL;
+		C4Network2IOConnection *pLastConn = nullptr;
 		for (int i = 0; i<2; ++i)
 		{
 			C4Network2IOConnection *pConn = i ? pNetClient->getMsgConn() : pNetClient->getDataConn();
@@ -500,7 +496,7 @@ void C4Network2ClientListBox::SetClientSoundIcon(int32_t client_id)
 // C4Network2ClientListDlg
 
 // singleton
-C4Network2ClientListDlg *C4Network2ClientListDlg::pInstance = NULL;
+C4Network2ClientListDlg *C4Network2ClientListDlg::pInstance = nullptr;
 
 C4Network2ClientListDlg::C4Network2ClientListDlg()
 		: Dialog(::pGUI->GetPreferredDlgRect().Wdt*3/4, ::pGUI->GetPreferredDlgRect().Hgt*3/4, LoadResStr("IDS_NET_CAPTION"), false)
@@ -511,7 +507,7 @@ C4Network2ClientListDlg::C4Network2ClientListDlg()
 	C4Rect rcStatus = caAll.GetFromBottom(pUseFont->GetLineHeight());
 	// create game options; max 1/2 of dialog height
 	pGameOptions = new C4GameOptionsList(caAll.GetFromTop(caAll.GetInnerHeight()/2), true, C4GameOptionsList::GOLS_Runtime);
-	pGameOptions->SetDecoration(false, NULL, true, false);
+	pGameOptions->SetDecoration(false, nullptr, true, false);
 	pGameOptions->SetSelectionDiabled();
 	// but resize to actually used height
 	int32_t iFreedHeight = pGameOptions->ContractToElementHeight();
@@ -529,7 +525,8 @@ C4Network2ClientListDlg::C4Network2ClientListDlg()
 
 C4Network2ClientListDlg::~C4Network2ClientListDlg()
 {
-	if (this==pInstance) pInstance=NULL; Application.Remove(this);
+	if (this==pInstance) pInstance=nullptr;
+	Application.Remove(this);
 }
 
 void C4Network2ClientListDlg::Update()
@@ -562,7 +559,7 @@ void C4Network2ClientListDlg::OnSound(class C4Client *singer)
 // C4Network2StartWaitDlg
 
 C4Network2StartWaitDlg::C4Network2StartWaitDlg()
-		: C4GUI::Dialog(DialogWidth, DialogHeight, LoadResStr("IDS_NET_CAPTION"), false), pClientListBox(NULL)
+		: C4GUI::Dialog(DialogWidth, DialogHeight, LoadResStr("IDS_NET_CAPTION"), false)
 {
 	C4GUI::ComponentAligner caAll(GetContainedClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent);
 	C4GUI::ComponentAligner caButtonArea(caAll.GetFromBottom(C4GUI_ButtonAreaHgt), 0,0);
@@ -616,7 +613,7 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 		btnInternet->SetEnabled(!fIsDisabled);
 		AddElement(btnInternet);
 	}
-	else btnInternet = NULL;
+	else btnInternet = nullptr;
 	bool fIsLeague = false;
 	// League button
 	if (fNetwork)
@@ -628,7 +625,7 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 		btnLeague->SetEnabled(fHost && !fLobby);
 		AddElement(btnLeague);
 	}
-	else btnLeague=NULL;
+	else btnLeague=nullptr;
 	if (fNetwork && fHost)
 	{
 		btnPassword = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(::Network.isPassworded() ? C4GUI::Ico_Ex_Locked : C4GUI::Ico_Ex_Unlocked, caButtons.GetFromLeft(iIconSize, iIconSize), LoadResStr("IDS_NET_PASSWORD_DESC"), &C4GameOptionButtons::OnBtnPassword, this);
@@ -636,7 +633,7 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 		btnComment = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(C4GUI::Ico_Ex_Comment, caButtons.GetFromLeft(iIconSize, iIconSize), LoadResStr("IDS_DESC_COMMENTDESCRIPTIONFORTHIS"), &C4GameOptionButtons::OnBtnComment, this);
 		AddElement(btnComment);
 	}
-	else btnPassword=btnComment=NULL;
+	else btnPassword=btnComment=nullptr;
 	btnRecord = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(Game.Record || fIsLeague ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff, caButtons.GetFromLeft(iIconSize, iIconSize), LoadResStr("IDS_DLGTIP_RECORD"), &C4GameOptionButtons::OnBtnRecord, this);
 	btnRecord->SetEnabled(!fIsLeague);
 	AddElement(btnRecord);
@@ -901,7 +898,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	}
 }
 
-C4Chart::C4Chart(C4Rect &rcBounds) : Element(), pDisplayGraph(NULL), fOwnGraph(false)
+C4Chart::C4Chart(C4Rect &rcBounds) : Element(), pDisplayGraph(nullptr), fOwnGraph(false)
 {
 	this->rcBounds = rcBounds;
 }
@@ -913,9 +910,9 @@ C4Chart::~C4Chart()
 
 
 // singleton
-C4ChartDialog *C4ChartDialog::pChartDlg=NULL;
+C4ChartDialog *C4ChartDialog::pChartDlg=nullptr;
 
-C4ChartDialog::C4ChartDialog() : Dialog(DialogWidth, DialogHeight, LoadResStr("IDS_NET_STATISTICS"), false), pChartTabular(NULL)
+C4ChartDialog::C4ChartDialog() : Dialog(DialogWidth, DialogHeight, LoadResStr("IDS_NET_STATISTICS"), false)
 {
 	// register singleton
 	pChartDlg = this;

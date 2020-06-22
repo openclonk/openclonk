@@ -1,6 +1,0 @@
-[DefCore]
-id=Deco_AltMaterials2
-Version=6,0
-Category=C4D_StaticBack
-Width=1
-Height=1

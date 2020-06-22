@@ -1,0 +1,6 @@
+ReproductionAreaSize=Reproduktionsgebiet
+ReproductionAreaSizeHelp=Groesse des quadratischen Gebietes in Pixeln in dem Tiere der gleichen Art gezaehlt werden, um eine Reproduktion zu verhindern.
+ReproductionRate=Reproduktionsrate
+ReproductionRateHelp=Reproduktionsrate von 0 bis 10000. 0 ist keine Reproduktion; 10000 ist maximale Rate (etwa alle zwei Sekunden).
+MaxCount=Maximale Anzahl
+MaxCountHelp=Maximale Anzahl an Tieren im Reproduktionsgebiet. Wenn diese Zahl ueberschritten wird, vermehren sich die Tiere nichtmehr.

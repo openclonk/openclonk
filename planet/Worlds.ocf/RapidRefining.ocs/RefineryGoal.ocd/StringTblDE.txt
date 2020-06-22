@@ -1,0 +1,3 @@
+Name=Raffinerie
+Description=Bis jetzt hast du %d / %d {{Oil}}, die zur Erfüllung des Spielziels benötigt werden, zur Raffinerie gepumpt.
+DescriptionCompleted=Glückwunsch! Du hast dem Raffineriezufluss genug Öl zugeführt.

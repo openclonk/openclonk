@@ -4,7 +4,7 @@
  * Copyright (c) 2001, 2006-2007, Sven Eberhardt
  * Copyright (c) 2006, Peter Wortmann
  * Copyright (c) 2007, Günther Brammer
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,9 +19,9 @@
 #ifndef C4AULEXEC_H
 #define C4AULEXEC_H
 
-#include <C4Aul.h>
-#include "C4TimeMilliseconds.h"
-#include <C4AulScriptFunc.h>
+#include "platform/C4TimeMilliseconds.h"
+#include "script/C4Aul.h"
+#include "script/C4AulScriptFunc.h"
 
 const int MAX_CONTEXT_STACK = 512;
 const int MAX_VALUE_STACK = 1024;
@@ -43,7 +43,6 @@ struct C4AulScriptContext
 	C4PropList *Obj;
 	C4Value *Return;
 	C4Value *Pars;
-	C4Value *Vars;
 	C4AulScriptFunc *Func;
 	C4AulBCC *CPos;
 	C4TimeMilliseconds tTime; // initialized only by profiler if active
@@ -57,42 +56,43 @@ class C4AulExec
 
 public:
 	C4AulExec()
-			: pCurCtx(Contexts - 1), pCurVal(Values - 1), iTraceStart(-1)
+			: pCurCtx(Contexts - 1), pCurVal(Values - 1)
 	{ }
 
 private:
 	C4AulScriptContext *pCurCtx;
 	C4Value *pCurVal;
 
-	int iTraceStart;
+	int iTraceStart{-1};
 	bool fProfiling;
 	C4TimeMilliseconds tDirectExecStart;
 	uint32_t tDirectExecTotal; // profiler time for DirectExec
-	C4AulScript *pProfiledScript;
+	C4ScriptHost *pProfiledScript;
 
 	C4AulScriptContext Contexts[MAX_CONTEXT_STACK];
 	C4Value Values[MAX_VALUE_STACK];
 
+	void StartProfiling(C4ScriptHost *pScript); // starts recording the times
+	bool IsProfiling() { return fProfiling; }
+	void StopProfiling() { fProfiling=false; }
+	friend class C4AulProfiler;
 public:
 	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors);
-	C4Value Exec(C4AulBCC *pCPos, bool fPassErrors);
-	C4Value DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL);
+	C4Value DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = nullptr, bool parse_function = false);
 
 	void StartTrace();
-	void StartProfiling(C4AulScript *pScript); // resets profling times and starts recording the times
-	void StopProfiling(); // stop the profiler and displays results
-	void AbortProfiling() { fProfiling=false; }
 	inline void StartDirectExec() { if (fProfiling) tDirectExecStart = C4TimeMilliseconds::Now(); }
 	inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += C4TimeMilliseconds::Now() - tDirectExecStart; }
 
 	int GetContextDepth() const { return pCurCtx - Contexts + 1; }
-	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }
+	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : nullptr; }
 	void LogCallStack();
 	static C4String *FnTranslate(C4PropList * _this, C4String *text);
 	static bool FnLogCallStack(C4PropList * _this);
 	void ClearPointers(C4Object *);
 
 private:
+	C4Value Exec(C4AulBCC *pCPos);
 	void PushContext(const C4AulScriptContext &rContext);
 	void PopContext();
 
@@ -184,7 +184,7 @@ private:
 	int LocalValueStackSize() const
 	{
 		return ContextStackSize()
-		       ? pCurVal - pCurCtx->Vars - pCurCtx->Func->VarNamed.iSize + 1
+		       ? pCurVal - pCurCtx->Pars - pCurCtx->Func->GetParCount() - pCurCtx->Func->VarNamed.iSize + 1
 		       : pCurVal - Values + 1;
 	}
 
@@ -195,17 +195,17 @@ private:
 
 		// Typecheck parameters
 		if (!pPar1->CheckParConversion(Type1))
-			throw C4AulExecError(FormatString("operator \"%s\" left side got %s, but expected %s",
+			throw C4AulExecError(FormatString(R"(operator "%s" left side got %s, but expected %s)",
 			                                      opname, pPar1->GetTypeName(), GetC4VName(Type1)).getData());
 		if (!pPar2->CheckParConversion(Type2))
-			throw C4AulExecError(FormatString("operator \"%s\" right side got %s, but expected %s",
+			throw C4AulExecError(FormatString(R"(operator "%s" right side got %s, but expected %s)",
 			                                      opname, pPar2->GetTypeName(), GetC4VName(Type2)).getData());
 	}
 	ALWAYS_INLINE void CheckOpPar(C4V_Type Type1, const char * opname)
 	{
 		// Typecheck parameter
 		if (!pCurVal->CheckParConversion(Type1))
-			throw C4AulExecError(FormatString("operator \"%s\": got %s, but expected %s",
+			throw C4AulExecError(FormatString(R"(operator "%s": got %s, but expected %s)",
 			                                      opname, pCurVal->GetTypeName(), GetC4VName(Type1)).getData());
 	}
 
@@ -226,9 +226,37 @@ private:
 		else
 			throw C4AulExecError(FormatString("can't access %s as array or proplist", pStructure->GetTypeName()).getData());
 	}
-	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList * pContext = NULL);
+	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList * pContext = nullptr);
 };
 
 extern C4AulExec AulExec;
+
+// script profiler entry
+class C4AulProfiler
+{
+private:
+	// map entry
+	struct Entry
+	{
+		C4AulScriptFunc *pFunc;
+		uint32_t tProfileTime;
+
+		bool operator < (const Entry &e2) const { return tProfileTime < e2.tProfileTime ; }
+	};
+
+	// items
+	std::vector<Entry> Times;
+
+	void CollectEntry(C4AulScriptFunc *pFunc, uint32_t tProfileTime);
+	void CollectTimes(C4PropListStatic * p);
+	void CollectTimes();
+	static void ResetTimes(C4PropListStatic * p);
+	static void ResetTimes();
+	void Show();
+public:
+	static void Abort() { AulExec.StopProfiling(); }
+	static void StartProfiling(C4ScriptHost *pScript); // reset times and start collecting new ones
+	static void StopProfiling(); // stop the profiler and displays results
+};
 
 #endif // C4AULEXEC_H

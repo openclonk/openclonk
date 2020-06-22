@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,20 +16,21 @@
 #ifndef INC_C4Network2
 #define INC_C4Network2
 
-#include "C4NetIO.h"
-#include "C4Network2Players.h"
-#include "C4Network2IO.h"
-#include "C4Network2Res.h"
-#include "C4Network2Client.h"
-#include "C4Control.h"
-#include "C4Gui.h"
-#include "C4GameParameters.h"
+#include "control/C4Control.h"
+#include "control/C4GameParameters.h"
+#include "gui/C4Gui.h"
+#include "network/C4NetIO.h"
+#include "network/C4Network2Client.h"
+#include "network/C4Network2IO.h"
+#include "network/C4Network2Players.h"
+#include "network/C4Network2Res.h"
 
 // standard ports
 const int16_t C4NetStdPortTCP = 11112,
               C4NetStdPortUDP = 11113,
               C4NetStdPortDiscovery = 11114,
               C4NetStdPortRefServer = 11111,
+              C4NetStdPortPuncher = 11115,
               C4NetStdPortHTTP = 80;
 
 // resource retrieve wait timeout
@@ -45,7 +46,7 @@ const unsigned int C4NetChaseTargetUpdateInterval = 5; // (s)
 
 // reference
 const unsigned int C4NetReferenceUpdateInterval = 120; // (s)
-const unsigned int C4NetMinLeagueUpdateInterval = 10; // (s)
+const unsigned int C4NetMinLeagueUpdateInterval = 1; // (s)
 
 // voting
 const unsigned int C4NetVotingTimeout = 10; // (s)
@@ -71,9 +72,9 @@ public:
 	C4Network2Status();
 
 protected:
-	C4NetGameState eState;
+	C4NetGameState eState{GS_None};
 	int32_t iCtrlMode;
-	int32_t iTargetCtrlTick;
+	int32_t iTargetCtrlTick{-1};
 
 public:
 	C4NetGameState  getState()            const { return eState; }
@@ -94,7 +95,7 @@ public:
 	void Clear();
 
 	void CompileFunc(StdCompiler *pComp, bool fReference);
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4Network2 : private C4ApplicationSec1Timer
@@ -102,7 +103,7 @@ class C4Network2 : private C4ApplicationSec1Timer
 	friend class C4Network2IO;
 public:
 	C4Network2();
-	virtual ~C4Network2();
+	~C4Network2() override;
 
 public:
 	// network i/o class
@@ -126,46 +127,46 @@ protected:
 	bool fHost;
 
 	// options
-	bool fAllowJoin, fAllowObserve;
+	bool fAllowJoin{false}, fAllowObserve;
 
 	// join resource
 	C4Network2ResCore ResDynamic;
 
 	// resources
-	int32_t iDynamicTick;
-	bool fDynamicNeeded;
+	int32_t iDynamicTick{-1};
+	bool fDynamicNeeded{false};
 
 	// game status flags
-	bool fStatusAck, fStatusReached;
-	bool fChasing;
+	bool fStatusAck{false}, fStatusReached{false};
+	bool fChasing{false};
 
 	// control
-	class C4GameControlNetwork *pControl;
+	class C4GameControlNetwork *pControl{nullptr};
 
 	// lobby
-	C4GameLobby::MainDlg *pLobby;
-	bool fLobbyRunning;
-	C4GameLobby::Countdown *pLobbyCountdown;
+	C4GameLobby::MainDlg *pLobby{nullptr};
+	bool fLobbyRunning{false};
+	C4GameLobby::Countdown *pLobbyCountdown{nullptr};
 
 	// master server used
 	StdCopyStrBuf MasterServerAddress;
 
 	// clients
-	int32_t iNextClientID;
+	int32_t iNextClientID{0};
 
 	// chase
-	uint32_t iLastChaseTargetUpdate;
+	uint32_t iLastChaseTargetUpdate{0};
 
 	// time of last activation request.
 	C4TimeMilliseconds tLastActivateRequest;
 
 	// reference
-	uint32_t iLastReferenceUpdate;
-	uint32_t iLastLeagueUpdate, iLeagueUpdateDelay;
+	uint32_t iLastReferenceUpdate{0};
+	uint32_t iLastLeagueUpdate{0}, iLeagueUpdateDelay;
 	bool fLeagueEndSent;
 
 	// league
-	class C4LeagueClient *pLeagueClient;
+	class C4LeagueClient *pLeagueClient{nullptr};
 
 	// game password
 	StdStrBuf sPassword;
@@ -174,16 +175,16 @@ protected:
 	bool fWrongPassword;
 
 	// delayed activation request?
-	bool fDelayedActivateReq;
+	bool fDelayedActivateReq{false};
 
 	// voting
 	C4Control Votes;
-	class C4VoteDialog *pVoteDialog;
-	bool fPausedForVote;
-	time_t iVoteStartTime, iLastOwnVoting;
+	class C4VoteDialog *pVoteDialog{nullptr};
+	bool fPausedForVote{false};
+	time_t iVoteStartTime, iLastOwnVoting{0};
 
 	// streaming
-	bool fStreaming;
+	bool fStreaming{false};
 	time_t iLastStreamAttempt;
 	C4Record *pStreamedRecord;
 	StdBuf StreamingBuf;
@@ -191,6 +192,10 @@ protected:
 
 	class C4Network2HTTPClient *pStreamer;
 	unsigned int iCurrentStreamAmount, iCurrentStreamPosition;
+
+	// puncher
+	C4NetpuncherID NetpuncherGameID;
+	StdCopyStrBuf NetpuncherAddr;
 
 public:
 
@@ -221,7 +226,7 @@ public:
 	// initialization
 	bool InitHost(bool fLobby);
 	InitResult InitClient(const class C4Network2Reference &Ref, bool fObserver);
-	InitResult InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const class C4ClientCore &HostCore, const char *szPassword = NULL);
+	InitResult InitClient(const std::vector<class C4Network2Address>& Addrs, const class C4ClientCore &HostCore, const char *szPassword = nullptr);
 	bool DoLobby();
 	bool Start();
 	bool Pause();
@@ -232,7 +237,7 @@ public:
 	C4Network2Res::Ref RetrieveRes(const C4Network2ResCore &Core, int32_t iTimeout, const char *szResName, bool fWaitForCore = false);
 
 	// idle processes
-	void OnSec1Timer();
+	void OnSec1Timer() override;
 	void Execute();
 
 	// termination
@@ -252,6 +257,8 @@ public:
 	void OnDisconn(C4Network2IOConnection *pConn);
 	void HandlePacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2IOConnection *pConn);
 	void HandleLobbyPacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2IOConnection *pConn);
+	bool HandlePuncherPacket(C4NetpuncherPacket::uptr, C4NetIO::HostAddress::AddressFamily family);
+	void OnPuncherConnect(C4NetIO::addr_t addr);
 
 	// runtime join stuff
 	void OnGameSynchronized();
@@ -264,7 +271,7 @@ public:
 	void DeactivateInactiveClients(); // host
 
 	// league
-	void LeagueGameEvaluate(const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL);
+	void LeagueGameEvaluate(const char *szRecordName = nullptr, const BYTE *pRecordSHA = nullptr);
 	void LeagueSignupDisable(); // if "internet game" button is switched off in lobby: Remove from league server
 	bool LeagueSignupEnable();  // if "internet game" button is switched on in lobby: (re)Add to league server
 	void InvalidateReference(); // forces a recreation and re-send of the game reference in the next execution cycle
@@ -287,7 +294,7 @@ public:
 	// lobby countdown
 	void StartLobbyCountdown(int32_t iCountdownTime);
 	void AbortLobbyCountdown();
-	bool isLobbyCountDown() { return pLobbyCountdown != 0; }
+	bool isLobbyCountDown() { return pLobbyCountdown != nullptr; }
 
 	// streaming
 	size_t getPendingStreamData() const { return StreamingBuf.getSize() - StreamCompressor.avail_out; }
@@ -295,6 +302,11 @@ public:
 	bool StartStreaming(C4Record *pRecord);
 	bool FinishStreaming();
 	bool StopStreaming();
+
+	// netpuncher
+	C4NetpuncherID::value& getNetpuncherGameID(C4NetIO::HostAddress::AddressFamily family);
+	C4NetpuncherID getNetpuncherGameID() const { return NetpuncherGameID; };
+	StdStrBuf getNetpuncherAddr() const { return NetpuncherAddr; }
 
 protected:
 
@@ -344,11 +356,34 @@ protected:
 	bool LeagueStart(bool *pCancel);
 	bool LeagueUpdate();
 	bool LeagueUpdateProcessReply();
-	bool LeagueEnd(const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL);
+	bool LeagueEnd(const char *szRecordName = nullptr, const BYTE *pRecordSHA = nullptr);
 
 	// streaming
 	bool StreamIn(bool fFinish);
 	bool StreamOut();
+
+	// puncher
+	void InitPuncher();
+
+	// Manages delayed initial connection attempts.
+	class InitialConnect : protected CStdTimerProc
+	{
+		static const uint32_t DELAY = 100; // ms to wait for each batch
+		static const int ADDR_PER_TRY = 4; // how many connection attempts to start each time
+
+		const std::vector<C4Network2Address>& Addrs;
+		std::vector<C4Network2Address>::const_iterator CurrentAddr;
+		const C4ClientCore& HostCore;
+		const char *Password;
+
+		void TryNext();
+		void Done();
+
+	public:
+		InitialConnect(const std::vector<C4Network2Address>& Addrs, const C4ClientCore& HostCore, const char *Password);
+		~InitialConnect() override;
+		bool Execute(int, pollfd *) override;
+	};
 };
 
 extern C4Network2 Network;
@@ -368,11 +403,11 @@ public:
 	int32_t getVoteData() const { return iVoteData; }
 
 private:
-	virtual bool OnEnter() { UserClose(false); return true; } // the vote dialog defaults to "No" [MarkFra]
-	virtual void OnClosed(bool fOK);
+	bool OnEnter() override { UserClose(false); return true; } // the vote dialog defaults to "No" [MarkFra]
+	void OnClosed(bool fOK) override;
 
 	// true for dialogs that receive full keyboard and mouse input even in shared mode
-	virtual bool IsExclusiveDialog() { return true; }
+	bool IsExclusiveDialog() override { return true; }
 };
 
 // * Packets *
@@ -380,7 +415,7 @@ private:
 class C4PacketJoinData : public C4PacketBase
 {
 public:
-	C4PacketJoinData() { }
+	C4PacketJoinData() = default;
 
 protected:
 
@@ -415,7 +450,7 @@ public:
 	void SetDynamicCore(const C4Network2ResCore &Core) { Dynamic = Core; }
 	void SetStartCtrlTick(int32_t iTick)               { iStartCtrlTick = iTick; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4PacketActivateReq : public C4PacketBase
@@ -429,7 +464,7 @@ protected:
 public:
 	int32_t getTick() const { return iTick; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 #endif

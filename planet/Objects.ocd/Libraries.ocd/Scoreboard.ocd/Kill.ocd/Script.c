@@ -6,7 +6,7 @@
 		Make sure that the following functions return _inherited(...);
 			* Initialize();
 			* InitializePlayer(int plr);
-			* RelaunchPlayer(int plr, int killer);
+			* OnClonkDeath(object clonk, int killer);
 			* RemovePlayer(int plr);
 --*/
 
@@ -35,19 +35,20 @@ protected func InitializePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
-protected func RelaunchPlayer(int plr, int killer)
+protected func OnClonkDeath(object clonk, int killer)
 {
+	var plr = clonk->GetOwner();
 	var plrid = GetPlayerID(killer);
 	// Only if killer exists and has not committed suicide.
 	if (killer == plr || killer == NO_OWNER)
-		return _inherited(plr, killer, ...);
+		return _inherited(clonk, killer, ...);
 	// Only if killer and victim are on different teams.
 	if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(plr))
-		return _inherited(plr, killer, ...);
+		return _inherited(clonk, killer, ...);
 	// Modify scoreboard kill count entry for killer.
 	score_kill_list[plrid]++;
 	Scoreboard->SetPlayerData(killer, "kills", score_kill_list[plrid]);
-	return _inherited(plr, killer, ...);
+	return _inherited(clonk, killer, ...);
 }
 
 protected func RemovePlayer(int plr)

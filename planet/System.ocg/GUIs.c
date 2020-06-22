@@ -1,12 +1,18 @@
-/*
+/**
+	GUI.c
 	This file contains functions that are used for layouting custom menus.
+
+	@author Zapper
 */
 
+
+// documented in /docs/sdk/script/fn
 global func GuiAction_Call(proplist target, string function, value)
 {
 	return [GUI_Call, target, function, value];
 }
 
+// documented in /docs/sdk/script/fn
 global func GuiAction_SetTag(string tag, int subwindow, object target)
 {
 	return [GUI_SetTag, tag, subwindow, target];

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,15 +15,12 @@
  */
 
 #include "C4Include.h"
-#include "C4Network2IRC.h"
+#include "network/C4Network2IRC.h"
 
-#include <C4Application.h>
-#include "C4Config.h"
 #include "C4Version.h"
-#include "C4InteractiveThread.h"
-#include "C4Gui.h" // for clearly visi
-
-#include <cctype> // for isdigit
+#include "game/C4Application.h"
+#include "gui/C4Gui.h" // for clearly visi
+#include "network/C4InteractiveThread.h"
 
 // Helper for IRC command parameter parsing
 StdStrBuf ircExtractPar(const char **ppPar)
@@ -37,7 +34,7 @@ StdStrBuf ircExtractPar(const char **ppPar)
 	{
 		// Reference everything after the double-colon
 		Result.Ref(*ppPar + 1);
-		*ppPar = NULL;
+		*ppPar = nullptr;
 	}
 	else
 	{
@@ -48,7 +45,7 @@ StdStrBuf ircExtractPar(const char **ppPar)
 		if (**ppPar == ' ')
 			(*ppPar)++;
 		else
-			*ppPar = NULL;
+			*ppPar = nullptr;
 	}
 	// Done
 	return Result;
@@ -65,7 +62,7 @@ C4Network2IRCUser::C4Network2IRCUser(const char *szName)
 // *** C4Network2IRCChannel
 
 C4Network2IRCChannel::C4Network2IRCChannel(const char *szName)
-		: Name(szName), pUsers(NULL), fReceivingUsers(false)
+		: Name(szName), pUsers(nullptr), fReceivingUsers(false)
 {
 
 }
@@ -80,7 +77,7 @@ C4Network2IRCUser *C4Network2IRCChannel::getUser(const char *szName) const
 	for (C4Network2IRCUser *pUser = pUsers; pUser; pUser = pUser->Next)
 		if (SEqual(pUser->getName(), szName))
 			return pUser;
-	return NULL;
+	return nullptr;
 }
 
 void C4Network2IRCChannel::OnUsers(const char *szUsers, const char *szPrefixes)
@@ -180,14 +177,7 @@ void C4Network2IRCChannel::ClearUsers()
 // *** C4Network2IRCClient
 // Created statically in C4Application.cpp, refer by &Application.IRCClient
 
-C4Network2IRCClient::C4Network2IRCClient()
-		: fConnecting(false), fConnected(false),
-		pChannels(NULL),
-		pLog(NULL), pLogEnd(NULL), iLogLength(0), iUnreadLogLength(0),
-		pNotify(NULL)
-{
-
-}
+C4Network2IRCClient::C4Network2IRCClient() = default;
 
 C4Network2IRCClient::~C4Network2IRCClient()
 {
@@ -246,7 +236,7 @@ size_t C4Network2IRCClient::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::ad
 bool C4Network2IRCClient::OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO::addr_t &AddrConnect, const addr_t *pOwnAddr, C4NetIO *pNetIO)
 {
 	// Security checks
-	if (!fConnecting || fConnected || !AddrEqual(AddrConnect, ServerAddr)) return false;
+	if (!fConnecting || fConnected || AddrConnect != ServerAddr) return false;
 	CStdLock Lock(&CSec);
 	// Save connection data
 	fConnected = true;
@@ -288,7 +278,7 @@ C4Network2IRCChannel *C4Network2IRCClient::getChannel(const char *szName) const
 	for (C4Network2IRCChannel *pChan = pChannels; pChan; pChan = pChan->Next)
 		if (SEqualNoCase(pChan->getName(), szName))
 			return pChan;
-	return NULL;
+	return nullptr;
 }
 
 void C4Network2IRCClient::ClearMessageLog()
@@ -318,8 +308,10 @@ bool C4Network2IRCClient::Connect(const char *szServer, const char *szNick, cons
 	if (!Init())
 		return false;
 	// Resolve address
-	if (!ResolveAddress(szServer, &ServerAddr, 6666))
+	ServerAddr.SetAddress(StdStrBuf(szServer));
+	if (ServerAddr.IsNull())
 		{ SetError("Could no resolve server address!"); return false; }
+	ServerAddr.SetDefaultPort(6666);
 	// Set connection data
 	Nick = szNick; RealName = szRealName;
 	Password = szPassword; AutoJoin = szAutoJoin;
@@ -400,7 +392,7 @@ bool C4Network2IRCClient::Join(const char *szChannel)
 			const char* message = LoadResStr("IDS_ERR_CHANNELNOTALLOWED");
 			PushMessage(MSG_Status, "", "", message);
 			SetError("Joining this channel not allowed");
-			Application.InteractiveThread.ThreadPostAsync<bool>(std::bind(&C4GUI::Screen::ShowMessage, ::pGUI, message, LoadResStr("IDS_DLG_CHAT"), C4GUI::Ico_Error, static_cast<int32_t* const &>(0)));
+			Application.InteractiveThread.ThreadPostAsync<bool>(std::bind(&C4GUI::Screen::ShowMessage, ::pGUI, message, LoadResStr("IDS_DLG_CHAT"), C4GUI::Ico_Error, static_cast<int32_t* const &>(nullptr)));
 			return false;
 		}
 	return Send("JOIN", szChannel);
@@ -684,7 +676,7 @@ void C4Network2IRCClient::OnNumericCommand(const char *szSender, int iCommand, c
 	if (fShowMessage)
 	{
 		// Check if first parameter is some sort of channel name
-		C4Network2IRCChannel *pChannel = NULL;
+		C4Network2IRCChannel *pChannel = nullptr;
 		if (szParameters && *szParameters && *szParameters != ':')
 			pChannel = getChannel(ircExtractPar(&szParameters).getData());
 		// Go over other parameters
@@ -769,8 +761,8 @@ void C4Network2IRCClient::PopMessage()
 	// Unlink message
 	C4Network2IRCMessage *pMsg = pLog;
 	pLog = pMsg->Next;
-	if (!pLog) pLogEnd = NULL;
-	if (pLogLastRead == pMsg) pLogLastRead = NULL;
+	if (!pLog) pLogEnd = nullptr;
+	if (pLogLastRead == pMsg) pLogLastRead = nullptr;
 	// Delete it
 	delete pMsg;
 	iLogLength--;

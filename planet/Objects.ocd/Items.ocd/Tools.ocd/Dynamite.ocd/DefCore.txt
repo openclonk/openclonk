@@ -1,6 +1,6 @@
 [DefCore]
 id=Dynamite
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=3
 Height=10
@@ -10,7 +10,6 @@ Vertices=3
 VertexX=-2,+2,0
 VertexY=5,5,-5
 VertexFriction=90,90,90
-Value=3
-Mass=8
+Value=6
+Mass=6
 Rotate=1
-Components=Coal=1;Firestone=1

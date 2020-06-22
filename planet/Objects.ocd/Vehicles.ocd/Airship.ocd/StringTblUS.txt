@@ -1,2 +1,13 @@
 Name=Airship
 Description=Lighter-than-air travel and transport vehicle. Caution: the balloon contains volatile gas. Do not puncture.
+None=None
+NoPilotHelp=The airship will stand in the air without a pilot.
+ClonkPilotHelp=A clonk controls the airship.
+Pilot=Pilot
+PilotHelp=Typ eof clonk to steer the airship.
+FlySpeed=Flight speed
+FlySpeedHelp=How fast the airship can fly.
+Crew=Crew
+CrewHelp=Additional clonks to be placed on each airship.
+HitPoints=Hit points
+HitPointsHelp=How much damage the airship needs to take to burn down.

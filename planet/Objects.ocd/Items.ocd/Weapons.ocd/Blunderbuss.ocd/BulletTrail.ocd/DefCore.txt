@@ -1,0 +1,11 @@
+[DefCore]
+id=BulletTrail
+Category=C4D_None
+Width=5
+Height=5
+Offset=-2,-2
+Vertices=1
+VertexX=0
+VertexY=0
+VertexFriction=100
+HideInCreator=true

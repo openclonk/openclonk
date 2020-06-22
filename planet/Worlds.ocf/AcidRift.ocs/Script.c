@@ -10,7 +10,7 @@
 static intro_init;
 
 // Set in Map.c
-static g_start_map_x, g_start_map_y;
+//static g_start_map_x, g_start_map_y;
 
 static g_start_x, g_start_y;
 
@@ -88,8 +88,9 @@ protected func InitializePlayer(int plr)
 	SetBaseMaterial(plr, Cloth, 10);
 	SetBaseProduction(plr, Cloth, 5);
 	
-	// Set player wealth.
-	SetWealth(plr, 75 - 25 * SCENPAR_Difficulty);
+	// Ensure mimimum player wealth.
+	var add_wealth = Max(0, 75 - 25 * SCENPAR_Difficulty - GetWealth(plr));
+	DoWealth(plr, add_wealth);
 	
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)
@@ -109,7 +110,7 @@ private func InitEnvironment(int map_size, int difficulty)
 	SetSkyParallax(0, 20, 20);
 	SetSkyAdjust(RGBa(225, 255, 205, 191), RGB(63, 200, 0));
 	
-	var map_size_factor = [90,120,140][map_size-1];
+	var map_size_factor = [90, 120, 140][map_size-1];
 
 	// Disasters
 	Meteor->SetChance((difficulty * 11) * map_size_factor / 120);

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,39 +17,36 @@
 
 /* Object definition */
 
-#include <C4Include.h>
-#include <C4DefList.h>
+#include "C4Include.h"
+#include "object/C4DefList.h"
 
-#include <C4Components.h>
-#include <C4Config.h>
-#include <C4Def.h>
-#include <C4FileMonitor.h>
-#include <C4GameVersion.h>
-#include <C4Language.h>
-#include <C4GameScript.h>
-#include <C4Record.h>
-
-#include <StdMeshLoader.h>
+#include "c4group/C4Components.h"
+#include "control/C4Record.h"
+#include "game/C4GameScript.h"
+#include "game/C4GameVersion.h"
+#include "lib/StdMeshLoader.h"
+#include "object/C4Def.h"
+#include "platform/C4FileMonitor.h"
 
 namespace
 {
 	class C4SkeletonManager : public StdMeshSkeletonLoader
 	{
-		virtual StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const
+		StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const override
 		{
 			// find the definition
 			C4Def* def = ::Definitions.ID2Def(C4ID(definition));
 			if (!def)
 			{
 				DebugLogF("WARNING: Looking up skeleton from definition '%s' failed, because there is no such definition with that ID", definition);
-				return NULL;
+				return nullptr;
 			}
 
 			// append animations, if the definition has a mesh
 			if (!def->Graphics.IsMesh())
 			{
 				DebugLogF("WARNING: Looking up skeleton from definition '%s' failed, because the definition has no mesh", definition);
-				return NULL;
+				return nullptr;
 			}
 			else
 			{
@@ -78,7 +75,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
                         bool fSearchMessage, int32_t iMinProgress, int32_t iMaxProgress, bool fLoadSysGroups)
 {
 	int32_t iResult=0;
-	C4Def *nDef;
+	C4Def *nDef = nullptr;
 	char szEntryname[_MAX_FNAME+1];
 	C4Group hChild;
 	bool fPrimaryDef=false;
@@ -109,7 +106,22 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			else
 			{
 				delete nDef;
+				nDef = nullptr;
 			}
+		}
+	}
+
+	// Remember localized name for pure definition groups
+	if (!nDef)
+	{
+		C4ComponentHost title_file;
+		StdCopyStrBuf title;
+		C4Language::LoadComponentHost(&title_file, hGroup, C4CFN_Title, Config.General.LanguageEx);
+		if (title_file.GetLanguageString(Config.General.LanguageEx, title))
+		{
+			StdCopyStrBuf group_path(hGroup.GetFullName());
+			group_path.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+			localized_group_folder_names[group_path] = title;
 		}
 	}
 
@@ -127,8 +139,8 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			hChild.Close();
 		}
 
-	// load additional system scripts for def groups only
-	if (!fPrimaryDef && fLoadSysGroups) Game.LoadAdditionalSystemGroup(hGroup);
+	// Load additional system scripts: Def groups (primary def), as well as real definitions
+	if (fLoadSysGroups) Game.LoadAdditionalSystemGroup(hGroup);
 
 	if (fThisSearchMessage) { LogF(LoadResStr("IDS_PRC_DEFSLOADED"),iResult); }
 
@@ -194,7 +206,7 @@ bool C4DefList::Add(C4Def *pDef, bool fOverload)
 bool C4DefList::Remove(C4ID id)
 {
 	C4Def *cdef,*prev;
-	for (cdef=FirstDef,prev=NULL; cdef; prev=cdef,cdef=cdef->Next)
+	for (cdef=FirstDef,prev=nullptr; cdef; prev=cdef,cdef=cdef->Next)
 		if (cdef->id==id)
 		{
 			if (prev) prev->Next=cdef->Next;
@@ -208,7 +220,7 @@ bool C4DefList::Remove(C4ID id)
 void C4DefList::Remove(C4Def *def)
 {
 	C4Def *cdef,*prev;
-	for (cdef=FirstDef,prev=NULL; cdef; prev=cdef,cdef=cdef->Next)
+	for (cdef=FirstDef,prev=nullptr; cdef; prev=cdef,cdef=cdef->Next)
 		if (cdef==def)
 		{
 			if (prev) prev->Next=cdef->Next;
@@ -226,16 +238,18 @@ void C4DefList::Clear()
 		next=cdef->Next;
 		delete cdef;
 	}
-	FirstDef=NULL;
+	FirstDef=nullptr;
 	// clear quick access table
 	table.clear();
+	// clear localized group names table
+	localized_group_folder_names.clear();
 	// clear loaded skeletons
 	SkeletonLoader->Clear();
 }
 
 C4Def* C4DefList::ID2Def(C4ID id)
 {
-	if (id==C4ID::None) return NULL;
+	if (id==C4ID::None) return nullptr;
 	if (table.empty())
 	{
 		// table not yet built: search list
@@ -250,7 +264,7 @@ C4Def* C4DefList::ID2Def(C4ID id)
 			return it->second;
 	}
 	// none found
-	return NULL;
+	return nullptr;
 }
 
 C4Def * C4DefList::GetByName(const StdStrBuf & name)
@@ -278,13 +292,32 @@ int32_t C4DefList::GetDefCount()
 C4Def* C4DefList::GetDef(int32_t iIndex)
 {
 	C4Def *pDef; int32_t iCurrentIndex;
-	if (iIndex<0) return NULL;
+	if (iIndex<0) return nullptr;
 	for (pDef=FirstDef,iCurrentIndex=-1; pDef; pDef=pDef->Next)
 	{
 		iCurrentIndex++;
 		if (iCurrentIndex==iIndex) return pDef;
 	}
-	return NULL;
+	return nullptr;
+}
+
+std::vector<C4Def*> C4DefList::GetAllDefs(C4String *filter_property) const
+{
+	// Collect vector of all definitions
+	// Filter for those where property evaluates to true if filter_property!=nullptr
+	std::vector<C4Def*> result;
+	result.reserve(filter_property ? 32 : table.size());
+	C4Value prop_val;
+	for (C4Def *def = FirstDef; def; def = def->Next)
+	{
+		if (filter_property)
+		{
+			if (!def->GetPropertyByS(filter_property, &prop_val)) continue;
+			if (!prop_val) continue;
+		}
+		result.push_back(def);
+	}
+	return result;
 }
 
 C4Def *C4DefList::GetByPath(const char *szPath)
@@ -304,14 +337,14 @@ C4Def *C4DefList::GetByPath(const char *szPath)
 						return pDef;
 			}
 	// not found
-	return NULL;
+	return nullptr;
 }
 
 int32_t C4DefList::RemoveTemporary()
 {
 	C4Def *cdef,*prev,*next;
 	int32_t removed=0;
-	for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
+	for (cdef=FirstDef,prev=nullptr; cdef; cdef=next)
 	{
 		next=cdef->Next;
 		if (cdef->Temporary)
@@ -333,7 +366,7 @@ int32_t C4DefList::CheckEngineVersion(int32_t ver1, int32_t ver2)
 {
 	int32_t rcount=0;
 	C4Def *cdef,*prev,*next;
-	for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
+	for (cdef=FirstDef,prev=nullptr; cdef; cdef=next)
 	{
 		next=cdef->Next;
 		if (CompareVersion(cdef->rC4XVer[0],cdef->rC4XVer[1],ver1,ver2) > 0)
@@ -355,7 +388,7 @@ int32_t C4DefList::CheckRequireDef()
 	do
 	{
 		rcount2 = rcount;
-		for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
+		for (cdef=FirstDef,prev=nullptr; cdef; cdef=next)
 		{
 			next=cdef->Next;
 			for (int32_t i = 0; i < cdef->RequireDef.GetNumberOfIDs(); i++)
@@ -379,7 +412,7 @@ void C4DefList::Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor)
 
 void C4DefList::Default()
 {
-	FirstDef=NULL;
+	FirstDef=nullptr;
 	LoadFailure=false;
 	table.clear();
 }
@@ -400,7 +433,7 @@ bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	// clear all skeletons in that group, so that deleted skeletons are also deleted in the engine
 	SkeletonLoader->RemoveSkeletonsInGroup(hGroup.GetName());
 	// load the definition
-	if (!pDef->Load( hGroup, *SkeletonLoader, dwLoadWhat, szLanguage, pSoundSystem)) return false;
+	if (!pDef->Load(hGroup, *SkeletonLoader, dwLoadWhat, szLanguage, pSoundSystem, &GfxBackup)) return false;
 	hGroup.Close();
 	// rebuild quick access table
 	BuildTable();
@@ -424,30 +457,57 @@ float C4DefList::GetFontImageAspect(const char* szImageTag)
 
 void C4DefList::Synchronize()
 {
-	for (Table::iterator it = table.begin(); it != table.end(); ++it)
-		it->second->Synchronize();
+	for (auto & it : table)
+		it.second->Synchronize();
 }
 
 void C4DefList::ResetIncludeDependencies()
 {
-	for (Table::iterator it = table.begin(); it != table.end(); ++it)
-		it->second->ResetIncludeDependencies();
+	for (auto & it : table)
+		it.second->ResetIncludeDependencies();
+}
+
+void C4DefList::SortByPriority()
+{
+	// Sort all definitions by DefinitionPriority property (descending)
+	// Build vector of definitions
+	int32_t n = GetDefCount();
+	if (!n) return;
+	std::vector<C4Def *> def_vec;
+	def_vec.reserve(n);
+	for (C4Def *def = FirstDef; def; def = def->Next)
+		def_vec.push_back(def);
+	// Sort it
+	std::stable_sort(def_vec.begin(), def_vec.end(), [](C4Def *a, C4Def *b) {
+		return b->GetPropertyInt(P_DefinitionPriority) < a->GetPropertyInt(P_DefinitionPriority);
+	});
+	// Restore linked list in new definition order
+	C4Def *prev_def = nullptr;
+	for (C4Def *def : def_vec)
+	{
+		if (prev_def)
+			prev_def->Next = def;
+		else
+			FirstDef = def;
+		prev_def = def;
+	}
+	if (prev_def) prev_def->Next = nullptr;
 }
 
 void C4DefList::CallEveryDefinition()
 {
-	for (Table::iterator it = table.begin(); it != table.end(); ++it)
+	for (C4Def *def = FirstDef; def; def = def->Next)
 	{
 		if (Config.General.DebugRec)
 		{
 			// TODO: Might not be synchronous on runtime join since is run by joining
 			// client but not by host. Might need to go to Synchronize().
 			char sz[32+1];
-			strncpy(sz, it->first.ToString(), 32+1);
+			strncpy(sz, def->id.ToString(), 32+1);
 			AddDbgRec(RCT_Definition, sz, 32);
 		}
-		C4AulParSet Pars(it->second);
-		it->second->Call(PSF_Definition, &Pars);
+		C4AulParSet Pars(def);
+		def->Call(PSF_Definition, &Pars);
 	}
 }
 
@@ -466,4 +526,12 @@ void C4DefList::AppendAndIncludeSkeletons()
 StdMeshSkeletonLoader& C4DefList::GetSkeletonLoader()
 {
 	return *SkeletonLoader;
+}
+
+const char *C4DefList::GetLocalizedGroupFolderName(const char *folder_path) const
+{
+	// lookup in map
+	auto iter = localized_group_folder_names.find(StdCopyStrBuf(folder_path));
+	if (iter == localized_group_folder_names.end()) return nullptr;
+	return iter->second.getData();
 }

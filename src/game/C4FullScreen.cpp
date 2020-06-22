@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,27 +17,25 @@
 
 /* Main class to execute the game fullscreen mode */
 
-#include <C4Include.h>
-#include <C4FullScreen.h>
+#include "C4Include.h"
+#include "game/C4FullScreen.h"
 
-#include <C4Game.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4Language.h>
-#include <C4Gui.h>
-#include <C4GameDialogs.h>
-#include <C4Player.h>
-#include <C4GameOverDlg.h>
-#include <C4GraphicsSystem.h>
-#include <C4MouseControl.h>
-#include <C4PlayerList.h>
-#include <C4Version.h>
+#include "C4Version.h"
+#include "game/C4Application.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "gui/C4GameDialogs.h"
+#include "gui/C4GameOverDlg.h"
+#include "gui/C4Gui.h"
+#include "gui/C4MouseControl.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 
 C4FullScreen::C4FullScreen()
 {
-	pMenu = NULL;
+	pMenu = nullptr;
 }
 
 C4FullScreen::~C4FullScreen()
@@ -64,7 +62,7 @@ void C4FullScreen::Close()
 void C4FullScreen::Clear()
 {
 	if (pSurface) delete pSurface;
-	pSurface = 0;
+	pSurface = nullptr;
 	C4Window::Clear();
 }
 
@@ -161,7 +159,7 @@ void C4FullScreen::CloseMenu()
 	{
 		if (pMenu->IsActive()) pMenu->Close(false);
 		delete pMenu;
-		pMenu = NULL;
+		pMenu = nullptr;
 	}
 }
 

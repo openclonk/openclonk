@@ -1,0 +1,4 @@
+EditorPropStoredPower=Stored power
+EditorPropStoredPowerHelp=Set the amount of power stored in this storage.
+EditorPropStoredPowerEmpty=Empty
+EditorPropStoredPowerFull=Full

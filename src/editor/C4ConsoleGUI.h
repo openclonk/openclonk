@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006, Armin Burgmeier
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,10 +17,9 @@
 #ifndef C4CONSOLEGUI_INC
 #define C4CONSOLEGUI_INC
 
-#include "C4Application.h"
-#include "C4Player.h"
-#include "C4GameControl.h"
-#include "StdBuf.h"
+#include "control/C4GameControl.h"
+#include "game/C4Application.h"
+#include "player/C4Player.h"
 
 namespace OpenFileFlags
 {
@@ -68,6 +67,14 @@ public:
 		CURSOR_Wait
 	};
 
+	enum ClientOperation
+	{
+		CO_None,
+		CO_Deactivate,
+		CO_Activate,
+		CO_Kick
+	};
+
 	class State;
 
 private:
@@ -77,7 +84,39 @@ public:
 	bool fGameOpen;
 
 	C4ConsoleGUI();
-	~C4ConsoleGUI();
+	~C4ConsoleGUI() override;
+
+#ifdef WITH_QT_EDITOR
+	void Execute();
+	void AddViewport(C4ViewportWindow *cvp);
+	void RemoveViewport(C4ViewportWindow *cvp);
+	void OnObjectSelectionChanged(class C4EditCursorSelection &selection); // selection changed (through other means than creator or object list view)
+	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network);
+	void OnStartGame();
+	void ClearGamePointers();
+	void EnsureDefinitionListInitialized();
+	void CloseConsoleWindow();
+	void ClearPointers(class C4Object *obj);
+	void EditGraphControl(const class C4ControlEditGraph *control);
+
+	// TODO some qt editor stuff is in state and needs to be public
+	// Once other editors are removed, C4ConsoleGUI, C4ConsoleQt and C4ConsoleQtState should be reorganized
+	State *GetState() const { return state; }
+
+	friend class C4ConsoleQtMainWindow;
+	friend class C4ToolsDlg;
+#else
+	void Execute() { }
+	void AddViewport(C4ViewportWindow *cvp) { }
+	void RemoveViewport(C4ViewportWindow *cvp) { }
+	void OnObjectSelectionChanged(class C4EditCursorSelection &selection) { }
+	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network) { return false; }
+	void OnStartGame() { }
+	void EnsureDefinitionListInitialized() { }
+	void CloseConsoleWindow() {}
+	void ClearPointers(class C4Object *obj) {}
+	void EditGraphControl(const class C4ControlEditGraph *control) {}
+#endif
 
 	void SetCursor(Cursor cursor);
 	void RecordingEnabled();
@@ -85,11 +124,12 @@ public:
 	bool UpdateModeCtrls(int iMode);
 	void AddNetMenu();
 	void ClearNetMenu();
-	void AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text);
+	void AddNetMenuItemForPlayer(int32_t client_id, const char *text, C4ConsoleGUI::ClientOperation co);
 	void ClearPlayerMenu();
 	void SetInputFunctions(std::list<const char*> &functions);
 	
-	C4Window* CreateConsoleWindow(C4AbstractApp *application);
+	bool CreateConsoleWindow(C4AbstractApp *application);
+	void DeleteConsoleWindow();
 	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);
@@ -120,7 +160,7 @@ public:
 	
 	bool PropertyDlgOpen();
 	void PropertyDlgClose();
-	void PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update);
+	void PropertyDlgUpdate(class C4EditCursorSelection &rSelection, bool force_function_update);
 	C4Object * PropertyDlgObject;
 	
 	bool ToolsDlgOpen(class C4ToolsDlg *dlg);
@@ -132,8 +172,8 @@ public:
 	void ToolsDlgSelectBackMaterial(C4ToolsDlg *dlg, const char *material);
 
 #ifdef USE_WIN32_WINDOWS
-	void Win32KeepDialogsFloating(HWND hwnd = 0);
-	virtual bool Win32DialogMessageHandling(MSG *msg);
+	void Win32KeepDialogsFloating(HWND hwnd = nullptr);
+	bool Win32DialogMessageHandling(MSG *msg) override;
 	void UpdateMenuText(HMENU hMenu);
 
 	friend INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);

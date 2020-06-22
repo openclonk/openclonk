@@ -1,0 +1,4 @@
+Name=Luke
+Description=Eine einfache Bodenluke. Kann nach Belieben geöffnet werden, um einen vertikalen Durchlass zu ermöglichen. Kann auf einfachen Fundamenten errichtet werden.
+Open=Öffnen
+Close=Schließen

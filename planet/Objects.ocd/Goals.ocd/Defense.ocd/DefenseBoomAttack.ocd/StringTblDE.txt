@@ -1,0 +1,9 @@
+Name=Boom-Angriff
+Description=Böse Rakete die einen angreift! Könnte auch von Gegnern geritten werden.
+FlySpeed=Fluggeschwindigkeit
+FlySpeedHelp=Wie schnell die Rakete fliegt.
+Rider=Reiter
+RiderHelp=Clonk, der auf der Rakete reitet und den Spieler angreift.
+None=Keiner
+NoRiderHelp=Die Rakete fliegt ohne Clonk.
+ClonkRiderHelp=Die Rakete traegt einen angreifenden Clonk.

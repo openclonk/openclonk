@@ -81,7 +81,7 @@ func Dlg_Woody_Init(object clonk)
 	if (!axe) axe = clonk->CreateContents(Axe);
 	axe.GetCarryTransform = Dialogue.Inventory_GetCarryTransform;
 	var h_scale = 2000;
-	axe.ExtraTransform = Trans_Scale(h_scale,h_scale,h_scale);
+	axe.ExtraTransform = Trans_Scale(h_scale, h_scale, h_scale);
 	// Axe is heavy. Clonk moves slowly.
 	clonk.ActMap = { Prototype = Clonk.ActMap, Walk = { Prototype = Clonk.ActMap.Walk } };
 	clonk.ActMap.Walk.Speed /= 3;
@@ -97,7 +97,7 @@ func FxWoodyWalkingTimer(object c, proplist fx, int time)
 	if (!Random(2) && GetPlayerCount())
 	{
 		// Move between places (only if players are joined so Woody stays in place for object saving)
-		c->SetCommand("MoveTo", nil, 750+Random(50), 366);
+		c->SetCommand("MoveTo", nil, 750 + Random(50), 366);
 	}
 	return FX_OK;
 }

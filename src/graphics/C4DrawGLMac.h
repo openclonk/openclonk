@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,7 +14,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#include <C4Window.h>
+#include "platform/C4Window.h"
 
 #ifdef USE_COCOA
 

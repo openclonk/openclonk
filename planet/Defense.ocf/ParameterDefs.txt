@@ -1,8 +1,17 @@
 [ParameterDef]
 ID=Done
 Achievement=Done
+
 	[Options]
 		
 		[Option]
-		Description=$Completed$
+		Description=$AchievementBasic$
 		Value=1
+		
+		[Option]
+		Description=$AchievementTough$
+		Value=2
+		
+		[Option]
+		Description=$AchievementRockSolid$
+		Value=3

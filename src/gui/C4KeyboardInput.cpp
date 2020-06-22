@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,25 +15,22 @@
  */
 // Keyboard input mapping to engine functions
 
-#include <C4Include.h>
-#include <C4KeyboardInput.h>
+#include "C4Include.h"
+#include "gui/C4KeyboardInput.h"
 
-#include <C4Components.h>
-#include <C4Game.h>
-#include <C4Window.h>
+#include "gui/C4MouseControl.h"
+#include "c4group/C4Components.h"
+#include "platform/C4Window.h"
 
-#ifdef USE_GTK
-#include <gtk/gtk.h>
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#include <X11/XKBlib.h>
+#include <unordered_map>
+
+#ifdef HAVE_SDL
+#include <SDL.h>
 #endif
-#endif
-
-#include <algorithm>
 
 #ifdef USE_SDL_MAINLOOP
-#include <SDL.h>
+// Required for KeycodeToString translation table.
+#include "platform/C4App.h"
 #endif
 
 /* ----------------- Key maps ------------------ */
@@ -49,7 +46,7 @@ const C4KeyShiftMapEntry KeyShiftMap [] =
 	{ KEYS_Alt,     "Alt" },
 	{ KEYS_Control, "Ctrl" },
 	{ KEYS_Shift,   "Shift" },
-	{ KEYS_Undefined, NULL }
+	{ KEYS_Undefined, nullptr }
 };
 
 C4KeyShiftState C4KeyCodeEx::String2KeyShift(const StdStrBuf &sName)
@@ -78,59 +75,59 @@ struct C4KeyCodeMapEntry
 };
 
 #if defined(USE_COCOA)
-#include "CocoaKeycodeMap.h"
+#include "platform/CocoaKeycodeMap.h"
 #else
 const C4KeyCodeMapEntry KeyCodeMap[] = {
 	{K_ESCAPE,        "Escape",       "Esc"},
-	{K_1,             "1",            NULL},
-	{K_2,             "2",            NULL},
-	{K_3,             "3",            NULL},
-	{K_4,             "4",            NULL},
-	{K_5,             "5",            NULL},
-	{K_6,             "6",            NULL},
-	{K_7,             "7",            NULL},
-	{K_8,             "8",            NULL},
-	{K_9,             "9",            NULL},
-	{K_0,             "0",            NULL},
+	{K_1,             "1",            nullptr},
+	{K_2,             "2",            nullptr},
+	{K_3,             "3",            nullptr},
+	{K_4,             "4",            nullptr},
+	{K_5,             "5",            nullptr},
+	{K_6,             "6",            nullptr},
+	{K_7,             "7",            nullptr},
+	{K_8,             "8",            nullptr},
+	{K_9,             "9",            nullptr},
+	{K_0,             "0",            nullptr},
 	{K_MINUS,         "Minus",        "-"},
 	{K_EQUAL,         "Equal",        "="},
-	{K_BACK,          "BackSpace",    NULL},
-	{K_TAB,           "Tab",          NULL},
-	{K_Q,             "Q",            NULL},
-	{K_W,             "W",            NULL},
-	{K_E,             "E",            NULL},
-	{K_R,             "R",            NULL},
-	{K_T,             "T",            NULL},
-	{K_Y,             "Y",            NULL},
-	{K_U,             "U",            NULL},
-	{K_I,             "I",            NULL},
-	{K_O,             "O",            NULL},
-	{K_P,             "P",            NULL},
+	{K_BACK,          "BackSpace",    nullptr},
+	{K_TAB,           "Tab",          nullptr},
+	{K_Q,             "Q",            nullptr},
+	{K_W,             "W",            nullptr},
+	{K_E,             "E",            nullptr},
+	{K_R,             "R",            nullptr},
+	{K_T,             "T",            nullptr},
+	{K_Y,             "Y",            nullptr},
+	{K_U,             "U",            nullptr},
+	{K_I,             "I",            nullptr},
+	{K_O,             "O",            nullptr},
+	{K_P,             "P",            nullptr},
 	{K_LEFT_BRACKET,  "LeftBracket",  "["},
 	{K_RIGHT_BRACKET, "RightBracket", "]"},
 	{K_RETURN,        "Return",       "Ret"},
 	{K_CONTROL_L,     "LeftControl",  "LCtrl"},
-	{K_A,             "A",            NULL},
-	{K_S,             "S",            NULL},
-	{K_D,             "D",            NULL},
-	{K_F,             "F",            NULL},
-	{K_G,             "G",            NULL},
-	{K_H,             "H",            NULL},
-	{K_J,             "J",            NULL},
-	{K_K,             "K",            NULL},
-	{K_L,             "L",            NULL},
+	{K_A,             "A",            nullptr},
+	{K_S,             "S",            nullptr},
+	{K_D,             "D",            nullptr},
+	{K_F,             "F",            nullptr},
+	{K_G,             "G",            nullptr},
+	{K_H,             "H",            nullptr},
+	{K_J,             "J",            nullptr},
+	{K_K,             "K",            nullptr},
+	{K_L,             "L",            nullptr},
 	{K_SEMICOLON,     "Semicolon",    ";"},
 	{K_APOSTROPHE,    "Apostrophe",   "'"},
 	{K_GRAVE_ACCENT,  "GraveAccent",  "`"},
 	{K_SHIFT_L,       "LeftShift",    "LShift"},
-	{K_BACKSLASH,     "Backslash",    "\\"},
-	{K_Z,             "Z",            NULL},
-	{K_X,             "X",            NULL},
-	{K_C,             "C",            NULL},
-	{K_V,             "V",            NULL},
-	{K_B,             "B",            NULL},
-	{K_N,             "N",            NULL},
-	{K_M,             "M",            NULL},
+	{K_BACKSLASH,     "Backslash",    R"(\)"},
+	{K_Z,             "Z",            nullptr},
+	{K_X,             "X",            nullptr},
+	{K_C,             "C",            nullptr},
+	{K_V,             "V",            nullptr},
+	{K_B,             "B",            nullptr},
+	{K_N,             "N",            nullptr},
+	{K_M,             "M",            nullptr},
 	{K_COMMA,         "Comma",        ","},
 	{K_PERIOD,        "Period",       "."},
 	{K_SLASH,         "Slash",        "/"},
@@ -138,17 +135,17 @@ const C4KeyCodeMapEntry KeyCodeMap[] = {
 	{K_MULTIPLY,      "Multiply",     "N*"},
 	{K_ALT_L,         "LeftAlt",      "LAlt"},
 	{K_SPACE,         "Space",        "Sp"},
-	{K_CAPS,          "Capslock",     NULL},
-	{K_F1,            "F1",           NULL},
-	{K_F2,            "F2",           NULL},
-	{K_F3,            "F3",           NULL},
-	{K_F4,            "F4",           NULL},
-	{K_F5,            "F5",           NULL},
-	{K_F6,            "F6",           NULL},
-	{K_F7,            "F7",           NULL},
-	{K_F8,            "F8",           NULL},
-	{K_F9,            "F9",           NULL},
-	{K_F10,           "F10",          NULL},
+	{K_CAPS,          "Capslock",     nullptr},
+	{K_F1,            "F1",           nullptr},
+	{K_F2,            "F2",           nullptr},
+	{K_F3,            "F3",           nullptr},
+	{K_F4,            "F4",           nullptr},
+	{K_F5,            "F5",           nullptr},
+	{K_F6,            "F6",           nullptr},
+	{K_F7,            "F7",           nullptr},
+	{K_F8,            "F8",           nullptr},
+	{K_F9,            "F9",           nullptr},
+	{K_F10,           "F10",          nullptr},
 	{K_NUM,           "NumLock",      "NLock"},
 	{K_SCROLL,        "ScrollLock",   "SLock"},
 	{K_NUM7,          "Num7",         "N7"},
@@ -164,35 +161,79 @@ const C4KeyCodeMapEntry KeyCodeMap[] = {
 	{K_NUM3,          "Num3",         "N3"},
 	{K_NUM0,          "Num0",         "N0"},
 	{K_DECIMAL,       "Decimal",      "N,"},
-	{K_86,            "|<>",          NULL},
-	{K_F11,           "F11",          NULL},
-	{K_F12,           "F12",          NULL},
+	{K_86,            "|<>",          nullptr},
+	{K_F11,           "F11",          nullptr},
+	{K_F12,           "F12",          nullptr},
 	{K_NUM_RETURN,    "NumReturn",    "NRet"},
 	{K_CONTROL_R,     "RightControl", "RCtrl"},
 	{K_DIVIDE,        "Divide",       "N/"},
 	{K_ALT_R,         "RightAlt",     "RAlt"},
-	{K_HOME,          "Home",         NULL},
-	{K_UP,            "Up",           NULL},
-	{K_PAGEUP,        "PageUp",       NULL},
-	{K_LEFT,          "Left",         NULL},
-	{K_RIGHT,         "Right",        NULL},
-	{K_END,           "End",          NULL},
-	{K_DOWN,          "Down",         NULL},
-	{K_PAGEDOWN,      "PageDown",     NULL},
+	{K_HOME,          "Home",         nullptr},
+	{K_UP,            "Up",           nullptr},
+	{K_PAGEUP,        "PageUp",       nullptr},
+	{K_LEFT,          "Left",         nullptr},
+	{K_RIGHT,         "Right",        nullptr},
+	{K_END,           "End",          nullptr},
+	{K_DOWN,          "Down",         nullptr},
+	{K_PAGEDOWN,      "PageDown",     nullptr},
 	{K_INSERT,        "Insert",       "Ins"},
 	{K_DELETE,        "Delete",       "Del"},
-	{K_PAUSE,         "Pause",        NULL},
+	{K_PAUSE,         "Pause",        nullptr},
 	{K_WIN_L,         "LeftWin",      "LWin"},
 	{K_WIN_R,         "RightWin",     "RWin"},
-	{K_MENU,          "Menu",         NULL},
-	{K_PRINT,         "Print",        NULL},
-	{0x00,            NULL,           NULL}
+	{K_MENU,          "Menu",         nullptr},
+	{K_PRINT,         "Print",        nullptr},
+	{0x00,            nullptr,           nullptr}
 };
 #endif
+
+C4KeyCodeEx::C4KeyCodeEx(C4KeyCode key, DWORD Shift, bool fIsRepeated, int32_t deviceId)
+: Key(key), dwShift(Shift), fRepeated(fIsRepeated), deviceId(deviceId)
+{
+}
+
+C4KeyCodeEx C4KeyCodeEx::FromC4MC(int8_t mouse_id, int32_t iButton, DWORD dwKeyParam, bool *is_down)
+{
+	bool dummy;
+	if (!is_down)
+		is_down = &dummy;
+	*is_down = true;
+	C4KeyCode mouseevent_code;
+	int wheel_dir = 0;
+	if (iButton == C4MC_Button_Wheel) wheel_dir = (short)(dwKeyParam >> 16);
+	switch (iButton)
+	{
+	case C4MC_Button_None: mouseevent_code = KEY_MOUSE_Move; break;
+	case C4MC_Button_LeftDown: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
+	case C4MC_Button_LeftUp: mouseevent_code = KEY_MOUSE_ButtonLeft; *is_down = false; break;
+	case C4MC_Button_LeftDouble: mouseevent_code = KEY_MOUSE_ButtonLeftDouble; break;
+	case C4MC_Button_RightDown: mouseevent_code = KEY_MOUSE_ButtonRight; break;
+	case C4MC_Button_RightDouble: mouseevent_code = KEY_MOUSE_ButtonRightDouble; break;
+	case C4MC_Button_RightUp: mouseevent_code = KEY_MOUSE_ButtonRight; *is_down = false; break;
+	case C4MC_Button_MiddleDown: mouseevent_code = KEY_MOUSE_ButtonMiddle; break;
+	case C4MC_Button_MiddleUp: mouseevent_code = KEY_MOUSE_ButtonMiddle; *is_down = false; break;
+	case C4MC_Button_MiddleDouble: mouseevent_code = KEY_MOUSE_ButtonMiddleDouble; break;
+	case C4MC_Button_X1Down: mouseevent_code = KEY_MOUSE_ButtonX1; break;
+	case C4MC_Button_X1Up: mouseevent_code = KEY_MOUSE_ButtonX1; *is_down = false; break;
+	case C4MC_Button_X1Double: mouseevent_code = KEY_MOUSE_ButtonX1Double; break;
+	case C4MC_Button_X2Down: mouseevent_code = KEY_MOUSE_ButtonX2; break;
+	case C4MC_Button_X2Up: mouseevent_code = KEY_MOUSE_ButtonX2; *is_down = false; break;
+	case C4MC_Button_X2Double: mouseevent_code = KEY_MOUSE_ButtonX2Double; break;
+	case C4MC_Button_Wheel:
+		if (!wheel_dir) assert("Attempted to record mouse wheel movement without a direction");
+		mouseevent_code = (wheel_dir > 0) ? KEY_MOUSE_Wheel1Up : KEY_MOUSE_Wheel1Down; break;
+	}
+	C4KeyCodeEx key{KEY_Mouse(mouse_id, mouseevent_code), KEYS_None};
+	if (dwKeyParam & MK_CONTROL) key.dwShift |= KEYS_Control;
+	if (dwKeyParam & MK_SHIFT) key.dwShift |= KEYS_Shift;
+	if (dwKeyParam & MK_ALT) key.dwShift |= KEYS_Alt;
+	return key;
+}
 
 void C4KeyCodeEx::FixShiftKeys()
 {
 	// reduce stuff like Ctrl+RightCtrl to simply RightCtrl
+	if ((dwShift & KEYS_Alt) && (Key == K_ALT_L || Key == K_ALT_R)) dwShift &= ~KEYS_Alt;
 	if ((dwShift & KEYS_Control) && (Key == K_CONTROL_L || Key == K_CONTROL_R)) dwShift &= ~KEYS_Control;
 	if ((dwShift & KEYS_Shift) && (Key == K_SHIFT_L || Key == K_SHIFT_R)) dwShift &= ~KEYS_Shift;
 }
@@ -205,57 +246,56 @@ C4KeyCode C4KeyCodeEx::GetKeyByScanCode(const char *scan_code)
 	return scan_code_int;
 }
 
+static const std::unordered_map<std::string, C4KeyCode> controllercodes =
+{
+		{ "ButtonA",               KEY_CONTROLLER_ButtonA             },
+		{ "ButtonB",               KEY_CONTROLLER_ButtonB             },
+		{ "ButtonX",               KEY_CONTROLLER_ButtonX             },
+		{ "ButtonY",               KEY_CONTROLLER_ButtonY             },
+		{ "ButtonBack",            KEY_CONTROLLER_ButtonBack          },
+		{ "ButtonGuide",           KEY_CONTROLLER_ButtonGuide         },
+		{ "ButtonStart",           KEY_CONTROLLER_ButtonStart         },
+		{ "ButtonLeftStick",       KEY_CONTROLLER_ButtonLeftStick     },
+		{ "ButtonRightStick",      KEY_CONTROLLER_ButtonRightStick    },
+		{ "ButtonLeftShoulder",    KEY_CONTROLLER_ButtonLeftShoulder  },
+		{ "ButtonRightShoulder",   KEY_CONTROLLER_ButtonRightShoulder },
+		{ "ButtonDpadUp",          KEY_CONTROLLER_ButtonDpadUp        },
+		{ "ButtonDpadDown",        KEY_CONTROLLER_ButtonDpadDown      },
+		{ "ButtonDpadLeft",        KEY_CONTROLLER_ButtonDpadLeft      },
+		{ "ButtonDpadRight",       KEY_CONTROLLER_ButtonDpadRight     },
+		{ "AnyButton",             KEY_CONTROLLER_AnyButton           },
+		{ "LeftStickLeft",         KEY_CONTROLLER_AxisLeftXLeft       },
+		{ "LeftStickRight",        KEY_CONTROLLER_AxisLeftXRight      },
+		{ "LeftStickUp",           KEY_CONTROLLER_AxisLeftYUp         },
+		{ "LeftStickDown",         KEY_CONTROLLER_AxisLeftYDown       },
+		{ "RightStickLeft",        KEY_CONTROLLER_AxisRightXLeft      },
+		{ "RightStickRight",       KEY_CONTROLLER_AxisRightXRight     },
+		{ "RightStickUp",          KEY_CONTROLLER_AxisRightYUp        },
+		{ "RightStickDown",        KEY_CONTROLLER_AxisRightYDown      },
+		{ "LeftTrigger",           KEY_CONTROLLER_AxisTriggerLeft     },
+		{ "RightTrigger",          KEY_CONTROLLER_AxisTriggerRight    },
+};
+
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 {
-	// direct key code?
-	if (sName.getLength() > 2)
+	// direct key code, e.g. "$e" (Backspace)?
+	if (sName.getLength() > 1)
 	{
 		unsigned int dwRVal;
-		if (sscanf(sName.getData(), "\\x%x", &dwRVal) == 1) return dwRVal;
+		if (sscanf(sName.getData(), R"(\x%x)", &dwRVal) == 1) return dwRVal;
 		// scan code
 		if (*sName.getData() == '$') return GetKeyByScanCode(sName.getData());
 		// direct gamepad code
-#ifdef _WIN32
-		if (!strnicmp(sName.getData(), "Joy", 3))
-#else
-		if (!strncasecmp(sName.getData(), "Joy", 3))
-#endif
+		std::regex controller_re(R"/(^Controller(\w+)$)/");
+		std::cmatch matches;
+		if (std::regex_match(sName.getData(), matches, controller_re))
 		{
-			int iGamepad;
-			if (sscanf(sName.getData(), "Joy%d",  &iGamepad) == 1)
-			{
-				// skip Joy[number]
-				const char *key_str = sName.getData()+4;
-				while (isdigit(*key_str)) ++key_str;
-				// check for button (single, uppercase letter) (e.g. Joy1A)
-				if (*key_str && !key_str[1])
-				{
-					char cGamepadButton = toupper(*key_str);
-					if (Inside(cGamepadButton, 'A', 'Z'))
-					{
-						cGamepadButton = cGamepadButton - 'A';
-						return KEY_Gamepad(iGamepad-1, KEY_JOY_Button(cGamepadButton));
-					}
-				}
-				else
-				{
-					// check for standard axis (e.g. Joy1Left)
-					if (!stricmp(key_str, "Left")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Left);
-					if (!stricmp(key_str, "Up")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Up);
-					if (!stricmp(key_str, "Down")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Down);
-					if (!stricmp(key_str, "Right")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Right);
-					// check for specific axis (e.g. Joy1Axis1Min)
-					int iAxis;
-					if (sscanf(key_str, "Axis%d", &iAxis) == 1 && iAxis>0)
-					{
-						--iAxis; // axis is 0-based internally but written 1-based in config
-						key_str += 5;
-						while (isdigit(*key_str)) ++key_str;
-						if (!stricmp(key_str, "Min")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, false));
-						if (!stricmp(key_str, "Max")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, true));
-					}
-				}
-			}
+			auto keycode_it = controllercodes.find(matches[1].str());
+			if (keycode_it != controllercodes.end())
+				return KEY_Gamepad(keycode_it->second);
+			else
+				return KEY_Undefined;
+
 		}
 		bool is_mouse_key;
 #ifdef _WIN32
@@ -272,35 +312,35 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 			{
 				// skip number
 				while (isdigit(*key_str)) ++key_str;
-				// check for known mouse events (e.g. Mouse1Move or GameMouse1Wheel)
-				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Move);
-				if (!stricmp(key_str, "Wheel1Up")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Up);
-				if (!stricmp(key_str, "Wheel1Down")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Down);
-				if (SEqualNoCase(key_str, "Button", 6)) // e.g. Mouse1ButtonLeft or GameMouse1ButtonRightDouble
-				{
-					// check for known mouse button events
-					uint8_t mouseevent_id = 0;
+				// check for known mouse events (e.g. Mouse0Move or GameMouse0Wheel)
+				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id, KEY_MOUSE_Move);
+				if (!stricmp(key_str, "Wheel1Up")) return KEY_Mouse(mouse_id, KEY_MOUSE_Wheel1Up);
+				if (!stricmp(key_str, "Wheel1Down")) return KEY_Mouse(mouse_id, KEY_MOUSE_Wheel1Down);
+				// check for known mouse button events
+				if (SEqualNoCase(key_str, "Button", 6)) // e.g. Mouse0ButtonLeft or GameMouse0ButtonRightDouble (This line is left here to not break anything, the buttons are now named Mouse0Left)
 					key_str += 6;
-					if (SEqualNoCase(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
-					else if (SEqualNoCase(key_str, "Right",5)) { mouseevent_id=KEY_MOUSE_ButtonRight; key_str += 5; }
-					else if (SEqualNoCase(key_str, "Middle",6)) { mouseevent_id=KEY_MOUSE_ButtonMiddle; key_str += 6; }
-					else if (isdigit(*key_str))
+				uint8_t mouseevent_id = 0;
+				if (SEqualNoCase(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
+				else if (SEqualNoCase(key_str, "Right",5)) { mouseevent_id=KEY_MOUSE_ButtonRight; key_str += 5; }
+				else if (SEqualNoCase(key_str, "Middle",6)) { mouseevent_id=KEY_MOUSE_ButtonMiddle; key_str += 6; }
+				else if (SEqualNoCase(key_str, "X1",2)) { mouseevent_id=KEY_MOUSE_ButtonX1; key_str += 2; }
+				else if (SEqualNoCase(key_str, "X2",2)) { mouseevent_id=KEY_MOUSE_ButtonX2; key_str += 2; }
+				else if (isdigit(*key_str))
+				{
+					// indexed mouse button (e.g. Mouse0Button4 or Mouse0Button4Double)
+					int button_index;
+					if (sscanf(key_str, "%d",  &button_index) == 1)
 					{
-						// indexed mouse button (e.g. Mouse1Button4 or Mouse1Button4Double)
-						int button_index;
-						if (sscanf(key_str, "%d",  &button_index) == 1)
-						{
-							mouseevent_id=static_cast<uint8_t>(KEY_MOUSE_Button1+button_index-1);
-							while (isdigit(*key_str)) ++key_str;
-						}
+						mouseevent_id=static_cast<uint8_t>(KEY_MOUSE_Button1+button_index);
+						while (isdigit(*key_str)) ++key_str;
 					}
-					if (mouseevent_id)
-					{
-						// valid event if finished or followed by "Double"
-						if (!*key_str) return KEY_Mouse(mouse_id-1, mouseevent_id);
-						if (!stricmp(key_str, "Double")) return KEY_Mouse(mouse_id-1, mouseevent_id+(KEY_MOUSE_Button1Double-KEY_MOUSE_Button1));
-						// invalid mouse key...
-					}
+				}
+				if (mouseevent_id)
+				{
+					// valid event if finished or followed by "Double"
+					if (!*key_str) return KEY_Mouse(mouse_id, mouseevent_id);
+					if (!stricmp(key_str, "Double")) return KEY_Mouse(mouse_id, mouseevent_id+(KEY_MOUSE_Button1Double-KEY_MOUSE_Button1));
+					// invalid mouse key...
 				}
 			}
 		}
@@ -326,34 +366,51 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	// Gamepad keys
 	if (Key_IsGamepad(wCode))
 	{
-		int iGamepad = Key_GetGamepad(wCode);
-		int gamepad_event = Key_GetGamepadEvent(wCode);
-		switch (gamepad_event)
+		if (fHumanReadable)
 		{
-		case KEY_JOY_Left:  return FormatString("Joy%dLeft", iGamepad+1);
-		case KEY_JOY_Up:    return FormatString("Joy%dUp", iGamepad+1);
-		case KEY_JOY_Down:  return FormatString("Joy%dDown", iGamepad+1);
-		case KEY_JOY_Right: return FormatString("Joy%dRight", iGamepad+1);
-		default:
-			if (Key_IsGamepadAxis(wCode))
+			switch (Key_GetGamepadEvent(wCode))
 			{
-				if (fHumanReadable)
-					// This is still not great, but it is not really possible to assign unknown axes to "left/right" "up/down"...
-					return FormatString("[%d] %s", int(1 + Key_GetGamepadAxisIndex(wCode)), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
-				else
-					return FormatString("Joy%dAxis%d%s", iGamepad+1, static_cast<int>(Key_GetGamepadAxisIndex(wCode)+1), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
-			}
-			else
-			{
-				// button
-				if (fHumanReadable)
-					// If there should be gamepads around with A B C D... on the buttons, we might create a display option to show letters instead...
-					return FormatString("< %d >", int(1 + Key_GetGamepadButtonIndex(wCode)));
-				else
-					return FormatString("Joy%d%c", iGamepad+1, static_cast<char>(Key_GetGamepadButtonIndex(wCode) + 'A'));
+			case KEY_CONTROLLER_ButtonA             : return StdStrBuf("{{@Ico:A}}");
+			case KEY_CONTROLLER_ButtonB             : return StdStrBuf("{{@Ico:B}}");
+			case KEY_CONTROLLER_ButtonX             : return StdStrBuf("{{@Ico:X}}");
+			case KEY_CONTROLLER_ButtonY             : return StdStrBuf("{{@Ico:Y}}");
+			case KEY_CONTROLLER_ButtonBack          : return StdStrBuf("{{@Ico:Back}}");
+			case KEY_CONTROLLER_ButtonGuide         : return StdStrBuf("Guide");
+			case KEY_CONTROLLER_ButtonStart         : return StdStrBuf("{{@Ico:Start}}");
+			case KEY_CONTROLLER_ButtonLeftStick     : return StdStrBuf("{{@Ico:LeftStick}}");
+			case KEY_CONTROLLER_ButtonRightStick    : return StdStrBuf("{{@Ico:RightStick}}");
+			case KEY_CONTROLLER_ButtonLeftShoulder  : return StdStrBuf("{{@Ico:LeftShoulder}}");
+			case KEY_CONTROLLER_ButtonRightShoulder : return StdStrBuf("{{@Ico:RightShoulder}}");
+			case KEY_CONTROLLER_ButtonDpadUp        : return StdStrBuf("{{@Ico:DpadUp}}");
+			case KEY_CONTROLLER_ButtonDpadDown      : return StdStrBuf("{{@Ico:DpadDown}}");
+			case KEY_CONTROLLER_ButtonDpadLeft      : return StdStrBuf("{{@Ico:DpadLeft}}");
+			case KEY_CONTROLLER_ButtonDpadRight     : return StdStrBuf("{{@Ico:DpadRight}}");
+			case KEY_CONTROLLER_AnyButton           : return StdStrBuf("Any Button");
+			case KEY_CONTROLLER_AxisLeftXLeft       : return StdStrBuf("{{@Ico:LeftStick}} Left");
+			case KEY_CONTROLLER_AxisLeftXRight      : return StdStrBuf("{{@Ico:LeftStick}} Right");
+			case KEY_CONTROLLER_AxisLeftYUp         : return StdStrBuf("{{@Ico:LeftStick}} Up");
+			case KEY_CONTROLLER_AxisLeftYDown       : return StdStrBuf("{{@Ico:LeftStick}} Down");
+			case KEY_CONTROLLER_AxisRightXLeft      : return StdStrBuf("{{@Ico:RightStick}} Left");
+			case KEY_CONTROLLER_AxisRightXRight     : return StdStrBuf("{{@Ico:RightStick}} Right");
+			case KEY_CONTROLLER_AxisRightYUp        : return StdStrBuf("{{@Ico:RightStick}} Up");
+			case KEY_CONTROLLER_AxisRightYDown      : return StdStrBuf("{{@Ico:RightStick}} Down");
+			case KEY_CONTROLLER_AxisTriggerLeft     : return StdStrBuf("{{@Ico:LeftTrigger}}");
+			case KEY_CONTROLLER_AxisTriggerRight    : return StdStrBuf("{{@Ico:RightTrigger}}");
 			}
 		}
+		else
+		{
+			// A linear search in our small map is probably fast enough.
+			auto it = std::find_if(controllercodes.begin(), controllercodes.end(), [wCode](const auto &p)
+			{
+				return p.second == Key_GetGamepadEvent(wCode);
+			});
+			if (it != controllercodes.end())
+				return FormatString("Controller%s", it->first.c_str());
+		}
+		return StdStrBuf("Unknown");
 	}
+
 	// Mouse keys
 	if (Key_IsMouse(wCode))
 	{
@@ -368,9 +425,13 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonX1:          return FormatString("%s%dX1", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonX2:          return FormatString("%s%dX2", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonLeftDouble:  return FormatString("%s%dLeftDouble", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonRightDouble: return FormatString("%s%dRightDouble", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonMiddleDouble:return FormatString("%s%dMiddleDouble", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonX1Double:    return FormatString("%s%dX1Double", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonX2Double:    return FormatString("%s%dX2Double", mouse_str, mouse_id);
 		default:
 			// extended mouse button
 		{
@@ -388,7 +449,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		// for config files and such: dump scancode
 		return FormatString("$%x", static_cast<unsigned int>(wCode));
 	}
-#if defined(USE_WIN32_WINDOWS) || (defined(_WIN32) && defined(USE_GTK))
+#if defined(USE_WIN32_WINDOWS)
 
 	// Query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
@@ -418,24 +479,11 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 			if (wCode == pCheck->wCode) return StdStrBuf((pCheck->szShortName && fShort) ? pCheck->szShortName : pCheck->szName); else ++pCheck;
 	// not found: Compose as direct code
 	return FormatString("\\x%x", static_cast<unsigned int>(wCode));
-#elif defined(USE_GTK)
-	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	KeySym keysym = (KeySym)XkbKeycodeToKeysym(dpy,wCode+8,0,0);
-	char* name = NULL;
-	if (keysym != NoSymbol) { // is the keycode without shift modifiers mapped to a symbol?
-		name = gtk_accelerator_get_label_with_keycode(gdk_display_get_default(), keysym, wCode+8, (GdkModifierType)0);
-	}
-	if (name) { // is there a string representation of the keysym?
-		// prevent memleak
-		StdStrBuf buf;
-		buf.Copy(name);
-		g_free(name);
-		return buf;
-	}
 #elif defined(USE_SDL_MAINLOOP)
 	StdStrBuf buf;
-	buf.Copy(SDL_GetScancodeName(static_cast<SDL_Scancode>(wCode)));
-	if (!buf.getLength()) buf.Format("\\x%x", wCode);
+	auto name = KeycodeToString(wCode);
+	if (name) buf.Copy(name);
+	if (!buf.getLength()) buf.Format("\\x%lx", wCode);
 	return buf;
 #endif
 	return FormatString("$%x", static_cast<unsigned int>(wCode));
@@ -470,7 +518,7 @@ StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort) const
 
 void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBuf)
 {
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		// reading from file
 		StdStrBuf sCode;
@@ -513,7 +561,16 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBuf)
 			}
 			dwShift = dwSetShift;
 			Key = eCode;
-			if (pOutBuf) pOutBuf->Take(std::move(sCode));
+			if (pOutBuf) {
+				// FIXME: This function is used both, to deserialize things like CON_Right and Shift+$12
+				// For CON_…, eCode and dwShift will be zero, and sCode will contain the key name.
+				// For Shift+… sCode will only contain the last token. What is correct here?
+				// Reading C4PlayerControlAssignment::KeyComboItem::CompileFunc suggests that setting not value for parsed combinations may be correct.
+				if (eCode == 0)
+					pOutBuf->Take(std::move(sCode));
+				else
+					pOutBuf->Copy(ToString(false, false));
+			}
 		}
 	}
 	else
@@ -551,6 +608,12 @@ bool C4KeyEventData::operator ==(const struct C4KeyEventData &cmp) const
 
 }
 
+bool KEY_IsModifier(C4KeyCode k) {
+	return k == K_CONTROL_L || k == K_SHIFT_L || k == K_ALT_L ||
+	       k == K_CONTROL_R || k == K_SHIFT_R || k == K_ALT_R;
+}
+
+
 /* ----------------- C4CustomKey------------------ */
 
 C4CustomKey::C4CustomKey(const C4KeyCodeEx &DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
@@ -568,8 +631,8 @@ C4CustomKey::C4CustomKey(const C4KeyCodeEx &DefCode, const char *szName, C4KeySc
 	}
 }
 
-C4CustomKey::C4CustomKey(const CodeList &rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
-		: DefaultCodes(rDefCodes), Scope(Scope), Name(), uiPriority(uiPriority), iRef(0), is_down(false)
+C4CustomKey::C4CustomKey(CodeList rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
+		: DefaultCodes(std::move(rDefCodes)), Scope(Scope), Name(), uiPriority(uiPriority), iRef(0), is_down(false)
 {
 	// ctor for default key
 	Name.Copy(szName);
@@ -582,15 +645,15 @@ C4CustomKey::C4CustomKey(const CodeList &rDefCodes, const char *szName, C4KeySco
 }
 
 C4CustomKey::C4CustomKey(const C4CustomKey &rCpy, bool fCopyCallbacks)
-		: Codes(rCpy.Codes), DefaultCodes(rCpy.DefaultCodes), Scope(rCpy.Scope), Name(), uiPriority(rCpy.uiPriority), iRef(0)
+		: Codes(rCpy.Codes), DefaultCodes(rCpy.DefaultCodes), Scope(rCpy.Scope), Name(), uiPriority(rCpy.uiPriority), iRef(0), is_down(false)
 {
 	Name.Copy(rCpy.GetName());
 	if (fCopyCallbacks)
 	{
-		for (CBVec::const_iterator i = rCpy.vecCallbacks.begin(); i != rCpy.vecCallbacks.end(); ++i)
+		for (auto callback : rCpy.vecCallbacks)
 		{
-			(*i)->Ref();
-			vecCallbacks.push_back(*i);
+			callback->Ref();
+			vecCallbacks.push_back(callback);
 		}
 	}
 }
@@ -602,6 +665,15 @@ C4CustomKey::~C4CustomKey()
 		(*i)->Deref();
 }
 
+bool C4CustomKey::IsCodeMatched(const C4KeyCodeEx &key) const
+{
+	const CodeList &codes = GetCodes();
+	for (const auto &code : codes)
+		if (code == key)
+			return true;
+	return false;
+}
+
 void C4CustomKey::Update(const C4CustomKey *pByKey)
 {
 	assert(pByKey);
@@ -611,23 +683,18 @@ void C4CustomKey::Update(const C4CustomKey *pByKey)
 	if (pByKey->Codes.size()) Codes = pByKey->Codes;
 	if (pByKey->Scope != KEYSCOPE_None) Scope = pByKey->Scope;
 	if (pByKey->uiPriority != PRIO_None) uiPriority = pByKey->uiPriority;
-	for (CBVec::const_iterator i = pByKey->vecCallbacks.begin(); i != pByKey->vecCallbacks.end(); ++i)
+	for (auto callback : pByKey->vecCallbacks)
 	{
-		(*i)->Ref();
-		vecCallbacks.push_back(*i);
+		callback->Ref();
+		vecCallbacks.push_back(callback);
 	}
-}
-
-bool C4KeyboardCallbackInterfaceHasOriginalKey(C4KeyboardCallbackInterface *pIntfc, const C4CustomKey *pCheckKey)
-{
-	return pIntfc->IsOriginalKey(pCheckKey);
 }
 
 void C4CustomKey::KillCallbacks(const C4CustomKey *pOfKey)
 {
 	// remove all instances from list
 	CBVec::iterator i;
-	while ((i = std::find_if(vecCallbacks.begin(), vecCallbacks.end(), std::bind2nd(std::ptr_fun(&C4KeyboardCallbackInterfaceHasOriginalKey), pOfKey))) != vecCallbacks.end())
+	while ((i = std::find_if(vecCallbacks.begin(), vecCallbacks.end(), [pOfKey](CBVec::value_type pIntfc) { return pIntfc->IsOriginalKey(pOfKey); })) != vecCallbacks.end())
 	{
 		C4KeyboardCallbackInterface *pItfc = *i;
 		vecCallbacks.erase(i);
@@ -645,8 +712,8 @@ bool C4CustomKey::Execute(C4KeyEventType eEv, C4KeyCodeEx key)
 	// remember down-state
 	is_down = (eEv == KEYEV_Down);
 	// execute all callbacks
-	for (CBVec::iterator i = vecCallbacks.begin(); i != vecCallbacks.end(); ++i)
-		if ((*i)->OnKeyEvent(key, eEv))
+	for (auto & callback : vecCallbacks)
+		if (callback->OnKeyEvent(key, eEv))
 			return true;
 	// no event processed it
 	return false;
@@ -812,28 +879,12 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 	FallbackKeys[iKeyRangeCnt++] = InKey.Key;
 	if (Key_IsGamepadButton(InKey.Key))
 	{
-		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
-		uint8_t byBtnIndex = Key_GetGamepadButtonIndex(InKey.Key);
-		// even/odd button events: Add even button indices as odd events, because byBtnIndex is zero-based and the event naming scheme is for one-based button indices
-		if (byBtnIndex % 2) FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyEvenButton);
-		else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyOddButton);
-		// high/low button events
-		if (byBtnIndex < 4) FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyLowButton);
-		else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyHighButton);
 		// "any gamepad button"-event
-		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyButton);
+		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(KEY_CONTROLLER_AnyButton);
 	}
 	else if (Key_IsGamepadAxis(InKey.Key))
 	{
-		// xy-axis-events for all even/odd axises
-		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
-		uint8_t byAxis = Key_GetGamepadAxisIndex(InKey.Key);
-		bool fHigh = Key_IsGamepadAxisHigh(InKey.Key);
-		C4KeyCode keyAxisDir;
-		if (byAxis % 2)
-				if (fHigh) keyAxisDir = KEY_JOY_Down; else keyAxisDir = KEY_JOY_Up;
-		else if (fHigh) keyAxisDir = KEY_JOY_Right; else keyAxisDir = KEY_JOY_Left;
-		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, (uint8_t)keyAxisDir);
+		// TODO: do we need "any axis" events?
 	}
 	if (InKey.Key != KEY_Any) FallbackKeys[iKeyRangeCnt++] = KEY_Any;
 	// now get key ranges for fallback chain
@@ -895,7 +946,7 @@ void C4KeyboardInput::CompileFunc(StdCompiler *pComp)
 			C4CustomKey::CodeList OldCodes = i->second->GetCodes();
 			pComp->Value(*i->second);
 			// resort in secondary map if key changed
-			if (pComp->isCompiler())
+			if (pComp->isDeserializer())
 			{
 				const C4CustomKey::CodeList &rNewCodes = i->second->GetCodes();
 				if (!(OldCodes == rNewCodes)) UpdateKeyCodes(i->second, OldCodes, rNewCodes);
@@ -927,7 +978,7 @@ bool C4KeyboardInput::LoadCustomConfig()
 C4CustomKey *C4KeyboardInput::GetKeyByName(const char *szKeyName)
 {
 	KeyNameMap::const_iterator i = KeysByName.find(szKeyName);
-	if (i == KeysByName.end()) return NULL; else return (*i).second;
+	if (i == KeysByName.end()) return nullptr; else return (*i).second;
 }
 
 StdStrBuf C4KeyboardInput::GetKeyCodeNameByKeyName(const char *szKeyName, bool fShort, int32_t iIndex)

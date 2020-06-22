@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,8 +17,8 @@
 
 /* Holds a single text file component from a group */
 
-#include <C4Include.h>
-#include <C4ComponentHost.h>
+#include "C4Include.h"
+#include "c4group/C4ComponentHost.h"
 
 bool C4ComponentHost::Load(C4Group &hGroup,
                            const char *fname,
@@ -98,16 +98,20 @@ bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
 
 void C4ComponentHost::FinishLoad(const StdStrBuf & name, C4Group &hGroup)
 {
-	Data.EnsureUnicode();
+	// Store actual filename
+	hGroup.FindEntry(name.getData(), &Filename);
+	CopyFilePathFromGroup(hGroup);
+
+	if (Data.EnsureUnicode())
+	{
+		LogF("WARNING: File is not encoded as UTF-8 (%s)", FilePath.getData());
+	}
 	// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
 	if (Data[0] == '\xEF' && Data[1] == '\xBB' && Data[2] == '\xBF')
 	{
 		Data.Move(3,Data.getSize()-3);
 		Data.Shrink(3);
 	}
-	// Store actual filename
-	hGroup.FindEntry(name.getData(), &Filename);
-	CopyFilePathFromGroup(hGroup);
 	// Notify
 	OnLoad();
 }

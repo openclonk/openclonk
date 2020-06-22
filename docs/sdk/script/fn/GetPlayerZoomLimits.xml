@@ -7,7 +7,7 @@
     <title>GetPlayerZoomLimits</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>5.5 OC</version>
+    <version>5.0 OC</version>
     <syntax>
       <rtype>proplist</rtype>
       <params>

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,13 +16,11 @@
 // A loader for the OGRE .mesh binary file format
 
 #include "C4Include.h"
-#include "StdMesh.h"
-#include "StdMeshLoader.h"
-#include "StdMeshLoaderBinaryChunks.h"
-#include "StdMeshLoaderDataStream.h"
-#include "StdMeshMaterial.h"
-#include <cassert>
-#include <vector>
+#include "lib/StdMesh.h"
+#include "lib/StdMeshLoader.h"
+#include "lib/StdMeshLoaderBinaryChunks.h"
+#include "lib/StdMeshLoaderDataStream.h"
+#include "lib/StdMeshMaterial.h"
 
 namespace
 {
@@ -182,9 +180,9 @@ namespace
 
 void StdMeshSkeletonLoader::StoreSkeleton(const char* groupname, const char* filename, std::shared_ptr<StdMeshSkeleton> skeleton)
 {
-	assert(groupname != NULL);
-	assert(filename != NULL);
-	assert(skeleton != NULL);
+	assert(groupname != nullptr);
+	assert(filename != nullptr);
+	assert(skeleton != nullptr);
 
 	// Create mirrored animations (#401)
 	// this is still going to be somewhere else, but for now it will keep moving around
@@ -247,9 +245,9 @@ void StdMeshSkeletonLoader::RemoveSkeletonsInGroup(const char* groupname)
 		}
 	}
 
-	for (unsigned i = 0; i < delete_skeletons.size(); i++)
+	for (const auto & delete_skeleton : delete_skeletons)
 	{
-		RemoveSkeleton(delete_skeletons[i]);
+		RemoveSkeleton(delete_skeleton);
 	}
 }
 
@@ -299,7 +297,7 @@ std::shared_ptr<StdMeshSkeleton> StdMeshSkeletonLoader::GetSkeletonByName(const 
 	StdCopyStrBuf filename(name);
 
 	std::map<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>>::const_iterator iter = Skeletons.find(filename);
-	if (iter == Skeletons.end()) return NULL;
+	if (iter == Skeletons.end()) return nullptr;
 	return iter->second;
 }
 
@@ -340,7 +338,7 @@ void StdMeshSkeletonLoader::LoadSkeletonBinary(const char* groupname, const char
 			if (bones.find(cbone.handle) != bones.end())
 				throw Ogre::Skeleton::IdNotUnique();
 			auto bone = std::make_unique<StdMeshBone>();
-			bone->Parent = NULL;
+			bone->Parent = nullptr;
 			bone->ID = cbone.handle;
 			bone->Name = cbone.name.c_str();
 			bone->Transformation.translate = cbone.position;
@@ -371,7 +369,7 @@ void StdMeshSkeletonLoader::LoadSkeletonBinary(const char* groupname, const char
 	}
 
 	// Find master bone (i.e., the one without a parent)
-	StdMeshBone *master = NULL;
+	StdMeshBone *master = nullptr;
 	for (auto& b: bones)
 	{
 		if (!b.second->Parent)
@@ -407,7 +405,7 @@ void StdMeshSkeletonLoader::LoadSkeletonBinary(const char* groupname, const char
 		{
 			const StdMeshBone &bone = Skeleton->GetBone(handle_lookup[catrack->bone]);
 			StdMeshTrack *&track = anim.Tracks[bone.Index];
-			if (track != NULL)
+			if (track != nullptr)
 				throw Ogre::Skeleton::MultipleBoneTracks();
 			track = new StdMeshTrack;
 			for(auto &catkf: catrack->keyframes)
@@ -466,7 +464,7 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, co
 		// with this exception the assert below is useless
 		// also, I think the bone_lookup should only be used if there is a skeleton anyway
 		// so there could be meshes without bones even?
-		if (mesh->Skeleton == NULL)
+		if (mesh->Skeleton == nullptr)
 		{
 			StdCopyStrBuf exception("The specified skeleton file was not found: ");
 			exception.Append(skeleton_filename.getData());
@@ -474,7 +472,7 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, co
 		}
 	}
 
-	assert(mesh->Skeleton != NULL); // the bone assignments could instead be added only, if there is a skeleton
+	assert(mesh->Skeleton != nullptr); // the bone assignments could instead be added only, if there is a skeleton
 
 	// Build bone handle->index quick access table
 	std::map<uint16_t, size_t> bone_lookup;
@@ -554,16 +552,14 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, co
 	bool first = true;
 	for (unsigned int i = 0; i < mesh->SubMeshes.size() + 1; ++i)
 	{
-		const std::vector<StdSubMesh::Vertex>* vertices = NULL;
+		const std::vector<StdSubMesh::Vertex>* vertices = nullptr;
 		if (i < mesh->SubMeshes.size())
 			vertices = &mesh->SubMeshes[i].Vertices;
 		else
 			vertices = &mesh->SharedVertices;
 
-		for (unsigned int j = 0; j < vertices->size(); ++j)
+		for (const auto & vertex : *vertices)
 		{
-			const StdMeshVertex& vertex = (*vertices)[j];
-
 			const float d = std::sqrt(vertex.x*vertex.x
 		 	                        + vertex.y*vertex.y
 			                        + vertex.z*vertex.z);
@@ -641,7 +637,7 @@ void StdMeshSkeletonLoader::DoAppendSkeletons()
 		StdMeshSkeleton* destination = GetSkeletonByDefinition(id.getData());
 
 		// append animations, if the definition has a mesh
-		if (destination == NULL)
+		if (destination == nullptr)
 		{
 			// Note that GetSkeletonByDefinition logs already why
 			// the skeleton does not exist.
@@ -681,7 +677,7 @@ void StdMeshSkeletonLoader::DoIncludeSkeletons()
 		StdMeshSkeleton* source = GetSkeletonByDefinition(id.getData());
 
 		// append animations, if the definition has a mesh
-		if (source == NULL)
+		if (source == nullptr)
 		{
 			// Note that GetSkeletonByDefinition logs already why
 			// the skeleton does not exist.

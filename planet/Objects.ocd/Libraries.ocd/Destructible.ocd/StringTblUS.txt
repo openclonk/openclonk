@@ -1,0 +1,7 @@
+Invincible=This object is invincible.
+Damage=Damage
+NotDamaged=Not damaged.
+SlightlyDamaged=Lightly damaged.
+HeavilyDamaged=Heavily damaged.
+
+MsgNotFullyConstructed=%s is not fully constructed yet.|There are no interactions possible at this point.

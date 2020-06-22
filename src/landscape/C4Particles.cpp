@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,26 +13,26 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Particles.h>
+#include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "landscape/C4Particles.h"
 
 // headers for particle loading
-#include <C4Log.h>
-#include <C4Components.h>
-#include <C4Config.h>
+#include "c4group/C4Components.h"
 
 #ifndef USE_CONSOLE
 // headers for particle execution
-#include <C4Application.h>
-#include <C4Value.h>
-#include <C4ValueArray.h>
-#include <C4Material.h>
-#include <C4MeshAnimation.h>
-#include <C4DrawGL.h>
-#include <C4Random.h>
-#include <C4Landscape.h>
-#include <C4Weather.h>	
-#include <C4Object.h>
+#include "game/C4Application.h"
+#include "graphics/C4DrawGL.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Weather.h"
+#include "object/C4MeshAnimation.h"	
+#include "object/C4Object.h"
+#include "script/C4Aul.h"
+#include "script/C4Value.h"
+#include "script/C4ValueArray.h"
+#include <random>
 #endif
 
 
@@ -60,7 +60,7 @@ C4ParticleDef::C4ParticleDef() : C4ParticleDefCore()
 	// link into list
 	if (!Particles.definitions.first)
 	{
-		previous = NULL;
+		previous = nullptr;
 		Particles.definitions.first = this;
 	}
 	else
@@ -92,7 +92,7 @@ bool C4ParticleDef::Load(C4Group &group)
 	Filename.Copy(group.GetFullName());
 	// load
 	char *particle_source;
-	if (group.LoadEntry(C4CFN_ParticleCore,&particle_source,NULL,1))
+	if (group.LoadEntry(C4CFN_ParticleCore,&particle_source,nullptr,1))
 	{
 		if (!Compile(particle_source, Filename.getData()))
 		{
@@ -217,6 +217,7 @@ C4ParticleValueProvider & C4ParticleValueProvider::operator= (const C4ParticleVa
 	valueFunction = other.valueFunction;
 	isConstant = other.isConstant;
 	keyFrameCount = other.keyFrameCount;
+	rng = other.rng;
 
 	if (keyFrameCount > 0)
 	{
@@ -376,18 +377,11 @@ void C4ParticleValueProvider::Floatify(float denominator)
 	{
 		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
 	}
-	else if (valueFunction == &C4ParticleValueProvider::Sin)
+	else if (valueFunction == &C4ParticleValueProvider::Sin || valueFunction == &C4ParticleValueProvider::Cos)
 	{
 		FloatifyParameterValue(&C4ParticleValueProvider::parameterValue, 1.0f);
 		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
 	}
-}
-
-void C4ParticleValueProvider::RollRandom()
-{
-	float range = endValue - startValue;
-	float rnd = (float)(rand()) / (float)(RAND_MAX); 
-	currentValue = startValue + rnd * range;
 }
 
 float C4ParticleValueProvider::GetValue(C4Particle *forParticle)
@@ -408,10 +402,27 @@ float C4ParticleValueProvider::Const(C4Particle *forParticle)
 
 float C4ParticleValueProvider::Random(C4Particle *forParticle)
 {
-	if ((rerollInterval != 0 && ((int)forParticle->GetAge() % rerollInterval == 0)) || alreadyRolled == 0)
+	// We need to roll again if..
+	const bool needToReevaluate =
+		// .. we haven't rolled yet
+		alreadyRolled == 0
+		// .. we are still in the intialization stage (and thus, this value provider could be an intialization term for multiple particles)
+		|| (forParticle->lifetime == forParticle->startingLifetime)
+		// .. or the reroll interval is set and expired.
+		|| (rerollInterval != 0 && ((int)forParticle->GetAge() % rerollInterval == 0));
+
+	if (needToReevaluate)
 	{
 		alreadyRolled = 1;
-		RollRandom();
+		// Even for seeded PV_Random, each particle should behave differently.  Thus, we use a different
+		// stream for each one.  Since this is by no means synchronisation relevant and since the
+		// particles lie on the heap we just use the address here.
+		const std::uintptr_t ourAddress = reinterpret_cast<std::uintptr_t>(forParticle);
+		rng.set_stream(ourAddress);
+		// We need to advance the RNG a bit to make streams with the same seed diverge.
+		rng.advance(5);
+		std::uniform_real_distribution<float> distribution(std::min(startValue, endValue), std::max(startValue, endValue));
+		currentValue = distribution(rng);
 	}
 	return currentValue;
 }
@@ -465,6 +476,11 @@ float C4ParticleValueProvider::Sin(C4Particle *forParticle)
 	return sin(parameterValue * M_PI / 180.0f) * maxValue + startValue;
 }
 
+float C4ParticleValueProvider::Cos(C4Particle *forParticle)
+{
+	return cos(parameterValue * M_PI / 180.0f) * maxValue + startValue;
+}
+
 float C4ParticleValueProvider::Speed(C4Particle *forParticle)
 {
 	float distX = forParticle->currentSpeedX;
@@ -481,7 +497,7 @@ float C4ParticleValueProvider::Wind(C4Particle *forParticle)
 
 float C4ParticleValueProvider::Gravity(C4Particle *forParticle)
 {
-	return startValue + (speedFactor * ::Landscape.Gravity);
+	return startValue + (speedFactor * fixtof(::Landscape.GetGravity()));
 }
 
 void C4ParticleValueProvider::SetType(C4ParticleValueProviderID what)
@@ -508,6 +524,9 @@ void C4ParticleValueProvider::SetType(C4ParticleValueProviderID what)
 		break;
 	case C4PV_Sin:
 		valueFunction = &C4ParticleValueProvider::Sin;
+		break;
+	case C4PV_Cos:
+		valueFunction = &C4ParticleValueProvider::Cos;
 		break;
 	case C4PV_Speed:
 		valueFunction = &C4ParticleValueProvider::Speed;
@@ -562,8 +581,19 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 			SetType(C4PV_Random);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4ParticleValueProvider::startValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4ParticleValueProvider::endValue);
-			if (arraySize >= 4)
+			if (arraySize >= 4 && fromArray[3].GetType() != C4V_Type::C4V_Nil)
 				SetParameterValue(VAL_TYPE_INT, fromArray[3], 0, &C4ParticleValueProvider::rerollInterval);
+			if (arraySize >= 5 && fromArray[4].GetType() != C4V_Type::C4V_Nil)
+			{
+				// We don't need the seed later on, but SetParameterValue won't accept local
+				// variables. Use an unrelated member instead which is reset below.
+				SetParameterValue(VAL_TYPE_INT, fromArray[4], 0, &C4ParticleValueProvider::alreadyRolled);
+				rng.seed(alreadyRolled);
+			}
+			else
+			{
+				rng.seed(UnsyncedRandom());
+			}
 			alreadyRolled = 0;
 		}
 		break;
@@ -612,10 +642,11 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 
 		}
 		break;
-	case C4PV_Sin:
+	case C4PV_Sin: // fallthrough
+	case C4PV_Cos:
 		if (arraySize >= 3)
 		{
-			SetType(C4PV_Sin); // Sin(parameterValue) * maxValue + startValue
+			SetType(static_cast<C4ParticleValueProviderID> (type)); // Sin(parameterValue) * maxValue + startValue
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4ParticleValueProvider::parameterValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4ParticleValueProvider::maxValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[3], &C4ParticleValueProvider::startValue);
@@ -972,7 +1003,7 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 	if (particleCount == 0) return;
 	const int stride = sizeof(C4Particle::DrawingData::Vertex);
 	assert(sourceDefinition && "No source definition assigned to particle chunk.");
-	C4TexRef *textureRef = &sourceDefinition->Gfx.GetFace().textures[0];
+	C4TexRef *textureRef = sourceDefinition->Gfx.GetFace().texture.get();
 	assert(textureRef != 0 && "Particle definition had no texture assigned.");
 
 	// use a relative offset?
@@ -1030,7 +1061,6 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 	if (!has_vao)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ::Particles.GetIBO());
 		pGL->ObjectLabel(GL_VERTEX_ARRAY, vao, -1, "<particles>/VAO");
 
 		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
@@ -1040,6 +1070,9 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 		glVertexAttribPointer(call.GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
 		glVertexAttribPointer(call.GetAttribute(C4SSA_Color), 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
 	}
+
+	// We need to always bind the ibo, because it might change its size.
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ::Particles.GetIBO(particleCount));
 
 	glDrawElements(GL_TRIANGLE_STRIP, static_cast<GLsizei> (5 * particleCount), GL_UNSIGNED_INT, 0);
 
@@ -1066,7 +1099,7 @@ void C4ParticleChunk::ClearBufferObjects()
 void C4ParticleChunk::ReserveSpace(uint32_t forAmount)
 {
 	uint32_t newSize = static_cast<uint32_t>(particleCount) + forAmount + 1;
-	::Particles.PreparePrimitiveRestartIndices(newSize);
+	
 	if (particles.capacity() < newSize)
 		particles.reserve(std::max<uint32_t>(newSize, particles.capacity() * 2));
 
@@ -1129,7 +1162,7 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	C4ShaderCall call(pGL->GetSpriteShader(true, false, false));
 	// apply zoom and upload shader uniforms
 	StdProjectionMatrix modelview = StdProjectionMatrix::Identity();
-	pGL->SetupMultiBlt(call, NULL, 0, 0, 0, 0, &modelview);
+	pGL->SetupMultiBlt(call, nullptr, 0, 0, 0, 0, &modelview);
 	// go to correct output position (note the normal matrix is unaffected
 	// by this)
 	Translate(modelview, cgo.X-cgo.TargetX, cgo.Y-cgo.TargetY, 0.0f);
@@ -1170,11 +1203,11 @@ void C4ParticleList::Clear()
 
 	if (targetObject)
 	{
-		if (this == targetObject->FrontParticles) targetObject->FrontParticles = NULL;
-		else if (this == targetObject->BackParticles) targetObject->BackParticles = NULL;
+		if (this == targetObject->FrontParticles) targetObject->FrontParticles = nullptr;
+		else if (this == targetObject->BackParticles) targetObject->BackParticles = nullptr;
 	}
 	else
-		if(this == ::Particles.globalParticles) ::Particles.globalParticles = NULL;
+		if(this == ::Particles.globalParticles) ::Particles.globalParticles = nullptr;
 
 	accessMutex.Leave();
 }
@@ -1373,13 +1406,7 @@ void C4ParticleSystem::Create(C4ParticleDef *of_def, C4ParticleValueProvider &x,
 	chunk->ReserveSpace(static_cast<uint32_t>(amount));
 
 	while (amount--)
-	{
-		if (x.IsRandom()) x.RollRandom();
-		if (y.IsRandom()) y.RollRandom();
-		if (speedX.IsRandom()) speedX.RollRandom();
-		if (speedY.IsRandom()) speedY.RollRandom();
-		if (lifetime.IsRandom()) lifetime.RollRandom();
-		
+	{	
 		// create a particle in the fitting chunk (note that we tell the particle list, we already locked it)
 		C4Particle *particle = chunk->AddNewParticle();
 
@@ -1389,9 +1416,13 @@ void C4ParticleSystem::Create(C4ParticleDef *of_def, C4ParticleValueProvider &x,
 		particle->properties.Floatify();
 
 		// setup some more non-property attributes of the particle
-		float lifetime_value = lifetime.GetValue(particle);
-		if (lifetime_value < 0.0f) lifetime_value = 0.0f; // negative values not allowed (would crash later); using a value of 0 is most likely visible to the scripter
-		particle->lifetime = particle->startingLifetime = lifetime_value;
+		// The particle having lifetime == startingLifetime will force all random values to alway-reevaluate.
+		// Thus we need to guarantee that even before setting the lifetime (to allow a PV_Random for the lifetime).
+		particle->lifetime = particle->startingLifetime = 0.0f;
+		const float lifetime_value = lifetime.GetValue(particle);
+		// Negative values are not allowed (would crash later); using a value of 0 is most likely visible to the scripter.
+		if (lifetime_value >= 0.0f)
+			particle->lifetime = particle->startingLifetime = lifetime_value;
 
 		particle->currentSpeedX = speedX.GetValue(particle);
 		particle->currentSpeedY = speedY.GetValue(particle);
@@ -1405,34 +1436,41 @@ void C4ParticleSystem::Create(C4ParticleDef *of_def, C4ParticleValueProvider &x,
 	pxList->Unlock();
 }
 
+GLuint C4ParticleSystem::GetIBO(size_t forParticleAmount)
+{
+	PreparePrimitiveRestartIndices(forParticleAmount);
+	return ibo;
+}
+
 void C4ParticleSystem::PreparePrimitiveRestartIndices(uint32_t forAmount)
 {
+	if (ibo == 0) glGenBuffers(1, &ibo);
+	// Each particle has 4 vertices and one PRI.
+	const size_t neededEntryAmount = 5 * forAmount;
+	const size_t neededIboSize = neededEntryAmount * sizeof(GLuint);
+	// Nothing to do?
+	if (ibo_size >= neededIboSize) return;
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
 	// prepare array with indices, separated by special primitive restart index
 	const uint32_t PRI = 0xffffffff;
-	size_t neededAmount = 5 * forAmount;
 
-	if (ibo == 0) glGenBuffers(1, &ibo);
+	std::vector<GLuint> ibo_data;
+	ibo_data.reserve(neededEntryAmount);
 
-	if (ibo_size < neededAmount * sizeof(GLuint))
+	unsigned int index = 0;
+	for (unsigned int i = 0; i < neededEntryAmount; ++i)
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-		std::vector<GLuint> ibo_data;
-		ibo_data.reserve(neededAmount);
-
-		unsigned int index = 0;
-		for (unsigned int i = 0; i < neededAmount; ++i)
-		{
-			if ((i+1) % 5 == 0)
-				ibo_data.push_back(PRI);
-			else
-				ibo_data.push_back(index++);
-		}
-
-		ibo_size = neededAmount * sizeof(GLuint);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibo_size, &ibo_data[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		if ((i+1) % 5 == 0)
+			ibo_data.push_back(PRI);
+		else
+			ibo_data.push_back(index++);
 	}
+
+	ibo_size = neededEntryAmount * sizeof(GLuint);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibo_size, &ibo_data[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 #endif
 

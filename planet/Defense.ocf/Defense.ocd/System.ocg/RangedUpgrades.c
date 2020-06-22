@@ -1,7 +1,7 @@
 /* Apply upgrades to ranged weapons */
 
 #appendto Bow
-#appendto Musket
+#appendto Blunderbuss
 #appendto GrenadeLauncher
 #appendto Javelin
 
@@ -26,7 +26,7 @@ public func Entrance(...)
 
 public func Gidl_UpdateLoadTimes()
 {
-	if (!Contained()) return false;
+	if (!Contained() || !g_homebases) return false;
 	var base = g_homebases[Contained()->GetOwner()];
 	if (base)
 	{
@@ -44,8 +44,8 @@ public func Gidl_UpdateLoadTimes()
 
 public func Guardians_UpdateShootingStrength()
 {
-	if (!Contained()) return false;
-	if (GetID() == Musket) return false; // Update not for muskets
+	if (!Contained() || !g_homebases) return false;
+	if (GetID() == Blunderbuss) return false; // Update not for blunderbusses
 	var base = g_homebases[Contained()->GetOwner()];
 	if (base)
 	{

@@ -1,5 +1,8 @@
 /**
-	Contains functions that require definitions from the "disasters" folder.
+	Disasters.c
+	Contains functions that require definitions from the Disasters.ocd folder.
+	
+	@author
 */
 
 /**

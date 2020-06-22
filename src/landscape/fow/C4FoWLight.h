@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,16 +15,16 @@
 #ifndef C4FOWLIGHT_H
 #define C4FOWLIGHT_H
 
+#include "C4ForbidLibraryCompilation.h"
+
 #ifndef USE_CONSOLE
 
-#include "C4Object.h"
-#include "C4Surface.h"
-#include "C4FacetEx.h"
-#include "C4FoWLightSection.h"
-#include "C4FoWDrawStrategy.h"
-#include "C4Rect.h"
-
-#include <vector>
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4Surface.h"
+#include "landscape/fow/C4FoWDrawStrategy.h"
+#include "landscape/fow/C4FoWLightSection.h"
+#include "lib/C4Rect.h"
+#include "object/C4Object.h"
 
 /** This class represents one light source. A light source has an associated object with which the light source moves
     and one light section that handles the light beams for each direction (up, down, left, right).

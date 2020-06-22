@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,9 +17,12 @@
 #ifndef C4LANDSCAPE_RENDER_H
 #define C4LANDSCAPE_RENDER_H
 
-#include "C4Surface.h"
-#include "C4FacetEx.h"
-#include "C4Shader.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4Shader.h"
+#include "graphics/C4Surface.h"
+
+#include <chrono>
 
 // Data we want to store per landscape pixel
 enum C4LR_Byte {
@@ -52,6 +55,10 @@ enum C4LR_Uniforms
 	C4LRU_MaterialSize,
 	C4LRU_AmbientBrightness,
 	C4LRU_AmbientTransform,
+	C4LRU_Modulation,
+
+	C4LRU_FrameCounter,
+	C4LRU_Time,
 
 	C4LRU_Count
 };
@@ -77,14 +84,12 @@ class C4Landscape; class C4TextureMap;
 class C4LandscapeRender
 {
 public:
-	C4LandscapeRender()
-		: iWidth(0), iHeight(0), pTexs(NULL) { }
-	virtual ~C4LandscapeRender()
-		{}
+	C4LandscapeRender() = default;
+	virtual ~C4LandscapeRender() = default;
 
 protected:
-	int32_t iWidth, iHeight;
-	C4TextureMap *pTexs;
+	int32_t iWidth{0}, iHeight{0};
+	C4TextureMap *pTexs{nullptr};
 
 public:
 
@@ -99,7 +104,7 @@ public:
 	// the given rectangle
 	virtual void Update(C4Rect Rect, C4Landscape *pSource) = 0;
 
-	virtual void Draw(const C4TargetFacet &cgo, const class C4FoWRegion *Light) = 0;
+	virtual void Draw(const C4TargetFacet &cgo, const class C4FoWRegion *Light, uint32_t clrMod) = 0;
 };
 
 #ifndef USE_CONSOLE
@@ -107,7 +112,7 @@ class C4LandscapeRenderGL : public C4LandscapeRender
 {
 public:
 	C4LandscapeRenderGL();
-	~C4LandscapeRenderGL();
+	~C4LandscapeRenderGL() override;
 
 private:
 	// surfaces
@@ -123,6 +128,8 @@ private:
 	unsigned int hVAOIDNoLight;
 	unsigned int hVAOIDLight;
 
+	// 1D texture for material map
+	GLuint matMapTexture;
 	// 2D texture array of material textures
 	GLuint hMaterialTexture;
 	// material texture positions in texture array
@@ -135,15 +142,18 @@ private:
 	// scaler image
 	C4FacetSurface fctScaler;
 
+	// shader timer
+	std::chrono::time_point<std::chrono::steady_clock> TimerStart;
+
 public:
-	virtual bool ReInit(int32_t iWidth, int32_t iHeight);
-	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);
-	virtual void Clear();
+	bool ReInit(int32_t iWidth, int32_t iHeight) override;
+	bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics) override;
+	void Clear() override;
 
-	virtual C4Rect GetAffectedRect(C4Rect Rect);
-	virtual void Update(C4Rect Rect, C4Landscape *pSource);
+	C4Rect GetAffectedRect(C4Rect Rect) override;
+	void Update(C4Rect Rect, C4Landscape *pSource) override;
 
-	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light);
+	void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light, uint32_t clrMod) override;
 
 private:
 	bool InitLandscapeTexture();
@@ -163,26 +173,5 @@ private:
 	void BuildMatMap(uint32_t *pTex);
 };
 #endif
-
-class C4LandscapeRenderClassic : public C4LandscapeRender
-{
-public:
-	C4LandscapeRenderClassic();
-	~C4LandscapeRenderClassic();
-
-private:
-	C4Surface *Surface32;
-
-public:
-	virtual bool ReInit(int32_t iWidth, int32_t iHeight);
-	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);
-	virtual void Clear();
-
-	virtual C4Rect GetAffectedRect(C4Rect Rect);
-	virtual void Update(C4Rect Rect, C4Landscape *pSource);
-
-	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light);
-
-};
 
 #endif // C4LANDSCAPE_RENDER_H

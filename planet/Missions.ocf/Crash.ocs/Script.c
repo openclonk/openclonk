@@ -17,7 +17,7 @@ public func Initialize()
 func DoInit(int first_player)
 {
 
-	CreateObjectAbove(Windmill, 152, 825+48, 0);
+	CreateObjectAbove(Windmill, 152, 825 + 48, 0);
 
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);
@@ -53,6 +53,14 @@ func DoInit(int first_player)
 	// Start intro if not yet started
 	StartSequence("Intro", 0, GetCrew(first_player));
 	
+	GetRelaunchRule()
+		->SetInventoryTransfer(true)
+		->SetLastClonkRespawn(true)
+		->SetFreeCrew(true)
+		->SetAllowPlayerRestart(true)
+		->SetBaseRespawn(true)
+		->SetRespawnDelay(0);
+	
 	return true;
 }
 
@@ -66,8 +74,8 @@ func EnsureTrees(proplist area)
 
 global func FxIntWaterfallTimer(object obj, proplist eff)
 {
-	InsertMaterial(Material("Water"), 1560,840);
-	ExtractLiquid(1314,901);
+	InsertMaterial(Material("Water"), 1560, 840);
+	ExtractLiquid(1314, 901);
 }
 
 func InitializePlayer(int plr)
@@ -77,7 +85,7 @@ func InitializePlayer(int plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Late joining players just start in the village
 	var index;
-	for(index = 0; crew = GetCrew(plr, index); ++index)
+	for (index = 0; crew = GetCrew(plr, index); ++index)
 	{
 		if (!crew->Contained()) // if not put into plane by intro
 		{
@@ -91,7 +99,7 @@ func InitializePlayer(int plr)
 	if (g_has_bought_plans) GiveExtraPlans(plr);
 
 	// Give clonks initial tools
-	for(var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = GetCrew(plr, index); ++index)
 	{
 		crew->CreateContents(Shovel);
 		// First Clonk can construct and mine.
@@ -106,9 +114,9 @@ func InitializePlayer(int plr)
 
 func OnGoalsFulfilled()
 {
-	SetNextMission("Missions.ocf/DeepSeaMining.ocs");
+	SetNextScenario("Missions.ocf/DeepSeaMining.ocs");
 	GainScenarioAchievement("Done");
-	GainMissionAccess("S2Crash");
+	GainScenarioAccess("S2Crash");
 	return false;
 }
 

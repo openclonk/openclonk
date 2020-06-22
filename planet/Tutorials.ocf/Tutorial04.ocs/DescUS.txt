@@ -4,4 +4,4 @@ Wipfville has been reconstructed, but the villagers have used all their building
 
 Goal: Production of new tools.
 
-Tutorial explains: Production, loam, pickaxe.
+Tutorial explains: production, loam, pickaxe.

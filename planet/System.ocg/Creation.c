@@ -1,12 +1,13 @@
-/*--
-		Creation.c
-		Authors: Ringwaul, Tyron
-
-		Creation of objects, particles or PSX.
---*/
+/**
+	Creation.c
+	Creation of objects, particles or PSX.
+	
+	@author Ringwaul, Tyron		
+*/
 
 // Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material.
 // Returns the number of iterations needed, or -1 when the placement failed.
+// documented in /docs/sdk/script/fn
 global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wdt, int hgt, bool onsf, bool nostuck)
 {
 	var i, j;
@@ -86,6 +87,7 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 	return j;
 }
 
+// documented in /docs/sdk/script/fn
 global func CastObjects(id def, int am, int lev, int x, int y, int angs, int angw)
 {
 	var objects = [];
@@ -102,7 +104,7 @@ global func CastObjects(id def, int am, int lev, int x, int y, int angs, int ang
 		obj->SetR(Random(360));
 		obj->SetXDir(xdir);
 		obj->SetYDir(Sin(ang, lev) + RandomX(-3, 3));
-		if(xdir != 0)
+		if (xdir != 0)
 			obj->SetRDir((10 + Random(21)) * (xdir / Abs(xdir)));
 		else
 			obj->SetRDir(-10 + Random(21));
@@ -111,6 +113,7 @@ global func CastObjects(id def, int am, int lev, int x, int y, int angs, int ang
 	return objects;
 }
 
+// documented in /docs/sdk/script/fn
 global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int angw)
 {
 	if (!angw)
@@ -123,6 +126,7 @@ global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int ang
 	return;
 }
 
+// documented in /docs/sdk/script/fn
 global func DrawParticleLine(string particle, int x0, int y0, int x1, int y1, int prtdist, xdir, ydir, lifetime, proplist properties)
 {
 	// Right parameters?
@@ -134,7 +138,7 @@ global func DrawParticleLine(string particle, int x0, int y0, int x1, int y1, in
 	// Create particles.
 	while (i >= 0)
 	{
-		var i1, i2, b;
+		var i1, i2;
 		i2 = i * 256 / prtnum;
 		i1 = 256 - i2;
 
@@ -170,7 +174,7 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 	var growth, y_pos, plant, x_variance, variance = 0, count, j, spot;
 	for (var i = plant_size; i < width; i += plant_size)
 	{
-		growth = 100;
+		growth = 95;
 		y_pos = y;
 		x_variance = RandomX(-plant_size/2, plant_size/2);
 		// End zone check
@@ -185,12 +189,12 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 			count = RandomX(2, 4);
 			for (j = 0; j < count; j++)
 			{
-				spot = (plant_size*2 / count) * j + RandomX(-5,5) - plant_size;
+				spot = (plant_size*2 / count) * j + RandomX(-5, 5) - plant_size;
 				y_pos = y;
 				if (!GBackSolid(x + i + spot, y_pos)) continue;
 				while (!GBackSky(x + i + spot, y_pos) && y_pos > 0) y_pos--;
 				if (y_pos == 0) continue;
-				plant = CreateObjectAbove(plants[variance], x + i + spot, y_pos+5, NO_OWNER);
+				plant = CreateObjectAbove(plants[variance], x + i + spot, y_pos + 5, NO_OWNER);
 			}
 			continue;
 		}
@@ -200,7 +204,7 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 		while (!GBackSky(x + i + x_variance, y_pos) && y_pos > 0) y_pos--;
 		if (y_pos == 0) continue;
 
-		plant = CreateObjectAbove(plants[0], x + i + x_variance, y_pos+5, NO_OWNER);
+		plant = CreateObjectAbove(plants[0], x + i + x_variance, y_pos + 5, NO_OWNER);
 		plant->SetCon(growth);
 		if (foreground && !Random(3)) plant.Plane = 510;
 		// Every ~7th plant: double plant!
@@ -210,7 +214,7 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 			if (!GBackSolid(x + i - x_variance, y_pos)) continue;
 			while (!GBackSky(x + i - x_variance, y_pos) && y_pos > 0) y_pos--;
 			if (y_pos == 0) continue;
-			plant = CreateObjectAbove(plants[0], x + i - x_variance, y_pos+5, NO_OWNER);
+			plant = CreateObjectAbove(plants[0], x + i - x_variance, y_pos + 5, NO_OWNER);
 			plant->SetCon(growth);
 			if (foreground && !Random(3)) plant.Plane = 510;
 		}

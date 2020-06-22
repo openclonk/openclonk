@@ -8,7 +8,7 @@
 		- Construction
 		
 	This library provides force fields of two types (attractor/repulsor) that can be placed arbitrarily.
-	The force for a X|Y point can then be calculated, taking into account all forces and their specific falloff.
+	The force for a X | Y point can then be calculated, taking into account all forces and their specific falloff.
 */
 
 
@@ -207,10 +207,10 @@ public func DebugShowForceField(int amount)
 		 var speed = force / 60;
 		 if (emitter.type == Library_ForceField_Repulsor)
 		 {
-		 	CreateParticle("SphereSpark", emitter->GetX() - GetX() + RandomX(-2, 2), emitter->GetY() - GetY() + RandomX(-2, 2), PV_Random(-speed, speed), PV_Random(-speed, speed), 60, {Prototype=Particles_Flash(), Size=PV_Linear(5, 0), R=255, G=0, B=0}, force / 20);
+		 	CreateParticle("SphereSpark", emitter->GetX() - GetX() + RandomX(-2, 2), emitter->GetY() - GetY() + RandomX(-2, 2), PV_Random(-speed, speed), PV_Random(-speed, speed), 60, {Prototype = Particles_Flash(), Size = PV_Linear(5, 0), R = 255, G = 0, B = 0}, force / 20);
 		 }
 		 else
-		 	CreateParticle("SphereSpark", emitter->GetX() - GetX() + RandomX(-2, 2), emitter->GetY() - GetY() + RandomX(-2, 2), PV_Random(-speed, speed), PV_Random(-speed, speed), 60, {Prototype=Particles_Flash(), Size=PV_Linear(5, 0), R=0, G=0, B=255}, force / 20);
+		 	CreateParticle("SphereSpark", emitter->GetX() - GetX() + RandomX(-2, 2), emitter->GetY() - GetY() + RandomX(-2, 2), PV_Random(-speed, speed), PV_Random(-speed, speed), 60, {Prototype = Particles_Flash(), Size = PV_Linear(5, 0), R = 0, G = 0, B = 255}, force / 20);
 	}
 	
 	if (amount > 0)

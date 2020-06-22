@@ -11,7 +11,7 @@ static g_caves, g_end_cave_x, g_end_cave_y;
 local caves, n_caves, start_cave, end_cave;
 
 func FindCaves(int n)
-{ //n=6;
+{ //n = 6;
 	var mask = CreateLayer();
 	mask->Draw("Rock");
 	caves = [];
@@ -19,8 +19,8 @@ func FindCaves(int n)
 	while (n--)
 	{
 		var cave = {};
-		if (!mask->FindPosition(cave, "Rock", [border,border,this.Wdt-border*2,this.Hgt-border*2])) continue;
-		mask->Draw("Tunnel", {Algo=MAPALGO_Ellipsis, X=cave.X, Y=cave.Y, Wdt=min_cave_dist, Hgt=min_cave_dist});
+		if (!mask->FindPosition(cave, "Rock", [border, border, this.Wdt-border*2, this.Hgt-border*2])) continue;
+		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = cave.X, Y = cave.Y, Wdt = min_cave_dist, Hgt = min_cave_dist});
 		cave.links = [];
 		cave.dirs = 0;
 		cave.rand = Random(65536);
@@ -39,30 +39,19 @@ func FindCaves(int n)
 func GetCaveLinkDir(c1, c2)
 {
 	// Returns if c2 is left (1), right (2), atop (4) or below (8) c1. Returns only one direction.
-	var dx=c2.X-c1.X, dy=c2.Y-c1.Y, adx=Abs(dx), ady=Abs(dy);
+	var dx = c2.X-c1.X, dy = c2.Y-c1.Y, adx = Abs(dx), ady = Abs(dy);
 	//Log("%d,%d  to   %d,%d  dx=%d  dy=%d", c1.X, c1.Y, c2.X, c2.Y, dx, dy);
 	return (dx<-ady) | (dx>ady)<<1 | (dy<=-adx)<<2 | (dy>=adx)<<3;
-}
-
-func IsLineOverlap(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
-{
-	// Check if line from x1,y1 to x2,y2 crosses the line from x3,y3 to x4,y4
-	var d1x=x2-x1, d1y=y2-y1, d2x=x4-x3, d2y=y4-y3, d3x=x3-x1, d3y=y3-y1;
-	var a = d1y*d3x-d1x*d3y;
-	var b = d2y*d3x-d2x*d3y;
-	var c = d2y*d1x-d2x*d1y;
-	if (!c) return !a && Inside(x3, x1,x2) && Inside(y3, y1,y2); // lines are parallel
-	return a*c>=0 && !(a*a/(c*c+1)) && b*c>=0 && !(b*b/(c*c+1));
 }
 
 func FindCaveConnections()
 {
 	var i, j, cave, cave2, caves2, dir, dir2, n, check_link, all_links = [];
 	// Connect all caves to neighbours
-	for (i=0; i<n_caves; ++i)
+	for (i = 0; i<n_caves; ++i)
 	{
 		cave = caves[i];
-		caves2 = caves[i+1:n_caves];
+		caves2 = caves[i + 1:n_caves];
 		for (cave2 in caves2) cave2.d = Distance(cave.X, cave.Y, cave2.X, cave2.Y);
 		SortArrayByProperty(caves2, "d");
 		for (cave2 in caves2)
@@ -71,7 +60,7 @@ func FindCaveConnections()
 			dir = GetCaveLinkDir(cave, cave2);
 			//Log("Cave %d to %d direction %d.", GetIndexOf(caves, cave), GetIndexOf(caves, cave2), dir);
 			if (cave.dirs & dir) continue;
-			dir2 = dir >>  1& 5|10 &dir  << 1;
+			dir2 = dir >>  1& 5 | 10 &dir  << 1;
 			//Log("dir %d opposite to %d.", dir2, dir);
 			if (cave2.dirs & dir2) continue;
 			// Make sure the connectors don't cross each other
@@ -82,7 +71,7 @@ func FindCaveConnections()
 				if (check_link[0] != cave && check_link[1] != cave)
 					if (check_link[0] != cave2 && check_link[1] != cave2)
 						if (IsLineOverlap(cave.X, cave.Y, cave2.X, cave2.Y, check_link[0].X, check_link[0].Y, check_link[1].X, check_link[1].Y))
-							{ has_overlap=true; break; }
+							{ has_overlap = true; break; }
 			if (has_overlap) continue;
 			// Connect these caves
 			cave.links[GetLength(cave.links)] = cave2;
@@ -112,7 +101,7 @@ func MakeMaze()
 	var open = [start_cave], n_open = 1;
 	while (n_open)
 	{
-		var i_cave = n_open-1-Random(1+Random(n_open)); // Prefer depth-first generation so stray paths are deeper
+		var i_cave = n_open-1-Random(1 + Random(n_open)); // Prefer depth-first generation so stray paths are deeper
 		var cave = open[i_cave];
 		open[i_cave] = open[--n_open]; // SetLength(open, n_open) not nessessery because length is stored in n_open
 		var path_length = GetLength(cave.path);
@@ -141,10 +130,10 @@ func MakeMaze()
 	// Close one connection 2/3rds of the way to the goal
 	var main_path = caves[n_caves-1].path;
 	var main_path_length = GetLength(main_path);
-	if (main_path_length > 5) RemoveCaveLinks(main_path[main_path_length*2/3], main_path[main_path_length*2/3+1]);
+	if (main_path_length > 5) RemoveCaveLinks(main_path[main_path_length*2/3], main_path[main_path_length*2/3 + 1]);
 	// Kill unreachable caves
 	var i;
-	for (i=0; i<n_caves; ++i) if (caves[i].depth>=0) break;
+	for (i = 0; i<n_caves; ++i) if (caves[i].depth>=0) break;
 	caves = caves[i:n_caves];
 	n_caves -= i;
 	end_cave = caves[n_caves-1];
@@ -158,35 +147,35 @@ func RemoveCaveLinks(c1, c2)
 	{
 		c1.links[i] = c1.links[n];
 		SetLength(c1.links, n);
-		c1.dirs &= ~GetCaveLinkDir(c1,c2);
+		c1.dirs &= ~GetCaveLinkDir(c1, c2);
 	}
 	i = GetIndexOf(c2.links, c1); n = GetLength(c2.links) - 1;
 	if (i>=0)
 	{
 		c2.links[i] = c2.links[n];
 		SetLength(c2.links, n);
-		c2.dirs &= ~GetCaveLinkDir(c2,c1);
+		c2.dirs &= ~GetCaveLinkDir(c2, c1);
 	}
 	return true;
 }
 
 func DrawVariations(string mat, int ratio, int sx, int sy)
 {
-	var rand_algo = {Algo=MAPALGO_RndChecker, Ratio=ratio, Wdt=sx, Hgt=sy};
-	var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=12, Scale=8, Op=rand_algo};
+	var rand_algo = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = sx, Hgt = sy};
+	var turb_algo = {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 8, Op = rand_algo};
 	return Draw(mat, turb_algo);
 }
 
 func DrawBackground()
 {
 	Draw("Rock");
-	DrawVariations("Rock", 50, 5,15);
-	DrawVariations("Ore", 10, 8,8);
-	DrawVariations("Firestone", 8, 12,3);
-	DrawVariations("Coal", 8, 8,3);
-	DrawVariations("Gold", 5, 4,4);
-	DrawVariations("Granite", 14, 15,5);
-	DrawVariations("Granite", 14, 5,15);
+	DrawVariations("Rock", 50, 5, 15);
+	DrawVariations("Ore", 10, 8, 8);
+	DrawVariations("Firestone", 8, 12, 3);
+	DrawVariations("Coal", 8, 8, 3);
+	DrawVariations("Gold", 5, 4, 4);
+	DrawVariations("Granite", 14, 15, 5);
+	DrawVariations("Granite", 14, 5, 15);
 	return true;
 }
 
@@ -194,8 +183,8 @@ func DrawCaves()
 {
 	for (var cave in caves)
 	{
-		var cave_algo = {Algo=MAPALGO_Ellipsis, X=cave.X, Y=cave.Y, Wdt=4, Hgt=4};
-		var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=8, Scale=15, Op=cave_algo};
+		var cave_algo = {Algo = MAPALGO_Ellipse, X = cave.X, Y = cave.Y, Wdt = 4, Hgt = 4};
+		var turb_algo = {Algo = MAPALGO_Turbulence, Amplitude = 8, Scale = 15, Op = cave_algo};
 		Draw("Tunnel", turb_algo);
 		//var src = cave.path;
 		//if (src && GetLength(src)) src = Format("%d,%d", src[GetLength(src)-1].X, src[GetLength(src)-1].Y);
@@ -211,8 +200,8 @@ func DrawTunnels()
 		for (var cave2 in cave.links)
 		{
 			if (cave2.done) continue;
-			var tunnel_algo = {Algo=MAPALGO_Polygon, X=[cave.X, cave2.X], Y=[cave.Y, cave2.Y], Wdt=2, Open=1, Empty=1 };
-			var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=9, Scale=10, Op=tunnel_algo};
+			var tunnel_algo = {Algo = MAPALGO_Polygon, X=[cave.X, cave2.X], Y=[cave.Y, cave2.Y], Wdt = 2, Open = 1, Empty = 1 };
+			var turb_algo = {Algo = MAPALGO_Turbulence, Amplitude = 9, Scale = 10, Op = tunnel_algo};
 			Draw("Tunnel", turb_algo);
 		}
 		cave.done = true;
@@ -229,7 +218,7 @@ func DrawStart()
 
 func DrawEnd()
 {
-	Draw("Ruby", {Algo=MAPALGO_Ellipsis, X=end_cave.X, Y=end_cave.Y, Wdt=4, Hgt=4});
+	Draw("Ruby", {Algo = MAPALGO_Ellipse, X = end_cave.X, Y = end_cave.Y, Wdt = 4, Hgt = 4});
 	g_end_cave_x = end_cave.X;
 	g_end_cave_y = end_cave.Y;
 	return true;
@@ -239,8 +228,8 @@ protected func InitializeMap(map)
 {
 	var s = SCENPAR_MapSize-1;
 	//var d = SCENPAR_Difficulty-1;
-	var map_size = [[120,120], [200,200], [330,330]][s];
-	var find_cave_iterations = [100,150,300][s];
+	var map_size = [[120, 120], [200, 200], [330, 330]][s];
+	var find_cave_iterations = [100, 150, 300][s];
 
 	Resize(map_size[0],map_size[1]);
 

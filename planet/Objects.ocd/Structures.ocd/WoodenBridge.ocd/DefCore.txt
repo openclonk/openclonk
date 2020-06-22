@@ -1,6 +1,6 @@
 [DefCore]
 id=WoodenBridge
-Version=7,0
+Version=8,0
 Category=C4D_Structure
 Width=72
 Height=12
@@ -11,6 +11,5 @@ VertexX=-36,36,-36,36
 VertexY=-6,6,6,-6
 VertexFriction=50,50,50,50
 Mass=100
-Components=Wood=3
 Exclusive=1
 Construction=1

@@ -1,11 +1,12 @@
-/*--
-		Objects.c
-		Authors: Maikel, boni, Ringwaul, Sven2, flgr, Clonkonaut, Günther, Randrian
-
-		Functions generally applicable to objects; not enough to be worth distinct scripts though.
---*/
+/**
+	Objects.c
+	Functions generally applicable to objects; not enough to be worth distinct scripts though.
+		
+	@author Maikel, boni, Ringwaul, Sven2, flgr, Clonkonaut, Günther, Randrian
+*/
 
 // Does not set the speed of an object. But you can set two components of the velocity vector with this function.
+// documented in /docs/sdk/script/fn
 global func SetSpeed(int x_dir, int y_dir, int prec)
 {
 	SetXDir(x_dir, prec);
@@ -19,16 +20,21 @@ global func GetSpeed(int prec)
 	return Sqrt(GetXDir(prec)**2 + GetYDir(prec)**2);
 }
 
+// You can add to the two components of the velocity vector individually with this function.
+global func AddSpeed(int x_dir, int y_dir, int prec)
+{
+	SetXDir(GetXDir(prec) + x_dir, prec);
+	SetYDir(GetYDir(prec) + y_dir, prec);
+}
+
 // Sets an objects's speed and its direction, doesn't it?
 // Can set either speed or angle of velocity, or both
 global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 {
-	if(!precSpd) precSpd = 10;
-	if(!precAng) precAng = 1;
-	if(!speed)
-		speed = Distance(0,0, GetXDir(precSpd), GetYDir(precSpd));
-	if(!angle)
-		angle = Angle(0,0, GetXDir(precSpd), GetYDir(precSpd), precAng);
+	if (!precSpd) precSpd = 10;
+	if (!precAng) precAng = 1;
+	speed = speed ?? Distance(0, 0, GetXDir(precSpd), GetYDir(precSpd));
+	angle = angle ?? Angle(0, 0, GetXDir(precSpd), GetYDir(precSpd), precAng);
 		
 	var x_dir = Sin(angle, speed, precAng);
 	var y_dir = -Cos(angle, speed, precAng);
@@ -38,7 +44,29 @@ global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 	return;
 }
 
+// Adds to an objects's speed and its direction:
+// Can set either speed or angle of velocity, or both
+global func AddVelocity(int angle, int speed, int precision_angle, int precision_speed)
+{
+	precision_speed = precision_speed ?? 10;
+	precision_angle = precision_angle ?? 1;
+	speed = speed ?? 0;
+	angle = angle ?? 0;
+
+	var current_x_dir = GetXDir(precision_speed);
+	var current_y_dir = GetYDir(precision_speed);
+		
+	var x_dir = +Sin(angle, speed, precision_angle);
+	var y_dir = -Cos(angle, speed, precision_angle);
+
+	SetXDir(current_x_dir + x_dir, precision_speed);
+	SetYDir(current_y_dir + y_dir, precision_speed);
+	return;
+}
+
+
 // Sets the completion of this to new_con.
+// documented in /docs/sdk/script/fn
 global func SetCon(int new_con, int precision, bool grow_from_center)
 {
 	return DoCon(new_con - GetCon(), precision, grow_from_center);
@@ -76,6 +104,20 @@ global func MakeInvincible(bool allow_fire)
 	this.RejectWindbagForce = Global.Invincibility_RejectWindbagForce;
 	this.QueryCatchBlow = Global.Invincibility_QueryCatchBlow;
 	return true;
+}
+
+global func IsInvincible()
+{
+	return !!GetEffect("IntInvincible", this);
+}
+
+global func SetInvincibility(bool to_val)
+{
+	// Turn invincibility on or off
+	if (to_val)
+		return MakeInvincible(false);
+	else
+		return ClearInvincible();
 }
 
 global func FxIntInvincibleDamage(target)
@@ -156,8 +198,8 @@ global func LaunchProjectile(int angle, int dist, int speed, int x, int y, int p
 	var x_offset = x ?? Sin(angle, dist, precAng);
 	var y_offset = y ?? -Cos(angle, dist, precAng);
 	
-	if(!precAng) precAng = 1;
-	if(!precSpd) precSpd = 10;
+	if (!precAng) precAng = 1;
+	if (!precSpd) precSpd = 10;
 
 	if (Contained() != nil && rel_x == true)
 		if (Contained()->GetDir() == 0)
@@ -201,6 +243,14 @@ global func GetMaxEnergy()
 	return this.MaxEnergy / 1000;
 }
 
+// Returns whether an object is at full energy, that is if its energy is >= its MaxEnergy
+global func HasMaxEnergy()
+{
+	if (!this)
+		return false;
+	return GetEnergy() >= GetMaxEnergy();
+}
+
 // Sets the MaxBreath value of an object and does the necessary callbacks.
 global func SetMaxBreath(int value)
 {
@@ -221,13 +271,19 @@ global func GetMaxBreath()
 	return this.MaxBreath;
 }
 
-// Makes an object gain Con until it is FullCon
-global func StartGrowth(int value /* the value the object grows approx. every second, in tenths of percent */)
+// Makes an object gain Con until it is FullCon.
+// value: the object grows approx. every second, in tenths of percent.
+// max_size = the maximum object size in tenths of percent.
+global func StartGrowth(int value, int max_size)
 {
-	var effect;
-	effect = AddEffect("IntGrowth", this, 1, 35, this, nil, value);
-	effect.Time = Random(35);
-	return effect;
+	if (value <= 0) return nil;
+	// Ensure max size is set and does not conflict with Oversize.
+	max_size = max_size ?? 1000;
+	if (!GetDefCoreVal("Oversize", "DefCore"))
+		max_size = Min(max_size, 1000);
+	var fx = AddEffect("IntGrowth", this, 1, 35, this, nil, value, max_size);
+	fx.Time = Random(35);
+	return fx;
 }
 
 global func StopGrowth()
@@ -237,22 +293,39 @@ global func StopGrowth()
 
 global func GetGrowthValue()
 {
-	var e = GetEffect("IntGrowth", this);
-	if(!e) return 0;
-	return e.growth;
+	var fx = GetEffect("IntGrowth", this);
+	if (!fx) 
+		return 0;
+	return fx.growth;
 }
 
-global func FxIntGrowthStart(object obj, effect, int temporary, int value)
+global func GetGrowthMaxSize()
 {
-	if (!temporary) effect.growth = value;
+	var fx = GetEffect("IntGrowth", this);
+	if (!fx) 
+		return 0;
+	return fx.max_size;
 }
 
-global func FxIntGrowthTimer(object obj, effect)
+global func FxIntGrowthStart(object obj, effect fx, int temporary, int value, int max_size)
 {
-	if (obj->OnFire()) return;
-	obj->DoCon(effect.growth, 1000);
-	if (!obj) return FX_Execute_Kill; // Negative growth might have removed the object
-	var done = obj->GetCon(1000) >= 1000;
+	if (!temporary)
+	{
+		fx.growth = value;
+		fx.max_size = max_size;	
+	}
+	return FX_OK;
+}
+
+global func FxIntGrowthTimer(object obj, effect fx)
+{
+	if (obj->OnFire())
+		return FX_OK;
+	obj->DoCon(fx.growth, 1000);
+	// Negative growth might have removed the object.
+	if (!obj) 
+		return FX_Execute_Kill; 
+	var done = obj->GetCon(1000) >= fx.max_size;
 	return -done;
 }
 
@@ -263,26 +336,29 @@ global func StonyObjectHit(int x, int y)
 	// Failsafe
 	if (!this) return false;
 	var xdir = GetXDir(), ydir = GetYDir();
-	if(x) x = x / Abs(x);
-	if(y) y = y / Abs(y);
+	if (x) x = x / Abs(x);
+	if (y) y = y / Abs(y);
 	// Check for solid in hit direction
 	var i = 0;
-	var average_obj_size = Distance(0,0, GetObjWidth(), GetObjHeight()) / 2 + 2;
-	while(!GBackSolid(x*i, y*i) && i < average_obj_size) i++;
+	var average_obj_size = Distance(0, 0, GetObjWidth(), GetObjHeight()) / 2 + 2;
+	while (!GBackSolid(x * i, y * i) && i < average_obj_size)
+		i++;
 	// To catch some high speed cases: if no solid found, check directly beneath
-	if (!GBackSolid(x*i, y*i))
-		while(!GBackSolid(x*i, y*i) && i < average_obj_size) i++;
+	if (!GBackSolid(x * i, y * i))
+		while (!GBackSolid(x * i, y * i) && i < average_obj_size)
+			i++;
 	// Check if digfree
 	if (!GetMaterialVal("DigFree", "Material", GetMaterial(x*i, y*i)) && GBackSolid(x*i, y*i))
 		return Sound("Hits::Materials::Rock::RockHit?");
 	// Else play standard sound
-	if (Distance(0,0,xdir,ydir) > 10)
+	if (Distance(0, 0, xdir, ydir) > 10)
 			return Sound("Hits::SoftTouch?");
 		else
 			return Sound("Hits::SoftHit?");
 }
 
 // Removes all objects of the given type.
+// documented in /docs/sdk/script/fn
 global func RemoveAll(p, ...)
 {
 	var cnt;
@@ -298,112 +374,91 @@ global func RemoveAll(p, ...)
 	return cnt;
 }
 
-// Splits the calling object into its components.
-global func Split2Components()
-{
-	if (!this)
-		return false;
-	var ctr = Contained();
-	// Transfer all contents to container.
-	while (Contents())
-		if (!ctr || !Contents()->Enter(ctr))
-			Contents()->Exit();
-	// Split components.
-	for (var i = 0, compid; compid = GetComponent(nil, i); ++i)
-		for (var j = 0; j < GetComponent(compid); ++j)
-		{
-			var comp = CreateObjectAbove(compid, nil, nil, GetOwner());
-			if (OnFire()) comp->Incinerate();
-			if (!ctr || !comp->Enter(ctr))
-			{
-				comp->SetR(Random(360));
-				comp->SetXDir(Random(3) - 1);
-				comp->SetYDir(Random(3) - 1);
-				comp->SetRDir(Random(3) - 1);
-			}
-		}
-	RemoveObject();
-	return;
-}
-
-// Pulls an object above ground if it was buried (e.g. by PlaceVegetation).
+// Pulls an object above ground if it was buried (e.g. by PlaceVegetation), mainly used by plants.
 // The object must have 'Bottom' and 'Center' CNAT to use this.
 // (bottom is the point which should be buried, center the lowest point that must not be buried)
-// Mainly used by plants.
-global func RootSurface()
+global func RootSurface(int max_movement)
 {
+	max_movement = max_movement ?? GetObjHeight() / 2;
+
 	if (HasCNAT(CNAT_Center))
 	{
 		var i = 0;
-		while(GetContact(-1) & CNAT_Center && i < GetObjHeight()/2) { SetPosition(GetX(),GetY()-1); i++; } //Move up if too far underground
+		// Move up if too far underground.
+		while (GetContact(-1) & CNAT_Center && i < max_movement)
+		{
+			SetPosition(GetX(),	GetY()	-	1);
+			i++;
+		}
 	}
 	if (HasCNAT(CNAT_Bottom))
 	{
-		i = 0;
-		while(!(GetContact(-1) & CNAT_Bottom) && i < GetObjHeight()/2) { SetPosition(GetX(),GetY()+1); i++; } //Move down if in midair
-
-		if (!Stuck()) SetPosition(GetX(),GetY()+1); // try make the plant stuck
+		var i = 0;
+		 // Move down if in midair.
+		while (!(GetContact(-1) & CNAT_Bottom) && i < max_movement)
+		{
+			SetPosition(GetX(), GetY() + 1);
+			i++;
+		}
+		// Try to make the plant stuck.
+		if (!Stuck())
+			SetPosition(GetX(), GetY() + 1); 
 	}
 }
 
 // Buys an object. Returns the object if it could be bought.
-global func Buy (id idBuyObj, int iForPlr, int iPayPlr, object pFromVendor, bool fShowErrors)
+// documented in /docs/sdk/script/fn
+global func Buy(id buy_def, int for_plr, int pay_plr, object from_vendor, bool show_errors)
 {
 	// if no vendor is given try this
-	if (!pFromVendor) pFromVendor = this;
+	if (!from_vendor) 
+		from_vendor = this;
 	// not a vendor?
-	if (!pFromVendor->~IsVendor())
+	if (!from_vendor->~IsVendor())
 		return nil;
-	return pFromVendor->DoBuy(idBuyObj, iForPlr, iPayPlr, 0, 0, fShowErrors);
+	return from_vendor->DoBuy(buy_def, for_plr, pay_plr, nil, false, show_errors);
 }
 
 // Sells an object. Returns true if it could be sold.
-global func Sell (int iPlr, object pObj, object pToVendor)
+// documented in /docs/sdk/script/fn
+global func Sell(int plr, object obj, object to_vendor)
 {
 	// if no vendor is given try this
-	if(!pToVendor) pToVendor = this;
+	if (!to_vendor)
+		to_vendor = this;
 	// not a vendor?
-	if (!pToVendor->~IsVendor())
+	if (!to_vendor->~IsVendor())
 		return false;
-	return pToVendor->DoSell(pObj, iPlr);
+	return to_vendor->DoSell(obj, plr);
 }
 
-// Returns the owner if this is a base.
-global func GetBase ()
-{
-	if(!(this->~IsBase())) return NO_OWNER;
-	return GetOwner();
-}
-
-
-/* GetXEdge returns the position of the objects top/bottom/left/right edge */
+// GetXEdge returns the position of the objects top/bottom/left/right edge.
 global func GetLeftEdge()
 {
-	return GetX()-GetObjWidth()/2;
+	return GetX() - GetObjWidth() / 2;
 }
 
 global func GetRightEdge()
 {
-	return GetX()+GetObjWidth()/2;
+	return GetX() + GetObjWidth() / 2;
 }
 
 global func GetTopEdge()
 {
-	return GetY()-GetObjHeight()/2;
+	return GetY() - GetObjHeight() / 2;
 }
 
 global func GetBottomEdge()
 {
-	return GetY()+GetObjHeight()/2;
+	return GetY() + GetObjHeight() / 2;
 }
 
 // Returns if the object is standing in front of the back-object
 global func InFrontOf(object back)
 {
 	var front = this;
-	if(!front)
+	if (!front)
 		return;
-	
 	return front->FindObject(front->Find_AtPoint(), Find_Not(Find_Exclude(back))) != nil;
 }
 
@@ -457,4 +512,13 @@ global func GetShape()
 	var width = GetObjectVal("Width");
 	var height = GetObjectVal("Height");
 	return [offset_x, offset_y, width, height];
+}
+
+global func GetEntranceRectangle()
+{
+	var entrance_x = GetDefCoreVal("Entrance", "DefCore", 0);
+	var entrance_y = GetDefCoreVal("Entrance", "DefCore", 1);
+	var entrance_wdt = GetDefCoreVal("Entrance", "DefCore", 2);
+	var entrance_hgt = GetDefCoreVal("Entrance", "DefCore", 3);
+	return [entrance_x, entrance_y, entrance_wdt, entrance_hgt];
 }

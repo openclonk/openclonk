@@ -16,12 +16,12 @@ private func Initialize()
 	SetAction("Fly");
 	SetPhase(Random(3));
 
-	_inherited();
+	_inherited(...);
 }
 
 private func Death()
 {
-	_inherited();
+	_inherited(...);
 	RemoveObject();
 }
 
@@ -52,13 +52,13 @@ private func Sleep()
 private func SleepComplete()
 {
 	SetAction("Sleep");
-	_inherited();
+	_inherited(...);
 }
 
 private func WakeUp()
 {
 	SetAction("Fly");
-	_inherited();
+	_inherited(...);
 }
 
 // Array: [object lovely_object, int x, int y]
@@ -70,8 +70,8 @@ local lovely_tries = 0;
 private func GetAttraction(proplist coordinates)
 {
 	// GetAttraction will only be called for the swarm master, perfect to have just one being make sound
-	if(!Random(30))
-		Sound("Animals::MosquitoBuzz", nil,nil,nil,nil, 200);
+	if (!Random(30))
+		Sound("Animals::MosquitoBuzz", nil, nil, nil, nil, 200);
 
 	if (!lovely_place) lovely_place = CreateArray(3);
 	if (!lovely_place[1])
@@ -132,7 +132,7 @@ private func LookForLovelyPlace()
 		return;
 	}
 	// Water is second best place
-	var water = FindLocation(Loc_InRect(-100,-50,200,100), Loc_Material("Water"), Loc_MaxTries(80));
+	var water = FindLocation(Loc_InRect(-100,-50, 200, 100), Loc_Material("Water"), Loc_MaxTries(80));
 	if (water)
 	{
 		// Try to find the surface
@@ -249,5 +249,6 @@ local Name = "$Name$";
 local MaxEnergy = 20000;
 local MaxBreath = 250;
 local Placement = 2;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,66 +14,9 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include "C4ScenarioParameters.h"
-#include "C4Components.h"
-#include "C4Aul.h"
-#include "C4FacetEx.h"
-
-
-/* C4AchievementGraphics */
-
-bool C4AchievementGraphics::Init(C4Group &File)
-{
-	// Load all graphics matching achievement filename and register them to map
-	char FileName[_MAX_FNAME];
-	File.ResetSearch();
-	while (File.FindNextEntry(C4CFN_Achievements, FileName))
-	{
-		C4FacetSurface *new_fct = new C4FacetSurface();
-		if (!new_fct->Load(File, FileName, C4FCT_Height, C4FCT_Full, false, 0))
-		{
-			delete new_fct;
-			LogF(LoadResStr("IDS_PRC_NOGFXFILE"), FileName, LoadResStr("IDS_ERR_NOFILE"));
-			return false;
-		}
-		// Register under filename excluding the leading "Achv" part. Delete any existing file with same name.
-		RemoveExtension(FileName);
-		int32_t id_offset = SCharPos('*', C4CFN_Achievements); assert(id_offset>=0);
-		StdCopyStrBuf sFileName(FileName + id_offset);
-		auto i = Graphics.find(sFileName);
-		if (i != Graphics.end()) delete i->second;
-		Graphics[sFileName] = new_fct;
-	}
-	// done. success no matter how many files were loaded.
-	return true;
-}
-
-bool C4AchievementGraphics::Init(C4GroupSet &Files)
-{
-	int32_t idNewGrp=0;
-	C4Group *pGrp = Files.FindEntry(C4CFN_Achievements, NULL, &idNewGrp);
-	if (!pGrp) return true; // no achievement gfx. That's OK.
-	if (idNewGrp == idGrp) return true; // no update
-	idGrp = idNewGrp;
-	// OK, load from this group
-	return Init(*pGrp);
-}
-
-void C4AchievementGraphics::Clear()
-{
-	for (auto i = Graphics.begin(); i != Graphics.end(); ++i)
-		delete i->second;
-	Graphics.clear();
-	idGrp = 0;
-}
-
-C4FacetSurface *C4AchievementGraphics::FindByName(const char *name) const
-{
-	auto i = Graphics.find(StdCopyStrBuf(name));
-	if (i != Graphics.end()) return i->second; else return NULL;
-}
-
-
+#include "player/C4ScenarioParameters.h"
+#include "c4group/C4Components.h"
+#include "script/C4Aul.h"
 
 // *** C4ScenarioParameters
 
@@ -89,15 +32,15 @@ void C4ScenarioParameterDef::Option::CompileFunc(StdCompiler *pComp)
 const C4ScenarioParameterDef::Option *C4ScenarioParameterDef::GetOptionByValue(int32_t val) const
 {
 	// search option by value
-	for (auto i = Options.cbegin(); i != Options.cend(); ++i)
-		if (i->Value == val)
-			return &*i;
-	return NULL;
+	for (const auto & Option : Options)
+		if (Option.Value == val)
+			return &Option;
+	return nullptr;
 }
 
 const C4ScenarioParameterDef::Option *C4ScenarioParameterDef::GetOptionByIndex(size_t idx) const
 {
-	if (idx >= Options.size()) return NULL;
+	if (idx >= Options.size()) return nullptr;
 	return &Options[idx];
 }
 
@@ -110,7 +53,7 @@ void C4ScenarioParameterDef::CompileFunc(StdCompiler *pComp)
 	StdEnumEntry<ParameterType> ParTypeEntries[] =
 	{
 		{ "Enumeration", SPDT_Enum },
-		{ NULL, SPDT_Enum }
+		{ nullptr, SPDT_Enum }
 	};
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(Type, ParTypeEntries),         "Type",         SPDT_Enum));
 	pComp->Value(mkNamingAdapt(Default,                                             "Default",      0));
@@ -127,7 +70,7 @@ void C4ScenarioParameterDefs::CompileFunc(StdCompiler *pComp)
 
 const C4ScenarioParameterDef *C4ScenarioParameterDefs::GetParameterDefByIndex(size_t idx) const
 {
-	if (idx >= Parameters.size()) return NULL;
+	if (idx >= Parameters.size()) return nullptr;
 	return &Parameters[idx];
 }
 
@@ -145,13 +88,25 @@ bool C4ScenarioParameterDefs::Load(C4Group &hGroup, C4LangStringTable *pLang)
 void C4ScenarioParameterDefs::RegisterScriptConstants(const C4ScenarioParameters &values)
 {
 	// register constants for all parameters in script engine
-	for (auto i = Parameters.cbegin(); i != Parameters.cend(); ++i)
+
+	// old-style: one constant per parameter
+	for (const auto & Parameter : Parameters)
 	{
 		StdStrBuf constant_name;
-		constant_name.Format("SCENPAR_%s", i->GetID());
-		int32_t constant_value = values.GetValueByID(i->GetID(), i->GetDefault());
+		constant_name.Format("SCENPAR_%s", Parameter.GetID());
+		int32_t constant_value = values.GetValueByID(Parameter.GetID(), Parameter.GetDefault());
 		::ScriptEngine.RegisterGlobalConstant(constant_name.getData(), C4VInt(constant_value));
 	}
+
+	// new-style: all constants in a proplist
+	auto scenpar = C4PropList::NewStatic(nullptr, nullptr, &Strings.P[P_SCENPAR]);
+	for (const auto & Parameter : Parameters)
+	{
+		int32_t constant_value = values.GetValueByID(Parameter.GetID(), Parameter.GetDefault());
+		scenpar->SetPropertyByS(Strings.RegString(StdStrBuf(Parameter.GetID())), C4VInt(constant_value));
+	}
+	scenpar->Freeze();
+	::ScriptEngine.RegisterGlobalConstant("SCENPAR", C4Value(scenpar));
 }
 
 void C4ScenarioParameters::Clear()
@@ -162,14 +117,14 @@ void C4ScenarioParameters::Clear()
 void C4ScenarioParameters::Merge(const C4ScenarioParameters &other)
 {
 	// Merge lists and keep larger value
-	for (auto i = other.Parameters.cbegin(); i != other.Parameters.cend(); ++i)
+	for (const auto & Parameter : other.Parameters)
 	{
-		auto j = Parameters.find(i->first);
+		auto j = Parameters.find(Parameter.first);
 		if (j != Parameters.end())
-			if (j->second >= i->second)
+			if (j->second >= Parameter.second)
 				continue; // existing value is same or larger - keep old
 		// update to new value from other list
-		Parameters[i->first] = i->second;
+		Parameters[Parameter.first] = Parameter.second;
 	}
 }
 
@@ -197,7 +152,7 @@ void C4ScenarioParameters::SetValue(const char *id, int32_t value, bool only_if_
 void C4ScenarioParameters::CompileFunc(StdCompiler *pComp)
 {
 	// Unfortunately, StdCompiler cannot save std::map yet
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		Parameters.clear();
 		if (pComp->hasNaming())
@@ -233,18 +188,18 @@ void C4ScenarioParameters::CompileFunc(StdCompiler *pComp)
 		if (pComp->hasNaming())
 		{
 			// save to INI
-			for (auto i = Parameters.begin(); i != Parameters.end(); ++i)
-				pComp->Value(mkNamingAdapt(i->second, i->first.getData()));
+			for (auto & Parameter : Parameters)
+				pComp->Value(mkNamingAdapt(Parameter.second, Parameter.first.getData()));
 		}
 		else
 		{
 			// save to binary
 			int32_t name_count=Parameters.size();
 			pComp->Value(name_count);
-			for (auto i = Parameters.begin(); i != Parameters.end(); ++i)
+			for (auto & Parameter : Parameters)
 			{
-				pComp->Value(const_cast<StdCopyStrBuf &>(i->first));
-				pComp->Value(i->second);
+				pComp->Value(const_cast<StdCopyStrBuf &>(Parameter.first));
+				pComp->Value(Parameter.second);
 			}
 		}
 	}

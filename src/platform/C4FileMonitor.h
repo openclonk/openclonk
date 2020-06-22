@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,14 +19,13 @@
 #ifndef STD_FILE_MONITOR_H_INC
 #define STD_FILE_MONITOR_H_INC
 
-#include <StdScheduler.h>
-#include <C4InteractiveThread.h>
-#include <map>
+#include "network/C4InteractiveThread.h"
+#include "platform/StdScheduler.h"
 
 #ifdef __APPLE__
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreServices/CoreServices.h>
-#import "ObjectiveCAssociated.h"
+#import "platform/ObjectiveCAssociated.h"
 #endif
 
 class C4FileMonitor: public StdSchedulerProc, public C4InteractiveThread::Callback
@@ -40,23 +39,23 @@ public:
 	typedef void (*ChangeNotify)(const char *, const char *);
 
 	C4FileMonitor(ChangeNotify pCallback);
-	~C4FileMonitor();
+	~C4FileMonitor() override;
 
 	void StartMonitoring();
 	void AddDirectory(const char *szDir);
 
 	// StdSchedulerProc:
-	virtual bool Execute(int iTimeout = -1, pollfd * = 0);
+	bool Execute(int iTimeout = -1, pollfd * = nullptr) override;
 
 	// Signal for calling Execute()
 #ifdef STDSCHEDULER_USE_EVENTS
-	virtual HANDLE GetEvent();
+	HANDLE GetEvent() override;
 #else
-	virtual void GetFDs(std::vector<struct pollfd> & FDs);
+	void GetFDs(std::vector<struct pollfd> & FDs) override;
 #endif
 
 	// C4InteractiveThread::Callback:
-	virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData);
+	void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) override;
 
 private:
 

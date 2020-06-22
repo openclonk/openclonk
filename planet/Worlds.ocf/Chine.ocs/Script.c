@@ -59,6 +59,14 @@ protected func InitializePlayer(int plr)
 	while (crew = GetCrew(plr, index))
 	{
 		crew->SetPosition(96 + RandomX(-12, 12), LandscapeHeight() - 92);
+		var u = 0;
+		while (crew->Stuck())
+		{
+			crew->SetPosition(crew->GetX(), crew->GetY()-1);
+			++u;
+			if (u > 50) // This is bad, the clonk will most likely die
+				break;
+		}
 
 		// First clonk can construct, others can chop.
 		if (index == 0)
@@ -84,8 +92,9 @@ protected func InitializePlayer(int plr)
 	// Additional explosives: dynamite boxes.
 	GivePlayerSpecificBaseMaterial(plr, [[DynamiteBox, 4, 2]]);
 	
-	// Set player wealth.
-	SetWealth(plr, 75 - 25 * SCENPAR_Difficulty);
+	// Ensure mimimum player wealth.
+	var add_wealth = Max(0, 75 - 25 * SCENPAR_Difficulty - GetWealth(plr));
+	DoWealth(plr, add_wealth);
 	
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)
@@ -135,7 +144,7 @@ private func InitEnvironment(int map_size, int difficulty)
 	for (var i = 0; i < 16 + 4 * difficulty; i++)
 	{
 		var fall = CreateWaterfall(waterfall_x + 2, 0, RandomX(3, 4), "Water");
-		fall->SetDirection(RandomX(10, 12), 8, 8, 8);
+		fall->SetDirection(RandomX(14, 16), 12, 4, 4);
 		fall->SetSoundLocation(LandscapeWidth() / 2, Random(LandscapeHeight()));
 	}
 	var trunk = CreateObjectAbove(Trunk, waterfall_x + 2, 20);
@@ -173,9 +182,9 @@ private func InitVegetation(int map_size, int difficulty)
 	// Place some cocont trees and cave mushrooms for wood.
 	for (var i = 0; i < 16 + Random(6); i++)
 	{
-		PlaceVegetation(Tree_Coconut, top.x, top.y, top.w, top.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Tree_Coconut, middle.x, middle.y, middle.w, middle.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Tree_Coconut, bottom.x, bottom.y, bottom.w, bottom.h, 1000 * (61 + Random(40)));
+		PlaceVegetation(Tree_Coconut, top.x, top.y, top.wdt, top.hgt, 1000 * (61 + Random(40)));
+		PlaceVegetation(Tree_Coconut, middle.x, middle.y, middle.wdt, middle.hgt, 1000 * (61 + Random(40)));
+		PlaceVegetation(Tree_Coconut, bottom.x, bottom.y, bottom.wdt, bottom.hgt, 1000 * (61 + Random(40)));
 	}
 	LargeCaveMushroom->Place(6, middle, { terraform = false });
 	LargeCaveMushroom->Place(6, bottom, { terraform = false });

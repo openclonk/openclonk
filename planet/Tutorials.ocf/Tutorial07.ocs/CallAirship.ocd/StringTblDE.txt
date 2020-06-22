@@ -1,0 +1,3 @@
+Name=Rufe Luftschiff
+MsgCallAirship=Rufe Luftschiff
+MsgStopAirship=Halte Luftschiff an

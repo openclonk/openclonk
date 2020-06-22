@@ -6,7 +6,7 @@
 
 #include Library_Ladder
 
-local master, index;
+local index;
 local angle;
 
 public func SetAngle(int new_angle) 
@@ -15,10 +15,12 @@ public func SetAngle(int new_angle)
 }
 
 // Called from the ladder object to set a master and the segment index.
-public func SetMaster(object new_master, int new_index) 
+public func SetMaster(object new_master, int new_index, ...) 
 {
-	master = new_master; 
-	index = new_index; 
+	// First perform setting the master in the library function.
+	_inherited(new_master, new_index, ...);
+	index = new_index;
+	return;
 }
 
 // Returns whether the ladder can be climbed.
@@ -39,7 +41,7 @@ public func GetLadderData()
 {
 	if (master)
 		return master->~GetLadderData(index);
-	return _inherited();
+	return _inherited(...);
 }
 
 public func OnLadderGrab(object clonk)

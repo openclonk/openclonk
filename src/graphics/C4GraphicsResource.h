@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,11 +20,11 @@
 #ifndef INC_C4GraphicsResource
 #define INC_C4GraphicsResource
 
-#include <C4GroupSet.h>
-#include <C4Surface.h>
-#include <C4FacetEx.h>
-#include <C4Gui.h>
-#include <C4ScenarioParameters.h>
+#include "c4group/C4GroupSet.h"
+#include "graphics/C4Surface.h"
+#include "graphics/C4FacetEx.h"
+#include "gui/C4Gui.h"
+#include "player/C4Achievement.h"
 
 class C4GraphicsResource
 {
@@ -37,7 +37,7 @@ protected:
 	C4Surface sfcControl, sfcClonkSkins;
 	C4Surface sfcCaption, sfcButton, sfcButtonD;
 	C4Surface sfcScroll, sfcContext;
-	int32_t idSfcCaption, idSfcButton, idSfcButtonD, idSfcScroll, idSfcContext, idSfcClonkSkins;
+	int32_t idSfcCaption{0}, idSfcButton{0}, idSfcButtonD{0}, idSfcScroll{0}, idSfcContext{0}, idSfcClonkSkins;
 	int32_t idSfcControl; // id of source group of control surface
 	// ID of last group in main group set that was already registered into the Files-set
 	// used to avoid doubled entries by subsequent calls to RegisterMainGroups
@@ -68,13 +68,12 @@ public:
 	C4FacetID fctGamepad;
 	C4FacetID fctBuild;
 	C4Facet fctClonkSkin;
-	C4Facet fctCursor;
-	C4Facet fctDropTarget;
 	C4Facet fctKeyboard;
 	C4Facet fctMouse;
 	C4Facet fctCommand;
 	C4Facet fctKey;
 	C4Facet fctOKCancel;
+	C4FacetID fctTransformKnob;
 	C4FacetID fctCrewClr; // ColorByOwner-surface of fctCrew
 	C4FacetID fctFlagClr; // ColorByOwner-surface of fctFlag
 	C4FacetID fctPlayerClr; // ColorByOwner-surface of fctPlayer
@@ -83,6 +82,7 @@ public:
 	C4FacetID fctButtonHighlight;
 	C4FacetID fctButtonHighlightRound;
 	C4FacetID fctIcons, fctIconsEx;
+	C4FacetID fctControllerIcons;
 	C4FacetID fctSubmenu;
 	C4FacetID fctCheckbox;
 	C4FacetID fctBigArrows;
@@ -105,7 +105,7 @@ public:
 	// achievement graphics
 	C4AchievementGraphics Achievements;
 public:
-	CStdFont &GetFontByHeight(int32_t iHgt, float *pfZoom=NULL); // get optimal font for given control size
+	CStdFont &GetFontByHeight(int32_t iHgt, float *pfZoom=nullptr); // get optimal font for given control size
 	void Default();
 	void Clear();
 	bool InitFonts();

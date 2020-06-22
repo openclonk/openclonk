@@ -1,0 +1,2 @@
+Name=Fragment
+Description=Fragment eines zerstörten Objekts.

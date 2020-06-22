@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,15 +17,18 @@
 /* OpenGL implementation of NewGfx, the context */
 
 #include "C4Include.h"
-#include <C4DrawGL.h>
+#include "C4ForbidLibraryCompilation.h"
+#include "graphics/C4DrawGL.h"
 
-#include <C4Window.h>
-#include <C4App.h>
+#include "platform/C4App.h"
+#include "platform/C4Window.h"
 
 #ifndef USE_CONSOLE
 
+#if defined(USE_WGL) || defined(USE_SDL_MAINLOOP)
 static const int REQUESTED_GL_CTX_MAJOR = 3;
 static const int REQUESTED_GL_CTX_MINOR = 2;
+#endif
 
 std::list<CStdGLCtx*> CStdGLCtx::contexts;
 
@@ -41,12 +44,12 @@ void CStdGLCtx::SelectCommon()
 	std::vector<GLuint> toBeDeleted;
 	if (!VAOsToBeDeleted.empty())
 	{
-		for (unsigned int i = 0; i < VAOsToBeDeleted.size(); ++i)
+		for (unsigned int i : VAOsToBeDeleted)
 		{
-			if (VAOsToBeDeleted[i] < hVAOs.size() && hVAOs[VAOsToBeDeleted[i]] != 0)
+			if (i < hVAOs.size() && hVAOs[i] != 0)
 			{
-				toBeDeleted.push_back(hVAOs[VAOsToBeDeleted[i]]);
-				hVAOs[VAOsToBeDeleted[i]] = 0;
+				toBeDeleted.push_back(hVAOs[i]);
+				hVAOs[i] = 0;
 			}
 		}
 
@@ -60,7 +63,7 @@ void CStdGLCtx::SelectCommon()
 #include <epoxy/wgl.h>
 
 static PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
-static HGLRC hrc = 0;
+static HGLRC hrc = nullptr;
 
 // Enumerate available pixel formats. Choose the best pixel format in
 // terms of color and depth buffer bits and then return all formats with
@@ -78,7 +81,7 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 
 	for(int i = 1; i < n_formats+1; ++i)
 	{
-		int new_attributes[] = { WGL_DRAW_TO_WINDOW_ARB, WGL_SUPPORT_OPENGL_ARB, WGL_DOUBLE_BUFFER_ARB, WGL_COLOR_BITS_ARB, WGL_DEPTH_BITS_ARB, WGL_STENCIL_BITS_ARB, WGL_AUX_BUFFERS_ARB, WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB };
+		int new_attributes[] = { WGL_DRAW_TO_WINDOW_ARB, WGL_SUPPORT_OPENGL_ARB, WGL_DOUBLE_BUFFER_ARB, WGL_COLOR_BITS_ARB, WGL_DEPTH_BITS_ARB, WGL_STENCIL_BITS_ARB, WGL_AUX_BUFFERS_ARB, WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB, WGL_PIXEL_TYPE_ARB };
 		const unsigned int nnew_attributes = sizeof(new_attributes)/sizeof(int);
 
 		int new_results[nnew_attributes];
@@ -90,6 +93,10 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 		// however, when choosing it then texturing does not work anymore. I am not
 		// exactly sure what the cause of that is, so let's not choose that one for now.
 		if(new_results[4] > 24) continue;
+
+		// ensure that we get an RGB buffer. otherwise we might end up with a float buffer, which messes up gamma.
+		if (new_results[9] != WGL_TYPE_RGBA_ARB) 
+			continue;
 
 		// Multisampling with just one sample is equivalent to no-multisampling,
 		// so don't include that in the result.
@@ -142,17 +149,17 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 static int GetPixelFormatForMS(HDC hDC, int samples)
 {
 	std::vector<int> vec = EnumeratePixelFormats(hDC);
-	for(unsigned int i = 0; i < vec.size(); ++i)
+	for(int i : vec)
 	{
 		int attributes[] = { WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB };
 		const unsigned int n_attributes = 2;
 		int results[2];
-		if(!wglGetPixelFormatAttribivARB(hDC, vec[i], 0, n_attributes, attributes, results)) continue;
+		if(!wglGetPixelFormatAttribivARB(hDC, i, 0, n_attributes, attributes, results)) continue;
 
 		if( (samples == 0 && results[0] == 0) ||
 		    (samples > 0 && results[0] == 1 && results[1] == samples))
 		{
-			return vec[i];
+			return i;
 		}
 	}
 
@@ -170,9 +177,9 @@ public:
 private:
 	static std::string format_error(error_code err)
 	{
-		LPWSTR buffer = 0;
+		LPWSTR buffer = nullptr;
 		FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
-			0, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, 0);
+			nullptr, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, nullptr);
 		StdStrBuf str(buffer);
 		LocalFree(buffer);
 		return std::string(str.getData(), str.getLength());
@@ -187,7 +194,7 @@ class GLTempContext
 public:
 	GLTempContext()
 	{
-		wnd = CreateWindowExW(0, L"STATIC", 0, WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, 0, 0, GetModuleHandle(0), 0);
+		wnd = CreateWindowExW(0, L"STATIC", nullptr, WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
 		if (!wnd)
 			throw WinAPIError();
 		dc = GetDC(wnd);
@@ -200,7 +207,7 @@ public:
 		int format = ChoosePixelFormat(dc, &pfd);
 		if (!format ||
 			!SetPixelFormat(dc, format, &pfd) ||
-			(glrc = wglCreateContext(dc)) == 0)
+			(glrc = wglCreateContext(dc)) == nullptr)
 		{
 			DWORD err = GetLastError();
 			ReleaseDC(wnd, dc);
@@ -219,22 +226,22 @@ public:
 	~GLTempContext()
 	{
 		if (glrc == wglGetCurrentContext())
-			wglMakeCurrent(dc, 0);
+			wglMakeCurrent(dc, nullptr);
 		wglDeleteContext(glrc);
 		ReleaseDC(wnd, dc);
 		DestroyWindow(wnd);
 	}
 };
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0), this_context(contexts.end()) { }
+CStdGLCtx::CStdGLCtx(): this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear(bool multisample_change)
 {
 	Deselect();
 	if (hDC && pWindow)
 		ReleaseDC(pWindow->renderwnd, hDC);
-	hDC = 0;
-	pWindow = 0;
+	hDC = nullptr;
+	pWindow = nullptr;
 
 	if (this_context != contexts.end())
 	{
@@ -246,7 +253,7 @@ void CStdGLCtx::Clear(bool multisample_change)
 		assert(!pGL->pCurrCtx);
 		if (hrc)
 			wglDeleteContext(hrc);
-		hrc = 0;
+		hrc = nullptr;
 	}
 }
 
@@ -256,12 +263,12 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 	if (!pGL || !pWindow) return false;
 
 	std::unique_ptr<GLTempContext> tempContext;
-	if (hrc == 0)
+	if (hrc == nullptr)
 	{
 		// Create a temporary context to be able to fetch GL extension pointers
 		try
 		{
-			tempContext.reset(new GLTempContext);
+			tempContext = std::make_unique<GLTempContext>();
 		}
 		catch (const WinAPIError &e)
 		{
@@ -312,15 +319,32 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 				// create context
 				if (epoxy_has_wgl_extension(hDC, "WGL_ARB_create_context"))
 				{
-					const int attribs[] = {
-						WGL_CONTEXT_FLAGS_ARB, Config.Graphics.DebugOpenGL ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
-						WGL_CONTEXT_MAJOR_VERSION_ARB, REQUESTED_GL_CTX_MAJOR,
-						WGL_CONTEXT_MINOR_VERSION_ARB, REQUESTED_GL_CTX_MINOR,
-						WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-						0
-					};
+					{
+						const int attribs[] = {
+							WGL_CONTEXT_FLAGS_ARB, Config.Graphics.DebugOpenGL ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+							WGL_CONTEXT_MAJOR_VERSION_ARB, REQUESTED_GL_CTX_MAJOR,
+							WGL_CONTEXT_MINOR_VERSION_ARB, REQUESTED_GL_CTX_MINOR,
+							WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+							0
+						};
 
-					hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
+						hrc = wglCreateContextAttribsARB(hDC, nullptr, attribs);
+					}
+
+					if (!hrc)
+					{
+						LogSilentF("  gl: OpenGL %d.%d not available; falling back to 3.1 emergency context.", REQUESTED_GL_CTX_MAJOR, REQUESTED_GL_CTX_MINOR);
+						// Some older Intel drivers don't support OpenGL 3.2; we don't use (much?) of
+						// that so we'll request a 3.1 context as a fallback.
+						const int attribs[] = {
+							WGL_CONTEXT_FLAGS_ARB, Config.Graphics.DebugOpenGL ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+							WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+							WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+							0
+						};
+						pGL->Workarounds.ForceSoftwareTransform = true;
+						hrc = wglCreateContextAttribsARB(hDC, nullptr, attribs);
+					}
 				}
 				else
 				{
@@ -345,7 +369,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 		return true;
 	}
 
-	ReleaseDC(pWindow->renderwnd, hDC); hDC = NULL;
+	ReleaseDC(pWindow->renderwnd, hDC); hDC = nullptr;
 	return false;
 }
 
@@ -354,12 +378,12 @@ std::vector<int> CStdGLCtx::EnumerateMultiSamples() const
 	assert(hrc != 0);
 	std::vector<int> result;
 	std::vector<int> vec = EnumeratePixelFormats(hDC);
-	for(unsigned int i = 0; i < vec.size(); ++i)
+	for(int i : vec)
 	{
 		int attributes[] = { WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB };
 		const unsigned int n_attributes = 2;
 		int results[2];
-		if(!wglGetPixelFormatAttribivARB(hDC, vec[i], 0, n_attributes, attributes, results)) continue;
+		if(!wglGetPixelFormatAttribivARB(hDC, i, 0, n_attributes, attributes, results)) continue;
 
 		if(results[0] == 1) result.push_back(results[1]);
 	}
@@ -389,9 +413,9 @@ void CStdGLCtx::Deselect()
 {
 	if (pGL && pGL->pCurrCtx == this)
 	{
-		wglMakeCurrent(NULL, NULL);
-		pGL->pCurrCtx=NULL;
-		pGL->RenderTarget=NULL;
+		wglMakeCurrent(nullptr, nullptr);
+		pGL->pCurrCtx=nullptr;
+		pGL->RenderTarget=nullptr;
 	}
 }
 
@@ -403,129 +427,14 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-#elif defined(USE_GTK)
-#include <epoxy/glx.h>
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
+#elif defined(USE_SDL_MAINLOOP)
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), this_context(contexts.end()) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { ctx = nullptr; }
 
 void CStdGLCtx::Clear(bool multisample_change)
 {
 	Deselect();
-	if (ctx)
-	{
-		Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-		glXDestroyContext(dpy, (GLXContext)ctx);
-		ctx = 0;
-	}
-	pWindow = 0;
-
-	if (this_context != contexts.end())
-	{
-		contexts.erase(this_context);
-		this_context = contexts.end();
-	}
-}
-
-static int GLXErrorHandler(Display * dpy, XErrorEvent * ev)
-{
-    return 0;
-}
-
-bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
-{
-	// safety
-	if (!pGL) return false;
-	// store window
-	this->pWindow = pWindow;
-	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-
-	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
-	const int attribs[] = {
-		GLX_CONTEXT_MAJOR_VERSION_ARB, REQUESTED_GL_CTX_MAJOR,
-		GLX_CONTEXT_MINOR_VERSION_ARB, REQUESTED_GL_CTX_MINOR,
-		GLX_CONTEXT_FLAGS_ARB, (Config.Graphics.DebugOpenGL ? GLX_CONTEXT_DEBUG_BIT_ARB : 0),
-		GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
-		None
-	};
-	GLXContext share_context = (pGL->pMainCtx != this) ? static_cast<GLXContext>(pGL->pMainCtx->ctx) : 0;
-
-	if (epoxy_has_glx_extension(dpy, gdk_x11_get_default_screen(), "GLX_ARB_create_context"))
-	{
-		int (*oldErrorHandler) (Display *, XErrorEvent *) = XSetErrorHandler(GLXErrorHandler);
-		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
-		XSync(dpy, False);
-		XSetErrorHandler(oldErrorHandler);
-	}
-	if(!ctx) {
-		Log("  gl: falling back to attribute-less context creation.");
-		ctx = glXCreateNewContext(dpy, pWindow->Info, GLX_RGBA_TYPE, share_context, True);
-	}
-
-	// No luck?
-	if (!ctx) return pGL->Error("  gl: Unable to create context");
-	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
-
-	this_context = contexts.insert(contexts.end(), this);
-	return true;
-}
-
-bool CStdGLCtx::Select(bool verbose)
-{
-	// safety
-	if (!pGL || !ctx)
-	{
-		if (verbose) pGL->Error("  gl: pGL is zero");
-		return false;
-	}
-	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	// make context current
-	if (!pWindow->renderwnd || !glXMakeCurrent(dpy, pWindow->renderwnd, (GLXContext)ctx))
-	{
-		if (verbose) pGL->Error("  gl: glXMakeCurrent failed");
-		return false;
-	}
-	SelectCommon();
-	// update clipper - might have been done by UpdateSize
-	// however, the wrong size might have been assumed
-	if (!pGL->UpdateClipper())
-	{
-		if (verbose) pGL->Error("  gl: UpdateClipper failed");
-		return false;
-	}
-	// success
-	return true;
-}
-
-void CStdGLCtx::Deselect()
-{
-	if (pGL && pGL->pCurrCtx == this)
-	{
-		Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-		glXMakeCurrent(dpy, None, NULL);
-		pGL->pCurrCtx = 0;
-		pGL->RenderTarget = 0;
-	}
-}
-
-bool CStdGLCtx::PageFlip()
-{
-	// flush GL buffer
-	glFlush();
-	if (!pWindow || !pWindow->renderwnd) return false;
-	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	glXSwapBuffers(dpy, pWindow->renderwnd);
-	return true;
-}
-
-#elif defined(USE_SDL_MAINLOOP)
-
-CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { }
-
-void CStdGLCtx::Clear(bool multisample_change)
-{
-	SDL_GL_DeleteContext(ctx);
+	if (ctx) SDL_GL_DeleteContext(ctx);
 	ctx = 0;
 	pWindow = 0;
 
@@ -543,8 +452,20 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	// store window
 	this->pWindow = pWindow;
 	ctx = SDL_GL_CreateContext(pWindow->window);
+	if (!ctx)
+	{
+		LogSilentF("  gl: OpenGL %d.%d not available; falling back to 3.1 emergency context.", REQUESTED_GL_CTX_MAJOR, REQUESTED_GL_CTX_MINOR);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+		pGL->Workarounds.ForceSoftwareTransform = true;
+		ctx = SDL_GL_CreateContext(pWindow->window);
+	}
+	if (!ctx)
+	{
+		return pGL->Error(FormatString("SDL_GL_CreateContext: %s", SDL_GetError()).getData());
+	}
 	// No luck at all?
-	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
+	if (!Select(true)) return false;
 
 	this_context = contexts.insert(contexts.end(), this);
 	return true;
@@ -552,7 +473,8 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 bool CStdGLCtx::Select(bool verbose)
 {
-	SDL_GL_MakeCurrent(pWindow->window, ctx);
+	if (SDL_GL_MakeCurrent(pWindow->window, ctx) != 0)
+		return pGL->Error(FormatString("SDL_GL_MakeCurrent: %s", SDL_GetError()).getData());
 	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
@@ -583,6 +505,104 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-#endif //USE_GTK/USE_SDL_MAINLOOP
+#endif // USE_*
+
+#ifdef WITH_QT_EDITOR
+#include <QOpenGLWidget>
+#include <QOpenGLContext>
+#include <QOffscreenSurface>
+
+CStdGLCtxQt::CStdGLCtxQt() { context = nullptr; surface = nullptr; }
+
+void CStdGLCtxQt::Clear(bool multisample_change)
+{
+	Deselect();
+
+	if (context)
+	{
+		if (!pWindow->glwidget) delete context;
+		delete surface;
+	}
+	pWindow = nullptr;
+}
+
+bool CStdGLCtxQt::Init(C4Window *window, C4AbstractApp *app)
+{
+	if (!pGL) return false;
+	pWindow = window;
+
+	if (!pWindow->glwidget)
+	{
+		surface = new QOffscreenSurface();
+		surface->create();
+		context = new QOpenGLContext();
+		QOpenGLContext* share_context = QOpenGLContext::globalShareContext();
+		if (share_context) context->setShareContext(share_context);
+		if (!context->create())
+			return false;
+
+		if (!Select(true)) return false;
+	}
+	else
+	{
+		// The Qt GL widget has its own context
+		context = pWindow->glwidget->context();
+	}
+
+	this_context = contexts.insert(contexts.end(), this);
+	return true;
+}
+
+bool CStdGLCtxQt::Select(bool verbose)
+{
+	if (!pWindow->glwidget)
+	{
+		if (!context->makeCurrent(surface))
+			return false;
+	}
+	else
+	{
+		// done automatically
+		/* pWindow->glwidget->makeCurrent(); */
+	}
+	SelectCommon();
+	// update clipper - might have been done by UpdateSize
+	// however, the wrong size might have been assumed
+	if (!pGL->UpdateClipper())
+	{
+		if (verbose) pGL->Error("  gl: UpdateClipper failed");
+		return false;
+	}
+	// success
+	return true;
+}
+
+void CStdGLCtxQt::Deselect()
+{
+	if (!pWindow->glwidget)
+		context->doneCurrent();
+	else
+	{
+		// done automatically
+		/* pWindow->glwidget->doneCurrent(); */
+	}
+	if (pGL && pGL->pCurrCtx == this)
+	{
+		pGL->pCurrCtx = nullptr;
+		pGL->RenderTarget = nullptr;
+	}
+}
+
+bool CStdGLCtxQt::PageFlip()
+{
+	// flush GL buffer
+	glFlush();
+	if (!pWindow) return false;
+	if (!pWindow->glwidget)
+		return false;
+	return true;
+}
+
+#endif
 
 #endif // USE_CONSOLE

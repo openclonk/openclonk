@@ -1,4 +1,0 @@
-[DefCore]
-id=GUI_SpawnMenu
-Version=5,4,0,0
-Category=C4D_StaticBack

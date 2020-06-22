@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,10 @@
 #ifndef C4GAMEPARAMETERS_H
 #define C4GAMEPARAMETERS_H
 
-#include "C4IDList.h"
-#include "C4PlayerInfo.h"
-#include "C4Teams.h"
-#include "C4InfoCore.h"
+#include "control/C4PlayerInfo.h"
+#include "control/C4Teams.h"
+#include "object/C4IDList.h"
+#include "object/C4InfoCore.h"
 
 class C4GameRes
 {
@@ -34,9 +34,9 @@ public:
 	C4GameRes &operator = (const C4GameRes &Res);
 
 private:
-	C4Network2ResType eType;
+	C4Network2ResType eType{NRT_Null};
 	StdCopyStrBuf File;
-	const C4Network2ResCore *pResCore;
+	const C4Network2ResCore *pResCore{nullptr};
 	C4Network2Res::Ref pNetRes;
 
 public:
@@ -64,11 +64,11 @@ public:
 class C4GameResList
 {
 private:
-	C4GameRes **pResList;
-	int32_t iResCount, iResCapacity;
+	C4GameRes **pResList{nullptr};
+	int32_t iResCount{0}, iResCapacity{0};
 
 public:
-	C4GameResList() : pResList(NULL), iResCount(0), iResCapacity(0) {}
+	C4GameResList() = default;
 	~C4GameResList() { Clear(); }
 
 	C4GameResList &operator = (const C4GameResList &List);
@@ -112,6 +112,9 @@ public:
 	// Original network game? Also set in replays of network games for sync safety
 	bool IsNetworkGame;
 
+	// Originally hosted in editor (also in replays from editor)
+	bool IsEditor;
+
 	// Control rate
 	int32_t ControlRate;
 
@@ -151,7 +154,7 @@ public:
 	bool InitNetwork(C4Network2ResList *pResList);
 	bool Save(C4Group &hGroup, C4Scenario *pDefault);
 
-	void CompileFunc(StdCompiler *pComp, C4Scenario *pScenario = NULL);
+	void CompileFunc(StdCompiler *pComp, C4Scenario *pScenario = nullptr);
 };
 
 #endif // C4GAMEPARAMETERS_H

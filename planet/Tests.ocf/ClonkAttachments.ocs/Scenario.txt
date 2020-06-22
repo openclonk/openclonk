@@ -1,0 +1,5 @@
+[Head]
+Title=Clonk Attachments
+
+[Landscape]
+NoScan=1

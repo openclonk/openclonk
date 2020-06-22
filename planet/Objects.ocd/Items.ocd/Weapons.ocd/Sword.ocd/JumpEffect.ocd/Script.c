@@ -16,7 +16,7 @@ func Initialize()
 
 func Point(from, to)
 {
-	if(from == nil) from = last_from;
+	if (from == nil) from = last_from;
 	else last_from = from;
 	
 	var my_size = 10;
@@ -40,7 +40,7 @@ func FadeOut()
 func FxQuickFadeTimer(target, effect, time)
 {
 	var fade = time * 6;
-	if(fade > 90)
+	if (fade > 90)
 	{
 		RemoveObject();
 		return -1;

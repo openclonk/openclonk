@@ -1,2 +1,6 @@
 Name=Flame
 Description=Burning.
+EditorEternal=Eternal
+EditorEternalHelp=When active this flame burns eternally.
+EditorEternalOn=Eternal
+EditorEternalOff=Finite

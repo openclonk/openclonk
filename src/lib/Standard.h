@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -21,8 +21,6 @@
 #define INC_STANDARD
 
 #include <type_traits>
-#pragma push_macro("new")
-#undef new
 
 // The Clear/Default functions that exist on most OpenClonk classes are A
 // BAD IDEA because the caller has no guarantee that every member has been
@@ -39,9 +37,6 @@ inline InplaceReconstruct(T *obj)
 	obj->~T();
 	new (obj) T();
 }
-#pragma pop_macro("new")
-
-#include "PlatformAbstraction.h"
 
 // Small helpers
 template <class T> inline T Abs(T val) { return val > 0 ? val : -val; }
@@ -56,11 +51,10 @@ inline int DWordAligned(int val)
 }
 
 int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2);
-int Angle(int iX1, int iY1, int iX2, int iY2);
+int32_t Angle(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iPrec = 1);
 int Pow(int base, int exponent);
 int32_t StrToI32(const char *s, int base, const char **scan_end);
 
-#include <cstring>
 template <class T>
 typename std::enable_if<std::is_pod<T>::value>::type
 inline ZeroMem(T *lpMem, size_t dwSize)
@@ -73,7 +67,6 @@ inline void MemCopy(const void *lpMem1, void *lpMem2, size_t dwSize)
 	std::memmove(lpMem2,lpMem1,dwSize);
 }
 
-#include <cctype>
 inline char CharCapital(char cChar) { return std::toupper(cChar); }
 bool IsIdentifier(char cChar);
 inline bool IsWhiteSpace(char cChar) { return !!std::isspace((unsigned char)cChar); }
@@ -120,7 +113,7 @@ void SDelete(char *szString, int iLen, int iPosition=0);
 
 int  SCharPos(char cTarget, const char *szInStr, int iIndex=0);
 int  SCharLastPos(char cTarget, const char *szInStr);
-unsigned int  SCharCount(char cTarget, const char *szInStr, const char *cpUntil=NULL);
+unsigned int  SCharCount(char cTarget, const char *szInStr, const char *cpUntil=nullptr);
 unsigned int  SCharCountEx(const char *szString, const char *szCharList);
 
 void SReplaceChar(char *str, char fc, char tc);
@@ -132,7 +125,7 @@ const char *SAdvanceSpace(const char *szSPos);
 const char *SAdvancePast(const char *szSPos, char cPast);
 
 bool SGetModule(const char *szList, int iIndex, char *sTarget, int iSize=-1);
-bool SIsModule(const char *szList, const char *szString, int *ipIndex=NULL, bool fCaseSensitive=false);
+bool SIsModule(const char *szList, const char *szString, int *ipIndex=nullptr, bool fCaseSensitive=false);
 bool SAddModule(char *szList, const char *szModule, bool fCaseSensitive=false);
 bool SAddModules(char *szList, const char *szModules, bool fCaseSensitive=false);
 bool SRemoveModule(char *szList, const char *szModule, bool fCaseSensitive=false);
@@ -151,12 +144,11 @@ int SLineGetCharacters(const char *szText, const char *cpPosition);
 // can match strings like  "*Cl?nk*vour" to "Clonk Endeavour"
 bool SWildcardMatchEx(const char *szString, const char *szWildcard);
 
-#define LineFeed "\x00D\x00A"
-
 // sprintf wrapper
 
-#include <cstdio>
-#include <cstdarg>
+#ifdef _WIN32
+#define vsnprintf _vsprintf_p
+#endif
 
 // old, insecure sprintf
 inline int osprintf(char *str, const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
@@ -182,5 +174,9 @@ inline int ssprintf(char(&str)[N], const char *fmt, ...)
 
 // Checks a string for conformance with UTF-8
 bool IsValidUtf8(const char *string, int length = -1);
+
+
+std::string vstrprintf(const char *format, va_list args);
+std::string strprintf(const char *format, ...) GNUC_FORMAT_ATTRIBUTE;
 
 #endif // INC_STANDARD

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,23 +16,19 @@
 
 // text drawing facility for C4Draw
 
-#include <C4Include.h>
-#include "C4FontLoader.h"
+#include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "graphics/C4FontLoader.h"
 
 #ifndef USE_CONSOLE
-#include <C4Components.h>
-#include <C4Config.h>
-#include <C4Draw.h>
-#include <C4Language.h>
-#include <C4Log.h>
-#include <C4Markup.h>
-#include <C4Surface.h>
-
-#include <stdexcept>
-#include <string>
+#include "c4group/C4Components.h"
+#include "lib/C4Markup.h"
+#include "lib/StdColors.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4Surface.h"
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 
 #include <ft2build.h>
@@ -50,7 +46,7 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 	assert(szFontName);
 	if (!szFontName || !*szFontName)
 	{
-		LogFatal(FormatString("%s (\"%s\")", LoadResStr("IDS_ERR_INITFONTS"), szFontName ? szFontName : "(null)").getData());
+		LogFatal(FormatString(R"(%s ("%s"))", LoadResStr("IDS_ERR_INITFONTS"), szFontName ? szFontName : "(null)").getData());
 		return false;
 	}
 	// if def has not been found, use the def as font name
@@ -99,7 +95,7 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 		LogF(LoadResStr("IDS_PRC_UPDATEFONT"), FontFaceName, iDefFontSize, dwDefWeight);
 	}
 	// check if one of the internally listed fonts should be used
-	const char * const extensions[] = { "ttf", "otf", "ttc", "fon", "fnt", "fot", NULL };
+	const char * const extensions[] = { "ttf", "otf", "ttc", "fon", "fnt", "fot", nullptr };
 	char FileName[_MAX_PATH+1];
 	int32_t ID;
 	C4Group * pGrp = pGfxGroups->FindSuitableFile(FontFaceName, extensions, FileName, &ID);
@@ -108,7 +104,7 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 		if (LastUsedGrpID != ID || LastUsedName != FontFaceName)
 		{
 			DestroyFont(pLastUsedFont);
-			pLastUsedFont = NULL;
+			pLastUsedFont = nullptr;
 		}
 		if (!pLastUsedFont)
 		{
@@ -124,7 +120,7 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 				catch (std::runtime_error & e)
 				{
 					LogFatal(e.what());
-					pGrp = NULL;
+					pGrp = nullptr;
 				}
 			}
 		}
@@ -135,7 +131,7 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 		if (LastUsedGrpID != -1 || LastUsedName != FontFaceName)
 		{
 			DestroyFont(pLastUsedFont);
-			pLastUsedFont = NULL;
+			pLastUsedFont = nullptr;
 		}
 		if (!pLastUsedFont)
 		{
@@ -178,7 +174,7 @@ void C4FontLoader::Clear()
 #ifndef USE_CONSOLE
 	// delete vector font cache
 	DestroyFont(pLastUsedFont);
-	pLastUsedFont = NULL;
+	pLastUsedFont = nullptr;
 #endif
 }
 
@@ -194,7 +190,7 @@ public:
 #if defined(_WIN32)
 	// Win32 using freetype: Load TrueType-data from WinGDI into Data-buffer to be used by FreeType
 	bool fSuccess = false;
-	HDC hDC = ::CreateCompatibleDC(NULL);
+	HDC hDC = ::CreateCompatibleDC(nullptr);
 	if (hDC)
 	{
 		HFONT hFont = ::CreateFontA(0, 0, 0, 0, FW_DONTCARE, false,
@@ -204,7 +200,7 @@ public:
 		if (hFont)
 		{
 			SelectObject( hDC, hFont );
-			uint32_t dwTTFSize = ::GetFontData(hDC, 0, 0, NULL, 0);
+			uint32_t dwTTFSize = ::GetFontData(hDC, 0, 0, nullptr, 0);
 			if (dwTTFSize && dwTTFSize != GDI_ERROR)
 			{
 				Data.SetSize(dwTTFSize);
@@ -283,9 +279,7 @@ CStdFont::CStdFont()
 {
 #ifndef USE_CONSOLE
 	// set default values
-	psfcFontData = NULL;
-	sfcCurrent = NULL;
-	iNumFontSfcs = 0;
+	sfcCurrent = nullptr;
 	iSfcSizes = 64;
 	dwDefFontHeight=iLineHgt=10;
 	iFontZoom=1; // default: no internal font zooming - likely no antialiasing either...
@@ -296,29 +290,24 @@ CStdFont::CStdFont()
 	// font not yet initialized
 	*szFontName=0;
 	id=0;
-	pCustomImages=NULL;
-	pVectorFont = NULL;
+	pCustomImages=nullptr;
+	pVectorFont = nullptr;
 #endif
 }
 
 #ifndef USE_CONSOLE
 bool CStdFont::AddSurface()
 {
-	// add new surface as render target; copy old ones
-	C4Surface **pNewSfcs = new C4Surface *[iNumFontSfcs+1];
-	if (iNumFontSfcs) memcpy(pNewSfcs, psfcFontData, iNumFontSfcs * sizeof (C4Surface *));
-	delete [] psfcFontData;
-	psfcFontData = pNewSfcs;
-	C4Surface *sfcNew = psfcFontData[iNumFontSfcs] = new C4Surface();
-	++iNumFontSfcs;
-	if (iSfcSizes) if (!sfcNew->Create(iSfcSizes, iSfcSizes)) return false;
+	// add new surface as render target
+	auto sfcNew = std::make_unique<C4Surface>(iSfcSizes, iSfcSizes, 0);
 	// If old surface was locked, unlock it and lock the new one in its stead
 	if (sfcCurrent && sfcCurrent->IsLocked())
 	{
 		sfcCurrent->Unlock();
 		sfcNew->Lock();
 	}
-	sfcCurrent = sfcNew;
+	sfcCurrent = sfcNew.get();
+	psfcFontData.push_back(std::move(sfcNew));
 	iCurrentSfcX = iCurrentSfcY = 0;
 	return true;
 }
@@ -351,11 +340,11 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget)
 		iBoldness = (1<<16) + (iBoldness<<16)/400;
 		FT_Matrix mat;
 		mat.xx = iBoldness; mat.xy = mat.yx = 0; mat.yy = 1<<16;
-		FT_Set_Transform(*pVectorFont, &mat, NULL);
+		FT_Set_Transform(*pVectorFont, &mat, nullptr);
 	}
 	else
 	{
-		FT_Set_Transform(*pVectorFont, NULL, NULL);
+		FT_Set_Transform(*pVectorFont, nullptr, nullptr);
 	}
 	// Render
 	if (FT_Load_Char(*pVectorFont, dwChar, FT_LOAD_RENDER | FT_LOAD_NO_HINTING))
@@ -446,7 +435,7 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 	// determine needed texture size
 	if (dwHeight * iFontZoom > 40)
 		iSfcSizes = 512;
-	else if (dwDefFontHeight * iFontZoom > 20)
+	else if (dwHeight * iFontZoom > 20)
 		iSfcSizes = 256;
 	else
 		iSfcSizes = 128;
@@ -492,17 +481,11 @@ void CStdFont::Clear()
 {
 #ifndef USE_CONSOLE
 	FontLoader.DestroyFont(pVectorFont);
-	pVectorFont = NULL;
+	pVectorFont = nullptr;
 
 	// clear font sfcs
-	if (psfcFontData)
-	{
-		while (iNumFontSfcs--) delete psfcFontData[iNumFontSfcs];
-		delete [] psfcFontData;
-		psfcFontData = NULL;
-	}
-	sfcCurrent = NULL;
-	iNumFontSfcs = 0;
+	sfcCurrent = nullptr;
+	psfcFontData.clear();
 	for (int c=' '; c<256; ++c) fctAsciiTexCoords[c-' '].Default();
 	fctUnicodeMap.clear();
 	// set default values
@@ -582,7 +565,6 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 #ifdef USE_CONSOLE
 	return 0;
 #else
-	// 2do: Implement this in terms of StdStrBuf-version
 	// note iMaxOutLen does not include terminating null character
 	// safety
 	if (!iMaxOutLen) return 0;
@@ -591,145 +573,11 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 		if (szOut) *szOut=0;
 		return 0;
 	}
-
-	// TODO: might szLastBreakOut, szLastEmergencyBreakPos, szLastEmergencyBreakOut, iXEmergencyBreak not be properly initialised before use?
-	uint32_t c;
-	const char *szPos=szMsg,   // current parse position in the text
-	                  *szLastBreakPos = szMsg, // points to the char after at (whitespace) or after ('-') which text can be broken
-	                                    *szLastEmergenyBreakPos = NULL, // same, but at last char in case no suitable linebreak could be found
-	                                                              *szLastPos;              // last position until which buffer has been transferred to output
-	char *szLastBreakOut = NULL, *szLastEmergencyBreakOut = NULL; // position of output pointer at break positions
-	int iX=0,      // current text width at parse pos
-	       iXBreak=0, // text width as it was at last break pos
-	               iXEmergencyBreak = 0, // same, but at last char in case no suitable linebreak could be found
-	                                  iHgt=iLineHgt; // total height of output text
-	bool fIsFirstLineChar = true;
-	// ignore any markup
-	C4Markup MarkupChecker(false);
-	// go through all text
-	while (*(szLastPos = szPos))
-	{
-		// ignore markup
-		if (fCheckMarkup) MarkupChecker.SkipTags(&szPos);
-		// get current char
-		c = GetNextCharacter(&szPos);
-		// done? (must check here, because markup-skip may have led to text end)
-		if (!c) break;
-		// manual break?
-		int iCharWdt = 0;
-		if (c != '\n' && (!fCheckMarkup || c != '|'))
-		{
-			// image?
-			int iImgLgt;
-			if (fCheckMarkup && c=='{' && szPos[0]=='{' && szPos[1]!='{' && (iImgLgt=SCharPos('}', szPos+1))>0 && szPos[iImgLgt+2]=='}')
-			{
-				char imgbuf[101];
-				SCopy(szPos+1, imgbuf, std::min(iImgLgt, 100));
-
-				int iCharHgt;
-				if(!GetFontImageSize(imgbuf, iCharWdt, iCharHgt))
-					iCharWdt = 0;
-
-				// skip image tag
-				szPos+=iImgLgt+3;
-			}
-			else
-			{
-				// regular char
-				// look up character width in texture coordinates table
-				if (c >= ' ')
-					iCharWdt = int(fZoom * GetCharacterFacet(c).Wdt / iFontZoom) + iHSpace;
-				else
-					iCharWdt = 0; // OMFG ctrl char
-			}
-			// add chars to output
-			while (szLastPos != szPos)
-			{
-				if (szOut)
-					*szOut++ = *szLastPos++;
-				else
-					++szLastPos;
-				if (szOut && !--iMaxOutLen)
-				{
-					// buffer end: cut and terminate
-					*szOut = '\0';
-					break;
-				}
-			}
-			if (szOut && !iMaxOutLen) break;
-			// add to line; always add one char at minimum
-			if ((iX+=iCharWdt) <= iWdt || fIsFirstLineChar)
-			{
-				// check whether linebreak possibility shall be marked here
-				// 2do: What about unicode-spaces?
-				if (c<256) if (isspace((unsigned char)c) || c == '-')
-					{
-						szLastBreakPos = szPos;
-						szLastBreakOut = szOut;
-						// space: Break directly at space if it isn't the first char here
-						// first char spaces must remain, in case the output area is just one char width
-						if (c != '-' && !fIsFirstLineChar) --szLastBreakPos; // because c<256, the character length can be safely assumed to be 1 here
-						iXBreak = iX;
-					}
-				// always mark emergency break after char that fitted the line
-				szLastEmergenyBreakPos = szPos;
-				iXEmergencyBreak = iX;
-				szLastEmergencyBreakOut = szOut;
-				// line OK; continue filling it
-				fIsFirstLineChar = false;
-				continue;
-			}
-			// line must be broken now
-			// if there was no linebreak, do it at emergency pos
-			if (szLastBreakPos == szMsg)
-			{
-				szLastBreakPos = szLastEmergenyBreakPos;
-				szLastBreakOut = szLastEmergencyBreakOut;
-				iXBreak = iXEmergencyBreak;
-			}
-			// insert linebreak at linebreak pos
-			// was it a space? Then just overwrite space with a linebreak
-			if (uint8_t(*szLastBreakPos)<128 && isspace((unsigned char)*szLastBreakPos))
-				*(szLastBreakOut-1) = '\n';
-			else
-			{
-				// otherwise, insert line break
-				if (szOut && !--iMaxOutLen)
-					// buffer is full
-					break;
-				if (szOut)
-				{
-					char *szOut2 = szOut;
-					while (--szOut2 >= szLastBreakOut)
-						szOut2[1] = *szOut2;
-					szOut2[1] = '\n';
-				}
-			}
-			// calc next line usage
-			iX -= iXBreak;
-		}
-		else
-		{
-			// a static linebreak: Everything's well; this just resets the line width
-			iX = 0;
-		}
-		// forced or manual line break: set new line beginning to char after line break
-		szLastBreakPos = szMsg = szPos;
-		// manual line break or line width overflow: add char to next line
-		iHgt += iLineHgt;
-		fIsFirstLineChar = true;
-	}
-	// transfer final data to buffer - markup and terminator
-	if (szOut)
-		while ((*szOut++ = *szLastPos++))
-			if (!--iMaxOutLen)
-			{
-				// buffer end: cut and terminate
-				*szOut = '\0';
-				break;
-			}
-	// return text height
-	return iHgt;
+	auto t = BreakMessage(szMsg, iWdt, fCheckMarkup, fZoom);
+	auto str = std::get<0>(t);
+	auto len = str.copy(szOut, iMaxOutLen);
+	szOut[len] = '\0';
+	return std::get<1>(t);
 #endif
 }
 
@@ -738,20 +586,34 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 #ifdef USE_CONSOLE
 	return 0;
 #else
-	// safety
 	if (!szMsg || !pOut) return 0;
+	auto t = BreakMessage(szMsg, iWdt, fCheckMarkup, fZoom);
+	auto str = std::get<0>(t);
 	pOut->Clear();
+	pOut->Append(str.c_str(), str.size());
+	return std::get<1>(t);
+#endif
+}
+
+// Returns broken message and resulting height.
+std::tuple<std::string, int> CStdFont::BreakMessage(const char *szMsg, int iWdt, bool fCheckMarkup, float fZoom)
+{
+#ifdef USE_CONSOLE
+	return std::make_tuple("", 0);
+#else
+	if (!szMsg) return std::make_tuple("", 0);
+	std::string out;
 	// TODO: might szLastEmergenyBreakPos, iLastBreakOutLen or iXEmergencyBreak not be properly initialised before use?
 	uint32_t c;
 	const char *szPos=szMsg,   // current parse position in the text
-	                  *szLastBreakPos = szMsg, // points to the char after at (whitespace) or after ('-') which text can be broken
-	                                    *szLastEmergenyBreakPos = NULL, // same, but at last char in case no suitable linebreak could be found
-	                                                              *szLastPos;              // last position until which buffer has been transferred to output
+	           *szLastBreakPos = szMsg, // points to the char after at (whitespace) or after ('-') which text can be broken
+	           *szLastEmergenyBreakPos = nullptr, // same, but at last char in case no suitable linebreak could be found
+	           *szLastPos;              // last position until which buffer has been transferred to output
 	int iLastBreakOutLen = 0, iLastEmergencyBreakOutLen = 0; // size of output string at break positions
 	int iX=0,      // current text width at parse pos
-	       iXBreak=0, // text width as it was at last break pos
-	               iXEmergencyBreak = 0, // same, but at last char in case no suitable linebreak could be found
-	                                  iHgt=iLineHgt; // total height of output text
+		iXBreak=0, // text width as it was at last break pos
+		iXEmergencyBreak = 0, // same, but at last char in case no suitable linebreak could be found
+		iHgt=iLineHgt; // total height of output text
 	int iCharHOverlap = std::max<int>(-iHSpace, 0); // character width exceeding placement of next character
 	bool fIsFirstLineChar = true;
 	// ignore any markup
@@ -793,7 +655,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 					iCharWdt = 0; // OMFG ctrl char
 			}
 			// add chars to output
-			pOut->Append(szLastPos, szPos - szLastPos);
+			out.append(szLastPos, szPos - szLastPos);
 			// add to line; always add one char at minimum
 			if ((iX+=iCharWdt)+iCharHOverlap <= iWdt || fIsFirstLineChar)
 			{
@@ -802,7 +664,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 				if (c<256) if (isspace((unsigned char)c) || c == '-')
 					{
 						szLastBreakPos = szPos;
-						iLastBreakOutLen = pOut->getLength();
+						iLastBreakOutLen = out.size();
 						// space: Break directly at space if it isn't the first char here
 						// first char spaces must remain, in case the output area is just one char width
 						if (c != '-' && !fIsFirstLineChar) --szLastBreakPos; // because c<256, the character length can be safely assumed to be 1 here
@@ -811,7 +673,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 				// always mark emergency break after char that fitted the line
 				szLastEmergenyBreakPos = szPos;
 				iXEmergencyBreak = iX;
-				iLastEmergencyBreakOutLen = pOut->getLength();
+				iLastEmergencyBreakOutLen = out.size();
 				// line OK; continue filling it
 				fIsFirstLineChar = false;
 				continue;
@@ -822,7 +684,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 			if (c<128 && isspace((unsigned char)c))
 			{
 				szLastBreakPos = szPos-1;
-				iLastBreakOutLen = pOut->getLength();
+				iLastBreakOutLen = out.size();
 				iXBreak = iX;
 			}
 			// if there was no linebreak, do it at emergency pos
@@ -835,11 +697,11 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 			// insert linebreak at linebreak pos
 			// was it a space? Then just overwrite space with a linebreak
 			if (uint8_t(*szLastBreakPos)<128 && isspace((unsigned char)*szLastBreakPos))
-				*pOut->getMPtr(iLastBreakOutLen-1) = '\n';
+				out.at(iLastBreakOutLen-1) = '\n';
 			else
 			{
 				// otherwise, insert line break
-				pOut->InsertChar('\n', iLastBreakOutLen);
+				out.insert(iLastBreakOutLen, 1, '\n');
 			}
 			// calc next line usage
 			iX -= iXBreak;
@@ -849,7 +711,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 			// a static linebreak: Everything's well; this just resets the line width
 			iX = 0;
 			// add to output
-			pOut->Append(szLastPos, szPos - szLastPos);
+			out.append(szLastPos, szPos - szLastPos);
 		}
 		// forced or manual line break: set new line beginning to char after line break
 		szLastBreakPos = szMsg = szPos;
@@ -858,9 +720,9 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 		fIsFirstLineChar = true;
 	}
 	// transfer final data to buffer (any missing markup)
-	pOut->Append(szLastPos, szPos - szLastPos);
+	out.append(szLastPos, szPos - szLastPos);
 	// return text height
-	return iHgt;
+	return std::make_tuple(out, iHgt);
 #endif
 }
 
@@ -928,7 +790,7 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 {
 #ifndef USE_CONSOLE
 	assert(IsValidUtf8(szText));
-	C4DrawTransform bt, *pbt=NULL;
+	C4DrawTransform bt, *pbt=nullptr;
 	// set blit color
 	DWORD dwOldModClr;
 	bool fWasModulated = pDraw->GetBlitModulation(dwOldModClr);

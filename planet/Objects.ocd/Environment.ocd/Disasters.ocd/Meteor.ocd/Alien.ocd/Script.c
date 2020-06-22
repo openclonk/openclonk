@@ -27,7 +27,7 @@ private func FxIntMeteorStart(object target, effect fx, bool temp)
 		R = 255,
 		B = 255,
 		G = 255,
-		Alpha = PV_Linear(150,0),
+		Alpha = PV_Linear(150, 0),
 		Size = 30,
 		Stretch = 1000,
 		Phase = 0,

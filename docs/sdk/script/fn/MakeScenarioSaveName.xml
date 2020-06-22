@@ -6,7 +6,7 @@
   <func>
     <title>MakeScenarioSaveName</title>
     <category>System</category>
-    <version>5.3 OC</version>
+    <version>3.0 OC</version>
     <syntax>
       <rtype>string</rtype>
     </syntax>

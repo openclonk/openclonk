@@ -1,6 +1,6 @@
 [DefCore]
 id=Fern
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=28
 Height=10

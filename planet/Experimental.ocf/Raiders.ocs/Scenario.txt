@@ -1,7 +1,7 @@
 [Head]
 Icon=29
 Title=Raiders
-Version=6,0
+Version=8,0
 MaxPlayer=4
 Difficulty=25
 

@@ -10,23 +10,23 @@
 
 protected func Initialize()
 {
-	var workshop = CreateObjectAbove(ToolsWorkshop, 835, 360);
-	var c1 = CreateObjectAbove(CableCrossing, 765, 355);
-	var c2 = CreateObjectAbove(CableCrossing, 695, 415);
-	var c3 = CreateObjectAbove(CableCrossing, 585, 415);
-	var c4 = CreateObjectAbove(CableCrossing, 555, 385);
-	var cabin = CreateObjectAbove(WoodenCabin, 490, 390);
+	//var workshop = CreateObjectAbove(ToolsWorkshop, 835, 360);
+	//var c1 = CreateObjectAbove(CableCrossing, 765, 355);
+	//var c2 = CreateObjectAbove(CableCrossing, 695, 415);
+	//var c3 = CreateObjectAbove(CableCrossing, 585, 415);
+	//var c4 = CreateObjectAbove(CableCrossing, 555, 385);
+	//var cabin = CreateObjectAbove(WoodenCabin, 490, 390);
 //	CreateObjectAbove(LiftTower, 935, 360);
 
 //	CreateObjectAbove(CableLine)->SetConnectedObjects(workshop, c1);
-	CreateObjectAbove(CableLine)->SetConnectedObjects(c1, c2);
-	CreateObjectAbove(CableLine)->SetConnectedObjects(c2, c3);
-	CreateObjectAbove(CableLine)->SetConnectedObjects(c3, c4);
+	//CreateObjectAbove(CableLine)->SetConnectedObjects(c1, c2);
+	//CreateObjectAbove(CableLine)->SetConnectedObjects(c2, c3);
+	//CreateObjectAbove(CableLine)->SetConnectedObjects(c3, c4);
 //	CreateObjectAbove(CableLine)->SetConnectedObjects(c4, cabin);
 
-	CreateObjectAbove(Lorry, 835, 360);
+	//CreateObjectAbove(Lorry, 835, 360);
 
-	CreateConstruction(Elevator, 160, 390, NO_OWNER, 100, true)->CreateShaft(150);
+	//CreateConstruction(Elevator, 160, 390, NO_OWNER, 100, true)->CreateShaft(150);
 
 	// Forest on the left side of the map, with sawmill.
 /*	for (var i = 0; i < 20; i++)
@@ -49,7 +49,7 @@ protected func Initialize()
 	chest->CreateContents(Dynamite, 4);
 	chest->CreateContents(Shovel, 2);
 	chest->CreateContents(Hammer, 2);
-	chest->CreateContents(CableLorryReel, 2);
+	chest->CreateContents(CableReel, 2);
 	
 	// Tool workshop on the little mountain.
 	var tools = CreateObjectAbove(ToolsWorkshop, 540, 260);
@@ -148,8 +148,12 @@ protected func Initialize()
 protected func InitializePlayer(int plr)
 {
 	// No FOW here.
-	SetFoW(false, plr);
+	//SetFoW(false, plr);
 	JoinPlayer(plr);
+	// Give all knowledge.
+	var index = 0, def;
+	while (def = GetDefinition(index++))
+		SetPlrKnowledge(plr, def);
 	return;
 }
 
@@ -167,5 +171,6 @@ private func JoinPlayer(int plr)
 	var clonk = GetCrew(plr);
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(510, 370);
+	clonk->CreateContents(Hammer);
 	return;
 }

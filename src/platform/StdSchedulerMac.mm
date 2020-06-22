@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,8 +13,8 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <StdScheduler.h>
+#include "C4Include.h"
+#include "platform/StdScheduler.h"
 #import <Cocoa/Cocoa.h>
 
 using namespace std;

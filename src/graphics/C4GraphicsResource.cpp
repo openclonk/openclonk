@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,20 +17,18 @@
 
 /* Loads all standard graphics from Graphics.ocg */
 
-#include <C4Include.h>
-#include <C4GraphicsResource.h>
+#include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "graphics/C4GraphicsResource.h"
 
-#include <C4DefList.h>
-#include <C4FontLoader.h>
-#include <C4Log.h>
-#include <C4Game.h>
-#include <C4Components.h>
-#include <C4DrawGL.h>
+#include "c4group/C4Components.h"
+#include "graphics/C4FontLoader.h"
+#include "graphics/C4DrawGL.h"
+#include "object/C4DefList.h"
 
 /* C4GraphicsResource */
 
 C4GraphicsResource::C4GraphicsResource():
-	idSfcCaption(0), idSfcButton(0), idSfcButtonD(0), idSfcScroll(0), idSfcContext(0),
 	CaptionFont(FontCaption), TitleFont(FontTitle), TextFont(FontRegular), MiniFont(FontTiny), TooltipFont(FontTooltip)
 {
 	Default();
@@ -76,14 +74,14 @@ void C4GraphicsResource::Default()
 	fctFlagClr.Default();
 	fctPlayerClr.Default();
 
-	fctCursor.Default();
-	fctDropTarget.Default();
 	fctKeyboard.Default();
 	fctGamepad.Default();
 	fctCommand.Default();
 	fctKey.Default();
 	fctOKCancel.Default();
 	fctMouse.Default();
+
+	fctTransformKnob.Default();
 
 	iNumRanks=1;
 	idRegisteredMainGroupSetFiles=-1;
@@ -123,11 +121,13 @@ void C4GraphicsResource::Clear()
 	fctHand.Clear();
 	fctGamepad.Clear();
 	fctBuild.Clear();
+	fctTransformKnob.Clear();
 	// GUI data
 	sfcCaption.Clear(); sfcButton.Clear(); sfcButtonD.Clear(); sfcScroll.Clear(); sfcContext.Clear();
 	idSfcCaption = idSfcButton = idSfcButtonD = idSfcScroll = idSfcContext = 0;
 	barCaption.Clear(); barButton.Clear(); barButtonD.Clear();
 	fctButtonHighlight.Clear(); fctIcons.Clear(); fctIconsEx.Clear();
+	fctControllerIcons.Clear();
 	fctButtonHighlightRound.Clear();
 	fctSubmenu.Clear();
 	fctCheckbox.Clear();
@@ -135,8 +135,9 @@ void C4GraphicsResource::Clear()
 	fctProgressBar.Clear();
 	fctContext.Default();
 
+
 	// unhook deflist from font
-	FontRegular.SetCustomImages(NULL);
+	FontRegular.SetCustomImages(nullptr);
 
 	Achievements.Clear();
 
@@ -150,7 +151,7 @@ bool C4GraphicsResource::InitFonts()
 {
 	// this regards scenario-specific fonts or overloads in Extra.ocg
 	const char *szFont;
-	if (*Game.C4S.Head.Font) szFont = Game.C4S.Head.Font; else szFont = Config.General.RXFontName;
+	if (!Game.C4S.Head.Font.empty()) szFont = Game.C4S.Head.Font.c_str(); else szFont = Config.General.RXFontName;
 	if (!::FontLoader.InitFont(&FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files)) return false;
 	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
 	if (!::FontLoader.InitFont(&FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files)) return false;
@@ -218,6 +219,8 @@ bool C4GraphicsResource::Init()
 	fctIcons.Set(fctIcons.Surface,0,0,C4GUI_IconWdt,C4GUI_IconHgt);
 	if (!LoadFile(fctIconsEx, "GUIIcons2", Files, C4FCT_Full, C4FCT_Full, false, 0)) return false;
 	fctIconsEx.Set(fctIconsEx.Surface,0,0,C4GUI_IconExWdt,C4GUI_IconExHgt);
+	if (!LoadFile(fctControllerIcons, "ControllerIcons", Files, C4FCT_Full, C4FCT_Full, false, 0)) return false;
+	fctControllerIcons.Set(fctControllerIcons.Surface,0,0,C4GUI_ControllerIconWdt,C4GUI_ControllerIconHgt);
 	if (!LoadFile(sfcScroll, "GUIScroll", Files, idSfcScroll, 0)) return false;
 	sfctScroll.Set(C4Facet(&sfcScroll,0,0,32,32));
 	if (!LoadFile(sfcContext, "GUIContext", Files, idSfcContext, 0)) return false;
@@ -262,6 +265,7 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(fctHand,        "Hand",         Files, C4FCT_Height, C4FCT_Full, false, 0))             return false;
 	if (!LoadFile(fctGamepad,     "Gamepad",      Files, 80,           C4FCT_Full, false, 0))             return false;
 	if (!LoadFile(fctBuild,       "Build",        Files, C4FCT_Full,   C4FCT_Full, false, 0))             return false;
+	if (!LoadFile(fctTransformKnob,"TransformKnob",Files,C4FCT_Full,   C4FCT_Full, false, 0))             return false;
 
 	// achievements
 	if (!Achievements.Init(Files)) return false;
@@ -312,10 +316,6 @@ bool C4GraphicsResource::LoadCursorGfx()
 	szCursorFilename = "Cursor";
 	if (!LoadFile(fctMouseCursor, szCursorFilename, Files, C4FCT_Height, C4FCT_Full, false, 0))
 		return false;
-	// adjust dependant faces
-	int32_t iCursorSize = fctMouseCursor.Hgt;
-	fctCursor.Set(fctMouseCursor.Surface, 11*iCursorSize, 0, iCursorSize, iCursorSize);
-	fctDropTarget.Set(fctMouseCursor.Surface, 11*iCursorSize, 0, iCursorSize, iCursorSize);
 	return true;
 }
 
@@ -334,8 +334,8 @@ bool C4GraphicsResource::RegisterGlobalGraphics()
 	// then be kept.
 	// The cleanest alternative would be to reinit all the fonts whenever a scenario is reloaded
 	// FIXME: Test whether vector fonts from a scenario are correctly reloaded
-	C4Group *pMainGfxGrp = new C4Group();
-	if (!Reloc.Open(*pMainGfxGrp, C4CFN_Graphics) || !Files.RegisterGroup(*pMainGfxGrp, true, C4GSPrio_Base, C4GSCnt_Graphics, 1))
+	auto *pMainGfxGrp = new C4Group();
+	if (!Reloc.Open(*pMainGfxGrp, C4CFN_Graphics) || !Files.RegisterGroup(*pMainGfxGrp, true, C4GSPrio_Base, C4GSCnt_Graphics, true))
 	{
 		// error
 		LogFatal(FormatString(LoadResStr("IDS_PRC_NOGFXFILE"),C4CFN_Graphics,pMainGfxGrp->GetError()).getData());
@@ -362,7 +362,7 @@ void C4GraphicsResource::CloseFiles()
 
 static C4Group *FindSuitableFile(const char *szName, C4GroupSet &rGfxSet, char *szFileName, int32_t * pID)
 {
-	const char * const extensions[] = { "bmp", "jpeg", "jpg", "png", NULL };
+	const char * const extensions[] = { "bmp", "jpeg", "jpg", "png", nullptr };
 
 	return rGfxSet.FindSuitableFile(szName, extensions, szFileName, pID);
 }

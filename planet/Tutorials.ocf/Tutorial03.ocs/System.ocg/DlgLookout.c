@@ -4,7 +4,7 @@
 
 public func Dlg_Lookout_Init(object clonk)
 {
-	clonk->CreateContents(Musket);
+	clonk->CreateContents(Blunderbuss);
 	return true;
 }
 
@@ -22,7 +22,7 @@ public func Dlg_Lookout_2(object clonk)
 
 public func Dlg_Lookout_3(object clonk)
 {
-	MessageBox("$DlgLookoutMusket$", clonk, clonk);
+	MessageBox("$DlgLookoutBlunderbuss$", clonk, clonk);
 	return true;
 }
 

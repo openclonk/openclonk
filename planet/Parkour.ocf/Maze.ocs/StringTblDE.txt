@@ -9,7 +9,7 @@ DescGoal=Setzt das Spielziel auf mit- oder gegeneinander
 GoalCooperative=Kooperativ
 DescGoalCooperative=Spieler versuchen gemeinsam, einen Rubin zu finden.
 GoalRace=Wettrennen
-DescGoalRace=Der erste Spieler, der einen Rubin findet und zum Start zur¸ck bringt, gewinnt die Runde.
+DescGoalRace=Der erste Spieler, der einen Rubin findet und zum Start zur√ºck bringt, gewinnt die Runde.
 
 # Scenario parameters: difficulty
 Difficulty=Schwierigkeit
@@ -22,11 +22,11 @@ DiffInsane=Irrsinnig
 DescDiffInsane=Die Schwierigkeit dieser Runde ist irrsinnig.
 
 # Scenario parameters: map size
-MapSize=Kartengrˆﬂe
-DescMapSize=Setzt die Kartengrˆﬂe dieser Runde.
+MapSize=Kartengr√∂√üe
+DescMapSize=Setzt die Kartengr√∂√üe dieser Runde.
 MapSmall=Klein
 DescMapSmall=Die Karte dieser Runde wird klein sein
 MapAverage=Durchschnittlich
 DescMapAverage=Die Karte dieser Runde wird durchschnittlich sein.
-MapLarge=Groﬂ
-DescMapLarge=Die Karte dieser Runde wird groﬂ sein.
+MapLarge=Gro√ü
+DescMapLarge=Die Karte dieser Runde wird gro√ü sein.

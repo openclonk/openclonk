@@ -1,24 +1,28 @@
-/*--
-		Colors.c
-		Authors: Tyron
-		
-		All sorts of operations on colors.
---*/
+/**
+	Colors.c
+	All sorts of operations on colors.
+	
+	@author Tyron	
+*/
 
 static const RGBA_ALPHA = 0;
 static const RGBA_RED = 1;
 static const RGBA_GREEN = 2;
 static const RGBA_BLUE = 3;
 
+// documented in /docs/sdk/script/fn
 global func HSL(int h, int s, int l)  { return HSL2RGB(RGB(h, s, l)); }
 global func HSLa(int h, int s, int l, int a) { return  HSL2RGB(RGB(h, s, l)) ^ ~(a & 255) << 24; }
 
+// documented in /docs/sdk/script/fn
 global func RGB(int r, int g, int b) { return (255 << 24) | (r & 255) << 16 | (g & 255) << 8 | (b & 255); }
 global func RGBa (int r, int g, int b, int a) { return (a & 255) << 24 | (r & 255) << 16 | (g & 255) << 8 | (b & 255); }
 
+// documented in /docs/sdk/script/fn
 global func GetRGBaValue(int val, int sel) { return val >> ((3 - sel) * 8) & 255; }
 global func DoRGBaValue(int val, int chng, int sel) { return val + (chng << ((3 - sel) * 8)); }
 
+// documented in /docs/sdk/script/fn
 global func SetRGBaValue(int val, int newval, int sel)
 {
 	// 'delete' old color
@@ -27,10 +31,18 @@ global func SetRGBaValue(int val, int newval, int sel)
 	return val | newval << ((3 - sel) * 8);
 }
 
-global func SplitRGBaValue(int rgb) {
-	return [GetRGBaValue(rgb, 1), GetRGBaValue(rgb, 2), GetRGBaValue(rgb, 3), GetRGBaValue(rgb, 0)];
+// documented in /docs/sdk/script/fn
+global func SplitRGBaValue(int rgb)
+{
+	return {
+		R = GetRGBaValue(rgb, RGBA_RED), 
+		G = GetRGBaValue(rgb, RGBA_GREEN), 
+		B = GetRGBaValue(rgb, RGBA_BLUE),
+		Alpha = GetRGBaValue(rgb, RGBA_ALPHA)
+	};
 }
 
+// documented in /docs/sdk/script/fn
 global func HSL2RGB(int hsl)
 {
 	var hue = GetRGBaValue(hsl, 1), sat = GetRGBaValue(hsl, 2), lightness = GetRGBaValue(hsl, 3);
@@ -73,15 +85,16 @@ global func Hue_2_RGB(int var1, int var2, int hue)
 	return var1;
 }
 
+// documented in /docs/sdk/script/fn
 global func RGB2HSL(int rgb)
 {
-	var red = GetRGBaValue(rgb, 1), green = GetRGBaValue(rgb, 2), blue = GetRGBaValue(rgb, 3);
+	var red = GetRGBaValue(rgb, RGBA_RED), green = GetRGBaValue(rgb, RGBA_GREEN), blue = GetRGBaValue(rgb, RGBA_BLUE);
 	var min_val = Min(red, Min(green, blue)), max_val = Max(red, Max(green, blue));
 	var diff_val = max_val - min_val;
 	var lightness = (max_val + min_val) / 2;
 	var hue, sat, diff_red, diff_green, diff_blue;
 	
-	if (diff_val==0)
+	if (diff_val == 0)
 	{
 		hue = 0;
 		sat = 0;
@@ -110,5 +123,5 @@ global func RGB2HSL(int rgb)
 			hue -= 255;
 	}
 	
-	return RGB(hue,sat,lightness);
+	return RGB(hue, sat, lightness);
 }

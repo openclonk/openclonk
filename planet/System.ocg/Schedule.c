@@ -1,32 +1,33 @@
-/*--
-		Schedule.c
-		Authors:
-		
-		Schedule can be used to execute scripts or functions repetitively with delay.
---*/
+/**
+	Schedule.c
+	Schedule can be used to execute scripts or functions repetitively with delay.
+
+	@author
+*/
 
 // Executes a script repetitively with delay.
+// documented in /docs/sdk/script/fn
 global func Schedule(object obj, string script, int interval, int repeats)
 {
 	// Defaults.
 	if (!repeats)
 		repeats = 1;
 	// Create effect.
-	var effect = AddEffect("IntSchedule", obj, 1, interval, obj);
-	if (!effect)
+	var fx = AddEffect("IntSchedule", obj, 1, interval, obj);
+	if (!fx)
 		return false;
 	// Set variables.
-	effect.Script = script;
-	effect.Repeats = repeats;
+	fx.Script = script;
+	fx.Repeats = repeats;
 	return true;
 }
 
-global func FxIntScheduleTimer(object obj, proplist effect)
+global func FxIntScheduleTimer(object obj, effect fx)
 {
 	// Just a specific number of repeats.
-	var done = --effect.Repeats <= 0;
+	var done = --fx.Repeats <= 0;
 	// Execute.
-	eval(effect.Script);
+	eval(fx.Script);
 	// Remove schedule if done.
 	if (done)
 		return FX_Execute_Kill;
@@ -42,25 +43,25 @@ global func AddTimer(call_function, int interval)
 	if (interval == nil)
 		interval = 36;
 	// Create effect and add function and repeat infinitely.
-	var effect = AddEffect("IntScheduleCall", this, 1, interval, this);
-	effect.Function = call_function;
-	effect.NoStop = true;
-	effect.Pars = [];
+	var fx = AddEffect("IntScheduleCall", this, 1, interval, this);
+	fx.Function = call_function;
+	fx.NoStop = true;
+	fx.Pars = [];
 	return true;
 }
 
 // removes a timer from an object that was added earlier with AddTimer. This removes exactly one timer that fits to the name and returns true on success
 global func RemoveTimer(call_function /* name or pointer to the timer to remove */)
 {
-	if(!this)
+	if (!this)
 		return false;
 		
-	var effect, index = 0;
-	while(effect = GetEffect("IntScheduleCall", this, index++))
+	var fx, index = 0;
+	while (fx = GetEffect("IntScheduleCall", this, index++))
 	{
-		if(effect.Function != call_function) continue;
-		if(effect.NoStop != true) continue;
-		RemoveEffect(nil, this, effect);
+		if (fx.Function != call_function) continue;
+		if (fx.NoStop != true) continue;
+		RemoveEffect(nil, this, fx);
 		return true;
 	}
 	
@@ -69,45 +70,47 @@ global func RemoveTimer(call_function /* name or pointer to the timer to remove 
 }
 
 // Executes a function repetitively with delay.
+// documented in /docs/sdk/script/fn
 global func ScheduleCall(object obj, call_function, int interval, int repeats, par0, par1, par2, par3, par4)
 {
 	// Defaults.
 	if (!repeats)
 		repeats = 1;
 	// Create effect.
-	var effect = AddEffect("IntScheduleCall", obj, 1, interval, obj);
-	if (!effect)
+	var fx = AddEffect("IntScheduleCall", obj, 1, interval, obj);
+	if (!fx)
 		return false;
 	// Set variables.
-	effect.Function = call_function;
-	effect.Repeats = repeats;
-	effect.Pars = [par0, par1, par2, par3, par4];
+	fx.Function = call_function;
+	fx.Repeats = repeats;
+	fx.Pars = [par0, par1, par2, par3, par4];
 	return true;
 }
 
-global func FxIntScheduleCallTimer(object obj, proplist effect)
+global func FxIntScheduleCallTimer(object obj, effect fx)
 {
 	// Just a specific number of repeats.
-	var done = --effect.Repeats <= 0;
+	var done = --fx.Repeats <= 0;
 	// Execute.
-	Call(effect.Function, effect.Pars[0], effect.Pars[1], effect.Pars[2], effect.Pars[3], effect.Pars[4]);
+	Call(fx.Function, fx.Pars[0], fx.Pars[1], fx.Pars[2], fx.Pars[3], fx.Pars[4]);
 	// Remove schedule call if done, take into account infinite schedules.
-	if (done && !effect.NoStop)
+	if (done && !fx.NoStop)
 		return FX_Execute_Kill;
 	return FX_OK;
 }
 
+// documented in /docs/sdk/script/fn
 global func ClearScheduleCall(object obj, call_function)
 {
-	var i, effect;
+	var i;
 	// Count downwards from effectnumber, to remove effects.
 	i = GetEffectCount("IntScheduleCall", obj);
-	while (i--)
+	while (i--) {
 		// Check All ScheduleCall-Effects.
-		if (effect = GetEffect("IntScheduleCall", obj, i))
-			// Found right function.
-			if (effect.Function == call_function)
-				// Remove effect.
-				RemoveEffect(nil, obj, effect);
+		var fx = GetEffect("IntScheduleCall", obj, i);
+		if (fx && fx.Function == call_function)
+			// Found right function. Remove effect.
+			RemoveEffect(nil, obj, fx);
+	}
 	return;
 }

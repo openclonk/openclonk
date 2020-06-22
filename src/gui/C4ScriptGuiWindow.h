@@ -1,7 +1,7 @@
 /*
 * OpenClonk, http://www.openclonk.org
 *
-* Copyright (c) 2014-2015, The OpenClonk Team and contributors
+* Copyright (c) 2014-2016, The OpenClonk Team and contributors
 *
 * Distributed under the terms of the ISC license; see accompanying file
 * "COPYING" for details.
@@ -18,72 +18,76 @@
 #ifndef INC_C4ScriptGuiWindow
 #define INC_C4ScriptGuiWindow
 
-#include <C4Surface.h>
-#include <C4Gui.h>
+#include "graphics/C4Surface.h"
+#include "gui/C4Gui.h"
+#include "script/C4Value.h"
 
-#include <C4Value.h>
+namespace C4ScriptGuiWindowPropertyName {
+	enum type
+	{
+		left = 0,
+		top,
+		right,
+		bottom,
 
-#include <map>
+		relLeft,
+		relRight,
+		relTop,
+		relBottom,
 
-enum C4ScriptGuiWindowPropertyName
-{
-	left = 0,
-	top,
-	right,
-	bottom,
+		leftMargin,
+		topMargin,
+		rightMargin,
+		bottomMargin,
 
-	relLeft,
-	relRight,
-	relTop,
-	relBottom,
+		relLeftMargin,
+		relRightMargin,
+		relTopMargin,
+		relBottomMargin,
 
-	leftMargin,
-	topMargin,
-	rightMargin,
-	bottomMargin,
-	
-	relLeftMargin,
-	relRightMargin,
-	relTopMargin,
-	relBottomMargin,
+		backgroundColor,
+		frameDecoration,
+		symbolObject,
+		symbolDef,
+		symbolGraphicsName,
+		text,
+		onClickAction,
+		onMouseInAction,
+		onMouseOutAction,
+		onCloseAction,
+		style,
+		priority,
+		player,
+		tooltip,
+		_lastProp
+	};
+}
 
-	backgroundColor,
-	frameDecoration,
-	symbolObject,
-	symbolDef,
-	symbolGraphicsName,
-	text,
-	onClickAction,
-	onMouseInAction,
-	onMouseOutAction,
-	onCloseAction,
-	style,
-	priority,
-	player,
-	tooltip,
-	_lastProp
-};
+namespace C4ScriptGuiWindowActionID {
+	enum type
+	{
+		SetTag = 1,
+		Call,
+	};
+}
 
-enum C4ScriptGuiWindowActionID
-{
-	SetTag = 1,
-	Call,
-};
-
-enum C4ScriptGuiWindowStyleFlag
-{
-	None = 0,
-	GridLayout = 1,
-	VerticalLayout = 2,
-	TextVCenter = 4,
-	TextHCenter = 8,
-	TextRight = 16,
-	TextBottom = 32,
-	FitChildren = 64,
-	Multiple = 128,
-	IgnoreMouse = 256,
-	NoCrop = 512
-};
+namespace C4ScriptGuiWindowStyleFlag {
+	enum type
+	{
+		None = 0,
+		GridLayout = 1,
+		VerticalLayout = 2,
+		TextVCenter = 4,
+		TextHCenter = 8,
+		TextRight = 16,
+		TextBottom = 32,
+		FitChildren = 64,
+		Multiple = 128,
+		IgnoreMouse = 256,
+		NoCrop = 512,
+		TightGridLayout = 1024,
+	};
+}
 
 class C4ScriptGuiWindow;
 
@@ -93,18 +97,18 @@ class C4ScriptGuiWindowAction
 
 	private:
 	// the ID is unique among all actions. It is used later to synchronize callbacks
-	int32_t id;
+	int32_t id{0};
 
-	int32_t action;
-	C4ScriptGuiWindowAction *nextAction; // a linked list of actions
+	int32_t action{0};
+	C4ScriptGuiWindowAction *nextAction{nullptr}; // a linked list of actions
 	// note: depending on the action not all of the following attributes always have values
-	C4PropList *target; // contains a valid C4Object in case of SetTag, a generic proplist in case of Call
-	C4String *text; // can be either a function name to call or a tag to set
+	C4PropList *target{nullptr}; // contains a valid C4Object in case of SetTag, a generic proplist in case of Call
+	C4String *text{nullptr}; // can be either a function name to call or a tag to set
 	C4Value value; // arbitrary value used for Call
-	int32_t subwindowID;
+	int32_t subwindowID{0};
 
 	public:
-	C4ScriptGuiWindowAction() : id(0), action(0), nextAction(0), target(0), text(0), value(0), subwindowID(0) { }
+	C4ScriptGuiWindowAction() : value(0) { }
 	~C4ScriptGuiWindowAction();
 	void ClearPointers(C4Object *pObj);
 	bool Init(C4ValueArray *array, int32_t index = 0); // index is the current action in an array of actions
@@ -134,25 +138,25 @@ class C4ScriptGuiWindowProperty
 		C4ScriptGuiWindowAction *action;
 	} Prop;
 
-	Prop *current;
+	Prop *current{nullptr};
 	// the last tag is used to be able to call the correct action on re-synchronizing commands
-	C4String* currentTag;
+	C4String* currentTag{nullptr};
 
 	std::map<C4String*, Prop> taggedProperties;
 	void CleanUp(Prop &prop);
 	void CleanUpAll();
 
-	int32_t type; // which property do I stand for?
+	int32_t type{-1}; // which property do I stand for?
 
 	// the following methods directly set values (default Std tag)
 	// note that for int/floats no cleanup is necessary as it would be for the more general Set method
-	void SetInt(int32_t to, C4String *tag = 0);
-	void SetFloat(float to, C4String *tag = 0);
-	void SetNull(C4String *tag = 0);
+	void SetInt(int32_t to, C4String *tag = nullptr);
+	void SetFloat(float to, C4String *tag = nullptr);
+	void SetNull(C4String *tag = nullptr);
 
 	public:
 	~C4ScriptGuiWindowProperty();
-	C4ScriptGuiWindowProperty() : current(0), currentTag(0), type(-1) {}
+	C4ScriptGuiWindowProperty() = default;
 	void Set(const C4Value &value, C4String *tag);
 
 	int32_t GetInt() { return current->d; }
@@ -198,8 +202,14 @@ public:
 	bool IsRoot();
 	bool mainWindowNeedsLayoutUpdate;
 
-	bool wasRemoved; // to notify the window that it should not inform its parent on Close() a second time
-	bool closeActionWasExecuted; // to prevent a window from calling the close-callback twice even if f.e. closed in the close-callback..
+	bool wasRemovedFromParent{ false }; // to notify the window that it should not inform its parent on Close() a second time
+	bool wasClosed{ false }; // to prevent a window from cleaning up twice even if e.g. closed in the close-callback..
+	// This is used to catch the situation when a closing callback wants to close the parent or a sibling.
+	int lockRemovalForClosingCallbackCounter{ 0 };
+	void lockRemovalForClosingCallback();
+	void unlockRemovalForClosingCallback();
+	bool isRemovalLockedForClosingCallback() const noexcept { return lockRemovalForClosingCallbackCounter > 0; }
+
 	C4Object *target;
 	const C4Object *GetTarget() { return target; }
 
@@ -216,8 +226,8 @@ public:
 	// will sort the child correctly into the children list
 	void ChildChangedPriority(C4ScriptGuiWindow *child);
 	// helper function to extract relative and absolute position values from a string
-	void SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName relative, C4ScriptGuiWindowPropertyName absolute, C4String *tag);
-	C4Value PositionToC4Value(C4ScriptGuiWindowPropertyName relative, C4ScriptGuiWindowPropertyName absolute);
+	void SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName::type relative, C4ScriptGuiWindowPropertyName::type absolute, C4String *tag);
+	C4Value PositionToC4Value(C4ScriptGuiWindowPropertyName::type relative, C4ScriptGuiWindowPropertyName::type absolute);
 	// sets all margins either from a string or from an array
 	void SetMarginProperties(const C4Value &property, C4String *tag);
 	C4Value MarginsToC4Value();
@@ -247,7 +257,7 @@ public:
 	void SetTag(C4String *tag);
 
 	C4ScriptGuiWindow();
-	virtual ~C4ScriptGuiWindow();
+	~C4ScriptGuiWindow() override;
 
 	int32_t GetID() { return id; }
 	// finds a child with a certain ID, usually called on ::MainWindowRoot to get submenus
@@ -281,7 +291,7 @@ public:
 	void ClearPointers(C4Object *pObj);
 
 	// calculate the width/height based on a certain property (f.e. leftMargin and relLeftMargin) and the parent's width/height
-	float CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName absoluteProperty, C4ScriptGuiWindowPropertyName relativeProperty);
+	float CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName::type absoluteProperty, C4ScriptGuiWindowPropertyName::type relativeProperty);
 
 	// schedules a layout update for the next drawing step
 	void RequestLayoutUpdate();
@@ -291,10 +301,11 @@ public:
 	bool UpdateChildLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight);
 	// special layouts that are set by styles
 	void UpdateLayoutGrid();
+	void UpdateLayoutTightGrid();
 	void UpdateLayoutVertical();
 	// the window will be drawn in the context of a viewport BY the viewport
 	// so just do nothing when TheScreen wants to draw the window
-	virtual void Draw(C4TargetFacet &cgo) {}
+	void Draw(C4TargetFacet &cgo) override {}
 	// Draw without parameters can be used for the root
 	bool DrawAll(C4TargetFacet &cgo, int32_t player);
 	// the clipping rectangle has already been set, but currentClippingRect must be passed to DrawChildren
@@ -319,11 +330,12 @@ public:
 	// this is then called on the child windows, note the return value
 	virtual bool ProcessMouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, int32_t parentOffsetX, int32_t parentOffsetY);
 	// called when mouse cursor enters element region
-	virtual void MouseEnter(C4GUI::CMouse &rMouse);
+	void MouseEnter(C4GUI::CMouse &rMouse) override;
 	// called when mouse cursor leaves element region
-	virtual void MouseLeave(C4GUI::CMouse &rMouse);
-	// this remembers whether the window currently has mouse focus and whether it has been mouse-down-ed
-	// all windows with mouse focus set are remembered by their parents and notified when the mouse left
+	void MouseLeave(C4GUI::CMouse &rMouse) override;
+	// This remembers whether the window currently has mouse focus and whether it has been mouse-down-ed.
+	// All windows with mouse focus set are remembered by their parents and notified when the mouse left.
+	// The state is also used to make sure that button-up events without button-downs are not caught by the UI.
 	enum MouseState // values of this enum will be bit-wise combined
 	{
 		None = 0,

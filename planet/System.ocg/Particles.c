@@ -1,8 +1,12 @@
 /**
+	Particles.c
 	This file contains some default particle behavior definitions as well as helper functions.
+	
+	@author Zapper
 */
 
-/* particle helper/effect functions */
+
+/*-- Helper/Effect Functions --*/
 
 global func CreateMuzzleFlash(int x, int y, int angle, int size)
 {
@@ -14,6 +18,7 @@ global func CreateMuzzleFlash(int x, int y, int angle, int size)
 	CreateParticle("StarFlash", x, y, PV_Random(xdir - size, xdir + size), PV_Random(ydir - size, ydir + size), PV_Random(20, 60), Particles_Glimmer(), size);
 }
 
+// documented in /docs/sdk/script/fn
 global func Smoke(int x, int y, int level, int color, bool heavy)
 {
 	level = level ?? 10;
@@ -30,7 +35,8 @@ global func Smoke(int x, int y, int level, int color, bool heavy)
 }
 
 
-/* particle definitions */
+/*-- Particle Definitions --*/
+
 global func Particles_Dust()
 {
 	return
@@ -55,14 +61,13 @@ global func Particles_Cloud()
 	};
 }
 
-
 global func Particles_Smoke(bool heavy)
 {
 	return
 	{
 		CollisionVertex = 500,
 		OnCollision = PC_Stop(),
-		ForceY = PV_Gravity(-100 + heavy*90),
+		ForceY = PV_Gravity(100 + heavy*400, -10),
 		ForceX = PV_Wind(200 - heavy*180),
 		DampingX = 900, DampingY = 900,
 		Alpha = PV_Linear(255, 0),
@@ -99,13 +104,13 @@ global func Particles_FireTrail()
 	};
 }
 
-global func Particles_Flash()
+global func Particles_Flash(int size)
 {
 	return
 	{
 		BlitMode = GFX_BLIT_Additive,
 		Alpha = PV_KeyFrames(0, 0, 128, 250, 64, 1000, 0),
-		Size = PV_KeyFrames(0, 0, 0, 100, 160, 1000, 0),
+		Size = PV_KeyFrames(0, 0, 0, 100, size ?? 160, 1000, 0),
 		R = 255, G = 255, B = 64
 	};
 }
@@ -147,6 +152,7 @@ global func Particles_Spark()
 	};
 }
 
+// documented in /docs/sdk/script/fn
 global func Particles_Colored(prototype, color, color2)
 {
 	// Colors the given particle. If color2 is given, colors in a random fade between color and color2
@@ -243,6 +249,27 @@ global func Particles_Straw()
 	};
 }
 
+global func Particles_Leaf(int color)
+{
+	return
+	{
+		Size = PV_Random(4, 6),
+		Phase = PV_Random(0, 2),
+		Rotation = PV_Random(0, 360),
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+		Alpha = PV_KeyFrames(0, 0, 255, 900, 255, 1000, 0),
+		CollisionVertex = 800,
+		OnCollision = PC_Die(),
+		ForceX = PV_Wind(50),
+		ForceY = PV_Gravity(100),
+		DampingX = 975, DampingY = 975,
+		Rotation = PV_Direction(PV_Random(750, 1250)),
+		Attach = ATTACH_Front
+	};
+}
+
 global func Particles_CottonBalloon()
 {
 	return
@@ -272,7 +299,6 @@ global func Particles_Air()
 		OnCollision = PC_Bounce(500)
 	};
 }
-
 
 global func Particles_Thrust(int size)
 {
@@ -310,16 +336,16 @@ global func Particles_Glimmer()
 	{
 		Size = PV_Linear(2, 0),
 	    ForceY = GetGravity(),
-		DampingY = PV_Linear(1000,700),
-		DampingX = PV_Linear(1000,700),
+		DampingY = PV_Linear(1000, 700),
+		DampingX = PV_Linear(1000, 700),
 		Stretch = PV_Speed(1000, 500),
 		Rotation = PV_Direction(),
 		OnCollision = PC_Die(),
 		CollisionVertex = 500,
 	    R = 255,
-	    G = PV_Linear(128,32),
+	    G = PV_Linear(128, 32),
 	    B = PV_Random(0, 128, 2),
-	    Alpha = PV_Random(255,0,3),
+	    Alpha = PV_Random(255, 0, 3),
 		BlitMode = GFX_BLIT_Additive,
 	};
 }
@@ -343,5 +369,111 @@ global func Particles_ElectroSpark2()
 	{
 		Prototype = Particles_ElectroSpark1(),
 		Phase = PV_Linear(6, 11),
+	};
+}
+
+
+/*-- Weather Particles --*/
+
+global func Particles_Rain(int color)
+{
+	return
+	{
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		ForceY = PV_Gravity(1000),
+		Size = PV_Random(10, 30),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Direction(),
+		CollisionDensity = 25,
+		Stretch = 3000,
+	};
+}
+
+global func Particles_Snow(int color)
+{
+	return
+	{
+		Phase = PV_Random(0, 16),
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		DampingY = 1000,//PV_Cos(PV_Linear(0, 1800),5, 990),
+		ForceY = 0,//GetGravity()/100,//PV_Gravity(100),
+		// TODO: PV_Random() here?
+		ForceX = PV_Sin(PV_Step(PV_Random(5, 10), PV_Random(0, 180)), PV_Random(5, 8), 0),
+		Size = PV_Random(0, 3),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Random(360),
+		CollisionDensity = 25,
+		Stretch = 1000,
+	};
+}
+
+global func Particles_RainSmall(int color)
+{
+	return 
+	{
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		ForceY = PV_Gravity(1000),
+		Size = 1,
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Alpha = 200,
+		Rotation = PV_Direction(),
+		CollisionDensity = 25,
+		Stretch = PV_Speed(4000),
+	};
+}
+
+global func Particles_Splash(int color)
+{
+	return
+	{
+		Phase = PV_Linear(0, 4),
+		Alpha = PV_KeyFrames(0, 0, 255, 500, 255, 1000, 0),
+		Size = PV_Random(5, 10),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Random(-5, 5),
+		Stretch = PV_Random(500, 1000),
+	};
+}
+
+global func Particles_SplashWater(int color)
+{
+	return
+	{
+		Phase = PV_Linear(0, 13),
+		Alpha = PV_KeyFrames(0, 0, 255, 500, 255, 1000, 0),
+		Size = PV_Random(2, 5),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Random(-5, 5),
+		Stretch = 3000,
+		Attach = ATTACH_Back,
+	};
+}
+
+global func Particles_Hail(int color)
+{
+	return
+	{
+		CollisionVertex = 0,
+		ForceY = PV_Gravity(1000),
+		OnCollision = PC_Stop(),
+		Size = 2,
+		Alpha = PV_KeyFrames(255, 0, 255, 500, 255, 1000, 0),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Random(360),
 	};
 }

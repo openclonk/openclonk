@@ -1,0 +1,2 @@
+Name=Teleporter
+Description=Fliegen war gestern. Teleportieren ist viel coolerer als wie alles andere.

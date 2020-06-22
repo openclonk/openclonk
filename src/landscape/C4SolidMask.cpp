@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,15 +16,17 @@
 
 /* Solid areas of objects, put into the landscape */
 
-#include <C4Include.h>
-#include <C4SolidMask.h>
+#include "C4Include.h"
+#include "landscape/C4SolidMask.h"
 
-#include <C4Object.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
-#include <C4DrawGL.h>
-#include <StdPNG.h>
+#include "graphics/C4DrawGL.h"
+#include "graphics/CSurface8.h"
+#include "graphics/StdPNG.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Material.h"
+#include "object/C4Def.h"
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
 
 
 void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRestoreAttachment)
@@ -75,8 +77,8 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			MaskPutRect.y = oy;
 			if (MaskPutRect.y < 0) { MaskPutRect.ty = -MaskPutRect.y; MaskPutRect.y = 0; }
 			else MaskPutRect.ty = 0;
-			MaskPutRect.Wdt = std::min<int32_t>(ox + pForObject->SolidMask.Wdt, GBackWdt) - MaskPutRect.x;
-			MaskPutRect.Hgt = std::min<int32_t>(oy + pForObject->SolidMask.Hgt, GBackHgt) - MaskPutRect.y;
+			MaskPutRect.Wdt = std::min<int32_t>(ox + pForObject->SolidMask.Wdt, ::Landscape.GetWidth()) - MaskPutRect.x;
+			MaskPutRect.Hgt = std::min<int32_t>(oy + pForObject->SolidMask.Hgt, ::Landscape.GetHeight()) - MaskPutRect.y;
 		}
 		// fill rect with mask
 		for (ycnt=0; ycnt<pClipRect->Hgt; ++ycnt)
@@ -93,7 +95,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 					if (!MaskPut)
 					{
 						// get background pixel
-						byPixel=GBackPix(iTx,iTy);
+						byPixel=::Landscape.GetPix(iTx,iTy);
 						// store it. If MCVehic, also store in initial put, but won't be used in restore
 						// do not overwrite current value in re-put issued by SolidMask-remover
 						if (!IsSomeVehicle(byPixel) || RegularPut)
@@ -128,8 +130,8 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			MaskPutRect.y = ystart;
 			if (MaskPutRect.y < 0) { MaskPutRect.ty = -MaskPutRect.y; MaskPutRect.Hgt = MaskPutRect.y; MaskPutRect.y = 0; }
 			else { MaskPutRect.ty = 0; MaskPutRect.Hgt = 0; }
-			MaskPutRect.Wdt = std::min<int32_t>(xstart + MatBuffPitch, GBackWdt) - MaskPutRect.x;
-			MaskPutRect.Hgt = std::min<int32_t>(ystart + MatBuffPitch, GBackHgt) - MaskPutRect.y;
+			MaskPutRect.Wdt = std::min<int32_t>(xstart + MatBuffPitch, ::Landscape.GetWidth()) - MaskPutRect.x;
+			MaskPutRect.Hgt = std::min<int32_t>(ystart + MatBuffPitch, ::Landscape.GetHeight()) - MaskPutRect.y;
 		}
 		// go through clipping rect
 		const C4Real y0 = itofix(pClipRect->ty - MatBuffPitch/2);
@@ -159,7 +161,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 					if (!MaskPut)
 					{
 						// get background pixel
-						byPixel=_GBackPix(iTx,iTy);
+						byPixel=::Landscape._GetPix(iTx,iTy);
 						// store it. If MCVehic, also store in initial put, but won't be used in restore
 						// do not overwrite current value in re-put issued by SolidMask-remover
 						if (!IsSomeVehicle(byPixel) || RegularPut)
@@ -259,7 +261,7 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 				// The pPix-check ensures that only pixels that hads been overwritten by this SolidMask are restored
 				// Non-SolidMask-pixels should not happen here, because all relevant landscape change routines should
 				// temp remove SolidMasks before
-				assert(IsSomeVehicle(_GBackPix(iTx,iTy)));
+				assert(IsSomeVehicle(::Landscape._GetPix(iTx,iTy)));
 				if (IsSomeVehicle(::Landscape._GetPix(iTx, iTy)))
 					::Landscape._SetPix2(iTx, iTy, *pPix, ::Landscape.Transparent);
 				// Instability
@@ -306,7 +308,7 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 					// check for any contact to own SolidMask - attach-directions, bottom - "stuck" (CNAT_Center) is ignored, because that causes problems with things being stuck in basements :(
 					int iVtx = 0;
 					for (; iVtx < pObj->Shape.VtxNum; ++iVtx)
-						if (pObj->Shape.GetVertexContact(iVtx, pObj->Action.t_attach | CNAT_Bottom, pObj->GetX(), pObj->GetY(), DensityProvider(pForObject, *this)))
+						if (pObj->Shape.GetVertexContact(iVtx, pObj->Action.t_attach | CNAT_Bottom, pObj->GetX(), pObj->GetY(), DensityProvider(*this)))
 							break;
 					if (iVtx == pObj->Shape.VtxNum) continue; // no contact
 					// contact: Add object to list
@@ -350,10 +352,10 @@ void C4SolidMask::RemoveTemporary(C4Rect where)
 		{
 			BYTE *pPix = pSolidMaskMatBuff + (y - MaskPutRect.y + MaskPutRect.ty) * MatBuffPitch + x - MaskPutRect.x + MaskPutRect.tx;
 			// only if mask was used here
-			if (*pPix != MCVehic) //
+			if (!IsSomeVehicle(*pPix)) //
 			{
 				// restore
-				assert(IsSomeVehicle(GBackPix(x,y)));
+				assert(IsSomeVehicle(::Landscape.GetPix(x,y)));
 				::Landscape._SetPix2Tmp(x, y, *pPix, ::Landscape.Transparent);
 			}
 		}
@@ -371,10 +373,10 @@ void C4SolidMask::PutTemporary(C4Rect where)
 		{
 			BYTE *pPix = pSolidMaskMatBuff + (y - MaskPutRect.y + MaskPutRect.ty) * MatBuffPitch + x - MaskPutRect.x + MaskPutRect.tx;
 			// only if mask was used here
-			if (*pPix != MCVehic)
+			if (!IsSomeVehicle(*pPix))
 			{
 				// put
-				assert(GBackPix(x,y)==*pPix);
+				assert(::Landscape.GetPix(x,y)==*pPix);
 				::Landscape._SetPix2Tmp(x, y, MaskMaterial, ::Landscape.Transparent);
 			}
 		}
@@ -392,10 +394,10 @@ void C4SolidMask::Repair(C4Rect where)
 		{
 			BYTE *pPix = pSolidMaskMatBuff + (y - MaskPutRect.y + MaskPutRect.ty) * MatBuffPitch + x - MaskPutRect.x + MaskPutRect.tx;
 			// only if mask was used here
-			if (*pPix != MCVehic)
+			if (!IsSomeVehicle(*pPix))
 			{
 				// record changed landscape in MatBuff
-				*pPix = GBackPix(x,y);
+				*pPix = ::Landscape.GetPix(x,y);
 				// put
 				::Landscape.SetPix2(x, y, MaskMaterial, ::Landscape.Transparent);
 			}
@@ -408,12 +410,13 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	// zero fields
 	MaskPut=false;
 	MaskPutRotation=0;
-	MaskRemovalX=MaskRemovalY=Fix0;
-	ppAttachingObjects=NULL;
+	MaskRemovalX = Fix0;
+	MaskRemovalY = 0;
+	ppAttachingObjects=nullptr;
 	iAttachingObjectsCount=iAttachingObjectsCapacity=0;
 	MaskMaterial=MCVehic;
 	// Update linked list
-	Next = 0;
+	Next = nullptr;
 	Prev = Last;
 	Last = this;
 	if (Prev) Prev->Next = this;
@@ -439,7 +442,7 @@ C4SolidMask::~C4SolidMask()
 
 void C4SolidMask::RemoveSolidMasks()
 {
-	C4Rect SolidMaskRect(0,0,GBackWdt,GBackHgt);
+	C4Rect SolidMaskRect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight());
 	C4SolidMask *pSolid;
 	for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
 	{
@@ -449,7 +452,7 @@ void C4SolidMask::RemoveSolidMasks()
 
 void C4SolidMask::PutSolidMasks()
 {
-	C4Rect SolidMaskRect(0,0,GBackWdt,GBackHgt);
+	C4Rect SolidMaskRect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight());
 	C4SolidMask *pSolid;
 	// Restore Solidmasks
 	for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
@@ -458,22 +461,22 @@ void C4SolidMask::PutSolidMasks()
 	}
 }
 
-C4SolidMask * C4SolidMask::First = 0;
-C4SolidMask * C4SolidMask::Last = 0;
+C4SolidMask * C4SolidMask::First = nullptr;
+C4SolidMask * C4SolidMask::Last = nullptr;
 
-
-#ifdef SOLIDMASK_DEBUG
 
 bool C4SolidMask::CheckConsistency()
 {
-	assert(IsSomeVehicle(MaskMaterial));
-	C4Rect SolidMaskRect(0,0,GBackWdt,GBackHgt);
+	if (!SOLIDMASK_DEBUG)
+		return true;
+
+	C4Rect SolidMaskRect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight());
 	C4SolidMask *pSolid;
 	for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
 	{
 		pSolid->RemoveTemporary(SolidMaskRect);
 	}
-	assert(!::Landscape.MatCount[MVehic]);
+	assert(!::Landscape.GetMatCount(MVehic));
 	// Restore Solidmasks
 	for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
 	{
@@ -482,16 +485,14 @@ bool C4SolidMask::CheckConsistency()
 	return true;
 }
 
-#endif
-
 CSurface8 *C4SolidMask::LoadMaskFromFile(class C4Group &hGroup, const char *szFilename)
 {
 	// Construct SolidMask surface from PNG bitmap:
 	// All pixels that are more than 50% transparent are not solid
 	CPNGFile png;
 	StdBuf png_buf;
-	if (!hGroup.LoadEntry(szFilename, &png_buf)) return NULL; // error messages done by caller
-	if (!png.Load((BYTE*)png_buf.getMData(), png_buf.getSize())) return NULL;
+	if (!hGroup.LoadEntry(szFilename, &png_buf)) return nullptr; // error messages done by caller
+	if (!png.Load((BYTE*)png_buf.getMData(), png_buf.getSize())) return nullptr;
 	CSurface8 *result = new CSurface8(png.iWdt, png.iHgt);
 	for (size_t y=0u; y<png.iHgt; ++y)
 		for (size_t x=0u; x<png.iWdt; ++x)

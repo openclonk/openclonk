@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,27 +13,20 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include <C4ValueArray.h>
-#include <algorithm>
+#include "C4Include.h"
+#include "script/C4ValueArray.h"
 
-#include <C4Aul.h>
-#include <C4FindObject.h>
-#include <C4Object.h>
+#include "object/C4FindObject.h"
+#include "script/C4Aul.h"
 
-C4ValueArray::C4ValueArray()
-		: iSize(0), iCapacity(0), pData(NULL)
-{
-}
+C4ValueArray::C4ValueArray() = default;
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: iSize(0), iCapacity(0), pData(NULL)
 {
 	SetSize(inSize);
 }
 
 C4ValueArray::C4ValueArray(const C4ValueArray &ValueArray2)
-		: iSize(0), iCapacity(0), pData(NULL)
 {
 	SetSize(ValueArray2.GetSize());
 	for (int32_t i = 0; i < iSize; i++)
@@ -42,7 +35,7 @@ C4ValueArray::C4ValueArray(const C4ValueArray &ValueArray2)
 
 C4ValueArray::~C4ValueArray()
 {
-	delete[] pData; pData = NULL;
+	delete[] pData; pData = nullptr;
 	iSize = iCapacity = 0;
 }
 
@@ -77,6 +70,7 @@ public:
 
 void C4ValueArray::Sort(class C4SortObject &rSort)
 {
+	assert(!constant);
 	if (rSort.PrepareCache(this))
 	{
 		// Initialize position array
@@ -89,7 +83,7 @@ void C4ValueArray::Sort(class C4SortObject &rSort)
 			pPos[i] = reinterpret_cast<intptr_t>(pData[pPos[i]]._getObj());
 		// Set the values
 		for (i = 0; i < iSize; i++)
-			pData[i].SetPropList(reinterpret_cast<C4Object *>(pPos[i]));
+			pData[i].SetPropList(reinterpret_cast<C4PropList *>(pPos[i]));
 		delete [] pPos;
 	}
 	else
@@ -104,12 +98,13 @@ struct C4ValueArraySortStringscomp
 	{
 		if (v1.getStr() && v2.getStr())
 			return std::strcmp(v1._getStr()->GetCStr(), v2._getStr()->GetCStr()) < 0;
-		return v2.getStr();
+		return v2.getStr() != nullptr;
 	}
 };
 
 void C4ValueArray::SortStrings()
 {
+	assert(!constant);
 	std::stable_sort(pData, pData+iSize, C4ValueArraySortStringscomp());
 }
 
@@ -126,6 +121,7 @@ struct C4ValueArraySortcomp
 
 void C4ValueArray::Sort(bool descending)
 {
+	assert(!constant);
 	// sort by whatever type the values have
 	std::stable_sort(pData, pData+iSize, C4ValueArraySortcomp());
 	if (descending) std::reverse(pData, pData+iSize);
@@ -146,6 +142,7 @@ struct C4ValueArraySortPropertycomp
 
 bool C4ValueArray::SortByProperty(C4String *prop_name, bool descending)
 {
+	assert(!constant);
 	// expect this to be an array of proplists and sort by given property
 	// make sure we're all proplists before
 	for (int32_t i=0; i<iSize; ++i)
@@ -170,6 +167,7 @@ struct C4ValueArraySortArrayElementcomp
 bool C4ValueArray::SortByArrayElement(int32_t element_idx, bool descending)
 {
 	assert(element_idx>=0);
+	assert(!constant);
 	// expect this to be an array of arrays and sort by given element
 	// make sure we're all arrays before
 	for (int32_t i=0; i<iSize; ++i)
@@ -189,6 +187,7 @@ C4Value &C4ValueArray::operator[](int32_t iElem)
 {
 	assert(iElem < MaxSize);
 	assert(iElem >= 0);
+	assert(!constant);
 	if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
 	// out-of-memory? This might not get caught, but it's better than a segfault
 	assert(iElem < iSize);
@@ -198,6 +197,7 @@ C4Value &C4ValueArray::operator[](int32_t iElem)
 
 void C4ValueArray::SetItem(int32_t iElem, const C4Value &Value)
 {
+	assert(!constant);
 	// enlarge
 	if (iElem < -iSize)
 		throw C4AulExecError("array access: index out of range");
@@ -214,6 +214,7 @@ void C4ValueArray::SetItem(int32_t iElem, const C4Value &Value)
 void C4ValueArray::SetSize(int32_t inSize)
 {
 	if(inSize == iSize) return;
+	assert(!constant);
 
 	// array not larger than allocated memory? Well, just ignore the additional allocated mem then
 	if (inSize <= iCapacity)
@@ -253,7 +254,7 @@ bool C4ValueArray::operator==(const C4ValueArray& IntList2) const
 
 void C4ValueArray::Reset()
 {
-	delete[] pData; pData = NULL;
+	delete[] pData; pData = nullptr;
 	iSize = iCapacity = 0;
 }
 
@@ -274,7 +275,7 @@ void C4ValueArray::CompileFunc(class StdCompiler *pComp, C4ValueNumbers * number
 	// Separator
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	// Allocate
-	if (pComp->isCompiler()) this->SetSize(inSize);
+	if (pComp->isDeserializer()) this->SetSize(inSize);
 	// Values
 	pComp->Value(mkArrayAdaptMap(pData, iSize, C4Value(), mkParAdaptMaker(numbers)));
 }

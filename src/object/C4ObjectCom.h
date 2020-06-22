@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,6 @@
 #ifndef INC_C4ObjectCom
 #define INC_C4ObjectCom
 
-#include "C4Real.h"
-
 bool ComDirLike(int32_t iComDir, int32_t iSample);
 
 bool ObjectActionWalk(C4Object *cObj);
@@ -34,21 +32,21 @@ bool ObjectActionKneel(C4Object *cObj);
 bool ObjectActionFlat(C4Object *cObj, int32_t dir);
 bool ObjectActionScale(C4Object *cObj, int32_t dir);
 bool ObjectActionHangle(C4Object *cObj);
-bool ObjectActionThrow(C4Object *cObj, C4Object *pThing=NULL);
+bool ObjectActionThrow(C4Object *cObj, C4Object *pThing=nullptr);
 bool ObjectActionDig(C4Object *cObj);
 bool ObjectActionPush(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionCornerScale(C4Object *cObj);
 
 bool ObjectComStop(C4Object *cObj);
 bool ObjectComGrab(C4Object *cObj, C4Object *pTarget);
-bool ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing=NULL);
-bool ObjectComThrow(C4Object *cObj, C4Object *pThing=NULL);
-bool ObjectComDrop(C4Object *cObj, C4Object *pThing=NULL);
+bool ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing=nullptr);
+bool ObjectComThrow(C4Object *cObj, C4Object *pThing=nullptr);
+bool ObjectComDrop(C4Object *cObj, C4Object *pThing=nullptr);
 bool ObjectComUnGrab(C4Object *cObj);
 bool ObjectComJump(C4Object *cObj);
 bool ObjectComLetGo(C4Object *cObj, int32_t xdirf);
 bool ObjectComDig(C4Object *cObj);
-bool ObjectComPutTake(C4Object *cObj, C4Object *pTarget, C4Object *pThing=NULL);
+bool ObjectComPutTake(C4Object *cObj, C4Object *pTarget, C4Object *pThing=nullptr);
 bool ObjectComTake(C4Object *cObj); // carlo
 bool ObjectComTake2(C4Object *cObj); // carlo
 bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t iPunch=0);

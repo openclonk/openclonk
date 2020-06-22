@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001, 2007, Sven Eberhardt
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,15 +14,15 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Value.h>
-#include <C4AulFunc.h>
-#include <C4Aul.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
+#include "script/C4AulFunc.h"
+#include "script/C4Aul.h"
 
 C4AulFunc::C4AulFunc(C4PropListStatic * Parent, const char *pName):
 		Parent(Parent),
-		Name(pName ? Strings.RegString(pName) : 0),
-		MapNext(NULL)
+		Name(pName ? Strings.RegString(pName) : nullptr),
+		MapNext(nullptr)
 {
 	// add to global lookuptable with this name
 	if (GetName())
@@ -35,7 +35,7 @@ C4AulFunc::~C4AulFunc()
 		::ScriptEngine.FuncLookUp.Remove(this);
 }
 
-StdStrBuf C4AulFunc::GetFullName()
+StdStrBuf C4AulFunc::GetFullName() const
 {
 	StdStrBuf r;
 	// "lost" function?
@@ -63,13 +63,13 @@ bool C4AulFunc::CheckParTypes(const C4Value pPars[], bool fPassErrors) const {
 		if (!pPars[i].CheckParConversion(pTypes[i]))
 		{
 			C4AulExecError e(FormatString(
-				"call to \"%s\" parameter %d: passed %s, but expected %s",
+				R"(call to "%s" parameter %d: passed %s, but expected %s)",
 				GetName(), i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])).getData());
 			if (fPassErrors)
 				throw e;
 			else
 			{
-				e.show();
+				::ScriptEngine.GetErrorHandler()->OnError(e.what());
 				return false;
 			}
 		}

@@ -1,2 +1,11 @@
 Name=Script goal
 Description=Script goal description: please change me
+PropDescription=Description
+PropDescriptionHelp=Description shown when the user clicks the game goal.
+Picture=Picture
+PictureHelp=Graphics overlayed on script goal picture.
+SetScriptGoalData=Set script goal data
+SetScriptGoalDataDesc=Sets script goal, message, picture and filfilled-status.
+Goal=Goal
+Fulfilled=Fulfilled
+FulfilledHelp=Determines if the goal is fulfilled. Once all goals are flfilled, the game is ended.

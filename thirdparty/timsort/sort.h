@@ -94,14 +94,14 @@ void SHELL_SORT(SORT_TYPE *dst, const size_t size)
   // TODO: binary search to find first gap?
   int inci = 47;
   int64_t inc = shell_gaps[inci];
-  while (inc > (size >> 1))
+  while (inc > int64_t(size >> 1))
   {
     inc = shell_gaps[--inci];
   }
   int64_t i;
   while (1)
   {
-    for (i = inc; i < size; i++)
+    for (i = inc; i < int64_t(size); i++)
     {
       SORT_TYPE temp = dst[i];
       int64_t j = i;
@@ -172,7 +172,7 @@ static inline int64_t binary_insertion_find(SORT_TYPE *dst, const SORT_TYPE x, c
 static inline void binary_insertion_sort_start(SORT_TYPE *dst, const size_t start, const size_t size)
 {
   int64_t i;
-  for (i = start; i < size; i++)
+  for (i = start; i < int64_t(size); i++)
   {
     int64_t j;
     /* If this entry is already correct, just move along */
@@ -200,9 +200,9 @@ void BUBBLE_SORT(SORT_TYPE *dst, const size_t size)
 {
   int64_t i;
   int64_t j;
-  for (i = 0; i < size; i++)
+  for (i = 0; i < int64_t(size); i++)
   {
-    for (j = i + 1; j < size; j++)
+    for (j = i + 1; j < int64_t(size); j++)
     {
       if (SORT_CMP(dst[j], dst[i]) < 0)
         SORT_SWAP(dst[i], dst[j]);
@@ -235,7 +235,7 @@ void MERGE_SORT(SORT_TYPE *dst, const size_t size)
   {
     if (i < middle)
     {
-      if (j < size)
+      if (j < int64_t(size))
       {
         if (SORT_CMP(dst[i], dst[j]) <= 0)
           newdst[out] = dst[i++];
@@ -313,7 +313,7 @@ static inline void reverse_elements(SORT_TYPE *dst, int64_t start, int64_t end)
 static inline int64_t count_run(SORT_TYPE *dst, const int64_t start, const size_t size)
 {
   if (size - start == 1) return 1;
-  if (start >= size - 2)
+  if (start >= int64_t(size) - 2)
   {
     if (SORT_CMP(dst[size - 2], dst[size - 1]) > 0)
       SORT_SWAP(dst[size - 2], dst[size - 1]);
@@ -362,7 +362,7 @@ static inline int compute_minrun(const uint64_t size)
 len = count_run(dst, curr, size);\
 run = minrun;\
 if (run < minrun) run = minrun;\
-if (run > size - curr) run = size - curr;\
+if (run > int64_t(size) - curr) run = size - curr;\
 if (run > len)\
 {\
   binary_insertion_sort_start(&dst[curr], len, run);\
@@ -420,7 +420,7 @@ static inline void tim_sort_resize(TEMP_STORAGE_T *store, const size_t new_size)
     SORT_TYPE *tempstore = (SORT_TYPE*)realloc(store->storage, new_size * sizeof(SORT_TYPE));
     if (tempstore == NULL)
     {
-      fprintf(stderr, "Error allocating temporary storage for tim sort: need %lu bytes", sizeof(SORT_TYPE) * new_size);
+      fprintf(stderr, "Error allocating temporary storage for tim sort: need %zu bytes", sizeof(SORT_TYPE) * new_size);
       exit(1);
     }
     store->storage = tempstore;

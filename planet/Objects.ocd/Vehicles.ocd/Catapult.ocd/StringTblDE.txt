@@ -1,2 +1,5 @@
 Name=Katapult
-Description=Halte [Verwenden] und zieh die Maus um die Stärke des Wurfes zu bestimmen. Clonks können auch geschleudert werden; entweder selbst oder mit der Hilfe eines anderen Clonks.
+Description=Halte [Verwenden] und zieh die Maus um die StÃ¤rke des Wurfes zu bestimmen. Clonks kÃ¶nnen auch geschleudert werden; entweder selbst oder mit der Hilfe eines anderen Clonks.
+Gunner=Kanonier
+GunnerHelp=Clonk, der das Katapult steuert.
+NoGunnerHelp=Das Katapult ist unbesetzt. Nicht zu empfehlen.

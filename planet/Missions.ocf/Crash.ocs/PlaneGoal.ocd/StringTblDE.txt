@@ -1,3 +1,3 @@
-Name=Hole das Flugzeug zurück
+Name=Hole das Flugzeug zurÃ¼ck
 MsgGoalFulfilled=Du hast das Flugzeug erfolgreich geborgen.
-MsgGoalUnFulfilled=Birg das Flugzeug und bringe es zum Piloten zurück.
+MsgGoalUnFulfilled=Birg das Flugzeug und bringe es zum Piloten zurÃ¼ck.

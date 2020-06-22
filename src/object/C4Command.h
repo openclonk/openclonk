@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,8 @@
 #ifndef INC_C4Command
 #define INC_C4Command
 
-#include "C4ObjectPtr.h"
-#include "C4Value.h"
+#include "object/C4ObjectPtr.h"
+#include "script/C4Value.h"
 
 enum C4CMD
 {
@@ -102,13 +102,13 @@ protected:
 	void Call();
 	void Home();
 	void Retry();
-	void Fail(const char *szFailMessage=0);
+	void Fail(const char *szFailMessage=nullptr);
 	void Acquire();
 	void Sell();
 	void Buy();
 	void Attack();
 	void Transfer();
-	void Finish(bool fSuccess=false, const char *szFailMessage=0);
+	void Finish(bool fSuccess=false, const char *szFailMessage=nullptr);
 	void Follow();
 	void MoveTo();
 	void Enter();

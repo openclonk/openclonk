@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -27,17 +27,17 @@ private:
 	struct Entry
 	{
 		StdStrBuf Text;
-		int32_t iVal;
+		int32_t iVal{0};
 
-		Entry() : Text(), iVal(0) { }
+		Entry() : Text() { }
 		void GrabFrom(Entry *pFrom) // grab data w/o copy
 		{ Text.Take(std::move(pFrom->Text)); iVal = pFrom->iVal; }
 		void SwapWith(Entry *pSwap);
 	};
 private:
 	// array - row/col zero are row/coloumn headers
-	int32_t iRows,iCols;
-	Entry *pEntries;
+	int32_t iRows{0},iCols{0};
+	Entry *pEntries{nullptr};
 
 	// realloc arrays, copy stuff
 	void AddRow(int32_t iInsertBefore);
@@ -57,8 +57,8 @@ private:
 
 protected:
 	// displaying dialog
-	class C4ScoreboardDlg *pDlg; // NO-SAVE
-	int32_t iDlgShow; // ref counter for dialog show
+	class C4ScoreboardDlg *pDlg{nullptr}; // NO-SAVE
+	int32_t iDlgShow{0}; // ref counter for dialog show
 
 	// not bounds-checked!
 	Entry *GetCell(int32_t iCol, int32_t iRow) const { return pEntries+iRow*iCols+iCol; }
@@ -66,7 +66,7 @@ protected:
 	friend class C4ScoreboardDlg;
 
 public:
-	C4Scoreboard() : iRows(0), iCols(0), pEntries(NULL), pDlg(NULL), iDlgShow(0) { }
+	C4Scoreboard() = default;
 	~C4Scoreboard() { Clear(); }
 
 	void Clear();

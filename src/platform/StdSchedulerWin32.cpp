@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,8 +15,8 @@
  */
 
 // Events are Windows-specific
-#include <C4Include.h>
-#include <StdScheduler.h>
+#include "C4Include.h"
+#include "platform/StdScheduler.h"
 #ifdef STDSCHEDULER_USE_EVENTS
 
 #include <mmsystem.h>
@@ -41,7 +41,7 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 	size_t i;
 	// Collect event handles
 	int iEventCnt = 0; HANDLE hEvent;
-	StdSchedulerProc *pMessageProc = NULL;
+	StdSchedulerProc *pMessageProc = nullptr;
 	for (i = 0u; i < procs.size(); i++)
 	{
 		auto proc = procs[i];
@@ -84,14 +84,17 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 	}
 
 	// Execute all processes with timeout
+	// Iterate over the index because procedures may be added or removed during execution
+	// (If they are removed, we skip one execution, which doesn't really matter in practice)
 	auto tNow = C4TimeMilliseconds::Now();
-	for (auto proc = procs.begin(); proc != procs.end(); ++proc)
+	for (size_t i_proc = 0u; i_proc < procs.size(); ++i_proc)
 	{
-		auto tProcTick = (*proc)->GetNextTick(tNow);
+		StdSchedulerProc *proc = procs[i_proc];
+		auto tProcTick = proc->GetNextTick(tNow);
 		if (tProcTick <= tNow)
-			if (!(*proc)->Execute(0))
+			if (!proc->Execute(0))
 			{
-				OnError(*proc);
+				OnError(proc);
 				fSuccess = false;
 			}
 	}

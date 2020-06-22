@@ -7,8 +7,11 @@
 
 /*
 	used properties:
-	this.inventory.last_slot: last inventory-slot that has been selected. Used for QuickSwitching
 	this.inventory.is_picking_up: whether currently picking up
+	this.inventory.quick_slot: slot that is currently selected for quick switching
+	this.inventory.hotkey_down: the number of a hotkey being held down
+	this.inventory.quick_slot_switched: true if the quick slot was switched during pressing down of a hotkey, the hotkey release will do nothing
+	this.inventory.slots_switched: true if two inventory were switched (pressed a hotkey while another one was pressed); the hotkey release will do nothing
 	
 	other used properties of "this.inventory" might have been declared in Inventory.ocd
 */
@@ -16,9 +19,10 @@
 
 func Construction()
 {
-	if(this.inventory == nil)
+	if (this.inventory == nil)
 		this.inventory = {};
-	this.inventory.last_slot = 0;
+	this.inventory.quick_slot = 1;
+	this.inventory.hotkey_down = nil;
 	return _inherited(...);
 }
 
@@ -27,6 +31,11 @@ public func OnShiftCursor(object new_cursor)
 	if (this.control.is_interacting)
 		AbortPickingUp();
 	return _inherited(new_cursor, ...);
+}
+
+public func GetQuickSwitchSlot()
+{
+	return this.inventory.quick_slot;
 }
 
 // Called by other libraries and objects when the Clonk has forcefully dropped (not thrown) an object.
@@ -38,7 +47,7 @@ func OnDropped(object obj)
 func RejectCollect(id objid, object obj)
 {
 	var rejected = _inherited(objid, obj, ...);
-	if(rejected) return rejected;
+	if (rejected) return rejected;
 	
 	// Allow collection only if called via clonk->Collect, to prevent picking up stuff on the ground.
 	// Make an exception for containers, though.
@@ -46,96 +55,115 @@ func RejectCollect(id objid, object obj)
 	return false;
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
-	if (!this) 
-		return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
-		
-	// Quickswitch changes the active slot to the last selected one
-	if (ctrl == CON_QuickSwitch)
+	if (!this)
+		return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
+
+	// Quickswitch changes the current active inventory slot
+	if (ctrl == CON_QuickSwitch && status == CONS_Down)
 	{
 		// but ignore quickswitch if we have more than 1 hand-slot
-		if(this.HandObjects > 1)
-			return inherited(plr, ctrl, x, y, strength, repeat, release, ...);;
+		if (this.HandObjects > 1)
+			return inherited(plr, ctrl, x, y, strength, repeat, status, ...);;
 		
-		// select last slot
-		SetHandItemPos(0, this.inventory.last_slot); // last_slot is updated in SetHandItemPos
-		return true;
-	}
-	
-	// Quick-pickup item via click? Note that this relies on being executed after the normal Clonk controls
-	if (ctrl == CON_Use && !this->GetHandItem(0) && !release)
-	{
-		var sort = Sort_Distance(x, y);
-		var items = FindAllPickupItems(sort);
-		for (var item in items)
+		// A number key (hotkey) is pressed, change quick switch slot
+		/*if (this.inventory.hotkey_down != nil)
 		{
-			if (item && TryToCollect(item)) return true;
-		}
-	}
-	
-	// Begin picking up objects.
-	if (ctrl == CON_PickUp && !release)
-	{
-		this->CancelUse();
-		BeginPickingUp();
+			if (SetQuickSwitchSlot(this.inventory.hotkey_down-1))
+				this.inventory.quick_slot_switched = true;
+			return true;
+		}*/
+		// Otherwise select slot
+		SetHandItemPos(0, this.inventory.quick_slot); // quick_slot is updated in SetHandItemPos
 		return true;
 	}
-	
-	// Drop the mouse item?
-	if (ctrl == CON_Drop && !release)
+	if (ctrl == CON_QuickSwitch && status == CONS_Up) // Do nothing for now but will be used in the future
 	{
-		// Do not immediately collect another thing unless chosen with left/right.
+		return true;
+	}
+	// Collection and dropping is only allowed when the Clonk is not contained.
+	if (!Contained())
+	{
+		// Quick-pickup item via click? Note that this relies on being executed after the normal Clonk controls
+		if (ctrl == CON_Use && !this->GetHandItem(0) && status == CONS_Down)
+		{
+			var sort = Sort_Distance(x, y);
+			var items = FindAllPickupItems(sort);
+			for (var item in items)
+			{
+				if (item && TryToCollect(item)) return true;
+			}
+		}
+		
+		// Begin picking up objects.
+		if (ctrl == CON_PickUp && status == CONS_Down)
+		{
+			this->CancelUse();
+			BeginPickingUp();
+			return true;
+		}
+		
+		// Drop the mouse item?
+		if (ctrl == CON_Drop && status == CONS_Down)
+		{
+			// Do not immediately collect another thing unless chosen with left/right.
+			if (this.inventory.is_picking_up)
+			{
+				SetNextPickupItem(nil);
+			}
+			
+			var item = this->GetHandItem(0);
+			if (item)
+				this->DropInventoryItem(this->GetHandItemPos(0));
+			return true;
+		}
+		
+		
+		// Switching pickup object or finish pickup?
 		if (this.inventory.is_picking_up)
 		{
-			SetNextPickupItem(nil);
+			// Stop picking up.
+			if (ctrl == CON_PickUpNext_Stop)
+			{
+				AbortPickingUp();
+				return true;
+			}
+			
+			// Quickly pick up everything possible.
+			if (ctrl == CON_PickUpNext_All)
+			{
+				PickUpAll();
+				AbortPickingUp();
+				return true;
+			}
+			
+			// Finish picking up (aka "collect").
+			if (ctrl == CON_PickUp && status == CONS_Up)
+			{
+				EndPickingUp();
+				return true;
+			}
+			
+			// Switch left/right through objects.
+			var dir = nil;
+			if (ctrl == CON_PickUpNext_Left) dir = -1;
+			else if (ctrl == CON_PickUpNext_Right) dir = 1;
+			
+			if (dir != nil)
+			{
+				var item = FindNextPickupObject(this.inventory.pickup_item, dir);
+				if (item)
+					SetNextPickupItem(item);
+				return true;
+			}
 		}
-		
-		var item = this->GetHandItem(0);
-		if (item)
-			this->DropInventoryItem(this->GetHandItemPos(0));
-		return true;
 	}
-	
-	// Switching pickup object or finish pickup?
-	if (this.inventory.is_picking_up)
+	else // Contained
 	{
-		// Stop picking up.
-		if (ctrl == CON_PickUpNext_Stop)
-		{
-			AbortPickingUp();
-			return true;
-		}
-		
-		// Quickly pick up everything possible.
-		if (ctrl == CON_PickUpNext_All)
-		{
-			PickUpAll();
-			AbortPickingUp();
-			return true;
-		}
-		
-		// Finish picking up (aka "collect").
-		if (ctrl == CON_PickUp && release)
-		{
-			EndPickingUp();
-			return true;
-		}
-		
-		// Switch left/right through objects.
-		var dir = nil;
-		if (ctrl == CON_PickUpNext_Left) dir = -1;
-		else if (ctrl == CON_PickUpNext_Right) dir = 1;
-		
-		if (dir != nil)
-		{
-			var item = FindNextPickupObject(this.inventory.pickup_item, dir);
-			if (item)
-				SetNextPickupItem(item);
-			return true;
-		}
+		// If we are contained, have a picking up process running, and issue another command we first stop the selection.
+		if (this.inventory.is_picking_up) AbortPickingUp();
 	}
-	
 	
 	// shift inventory
 	var inventory_shift = 0;
@@ -177,7 +205,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		this->~DropInventoryItem(hot-1);
 		return true;
 	}
-		
+	
 	// inventory
 	hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
@@ -191,15 +219,55 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
-	// only the last-pressed key is taken into consideration.
-	// if 2 hotkeys are held, the earlier one is being treated as released
-	if (hot > 0 && hot <= this.MaxContentsCount)
+	// another hotkey is already pressed
+	if (this.inventory.hotkey_down != nil && hot > 0 && hot <= this.MaxContentsCount && this.inventory.hotkey_down != hot)
 	{
-		SetHandItemPos(0, hot-1);
+		// do nothing if this is just key down
+		if (status == CONS_Down)
+			return true;
+		// switch the two slots
+		this->~Switch2Items(this.inventory.hotkey_down-1, hot-1);
+		//this.inventory.slots_switched = true;
+		// This needs some explanation:
+		// In the event of the Clonk window ever losing focus, a hotkey might still be registered as being held down.
+		// If this was ever the case, the inventory would constantly switch around unless the exact same hotkey is pressed
+		// again to trigger a release. This could very well confuse players as it is not obvious which key needs to be
+		// pressed. With this, there will only be one switch and afterwards the inventory works just fine.
+		// The downside is that after one switch a hotkey has be pressed again for another switch.
+		this.inventory.hotkey_down = nil;
+
 		return true;
 	}
 	
-	return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+	// hotkey up: perform slot selection
+	if (hot > 0 && hot <= this.MaxContentsCount && status == CONS_Up)
+	{
+		// This wasn't liked by many players, so slot selection is back to key down.
+
+		// Only perform slot selection if nothing happened in the meantime
+		/*if (!this.inventory.quick_slot_switched)
+			if (!this.inventory.slots_switched)
+				SetHandItemPos(0, hot-1);*/
+
+		this.inventory.hotkey_down = nil;
+		//this.inventory.quick_slot_switched = false;
+		//this.inventory.slots_switched = false;
+
+		return true;
+	}
+	// a hotkey is pressed, save it for now
+	if (hot > 0 && hot <= this.MaxContentsCount && status == CONS_Down)
+	{
+		this.inventory.hotkey_down = hot;
+		// For safety
+		//this.inventory.quick_slot_switched = false;
+		//this.inventory.slots_switched = false;
+
+		SetHandItemPos(0, hot-1);
+		return true;
+	}
+
+	return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 }
 
 private func FxIntHighlightItemStart(object target, proplist fx, temp, object item)
@@ -214,7 +282,7 @@ private func FxIntHighlightItemStart(object target, proplist fx, temp, object it
 		{
 			Name = "Attach",
 			Procedure = DFA_ATTACH,
-			FaceBase = 1
+			FacetBase = 1
 		}
 	};
 	fx.dummy.Visibility = VIS_Owner;
@@ -295,7 +363,7 @@ private func FindNextPickupObject(object start_from, int x_dir)
 	if (index != -1)
 	{
 		// Previous item was found in the list.
-		// Cycle through list to the right (x_dir==1) or left (x_dir==-1)
+		// Cycle through list to the right (x_dir == 1) or left (x_dir==-1)
 		index = (index + x_dir) % len;
 	}
 	else
@@ -353,8 +421,17 @@ private func TryToCollect(object item)
 	var x = item->GetX();
 	var y = item->GetY();
 	var name = item->GetName();
-	// Try to collect the item.
-	Collect(item);
+	
+	// When pushing a lorry, try to directly collect it into the lorry first.
+	var vehicle = GetActionTarget();
+	if (vehicle && vehicle->~IsContainer() && GetProcedure() == "PUSH")
+	{
+		vehicle->Collect(item);
+	}
+	
+	// Otherwise, try to collect the item myself.
+	if (item && !item->Contained())
+		Collect(item);
 	
 	// If anything happened, assume collection.
 	if (!item || item->Contained())
@@ -396,15 +473,32 @@ private func PickUpAll()
 	}
 }
 
-// used in Inventory.ocd
+// Used in Inventory.ocd
 public func SetHandItemPos(int hand, int inv)
 {
-	// save current slot
-	if(hand == 0)
-		this.inventory.last_slot = this->GetHandItemPos(0);
+	// Save the current slot as the last slot only for the first hand
+	// and if the inventory slot actually changes.
+	if (hand == 0 && this->GetHandItemPos(0) != inv)
+		this.inventory.quick_slot = this->GetHandItemPos(0);
 		
 	return _inherited(hand, inv, ...);
 }
+
+public func SetQuickSwitchSlot(int slot)
+{
+	// Do not set if the quick switch slot doesn't change
+	if (slot == this.inventory.quick_slot) return false;
+	// Do not set if slot is currently selected
+	if (slot == this->GetHandItemPos(0)) return false;
+
+	this.inventory.quick_slot = slot;
+	// Notify HUD
+	this->~OnInventoryChange();
+	this->~UpdateAttach();
+
+	return true;
+}
+
 /* Backpack control */
 func Selected(object mnu, object mnu_item)
 {

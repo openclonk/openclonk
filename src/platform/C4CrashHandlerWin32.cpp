@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -22,16 +22,11 @@
 #ifdef HAVE_DBGHELP
 
 // Dump generation on crash
-#include <C4Version.h>
-#include <C4windowswrapper.h>
+#include "C4Version.h"
+#include "platform/C4windowswrapper.h"
 #include <dbghelp.h>
-#include <fcntl.h>
-#include <string.h>
 #include <tlhelp32.h>
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
-#include <assert.h>
+#include <cinttypes>
 #if defined(__CRT_WIDE) || (defined(_MSC_VER) && _MSC_VER >= 1900)
 #define USE_WIDE_ASSERT
 #endif
@@ -270,7 +265,7 @@ namespace {
 		// Initialize DbgHelp.dll symbol functions
 		SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES);
 		HANDLE process = GetCurrentProcess();
-		if (SymInitialize(process, 0, true))
+		if (SymInitialize(process, nullptr, true))
 		{
 			LOG_STATIC_TEXT("\nStack trace:\n");
 			auto frame = STACKFRAME64();
@@ -300,7 +295,7 @@ namespace {
 			IMAGEHLP_LINE64 *line = reinterpret_cast<IMAGEHLP_LINE64*>(SymbolBuffer);
 			static_assert(DumpBufferSize >= sizeof(*line), "IMAGEHLP_LINE64 too large to fit into buffer");
 			int frame_number = 0;
-			while (StackWalk64(image_type, process, GetCurrentThread(), &frame, &context, 0, SymFunctionTableAccess64, SymGetModuleBase64, 0))
+			while (StackWalk64(image_type, process, GetCurrentThread(), &frame, &context, nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
 			{
 				LOG_DYNAMIC_TEXT("#%3d ", frame_number);
 				module->SizeOfStruct = sizeof(*module);
@@ -428,7 +423,7 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 
 	if (filename[0] != L'\0')
 	{
-		file = CreateFile(filename, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+		file = CreateFile(filename, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
 		// If we can't create a *new* file to dump into, don't dump at all.
 		if (file == INVALID_HANDLE_VALUE)
 			filename[0] = L'\0';
@@ -457,7 +452,7 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 		ExpParam.ExceptionPointers = pExceptionPointers;
 		ExpParam.ClientPointers = true;
 		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-							file, MiniDumpNormal, &ExpParam, &user_stream_info, NULL);
+							file, MiniDumpNormal, &ExpParam, &user_stream_info, nullptr);
 		CloseHandle(file);
 	}
 
@@ -599,7 +594,7 @@ namespace {
 			this_thread,
 			expression, file, line
 		};
-		HANDLE ctx_thread = CreateThread(NULL, 0L, &dump_thread, &dump_thread_data, 0L, NULL);
+		HANDLE ctx_thread = CreateThread(nullptr, 0L, &dump_thread, &dump_thread_data, 0L, nullptr);
 		WaitForSingleObject(ctx_thread, INFINITE);
 		CloseHandle(this_thread);
 		CloseHandle(ctx_thread);

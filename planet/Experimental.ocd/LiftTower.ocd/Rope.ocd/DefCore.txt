@@ -1,6 +1,6 @@
 [DefCore]
 id=LiftTower_Rope
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Vertices=2
 Width=2

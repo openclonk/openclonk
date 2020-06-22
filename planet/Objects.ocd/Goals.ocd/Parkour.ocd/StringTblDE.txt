@@ -29,3 +29,13 @@ MsgEvalPlrWon=%s has won the parkour in %s.
 MsgEvalTeamWon=The team %s has won the parkour in %s.
 MsgEvalPlayerX=You have cleared %d out of %d checkpoints.
 MsgEvalPlayerAll=You have cleared all checkpoints.
+
+#Editor
+OnCleared=Aktion: CP erreicht
+OnClearedHelp=Aktion, die ausgefuehrt wird, wenn ein Spieler einen Checkpoint freischaltet.
+OnFirstCleared=Aktion: CP erstmals erreicht
+OnFirstClearedHelp=Aktion, die ausgefuehrt wird, wenn der erste Spieler einen Checkpoint freischaltet.
+OnRespawn=Aktion: Respawn
+OnRespawnHelp=Aktion, die ausgefuehrt wird, wenn ein Spieler an einem Checkpoint neu startet.
+ResetAllCleared=Checkpoint reset
+ResetAllClearedHelp=Setzt die Checkpoints fuer alle Spieler auf 'nicht erreicht' zurueck.

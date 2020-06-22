@@ -3,24 +3,24 @@
 #appendto DynamiteBox
 func Initialize()
 {
-	SetObjDrawTransform(2000,0,4000,0,2000);
+	SetObjDrawTransform(2000, 0, 4000, 0, 2000);
 }
 
 func HasNoFadeOut()
 {
-	if(GetAction() == "Attach") return true;
+	if (GetAction() == "Attach") return true;
 	return false;
 }
 
 func Fall(int from) 
 {
-	for(var i=0; i < 7 + Random(2); i++) 
+	for (var i = 0; i < 7 + Random(2); i++) 
 	{
-		var dyn=CreateObjectAbove(Dynamite,0,0,from);
+		var dyn = CreateObjectAbove(Dynamite, 0, 0, from);
 		dyn->SetController(from);
-		dyn->SetXDir(RandomX(-9,9));
-		dyn->SetYDir(RandomX(-5,8));
-		dyn->SetRDir(RandomX(-15,15));
+		dyn->SetXDir(RandomX(-9, 9));
+		dyn->SetYDir(RandomX(-5, 8));
+		dyn->SetRDir(RandomX(-15, 15));
 		dyn->Fuse();
 		dyn->MakeFast(70+(i*4));
 	}

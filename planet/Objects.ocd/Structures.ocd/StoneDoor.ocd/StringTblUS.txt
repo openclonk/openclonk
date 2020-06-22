@@ -1,1 +1,7 @@
 Name=Stone Door
+DoorUp=Door up
+DoorDown=Door down
+DoorUpDesc=Raises a door.
+Door=Door
+DoorTargetHelp=Door to move.
+DoorDownDesc=Lowers a door.

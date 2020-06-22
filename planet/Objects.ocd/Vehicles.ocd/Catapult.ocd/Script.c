@@ -6,6 +6,7 @@
 */
 
 #include Library_ElevatorControl
+#include Library_Destructible
 
 local aim_anim;
 local turn_anim;
@@ -40,6 +41,21 @@ protected func ContactRight()
 {
 	if (Stuck() && !Random(5))
 		SetRDir(RandomX(-7, +7));
+}
+
+public func SetDir(int to_dir)
+{
+	if (to_dir == DIR_Left)
+	{
+		turn_anim = PlayAnimation("TurnLeft", 5, Anim_Const(GetAnimationLength("TurnLeft")));
+		dir = DIR_Left;
+	}
+	if (to_dir == DIR_Right)
+	{
+		turn_anim = PlayAnimation("TurnRight", 5, Anim_Const(GetAnimationLength("TurnRight")));
+		dir = DIR_Right;
+	}
+	return inherited(dir, ...);
 }
 
 /*-- Controls --*/
@@ -77,6 +93,15 @@ func ControlRight(object clonk)
 	}
 }
 
+public func TurnLeft()
+{
+	// Instantly set catapult orientation to face left
+	var len = GetAnimationLength("TurnLeft");
+	turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(len, 0, len, 1, ANIM_Hold));
+	dir = olddir = DIR_Left;
+	return true;
+}
+
 public func HoldingEnabled() { return true; }
 
 public func ControlUseStart(object clonk)
@@ -94,7 +119,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 public func ControlUseStop(object clonk, int x, int y)
 {
-	DoFire(clonk, DefinePower(x,y));
+	DoFire(clonk, DefinePower(x, y));
 	return true;
 }
 
@@ -290,17 +315,58 @@ public func CatapultDismount(object clonk)
 	return true;
 }
 
-/*-- Properties --*/
+
+/* Register enemy spawn with catapult */
 
 func Definition(proplist def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(-1000, -4000, 0), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(35, 0, 1, 0));
+	var spawn_editor_props = { Type="proplist", Name = def->GetName(), EditorProps= {
+		Gunner = new EnemySpawn->GetAICreatureEditorProps(EnemySpawn->GetAIClonkDefaultPropValues("Firestone"), "$NoGunnerHelp$") { Name="$Gunner$", EditorHelp="$GunnerHelp$" },
+	} };
+	var spawn_default_values = {
+		Gunner = { Type="Clonk", Properties = EnemySpawn->GetAIClonkDefaultPropValues("Firestone") },
+	};
+	EnemySpawn->AddEnemyDef("Catapult",
+			{ SpawnType = Catapult,
+				SpawnFunction = def.SpawnCatapult,
+				OffsetAttackPathByPos = false,
+				GetInfoString = def.GetSpawnInfoString },
+		spawn_default_values,
+		spawn_editor_props);
 }
+
+private func SpawnCatapult(array pos, proplist enemy_data, proplist enemy_def, array attack_path, object spawner)
+{
+	// First spawn the catapult
+	var catapult = CreateObjectAbove(Catapult, pos[0], pos[1], g_enemyspawn_player);
+	catapult->Unstick(10);
+	if (!catapult) return;
+	// Next let a clonk steer the catapult
+	var clonk = EnemySpawn->SpawnAICreature(enemy_data.Gunner, pos, enemy_def, attack_path, spawner);
+	if (!clonk) return;
+	clonk->SetAction("Push", catapult);
+	// Set attack mode
+	AI->SetVehicle(clonk, catapult);
+	// Only the clonk is an actual enemy
+	return clonk;
+}
+
+private func GetSpawnInfoString(proplist enemy_data)
+{
+	// Prepend balloon to clonk info string
+	return Format("{{Catapult}}%s", EnemySpawn->GetAICreatureInfoString(enemy_data.Gunner));
+}
+
+/* Properties */
 
 local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 1;
 local BorderBound = C4D_Border_Sides;
+local ContactCalls = true;
+local Components = {Metal = 1, Wood = 6};
+local HitPoints = 100;
 
 local ActMap = {
 	Roll = {

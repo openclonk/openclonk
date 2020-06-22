@@ -10,6 +10,7 @@
 */
 
 #include Library_Stackable
+#include Library_Flammable
 
 
 protected func Construction()
@@ -18,14 +19,14 @@ protected func Construction()
 	return _inherited(...);
 }
 
-public func Launch(int angle, int str, object shooter)
+public func Launch(int angle, int str, object shooter, object weapon)
 {
 	SetShape(-2, -2, 4, 11);
 	SetVertex(0, VTX_Y, 3, 1);
 	SetVertex(1, VTX_Y, 4, 1);
 	SetVertex(2, VTX_Y, -2, 1);
 	SetPosition(GetX(), GetY() - 2);
-	var xdir = Sin(angle,str);
+	var xdir = Sin(angle, str);
 	var ydir = Cos(angle,-str);
 	SetXDir(xdir);
 	SetYDir(ydir);
@@ -34,8 +35,8 @@ public func Launch(int angle, int str, object shooter)
 	// Shooter controls the arrow for correct kill tracing.
 	SetController(shooter->GetController());
 	
-	AddEffect("HitCheck", this, 1,1, nil, nil, shooter);
-	AddEffect("InFlight", this, 1,1, this);
+	AddEffect("HitCheck", this, 1, 1, nil, nil, shooter);
+	AddEffect("InFlight", this, 1, 1, this);
 	return;
 }
 
@@ -166,3 +167,6 @@ public func IsArmoryProduct() { return true; }
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
+local Components = {Wood = 3};
+local BlastIncinerate = 5;
+local ContactIncinerate = 1;

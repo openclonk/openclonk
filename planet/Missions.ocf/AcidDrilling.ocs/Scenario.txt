@@ -1,52 +1,49 @@
 [Head]
-Title=AcidDrilling
 Icon=30
-Version=6,0
+Version=8
 Difficulty=100
 NoInitialize=true
 
 [Definitions]
 Definition1=Objects.ocd
+Definition2=Decoration.ocd
 
 [Game]
-Goals=Goal_AcidDrilling=1;
-Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
+Goals=Goal_AcidDrilling=1
+Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1
 
 [Player1]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1;Chest=1
 BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50
 BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50
 
 [Player2]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1;Chest=1
 BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50
 BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50
 
 [Player3]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1;Chest=1
 BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50
 BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50
 
 [Player4]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1;Chest=1
 BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50
 BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50
 
 [Landscape]
 Sky=Clouds1
 TopOpen=0
-BottomOpen=0
-MapWidth=300
-MapHeight=100
-MapZoom=8
+MapWidth=300,0,64,10000
+MapHeight=100,0,40,10000
 
 [Weather]
-Climate=00,0,0,00
-StartSeason=0,0,0,00
-YearSpeed=0,0,0,000
+Climate=0,0,0,0
+StartSeason=0,0,0,0
+YearSpeed=0,0,0,0
 Wind=100,0,100,100
-

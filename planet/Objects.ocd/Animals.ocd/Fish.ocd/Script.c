@@ -3,6 +3,8 @@
 	Author: Zapper
 */
 
+#include Library_Edible
+
 local SwimMaxAngle = 15;
 local SwimMaxSpeed = 30;
 local VisionMaxAngle = 140;
@@ -55,6 +57,8 @@ func Place(int amount, proplist rectangle, proplist settings)
 	return f; // return last created fish
 }
 
+public func IsAnimal() { return true; }
+
 func Construction()
 {
 	// general stuff	
@@ -93,7 +97,7 @@ func Death()
 	this.MeshTransformation = Trans_Rotate(160 + Random(41), 1, 0, 0);
 	if (base_transform) this.MeshTransformation = Trans_Mul(base_transform, this.MeshTransformation);
 	StopAnimation(swim_animation);
-	AddTimer(this.Decaying, 500);
+	Decay();
 	this.Collectible = true;
 	
 	// maybe respawn a new fish if roe is near
@@ -102,18 +106,6 @@ func Death()
 		roe->Hatch(GetID());
 	
 	return _inherited(...);
-}
-
-func Decaying()
-{
-	if (GetCon()<20) RemoveObject(); else DoCon(-5);
-	return true;
-}
-
-protected func ControlUse(object clonk, int iX, int iY)
-{
-	clonk->Eat(this);
-	return true;
 }
 
 public func NutritionalValue() { if (!GetAlive()) return 15; else return 0; }
@@ -157,13 +149,13 @@ func InitFuzzyRules()
 	brain->AddSet("wall_range", "close", [[0, 1], [0, 1], [wall_vision_range, 0]]);
 	
 	// RULES
-	brain->AddRule(brain->And(brain->Not("wall_range=close"), "enemy_range=close"), "speed=fast");
-	brain->AddRule(brain->Or("friend_range=close", "food_range=close", "wall_range=close"), "speed=slow");
+	brain->AddRule(brain->And(brain->Not("wall_range = close"), "enemy_range = close"), "speed = fast");
+	brain->AddRule(brain->Or("friend_range = close", "food_range = close", "wall_range = close"), "speed = slow");
 	
-	brain->AddRule(brain->And(brain->Not("wall_range=close"), brain->Or("food=left", brain->And("friend=left", "enemy_range=far", "food_range=far"), "enemy=right")), "swim=left");
-	brain->AddRule(brain->And(brain->Not("wall_range=close"), brain->Or("food=right", brain->And("friend=right", "enemy_range=far", "food_range=far"), "enemy=left")), "swim=right");
-	brain->AddRule(brain->And("left_wall=close", brain->Not("right_wall=close")), "swim=sharp_right");
-	brain->AddRule("right_wall=close", "swim=sharp_left");
+	brain->AddRule(brain->And(brain->Not("wall_range = close"), brain->Or("food = left", brain->And("friend = left", "enemy_range = far", "food_range = far"), "enemy = right")), "swim = left");
+	brain->AddRule(brain->And(brain->Not("wall_range = close"), brain->Or("food = right", brain->And("friend = right", "enemy_range = far", "food_range = far"), "enemy = left")), "swim = right");
+	brain->AddRule(brain->And("left_wall = close", brain->Not("right_wall = close")), "swim = sharp_right");
+	brain->AddRule("right_wall = close", "swim = sharp_left");
 }
 
 
@@ -236,7 +228,7 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 		//CreateParticle("MagicSpark", obj->GetX() - GetX(), obj->GetY() - GetY(), 0, 0, 60, RGB(0, 255, 0));
 		//this->Message("%s@%d (me %d, it %d)", obj->GetName(), d, current_angle, angle);
 		var angle = -VisionMaxAngle;
-		if (d > 0) angle = VisionMaxRange;
+		if (d > 0) angle = VisionMaxAngle;
 		var distance = ObjectDistance(this, obj);
 		brain->Fuzzify(set, angle * distance / VisionMaxRange);
 		if (range_set != nil)
@@ -454,7 +446,7 @@ Swim = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	NextAction = "Swim",
 	StartCall = "StartSwim"
 },
@@ -467,7 +459,7 @@ Walk = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Walk",
@@ -483,7 +475,7 @@ Jump = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Jump",
@@ -497,7 +489,7 @@ Dead = {
 	Speed = 10,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Hold",
@@ -510,13 +502,14 @@ local Description = "$Description$";
 local MaxEnergy = 40000;
 local MaxBreath = 180; // 180 = five seconds
 local Placement = 1;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local BreatheWater = 1;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;
 
 func IsPrey() { return true; }
 
-func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
+public func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(0, 600, 0), Trans_Scale(1200), Trans_Rotate(20, 1, 0, 0), Trans_Rotate(70, 0, 1, 0));
 }
-

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,11 +14,10 @@
  */
 
 // A loader for the OGRE .mesh binary file format
-#include <StdMesh.h>
-
 #ifndef INC_StdMeshLoader
 #define INC_StdMeshLoader
-#include <stdexcept>
+
+#include "lib/StdMesh.h"
 
 namespace OgreToClonk
 {
@@ -39,18 +38,18 @@ public:
 
 	// filename is only used to show it in error messages. The model is
 	// loaded from src. Throws LoaderException.
-	static StdMesh *LoadMeshBinary(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = 0);
-	static StdMesh *LoadMeshXml(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = 0);
+	static StdMesh *LoadMeshBinary(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = nullptr);
+	static StdMesh *LoadMeshXml(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = nullptr);
 };
 
 // Interface to load skeleton files. Given a filename occuring in the
 // mesh file, this should load the skeleton file from wherever the mesh file
 // was loaded from, for example from a C4Group. Return default-construted
-// StdStrBuf with NULL data in case of error.
+// StdStrBuf with nullptr data in case of error.
 class StdMeshSkeletonLoader
 {
 public:
-	virtual ~StdMeshSkeletonLoader() {}
+	virtual ~StdMeshSkeletonLoader() = default;
 
 	void StoreSkeleton(const char* groupname, const char* filename, std::shared_ptr<StdMeshSkeleton> skeleton);
 	void RemoveSkeleton(const StdCopyStrBuf& filepath);

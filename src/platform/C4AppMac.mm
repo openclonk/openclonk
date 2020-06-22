@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,25 +16,26 @@
 
 // based on SDL implementation
 
-#include <C4Include.h>
-#include "C4App.h"
-
-#include <C4Window.h>
-#include <C4Draw.h>
-
+#include "C4ForbidLibraryCompilation.h"
+#define GL_SILENCE_DEPRECATION
 #include <epoxy/gl.h>
 
+#include "C4Include.h"
+#include "platform/C4Window.h"
+#include "graphics/C4Draw.h"
+
+#include "platform/C4App.h"
 #import <Cocoa/Cocoa.h>
 
 #ifndef USE_CONSOLE
-#import "C4WindowController.h"
-#import "C4DrawGLMac.h"
+#import "platform/C4WindowController.h"
+#import "graphics/C4DrawGLMac.h"
 
-bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const std::string &text, bool fClipboard)
 {
 	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
 	[pasteboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-	NSString* string = [NSString stringWithCString:text.getData() encoding:NSUTF8StringEncoding];
+	NSString* string = [NSString stringWithCString:text.c_str() encoding:NSUTF8StringEncoding];
 	if (![pasteboard setString:string forType:NSStringPboardType])
 	{
 		Log("Writing to Cocoa pasteboard failed");
@@ -43,15 +44,15 @@ bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 	return true;
 }
 
-StdStrBuf C4AbstractApp::Paste(bool fClipboard)
+std::string C4AbstractApp::Paste(bool fClipboard)
 {
 	if (fClipboard)
 	{
 		NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
 		const char* chars = [[pasteboard stringForType:NSStringPboardType] cStringUsingEncoding:NSUTF8StringEncoding];
-		return StdStrBuf(chars);
+		return chars;
 	}
-	return StdStrBuf(0);
+	return std::string();
 }
 
 bool C4AbstractApp::IsClipboardFull(bool fClipboard)
@@ -109,7 +110,7 @@ bool C4AbstractApp::FlushMessages()
 
 	while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, TRUE) == kCFRunLoopRunHandledSource);
 	NSEvent* event;
-	while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSEventTrackingRunLoopMode dequeue:YES]) != nil)
+	while ((event = [NSApp nextEventMatchingMask:NSEventMaskAny untilDate:[NSDate distantPast] inMode:NSEventTrackingRunLoopMode dequeue:YES]) != nil)
 	{
 		[NSApp sendEvent:event];
 		[NSApp updateWindows];
@@ -167,7 +168,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 	ActualFullscreenX = iXRes;
 	ActualFullscreenY = iYRes;
 	[C4OpenGLView setSurfaceBackingSizeOf:[C4OpenGLView mainContext] width:ActualFullscreenX height:ActualFullscreenY];
-	if ((window.styleMask & NSFullScreenWindowMask) == 0)
+	if ((window.styleMask & NSWindowStyleMaskFullScreen) == 0)
 	{
 		[window setResizeIncrements:NSMakeSize(1.0, 1.0)];
 		pWindow->SetSize(iXRes, iYRes);
@@ -213,7 +214,7 @@ bool EraseItemSafe(const char* szFilename)
 		tag: 0];
 }
 
-StdStrBuf C4AbstractApp::GetGameDataPath()
+std::string C4AbstractApp::GetGameDataPath()
 {
-	return StdCopyStrBuf([[[NSBundle mainBundle] resourcePath] fileSystemRepresentation]);
+	return [[[NSBundle mainBundle] resourcePath] fileSystemRepresentation];
 }

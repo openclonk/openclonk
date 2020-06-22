@@ -10,7 +10,7 @@ func Initialize()
 	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
 	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObject(Rule_BuyAtFlagpole);
 	// Environment
-	SetSkyParallax(1, 20,20, 0,0, nil, nil);
+	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
 	return true;
 }
 
@@ -20,7 +20,7 @@ func InitializePlayer(int plr)
 {
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,500,350,flag);
+		SetPlayerZoomByViewRange(plr, 500, 350, flag);
 	SetPlayerViewLock(plr, true);
 	// First player init base
 	if (!g_was_player_init)
@@ -30,9 +30,9 @@ func InitializePlayer(int plr)
 	}
 	// Position and materials
 	var i, crew;
-	for (i=0; crew=GetCrew(plr,i); ++i)
+	for (i = 0; crew = GetCrew(plr, i); ++i)
 	{
-		crew->SetPosition(500+Random(100), 200-10);
+		crew->SetPosition(500 + Random(100), 200-10);
 		crew->CreateContents(Shovel);
 	}
 	return true;
@@ -41,22 +41,22 @@ func InitializePlayer(int plr)
 private func InitBase(int owner)
 {
 	// Create standard base owned by player
-	var y=200;
-	var flag = CreateObjectAbove(Flagpole, 590,y, owner);
-	var windgen = CreateObjectAbove(WindGenerator, 500,y, owner);
-	var chemlab = CreateObjectAbove(ChemicalLab, 560,y, owner);
-	var invlab = CreateObjectAbove(InventorsLab, 660,y, owner);
+	var y = 200;
+	var flag = CreateObjectAbove(Flagpole, 590, y, owner);
+	var windgen = CreateObjectAbove(WindGenerator, 500, y, owner);
+	var chemlab = CreateObjectAbove(ChemicalLab, 560, y, owner);
+	var invlab = CreateObjectAbove(InventorsLab, 660, y, owner);
 	if (invlab)
 	{
 		invlab->SetClrModulation(0xff804000);
 	}
-	var toolsw = CreateObjectAbove(ToolsWorkshop, 620,y, owner);
+	var toolsw = CreateObjectAbove(ToolsWorkshop, 620, y, owner);
 	if (toolsw)
 	{
 		toolsw->CreateContents(Wood, 5);
 		toolsw->CreateContents(Metal, 2);
 	}
-	var lorry = CreateObjectAbove(Lorry, 690,y-2, owner);
+	var lorry = CreateObjectAbove(Lorry, 690, y-2, owner);
 	if (lorry)
 	{
 		//lorry->CreateContents(GrappleBow, GetStartupPlayerCount());

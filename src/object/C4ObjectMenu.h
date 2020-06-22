@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,7 +20,7 @@
 #ifndef INC_C4ObjectMenu
 #define INC_C4ObjectMenu
 
-#include "C4Menu.h"
+#include "gui/C4Menu.h"
 
 enum
 {
@@ -49,7 +49,7 @@ class C4ObjectMenu : public C4Menu
 public:
 	C4ObjectMenu();
 
-	virtual void Default();
+	void Default() override;
 
 	enum CallbackType { CB_None=0, CB_Object, CB_Scenario };
 protected:
@@ -70,20 +70,20 @@ public:
 	bool InitRefSym(const C4TargetFacet &fctSymbol, const char *szEmpty, C4Object *pObject, int32_t iExtra=C4MN_Extra_None, int32_t iExtraData=0, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal, bool fUserMenu=false);
 	void Execute();
 
-	virtual C4Object* GetParentObject();
+	C4Object* GetParentObject() override;
 	bool IsCloseQuerying() const { return !!CloseQuerying; }
 
 protected:
-	virtual bool MenuCommand(const char *szCommand, bool fIsCloseCommand);
+	bool MenuCommand(const char *szCommand, bool fIsCloseCommand) override;
 
-	virtual bool DoRefillInternal(bool &rfRefilled);
-	virtual void OnSelectionChanged(int32_t iNewSelection); // do object callbacks if selection changed in user menus
-	virtual bool IsCloseDenied(); // do MenuQueryCancel-callbacks for user menus
-	virtual bool IsReadOnly(); // determine whether the menu is just viewed by an observer, and should not issue any calls
-	virtual void OnUserSelectItem(int32_t Player, int32_t iIndex);
-	virtual void OnUserEnter(int32_t Player, int32_t iIndex, bool fRight);
-	virtual void OnUserClose();
-	virtual int32_t GetControllingPlayer();
+	bool DoRefillInternal(bool &rfRefilled) override;
+	void OnSelectionChanged(int32_t iNewSelection) override; // do object callbacks if selection changed in user menus
+	bool IsCloseDenied() override; // do MenuQueryCancel-callbacks for user menus
+	bool IsReadOnly() override; // determine whether the menu is just viewed by an observer, and should not issue any calls
+	void OnUserSelectItem(int32_t Player, int32_t iIndex) override;
+	void OnUserEnter(int32_t Player, int32_t iIndex, bool fRight) override;
+	void OnUserClose() override;
+	int32_t GetControllingPlayer() override;
 };
 
 #endif

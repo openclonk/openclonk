@@ -1,5 +1,5 @@
 /** 
-	Tutorial 04: 
+	Tutorial 04: Mining Tools
 	Author: Maikel
 	
 	Produce loam, transport lorry, produce pickaxe and mine ore.
@@ -30,7 +30,7 @@ protected func Initialize()
 	InitAI();
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorials.ocf\\Tutorial04.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial04.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -40,7 +40,7 @@ protected func OnGoalsFulfilled()
 	// Achievement: Tutorial completed.
 	GainScenarioAchievement("TutorialCompleted", 3);	
 	// Dialogue options -> next round.
-	SetNextMission("Tutorials.ocf\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }
@@ -81,7 +81,7 @@ private func InitVillageMain()
 		
 	// Elevator, and grain production on the right.
 	var elevator = CreateObjectAbove(Elevator, 601, 392);
-	elevator->CreateShaft(264);
+	elevator->CreateShaft(262);
 	elevator->MakeInvincible();
 	CreateObjectAbove(Windmill, 816, 392)->MakeInvincible();
 	CreateObjectAbove(Kitchen, 904, 376)->MakeInvincible();
@@ -94,7 +94,7 @@ private func InitVillageMain()
 	// Stone door to protect the village.
 	var door = CreateObjectAbove(StoneDoor, 1004, 376);
 	var wheel = CreateObjectAbove(SpinWheel, 972, 376);
-	wheel->SetStoneDoor(door);
+	wheel->SetSwitchTarget(door);
 	
 	// Tools and armory down below.	
 	CreateObjectAbove(ToolsWorkshop, 698, 504)->MakeInvincible();
@@ -243,9 +243,9 @@ protected func InitializePlayer(int plr)
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
-	var interact = GetPlayerControlAssignment(plr, CON_Interact, true);
-	var up = GetPlayerControlAssignment(plr, CON_Up, true);
-	var down = GetPlayerControlAssignment(plr, CON_Down, true);
+	var interact = GetPlayerControlAssignment(plr, CON_Interact, true, true);
+	var up = GetPlayerControlAssignment(plr, CON_Up, true, true);
+	var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
 	guide->AddGuideMessage(Format("$MsgTutorialVillageHead$", interact, up, down));
 	guide->ShowGuideMessage();
 	var effect = AddEffect("TutorialTalkedToVillageHead", nil, 100, 5);
@@ -353,10 +353,9 @@ global func FxTutorialFilledBarrelTimer(object target, proplist effect)
 	var foundry = FindObject(Find_ID(Foundry));
 	if (!foundry)
 		return FX_OK;
-	var barrel = FindObject(Find_ID(Barrel), Find_Container(foundry));
-	if (barrel && barrel->GetFillLevel() >= 100)
+	if (foundry->GetLiquidAmount("Water") >= 100)
 	{
-		var contents = GetPlayerControlAssignment(effect.plr, CON_Contents, true);
+		var contents = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialProduceLoam$", contents));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialGotLoam", nil, 100, 5);
@@ -373,8 +372,8 @@ global func FxTutorialGotLoamTimer(object target, proplist effect)
 		return FX_OK;
 	if (FindObject(Find_ID(Loam), Find_Container(clonk)))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true);
-		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true);
+		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialMakeLoamBridge$", use, interact));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialMovedLorryToWorkshop", nil, 100, 5);
@@ -388,7 +387,7 @@ global func FxTutorialMovedLorryToWorkshopTimer(object target, proplist effect)
 {
 	if (FindObject(Find_ID(Lorry), Find_InRect(674, 474, 44, 30)))
 	{
-		var contents = GetPlayerControlAssignment(effect.plr, CON_Contents, true);
+		var contents = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialProducePickaxe$", contents));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialProducedPickaxe", nil, 100, 5);
@@ -405,7 +404,7 @@ global func FxTutorialProducedPickaxeTimer(object target, proplist effect)
 		return FX_OK;
 	if (FindObject(Find_ID(Pickaxe), Find_Container(workshop)))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true);
+		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialMineOre$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialMinedOre", nil, 100, 5);
@@ -497,7 +496,11 @@ protected func OnGuideMessageShown(int plr, int index)
 	}
 	// Show ore to mine.
 	if (index == 8)
+	{
+		TutArrowShowPos(620, 400, 0);
+		TutArrowShowPos(400, 398, 240);
 		TutArrowShowPos(306, 628, 90);
+	}
 	return;
 }
 
@@ -532,7 +535,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
-		Rule_BaseRespawn->TransferInventory(target, clonk);
+		Rule_Relaunch->TransferInventory(target, clonk);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");

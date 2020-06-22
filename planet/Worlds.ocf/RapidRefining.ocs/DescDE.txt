@@ -1,0 +1,9 @@
+Rasches Raffinieren
+
+Tief in einer Höhle befindet sich eine Ölquelle, die unendlich zu sein scheint. Verbinde die Quelle mittels Pumpen mit dem Raffineriezufluss, um die Raffinerie mit Öl zu versorgen.
+
+Ziel: Pumpe Öl.
+
+Tipps:
+- Zünde kein Öl an, es wird für eine lange Zeit brennen.
+- Du kannst mehrere Rohre mit dem Raffineriezufluss verbinden.

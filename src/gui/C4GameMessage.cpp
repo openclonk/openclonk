@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,20 +17,19 @@
 
 /* Text messages drawn inside the viewport */
 
-#include <C4Include.h>
-#include <C4GameMessage.h>
+#include "C4Include.h"
+#include "gui/C4GameMessage.h"
 
-#include <C4Object.h>
-#include <C4GraphicsResource.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 const int32_t ObjectMsgDelayFactor = 2, GlobalMsgDelayFactor = 3; // frames per char message display time
 
-C4GameMessage::C4GameMessage() : pFrameDeco(NULL)
-{
-
-}
+C4GameMessage::C4GameMessage() = default;
 
 C4GameMessage::~C4GameMessage()
 {
@@ -40,7 +39,7 @@ C4GameMessage::~C4GameMessage()
 void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID, C4PropList *pSrc, uint32_t dwFlags, int width)
 {
 	// safety!
-	if (pTarget && !pTarget->Status) pTarget = NULL;
+	if (pTarget && !pTarget->Status) pTarget = nullptr;
 	// Set data
 	Text.Copy(sText);
 	Target=pTarget;
@@ -51,7 +50,7 @@ void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarg
 	Delay=std::max<int32_t>(C4GM_MinDelay, Text.getLength() * (Target ? ObjectMsgDelayFactor : GlobalMsgDelayFactor));
 	DecoID=idDecoID;
 	this->dwFlags=dwFlags;
-	PictureDef=NULL;
+	PictureDef=nullptr;
 	PictureDefVal.Set0();
 	if (pSrc)
 	{
@@ -82,14 +81,14 @@ void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarg
 		Text.Shrink(1);
 	}
 	// frame decoration
-	delete pFrameDeco; pFrameDeco = NULL;
+	delete pFrameDeco; pFrameDeco = nullptr;
 	if (DecoID)
 	{
 		pFrameDeco = new C4GUI::FrameDecoration();
 		if (!pFrameDeco->SetByDef(DecoID))
 		{
 			delete pFrameDeco;
-			pFrameDeco = NULL;
+			pFrameDeco = nullptr;
 		}
 	}
 }
@@ -304,7 +303,7 @@ void C4GameMessage::UpdateDef(C4ID idUpdDef)
 		if (!pFrameDeco->UpdateGfx())
 		{
 			delete pFrameDeco;
-			pFrameDeco = NULL;
+			pFrameDeco = nullptr;
 		}
 	}
 }
@@ -321,12 +320,12 @@ C4GameMessageList::~C4GameMessageList()
 
 void C4GameMessageList::Default()
 {
-	First=NULL;
+	First=nullptr;
 }
 
 void C4GameMessageList::ClearPointers(C4Object *pObj)
 {
-	C4GameMessage *cmsg,*next,*prev=NULL;
+	C4GameMessage *cmsg,*next,*prev=nullptr;
 	for (cmsg=First; cmsg; cmsg=next)
 	{
 		next=cmsg->Next;
@@ -345,12 +344,12 @@ void C4GameMessageList::Clear()
 		next=cmsg->Next;
 		delete cmsg;
 	}
-	First=NULL;
+	First=nullptr;
 }
 
 void C4GameMessageList::Execute()
 {
-	C4GameMessage *cmsg,*next,*prev=NULL;
+	C4GameMessage *cmsg,*next,*prev=nullptr;
 	for (cmsg=First; cmsg; cmsg=next)
 	{
 		next=cmsg->Next;
@@ -394,7 +393,7 @@ bool C4GameMessageList::New(int32_t iType, const StdStrBuf & sText, C4Object *pT
 
 bool C4GameMessageList::Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t bCol, bool fNoDuplicates)
 {
-	C4GameMessage *cmsg = NULL;
+	C4GameMessage *cmsg = nullptr;
 	if (iType == C4GM_Target)
 	{
 		for (cmsg=::Messages.First; cmsg; cmsg=cmsg->Next)
@@ -420,7 +419,7 @@ bool C4GameMessageList::Append(int32_t iType, const char *szText, C4Object *pTar
 
 void C4GameMessageList::ClearPlayers(int32_t iPlayer, int32_t dwPositioningFlags)
 {
-	C4GameMessage *cmsg,*next,*prev=NULL;
+	C4GameMessage *cmsg,*next,*prev=nullptr;
 	for (cmsg=First; cmsg; cmsg=next)
 	{
 		next=cmsg->Next;

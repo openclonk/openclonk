@@ -59,7 +59,7 @@ global func GivePlayerPumpingKnowledge(int plr)
 {
 	var knowledge = [
 		// Stuff needed for pumping.
-		Pump, Pipe
+		Pump, Pipe /*,LiquidTank TODO: add when graphics are done*/
 	];
 	for (var plan in knowledge)
 		SetPlrKnowledge(plr, plan);
@@ -70,7 +70,7 @@ global func GivePlayerFarmingKnowledge(int plr)
 {
 	var knowledge = [
 		// Structures needed to process farming materials.
-		Kitchen, Loom,
+		Kitchen, Loom, Windmill,
 		// Basic tools for farming.
 		Sickle,
 		// Processed goods.
@@ -87,7 +87,7 @@ global func GivePlayerWeaponryKnowledge(int plr)
 		// Armory to construct the weapons.
 		Armory,
 		// Weapons and explosives.
-		Bow, Arrow, FireArrow, BombArrow, Club, Sword, Javelin, Shield, Musket, LeadShot, IronBomb, GrenadeLauncher, PowderKeg,
+		Bow, Arrow, FireArrow, BombArrow, Club, Sword, Javelin, Shield, Blunderbuss, LeadBullet, IronBomb, GrenadeLauncher, PowderKeg, Helmet, SmokeBomb,
 		// Artillery vehicles.
 		Catapult, Cannon
 	];
@@ -113,7 +113,7 @@ global func GivePlayerAdvancedKnowledge(int plr)
 		// Inventors lab to construct the items.
 		InventorsLab, Loom,
 		// Advanced items in tools workshop and needed materials.
-		Ropeladder, MetalBarrel, PowderKeg, WallKit, Cloth,
+		Ropeladder, MetalBarrel, PowderKeg, WallKit, Cloth, DivingHelmet,
 		// Advanced items in inventors lab.
 		TeleGlove, WindBag, GrappleBow, Boompack, Balloon,
 	];

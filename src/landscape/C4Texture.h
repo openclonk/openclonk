@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,10 +20,11 @@
 #ifndef INC_C4Texture
 #define INC_C4Texture
 
-#include <C4TextureShape.h>
-#include <C4Surface.h>
-#include <C4Constants.h>
-#include <C4Material.h>
+#include "config/C4Constants.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4TextureShape.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4Surface.h"
 
 class C4Texture
 {
@@ -52,7 +53,7 @@ public:
 private:
 	StdCopyStrBuf Material, Texture;
 	int32_t iMaterialIndex;
-	C4Material *pMaterial;
+	C4Material *pMaterial{nullptr};
 	C4Pattern MatPattern;
 public:
 	bool isNull() const { return Material.isNull(); }
@@ -74,14 +75,14 @@ public:
 protected:
 	C4TexMapEntry Entry[C4M_MaxTexIndex];
 	std::vector<int32_t> Order; // drawing order in map2landscape. Reflects order in MatMap.txt file.
-	C4Texture *FirstTexture;
-	bool fOverloadMaterials;
-	bool fOverloadTextures;
-	bool fInitialized; // Set after Init() - newly added entries initialized automatically
+	C4Texture *FirstTexture{nullptr};
+	bool fOverloadMaterials{false};
+	bool fOverloadTextures{false};
+	bool fInitialized{false}; // Set after Init() - newly added entries initialized automatically
 public:
-	bool fEntriesAdded;
+	bool fEntriesAdded{false};
 public:
-	const C4TexMapEntry *GetEntry(int32_t iIndex) const { return Inside<int32_t>(iIndex, 0, C4M_MaxTexIndex-1) ? &Entry[iIndex] : NULL; }
+	const C4TexMapEntry *GetEntry(int32_t iIndex) const { return Inside<int32_t>(iIndex, 0, C4M_MaxTexIndex-1) ? &Entry[iIndex] : nullptr; }
 	void RemoveEntry(int32_t iIndex);
 	void Clear();
 	void StoreMapPalette(CStdPalette *, C4MaterialMap &rMaterials);
@@ -89,12 +90,12 @@ public:
 	int32_t LoadMap(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures);
 	int32_t Init();
 	bool SaveMap(C4Group &hGroup, const char *szEntryName);
-	int32_t LoadTextures(C4Group &hGroup, C4Group* OverloadFile=0);
+	int32_t LoadTextures(C4Group &hGroup, C4Group* OverloadFile=nullptr);
 	bool HasTextures(C4Group &hGroup);
 	const char *GetTexture(int32_t iIndex);
 	void MoveIndex(BYTE byOldIndex, BYTE byNewIndex); // change index of texture
-	int32_t GetIndex(const char *szMaterial, const char *szTexture, bool fAddIfNotExist=true, const char *szErrorIfFailed=NULL);
-	int32_t GetIndexMatTex(const char *szMaterialTexture, const char *szDefaultTexture = NULL, bool fAddIfNotExist=true, const char *szErrorIfFailed=NULL);
+	int32_t GetIndex(const char *szMaterial, const char *szTexture, bool fAddIfNotExist=true, const char *szErrorIfFailed=nullptr);
+	int32_t GetIndexMatTex(const char *szMaterialTexture, const char *szDefaultTexture = nullptr, bool fAddIfNotExist=true, const char *szErrorIfFailed=nullptr);
 	C4Texture * GetTexture(const char *szTexture);
 	bool CheckTexture(const char *szTexture); // return whether texture exists
 	bool AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);

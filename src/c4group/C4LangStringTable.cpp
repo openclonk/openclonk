@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,14 +16,9 @@
 // Loads StringTbl* and replaces $..$-strings by localized versions
 
 #include "C4Include.h"
+#include "c4group/C4LangStringTable.h"
 
-#include <utility>
-#include <vector>
-
-#include "C4LangStringTable.h"
-#include "C4InputValidation.h"
-
-C4LangStringTable::C4LangStringTable() : ref_count(1) {}
+#include "lib/C4InputValidation.h"
 
 bool C4LangStringTable::HasTranslation(const std::string &text) const
 {
@@ -68,7 +63,7 @@ void C4LangStringTable::PopulateStringTable() const
 			else if (*data == '\0' || *data == '\n' || *data == '\r')
 			{
 				if (!key.empty() && key[0]!='#')
-					LogF("%s: string table entry without a value: \"%s\"", GetFilePath() ? GetFilePath() : "<unknown>", key.c_str());
+					LogF(R"(%s: string table entry without a value: "%s")", GetFilePath() ? GetFilePath() : "<unknown>", key.c_str());
 				key.clear();
 			}
 			else
@@ -104,7 +99,7 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 
 	// Find Replace Positions
 	int iScriptLen = SLen(Data);
-	struct RP { const char *Pos; std::string String; unsigned int Len; RP *Next; } *pRPList = NULL, *pRPListEnd = NULL;
+	struct RP { const char *Pos; std::string String; unsigned int Len; RP *Next; } *pRPList = nullptr, *pRPListEnd = nullptr;
 	for (const char *pPos = SSearch(Data, "$"); pPos; pPos = SSearch(pPos, "$"))
 	{
 		// Get name
@@ -127,14 +122,14 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 			pnRP->Pos = pPos - SLen(szStringName) - 2;
 			pnRP->String = pStrTblEntry;
 			pnRP->Len = SLen(szStringName) + 2;
-			pnRP->Next = NULL;
+			pnRP->Next = nullptr;
 			pRPListEnd = (pRPListEnd ? pRPListEnd->Next : pRPList) = pnRP;
 			// calculate new script length
 			iScriptLen += pStrTblEntry.size() - pnRP->Len;
 		}
 		catch (NoSuchTranslation &)
 		{
-			LogF("%s: string table entry not found: \"%s\"", GetFilePath() ? GetFilePath() : "<unknown>", szStringName);
+			LogF(R"(%s: string table entry not found: "%s")", GetFilePath() ? GetFilePath() : "<unknown>", szStringName);
 		}
 	}
 	// Alloc new Buffer
@@ -174,5 +169,3 @@ void C4LangStringTable::ReplaceStrings(StdStrBuf &rBuf)
 {
 	ReplaceStrings(rBuf, rBuf);
 }
-
-C4LangStringTable C4LangStringTable::system_string_table;

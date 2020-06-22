@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,25 +17,19 @@
 
 /* Handles the sound bank and plays effects using DSoundX */
 
-#include <C4Include.h>
-#include <C4SoundInstance.h>
+#include "C4Include.h"
+#include "platform/C4SoundInstance.h"
 
-#include <C4Random.h>
-#include <C4Object.h>
-#include <C4Game.h>
-#include <C4Config.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4SoundIncludes.h>
-#include <C4SoundLoaders.h>
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "lib/C4Random.h"
+#include "object/C4Object.h"
+#include "platform/C4SoundIncludes.h"
+#include "platform/C4SoundLoaders.h"
 
 using namespace C4SoundLoaders;
 
-C4SoundEffect::C4SoundEffect():
-		Instances (0),
-		pSample (0),
-		FirstInst (NULL),
-		Next (NULL)
+C4SoundEffect::C4SoundEffect()
 {
 	Name[0]=0;
 }
@@ -135,10 +129,10 @@ void C4SoundEffect::Execute()
 C4SoundInstance *C4SoundEffect::New(bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// check: too many instances?
-	if (!fLoop && Instances >= C4MaxSoundInstances) return NULL;
+	if (!fLoop && Instances >= C4MaxSoundInstances) return nullptr;
 	// create & init sound instance
 	C4SoundInstance *pInst = new C4SoundInstance();
-	if (!pInst->Create(this, fLoop, iVolume, pObj, 0, iCustomFalloffDistance, iPitch, modifier)) { delete pInst; return NULL; }
+	if (!pInst->Create(this, fLoop, iVolume, pObj, 0, iCustomFalloffDistance, iPitch, modifier)) { delete pInst; return nullptr; }
 	// add to list
 	AddInst(pInst);
 	// return
@@ -150,7 +144,7 @@ C4SoundInstance *C4SoundEffect::GetInstance(C4Object *pObj)
 	for (C4SoundInstance *pInst = FirstInst; pInst; pInst = pInst->pNext)
 		if (pInst->getObj() == pObj)
 			return pInst;
-	return NULL;
+	return nullptr;
 }
 
 void C4SoundEffect::ClearPointers(C4Object *pObj)
@@ -200,14 +194,7 @@ void C4SoundEffect::RemoveInst(C4SoundInstance *pInst)
 
 
 C4SoundInstance::C4SoundInstance():
-		pEffect (NULL),
-		iVolume(0), iPan(0), iPitch(0),
-		player(NO_OWNER),
-		pitch_dirty(false),
-		iChannel (-1),
-		modifier(NULL),
-		has_local_modifier(false),
-		pNext (NULL)
+		player(NO_OWNER)
 {
 }
 
@@ -223,7 +210,7 @@ void C4SoundInstance::Clear()
 	if (modifier)
 	{
 		modifier->DelRef();
-		modifier = NULL;
+		modifier = nullptr;
 		has_local_modifier = false;
 	}
 }
@@ -400,10 +387,10 @@ void C4SoundInstance::Execute()
 	}
 }
 
-void C4SoundInstance::SetVolumeByPos(int32_t x, int32_t y)
+void C4SoundInstance::SetVolumeByPos(int32_t x, int32_t y, int32_t relative_vol)
 {
 	int32_t vol_player = NO_OWNER;
-	iVolume = ::Viewports.GetAudibility(x, y, &iPan, 0, &vol_player);
+	iVolume = ::Viewports.GetAudibility(x, y, &iPan, 0, &vol_player) * relative_vol / 100.0f;
 	if (vol_player != player) SetPlayer(vol_player);
 }
 
@@ -418,7 +405,7 @@ void C4SoundInstance::ClearPointers(C4Object *pDelete)
 		// otherwise: set volume by last position
 		else
 			SetVolumeByPos(pObj->GetX(), pObj->GetY());
-		pObj = NULL;
+		pObj = nullptr;
 	}
 }
 
@@ -438,7 +425,7 @@ void C4SoundInstance::SetModifier(C4SoundModifier *new_modifier, bool is_global)
 	else
 	{
 		// this sound has its own modifier now and doesn't care for global ones
-		has_local_modifier = (new_modifier != NULL);
+		has_local_modifier = (new_modifier != nullptr);
 	}
 	if (new_modifier != modifier)
 	{

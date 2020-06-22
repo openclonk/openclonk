@@ -35,7 +35,12 @@
     </title>
   </xsl:template>
   <xsl:template match="script">
-      <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
+      <xsl:copy>
+          <xsl:for-each select="@*">
+              <xsl:copy />
+          </xsl:for-each>
+          <xsl:apply-templates />
+      </xsl:copy>
   </xsl:template>
   <xsl:template match="func|const" mode="head">
     <xsl:apply-templates mode="head" />
@@ -336,7 +341,7 @@
             </xsl:if>
             <xsl:if test="position() mod 2=0"><xsl:attribute name="class">dark</xsl:attribute></xsl:if>
             <xsl:for-each select="col|literal_col">
-              <td><xsl:apply-templates select="@colspan|node()"/></td>
+              <td><xsl:apply-templates select="@colspan|@id|node()"/></td>
             </xsl:for-each>
           </tr>
         </xsl:for-each>
@@ -349,16 +354,6 @@
     <caption><xsl:apply-templates select="@id|node()" /></caption>
   </xsl:template>
 
-  <xsl:template match="search">
-    <xsl:if test="not($chm)">
-      <form action="../search.php" method="get">
-        <input name="search" type="text"></input>
-        <input type="submit" name="func" value="Search"></input>
-        <input type="submit" name="fulltext" value="Fulltext"></input>
-      </form>
-    </xsl:if>
-  </xsl:template>
-  
   <xsl:template match="table/bitmask">
     <xsl:value-of select="." />:
     <input id="input" onKeyUp="Calc();" name="input" type="text">
@@ -516,7 +511,7 @@
   <xsl:template name="color2">
     <xsl:param name="s" select="." />
     <!-- the list of keywords -->
-    <xsl:param name="t" select="'#include|#appendto|public|private|protected|global|static|var|local|const|any|int|bool|def|effect|object|proplist|string|array|func|return|if|else|break|continue|while|for|true|false|nil|'" />
+    <xsl:param name="t" select="'#include|#appendto|#warning|public|private|protected|global|static|var|local|const|any|int|bool|def|effect|object|proplist|string|array|func|return|if|else|break|continue|while|for|new|true|false|nil|'" />
     <xsl:param name="w" select="substring-before($t, '|')" />
     <!-- text before the keyword -->
     <xsl:variable name="l" select="substring-before($s, $w)" />

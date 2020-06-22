@@ -1,8 +1,8 @@
 [Head]
 Title=GemGrabbers
 Icon=35
-Version=6,0
-Difficulty=80
+Version=8,0
+Difficulty=90
 
 [Definitions]
 Definition1=Objects.ocd

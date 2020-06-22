@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,12 +15,12 @@
  */
 // file selection dialogs
 
-#include <C4Include.h>
-#include <C4FileSelDlg.h>
+#include "C4Include.h"
+#include "gui/C4FileSelDlg.h"
 
-#include <C4GraphicsResource.h> // only for single use of ::GraphicsResource.fctOKCancel below...
-#include <C4Version.h>
-#include <C4Draw.h>
+#include "C4Version.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h" // only for single use of ::GraphicsResource.fctOKCancel below...
 
 #ifdef _WIN32
 #ifndef _WIN32_IE
@@ -47,15 +47,13 @@ C4FileSelDlg::ListItem::ListItem(const char *szFilename) : C4GUI::Control(C4Rect
 	if (szFilename) sFilename.Copy(szFilename); else sFilename.Clear();
 }
 
-C4FileSelDlg::ListItem::~ListItem()
-{
-}
+C4FileSelDlg::ListItem::~ListItem() = default;
 
 // ---------------------------------------------------
 // C4FileSelDlg::DefaultListItem
 
 C4FileSelDlg::DefaultListItem::DefaultListItem(const char *szFilename, bool fTruncateExtension, bool fCheckbox, bool fGrayed, C4GUI::Icons eIcon)
-		: C4FileSelDlg::ListItem(szFilename), pLbl(NULL), pCheck(NULL), pKeyCheck(NULL), fGrayed(fGrayed)
+		: C4FileSelDlg::ListItem(szFilename), pLbl(nullptr), pCheck(nullptr), pKeyCheck(nullptr), fGrayed(fGrayed)
 {
 	StdStrBuf sLabel; if (szFilename) sLabel.Ref(::GetFilename(szFilename)); else sLabel.Ref(LoadResStr("IDS_CTL_NONE"));
 	if (szFilename && fTruncateExtension)
@@ -71,7 +69,7 @@ C4FileSelDlg::DefaultListItem::DefaultListItem(const char *szFilename, bool fTru
 	int32_t iHeight = caMain.GetInnerHeight();
 	if (fCheckbox)
 	{
-		pCheck = new C4GUI::CheckBox(caMain.GetFromLeft(iHeight), NULL, false);
+		pCheck = new C4GUI::CheckBox(caMain.GetFromLeft(iHeight), nullptr, false);
 		if (fGrayed) pCheck->SetEnabled(false);
 		AddElement(pCheck);
 		pKeyCheck = new C4KeyBinding(C4KeyCodeEx(K_SPACE), "FileSelToggleFileActive", KEYSCOPE_Gui,
@@ -127,7 +125,7 @@ bool C4FileSelDlg::DefaultListItem::UserToggleCheck()
 
 C4FileSelDlg::C4FileSelDlg(const char *szRootPath, const char *szTitle, C4FileSel_BaseCB *pSelCallback, bool fInitElements)
 		: C4GUI::Dialog(Clamp(C4GUI::GetScreenWdt()*2/3+10, 300,600), Clamp(C4GUI::GetScreenHgt()*2/3+10, 220,500), szTitle, false),
-		pLocationComboBox(NULL), pFileListBox(NULL), pSelectionInfoBox(NULL), btnOK(NULL), pLocations(NULL), iLocationCount(0), pSelection(NULL), pSelCallback(pSelCallback)
+		pLocationComboBox(nullptr), pFileListBox(nullptr), pSelectionInfoBox(nullptr), btnOK(nullptr), pLocations(nullptr), iLocationCount(0), pSelection(nullptr), pSelCallback(pSelCallback)
 {
 	sTitle.Copy(szTitle);
 	// key bindings
@@ -169,7 +167,7 @@ void C4FileSelDlg::InitElements()
 	{
 		caUpperArea.ExpandLeft(C4GUI_DefDlgIndent);
 		pSelectionInfoBox = new C4GUI::TextWindow(caUpperArea.GetAll());
-		pSelectionInfoBox->SetDecoration(true, true, NULL, true);
+		pSelectionInfoBox->SetDecoration(true, true, nullptr, true);
 	}
 	// create button area
 	C4GUI::Button *btnAbort = new C4GUI::CancelButton(caButtonArea.GetFromRight(C4GUI_DefButton2Wdt));
@@ -260,7 +258,7 @@ C4FileSelDlg::ListItem *C4FileSelDlg::CreateListItem(const char *szFilename)
 	if (szFilename)
 		return new DefaultListItem(szFilename, !!GetFileMask(), IsMultiSelection(), IsItemGrayed(szFilename), GetFileItemIcon());
 	else
-		return new DefaultListItem(NULL, false, IsMultiSelection(), false, GetFileItemIcon());
+		return new DefaultListItem(nullptr, false, IsMultiSelection(), false, GetFileItemIcon());
 }
 
 void C4FileSelDlg::UpdateFileList()
@@ -278,7 +276,7 @@ void C4FileSelDlg::UpdateFileList()
 	// none-item?
 	if (HasNoneItem())
 	{
-		pFileListBox->AddElement(CreateListItem(NULL));
+		pFileListBox->AddElement(CreateListItem(nullptr));
 	}
 	// list now done
 	EndFileListUpdate();
@@ -427,7 +425,7 @@ bool C4DefinitionSelDlg::IsItemGrayed(const char *szFilename) const
 bool C4DefinitionSelDlg::SelectDefinitions(C4GUI::Screen *pOnScreen, StdStrBuf *pSelection)
 {
 	// let the user select definitions by showing a modal selection dialog
-	C4DefinitionSelDlg *pDlg = new C4DefinitionSelDlg(NULL, pSelection->getData());
+	C4DefinitionSelDlg *pDlg = new C4DefinitionSelDlg(nullptr, pSelection->getData());
 	bool fResult;
 	if ((fResult = pOnScreen->ShowModalDlg(pDlg, false)))
 	{
@@ -572,9 +570,9 @@ C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback)
 	AddCheckedLocation(strLocation.getData(), path);
 #ifdef _WIN32
 	wchar_t wpath[MAX_PATH+1];
-	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_PERSONAL, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYDOCUMENTS"), StdStrBuf(wpath).getData());
-	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_MYPICTURES, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYPICTURES"), StdStrBuf(wpath).getData());
-	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_DESKTOPDIRECTORY, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_DESKTOP"), StdStrBuf(wpath).getData());
+	if (SHGetSpecialFolderPathW(nullptr, wpath, CSIDL_PERSONAL, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYDOCUMENTS"), StdStrBuf(wpath).getData());
+	if (SHGetSpecialFolderPathW(nullptr, wpath, CSIDL_MYPICTURES, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYPICTURES"), StdStrBuf(wpath).getData());
+	if (SHGetSpecialFolderPathW(nullptr, wpath, CSIDL_DESKTOPDIRECTORY, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_DESKTOP"), StdStrBuf(wpath).getData());
 #endif
 #ifdef __APPLE__
 	AddCheckedLocation(LoadResStr("IDS_TEXT_HOME"), getenv("HOME"));
@@ -634,11 +632,11 @@ void C4PortraitSelDlg::OnIdle()
 bool C4PortraitSelDlg::SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSelection)
 {
 	// let the user select a portrait by showing a modal selection dialog
-	C4PortraitSelDlg *pDlg = new C4PortraitSelDlg(NULL);
+	C4PortraitSelDlg *pDlg = new C4PortraitSelDlg(nullptr);
 	bool fResult;
 	if ((fResult = pOnScreen->ShowModalDlg(pDlg, false)))
 	{
-		pSelection->Take(pDlg->GetSelection(NULL, false));
+		pSelection->Take(pDlg->GetSelection(nullptr, false));
 	}
 	delete pDlg;
 	return fResult;

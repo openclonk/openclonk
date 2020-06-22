@@ -1,6 +1,6 @@
 [DefCore]
 id=Elevator_Case_Back
-Version=6,0
+Version=8,0
 Width=24
 Height=45
 Offset=-12,-26
@@ -10,3 +10,4 @@ Vertices=1
 VertexX=-12
 VertexY=-2
 VertexFriction=0
+HideInCreator=true

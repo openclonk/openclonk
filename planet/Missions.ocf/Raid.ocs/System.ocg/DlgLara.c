@@ -118,7 +118,7 @@ func FxLaraWalkingTimer(object c, proplist fx, int time)
 				c->SetXDir();
 				fx.carry_obj->Enter(c);
 				// find a target
-				fx.target_pos = [[220+Random(11), 311], [495+Random(51),358]][fx.carry_obj->GetX() < 350];
+				fx.target_pos = [[220 + Random(11), 311], [495 + Random(51),358]][fx.carry_obj->GetX() < 350];
 			}
 			else 
 			{
@@ -161,6 +161,6 @@ func Lara_FindCarryObj(object c, proplist fx)
 {
 	var last_exclude;
 	if (fx.last_barrel) last_exclude = Find_Exclude(fx.last_barrel);
-	var objs = Global->FindObjects(Global->Find_InRect(200,200,650,180), Find_Func("IsBarrel"), last_exclude);
+	var objs = Global->FindObjects(Global->Find_InRect(200, 200, 650, 180), Find_Func("IsBarrel"), last_exclude);
 	return objs[Random(GetLength(objs))];
 }

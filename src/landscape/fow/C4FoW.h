@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,13 +16,14 @@
 #ifndef C4FOW_H
 #define C4FOW_H
 
-#include "C4Surface.h"
-#include "C4FacetEx.h"
-#include "C4Rect.h"
-#include "C4Object.h"
-#include "C4FoWLight.h"
-#include "C4FoWAmbient.h"
-#include "C4Shader.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4Shader.h"
+#include "graphics/C4Surface.h"
+#include "landscape/fow/C4FoWAmbient.h"
+#include "landscape/fow/C4FoWLight.h"
+#include "lib/C4Rect.h"
+#include "object/C4Object.h"
 
 /** Simple transformation class which allows translation and scales in x and y.
  * This is typically used to initialize shader uniforms to transform fragment
@@ -31,7 +32,7 @@
 class C4FragTransform
 {
 public:
-	C4FragTransform(): x(1.0f), y(1.0f), x0(0.0f), y0(0.0f) {}
+	C4FragTransform() = default;
 
 	// Multiplies from left
 	inline void Translate(float dx, float dy)
@@ -61,8 +62,8 @@ public:
 	}
 
 private:
-	float x, y;
-	float x0, y0;
+	float x{1.0f}, y{1.0f};
+	float x0{0.0f}, y0{0.0f};
 };
 
 enum C4FoWFramebufShaderUniforms {
@@ -101,10 +102,14 @@ class C4FoW
 {
 public:
 	C4FoW();
+	~C4FoW();
 
 private:
 	/** linked list of all lights */
-	class C4FoWLight *pLights;
+	class C4FoWLight *pLights{nullptr};
+
+	/** linked list of all dead light objects to be deleted on next render pass*/
+	class C4FoWLight *deleted_lights{nullptr};
 
 public:
 	C4FoWAmbient Ambient;
@@ -114,7 +119,7 @@ public:
 	// Shader to use for rendering the lights
 	C4Shader *GetRenderShader();
 
-	void Clear();
+	void ClearDeletedLights();
 
 	/** Updates the view range of the given object in its associated light or create a new light if none exists yet. */
 	void Add(C4Object *pObj);

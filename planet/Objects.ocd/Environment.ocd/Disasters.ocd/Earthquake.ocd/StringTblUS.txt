@@ -1,1 +1,6 @@
 Name=Earthquake
+LaunchEarthquake=Earthquake
+LaunchEarthquakeHelp=Shakes the ground, flings objects and drops loose materials.
+PositionHelp=Where the earth shakes.
+Strength=Strength
+StrengthHelp=Radius and strength of the shaking.

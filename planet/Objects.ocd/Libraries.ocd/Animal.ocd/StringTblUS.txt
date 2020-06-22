@@ -1,0 +1,6 @@
+ReproductionAreaSize=Reproduction area
+ReproductionAreaSizeHelp=Size of the square area in pixels in which animals of the same kind are counted in order to prevent over-population.
+ReproductionRate=Reproduction rate
+ReproductionRateHelp=Reproduction rate from 0 to 10,000. 0 is no reproduktion; 10000 ist maximum rate (approximately every two seconds).
+MaxCount=Maximum count
+MaxCountHelp=Maximale number of animals in reproduction area. If this number is exceeded, animals stop reproducing.

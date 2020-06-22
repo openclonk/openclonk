@@ -36,11 +36,6 @@
           <col>Category of the object. Also see <emlink href="definition/category.html">object categories</emlink>.</col>
         </row>
         <row>
-          <literal_col>ContactCalls</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. If 1, Contactcalls are called in the object script.</col>
-        </row>
-        <row>
           <literal_col>Width</literal_col>
           <col>Integer</col>
           <col>Width of the object.</col>
@@ -64,11 +59,6 @@
           <literal_col>Mass</literal_col>
           <col>Integer</col>
           <col>Weight of the object. Rock 10, clonk 50, hut 1000, castle 10000.</col>
-        </row>
-        <row>
-          <literal_col>Components</literal_col>
-          <col>ID list</col>
-          <col>Elements from which the object is composed. Uncompleted or half grown objects will only have the respective fraction of the components.</col>
         </row>
         <row>
           <literal_col>SolidMask</literal_col>
@@ -119,11 +109,6 @@
           <literal_col>Collection</literal_col>
           <col>4 integers</col>
           <col>Position of the intake region relative to the object centre.</col>
-        </row>
-        <row>
-          <literal_col>FireTop</literal_col>
-          <col>Integer</col>
-          <col>Flame distance to the object's bottom line.</col>
         </row>
         <row>
           <literal_col>Exclusive</literal_col>
@@ -191,11 +176,6 @@
           <col>0 or 1. The object can be scaled over 100% using DoCon.</col>
         </row>
         <row>
-          <literal_col>AttractLightning</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. The object attracts lightning.</col>
-        </row>
-        <row>
           <literal_col>Fragile</literal_col>
           <col>Integer</col>
           <col>0 or 1. The object should not be thrown.</col>
@@ -216,7 +196,7 @@
           <col>1 - 10. Determines search depth of the pathfinder algorithm (default 1). Warning: higher values may slow down the game. By setting this value you can also enable non-CrewMember objects to use pathfinding when executing commands.</col>
         </row>
         <row>
-          <literal_col>NoComponentMass</literal_col>
+          <literal_col>NoMassFromContents</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1, the object's contents is not added to the object's total mass. This can be used to prevent small container objects from turning into killer throwing items.</col>
         </row>
@@ -279,6 +259,11 @@
           <literal_col>NoTransferZones</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1 the object's pathfinding will ignore any transfer zones.</col>
+        </row>
+        <row>
+          <literal_col>HideInCreator</literal_col>
+          <col>Boolean</col>
+          <col>false (default) or true. If true, the definition is not shown in the object creator window of the editor. Should be used for internal definitions, libraries, etc.</col>
         </row>
       </table>
     </text>

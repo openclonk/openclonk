@@ -6,7 +6,7 @@
 */
 
 // Set in Objects.c
-static g_chemical, g_cabin, g_sawmill, g_workshop, g_flagpole, g_windmill, npc_newton, npc_lara, npc_lisa, npc_woody, npc_rocky, npc_mave, npc_pyrit, npc_clonko, npc_matthi, npc_dora;
+//static g_chemical, g_cabin, g_sawmill, g_workshop, g_flagpole, g_windmill, npc_newton, npc_lara, npc_lisa, npc_woody, npc_rocky, npc_mave, npc_pyrit, npc_clonko, npc_matthi, npc_dora;
 
 // Created after intro
 static g_goal;
@@ -26,9 +26,20 @@ static g_is_initialized,      // intro started
 
 func Initialize()
 {
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetInventoryTransfer(true);
+	relaunch_rule->SetFreeCrew(true);
+	relaunch_rule->SetRespawnDelay(1);
+	relaunch_rule->SetBaseRespawn(true);
+	relaunch_rule->SetDefaultRelaunchCount(nil);
+	relaunch_rule->SetAllowPlayerRestart(true);
+	relaunch_rule->SetLastClonkRespawn(true);
+	relaunch_rule->SetInitialRelaunch(false);
 	npc_newton->SetAlternativeSkin("MaleBlackHair");
 	npc_pyrit->SetAlternativeSkin("MaleBrownHair");
 	npc_woody->SetAlternativeSkin("Youngster");
+	g_guidepost1->SetInscription("$Post1$");
+	g_guidepost2->SetInscription("$Post2$");
 	MakeRuinsOnDamage(); // see System.ocg/Ruins.c
 	PlaceGrass(40);
 	return true;
@@ -87,7 +98,7 @@ func JoinPlayer(int plr, object crew, bool no_placement)
 	if (g_attack_done) tools = [Shovel, Axe]; else tools = [];
 	for (var tool in tools)
 		if (!crew->ContentsCount(tool)) crew->CreateContents(tool);
-	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetCursor(crew->GetOwner(), crew);
 	return true;
 }
@@ -117,8 +128,8 @@ func OnPlaneLoaded(object plane, object oil)
 
 func OnGoalsFulfilled()
 {
-	SetNextMission("Missions.ocf/Crash.ocs");
-	GainMissionAccess("S2Raid");
+	SetNextScenario("Missions.ocf/Crash.ocs");
+	GainScenarioAccess("S2Raid");
 	GainScenarioAchievement("Done");
 	return true; // GameOver done by outro
 }

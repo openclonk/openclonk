@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,14 +17,13 @@
 // dropdown box
 // implemented via context menu
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4FacetEx.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
-
-#include <C4Window.h>
+#include "graphics/C4Draw.h"
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
 
 namespace C4GUI
 {
@@ -64,28 +63,28 @@ namespace C4GUI
 // ComboBox
 
 	ComboBox::ComboBox(const C4Rect &rtBounds) :
-			Control(rtBounds), iOpenMenu(0), pFillCallback(NULL), fReadOnly(false), fSimple(false), fMouseOver(false),
-			pUseFont(NULL), dwFontClr(C4GUI_ComboFontClr), dwBGClr(C4GUI_StandardBGColor), dwBorderClr(0), pFctSideArrow(NULL)
+			Control(rtBounds), iOpenMenu(0), pFillCallback(nullptr), fReadOnly(false), fSimple(false), fMouseOver(false),
+			pUseFont(nullptr), dwFontClr(C4GUI_ComboFontClr), dwBGClr(C4GUI_StandardBGColor), dwBorderClr(0), pFctSideArrow(nullptr)
 	{
 		*Text=0;
 		// key callbacks - lots of possibilities to get the dropdown
 		C4CustomKey::CodeList cbKeys;
-		cbKeys.push_back(C4KeyCodeEx(K_DOWN));
-		cbKeys.push_back(C4KeyCodeEx(K_SPACE));
-		cbKeys.push_back(C4KeyCodeEx(K_DOWN, KEYS_Alt));
-		cbKeys.push_back(C4KeyCodeEx(K_SPACE, KEYS_Alt));
+		cbKeys.emplace_back(K_DOWN);
+		cbKeys.emplace_back(K_SPACE);
+		cbKeys.emplace_back(K_DOWN, KEYS_Alt);
+		cbKeys.emplace_back(K_SPACE, KEYS_Alt);
 		if (Config.Controls.GamepadGuiControl)
 		{
-			cbKeys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
-			cbKeys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+			ControllerKeys::Ok(cbKeys);
+			ControllerKeys::Down(cbKeys);
 		}
 		pKeyOpenCombo = new C4KeyBinding(cbKeys, "GUIComboOpen", KEYSCOPE_Gui,
 		                                 new ControlKeyCB<ComboBox>(*this, &ComboBox::KeyDropDown), C4CustomKey::PRIO_Ctrl);
 		cbKeys.clear();
-		cbKeys.push_back(C4KeyCodeEx(K_ESCAPE));
+		cbKeys.emplace_back(K_ESCAPE);
 		if (Config.Controls.GamepadGuiControl)
 		{
-			cbKeys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+			ControllerKeys::Cancel(cbKeys);
 		}
 		pKeyCloseCombo = new C4KeyBinding(cbKeys, "GUIComboClose", KEYSCOPE_Gui,
 		                                  new ControlKeyCB<ComboBox>(*this, &ComboBox::KeyAbortDropDown), C4CustomKey::PRIO_Ctrl);

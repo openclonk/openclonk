@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,27 +13,22 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include <C4UpperBoard.h>
+#include "C4Include.h"
+#include "gui/C4UpperBoard.h"
 
-#include <C4Game.h>
-#include <C4Config.h>
-#include <C4GraphicsResource.h>
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
 
-C4UpperBoard::C4UpperBoard()
-{
-}
+C4UpperBoard::C4UpperBoard() = default;
 
-C4UpperBoard::~C4UpperBoard()
-{
-}
+C4UpperBoard::~C4UpperBoard() = default;
 
 void C4UpperBoard::Execute()
 {
 	if (!Config.Graphics.UpperBoard) return;
 	// Make the time strings
 	sprintf(cTimeString,"%02d:%02d:%02d", Game.Time/3600,(Game.Time%3600)/60,Game.Time%60);
-	time_t t = time(0); strftime(cTimeString2, sizeof(cTimeString2), "[%H:%M:%S]", localtime(&t));
+	time_t t = time(nullptr); strftime(cTimeString2, sizeof(cTimeString2), "[%H:%M:%S]", localtime(&t));
 	Draw(Output);
 }
 
@@ -41,7 +36,7 @@ void C4UpperBoard::Draw(C4Facet &cgo)
 {
 	if (!cgo.Surface) return;
 	// Background
-	pDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,Output.Surface,0,0,Output.Wdt,Output.Hgt,0,0,NULL);
+	pDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,Output.Surface,0,0,Output.Wdt,Output.Hgt,0,0,nullptr);
 	// Logo
 	C4Facet cgo2;
 	float fLogoZoom = 1.0f;

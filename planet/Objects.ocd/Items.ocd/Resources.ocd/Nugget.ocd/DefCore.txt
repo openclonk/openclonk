@@ -1,6 +1,6 @@
 [DefCore]
 id=Nugget
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=8
 Height=8
@@ -11,5 +11,4 @@ VertexY=1,-1,-1
 VertexFriction=40,40,40
 Value=5
 Mass=12
-Components=Nugget=1
 Rotate=1

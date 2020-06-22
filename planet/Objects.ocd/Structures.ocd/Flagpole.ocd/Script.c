@@ -3,7 +3,6 @@
 #include Library_Ownable
 #include Library_Structure
 #include Library_Flag
-#include Library_Base // Needed for DoBuy...
 #include Library_PowerDisplay
 #include Library_Vendor
 
@@ -29,11 +28,18 @@ protected func Initialize()
 
 protected func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Translate(0,4000,0));
+	SetProperty("MeshTransformation", Trans_Translate(0, 4000, 0));
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 public func NoConstructionFlip() { return true; }
+
+// This building is a base.
+public func IsBaseBuilding() { return true; }
+public func IsBase() { return true; }
+
 
 /*-- Interaction --*/
 
@@ -41,19 +47,19 @@ public func NoConstructionFlip() { return true; }
 public func IsContainer() { return true; }
 
 // Allow buying only if the rule is active
-public func AllowBuyMenuEntries(){ return ObjectCount(Find_ID(Rule_BuyAtFlagpole));}
+public func AllowBuyMenuEntries(){ return ObjectCount(Find_ID(Rule_BuyAtFlagpole), Find_AnyLayer());}
 
 public func RejectCollect(id def, object obj)
 {
 	if (obj->~IsValuable())
-		if (!obj->~QueryOnSell(obj->GetController()))
+		if (!obj->~QueryRejectSell(obj->GetController()))
 	 		return _inherited(def, obj, ...);
 	return true;
 }
 
 public func Collection(object obj)
 {
-	if (obj->~IsValuable() && !obj->~QueryOnSell(obj->GetController()))
+	if (obj->~IsValuable() && !obj->~QueryRejectSell(obj->GetController()))
 	{
 		DoSell(obj, obj->GetController());
 	}
@@ -74,13 +80,14 @@ func IsNeutral() { return neutral; }
 
 func SetNeutral(bool to_val)
 {
+	neutral = to_val;
 	// Neutral flagpoles: A bit smaller and different texture. No marker Radius.
-	if (neutral = to_val)
+	if (neutral)
 	{
 		SetMeshMaterial("NeutralFlagBanner",0);
 		//SetMeshMaterial("NeutralFlagPole",1);
 		SetFlagRadius(0);
-		this.MeshTransformation = Trans_Mul(Trans_Scale(700,700,700), Trans_Translate(0,6000,0));
+		this.MeshTransformation = Trans_Mul(Trans_Scale(700, 700, 700), Trans_Translate(0, 6000, 0));
 		this.Name = "$NameNeutral$";
 	}
 	else
@@ -88,7 +95,7 @@ func SetNeutral(bool to_val)
 		SetMeshMaterial("FlagBanner",0);
 		//SetMeshMaterial("SettlementFlagPole",1);
 		SetFlagRadius(this.DefaultFlagRadius);
-		this.MeshTransformation = Trans_Translate(0,4000,0);
+		this.MeshTransformation = Trans_Translate(0, 4000, 0);
 		this.Name = this.Prototype.Name;
 	}
 	return true;
@@ -108,10 +115,21 @@ public func SaveScenarioObject(props)
 }
 
 
+/* Editor */
+
+public func Definition(def, ...)
+{
+	_inherited(def, ...);
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.neutral = { Name="$Neutral$", EditorHelp="$NeutralHelp$", Set="SetNeutral", Type="bool" };
+}
+
 
 /*-- Properties --*/
 
 local Name = "$Name$";
 local Description = "$Description$";
 local HitPoints = 60;
+local FireproofContainer = true;
 local neutral = false;
+local Components = {Wood = 3, Metal = 1};

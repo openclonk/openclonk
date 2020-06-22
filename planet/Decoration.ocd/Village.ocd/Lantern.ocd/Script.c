@@ -1,5 +1,5 @@
-/**
-	@author Dustin Ne� (dness.de)
+﻿/**
+	@author Dustin Neß (dness.de)
 */
 
 local fShine = false;
@@ -12,16 +12,21 @@ protected func Initialize()
 	return SetAction("Shine");
 }
 
+func Definition(proplist def)
+{
+	def.MeshTransformation = Trans_Scale(400);
+}
+
 protected func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 11, 40), Trans_Scale(400)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 11, 40), GetID().MeshTransformation));
 	objShine = CreateObjectAbove(EnvPack_Lantern_Shine, x, y + 15, -1);
 	SetLightRange(80, 60);
 }
 
 private func Shining()
 {
-	//check if position changed
+	// check if position changed
 	if (x != GetX() && y != GetY())
 	{
 		x = GetX();
@@ -35,7 +40,7 @@ private func Shining()
 		fShine = true;
 }
 
-//flickering
+// flickering
 private func Noise()
 {
 	if (RandomX(5) <= 2)
@@ -58,7 +63,7 @@ public func SetOn(fOn)
 	{
 		objShine->RemoveObject();
 		SetAction("Idle");
-		SetClrModulation(RGB(155, 155, 155)); //Turn modell darker
+		SetClrModulation(RGB(155, 155, 155)); // Turn model darker
 		fShine = false;
 	}
 	return true;

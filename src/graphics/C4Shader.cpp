@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,12 +14,15 @@
  */
 
 #include "C4Include.h"
-#include "C4Shader.h"
-#include "C4Application.h"
+#include "C4ForbidLibraryCompilation.h"
+#include "graphics/C4Shader.h"
+#include "game/C4Application.h"
 #include "graphics/C4DrawGL.h"
 
+#ifndef USE_CONSOLE
 // How often we check whether shader files got updated
 const uint32_t C4Shader_RefreshInterval = 1000; // ms
+#endif
 
 struct C4ShaderPosName {
 	int Position; const char *Name;
@@ -42,11 +45,7 @@ C4ShaderPosName C4SH_PosNames[] = {
 };
 
 C4Shader::C4Shader()
-	: iTexCoords(0)
-	, LastRefresh()
-#ifndef USE_CONSOLE
-	, hProg(0)
-#endif
+	: LastRefresh()
 {
 
 }
@@ -54,6 +53,13 @@ C4Shader::C4Shader()
 C4Shader::~C4Shader()
 {
 	Clear();
+}
+
+int C4Shader::GetSourceFileId(const char *file) const
+{
+	auto it = std::find(SourceFiles.begin(), SourceFiles.end(), file);
+	if (it == SourceFiles.end()) return -1;
+	return std::distance(SourceFiles.begin(), it);
 }
 
 void C4Shader::AddDefine(const char* name)
@@ -65,12 +71,12 @@ void C4Shader::AddDefine(const char* name)
 
 void C4Shader::AddVertexSlice(int iPos, const char *szText)
 {
-	AddSlice(VertexSlices, iPos, szText, NULL, 0);
+	AddSlice(VertexSlices, iPos, szText, nullptr, 0, 0);
 }
 
-void C4Shader::AddFragmentSlice(int iPos, const char *szText, const char *szSource, int iSourceTime)
+void C4Shader::AddFragmentSlice(int iPos, const char *szText)
 {
-	AddSlice(FragmentSlices, iPos, szText, szSource, iSourceTime);
+	AddSlice(FragmentSlices, iPos, szText, nullptr, 0, 0);
 }
 
 void C4Shader::AddVertexSlices(const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
@@ -93,26 +99,61 @@ bool C4Shader::LoadVertexSlices(C4GroupSet *pGroups, const char *szFile)
 	return LoadSlices(VertexSlices, pGroups, szFile);
 }
 
-void C4Shader::AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int iSourceTime)
+void C4Shader::SetScriptCategories(const std::vector<std::string>& categories)
+{
+	assert(!ScriptSlicesLoaded && "Can't change shader categories after initialization");
+	Categories = categories;
+}
+
+void C4Shader::LoadScriptSlices()
+{
+	ScriptShaders = ScriptShader.GetShaderIDs(Categories);
+	for (auto& id : ScriptShaders)
+	{
+		LoadScriptSlice(id);
+	}
+	ScriptSlicesLoaded = true;
+}
+
+void C4Shader::LoadScriptSlice(int id)
+{
+	auto& s = ScriptShader.shaders.at(id);
+	switch (s.type)
+	{
+	case C4ScriptShader::VertexShader:
+		AddVertexSlices(Name.getData(), s.source.c_str(), FormatString("[script %d]", id).getData());
+		break;
+	case C4ScriptShader::FragmentShader:
+		AddFragmentSlices(Name.getData(), s.source.c_str(), FormatString("[script %d]", id).getData());
+		break;
+	}
+}
+
+void C4Shader::AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int line, int iSourceTime)
 {
 	ShaderSlice Slice;
 	Slice.Position = iPos;
 	Slice.Text.Copy(szText);
 	Slice.Source = szSource;
 	Slice.SourceTime = iSourceTime;
+	Slice.SourceLine = line;
 	slices.push_back(Slice);
 }
 
 void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
 {
+	if (std::find(SourceFiles.cbegin(), SourceFiles.cend(), szSource) == SourceFiles.cend())
+		SourceFiles.emplace_back(szSource);
+
 	const char *pStart = szText, *pPos = szText;
 	int iDepth = -1;
 	int iPosition = -1;
 	bool fGotContent = false; // Anything in the slice apart from comments and white-space?
+	
+#define SKIP_WHITESPACE do { while(isspace(*pPos)) { ++pPos; } } while (0)
 
 	// Find slices
 	while(*pPos) {
-
 		// Comment? Might seem silly, but we don't want to get confused by braces in comments...
 		if (*pPos == '/' && *(pPos + 1) == '/') {
 			pPos += 2;
@@ -121,7 +162,10 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 		}
 		if (*pPos == '/' && *(pPos + 1) == '*') {
 			pPos += 2;
-			while (*pPos && (*pPos != '*' || *(pPos+1) != '/')) pPos++;
+			while (*pPos && (*pPos != '*' || *(pPos + 1) != '/'))
+			{
+				pPos++;
+			}
 			if (*pPos) pPos += 2;
 			continue;
 		}
@@ -139,7 +183,7 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 				if (fGotContent)
 				{
 					StdStrBuf Str; Str.Copy(pStart, pPos - pStart);
-					AddSlice(slices, iPosition, Str.getData(), szSource, iSourceTime);
+					AddSlice(slices, iPosition, Str.getData(), szSource, SGetLine(szText, pStart), iSourceTime);
 				}
 
 				iPosition = -1;
@@ -158,7 +202,7 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 		if (*pPos == '\n') {
 			if (SEqual2(pPos+1, "slice") && !isalnum(*(pPos+6))) {
 				const char *pSliceEnd = pPos; pPos += 6;
-				while(isspace(*pPos)) pPos++;
+				SKIP_WHITESPACE;
 				if(*pPos != '(') { pPos++; continue; }
 				pPos++;
 
@@ -166,19 +210,19 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 				iPosition = ParsePosition(szWhat, &pPos);
 				if (iPosition != -1) {
 					// Make sure a closing parenthesis
-					while(isspace(*pPos)) pPos++;
+					SKIP_WHITESPACE;
 					if(*pPos != ')') { pPos++; continue; }
 					pPos++;
 
 					// Make sure an opening brace follows
-					while(isspace(*pPos)) pPos++;
+					SKIP_WHITESPACE;
 					if (*pPos == '{') {
 
 						// Add code before "slice" as new slice
 						if (fGotContent)
 						{
 							StdStrBuf Str; Str.Copy(pStart, pSliceEnd - pStart);
-							AddSlice(slices, -1, Str.getData(), szSource, iSourceTime);
+							AddSlice(slices, -1, Str.getData(), szSource, SGetLine(szText, pSliceEnd), iSourceTime);
 						}
 
 						iDepth = 0;
@@ -202,9 +246,9 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 	if (fGotContent)
 	{
 		StdStrBuf Str; Str.Copy(pStart, pPos - pStart);
-		AddSlice(slices, iPosition, Str.getData(), szSource, iSourceTime);
+		AddSlice(slices, iPosition, Str.getData(), szSource, SGetLine(szText, pStart), iSourceTime);
 	}
-
+#undef SKIP_WHITESPACE
 }
 
 int C4Shader::ParsePosition(const char *szWhat, const char **ppPos)
@@ -219,9 +263,9 @@ int C4Shader::ParsePosition(const char *szWhat, const char **ppPos)
 
 	// Lookup name
 	int iPosition = -1;
-	for (unsigned int i = 0; i < sizeof(C4SH_PosNames) / sizeof(*C4SH_PosNames); i++) {
-		if (SEqual(Name.getData(), C4SH_PosNames[i].Name)) {
-			iPosition = C4SH_PosNames[i].Position;
+	for (auto & PosName : C4SH_PosNames) {
+		if (SEqual(Name.getData(), PosName.Name)) {
+			iPosition = PosName.Position;
 			break;
 		}
 	}
@@ -282,6 +326,10 @@ void C4Shader::ClearSlices()
 	VertexSlices.clear();
 	FragmentSlices.clear();
 	iTexCoords = 0;
+	// Script slices
+	ScriptSlicesLoaded = false;
+	Categories.clear();
+	ScriptShaders.clear();
 }
 
 void C4Shader::Clear()
@@ -299,6 +347,15 @@ void C4Shader::Clear()
 
 bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **szAttributes)
 {
+	Name.Copy(szWhat);
+	LastRefresh = C4TimeMilliseconds::Now();
+
+	if (!ScriptSlicesLoaded)
+	{
+		Categories.emplace_back(szWhat);
+		LoadScriptSlices();
+	}
+
 	StdStrBuf VertexShader = Build(VertexSlices, true),
 		FragmentShader = Build(FragmentSlices, true);
 
@@ -354,13 +411,13 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **sz
 
 	// Allocate uniform and attribute arrays
 	int iUniformCount = 0;
-	if (szUniforms != NULL)
+	if (szUniforms != nullptr)
 		while (szUniforms[iUniformCount])
 			iUniformCount++;
 	Uniforms.resize(iUniformCount);
 
 	int iAttributeCount = 0;
-	if (szAttributes != NULL)
+	if (szAttributes != nullptr)
 		while (szAttributes[iAttributeCount])
 			iAttributeCount++;
 	Attributes.resize(iAttributeCount);
@@ -381,63 +438,97 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **sz
 
 #endif
 
-	Name.Copy(szWhat);
-	LastRefresh = C4TimeMilliseconds::Now();
 	return true;
 }
 
 
 bool C4Shader::Refresh()
 {
-	// Update last refresh. Align across engine for reasons.
+	// Update last refresh. Keep a local copy around though to identify added script shaders.
 	LastRefresh = C4TimeMilliseconds::Now();
-	LastRefresh -= LastRefresh.AsInt() % C4Shader_RefreshInterval;
-	// Find a slice where the source file has updated
-	ShaderSliceList::iterator pSlice;
-	for (pSlice = FragmentSlices.begin(); pSlice != FragmentSlices.end(); pSlice++)
-		if (pSlice->Source.getLength() &&
-			FileExists(pSlice->Source.getData()) &&
-			FileTime(pSlice->Source.getData()) > pSlice->SourceTime)
-			break;
-	if (pSlice == FragmentSlices.end()) return true;
-	StdCopyStrBuf Source = pSlice->Source;
 
-	// Okay, remove all slices that came from this file
-	ShaderSliceList::iterator pNext;
-	for (; pSlice != FragmentSlices.end(); pSlice = pNext)
+	auto next = ScriptShader.GetShaderIDs(Categories);
+	std::set<int> toAdd, toRemove;
+	std::set_difference(ScriptShaders.begin(), ScriptShaders.end(), next.begin(), next.end(), std::inserter(toRemove, toRemove.end()));
+	std::set_difference(next.begin(), next.end(), ScriptShaders.begin(), ScriptShaders.end(), std::inserter(toAdd, toAdd.end()));
+	ScriptShaders = next;
+
+	auto removeSlices = [&](ShaderSliceList::iterator& pSlice)
 	{
-		pNext = pSlice; pNext++;
-		if (SEqual(pSlice->Source.getData(), Source.getData()))
-			FragmentSlices.erase(pSlice);
-	}
+		StdCopyStrBuf Source = pSlice->Source;
 
-	// Load new shader
-	char szParentPath[_MAX_PATH+1]; C4Group Group;
-	StdStrBuf Shader;
-	GetParentPath(Source.getData(),szParentPath);
-	if(!Group.Open(szParentPath) ||
-	   !Group.LoadEntryString(GetFilename(Source.getData()),&Shader) ||
-	   !Group.Close())
+		// Okay, remove all slices that came from this file
+		ShaderSliceList::iterator pNext;
+		for (; pSlice != FragmentSlices.end(); pSlice = pNext)
+		{
+			pNext = pSlice; pNext++;
+			if (SEqual(pSlice->Source.getData(), Source.getData()))
+				FragmentSlices.erase(pSlice);
+		}
+	};
+
+	// Find slices where the source file has updated.
+	std::vector<StdCopyStrBuf> sourcesToUpdate;
+	for (ShaderSliceList::iterator pSlice = FragmentSlices.begin(); pSlice != FragmentSlices.end(); pSlice++)
+		if (pSlice->Source.getLength())
+		{
+			if (pSlice->Source.BeginsWith("[script "))
+			{
+				// TODO: Maybe save id instead of parsing the string here.
+				int sid = -1;
+				sscanf(pSlice->Source.getData(), "[script %d", &sid);
+				if (toRemove.find(sid) != toRemove.end())
+					removeSlices(pSlice);
+				// Note: script slices don't change, so we don't have to handle updates like for files.
+			}
+			else if (FileExists(pSlice->Source.getData()) &&
+			         FileTime(pSlice->Source.getData()) > pSlice->SourceTime)
+			{
+				sourcesToUpdate.push_back(pSlice->Source);
+				removeSlices(pSlice);
+			}
+		}
+
+	// Anything to do?
+	if (toAdd.size() == 0 && toRemove.size() == 0 && sourcesToUpdate.size() == 0)
+		return true;
+
+	// Process file reloading.
+	for (auto& Source : sourcesToUpdate)
 	{
-		ShaderLogF("  gl: Failed to refresh %s shader from %s!", Name.getData(), Source.getData());
-		return false;
-	}
+		char szParentPath[_MAX_PATH+1]; C4Group Group;
+		StdStrBuf Shader;
+		GetParentPath(Source.getData(),szParentPath);
+		if(!Group.Open(szParentPath) ||
+		   !Group.LoadEntryString(GetFilename(Source.getData()),&Shader) ||
+		   !Group.Close())
+		{
+			ShaderLogF("  gl: Failed to refresh %s shader from %s!", Name.getData(), Source.getData());
+			return false;
+		}
 
-	// Load slices
-	int iSourceTime = FileTime(Source.getData());
-	StdStrBuf WhatSrc = FormatString("file %s", Config.AtRelativePath(Source.getData()));
-	AddFragmentSlices(WhatSrc.getData(), Shader.getData(), Source.getData(), iSourceTime);
+		// Load slices
+		int iSourceTime = FileTime(Source.getData());
+		StdStrBuf WhatSrc = FormatString("file %s", Config.AtRelativePath(Source.getData()));
+		AddFragmentSlices(WhatSrc.getData(), Shader.getData(), Source.getData(), iSourceTime);
+	}
+	
+	// Process new script slices.
+	for (int id : toAdd)
+	{
+		LoadScriptSlice(id);
+	}
 
 #ifndef USE_CONSOLE
 	std::vector<const char*> UniformNames(Uniforms.size() + 1);
 	for (std::size_t i = 0; i < Uniforms.size(); ++i)
 		UniformNames[i] = Uniforms[i].name;
-	UniformNames[Uniforms.size()] = NULL;
+	UniformNames[Uniforms.size()] = nullptr;
 
 	std::vector<const char*> AttributeNames(Attributes.size() + 1);
 	for (std::size_t i = 0; i < Attributes.size(); ++i)
 		AttributeNames[i] = Attributes[i].name;
-	AttributeNames[Attributes.size()] = NULL;
+	AttributeNames[Attributes.size()] = nullptr;
 #endif
 
 	// Reinitialise
@@ -447,19 +538,17 @@ bool C4Shader::Refresh()
 		&UniformNames[0],
 		&AttributeNames[0]
 #else
-		0,
-		0
+		nullptr,
+		nullptr
 #endif
 		))
 		return false;
 
-	// Retry in case there have been more changes
-	return Refresh();
+	return true;
 }
 
 StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 {
-
 	// At the start of the shader set the #version and number of
 	// available uniforms
 	StdStrBuf Buf;
@@ -483,23 +572,26 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 		// Add all slices at the current level
 		if (fDebug && iPos > 0)
 			Buf.AppendFormat("\t// Position %d:\n", iPos);
-		for (ShaderSliceList::const_iterator pSlice = Slices.begin(); pSlice != Slices.end(); pSlice++)
+		for (const auto & Slice : Slices)
 		{
-			if (pSlice->Position < iPos) continue;
-			if (pSlice->Position > iPos)
+			if (Slice.Position < iPos) continue;
+			if (Slice.Position > iPos)
 			{
-				iNextPos = std::min(iNextPos, pSlice->Position);
+				iNextPos = std::min(iNextPos, Slice.Position);
 				continue;
 			}
 			// Same position - add slice!
 			if (fDebug)
 			{
-				if (pSlice->Source.getLength())
-					Buf.AppendFormat("\t// Slice from %s:\n", pSlice->Source.getData());
-				else
-					Buf.Append("\t// Built-in slice:\n");
+				if (Slice.Source.getLength())
+				{
+					// GLSL below 3.30 consider the line after a #line N directive to be N + 1; 3.30 and higher consider it N
+					Buf.AppendFormat("\t// Slice from %s:\n#line %d %d\n", Slice.Source.getData(), Slice.SourceLine - (C4Shader_Version < 330), GetSourceFileId(Slice.Source.getData()) + 1);
 				}
-			Buf.Append(pSlice->Text);
+				else
+					Buf.Append("\t// Built-in slice:\n#line 1 0\n");
+				}
+			Buf.Append(Slice.Text);
 			if (Buf[Buf.getLength()-1] != '\n')
 				Buf.AppendChar('\n');
 		}
@@ -512,6 +604,10 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 
 	// Terminate
 	Buf.Append("}\n");
+
+	Buf.Append("// File number to name mapping:\n//\t  0: <built-in shader code>\n");
+	for (int i = 0; i < SourceFiles.size(); ++i)
+		Buf.AppendFormat("//\t%3d: %s\n", i + 1, SourceFiles[i].c_str());
 	return Buf;
 }
 
@@ -523,7 +619,7 @@ GLuint C4Shader::Create(GLenum iShaderType, const char *szWhat, const char *szSh
 	pGL->ObjectLabel(GL_SHADER, hShader, -1, szWhat);
 
 	// Compile
-	glShaderSource(hShader, 1, &szShader, 0);
+	glShaderSource(hShader, 1, &szShader, nullptr);
 	glCompileShader(hShader);
 
 	// Dump any information to log
@@ -598,7 +694,7 @@ void C4ShaderCall::Start()
 	assert(pShader->hProg != 0); // Shader must be initialized
 
 	// Possibly refresh shader
-	if (C4TimeMilliseconds::Now() > pShader->LastRefresh + C4Shader_RefreshInterval)
+	if (ScriptShader.LastUpdate > pShader->LastRefresh || C4TimeMilliseconds::Now() > pShader->LastRefresh + C4Shader_RefreshInterval)
 		const_cast<C4Shader *>(pShader)->Refresh();
 
 	// Activate shader
@@ -618,3 +714,138 @@ void C4ShaderCall::Finish()
 }
 
 #endif
+
+// global instance
+C4ScriptShader ScriptShader;
+
+std::set<int> C4ScriptShader::GetShaderIDs(const std::vector<std::string>& cats)
+{
+	std::set<int> result;
+	for (auto& cat : cats)
+		for (auto& id : categories[cat])
+			result.emplace(id);
+	return result;
+}
+
+int C4ScriptShader::Add(const std::string& shaderName, ShaderType type, const std::string& source)
+{
+	int id = NextID++;
+	LastUpdate = C4TimeMilliseconds::Now().AsInt();
+	// Hack: Always prepend a newline as the slice parser doesn't recognize
+	// slices that don't begin with a newline.
+	auto nsource = "\n" + source;
+	shaders.emplace(std::make_pair(id, ShaderInstance{type, nsource}));
+	categories[shaderName].emplace(id);
+	return id;
+}
+
+bool C4ScriptShader::Remove(int id)
+{
+	// We have to perform a rather inefficient full search. We'll have to see
+	// whether this turns out to be a performance issue.
+	if (shaders.erase(id))
+	{
+		for (auto& kv : categories)
+			if (kv.second.erase(id))
+				break; // each id can appear in one category only
+		LastUpdate = C4TimeMilliseconds::Now().AsInt();
+		return true;
+	}
+	return false;
+}
+
+std::unique_ptr<C4ScriptUniform::Popper> C4ScriptUniform::Push(C4PropList* proplist)
+{
+#ifdef USE_CONSOLE
+	return std::unique_ptr<C4ScriptUniform::Popper>();
+#else
+	C4Value ulist;
+	if (!proplist->GetProperty(P_Uniforms, &ulist) || ulist.GetType() != C4V_PropList)
+		return std::unique_ptr<C4ScriptUniform::Popper>();
+
+	uniformStack.emplace();
+	auto& uniforms = uniformStack.top();
+	Uniform u;
+	for (const C4Property* prop : *ulist.getPropList())
+	{
+		if (!prop->Key) continue;
+		switch (prop->Value.GetType())
+		{
+		case C4V_Int:
+			u.type = GL_INT;
+			u.intVec[0] = prop->Value._getInt();
+			break;
+		case C4V_Array:
+		{
+			auto array = prop->Value._getArray();
+			switch (array->GetSize())
+			{
+			case 1: u.type = GL_INT; break;
+			case 2: u.type = GL_INT_VEC2; break;
+			case 3: u.type = GL_INT_VEC3; break;
+			case 4: u.type = GL_INT_VEC4; break;
+			default: continue;
+			}
+			for (int32_t i = 0; i < array->GetSize(); i++)
+			{
+				auto& item = array->_GetItem(i);
+				switch (item.GetType())
+				{
+				case C4V_Int:
+					u.intVec[i] = item._getInt();
+					break;
+				default:
+					goto skip;
+				}
+			}
+			break;
+		}
+		default:
+			continue;
+		}
+		// Uniform is now filled properly. Note that array contents are undefined for higher slots
+		// when "type" only requires a smaller array.
+		uniforms.insert({prop->Key->GetCStr(), u});
+skip:;
+	}
+	// Debug
+	/*
+	for (auto& p : uniforms)
+	{
+		LogF("Uniform %s (type %d) = %d %d %d %d", p.first.c_str(), p.second.type, p.second.intVec[0], p.second.intVec[1], p.second.intVec[2], p.second.intVec[3]);
+	}
+	*/
+	return std::make_unique<C4ScriptUniform::Popper>(this);
+#endif
+}
+
+void C4ScriptUniform::Clear()
+{
+	uniformStack = std::stack<UniformMap>();
+	uniformStack.emplace();
+}
+
+void C4ScriptUniform::Apply(C4ShaderCall& call)
+{
+#ifndef USE_CONSOLE
+	for (auto& p : uniformStack.top())
+	{
+		// The existing SetUniform* methods only work for pre-defined indexed uniforms. The script
+		// uniforms are unknown at shader compile time, so we have to use OpenGL functions directly
+		// here.
+		GLint loc = glGetUniformLocation(call.pShader->hProg, p.first.c_str());
+		// Is this uniform defined in the shader?
+		if (loc == -1) continue;
+		auto& intVec = p.second.intVec;
+		switch (p.second.type)
+		{
+		case GL_INT:      glUniform1iv(loc, 1, intVec); break;
+		case GL_INT_VEC2: glUniform2iv(loc, 1, intVec); break;
+		case GL_INT_VEC3: glUniform3iv(loc, 1, intVec); break;
+		case GL_INT_VEC4: glUniform4iv(loc, 1, intVec); break;
+		default:
+			assert(false && "unsupported uniform type");
+		}
+	}
+#endif
+}

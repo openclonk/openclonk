@@ -10,16 +10,16 @@
 
 local swing_anim;
 
-private func SeedArea() { return 60; }
-private func SeedChance() { return 250; }
-private func SeedAmount() { return 4; } // small seed area -> don't allow too many plants
-private func SeedOffset() { return 20; }
+local plant_seed_area = 60;
+local plant_seed_chance = 40;
+local plant_seed_amount = 4; // small seed area -> don't allow too many plants
+local plant_seed_offset = 10;
 public func SickleHarvesting() { return true; }
 
 private func Construction()
 {
 	StartGrowth(this.growth);
-	AddTimer("WaterCheck", 70+Random(10));
+	AddTimer("WaterCheck", 70 + Random(10));
 	AddTimer("WindCheck", 350);
 	swing_anim = PlayAnimation("Swing", 1, Anim_Const(0));
 	return _inherited(...);
@@ -57,3 +57,4 @@ local Description = "$Description$";
 local growth = 3;
 local degrowth = -6;
 local fastgrowth = 9;
+local Components = {Seeds = 2};

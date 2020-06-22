@@ -57,8 +57,6 @@ private func FxIntMeteorControlStart(object target, effect fx, temp, id spawn_id
 	fx.spawn_amount = spawn_amount;
 }
 
-
-
 private func FxIntMeteorControlTimer(object target, effect fx, int time)
 {
 	if (Random(100) < fx.chance && !Random(10))
@@ -101,7 +99,7 @@ public func Launch(int x, int y, int size, int xdir, int ydir, id spawn_id, int 
 		return false;
 	// Allow for some more effects (overloadable).
 	this->OnAfterLaunch();
-	return true;
+	return this;
 }
 
 public func OnAfterLaunch()
@@ -132,13 +130,13 @@ private func FxIntMeteorStart(object target, effect fx, bool temp)
 	fx.smoketrail = 
 	{
 		R = 255,
-		B = PV_KeyFrames(0,  0,100,    30,0,  100,255, 1000,255),
-		G = PV_KeyFrames(0,  0,150,  30,0, 100,255, 1000,255),
+		B = PV_KeyFrames(0,  0, 100,    30, 0,  100, 255, 1000, 255),
+		G = PV_KeyFrames(0,  0, 150,  30, 0, 100, 255, 1000, 255),
 		
 		Alpha = PV_KeyFrames(1000, 0, 0, 30, 255, 1000, 0),
-		Size = PV_Linear(20,60),
+		Size = PV_Linear(20, 60),
 		Stretch = 1000,
-		Phase = PV_Random(0,4),
+		Phase = PV_Random(0, 4),
 		Rotation = PV_Random(-GetR() - 15, -GetR() + 15),
 		DampingX = 1000,
 		DampingY = 1000,
@@ -150,8 +148,8 @@ private func FxIntMeteorStart(object target, effect fx, bool temp)
 	fx.brighttrail = 
 	{
 		Prototype = fx.smoketrail,
-		Alpha = PV_Linear(180,0),
-		Size = PV_Linear(20,30),
+		Alpha = PV_Linear(180, 0),
+		Size = PV_Linear(20, 30),
 		BlitMode = GFX_BLIT_Additive,
 	};
 	fx.frontburn = 
@@ -161,9 +159,9 @@ private func FxIntMeteorStart(object target, effect fx, bool temp)
 		G = 190,
 		
 		Alpha = PV_KeyFrames(0, 0, 0, 500, 25, 1000, 0),
-		Size = PV_Linear(4,5),
+		Size = PV_Linear(4, 5),
 		Stretch = 1000,
-		Phase = PV_Random(0,4),
+		Phase = PV_Random(0, 4),
 		Rotation = PV_Random(-GetR() - 15, -GetR() + 15),
 		DampingX = 1000,
 		DampingY = 1000,
@@ -194,7 +192,7 @@ protected func FxIntMeteorTimer(object target, effect fx, bool temp)
 	if (size > 10 && !Random(5))
 		DoCon(-1);
 
-	return 1;
+	return FX_OK;
 }
 
 // Scenario saving
@@ -237,6 +235,32 @@ protected func Hit(int xdir, int ydir)
 	RemoveObject();
 	return;
 }
+
+
+/*-- Target --*/
+
+public func OnLightningStrike(object lightning, int damage)
+{
+	SetController(lightning->GetController());
+	if (GetDamage() + damage >= 6)
+		Hit();
+	return;
+}
+
+public func IsProjectileTarget(object projectile)
+{
+	return true;
+}
+
+public func OnProjectileHit(object projectile)
+{
+	SetController(projectile->GetController());
+	Hit();
+	return;
+}
+
+public func IsMeteor() { return true; }
+
 
 /*-- Proplist --*/
 

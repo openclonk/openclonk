@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,16 +20,17 @@
 #ifndef INC_C4Console
 #define INC_C4Console
 
-#include "C4ConsoleGUI.h"
-#include "C4ToolsDlg.h"
-#include "C4ObjectListDlg.h"
-#include "C4EditCursor.h"
+#include "editor/C4ConsoleGUI.h"
+#include "editor/C4EditCursor.h"
+#include "editor/C4ObjectListDlg.h"
+#include "editor/C4ToolsDlg.h"
 
-#include <C4Window.h>
+#include "platform/C4Window.h"
 
 const int C4CNS_ModePlay = 0,
           C4CNS_ModeEdit = 1,
-          C4CNS_ModeDraw = 2;
+          C4CNS_ModeCreateObject = 2,
+          C4CNS_ModeDraw = 3;
 
 #define IDM_NET_CLIENT1   10000
 #define IDM_NET_CLIENT2   10100
@@ -42,10 +43,10 @@ class C4Console: public C4ConsoleGUI
 {
 public:
 	C4Console();
-	virtual ~C4Console();
+	~C4Console() override;
 	void Default();
-	virtual void Clear();
-	virtual void Close();
+	void Clear() override;
+	void Close() override;
 	using C4Window::Init;
 	virtual C4Window * Init(C4AbstractApp * app);
 	void Execute();
@@ -72,10 +73,11 @@ public:
 	void HelpAbout();
 	bool FileSelect(StdStrBuf *sFilename, const char *szFilter, DWORD dwFlags, bool fSave=false);
 	bool SaveGame(const char * path);
-	bool SaveScenario(const char * path);
-	bool FileSaveAs(bool fSaveGame);
+	bool SaveScenario(const char * path, bool export_packed=false);
+	bool FileSaveAs(bool fSaveGame, bool export_packed=false);
 	bool FileSave();
-	bool FileOpen();
+	bool FileNew();
+	bool FileOpen(const char *filename=nullptr, bool host_in_network=false);
 	bool FileOpenWPlrs();
 	bool FileCommand();
 	bool FileClose();

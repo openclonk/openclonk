@@ -9,8 +9,8 @@
 // Whether the intro has been initialized.
 static intro_init;
 
-// Bat cave [x, y] coordinates.
-static bat_cave;
+// Bat cave [x, y] coordinates. Set in Map.c
+//static bat_cave;
 
 public func Initialize()
 {
@@ -165,19 +165,16 @@ private func InitVegetation(int map_size, int difficulty)
 
 private func InitAnimals(int map_size, int difficulty)
 {
-	// Place some fish and piranhas.
+	// Place some fish, sharks and piranhas.
 	Fish->Place(20 + 4 * map_size);
 	Piranha->Place((10 + 4 * map_size) * (difficulty - 1));
+	Shark->Place(difficulty - 1);
 	
 	// Some insects: zaps, mosquitos, butterflies, fireflies.
 	Zaphive->Place(2 + 4 * difficulty);
 	Mosquito->Place(4 + 2 * map_size);
 	Butterfly->Place(16 + 4 * map_size);
-	for (var cnt = 0; cnt < 4 + map_size; cnt++)
-	{
-		var tree = FindObject(Find_ID(Tree_Deciduous), Sort_Random());
-		Firefly->SpawnSwarm(tree, RandomX(6, 12));
-	}
+	Firefly->Place(4 + map_size);
 	
 	// Bats in the bat cave.
 	Bat->Place(4 + 2 * difficulty, Rectangle(bat_cave[0] - 20, bat_cave[1] - 20, 40, 40));

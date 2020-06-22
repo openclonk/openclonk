@@ -1,0 +1,9 @@
+MsgAttack0=Angriff!
+MsgAttack1=Zum Angriff!
+MsgAttack2=Attacke!
+MsgAttack3=Vorwärts!
+MsgAttack4=Hau drauf!
+
+MsgIntruder0=Ein Eindringer!
+MsgIntruder1=Wer bist du?
+MsgIntruder2=Verschwinde!

@@ -1,7 +1,7 @@
 [Head]
 Title=FrostySummit
 Icon=24
-Version=6,0
+Version=8,0
 Difficulty=60
 
 [Definitions]

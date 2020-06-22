@@ -13,6 +13,15 @@ public func Place(int amount, proplist area, ...)
 }
 
 public func IsValuable() { return true; }
+public func QueryRejectRebuy() { return true; }
+
+public func SaveScenarioObject(props, ...)
+{
+	// Do not save diamonds in sockets
+	if (!inherited(props, ...)) return false;
+	if (Contained() && Contained()->GetID() == Diamond_Socket) return false;
+	return true;
+}
 
 local Name = "$Name$";
 local Description = "$Description$";

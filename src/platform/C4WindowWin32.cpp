@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,24 +18,24 @@
 /* A wrapper class to OS dependent event and window interfaces, WIN32 version */
 
 #include "C4Include.h"
-#include <C4Window.h>
+#include "C4ForbidLibraryCompilation.h"
+#include "platform/C4Window.h"
 
-#include <C4Application.h>
-#include <C4AppWin32Impl.h>
-#include <C4Config.h>
-#include <C4Console.h>
-#include <C4DrawGL.h>
-#include <C4FullScreen.h>
-#include <C4GraphicsSystem.h>
-#include <C4MouseControl.h>
-#include <C4Rect.h>
-#include <C4Version.h>
-#include <C4Viewport.h>
-#include <C4ViewportWindow.h>
-#include <StdRegistry.h>
-#include "resource.h"
+#include "C4Version.h"
+#include "editor/C4Console.h"
+#include "editor/C4ViewportWindow.h"
+#include "game/C4Application.h"
+#include "game/C4FullScreen.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4DrawGL.h"
+#include "gui/C4MouseControl.h"
+#include "lib/C4Rect.h"
+#include "platform/C4AppWin32Impl.h"
+#include "platform/StdRegistry.h"
+#include "res/resource.h"
 
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <mmsystem.h>
 #include <shellapi.h>
 
@@ -119,7 +119,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			{
 				if (Application.FullScreenMode())
 				{
-					::ChangeDisplaySettings(NULL, 0);
+					::ChangeDisplaySettings(nullptr, 0);
 					::ShowWindow(hwnd, SW_MINIMIZE);
 				}
 			}
@@ -149,16 +149,16 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			Application.MusicSystem.NotifySuccess();
 		return true;
 	case WM_KEYUP:
-		if (Game.DoKeyboardInput(scancode, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, NULL))
+		if (Game.DoKeyboardInput(scancode, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, nullptr))
 			return 0;
 		break;
 	case WM_KEYDOWN:
-		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL))
+		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), nullptr))
 			return 0;
 		break;
 	case WM_SYSKEYDOWN:
 		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL))
+		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), nullptr))
 		{
 			// Remove handled message from queue to prevent Windows "standard" sound for unprocessed system message
 			MSG msg;
@@ -170,7 +170,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	{
 		// UTF-8 has 1 to 4 data bytes, and we need a terminating \0
 		char c[5] = {0,0,0,0,0};
-		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, 0, 0))
+		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, nullptr, nullptr))
 			return 0;
 		// GUI: forward
 		if (::pGUI->CharIn(c))
@@ -184,21 +184,21 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			Log((const char *)lParam);
 		return false;
 	case WM_LBUTTONDOWN:
-		C4GUI::MouseMove(C4MC_Button_LeftDown,p.x,p.y,wParam, NULL);
+		C4GUI::MouseMove(C4MC_Button_LeftDown,p.x,p.y,wParam, nullptr);
 		break;
-	case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp, p.x, p.y, wParam, NULL); break;
-	case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown, p.x, p.y, wParam, NULL); break;
-	case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp, p.x, p.y, wParam, NULL); break;
-	case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble, p.x, p.y, wParam, NULL); break;
-	case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble, p.x, p.y, wParam, NULL); break;
+	case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp, p.x, p.y, wParam, nullptr); break;
+	case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown, p.x, p.y, wParam, nullptr); break;
+	case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp, p.x, p.y, wParam, nullptr); break;
+	case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble, p.x, p.y, wParam, nullptr); break;
+	case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble, p.x, p.y, wParam, nullptr); break;
 	case WM_MOUSEWHEEL:
 		// the coordinates are screen-coordinates here (but only on this uMsg),
 		// we need to convert them to client area coordinates
 		ScreenToClient(hwnd, &p);
-		C4GUI::MouseMove(C4MC_Button_Wheel, p.x, p.y, wParam, NULL);
+		C4GUI::MouseMove(C4MC_Button_Wheel, p.x, p.y, wParam, nullptr);
 		break;
 	case WM_MOUSEMOVE:
-		C4GUI::MouseMove(C4MC_Button_None, p.x, p.y, wParam, NULL);
+		C4GUI::MouseMove(C4MC_Button_None, p.x, p.y, wParam, nullptr);
 		// Hide cursor in client area
 		if (NativeCursorShown)
 		{
@@ -222,7 +222,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		case SIZE_MAXIMIZED:
 			::Application.OnResolutionChanged(p.x, p.y);
 			if(Application.pWindow) // this might be called from C4Window::Init in which case Application.pWindow is not yet set
-				::SetWindowPos(Application.pWindow->renderwnd, NULL, 0, 0, p.x, p.y, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+				::SetWindowPos(Application.pWindow->renderwnd, nullptr, 0, 0, p.x, p.y, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 			break;
 		}
 		break;
@@ -238,6 +238,34 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		break;
 	}
 	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
+}
+
+static C4KeyCode msg2scancode(MSG *msg)
+{
+	// compute scancode
+	C4KeyCode scancode = (((unsigned int)msg->lParam) >> 16) & 0xFF;
+	bool extended = ((msg->lParam & 0x01000000) != 0);
+	ConvertToUnixScancode(msg->wParam, &scancode, extended);
+	return scancode;
+}
+
+bool ConsoleHandleWin32KeyboardMessage(MSG *msg)
+{
+	switch (msg->message)
+	{
+	case WM_KEYDOWN:
+		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Down, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(msg->lParam & 0x40000000), nullptr)) return true;
+		break;
+	case WM_KEYUP:
+		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Up, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, nullptr)) return false;
+		break;
+	case WM_SYSKEYDOWN:
+		if (msg->wParam == 18) break; // VK_MENU (Alt)
+		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Down, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(msg->lParam & 0x40000000), nullptr)) return false;
+		break;
+	}
+	return false;
+
 }
 
 LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -267,19 +295,19 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			break;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		default:
-			if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL)) return 0;
+			if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), nullptr)) return 0;
 			break;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
 		break;
 		//---------------------------------------------------------------------------------------------------------------------------
 	case WM_KEYUP:
-		if (Game.DoKeyboardInput(scancode, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, NULL)) return 0;
+		if (Game.DoKeyboardInput(scancode, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, nullptr)) return 0;
 		break;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_SYSKEYDOWN:
 		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL)) return 0;
+		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), nullptr)) return 0;
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_DESTROY:
@@ -299,7 +327,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		HDROP hDrop = (HDROP)(HANDLE) wParam;
 		if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return false; }
 
-		int32_t iFileNum = DragQueryFile(hDrop,0xFFFFFFFF,NULL,0);
+		int32_t iFileNum = DragQueryFile(hDrop,0xFFFFFFFF,nullptr,0);
 		POINT pntPoint;
 		DragQueryPoint(hDrop,&pntPoint);
 		wchar_t szFilename[500+1];
@@ -406,7 +434,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		case WM_MOUSEMOVE:
 			if ( Inside<int32_t>(p.x-cvp->DrawX,0,cvp->ViewWdt-1)
 			     && Inside<int32_t>(p.y-cvp->DrawY,0,cvp->ViewHgt-1) )
-				SetCursor(NULL);
+				SetCursor(nullptr);
 			C4GUI::MouseMove(C4MC_Button_None, p.x, p.y, wParam, cvp);
 			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
@@ -516,25 +544,25 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 		return 0;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown, p.x, p.y, wParam, pDlg, NULL); break;
+	case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown, p.x, p.y, wParam, pDlg, nullptr); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp, p.x, p.y, wParam, pDlg, NULL); break;
+	case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp, p.x, p.y, wParam, pDlg, nullptr); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown, p.x, p.y, wParam, pDlg, NULL); break;
+	case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown, p.x, p.y, wParam, pDlg, nullptr); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp, p.x, p.y, wParam, pDlg, NULL); break;
+	case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp, p.x, p.y, wParam, pDlg, nullptr); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble, p.x, p.y, wParam, pDlg, NULL); break;
+	case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble, p.x, p.y, wParam, pDlg, nullptr); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble, p.x, p.y, wParam, pDlg, NULL);  break;
+	case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble, p.x, p.y, wParam, pDlg, nullptr);  break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_MOUSEMOVE:
-		::pGUI->MouseInput(C4MC_Button_None, p.x, p.y, wParam, pDlg, NULL);
+		::pGUI->MouseInput(C4MC_Button_None, p.x, p.y, wParam, pDlg, nullptr);
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_MOUSEWHEEL:
 		ScreenToClient(hwnd, &p);
-		::pGUI->MouseInput(C4MC_Button_Wheel, p.x, p.y, wParam, pDlg, NULL);
+		::pGUI->MouseInput(C4MC_Button_Wheel, p.x, p.y, wParam, pDlg, nullptr);
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	}
@@ -542,12 +570,8 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-C4Window::C4Window (): Active(false), pSurface(0), hWindow(0)
-{
-}
-C4Window::~C4Window ()
-{
-}
+C4Window::C4Window () = default;
+C4Window::~C4Window () = default;
 
 C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
@@ -555,6 +579,11 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 	eKind = windowKind;
 	if (windowKind == W_Viewport)
 	{
+#ifdef WITH_QT_EDITOR
+		// embed into editor: Viewport widget creation handled by C4ConsoleQt
+		::Console.AddViewport(static_cast<C4ViewportWindow *>(this));
+		return this;
+#else
 		static bool fViewportClassRegistered = false;
 		if (!fViewportClassRegistered)
 		{
@@ -566,13 +595,13 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 			WndClass.cbClsExtra    = 0;
 			WndClass.cbWndExtra    = 0;
 			WndClass.hInstance     = pApp->GetInstance();
-			WndClass.hCursor       = LoadCursor (NULL, IDC_ARROW);
+			WndClass.hCursor       = LoadCursor (nullptr, IDC_ARROW);
 			WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-			WndClass.lpszMenuName  = NULL;
+			WndClass.lpszMenuName  = nullptr;
 			WndClass.lpszClassName = C4ViewportClassName;
 			WndClass.hIcon         = LoadIcon (pApp->GetInstance(), MAKEINTRESOURCE (IDI_01_OCS) );
 			WndClass.hIconSm       = LoadIcon (pApp->GetInstance(), MAKEINTRESOURCE (IDI_01_OCS) );
-			if (!RegisterClassExW(&WndClass)) return NULL;
+			if (!RegisterClassExW(&WndClass)) return nullptr;
 			fViewportClassRegistered = true;
 		}
 		// Create window
@@ -580,9 +609,9 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		            WS_EX_ACCEPTFILES,
 		            C4ViewportClassName, GetWideChar(Title), C4ViewportWindowStyle,
 		            CW_USEDEFAULT,CW_USEDEFAULT, size->Wdt, size->Hgt,
-		            Console.hWindow,NULL,pApp->GetInstance(),NULL);
-		if(!hWindow) return NULL;
-
+		            Console.hWindow,nullptr,pApp->GetInstance(),nullptr);
+		if(!hWindow) return nullptr;
+#endif
 		// We don't re-init viewport windows currently, so we don't need a child window
 		// for now: Render into main window.
 		renderwnd = hWindow;
@@ -599,7 +628,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		WndClass.lpszClassName = C4FullScreenClassName;
 		WndClass.hIcon         = LoadIcon (pApp->GetInstance(), MAKEINTRESOURCE (IDI_00_C4X) );
 		WndClass.hIconSm       = LoadIcon (pApp->GetInstance(), MAKEINTRESOURCE (IDI_00_C4X) );
-		if (!RegisterClassExW(&WndClass)) return NULL;
+		if (!RegisterClassExW(&WndClass)) return nullptr;
 
 		// Create window
 		hWindow = CreateWindowExW  (
@@ -608,15 +637,15 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		            GetWideChar(Title),
 		            WS_OVERLAPPEDWINDOW,
 		            CW_USEDEFAULT,CW_USEDEFAULT, size->Wdt, size->Hgt,
-		            NULL,NULL,pApp->GetInstance(),NULL);
-		if(!hWindow) return NULL;
+		            nullptr,nullptr,pApp->GetInstance(),nullptr);
+		if(!hWindow) return nullptr;
 
 		RECT rc;
 		GetClientRect(hWindow, &rc);
-		renderwnd = CreateWindowExW(0, L"STATIC", NULL, WS_CHILD,
+		renderwnd = CreateWindowExW(0, L"STATIC", nullptr, WS_CHILD,
 		                                0, 0, rc.right - rc.left, rc.bottom - rc.top,
-		                                hWindow, NULL, pApp->GetInstance(), NULL);
-		if(!renderwnd) { DestroyWindow(hWindow); return NULL; }
+		                                hWindow, nullptr, pApp->GetInstance(), nullptr);
+		if(!renderwnd) { DestroyWindow(hWindow); return nullptr; }
 		ShowWindow(renderwnd, SW_SHOW);
 
 	#ifndef USE_CONSOLE
@@ -638,14 +667,14 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 			WndClass.cbClsExtra    = 0;
 			WndClass.cbWndExtra    = 0;
 			WndClass.hInstance     = pApp->GetInstance();
-			WndClass.hCursor       = LoadCursor (NULL, IDC_ARROW); // - always use normal hw cursor
+			WndClass.hCursor       = LoadCursor (nullptr, IDC_ARROW); // - always use normal hw cursor
 			WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-			WndClass.lpszMenuName  = NULL;
+			WndClass.lpszMenuName  = nullptr;
 			WndClass.lpszClassName = ConsoleDlgClassName;
 			WndClass.hIcon         = LoadIcon (pApp->GetInstance(), MAKEINTRESOURCE (IDI_00_C4X) );
 			WndClass.hIconSm       = LoadIcon (pApp->GetInstance(), MAKEINTRESOURCE (IDI_00_C4X) );
 			if (!RegisterClassExW(&WndClass))
-				return NULL;
+				return nullptr;
 		}
 		Active = true;
 		// calculate required size
@@ -655,7 +684,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		rtSize.right = size->Wdt;
 		rtSize.bottom = size->Hgt;
 		if (!::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0))
-			return NULL;
+			return nullptr;
 		// create it!
 		if (!Title || !*Title) Title = "???";
 		hWindow = ::CreateWindowExW(
@@ -663,14 +692,14 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		            ConsoleDlgClassName, GetWideChar(Title),
 		            ConsoleDlgWindowStyle,
 		            CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
-					::Console.hWindow,NULL,pApp->GetInstance(),NULL);
+					::Console.hWindow,nullptr,pApp->GetInstance(),nullptr);
 		renderwnd = hWindow;
-		return hWindow ? this : 0;
+		return hWindow ? this : nullptr;
 	}
 	else if (windowKind == W_Control)
 	{
 		// controlled externally
-		hWindow = renderwnd = NULL;
+		hWindow = renderwnd = nullptr;
 	}
 	return this;
 }
@@ -685,9 +714,9 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 	RECT rc;
 	GetClientRect(hWindow, &rc);
-	HWND hNewRenderWindow = CreateWindowExW(0, L"STATIC", NULL, WS_CHILD,
+	HWND hNewRenderWindow = CreateWindowExW(0, L"STATIC", nullptr, WS_CHILD,
 	                                        0, 0, rc.right - rc.left, rc.bottom - rc.top,
-	                                        hWindow, NULL, pApp->hInstance, NULL);
+	                                        hWindow, nullptr, pApp->hInstance, nullptr);
 	if(!hNewRenderWindow) return false;
 
 	ShowWindow(hNewRenderWindow, SW_SHOW);
@@ -705,8 +734,15 @@ void C4Window::Clear()
 		if (renderwnd) DestroyWindow(renderwnd);
 		if (hWindow && hWindow != renderwnd) DestroyWindow(hWindow);
 	}
-	renderwnd = NULL;
-	hWindow = NULL;
+#ifdef WITH_QT_EDITOR
+	if (eKind == W_Viewport)
+	{
+		// embed into editor: Viewport widget creation handled by C4ConsoleQt
+		::Console.RemoveViewport(static_cast<C4ViewportWindow *>(this));
+	}
+#endif
+	renderwnd = nullptr;
+	hWindow = nullptr;
 }
 
 bool C4Window::StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize)
@@ -746,11 +782,11 @@ void C4Window::SetSize(unsigned int cx, unsigned int cy)
 		::AdjustWindowRectEx(&rect, GetWindowLong(hWindow, GWL_STYLE), FALSE, GetWindowLong(hWindow, GWL_EXSTYLE));
 		cx = rect.right - rect.left;
 		cy = rect.bottom - rect.top;
-		::SetWindowPos(hWindow, NULL, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+		::SetWindowPos(hWindow, nullptr, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 
 		// Also resize child window
 		GetClientRect(hWindow, &rect);
-		::SetWindowPos(renderwnd, NULL, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+		::SetWindowPos(renderwnd, nullptr, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 	}
 }
 
@@ -761,7 +797,12 @@ void C4Window::FlashWindow()
 		::FlashWindow(hWindow, FLASHW_ALL | FLASHW_TIMERNOFG);
 }
 
-void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::GrabMouse(bool grab)
+{
+	// TODO
+}
+
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples, int) const
 {
 #ifndef USE_CONSOLE
 	if(pGL && pGL->pMainCtx)
@@ -775,7 +816,7 @@ bool CStdMessageProc::Execute(int iTimeout, pollfd *)
 {
 	// Peek messages
 	MSG msg;
-	while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
+	while (PeekMessage(&msg,nullptr,0,0,PM_REMOVE))
 	{
 		// quit?
 		if (msg.message == WM_QUIT)
@@ -794,9 +835,7 @@ bool CStdMessageProc::Execute(int iTimeout, pollfd *)
 
 /* C4AbstractApp */
 
-C4AbstractApp::C4AbstractApp() :
-		Active(false), pWindow(NULL), fQuitMsgReceived(false),
-		hInstance(NULL), fDspModeSet(false)
+C4AbstractApp::C4AbstractApp()
 {
 	ZeroMemory(&dspMode, sizeof(dspMode)); dspMode.dmSize =  sizeof(dspMode);
 	ZeroMemory(&OldDspMode, sizeof(OldDspMode)); OldDspMode.dmSize =  sizeof(OldDspMode);
@@ -807,9 +846,7 @@ C4AbstractApp::C4AbstractApp() :
 #endif
 }
 
-C4AbstractApp::~C4AbstractApp()
-{
-}
+C4AbstractApp::~C4AbstractApp() = default;
 
 bool C4AbstractApp::Init(int argc, char * argv[])
 {
@@ -841,10 +878,10 @@ bool C4AbstractApp::FlushMessages()
 
 void C4AbstractApp::SetLastErrorFromOS()
 {
-	LPWSTR buffer = 0;
+	LPWSTR buffer = nullptr;
 	FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
-		0, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, 0);
-	sLastError.Take(StdStrBuf(buffer));
+		nullptr, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, nullptr);
+	sLastError = WStrToString(buffer);
 	LocalFree(buffer);
 }
 
@@ -868,7 +905,7 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
 	StdStrBuf Mon;
 	if (iMonitor)
-		Mon.Format("\\\\.\\Display%d", iMonitor+1);
+		Mon.Format(R"(\\.\Display%d)", iMonitor+1);
 	// check if indexed mode exists
 	if (!EnumDisplaySettingsW(Mon.GetWideChar(), iIndex, &dmode))
 	{
@@ -896,14 +933,14 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 	if (!fFullScreen)
 	{
 
-		ChangeDisplaySettings(NULL, 0);
+		ChangeDisplaySettings(nullptr, 0);
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) | (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
 		if(iXRes != -1 && iYRes != -1) {
 			pWindow->SetSize(iXRes, iYRes);
 			OnResolutionChanged(iXRes, iYRes);
 		}
-		::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
+		::SetWindowPos(pWindow->hWindow, nullptr, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
 	}
 	else
 	{
@@ -912,8 +949,8 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 		// if a monitor is given, search on that instead
 		// get monitor infos
 		GLMonitorInfoEnumCount = iMonitor;
-		hMon = NULL;
-		EnumDisplayMonitors(NULL, NULL, GLMonitorInfoEnumProc, (LPARAM) this);
+		hMon = nullptr;
+		EnumDisplayMonitors(nullptr, nullptr, GLMonitorInfoEnumProc, (LPARAM) this);
 		// no monitor assigned?
 		if (!hMon)
 		{
@@ -928,7 +965,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 		}
 		StdStrBuf Mon;
 		if (iMonitor)
-			Mon.Format("\\\\.\\Display%d", iMonitor+1);
+			Mon.Format(R"(\\.\Display%d)", iMonitor+1);
 
 		ZeroMemory(&dmode, sizeof(dmode));
 		dmode.dmSize = sizeof(dmode);
@@ -961,7 +998,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 		if (iRefreshRate != 0)
 			dspMode.dmFields |= DM_DISPLAYFREQUENCY;
-		DWORD rv = ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : NULL, &dspMode, NULL, CDS_FULLSCREEN, NULL);
+		LONG rv = ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : nullptr, &dspMode, nullptr, CDS_FULLSCREEN, nullptr);
 		if (rv != DISP_CHANGE_SUCCESSFUL)
 		{
 			switch (rv)
@@ -985,7 +1022,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 
 		pWindow->SetSize(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
 		OnResolutionChanged(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
-		::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
+		::SetWindowPos(pWindow->hWindow, nullptr, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
 	}
 	return true;
 #endif
@@ -993,24 +1030,24 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 
 void C4AbstractApp::MessageDialog(const char * message)
 {
-	MessageBoxW(0, GetWideChar(message), ADDL(C4ENGINECAPTION), MB_ICONERROR);
+	MessageBoxW(nullptr, GetWideChar(message), ADDL(C4ENGINECAPTION), MB_ICONERROR);
 }
 
 // Clipboard functions
-bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const std::string &text, bool fClipboard)
 {
 	if (!fClipboard) return false;
 	bool fSuccess = true;
 	// gain clipboard ownership
-	if (!OpenClipboard(pWindow ? pWindow->hWindow : NULL)) return false;
+	if (!OpenClipboard(pWindow ? pWindow->hWindow : nullptr)) return false;
 	// must empty the global clipboard, so the application clipboard equals the Windows clipboard
 	EmptyClipboard();
-	int size = MultiByteToWideChar(CP_UTF8, 0, text.getData(), text.getSize(), 0, 0);
+	int size = MultiByteToWideChar(CP_UTF8, 0, text.c_str(), text.size() + 1, nullptr, 0);
 	HANDLE hglbCopy = GlobalAlloc(GMEM_MOVEABLE, size * sizeof(wchar_t));
-	if (hglbCopy == NULL) { CloseClipboard(); return false; }
+	if (hglbCopy == nullptr) { CloseClipboard(); return false; }
 	// lock the handle and copy the text to the buffer.
 	wchar_t *szCopyChar = (wchar_t *) GlobalLock(hglbCopy);
-	fSuccess = !!MultiByteToWideChar(CP_UTF8, 0, text.getData(), text.getSize(), szCopyChar, size);
+	fSuccess = !!MultiByteToWideChar(CP_UTF8, 0, text.c_str(), text.size() + 1, szCopyChar, size);
 	GlobalUnlock(hglbCopy);
 	// place the handle on the clipboard.
 	fSuccess = fSuccess && !!SetClipboardData(CF_UNICODETEXT, hglbCopy);
@@ -1020,15 +1057,15 @@ bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 	return fSuccess;
 }
 
-StdStrBuf C4AbstractApp::Paste(bool fClipboard)
+std::string C4AbstractApp::Paste(bool fClipboard)
 {
-	if (!fClipboard) return StdStrBuf();
+	if (!fClipboard) return std::string();
 	// open clipboard
-	if (!OpenClipboard(NULL)) return StdStrBuf();
+	if (!OpenClipboard(nullptr)) return std::string();
 	// get text from clipboard
 	HANDLE hglb = GetClipboardData(CF_UNICODETEXT);
-	if (!hglb) return StdStrBuf();
-	StdStrBuf text((LPCWSTR) GlobalLock(hglb));
+	if (!hglb) return std::string();
+	std::string text{ WStrToString((wchar_t*)GlobalLock(hglb)) };
 	// unlock mem
 	GlobalUnlock(hglb);
 	// close clipboard

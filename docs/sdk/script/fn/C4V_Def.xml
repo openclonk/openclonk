@@ -6,7 +6,7 @@
   <const>
     <title>C4V_Def</title>
     <category>Variables</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Data type: Definition. Definitions are a special type of proplist, and this data type is used for distinguishing definitions from proplists.</desc>
     <examples>

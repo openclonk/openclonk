@@ -1,0 +1,2 @@
+Name=Magma
+Description=Stellt ein Material-Pixel besonders heißer Magma dar.

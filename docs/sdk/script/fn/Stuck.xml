@@ -7,13 +7,33 @@
     <title>Stuck</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>5.1 OC</version>
-    <syntax><rtype>bool</rtype></syntax>
-    <desc>Returns whether the object is stuck, meaning that one of its vertices is enclosed in solid matter.</desc>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X offset for which stuck-status is checked.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y offset for which stuck-status is checked.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns whether the object is stuck, meaning that one of its vertices is enclosed in solid matter. An optional offset can be specified, in which case it is checked whether the object would be stuck at the offset position.</desc>
     <examples>
       <example>
         <code><funclink>if</funclink>(<funclink>GetCursor</funclink>()-&gt;Stuck()) <funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;Help!&quot;);</code>
         <text>Displays a message above the selected clonk of the first player if the clonk is stuck at the time the script is called.</text>
+      </example>
+      <example>
+        <code><funclink>if</funclink>(<funclink>GetCursor</funclink>()-&gt;Stuck() &amp;&amp; !<funclink>GetCursor</funclink>()-&gt;Stuck(0, -10)) <funclink>GetCursor</funclink>()-&gt;<funclink>SetPosition</funclink>(<funclink>GetCursor</funclink>()-&gt;<funclink>GetX</funclink>(), <funclink>GetCursor</funclink>()-&gt;<funclink>GetY</funclink>() - 10);</code>
+        <text>If the clonk is stuck at its current position but would not be stuck 10 pixels higher, move it upwards.</text>
       </example>
     </examples>
     <related>
@@ -21,7 +41,8 @@
       <funclink>GetVertex</funclink>
       <funclink>GetMaterial</funclink>
       <funclink>VerticesStuck</funclink>
+      <funclink>Unstick</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>2002-08</date>
+  <author>Sven2</author><date>2016-09</date>
 </funcs>

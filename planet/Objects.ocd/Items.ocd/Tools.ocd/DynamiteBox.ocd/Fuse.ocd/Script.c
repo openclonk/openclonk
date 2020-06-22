@@ -5,6 +5,17 @@
 	@author Newton, Maikel
 */
 
+// Definition call: Create a fuse between two objects
+public func Create(object o1, object o2)
+{
+	if (!o1 || !o2) return;
+	var fuse = CreateObject(Fuse, AbsX(o1->GetX()), AbsY(o1->GetY()));
+	if (fuse)
+	{
+		fuse->Connect(o1, o2);
+	}
+	return fuse;
+}
 
 protected func Initialize()
 {
@@ -22,13 +33,23 @@ public func Connect(object target1, object target2)
 	SetAction("Connect", target1, target2);
 }
 
+public func GetConnectedItem(object source)
+{
+	// Return connected target on the other side of given source
+	if (source == GetActionTarget(0)) return GetActionTarget(1);
+	if (source == GetActionTarget(1)) return GetActionTarget(0);
+	// source is invalid
+	return nil;
+}
+
 public func StartFusing(object controller)
 {
-	var effect;
-	if (effect = GetEffect("IntFusing", this)) 
+	var fx = GetEffect("IntFusing", this);
+	if (fx) 
 	{
 		// Double fuse start scheduled? Ignore.
-		if (effect.fuse_source == controller) return false;
+		if (fx.fuse_source == controller)
+			return false;
 		// Fuse from both sides not supported
 		return RemoveObject();
 	}
@@ -51,13 +72,13 @@ public func StartFusing(object controller)
 		fuse_call = GetActionTarget(0);
 		fuse_vertex = GetVertexNum()-1;
 	}
-	effect = AddEffect("IntFusing", this, 100, 1, this);
-	effect.fuse_dir = fuse_dir;
-	effect.fuse_source = controller;
-	effect.fuse_call = fuse_call;
-	effect.fuse_vertex = fuse_vertex;
-	effect.fuse_x = GetVertex(fuse_vertex, VTX_X) * 10;
-	effect.fuse_y = GetVertex(fuse_vertex, VTX_Y) * 10;
+	fx = AddEffect("IntFusing", this, 100, 1, this);
+	fx.fuse_dir = fuse_dir;
+	fx.fuse_source = controller;
+	fx.fuse_call = fuse_call;
+	fx.fuse_vertex = fuse_vertex;
+	fx.fuse_x = GetVertex(fuse_vertex, VTX_X) * 10;
+	fx.fuse_y = GetVertex(fuse_vertex, VTX_Y) * 10;
 	return true;
 }
 
@@ -113,8 +134,13 @@ protected func FxIntFusingStop(object target, proplist effect, int reason, bool 
 	return FX_OK;
 }
 
-// Only the main dynamite pack is stored.
-public func SaveScenarioObject() { return false;}
+// Store as connector
+public func SaveScenarioObject(proplist props)
+{
+	if (!_inherited(props)) return false;
+	props->AddCall("Fuse", GetID(), "Create", GetActionTarget(0), GetActionTarget(1));
+	return true;
+}
 
 
 /*-- Properties --*/

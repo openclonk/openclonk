@@ -49,7 +49,7 @@ protected func InitializePlayer(int plr)
 	{
 		var pos = FindTopSpot();
 		crew->SetPosition(pos.x, pos.y - 10);
-		while(crew->Stuck())
+		while (crew->Stuck())
 			crew->SetPosition(pos.x, crew->GetY()-1);
 		crew->CreateContents(Shovel);
 		// First clonk can construct, others can chop.
@@ -79,7 +79,7 @@ private func InitEnvironment(int difficulty)
 	Cloud->Place(8 + 2 * difficulty);
 	Cloud->SetPrecipitation("Acid", 100);
 	// Sky.
-	SetSkyParallax(1, 20, 20, 0,0, nil, nil);
+	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
 	// Some natural disasters.
 	Earthquake->SetChance(100);
 	Volcano->SetChance(1 + difficulty);
@@ -87,7 +87,7 @@ private func InitEnvironment(int difficulty)
 	Meteor->SetChance(16 + 4 * difficulty);
 	// Bottom item killer.
 	var fx = AddEffect("KeepAreaClear", nil, 1, 5);
-	fx.search_criterion=Find_And(Find_AtRect(0, LandscapeHeight() - 10, LandscapeWidth(), 10), Find_Not(Find_Category(C4D_StaticBack)));
+	fx.search_criterion = Find_And(Find_AtRect(0, LandscapeHeight() - 10, LandscapeWidth(), 10), Find_Not(Find_Category(C4D_StaticBack)));
 	return;
 }
 
@@ -97,8 +97,8 @@ private func InitVegetation(int map_size)
 	LargeCaveMushroom->Place(15, Shape->Rectangle(LandscapeWidth() / 4, 172 * 6, LandscapeWidth() / 2, 60 * 6));
 	// Create earth materials
 	// Create them in big clusters so the whole object arrangement looks a bit less uniform and more interesting.
-	PlaceBatches([Firestone], 3, 100, 5);
-	PlaceBatches([Rock, Loam, Loam], 10, 200, 10);
+	PlaceObjectBatches([Firestone], 3, 100, 5);
+	PlaceObjectBatches([Rock, Loam, Loam], 10, 200, 10);
 	// Misc vegetation
 	SproutBerryBush->Place(5, Shape->Rectangle(0, LandscapeHeight() / 4, LandscapeWidth(), LandscapeHeight() * 3 / 4));
 	Mushroom->Place(5, Shape->Rectangle(0, LandscapeHeight() / 4, LandscapeWidth(), LandscapeHeight() * 3 / 4));
@@ -125,19 +125,25 @@ private func InitMaterial(int amount)
 		lorry->CreateContents(Firestone, 5);
 		lorry->CreateContents(Dynamite, 3);
 		lorry->CreateContents(DynamiteBox, 2);
-		while(lorry->Stuck())
+		while (lorry->Stuck())
 			lorry->SetPosition(lorry->GetX(), lorry->GetY()-1);
 	}
 	// Create some chests in caves.
-	var chest_pos, chest;
-	var chest_sets = [[[DynamiteBox,2], [Dynamite,5], [Bread,5]], [[Loam,5], [WallKit,3], [Wood,8]], [[Bread,10],[Firestone,5],[Wood,8]]];
+	var chest_sets = [[[DynamiteBox, 2], [Dynamite, 5], [Bread, 5]], [[Loam, 5], [WallKit, 3], [Wood, 8]], [[Bread, 10],[Firestone, 5],[Wood, 8]]];
 	for (var i = 0; i < 3; ++i)
-		if (chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom)))
-			if (chest = CreateObjectAbove(Chest, chest_pos.x, chest_pos.y))
+	{
+		var chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom));
+		if (chest_pos)
+		{
+			var chest = CreateObjectAbove(Chest, chest_pos.x, chest_pos.y);
+			if (chest)
 				for (var chest_fill in chest_sets[i])
 					chest->CreateContents(chest_fill[0], chest_fill[1]);
+		}
+	}
 	// A barrel somewhere in a cave.
-	if (chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom)))
+	var chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom));
+	if (chest_pos)
 		CreateObjectAbove(Barrel, chest_pos.x, chest_pos.y);
 
 	return;
@@ -157,21 +163,4 @@ global func FxKeepAreaClearTimer(object q, proplist fx, int time)
 		if (obj) 
 			obj->RemoveObject();
 	return FX_OK;
-}
-
-private func PlaceBatches(array item_ids, int n_per_batch, int batch_radius, int n_batches)
-{
-	// place a number (n_batches) of batches of objects of types item_ids. Each batch has n_per_batch objects.
-	// fewer batches and/or objects may be placed if no space is found
-	var loc,loc2,n_item_ids=GetLength(item_ids), n_created=0, obj;
-	for (var i=0; i<n_batches; ++i)
-		if (loc = FindLocation(Loc_Material("Earth")))
-			for (var j=0; j<n_per_batch; ++j)
-				if (loc2 = FindLocation(Loc_InRect(loc.x-batch_radius,loc.y-batch_radius,batch_radius*2,batch_radius*2), Loc_Material("Earth")))
-					if (obj=CreateObjectAbove(item_ids[Random(n_item_ids)],loc2.x,loc2.y))
-					{
-						obj->SetPosition(loc2.x,loc2.y);
-						++n_created;
-					}
-	return n_created;
 }

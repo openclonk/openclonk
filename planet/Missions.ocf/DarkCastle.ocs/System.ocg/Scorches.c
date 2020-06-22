@@ -1,13 +1,13 @@
 global func AddScorch(int x, int y, int r, int strength, int duration)
 {
-	var scorch = CreateObjectAbove(Wood, x,y, NO_OWNER);
+	var scorch = CreateObjectAbove(Wood, x, y, NO_OWNER);
 	if (!scorch) return nil;
 	scorch->SetObjectLayer(scorch);
 	scorch->SetR(r);
 	scorch->SetClrModulation(0x80804000);
 	scorch->SetCategory(C4D_StaticBack);
 	scorch.Collectible = false; // SetObjectLayer is not enough...
-	scorch.Plane = this.Plane+1;
+	scorch.Plane = this.Plane + 1;
 	var fx = AddEffect("FireScorching", scorch, 1, 2, scorch);
 	fx.strength = strength;
 	fx.duration = duration;

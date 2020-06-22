@@ -19,6 +19,10 @@ protected func Initialize()
 	goal.Name = "$MsgGoalName$";
 	goal.Description = "$MsgGoalDescription$";
 	
+	// Rules: make the pump faster.
+	var rule = CreateObject(Rule_FastPump);
+	rule->SetPumpSpeed(4 * Pump.PumpSpeed);
+	
 	// Place objects in different sections.
 	InitVillage();
 	InitMines();
@@ -27,7 +31,7 @@ protected func Initialize()
 	InitAI();
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorials.ocf\\Tutorial08.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial08.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -37,7 +41,7 @@ protected func OnGoalsFulfilled()
 	// Achievement: Tutorial completed.
 	GainScenarioAchievement("TutorialCompleted", 3);
 	// Dialogue options -> next round.
-	//SetNextMission("Tutorials.ocf\\Tutorial09.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	//SetNextScenario("Tutorials.ocf\\Tutorial09.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }
@@ -97,6 +101,7 @@ private func InitMines()
 	lantern->TurnOn();
 	var lorry = CreateObjectAbove(Lorry, 596, 886);
 	lorry->CreateContents(Metal, 32);
+	lorry.is_metal_lorry = true;
 	
 	// Another lorry with coal and ore in the lower part of the mines.
 	var lorry = CreateObjectAbove(Lorry, 517, 974);
@@ -406,11 +411,12 @@ protected func OnGuideMessageShown(int plr, int index)
 {
 	if (index == 0)
 	{
-		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(218, 182)));
+		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(218, 182), Find_Not(Find_Owner(plr))));
 	}	
 	if (index == 2)
 	{
 		TutArrowShowPos(302, 270, 180);
+		TutArrowShowTarget(FindObject(Find_ID(Lorry), Find_Property("is_metal_lorry")));
 	}	
 	if (index == 3)
 	{
@@ -420,7 +426,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	if (index == 4)
 	{
 		TutArrowShowPos(292, 850, 180);
-		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(604, 806)));
+		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(604, 806), Find_Not(Find_Owner(plr))));
 	}
 	if (index == 6)
 	{
@@ -433,7 +439,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	}
 	if (index == 9)
 	{
-		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(218, 182)));
+		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(218, 182), Find_Not(Find_Owner(plr))));
 	}
 	return;
 }
@@ -473,7 +479,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
-		Rule_BaseRespawn->TransferInventory(target, clonk);
+		Rule_Relaunch->TransferInventory(target, clonk);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");

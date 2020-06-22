@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,7 @@
 #ifndef INC_C4Sky
 #define INC_C4Sky
 
-#include "C4Real.h"
-#include "C4Shader.h"
+#include "graphics/C4Shader.h"
 
 #define C4SkyPM_Fixed     0   // sky parallax mode: fixed
 #define C4SkyPM_Wind      1   // sky parallax mode: blown by the wind
@@ -33,7 +32,7 @@ public:
 	~C4Sky();
 	void Default(); // zero fields
 
-	bool Init(bool fSavegame);
+	bool Init(bool fSavegame, std::string names = "");
 	void Clear();
 	void SetColor(int32_t iIndex, int32_t iRed, int32_t iGreen, int32_t iBlue);
 	void SetFadePalette(int32_t *ipColors);

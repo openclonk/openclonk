@@ -61,7 +61,7 @@ public func DrawCavern(proplist map)
 	map->DrawMaterial("Rock", map_top, 3, 20);
    
     // The cavern is located a bit to the left and can be entered from the left side of the map.
-    var cavern = {Algo = MAPALGO_Ellipsis, X = wdt / 2 - 10, Y = cavern_hgt - 7, Wdt = 20, Hgt = 7};
+    var cavern = {Algo = MAPALGO_Ellipse, X = wdt / 2 - 10, Y = cavern_hgt - 7, Wdt = 20, Hgt = 7};
     cavern = {Algo = MAPALGO_Or, Op = [cavern, {Algo = MAPALGO_Turbulence, Iterations = 4, Seed = Random(65536), Op = cavern}]};
     cavern = {Algo = MAPALGO_Or, Op = [cavern, {Algo = MAPALGO_Rect, X = wdt / 2 - 30, Y = cavern_hgt - 7, Wdt = 40, Hgt = 7}]};
     cavern = {Algo = MAPALGO_And, Op = [cavern, map_top]};
@@ -223,7 +223,7 @@ public func FindVeinNodes(proplist map, int size, nr_nodes)
 		var node = {};
 		if (!mask->FindPosition(node, "Rock", [4, hgt - 10, wdt - 8, 6]))
 			continue;
-		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
+		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
 		node.is_gem = true;
 		node.tunnels = [];
 		PushBack(nodes, node);	
@@ -235,7 +235,7 @@ public func FindVeinNodes(proplist map, int size, nr_nodes)
 		var node = {};
 		if (!mask->FindPosition(node, "Rock", [4, hgt - size + 4, wdt - 8, size - 18]))
 			continue;
-		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
+		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipse, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
 		node.tunnels = [];
 		PushBack(nodes, node);
 	}
@@ -254,7 +254,7 @@ public func FindNodeConnections(array nodes, int max_length)
 		{
 			var to_node = nodes[j];
 			// Check for the maximum connections per cave.
-			if (from_node.conn_count >= RandomX(3,4) || to_node.conn_count >= RandomX(3,4))
+			if (from_node.conn_count >= RandomX(3, 4) || to_node.conn_count >= RandomX(3, 4))
 				continue;
 			// Check for two gem nodes which may not connect.
 			if (from_node.is_gem && to_node.is_gem)
@@ -299,23 +299,4 @@ public func FindNodeConnections(array nodes, int max_length)
 		}
 	}
 	return connections;
-}
-
-
-/*-- Helper Functions --*/
-
-public func IsLineOverlap(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
-{
-	// Same starting point is not overlapping.
-	if ((x1 == x3 && y1 == y3) || (x1 == x4 && y1 == y4) || (x2 == x3 && y2 == y3) || (x2 == x4 && y2 == y4))
-		return false;	
-	
-	// Check if line from x1,y1 to x2,y2 crosses the line from x3,y3 to x4,y4
-	var d1x = x2 - x1, d1y = y2 - y1, d2x = x4 - x3, d2y = y4 - y3, d3x = x3 - x1, d3y = y3 - y1;
-	var a = d1y * d3x - d1x * d3y;
-	var b = d2y * d3x - d2x * d3y;
-	var c = d2y * d1x - d2x * d1y;
-	if (!c) 
-		return !a && Inside(x3, x1, x2) && Inside(y3, y1, y2); // lines are parallel
-	return a * c >= 0 && !(a * a / (c * c + 1)) && b * c >= 0 && !(b * b/(c * c + 1));
 }

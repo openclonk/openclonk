@@ -2,17 +2,14 @@
 /* Generate minidumps on crash */
 #cmakedefine HAVE_DBGHELP 1
 
-/* Define to 1 if you have the <direct.h> header file. */
-#cmakedefine HAVE_DIRECT_H 1
+/* Use backward-cpp to print stack traces on crash */
+#cmakedefine HAVE_BACKWARD 1
 
 /* The backtrace function is declared in execinfo.h and works */
 #cmakedefine HAVE_EXECINFO_H 1
 
 /* Define to 1 if you have the <history.h> header file. */
 #cmakedefine HAVE_HISTORY_H 1
-
-/* Define to 1 if you have the <inttypes.h> header file. */
-#cmakedefine HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <io.h> header file. */
 #cmakedefine HAVE_IO_H 1
@@ -22,9 +19,6 @@
 
 /* Define to 1 if you have the <locale.h> header file. */
 #cmakedefine HAVE_LOCALE_H 1
-
-/* Define to 1 if your stdlib has std::make_unique */
-#cmakedefine HAVE_MAKE_UNIQUE 1
 
 /* Define to 1 if you have the <poll.h> header file. */
 #cmakedefine HAVE_POLL_H 1
@@ -40,9 +34,6 @@
 
 /* Define to 1 if you have the <signal.h> header file. */
 #cmakedefine HAVE_SIGNAL_H 1
-
-/* Define to 1 if you have the <stdint.h> header file. */
-#cmakedefine HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <sys/eventfd.h> header file. */
 #cmakedefine HAVE_SYS_EVENTFD_H 1
@@ -68,20 +59,11 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H 1
 
-/* Define to 1 if your compiler supports variadic templates */
-#cmakedefine HAVE_VARIADIC_TEMPLATES 1
-
 /* Define to 1 if you have the `vasprintf' function. */
 #cmakedefine HAVE_VASPRINTF 1
 
-/* Define to 1 if you have the `__mingw_vasprintf' function. */
-#cmakedefine HAVE___MINGW_VASPRINTF 1
-
 /* Define to 1 if you have the <X11/extensions/Xrandr.h> header file. */
 #cmakedefine HAVE_X11_EXTENSIONS_XRANDR_H 1
-
-/* Define to 1 if you have the <X11/keysym.h> header file. */
-#cmakedefine HAVE_X11_KEYSYM_H 1
 
 /* compile without debug options */
 #cmakedefine NDEBUG 1
@@ -104,12 +86,13 @@
 
 /* Enable automatic update system */
 #cmakedefine WITH_AUTOMATIC_UPDATE 1
+#cmakedefine WITH_APPDIR_INSTALLATION 1
 
 /* Select an audio provider */
 #define AUDIO_TK AUDIO_TK_${Audio_TK_UPPER}
 #else
 #define AUDIO_TK AUDIO_TK_NONE
-#endif
+#endif // USE_CONSOLE
 
 #define AUDIO_TK_NONE 0
 #define AUDIO_TK_OPENAL 1
@@ -117,3 +100,13 @@
 
 /* Include OpenAL extensions (alext.h) for sound modifiers */
 #cmakedefine HAVE_ALEXT 1
+
+/* Path to data directory */
+#ifdef WITH_APPDIR_INSTALLATION
+#define OC_SYSTEM_DATA_DIR "../share/games/openclonk"
+#else
+#define OC_SYSTEM_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/games/openclonk"
+#endif
+
+/* Path to /proc/self/exe (Linux) or equivalent */
+#cmakedefine PROC_SELF_EXE "${PROC_SELF_EXE}"

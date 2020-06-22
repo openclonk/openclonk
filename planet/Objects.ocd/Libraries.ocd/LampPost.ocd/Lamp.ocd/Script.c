@@ -36,28 +36,38 @@ public func LampOffset() {}
 /*-- Convenient calls --*/
 
 /** Standard turning on procedure. Overload as needed.
-	Default behaviour: lib_lamp_lit to true, light range 80,60, inherited
+	Default behaviour: lib_lamp_lit to true, light range 80, 60, inherited
 */
 public func TurnOn()
 {
 	if (lib_lamp_lit) return false;
-	_inherited();
-	SetLightRange(this->GetLampRange(), this->GetLampFadeRange());
-	SetLightColor(this->GetLampColor());
+	_inherited(...);
+	TurnLightOn();
 	lib_lamp_lit = true;
 	return true;
 }
 
+func TurnLightOn()
+{
+	SetLightRange(this->GetLampRange(), this->GetLampFadeRange());
+	SetLightColor(this->GetLampColor());
+}
+
 /** Standard turning off procedure. Overload as needed.
-	Default behaviour: lib_lamp_lit to false, light range 0,0, inherited
+	Default behaviour: lib_lamp_lit to false, light range 0, 0, inherited
 */
 public func TurnOff()
 {
 	if (!lib_lamp_lit) return false;
-	_inherited();
-	SetLightRange(0, 0);
+	_inherited(...);
+	TurnLightOff();
 	lib_lamp_lit = false;
 	return true;
+}
+
+func TurnLightOff()
+{
+	SetLightRange(0, 0);
 }
 
 // Returns whether the lamp currently is a source of light.

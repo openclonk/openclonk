@@ -1,6 +1,6 @@
 [DefCore]
 id=HelpArrow
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=4
 Height=15
@@ -10,6 +10,6 @@ VertexY=-6,6,0
 VertexFriction=120,120,120
 Value=15
 Mass=15
-Components=Wood=5
 Rotate=1
 Float=1
+HideInCreator=true

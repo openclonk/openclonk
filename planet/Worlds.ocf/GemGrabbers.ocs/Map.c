@@ -61,8 +61,8 @@ public func DrawMainIsland(proplist map, int size)
 	var island = {Algo = MAPALGO_Polygon};
 	var x = map.Wdt / 2;
 	var y = map.Hgt / 2;
-	island.X = [x-size/3, x-size/2, x-size/3, x-size/6, x+size/6, x+size/3, x+size/2, x+size/3];
-	island.Y = [y-size/6, y, y+size/3, y+size/6, y+size/6, y+size/3, y, y-size/6];
+	island.X = [x-size/3, x-size/2, x-size/3, x-size/6, x + size/6, x + size/3, x + size/2, x + size/3];
+	island.Y = [y-size/6, y, y + size/3, y + size/6, y + size/6, y + size/3, y, y-size/6];
 	
 	// Draw the earth patch of the island.
 	island = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = [10, 6], Seed = Random(65536), Op = island};
@@ -109,7 +109,7 @@ public func DrawIsland(proplist map, int x, int y, int wdt, int hgt, array mats)
 		return false;
 	
 	// An island is just an ellipse with turbulence.
-	var island = {Algo = MAPALGO_Ellipsis, X = x, Y = y, Wdt = wdt / 2, Hgt = hgt / 2};
+	var island = {Algo = MAPALGO_Ellipse, X = x, Y = y, Wdt = wdt / 2, Hgt = hgt / 2};
 	island = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = [6, 12], Seed = Random(65536), Op = island};
 	Draw("Earth", island);
 	
@@ -124,13 +124,13 @@ public func DrawIsland(proplist map, int x, int y, int wdt, int hgt, array mats)
 	}
 		
 	// Draw a top border out of sand and top soil.
-	var sand_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1,2]}, {Algo = MAPALGO_RndChecker, Ratio = 50, Wdt = 4, Hgt = 3}]};
- 	var topsoil_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1,3]}, {Algo = MAPALGO_RndChecker, Ratio = 40, Wdt = 4, Hgt = 2}]};
+	var sand_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1, 2]}, {Algo = MAPALGO_RndChecker, Ratio = 50, Wdt = 4, Hgt = 3}]};
+ 	var topsoil_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1, 3]}, {Algo = MAPALGO_RndChecker, Ratio = 40, Wdt = 4, Hgt = 2}]};
 	Draw("Sand", sand_border);
 	Draw("Earth-earth", topsoil_border);	
 	
 	// Draw a bottom border out of granite and rock (or everrock on insane).
-	var granite_border = {Algo = MAPALGO_Border, Op = island, Bottom = [-2,3]};
+	var granite_border = {Algo = MAPALGO_Border, Op = island, Bottom = [-2, 3]};
 	Draw(["Rock", "Granite", "Everrock"][SCENPAR_Difficulty - 1], granite_border);
 	var rock_border = {Algo = MAPALGO_RndChecker, Ratio = 20, Wdt = 2, Hgt = 2};
 	Draw(["Granite", "Rock", "Granite"][SCENPAR_Difficulty - 1], {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
@@ -164,7 +164,7 @@ public func DrawGems(string gem_mat, array rect, int size, proplist map, proplis
 	// Sometimes draw a large patch of tunnel behind the gems.
 	if (!Random(3))
 	{
-		var gem_tunnel = {Algo = MAPALGO_Ellipsis, X = low_spot.X, Y = low_spot.Y + 2, Wdt = size * 3, Hgt = 2 * size};
+		var gem_tunnel = {Algo = MAPALGO_Ellipse, X = low_spot.X, Y = low_spot.Y + 2, Wdt = size * 3, Hgt = 2 * size};
 		gem_tunnel = {Algo = MAPALGO_And, Op = [gem_tunnel, {Algo = MAPALGO_Not, Op = {Algo = MAPALGO_Lines, X = 1, Y = 0, OffX = Random(6), Distance = RandomX(4, 6)}}]};
 		gem_tunnel = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = 14, Scale = 8, Seed = Random(65536), Op = gem_tunnel};
 		gem_tunnel = {Algo = MAPALGO_And, Op = [gem_tunnel, {Algo = MAPALGO_Not, Op = island}]};
@@ -172,7 +172,7 @@ public func DrawGems(string gem_mat, array rect, int size, proplist map, proplis
 	}
 	
 	// Draw the gems.
-	var gems = {Algo = MAPALGO_Ellipsis, X = low_spot.X, Y = low_spot.Y + 1, Wdt = size - 1, Hgt = size};
+	var gems = {Algo = MAPALGO_Ellipse, X = low_spot.X, Y = low_spot.Y + 1, Wdt = size - 1, Hgt = size};
 	gems = {Algo = MAPALGO_Turbulence, Amplitude = 5, Scale = 5, Iterations = 2, Op = gems};
 	Draw(gem_mat, gems);
 	

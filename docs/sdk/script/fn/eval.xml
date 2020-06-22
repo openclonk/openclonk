@@ -6,7 +6,7 @@
   <func>
     <title>eval</title>
     <category>Script</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -14,6 +14,11 @@
           <type>string</type>
           <name>script</name>
           <desc>Script to be executed</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>dont_pass_errors</name>
+          <desc>If true and the script causes an error, the function returns nil and does not cancel its parent script execution.</desc>
         </param>
       </params>
     </syntax>

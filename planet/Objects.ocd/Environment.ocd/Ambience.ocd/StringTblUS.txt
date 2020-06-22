@@ -1,3 +1,17 @@
 Name=Ambience
 Description=Controls environmental sounds and music.
-
+Ambience=Ambience
+FixedEnv=Ambience
+FixedEnvHelp=Sets an ambience controlling the acoustic environment.
+Automatic=Automatic
+AutomaticEnvHelp=Changes the ambience automatically per player depending on the surroundings of the controlled clonk.
+SetShader=Set shader
+SetShaderHelp=Turns a global shader on or off.
+Shader=Shader
+None=None
+Grayscale=Grayscale
+Psycho=Psycho
+Status=Status
+SetEnvironment=Set ambience
+SetEnvironmentHelp=Sets an ambience controlling the acoustic environment.
+Environment=Environment

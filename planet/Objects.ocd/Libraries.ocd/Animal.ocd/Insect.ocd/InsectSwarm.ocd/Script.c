@@ -21,10 +21,10 @@ public func Place(int amount, int swarm_members, proplist area)
 
 /** Call something for every swarm member
 */
-public func SwarmCall(string func, par1, par2, par3, par4, par5, par6, par7, par8, par9)
+public func SwarmCall(string fn, par1, par2, par3, par4, par5, par6, par7, par8, par9)
 {
-	if(!lib_swarm_helper) return;
-	lib_swarm_helper->SwarmCall(func, par1, par2, par3, par4, par5, par6, par7, par8, par9);
+	if (!lib_swarm_helper) return;
+	lib_swarm_helper->SwarmCall(fn, par1, par2, par3, par4, par5, par6, par7, par8, par9);
 }
 
 /** Standard swarm size (utilised in Place()). Default 10.
@@ -46,7 +46,7 @@ local lib_swarm_previnline;
 */
 public func CreateSwarm(int amount)
 {
-	if (!amount) return;
+	if (amount <= 0) return;
 
 	// Create a swarm helper
 	lib_swarm_helper = CreateObject(Library_Swarm_Helper, AbsX(0), AbsY(0), NO_OWNER);
@@ -54,9 +54,9 @@ public func CreateSwarm(int amount)
 	lib_swarm_helper->SetSwarmCount(amount);
 
 	var last_created = this, insect;
-	while(amount)
+	while (amount)
 	{
-		insect = CreateObject(GetID(),0,0,GetOwner());
+		insect = CreateObject(GetID(), 0, 0, GetOwner());
 		insect->SetPreviousInLine(last_created);
 		insect->SetSwarmHelper(lib_swarm_helper);
 		insect->SetCommand("None");
@@ -99,13 +99,13 @@ private func Death()
 		if (lib_swarm_helper->GetMaster() == this)
 			lib_swarm_helper->MakeNewMaster(lib_swarm_nextinline);
 	// Death of a slave
-	if(lib_swarm_previnline && lib_swarm_nextinline)
+	if (lib_swarm_previnline && lib_swarm_nextinline)
 	{
 		lib_swarm_nextinline->SetPreviousInLine(lib_swarm_previnline);
 		lib_swarm_previnline->SetNextInLine(lib_swarm_nextinline);
 	}
 	PurgeLine(); // Don't do everything twice in case Destruction() follows
-	_inherited();
+	_inherited(...);
 }
 
 private func Destruction()
@@ -115,7 +115,7 @@ private func Destruction()
 		if (lib_swarm_helper->GetMaster() == this)
 			lib_swarm_helper->MakeNewMaster(lib_swarm_nextinline);
 	// Destruction of a slave
-	if(lib_swarm_previnline && lib_swarm_nextinline)
+	if (lib_swarm_previnline && lib_swarm_nextinline)
 	{
 		lib_swarm_nextinline->SetPreviousInLine(lib_swarm_previnline);
 		lib_swarm_previnline->SetNextInLine(lib_swarm_nextinline);
@@ -131,7 +131,7 @@ private func PurgeLine()
 private func MoveToTarget()
 {
 	if (!lib_swarm_helper || (lib_swarm_helper->GetMaster() == this))
-		return _inherited();
+		return _inherited(...);
 
 	var x, y;
 	// Follow previous in line
@@ -147,10 +147,14 @@ private func MoveToTarget()
 		x = point.x;
 		y = point.y;
 	}
-	x = BoundBy(x + Random(lib_swarm_density*2) - lib_swarm_density, 10, LandscapeWidth()-10);
-	y = BoundBy(y + Random(lib_swarm_density*2) - lib_swarm_density, 10, LandscapeHeight()-10);
+	x = BoundBy(x + Random(lib_swarm_density * 2) - lib_swarm_density, 10, LandscapeWidth() - 10);
+	y = BoundBy(y + Random(lib_swarm_density * 2) - lib_swarm_density, 10, LandscapeHeight() - 10);
+	// Only move if there is no solid or liquid at this coordinate, otherwise just wait for next activity update.
+	if (GBackSemiSolid(x - GetX(), y - GetY()))
+		return;	
 	SetCommand("MoveTo", nil, x, y, nil, true);
-	AppendCommand("Call", this, nil,nil,nil,nil, "MissionComplete");
+	AppendCommand("Call", this, nil, nil, nil, nil, "MissionComplete");
+	return;
 }
 
 /* Saving */

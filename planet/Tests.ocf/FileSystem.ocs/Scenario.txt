@@ -1,0 +1,5 @@
+[Head]
+Title=OC File System
+
+[Landscape]
+NoScan=1

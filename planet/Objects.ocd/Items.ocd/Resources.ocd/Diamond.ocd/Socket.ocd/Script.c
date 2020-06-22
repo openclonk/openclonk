@@ -10,15 +10,17 @@ local attached_mesh;
 local last_free;
 local mat_color;
 
-public func Place(int amount, proplist area)
+public func Place(int amount, proplist area, proplist settings)
 {
 	area = area ?? Shape->LandscapeRectangle();
-	
+	var diamond_sockets = [];
 	var failsafe = amount * 100;
-	while((amount > 0) && (--failsafe > 0))
+	while ((amount > 0) && (--failsafe > 0))
 	{
 		// select cluster
-		var c_size = Min(5 + RandomX(-1, 1), amount);
+		var c_size = Min(RandomX(4, 6), amount);
+		if (settings != nil && settings.cluster_size != nil)
+			c_size = Min(settings.cluster_size, amount);
 		
 		// look for random in-earth position
 		var failsafe2 = 500;
@@ -27,15 +29,16 @@ public func Place(int amount, proplist area)
 		{
 			if (!area->GetRandomPoint(pt)) break;
 			
-			if(!GBackSolid(pt.x, pt.y)) continue;
+			if (!GBackSolid(pt.x, pt.y)) continue;
 			
 			// must be diggable
 			var mat = GetMaterial(pt.x, pt.y);
-			if(!GetMaterialVal("DigFree","Material",mat)) continue;
+			if (!GetMaterialVal("DigFree","Material",mat))
+				continue;
 			break;
 		}
 		
-		if(failsafe2 <= 0) continue;
+		if (failsafe2 <= 0) continue;
 		
 		// color of cluster
 		var hsl = HSL(Random(255), 50, 150);
@@ -58,10 +61,12 @@ public func Place(int amount, proplist area)
 			++i;
 			var socket = CreateObject(this, mx, my, NO_OWNER);
 			socket->Set(r2, g2, b2);
+			PushBack(diamond_sockets, socket);
 		}
 		
 		amount -= i;
 	}
+	return diamond_sockets;
 }
 
 public func Construction()
@@ -84,7 +89,7 @@ public func Construction()
 	attached_mesh = AttachMesh(contents, "main", "main", Trans_Mul(Trans_Rotate(Random(360), 1, 0, 0)));
 	
 	SetR(Random(360));
-	this.Visibility = VIS_None;
+	Hide();
 	AddTimer("CheckFree", 100 + Random(10));
 	
 	// Random color for now. The Place() function will create groups of the same color.
@@ -111,8 +116,8 @@ private func CheckFree(bool by_dig_free)
 		last_free = !last_free;
 		if (!last_free)
 		{
-			this.Visibility = VIS_None;
 			if (!Contents()) return RemoveObject();
+			Hide();
 		}
 		else
 		{
@@ -130,9 +135,9 @@ private func CheckFree(bool by_dig_free)
 			CreateParticle("StarSpark", 0, 0, 0, 0, 10, particles);
 			// And some extra sparkling in the future
 			AddEffect("MuchSparkle", this, 1, 1, this);
-			this.Visibility = VIS_All;
+			Show();
 			// Also, some sound (delayed for audibility on visibility change)
-			if (by_dig_free) ScheduleCall(this, Global.Sound, 1,1, "Objects::DiamondDigOut");
+			if (by_dig_free) ScheduleCall(this, Global.Sound, 1, 1, "Objects::DiamondDigOut");
 		}
 	}
 	
@@ -185,8 +190,8 @@ private func DugOutDust()
 public func OnHitByPickaxe()
 {
 	var c = Contents();
-	if(!c) return;
-	if(Random(3)) return;
+	if (!c) return;
+	if (Random(3)) return;
 	
 	Sound("Hits::Materials::Rock::RockHit*");
 	DetachMesh(attached_mesh);
@@ -196,4 +201,44 @@ public func OnHitByPickaxe()
 public func CanBeHitByPickaxe()
 {
 	return !!Contents();
+}
+
+
+/* Hidden socket state: Still show (but semi-transparent) in editor */
+
+private func Hide()
+{
+	this.Visibility = VIS_Editor;
+	SetClrModulation(0x80ffffff);
+}
+
+private func Show()
+{
+	this.Visibility = VIS_All;
+	SetClrModulation(0xffffffff);
+}
+
+
+/* Scenario saving */
+
+public func SaveScenarioObject(props, ...)
+{
+	if (!inherited(props, ...)) return false;
+	// Ignore some properties set in construction
+	props->Remove("Visibility");
+	props->Remove("ClrModulation");
+	props->Remove("R");
+	// Special saving of empty sockets
+	if (!Contents())
+	{
+		props->AddCall("Diamond", this, "RemoveDiamond");
+	}
+	return true;
+}
+
+public func RemoveDiamond()
+{
+	// Remove any contained diamond (for scenario saving of empty sockets)
+	var diamond = FindContents(Diamond);
+	if (diamond) return diamond->RemoveObject();
 }

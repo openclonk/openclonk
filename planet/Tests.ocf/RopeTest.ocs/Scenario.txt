@@ -1,7 +1,7 @@
 [Head]
 Icon=2
 Title=RopeTest
-Version=6,0
+Version=8,0
 
 [Definitions]
 Definition1=Objects.ocd

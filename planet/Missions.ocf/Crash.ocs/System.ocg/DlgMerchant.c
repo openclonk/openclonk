@@ -2,8 +2,6 @@
 
 #appendto Dialogue
 
-static g_has_bought_plans;
-
 func Dlg_Merchant_1(object clonk)
 {
 	MessageBox("$Merchant1$", clonk);

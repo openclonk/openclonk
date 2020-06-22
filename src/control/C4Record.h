@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,8 @@
 
 class C4Record;
 
-#include "C4Group.h"
-#include "C4Control.h"
+#include "c4group/C4Group.h"
+#include "control/C4Control.h"
 
 extern int DoNoDebugRec; // debugrec disable counter in C4Record.cpp
 
@@ -31,7 +31,7 @@ extern int DoNoDebugRec; // debugrec disable counter in C4Record.cpp
 // turn off debugrecs in current block
 class C4DebugRecOff
 {
-	bool fDoOff;
+	bool fDoOff{true};
 
 public:
 	C4DebugRecOff();
@@ -90,7 +90,7 @@ enum C4RecordChunkType // record file chunk type
 	RCT_Undefined = 0xff
 };
 
-void AddDbgRec(C4RecordChunkType eType, const void *pData=NULL, int iSize=0); // record debug stuff
+void AddDbgRec(C4RecordChunkType eType, const void *pData=nullptr, int iSize=0); // record debug stuff
 
 #pragma pack(1)
 
@@ -116,7 +116,7 @@ public:
 	C4RecordChunk();
 	void Delete();
 	virtual void CompileFunc(StdCompiler *pComp);
-	virtual ~C4RecordChunk() {}
+	virtual ~C4RecordChunk() = default;
 };
 
 struct C4RCSetPix
@@ -140,8 +140,8 @@ struct C4RCMassMover
 struct C4RCRandom
 {
 	int Cnt; // index in seed
-	int Range; // random range query
-	int Val; // random value
+	uint32_t Range; // random range query
+	uint32_t Val; // random value
 };
 
 struct C4RCCreateObj
@@ -228,16 +228,16 @@ struct C4RCOCF
 class C4PktDebugRec : public C4PktBuf
 {
 protected:
-	C4RecordChunkType eType;
+	C4RecordChunkType eType{RCT_Undefined};
 public:
-	C4PktDebugRec() : C4PktBuf(), eType(RCT_Undefined) {}
-	C4PktDebugRec(const C4PktDebugRec &rCopy) : C4PktBuf(rCopy), eType(rCopy.eType) {}
+	C4PktDebugRec() : C4PktBuf() {}
+	C4PktDebugRec(const C4PktDebugRec &rCopy) = default;
 	C4PktDebugRec(C4RecordChunkType eType, const StdBuf &rCpyData)
 			: C4PktBuf(rCpyData), eType(eType) {}
 
 	C4RecordChunkType getType() const { return eType; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4Record // demo recording
@@ -247,9 +247,9 @@ private:
 	CStdFile LogRec; // handle for additional log file in record
 	StdStrBuf sFilename; // recorded scenario file name
 	C4Group RecordGrp; // record scenario group
-	bool fRecording; // set if recording is active
+	bool fRecording{false}; // set if recording is active
 	uint32_t iLastFrame; // frame of last chunk written
-	bool fStreaming; // perdiodically sent new control to server
+	bool fStreaming{false}; // perdiodically sent new control to server
 	unsigned int iStreamingPos; // Position of current buffer in stream
 	StdBuf StreamingData; // accumulated control data since last stream sync
 public:
@@ -263,7 +263,7 @@ public:
 	const StdBuf &GetStreamingBuf() const { return StreamingData; }
 
 	bool Start(bool fInitial);
-	bool Stop(StdStrBuf *pRecordName = NULL, BYTE *pRecordSHA1 = NULL);
+	bool Stop(StdStrBuf *pRecordName = nullptr, BYTE *pRecordSHA1 = nullptr);
 
 	bool Rec(const C4Control &Ctrl, int iFrame); // record control
 	bool Rec(C4PacketType eCtrlType, C4ControlPacket *pCtrl, int iFrame); // record control packet
@@ -288,9 +288,9 @@ private:
 	typedef std::list<C4RecordChunk> chunks_t;
 	chunks_t chunks;
 	chunks_t::iterator currChunk;
-	bool Finished;    // if set, free playback in next frame
+	bool Finished{true};    // if set, free playback in next frame
 	CStdFile playbackFile; // if open, try reading additional chunks from this file
-	bool fLoadSequential;  // used for debugrecs: Sequential reading of files
+	bool fLoadSequential{false};  // used for debugrecs: Sequential reading of files
 	StdBuf sequentialBuffer; // buffer to manage sequential reads
 	uint32_t iLastSequentialFrame; // frame number of last chunk read
 	void Finish(); // end playback

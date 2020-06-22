@@ -1,5 +1,5 @@
 # Intro sequence messages
 MsgAbandonedSettlement=%s sieht du auch die verlassene Siedlung?
-MsgLegendGems=Sehe ich. Wusstest du, dass Legenden von großen Mengen Edelsteinen in der Gegend erzählen?!
-MsgExplore=Ja %s, davon habe ich gehört. Lasst uns die Höhlen unter uns erforschen!
+MsgLegendGems=Sehe ich. Wusstest du, dass Legenden von groÃŸen Mengen Edelsteinen in der Gegend erzÃ¤hlen?!
+MsgExplore=Ja %s, davon habe ich gehÃ¶rt. Lasst uns die HÃ¶hlen unter uns erforschen!
 MsgAgree=Ich will unbedingt herausfinden, ob die Legenden wahr sind. Ich bin dabei.

@@ -6,7 +6,7 @@
   <func>
     <title>Random</title>
     <category>Arithmetics</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -17,7 +17,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Yields a random number from 0 to max-1. The returned value cannot be greater than 32767, however.</desc>
+    <desc>Yields a random number from 0 to max-1.</desc>
     <examples>
       <example>
         <code>protected func Hit()

@@ -13,8 +13,8 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Log.h>
+#include "C4Include.h"
+#include "lib/C4Log.h"
 
 // This implements the Log engine function such that the first log message
 // is stored and can be retrieved later by the C API.
@@ -60,7 +60,7 @@ void c4_log_handle_clear()
 
 const char* c4_log_handle_get_first_log_message()
 {
-	if(first_log.empty()) return NULL;
+	if(first_log.empty()) return nullptr;
 	return first_log.c_str();
 }
 

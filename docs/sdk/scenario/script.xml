@@ -27,6 +27,11 @@
           <col>int player, int x, int y, object base, int team, id extra_data</col>
           <col>Called after when a new player joins the game. At this point, the clonks, materials, structures etc. are already placed at the position given in the <emlink href="scenario/scenario.html#SektionenPlayer1Player2Player3Player4">Scenario.txt</emlink>. <code>x</code> and <code>y</code> specify the starting position of the player, <code>base</code> is the player's base (if any), <code>team</code> denotes the team of the player. For <code>extra_data</code>, see <funclink>CreateScriptPlayer</funclink></col>
         </row>
+        <row id="InitializePlayers">
+          <literal_col>InitializePlayers</literal_col>
+          <col></col>
+          <col>Called after all initial players joined. Can be used e.g. to start intros.</col>
+        </row>
         <row id="RelaunchPlayer">
           <literal_col>RelaunchPlayer</literal_col>
           <col>int player, int killed_by_player</col>

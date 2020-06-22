@@ -1,2 +1,2 @@
-Name=Hüte die Windräder
-Description=Verteidige die Windräder gegen die Feinde!
+Name=HÃ¼te die WindrÃ¤der
+Description=Verteidige die WindrÃ¤der gegen die Feinde!

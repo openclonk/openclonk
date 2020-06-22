@@ -1,7 +1,7 @@
 [Head]
 Icon=23
 Title=LostMine
-Version=6,0
+Version=8,0
 Difficulty=55
 
 [Definitions]

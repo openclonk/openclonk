@@ -1,0 +1,18 @@
+[DefCore]
+id=LavaCore
+Version=8,0
+Category=C4D_Living
+Height=40
+Width=40
+Offset=-20,-20
+Vertices=9
+VertexX=0,-19,19,  0, 0,-14, 14,-14,14
+VertexY=0,  0, 0,-19,19,-14,-14, 14,14
+VertexFriction=1,50,50,50,50,50,50,50,50
+VertexCNAT=16,1,2,4,8,5,6,9,10
+Mass=80
+StretchGrowth=1
+Oversize=1
+IncompleteActivity=1
+NoBreath=1
+Float=1

@@ -68,12 +68,6 @@
         <col>Behaviour according to <emlink href="definition/actmap.html">activity</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
-      <row id="BRIDGE">
-        <col>DFA_BRIDGE</col>
-        <col>Bridge building</col>
-        <col>According to <emlink href="script/fn/SetComDir.html">ComDir</emlink>. Bridge material is a material number in <emlink href="script/fn/SetActionData.html">Data</emlink>.</col>
-        <col>CNAT_Bottom</col>
-      </row>
       <row id="PUSH">
         <col>DFA_PUSH</col>
         <col>Pushing</col>
@@ -101,7 +95,7 @@
       <row id="CONNECT">
         <col>DFA_CONNECT</col>
         <col>Line connections</col>
-        <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>. If property LineMaxDistance is a nonzero integer, the line breaks when the target objects are further apart than the given distance.</col>
+        <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>.</col>
         <col>CNAT_None</col>
       </row>
       <row id="PULL">
@@ -114,4 +108,5 @@
   </text>
   <text>Procedures are hardcoded in the engine and are from older times in which is was not yet possible to implement the same functionality in script. Most procedures represent highly complex behaviour which is useful only for clonks.</text>
   <author>Sven2</author><date>2002-04</date>
+  <author>Marky</author><date>2019-04</date>
 </doc>

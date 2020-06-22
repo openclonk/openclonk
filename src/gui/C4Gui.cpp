@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,18 +16,18 @@
 // generic user interface
 // all generic classes that do not fit into other C4Gui*-files
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4FullScreen.h>
-#include <C4LoaderScreen.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4Log.h>
-#include <C4GamePadCon.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
+#include "game/C4Application.h"
+#include "game/C4FullScreen.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4LoaderScreen.h"
+#include "gui/C4MouseControl.h"
+#include "platform/C4GamePadCon.h"
 
 namespace C4GUI
 {
@@ -150,9 +150,9 @@ namespace C4GUI
 // --------------------------------------------------
 // Element
 
-	Element::Element() : pParent(NULL), pDragTarget(NULL), fDragging(false), pContextHandler(NULL), fVisible(true), is_immediate_tooltip(false)
+	Element::Element()
 	{
-		// pParent=NULL invalidates pPrev/pNext
+		// pParent=nullptr invalidates pPrev/pNext
 		// fDragging=false invalidates iDragX/Y
 		// zero fields
 		rcBounds.Set(0,0,0,0);
@@ -161,7 +161,7 @@ namespace C4GUI
 	Element::~Element()
 	{
 		// delete context handler
-		if (pContextHandler) { pContextHandler->DeRef(); pContextHandler=NULL; }
+		if (pContextHandler) { pContextHandler->DeRef(); pContextHandler=nullptr; }
 		// remove from any container
 		if (pParent)
 			pParent->RemoveElement(this);
@@ -285,8 +285,8 @@ namespace C4GUI
 		DoDragging(rMouse, iX, iY, dwKeyParam);
 	}
 
-	Dialog *Element::GetDlg   () { if (pParent) return pParent->GetDlg   (); return NULL; }
-	Screen *Element::GetScreen() { if (pParent) return pParent->GetScreen(); return NULL; }
+	Dialog *Element::GetDlg   () { if (pParent) return pParent->GetDlg   (); return nullptr; }
+	Screen *Element::GetScreen() { if (pParent) return pParent->GetScreen(); return nullptr; }
 
 	void Element::Draw3DFrame(C4TargetFacet &cgo, bool fUp, int32_t iIndent, BYTE byAlpha, bool fDrawTop, int32_t iTopOff, bool fDrawLeft, int32_t iLeftOff)
 	{
@@ -452,15 +452,13 @@ namespace C4GUI
 		// reset fields
 		LDown=MDown=RDown=false;
 		dwKeys=0;
-		pMouseOverElement = pPrevMouseOverElement = NULL;
-		pDragElement = NULL;
+		pMouseOverElement = pPrevMouseOverElement = nullptr;
+		pDragElement = nullptr;
 		ResetToolTipTime();
 		// LDownX/Y initialized upon need
 	}
 
-	CMouse::~CMouse()
-	{
-	}
+	CMouse::~CMouse() = default;
 
 	void CMouse::Input(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 	{
@@ -530,7 +528,7 @@ namespace C4GUI
 			pDragElement->ScreenPos2ClientPos(iX, iY);
 			pDragElement->StopDragging(*this, iX, iY, dwKeys);
 		}
-		pPrevMouseOverElement = pMouseOverElement = pDragElement = NULL;
+		pPrevMouseOverElement = pMouseOverElement = pDragElement = nullptr;
 	}
 
 	void CMouse::RemoveElement(Element *pChild)
@@ -539,10 +537,10 @@ namespace C4GUI
 		if (pMouseOverElement == pChild)
 		{
 			pMouseOverElement->MouseLeave(*this); // do leave callback so any tooltip is cleared!
-			pMouseOverElement = NULL;
+			pMouseOverElement = nullptr;
 		}
-		if (pPrevMouseOverElement == pChild) pPrevMouseOverElement = NULL;
-		if (pDragElement == pChild) pDragElement = NULL;
+		if (pPrevMouseOverElement == pChild) pPrevMouseOverElement = nullptr;
+		if (pDragElement == pChild) pDragElement = nullptr;
 	}
 
 	void CMouse::OnElementGetsInvisible(Element *pChild)
@@ -560,19 +558,19 @@ namespace C4GUI
 		// inherited
 		Window::RemoveElement(pChild);
 		// clear ptrs
-		if (pActiveDlg == pChild) { pActiveDlg = NULL; Mouse.ResetElements(); }
+		if (pActiveDlg == pChild) { pActiveDlg = nullptr; Mouse.ResetElements(); }
 		Mouse.RemoveElement(pChild);
 		if (pContext)
 		{
-			if (pContext == pChild) pContext=NULL;
+			if (pContext == pChild) pContext=nullptr;
 			else pContext->RemoveElement(pChild);
 		}
 	}
 
-	Screen::Screen() : Window(), Mouse(0, 0), pContext(NULL), fExclusive(true), pGamePadOpener(NULL), fZoom(1.0f)
+	Screen::Screen() : Window(), Mouse(0, 0)
 	{
 		// no dialog active
-		pActiveDlg = NULL;
+		pActiveDlg = nullptr;
 		// set static var
 		pScreen = this;
 	}
@@ -585,9 +583,6 @@ namespace C4GUI
 		// set size - calcs client area as well
 		SetBounds(C4Rect(tx,ty,twdt,thgt));
 		SetPreferredDlgRect(C4Rect(0,0,twdt,thgt));
-		// GamePad
-		if (Application.pGamePadControl && Config.Controls.GamepadGuiControl)
-			pGamePadOpener = new C4GamePadOpener(0);
 	}
 
 	void Screen::Clear()
@@ -595,8 +590,6 @@ namespace C4GUI
 		Container::Clear();
 		// dtor: Close context menu
 		AbortContext(false);
-		// GamePad
-		if (pGamePadOpener) delete pGamePadOpener;
 		// fields reset
 		fExclusive = true;
 		fZoom = 1.0f;
@@ -605,7 +598,7 @@ namespace C4GUI
 	Screen::~Screen()
 	{
 		// clear singleton
-		if (this == pScreen) pScreen = NULL;
+		if (this == pScreen) pScreen = nullptr;
 	}
 
 	void Screen::ElementPosChanged(Element *pOfElement)
@@ -681,7 +674,7 @@ namespace C4GUI
 			// set new active dlg
 			pActiveDlg = GetTopDialog();
 			// do not set yet if it's fading
-			if (pActiveDlg && pActiveDlg->IsFading()) pActiveDlg = NULL;
+			if (pActiveDlg && pActiveDlg->IsFading()) pActiveDlg = nullptr;
 		}
 		// redraw background; clip update
 		::GraphicsSystem.InvalidateBg(); UpdateMouseFocus();
@@ -693,7 +686,7 @@ namespace C4GUI
 		if (pActiveDlg == pNewTop) return;
 		Mouse.ReleaseElements();
 		// do not set yet if it's fading
-		if (pActiveDlg && pActiveDlg->IsFading()) pActiveDlg = NULL;
+		if (pActiveDlg && pActiveDlg->IsFading()) pActiveDlg = nullptr;
 	}
 
 	Dialog *Screen::GetTopDialog()
@@ -705,7 +698,7 @@ namespace C4GUI
 				if (pDlg->IsShown())
 					return pDlg;
 		// no dlg found
-		return NULL;
+		return nullptr;
 	}
 
 	void Screen::CloseAllDialogs(bool fWithOK)
@@ -721,7 +714,7 @@ namespace C4GUI
 			if ((pDlg = pEl->GetDlg()))
 				if (pDlg->pWindow && pDlg->pWindow->hWindow == hWindow)
 					return pDlg;
-		return NULL;
+		return nullptr;
 	}
 #endif
 	Dialog *Screen::GetDialog(C4Window * pWindow)
@@ -729,10 +722,10 @@ namespace C4GUI
 		// get dialog with matching window
 		Dialog *pDlg;
 		for (Element *pEl = pLast; pEl; pEl = pEl->GetPrev())
-			if ( (pDlg = pEl->GetDlg()) != NULL)
+			if ( (pDlg = pEl->GetDlg()) != nullptr)
 				if (pDlg->pWindow == pWindow)
 					return pDlg;
-		return NULL;
+		return nullptr;
 	}
 	void Screen::Render(bool fDoBG)
 	{
@@ -759,7 +752,7 @@ namespace C4GUI
 			if (!pFSDlg || !pFSDlg->HasBackground())
 			{
 				if (::GraphicsSystem.pLoaderScreen)
-					::GraphicsSystem.pLoaderScreen->fctBackground.DrawFullScreen(cgo);
+					::GraphicsSystem.pLoaderScreen->Draw(cgo, C4LoaderScreen::Flag::BACKGROUND);
 				else
 					// loader not yet loaded: black BG
 					pDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt+1, cgo.Hgt+1, 0x00000000);
@@ -806,7 +799,7 @@ namespace C4GUI
 		// Special: Pass to MouseControl if dragging and button is not upped
 		if (IsActive() && !::MouseControl.IsDragging())
 		{
-			bool fResult = MouseInput(iButton, iX, iY, dwKeyParam, NULL, pVP);
+			bool fResult = MouseInput(iButton, iX, iY, dwKeyParam, nullptr, pVP);
 			if (HasMouseFocus()) { SetMouseInGUI(true, true); return; }
 			// non-exclusive GUI: inform mouse-control about GUI-result
 			SetMouseInGUI(fResult, true);
@@ -859,7 +852,7 @@ namespace C4GUI
 			{
 				// stop dragging
 				Mouse.pDragElement->StopDragging(Mouse, iX2, iY2, dwKeyParam);
-				Mouse.pDragElement = NULL;
+				Mouse.pDragElement = nullptr;
 			}
 			else
 			{
@@ -869,7 +862,7 @@ namespace C4GUI
 		}
 		// backup previous MouseOver-element
 		Mouse.pPrevMouseOverElement = Mouse.pMouseOverElement;
-		Mouse.pMouseOverElement = NULL;
+		Mouse.pMouseOverElement = nullptr;
 		bool fProcessed = false;
 		// active context menu?
 		if (!pForVP && pContext && pContext->CtxMouseInput(Mouse, iButton, fX, fY, dwKeyParam))
@@ -899,7 +892,7 @@ namespace C4GUI
 						// forward to active dialog
 						pActiveDlg->MouseInput(Mouse, iButton, fX - rcDlgBounds.x, fY - rcDlgBounds.y, dwKeyParam);
 					else
-						Mouse.pMouseOverElement = NULL;
+						Mouse.pMouseOverElement = nullptr;
 				}
 				else
 					// outside dialog: own handling (for screen context menu)
@@ -917,7 +910,7 @@ namespace C4GUI
 							if (pForDlg && pDlg != pForDlg) continue;
 							// if specified: process specified viewport only
 							bool fIsExternalDrawDialog = pDlg->IsExternalDrawDialog();
-							C4Viewport *pVP = fIsExternalDrawDialog ? pDlg->GetViewport() : NULL;
+							C4Viewport *pVP = fIsExternalDrawDialog ? pDlg->GetViewport() : nullptr;
 							if (pForVP && pForVP != pVP) continue;
 							// calc offset
 							C4Rect &rcDlgBounds = pDlg->GetBounds();
@@ -966,7 +959,7 @@ namespace C4GUI
 
 	bool Screen::RecheckMouseInput()
 	{
-		return MouseInput(C4MC_Button_None, Mouse.x, Mouse.y, Mouse.dwKeys, NULL, NULL);
+		return MouseInput(C4MC_Button_None, Mouse.x, Mouse.y, Mouse.dwKeys, nullptr, nullptr);
 	}
 
 	void Screen::UpdateMouseFocus()
@@ -1050,20 +1043,12 @@ namespace C4GUI
 					if (pDlg->IsFullscreenDialog())
 						if (fIncludeFading || !pDlg->IsFading())
 							return pDlg;
-		return NULL;
+		return nullptr;
 	}
 
 	void Screen::UpdateGamepadGUIControlEnabled()
 	{
-		// update pGamePadOpener to config value
-		if (pGamePadOpener && (!Config.Controls.GamepadGuiControl || !Application.pGamePadControl))
-		{
-			delete pGamePadOpener; pGamePadOpener = NULL;
-		}
-		else if (!pGamePadOpener && (Config.Controls.GamepadGuiControl && Application.pGamePadControl))
-		{
-			pGamePadOpener = new C4GamePadOpener(0);
-		}
+		// Gamepad is always kept open now.
 	}
 
 	Screen TheScreen;

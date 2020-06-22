@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -23,8 +23,7 @@
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
-#include <CStdFile.h>
-#include <StdBuf.h>
+#include "c4group/CStdFile.h"
 
 // C4Group-Rewind-warning:
 // The current C4Group-implementation cannot handle random file access very well,
@@ -123,56 +122,27 @@ public:
 	bool HoldBuffer = false;
 	bool BufferIsStdbuf = false;
 	bool NoSort = false;
-	BYTE *bpMemBuf = 0;
-	C4GroupEntry *Next = 0;
+	BYTE *bpMemBuf = nullptr;
+	C4GroupEntry *Next = nullptr;
 public:
 	void Set(const DirectoryIterator & iter, const char * szPath);
 };
 
 class C4Group : public CStdStream
 {
+	struct P;
+	std::unique_ptr<P> p;
 public:
 	C4Group();
-	~C4Group();
+	~C4Group() override;
+	C4Group(C4Group &&) = default;
+	C4Group &operator=(C4Group &&) = default;
 
 protected:
-	enum Status
-	{
-		GRPF_Inactive,
-		GRPF_File,
-		GRPF_Folder
-	};
-
-	Status Status;
-	char FileName[_MAX_PATH+1];
-	// Parent status
-	C4Group *Mother;
-	bool ExclusiveChild;
-	// File & Folder
-	C4GroupEntry *SearchPtr;
-	CStdFile StdFile;
-	size_t iCurrFileSize; // size of last accessed file
-	// File only
-	int FilePtr;
-	int MotherOffset;
-	int EntryOffset;
-	bool Modified;
+	// C4Update requires these to be available by a subclass (C4GroupEx)
 	C4GroupHeader Head;
-	C4GroupEntry *FirstEntry;
-	BYTE *pInMemEntry; size_t iInMemEntrySize; // for reading from entries prefetched into memory
-#ifdef _DEBUG
-	StdStrBuf sPrevAccessedEntry;
-#endif
-	// Folder only
-	DirectoryIterator FolderSearch;
-	C4GroupEntry FolderSearchEntry;
-	C4GroupEntry LastFolderSearchEntry;
-
-	bool StdOutput;
-	bool (*fnProcessCallback)(const char *, int);
-	char ErrorString[C4GroupMaxError+1];
-
-	bool NoSort; // If this flag is set, all entries will be marked NoSort in AddEntry
+	C4GroupEntry *GetEntry(const char *szName);
+	void Clear();
 
 public:
 	bool Open(const char *szGroupName, bool fCreate=false);
@@ -187,28 +157,28 @@ public:
 	bool Add(const char *szName, StdStrBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
 	bool Merge(const char *szFolders);
 	bool Move(const char *szFile, const char *szAddAs);
-	bool Extract(const char *szFiles, const char *szExtractTo=NULL, const char *szExclude=NULL);
-	bool ExtractEntry(const char *szFilename, const char *szExtractTo=NULL);
+	bool Extract(const char *szFiles, const char *szExtractTo=nullptr, const char *szExclude=nullptr);
+	bool ExtractEntry(const char *szFilename, const char *szExtractTo=nullptr);
 	bool Delete(const char *szFiles, bool fRecursive = false);
 	bool DeleteEntry(const char *szFilename, bool fRecycle=false);
 	bool Rename(const char *szFile, const char *szNewName);
 	bool Sort(const char *szSortList);
-	bool SortByList(const char **ppSortList, const char *szFilename=NULL);
+	bool SortByList(const char **ppSortList, const char *szFilename=nullptr);
 	bool AccessEntry(const char *szWildCard,
-	                 size_t *iSize=NULL, char *sFileName=NULL,
+	                 size_t *iSize=nullptr, char *sFileName=nullptr,
 	                 bool NeedsToBeAGroup = false);
 	bool AccessNextEntry(const char *szWildCard,
-	                     size_t *iSize=NULL, char *sFileName=NULL,
+	                     size_t *iSize=nullptr, char *sFileName=nullptr,
 	                     bool fStartAtFilename=false);
 	bool LoadEntry(const char *szEntryName, char **lpbpBuf,
-	               size_t *ipSize=NULL, int iAppendZeros=0);
+	               size_t *ipSize=nullptr, int iAppendZeros=0);
 	bool LoadEntry(const char *szEntryName, StdBuf * Buf);
 	bool LoadEntry(const StdStrBuf & name, StdBuf * Buf) { return LoadEntry(name.getData(), Buf); }
 	bool LoadEntryString(const char *szEntryName, StdStrBuf * Buf);
 	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * Buf) { return LoadEntryString(name.getData(), Buf); }
 	bool FindEntry(const char *szWildCard,
-	               StdStrBuf *sFileName=NULL,
-	               size_t *iSize=NULL);
+	               StdStrBuf *sFileName=nullptr,
+	               size_t *iSize=nullptr);
 	bool FindEntry(const char *szWildCard,
 	               char *sFileName)
 	{
@@ -218,12 +188,12 @@ public:
 		return r;
 	}
 	bool FindNextEntry(const char *szWildCard,
-	                   StdStrBuf *sFileName=NULL,
-	                   size_t *iSize=NULL,
+	                   StdStrBuf *sFileName=nullptr,
+	                   size_t *iSize=nullptr,
 	                   bool fStartAtFilename=false);
 	bool FindNextEntry(const char *szWildCard,
 	                   char *sFileName,
-	                   size_t *iSize=NULL,
+	                   size_t *iSize=nullptr,
 	                   bool fStartAtFilename=false)
 	{
 		StdStrBuf name(fStartAtFilename ? sFileName : "");
@@ -231,32 +201,29 @@ public:
 		if (r && sFileName) SCopy(name.getData(),sFileName);
 		return r;
 	}
-	bool Read(void *pBuffer, size_t iSize);
-	bool Advance(int iOffset);
+	bool Read(void *pBuffer, size_t iSize) override;
+	bool Advance(int iOffset) override;
 	void SetStdOutput(bool fStatus);
 	void ResetSearch(bool reload_contents=false); // reset search pointer so calls to FindNextEntry find first entry again. if reload_contents is set, the file list for directories is also refreshed.
 	const char *GetError();
-	const char *GetName();
+	const char *GetName() const;
 	StdStrBuf GetFullName() const;
-	int EntryCount(const char *szWildCard=NULL);
-	size_t EntrySize(const char *szWildCard=NULL);
-	size_t AccessedEntrySize() { return iCurrFileSize; } // retrieve size of last accessed entry
-	unsigned int EntryCRC32(const char *szWildCard=NULL);
-	inline bool IsOpen() { return Status != GRPF_Inactive; }
+	int EntryCount(const char *szWildCard=nullptr);
+	size_t EntrySize(const char *szWildCard=nullptr);
+	size_t AccessedEntrySize() const override; // retrieve size of last accessed entry
+	unsigned int EntryCRC32(const char *szWildCard=nullptr);
+	bool IsOpen() const;
 	C4Group *GetMother();
-	inline bool IsPacked() { return Status == GRPF_File; }
-	inline bool HasPackedMother() { if (!Mother) return false; return Mother->IsPacked(); }
-	inline bool SetNoSort(bool fNoSort) { NoSort = fNoSort; return true; }
+	bool IsPacked() const;
+	bool HasPackedMother() const;
+	bool SetNoSort(bool fNoSort);
 	int PreCacheEntries(const char *szSearchPattern, bool cache_previous=false); // pre-load entries to memory. return number of loaded entries.
 
-	const C4GroupHeader &GetHeader() const { return Head; }
-	const C4GroupEntry *GetFirstEntry() const { return FirstEntry; }
+	const C4GroupHeader &GetHeader() const;
+	const C4GroupEntry *GetFirstEntry() const;
 
-protected:
+private:
 	void Init();
-	void Default();
-	void Clear();
-	void ProcessOut(const char *szMessage, int iProcess=0);
 	bool EnsureChildFilePtr(C4Group *pChild);
 	bool CloseExclusiveMother();
 	bool Error(const char *szStatus);
@@ -264,21 +231,20 @@ protected:
 	bool OpenRealGrpFile();
 	bool SetFilePtr(int iOffset);
 	bool RewindFilePtr();
-	bool AdvanceFilePtr(int iOffset, C4Group *pByChild=NULL);
+	bool AdvanceFilePtr(int iOffset);
 	bool AddEntry(C4GroupEntry::EntryStatus status,
 	              bool childgroup,
 	              const char *fname,
 	              long size,
-	              const char *entryname = NULL,
-	              BYTE *membuf = NULL,
+	              const char *entryname = nullptr,
+	              BYTE *membuf = nullptr,
 	              bool fDeleteOnDisk = false,
 	              bool fHoldBuffer = false,
 	              bool fExecutable = false,
 	              bool fBufferIsStdbuf = false);
-	bool AddEntryOnDisk(const char *szFilename, const char *szAddAs=NULL, bool fMove=false);
+	bool AddEntryOnDisk(const char *szFilename, const char *szAddAs=nullptr, bool fMove=false);
 	bool SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup = false);
 	bool AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &stdfile);
-	C4GroupEntry *GetEntry(const char *szName);
 	C4GroupEntry *SearchNextEntry(const char *szName);
 	C4GroupEntry *GetNextFolderEntry();
 	uint32_t CalcCRC32(C4GroupEntry *pEntry);

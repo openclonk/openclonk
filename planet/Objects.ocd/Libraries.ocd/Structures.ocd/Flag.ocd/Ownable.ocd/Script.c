@@ -63,6 +63,9 @@ protected func FxIntMovementCheckStart(object target, proplist effect, int temp)
 
 protected func FxIntMovementCheckTimer(object target, proplist effect)
 {
+	// Remove effect for structures that can't be owned.
+	if (!this->~CanBeOwned())
+		return FX_Execute_Kill;	
 	// Check whether the structure has moved.
 	if (GetX() != effect.x || GetY() != effect.y)
 	{

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,9 +16,9 @@
 // a buffer holding a log history
 
 #include "C4Include.h"
-#include "C4LogBuf.h"
+#include "lib/C4LogBuf.h"
 
-#include <C4FontLoader.h>
+#include "graphics/C4FontLoader.h"
 
 C4LogBuffer::C4LogBuffer(int iSize, int iMaxLines, int iLBWidth, const char *szIndentChars, bool fDynamicGrow, bool fMarkup)
 		: iBufSize(iSize), iFirstLinePos(0), iAfterLastLinePos(0), iLineDataPos(0),
@@ -30,10 +30,10 @@ C4LogBuffer::C4LogBuffer(int iSize, int iMaxLines, int iLBWidth, const char *szI
 		szIndent = new char[strlen(szIndentChars)+1];
 		strcpy(szIndent, szIndentChars);
 	}
-	else szIndent = NULL;
+	else szIndent = nullptr;
 	// create buffers, if buffer size is given. Otherwise, create/grow them dynamically
-	if (iBufSize) szBuf = new char[iBufSize]; else szBuf=NULL;
-	if (iMaxLineCount) pLineDataBuf = new LineData[iMaxLineCount]; else pLineDataBuf=NULL;
+	if (iBufSize) szBuf = new char[iBufSize]; else szBuf=nullptr;
+	if (iMaxLineCount) pLineDataBuf = new LineData[iMaxLineCount]; else pLineDataBuf=nullptr;
 	assert(fDynamicGrow || (iBufSize && iMaxLineCount));
 }
 
@@ -189,7 +189,7 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 		while ((szBufPos = szPos2))
 		{
 			// find first occurance of any line break char
-			szPos2 = NULL;
+			szPos2 = nullptr;
 			for (int i = 0; i < iLineBreakCharCount; ++i)
 				if ((szBufFind = strchr(szBufPos, LineBreakChars[i])))
 					if (!szPos2 || szBufFind < szPos2)
@@ -202,7 +202,7 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 			if (pFirstLineFont)
 			{
 				AppendLines(szBufPos, pFirstLineFont, dwClr);
-				pFirstLineFont = NULL;
+				pFirstLineFont = nullptr;
 			}
 			else
 				AppendLines(szBufPos, pFont, dwClr);
@@ -213,10 +213,13 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 	// no line breaks desired: Output all in one line
 	if (!iLineBreakWidth || !pFont)
 	{
-		AppendSingleLine(szLine, strlen(szLine), NULL, pFont, dwClr, true);
+		AppendSingleLine(szLine, strlen(szLine), nullptr, pFont, dwClr, true);
 	}
 	else
 	{
+		C4Markup markup(false);
+		const char *markupPos = szLine;
+		std::string rline;
 		// output broken lines until there are any
 		int iLineIndex = 0;
 		while (*szLine)
@@ -232,11 +235,44 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 			// get number of characters printable into this line
 			const char *szNextLine;
 			int iNumChars = pFont->GetMessageBreak(szLine, &szNextLine, iBreakWdt);
+			// make sure not to break markup
+			if (fMarkup)
+			{
+				std::string opening = markup.OpeningTags();
+				while (markupPos < szNextLine)
+				{
+					if (*markupPos == '<')
+					{
+						if (markup.Read(&markupPos))
+						{
+							if (markupPos > szNextLine)
+							{
+								// The message break is within a tag.
+								iNumChars += markupPos - szNextLine + 1;
+								szNextLine = markupPos;
+							}
+							// Read already moved us over a valid tag.
+							continue;
+						}
+					}
+					markupPos++;
+				}
+				std::string closing = markup.ClosingTags();
+				if (!opening.empty() || !closing.empty())
+				{
+					rline = std::move(opening);
+					rline.append(szLine, iNumChars);
+					rline.append(closing);
+					szLine = rline.c_str();
+					iNumChars = rline.size();
+				}
+			}
 			// add them
-			AppendSingleLine(szLine, iNumChars, iLineIndex ? szIndent : NULL, pFont, dwClr, !iLineIndex);
+			AppendSingleLine(szLine, iNumChars, iLineIndex ? szIndent : nullptr, pFont, dwClr, !iLineIndex);
 			// next line
 			szLine = szNextLine;
 			++iLineIndex;
+			rline.clear();
 		}
 	}
 }
@@ -247,10 +283,10 @@ const char *C4LogBuffer::GetLine(int iLineIndex, CStdFont **ppFont, DWORD *pdwCl
 	if (iLineIndex < 0)
 	{
 		iLineIndex += iLineCount;
-		if (iLineIndex < 0) return NULL;
+		if (iLineIndex < 0) return nullptr;
 	}
 	// range check
-	if (iLineIndex >= iLineCount) return NULL;
+	if (iLineIndex >= iLineCount) return nullptr;
 	// assign data
 	LineData &rData = pLineDataBuf[(iLineDataPos + iLineIndex) % iMaxLineCount];
 	if (ppFont) *ppFont = rData.pFont;

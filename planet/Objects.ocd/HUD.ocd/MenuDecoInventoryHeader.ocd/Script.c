@@ -1,6 +1,6 @@
 /*-- Menu-Deco --*/
 
-func FrameDecorationBackClr() { return RGBa(0,255,0,25); }
+func FrameDecorationBackClr() { return RGBa(0, 255, 0, 25); }
 func FrameDecorationBorderTop()     { return 3; }
 func FrameDecorationBorderLeft()    { return 3; }
 func FrameDecorationBorderRight()   { return 3; }

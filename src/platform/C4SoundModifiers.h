@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2015, The OpenClonk Team and contributors
+ * Copyright (c) 2015-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,8 @@
 #ifndef INC_C4SoundModifiers
 #define INC_C4SoundModifiers
 
-#include <C4SoundIncludes.h>
-#include <C4PropList.h>
+#include "platform/C4SoundIncludes.h"
+#include "script/C4PropList.h"
 
 class C4SoundModifier
 {
@@ -85,7 +85,7 @@ public:
 	C4SoundModifierReverb(C4PropList *in_props);
 
 public:
-	virtual void Update();
+	void Update() override;
 };
 
 // Echo: Repeats dampened version of input signal
@@ -95,7 +95,7 @@ public:
 	C4SoundModifierEcho(C4PropList *in_props);
 
 public:
-	virtual void Update();
+	void Update() override;
 };
 
 // Equalizer: Allows to specify low- mid- and high-frequency amplification and reduction
@@ -105,7 +105,7 @@ public:
 	C4SoundModifierEqualizer(C4PropList *in_props);
 
 public:
-	virtual void Update();
+	void Update() override;
 };
 
 // member of C4SoundSystem: Handles modifier management and EFX initialization

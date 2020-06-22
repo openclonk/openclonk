@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ExecutePXS</title>
+    <category>Landscape</category>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>frames</name>
+          <desc>How many frames to execute</desc>
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>callback</name>
+          <desc>For each executed frame, call <code>callback-&gt;Timer(i)</code>, 0 ≤ i &lt; <code>frames</code></desc>
+          <optional />
+        </param>
+</params>
+    </syntax>
+    <desc>Advances PXS (flying material pixels) by the specified amount of frames. This is meant for rainy or snowy scenarios to start with a screen full of precipitation.</desc>
+    <remark>The <code>callback</code> parameter is chosen to allow passing simple effects.</remark>
+    <examples>
+      <example>
+        <code>local snowfx = new Effect
+{
+  Timer = func()
+  {
+    <funclink>CastPXS</funclink>("Snow", 2, 0, <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), 0, <funclink>RandomX</funclink>(90, 270));
+  }
+};
+
+func Initialize()
+{
+  var fx = <funclink>CreateEffect</funclink>(snowfx, 1, 1);
+  ExecutePXS(100, fx);
+}</code>
+        <text>Creates a snowing effect and executes it for 100 frames so that the game starts with a snowy screen.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CastPXS</funclink>
+    </related>
+  </func>
+  <author>Luchs</author><date>2017-11</date>
+</funcs>

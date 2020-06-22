@@ -1,0 +1,17 @@
+[DefCore]
+id=Tree_Coniferous4
+Version=8,0
+Category=C4D_StaticBack
+Width=34
+Height=80
+Offset=-17,-40
+Vertices=9
+VertexX=0,0,0,0,0,0,0,0,0
+VertexY=40,25,20,10,0,-10,-20,-25,-36
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Mass=100
+StretchGrowth=1
+Oversize=1
+Float=1
+Rotate=1

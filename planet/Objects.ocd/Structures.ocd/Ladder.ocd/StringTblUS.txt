@@ -1,0 +1,3 @@
+Name=Ladder
+TopHandle=Top end
+BottomHandle=Bottom end

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,17 +13,16 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4AulDebug.h"
+#include "C4Include.h"
+#include "script/C4AulDebug.h"
 
-#include <C4Application.h>
-#include <C4Version.h>
-#include <C4GameControl.h>
-#include <C4Game.h>
-#include <C4MessageInput.h>
-#include <C4Log.h>
-#include <C4Object.h>
-#include "C4AulExec.h"
+#include "C4Version.h"
+#include "control/C4GameControl.h"
+#include "game/C4Application.h"
+#include "gui/C4MessageInput.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "script/C4AulExec.h"
 
 #ifndef NOAULDEBUG
 
@@ -32,14 +31,13 @@
 C4AulDebug::C4AulDebug()
 		: fInit(false), fConnected(false)
 {
-	ZeroMem(&PeerAddr, sizeof PeerAddr);
 }
 
 C4AulDebug::~C4AulDebug()
 {
-	for (std::list<StdStrBuf*>::iterator it = StackTrace.begin(); it != StackTrace.end(); it++)
-		{delete *it;}
-	if (pDebug == this) pDebug = NULL;
+	for (auto & it : StackTrace)
+		delete it;
+	if (pDebug == this) pDebug = nullptr;
 }
 
 bool C4AulDebug::InitDebug(const char *szPassword, const char *szHost)
@@ -104,7 +102,7 @@ size_t C4AulDebug::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &add
 	{
 		ProcessLineResult result = ProcessLine(Buf);
 		// Send answer
-		SendLine(result.okay ? "OK" : "ERR", result.answer.length() > 0 ? result.answer.c_str() : NULL);
+		SendLine(result.okay ? "OK" : "ERR", result.answer.length() > 0 ? result.answer.c_str() : nullptr);
 	}
 	else if (!Password.getSize() || Password == Buf)
 	{
@@ -124,15 +122,15 @@ bool C4AulDebug::OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO::addr_t &
 	// Already have a connection?
 	if (fConnected) return false;
 	// Check address
-	if (AllowedAddr.sin_addr.s_addr)
-		if (AllowedAddr.sin_addr.s_addr != AddrPeer.sin_addr.s_addr ||
-		    (AllowedAddr.sin_port && AllowedAddr.sin_port != AddrPeer.sin_port))
+	if (!AllowedAddr.IsNull())
+		if (AllowedAddr.GetHost() != AddrPeer.GetHost() ||
+		    (AllowedAddr.GetPort() && AllowedAddr.GetPort() != AddrPeer.GetPort()))
 		{
-			LogF("C4AulDebug blocked connection from %s:%d", inet_ntoa(AddrPeer.sin_addr), htons(AddrPeer.sin_port));
+			LogF("C4AulDebug blocked connection from %s", AddrPeer.ToString().getData());
 			return false;
 		}
 	// Log
-	LogF("C4AulDebug got connection from %s:%d", inet_ntoa(AddrPeer.sin_addr), htons(AddrPeer.sin_port));
+	LogF("C4AulDebug got connection from %s", AddrPeer.ToString().getData());
 	// Accept connection
 	PeerAddr = AddrPeer;
 	return true;
@@ -143,7 +141,7 @@ void C4AulDebug::OnDisconn(const C4NetIO::addr_t &AddrPeer, C4NetIO *pNetIO, con
 	LogF("C4AulDebug lost connection (%s)", szReason);
 	fConnected = false;
 	eState = DS_Go;
-	ZeroMem(&PeerAddr, sizeof PeerAddr);
+	PeerAddr.Clear();
 }
 
 void C4AulDebug::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
@@ -154,17 +152,18 @@ void C4AulDebug::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 bool C4AulDebug::SetAllowed(const char *szHost)
 {
 	// Clear
-	ZeroMem(&AllowedAddr, sizeof(AllowedAddr));
+	AllowedAddr.Clear();
 	// No host?
 	if (!szHost || !*szHost) return true;
 	// Resolve the address
-	return ResolveAddress(szHost, &AllowedAddr, 0);
+	AllowedAddr.SetAddress(StdStrBuf(szHost));
+	return !AllowedAddr.IsNull();
 }
 
 bool C4AulDebug::Init(uint16_t iPort)
 {
 	if (fInit) Close();
-	if (iPort == P_NONE) return false;
+	if (iPort == EndpointAddress::IPPORT_NONE) return false;
 
 	// Register self as callback for network events
 	C4NetIOTCP::SetCallback(this);
@@ -248,7 +247,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		}
 	else if (SEqualNoCase(szCmd, "LST"))
 	{
-		for (C4AulScript* script = ScriptEngine.Child0; script; script = script->Next)
+		for (C4ScriptHost* script = ScriptEngine.Child0; script; script = script->Next)
 		{
 			SendLine(RelativePath(script->ScriptName));
 		}
@@ -266,17 +265,17 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		int line = atoi(&scriptPath[colonPos+1]);
 		scriptPath.erase(colonPos);
 
-		C4AulScript *script;
+		C4ScriptHost *script;
 		for (script = ScriptEngine.Child0; script; script = script->Next)
 		{
 			if (SEqualNoCase(RelativePath(script->ScriptName), scriptPath.c_str()))
 				break;
 		}
 
-		auto sh = script ? script->GetScriptHost() : NULL;
+		auto sh = script;
 		if (sh)
 		{
-			C4AulBCC * found = NULL;
+			C4AulBCC * found = nullptr;
 			for (auto script = ::ScriptEngine.Child0; script; script = script->Next)
 			for (C4PropList *props = script->GetPropList(); props; props = props->GetPrototype())
 			for (auto fname = props->EnumerateOwnFuncs(); fname; fname = props->EnumerateOwnFuncs(fname))
@@ -322,7 +321,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	else if (SEqualNoCase(szCmd, "VAR"))
 	{
 		
-		C4Value *val = NULL;
+		C4Value *val = nullptr;
 		int varIndex;
 		C4AulScriptContext* pCtx = pExec->GetContext(pExec->GetContextDepth() - 1);
 		if (pCtx)
@@ -333,7 +332,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 			}
 			else if ((varIndex = pCtx->Func->VarNamed.GetItemNr(szData)) != -1)
 			{
-				val = &pCtx->Vars[varIndex];
+				val = &pCtx->Pars[pCtx->Func->GetParCount() + varIndex];
 			}
 		}
 		const char* typeName = val ? GetC4VName(val->GetType()) : "any";
@@ -455,8 +454,8 @@ const char* C4AulDebug::RelativePath(StdStrBuf &path)
 
 void C4AulDebug::ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos)
 {
-	for (std::list<StdStrBuf*>::iterator it = StackTrace.begin(); it != StackTrace.end(); it++)
-		{delete *it;}
+	for (auto & it : StackTrace)
+		delete it;
 	StackTrace.clear();
 	for (int ctxNum = pExec->GetContextDepth()-1; ctxNum >= 0; ctxNum--)
 	{
@@ -480,6 +479,6 @@ StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 		return StdStrBuf("(eval)");
 }
 
-C4AulDebug * C4AulDebug::pDebug = NULL;
+C4AulDebug * C4AulDebug::pDebug = nullptr;
 
 #endif

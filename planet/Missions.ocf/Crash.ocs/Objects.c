@@ -9,13 +9,7 @@ func InitializeObjects()
 	var BoilingLava001 = CreateObject(BoilingLava);
 	BoilingLava001->SetIntensity(25);
 
-	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
-	Rule_BaseRespawn001->SetInventoryTransfer(true);
-	Rule_BaseRespawn001->SetFreeCrew(true);
-
 	CreateObject(Rule_TeamAccount);
-
-	CreateObject(Rule_Restart);
 
 	CreateObjectAbove(Tree_Coniferous, 380, 877);
 
@@ -73,7 +67,7 @@ func InitializeObjects()
 
 	var Chest001 = CreateObjectAbove(Chest, 264, 1287);
 
-	var WoodenCabin001 = CreateObjectAbove(WoodenCabin, 62, 870);
+	var WoodenCabin001 = CreateObjectAbove(WoodenCabin, 62, 872);
 
 	CreateObjectAbove(Idol, 102, 871);
 
@@ -92,10 +86,7 @@ func InitializeObjects()
 
 	Clonk001->SetDialogue("Gyro",true);
 
-	Firefly->SpawnSwarm(Tree_Coniferous2001, 1);
-	Firefly->SpawnSwarm(Tree_Coniferous2002, 2);
-	Firefly->SpawnSwarm(Tree_Coniferous2003, 1);
-	Firefly->SpawnSwarm(Tree_Coniferous2004, 2);
+	Firefly->Place(4, nil, Rectangle(300, 520, 260, 100));
 
 	CreateObject(Rock, 279, 964);
 	CreateObject(Rock, 469, 1213);

@@ -1,12 +1,34 @@
+Theme=Thema
+DescTheme=Genug Eis gesehen?
+HotIce=Heißes Eis
+DescHotIce=Das Übliche: Eis und Lava
+RandomIce=Random Eis
+DescRandomIce=Zufälliges Thema jede Runde
+MiamiIce=Miami Eis
+DescMiamiIce=Augenkrebs
+EciToh=Eci Toh
+DescEciToh=Was mag der Name nur bedeuten?!
+
 MapType=Karte
 DescMapType=Definiert die Landschaftsform.
-MapTypeBigIsland=Gro�e Insel
+MapTypeBigIsland=Große Insel
 DescMapTypeBigIsland=Eine zentrale Hauptinsel mit einigen Eisflecken in der Luft.
 MapTypeSpots=Kleine inseln
 DescMapTypeSpots=Viele kleine Eisflecken in der Luft.
+
 Weapons=Waffen
-DescWeapons=Setzt fest welche Angriffsmittel den Spielern zur Verf�gung stehen.
+DescWeapons=Setzt fest welche Angriffsmittel den Spielern zur Verfügung stehen.
 WeaponsClassic=Klassisch
-DescWeaponsClassic=B�gen, Speere, Keulen und einige Feuersteine
+DescWeaponsClassic=Bögen, Speere, Keulen und einige Feuersteine
 WeaponsExplosive=Explosiv
 DescWeaponsExplosive=Nur Granatwerfer mit Endlosmunition
+
+SpawnType=Startpunkte
+DescSpawn=Legt fest, wo die Clonks der Spieler starten.
+ClassicSpawn=Klassisch
+DescClassicSpawn=Die Clonks starten auf den Eisinseln.
+BalloonSpawn=Ballons
+DescBalloonSpawn=Die Clonks fallen mit Ballons vom Himmel.
+
+Rounds=Rundenzahl
+DescRounds=Mehrere Runden spielen

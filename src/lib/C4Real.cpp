@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,10 +16,10 @@
 // fixed numbers - sine functions
 
 #include "C4Include.h"
-#include "C4Real.h"
+#include "lib/C4Real.h"
 
-#include "StdCompiler.h"
-#include "StdAdaptors.h"
+#include "lib/StdCompiler.h"
+#include "lib/StdAdaptors.h"
 
 #ifdef C4REAL_USE_FIXNUM
 

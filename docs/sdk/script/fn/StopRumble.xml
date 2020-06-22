@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>StopRumble</title>
+    <category>Player</category>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose controller should stop rumbling. Can be NO_OWNER to make all controllers stop.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Stops a rumble effect that was started with <funclink>PlayRumble</funclink>. Returns true if the given player is valid; there is no way to know whether there was actually a playing rumble effect.</desc>
+    <related>
+      <funclink>PlayRumble</funclink>
+    </related>
+  </func>
+  <author>Luchs</author><date>2016-02</date>
+</funcs>

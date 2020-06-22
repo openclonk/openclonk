@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2012-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2012-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -21,7 +21,7 @@
 
 class C4Network2UPnP
 {
-	struct C4Network2UPnPP *p;
+	class C4Network2UPnPP *p;
 public:
 	C4Network2UPnP();
 	//noncopyable

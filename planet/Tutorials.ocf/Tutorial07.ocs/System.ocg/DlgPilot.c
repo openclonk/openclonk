@@ -47,6 +47,19 @@ public func Dlg_Pilot_6(object clonk)
 public func Dlg_Pilot_7(object clonk)
 {
 	MessageBox("$DlgPilotArmory$", clonk, dlg_target);
+	return true;
+}
+
+public func Dlg_Pilot_8(object clonk)
+{
+	MessageBox("$DlgPilotFallOff$", clonk, clonk);
+	return true;
+}
+
+public func Dlg_Pilot_9(object clonk)
+{
+	var interact = GetPlayerControlAssignment(clonk->GetOwner(), CON_Interact, true, true);
+	MessageBox(Format("$DlgPilotRescue$", interact), clonk, dlg_target);
 	StopDialogue();
 	SetDialogueProgress(1);
 	return true;
@@ -54,7 +67,7 @@ public func Dlg_Pilot_7(object clonk)
 
 public func Dlg_Pilot_Closed(object clonk)
 {
-	GameCall("OnHasTalkedToFireman", clonk);
+	GameCall("OnHasTalkedToPilot", clonk);
 	return true;
 }
 

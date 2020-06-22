@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PV_Cos</title>
+    <category>Particles</category>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Value or value provider to calculate the cosine of. The result of <funclink>PV_Linear</funclink> can be used to evaluate the cosine function linearly over time.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>amplitude</name>
+          <desc>Amplitude of result. May be a value or value provider.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>offset</name>
+          <desc>Offset added to result. May be a value or value provider. Defaults to zero.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>The value will is calculates as cos(value) * amplitude + offset with value given in degrees.</desc>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <remark>See <funclink>PV_Random</funclink> for another example with PV_Cos.</remark>
+	<related>
+      <funclink>CreateParticle</funclink>
+      <funclink>PV_Sin</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Random</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Linear</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PV_KeyFrames</funclink>
+    </related>
+  </func>
+  <author>Zapper</author><date>2016-02</date>
+</funcs>

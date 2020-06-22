@@ -5,14 +5,12 @@
 	Defend the windmills against waves of enemies
 */
 
-static g_goal, g_object_fade, g_flag, g_windgen1, g_windgen2, g_windgen3, g_windmill, g_chest, g_windbag, g_lorry;
 
 static g_wave; // index of current wave
 static g_spawned_enemies;
 static g_relaunchs; // array of relaunch counts
 static g_scores; // array of player scores
 static g_ai; // derived from AI; contains changes for this scenario
-static g_homebases; // item management / buy menus for each player
 static g_lost; // True if all windmills are destroyed
 static const ENEMY = 10; // player number of enemy
 static const ALLOW_DEBUG_COMMANDS = true;
@@ -47,7 +45,7 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	{
 		g_relaunchs = [];
 		g_scores = [];
-		Scoreboard->Init([{key = "relaunchs", title = Rule_Restart, sorted = true, desc = true, default = "", priority = 75},
+		Scoreboard->Init([{key = "relaunchs", title = Rule_Relaunch, sorted = true, desc = true, default = "", priority = 75},
 	                    {key = "score", title = Nugget, sorted = true, desc = true, default = "0", priority = 100}]);
 	}
 	g_relaunchs[plr] = MAX_RELAUNCH;
@@ -56,7 +54,7 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
 	Scoreboard->SetPlayerData(plr, "score", g_scores[plr]);
 
-	CreateObject(Homebase, 0,0, plr);
+	CreateObject(Homebase, 0, 0, plr);
 
 	SetPlayerZoomByViewRange(plr, 1200, 0, PLRZOOM_LimitMax);
 
@@ -76,30 +74,31 @@ func RemovePlayer(int plr)
 private func TransferInventory(object from, object to)
 {
 	// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
-	var i = from->ContentsCount(), contents;
+	var i = from->ContentsCount();
 	while (i--)
-		if (contents = from->Contents(i))
-			if (contents->~IsDroppedOnDeath(from))
-				contents->Exit();
+	{
+		var contents = from->Contents(i);
+		if (contents && contents->~IsDroppedOnDeath(from))
+			contents->Exit();
+	}
 	return to->GrabContents(from);
 }
 
 func JoinPlayer(plr, prev_clonk)
 {
-	var x=991,y = 970;
+	var x = 991, y = 970;
 	var clonk = GetCrew(plr);
 	if (clonk)
 	{
-		clonk->SetPosition(x,y-10);
+		clonk->SetPosition(x, y-10);
 	}
 	else
 	{
-		clonk = CreateObjectAbove(Clonk, x,y, plr);
+		clonk = CreateObjectAbove(Clonk, x, y, plr);
 		clonk->MakeCrewMember(plr);
 	}
 	SetCursor(plr, clonk);
 	clonk->DoEnergy(1000);
-	clonk->MakeInvincibleToFriendlyFire();
 	// contents
 	clonk.MaxContentsCount = 1;
 	if (prev_clonk) TransferInventory(prev_clonk, clonk);
@@ -111,19 +110,23 @@ func JoinPlayer(plr, prev_clonk)
 		arrow->SetInfiniteStackCount();
 	}
 	clonk->~CrewSelection(); // force update HUD
+	// Make this work under the friendly fire rule.
+	for (var obj in [g_windgen1, g_windgen2, g_windgen3, g_windmill])
+		if (obj)
+			obj->SetOwner(plr);
 }
 
 // Enter all buyable things into the homebase
 func FillHomebase(object homebase)
 {
 	// Quick buy items on hotkeys
-	homebase->SetQuickbuyItems([WindBag, Bow, Javelin, Musket, GrenadeLauncher, nil, nil, nil, nil, nil]);
+	homebase->SetQuickbuyItems([WindBag, Bow, Javelin, Blunderbuss, GrenadeLauncher, nil, nil, nil, nil, nil]);
 
 	// Buy menu entries
 	homebase->AddCaption("$HomebaseWeapons$");
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Bow,                         ammo = Arrow,    desc = "$HomebaseDescBow$" });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Javelin,         cost = 10,                   desc = "$HomebaseDescJavelin$"                                            , infinite = true});
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Musket,          cost = 50,  ammo = LeadShot, desc = "$HomebaseDescMusket$",          requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Blunderbuss,          cost = 50,  ammo = LeadBullet, desc = "$HomebaseDescBlunderbuss$",          requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = GrenadeLauncher,             ammo = IronBomb, desc = "$HomebaseDescGrenadeLauncher$", requirements = ["MasterWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = WindBag,         cost = 500,                  desc = "$HomebaseDescWindBag$", requirements = ["MasterWeapons"] });
 
@@ -132,13 +135,13 @@ func FillHomebase(object homebase)
 //	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon { item = Hammer,    cost = 1000, desc = "$HomebaseDescHammer$", extra_width = 1 });
 
 	homebase->AddCaption("$HomebaseTechnology$");
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World,cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseMasterWeapons$", item = Icon_World,cost = 1000, desc = "$HomebaseDescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World, cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseMasterWeapons$", item = Icon_World, cost = 1000, desc = "$HomebaseDescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
 
 	homebase->AddCaption("$HomebaseUpgrades$");
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$HomebaseDescLoadSpeed$", tech = "LoadSpeed", tiers=3 });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseShootingStrength$", item = Homebase_Icon, graphics="ShootingStrength%d", costs = [50, 150, 350], desc = "$HomebaseDescShootingStrength$", tech = "ShootingStrength", tiers=3 });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLife$", item = Homebase_Icon, graphics="Life%d", costs = [10, 50, 100], desc = "$HomebaseDescLife$", tech = "Life", tiers=3 });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$HomebaseDescLoadSpeed$", tech = "LoadSpeed", tiers = 3 });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseShootingStrength$", item = Homebase_Icon, graphics="ShootingStrength%d", costs = [50, 150, 350], desc = "$HomebaseDescShootingStrength$", tech = "ShootingStrength", tiers = 3 });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLife$", item = Homebase_Icon, graphics="Life%d", costs = [10, 50, 100], desc = "$HomebaseDescLife$", tech = "Life", tiers = 3 });
 	homebase->AddCaption("$HomebaseArtifacts$");
 }
 
@@ -168,10 +171,13 @@ func OnClonkDeath(clonk, killed_by)
 	{
 		// Enemy clonk death
 		// Remove inventory
-		var i = clonk->ContentsCount(), obj;
-		while (i--) if (obj=clonk->Contents(i))
-			if (!obj->~OnContainerDeath())
+		var i = clonk->ContentsCount();
+		while (i--)
+		{
+			var obj = clonk->Contents(i);
+			if (obj && !obj->~OnContainerDeath())
 				obj->RemoveObject();
+		}
 		// Clear enemies from list
 		i = GetIndexOf(g_spawned_enemies, clonk);
 		if (i>=0)
@@ -207,20 +213,12 @@ func StartGame()
 		obj.MaxEnergy = 800000;
 		obj->DoEnergy(obj.MaxEnergy/1000);
 		obj->AddEnergyBar();
-		obj.FxNoPlayerDamageDamage = Scenario.Object_NoPlayerDamage;
-		AddEffect("NoPlayerDamage", obj, 500, 0, obj);
+		GameCallEx("OnCreationRuleNoFF", obj);
 	}
 	// Launch first wave!
 	g_wave = 1;
 	ScheduleCall(nil, Scenario.LaunchWave, 50, 1, g_wave);
 	return true;
-}
-
-func Object_NoPlayerDamage(object target, fx, dmg, cause, cause_player)
-{
-	// players can't damage windmills
-	if (GetPlayerType(cause_player) == C4PT_User) return 0;
-	return dmg;
 }
 
 public func WindmillDown(object windmill)
@@ -236,7 +234,7 @@ public func WindmillDown(object windmill)
 	if (!g_windgen1 && !g_windgen2 && !g_windgen3 && !g_windmill)
 	{
 		// Fail!
-		var i=GetPlayerCount(C4PT_User);
+		var i = GetPlayerCount(C4PT_User);
 		while (i--) EliminatePlayer(GetPlayerByIndex(i, C4PT_User));
 		g_lost = true;
 		ScheduleCall(nil, Global.GameOver, 50, 1);
@@ -306,7 +304,7 @@ func LaunchWave(int wave)
 		{
 			CreateArrowForPlayers(arrow.X, arrow.Y);
 		}
-		ScheduleCall(nil, Scenario.LaunchWaveDone, wave_spawn_time+5, 1, wave);
+		ScheduleCall(nil, Scenario.LaunchWaveDone, wave_spawn_time + 5, 1, wave);
 		return true;
 	}
 	return false;
@@ -343,7 +341,7 @@ func ScheduleLaunchEnemy(proplist enemy)
 	ymin = BoundBy(enemy.PosY - 100, 0 + height/2, LandscapeHeight() - height/2);
 	ymax = BoundBy(enemy.PosY + 100, 0 + height/2, LandscapeHeight() - height/2);
 
-	ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, xmin, xmax - xmin, ymin, ymax - ymin);
+	ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval, 1), Max(enemy.Num, 1), enemy, xmin, xmax - xmin, ymin, ymax - ymin);
 	return true;
 }
 
@@ -359,7 +357,7 @@ func CheckWaveCleared(int wave)
 	// Check timer to determine if enemy wave has been cleared.
 	// Enemies nil themselves when they're dead. So clear out nils and we're done when the list is empty
 	var nil_idx;
-	while ( (nil_idx=GetIndexOf(g_spawned_enemies))>=0 )
+	while ( (nil_idx = GetIndexOf(g_spawned_enemies))>=0 )
 	{
 		var l = GetLength(g_spawned_enemies) - 1;
 		if (nil_idx<l) g_spawned_enemies[nil_idx] = g_spawned_enemies[l];
@@ -383,7 +381,7 @@ func OnWaveCleared(int wave)
 		DoWealthForAll(bounty);
 	}
 	CustomMessage(Format("$MsgWaveCleared$%s|                                                             ", wave, bounty_msg));
-	Sound("NextWave");
+	Sound("UI::NextWave");
 	// Fade out stuff
 	Airship->AllStop();
 	if (g_object_fade)
@@ -398,6 +396,11 @@ func OnWaveCleared(int wave)
 		// There is no next wave? Game done D:
 		ScheduleCall(nil, Scenario.OnAllWavesCleared, 50, 1);
 	}
+}
+
+public func GiveRandomAttackTarget(object attacker)
+{
+	return GetRandomWindmill();
 }
 
 //======================================================================
@@ -416,11 +419,6 @@ func OnAllWavesCleared()
 //======================================================================
 /* Wave and enemy definitions */
 
-static const CSKIN_Default = 0,
-             CSKIN_Steampunk = 1,
-             CSKIN_Alchemist = 2,
-             CSKIN_Farmer = 3;
-
 static ENEMY_WAVE_DATA;
 
 static const g_respawning_weapons = [Firestone, Rock];
@@ -428,32 +426,32 @@ static const g_respawning_weapons = [Firestone, Rock];
 func InitWaveData()
 {
 	// Define different enemy types
-	var pilot       = { Name="$EnemyPilot$",     Inventory=Rock,          Energy=30, Bounty=20, Color=0xff0000ff, Skin=CSKIN_Alchemist, Backpack=0, Vehicle=Airship };
-	var swordman    = { Name="$EnemyCrewman$",   Inventory=Sword,         Energy=50, Bounty=15, Color=0xffff0000, Skin=CSKIN_Default,   Backpack=0,                    IsCrew=true };
-	var defender    = { Name="$EnemyDefender$",  Inventory=[Shield, Axe], Energy=50, Bounty=10, Color=0xff00ff00, Skin=CSKIN_Farmer,    Backpack=0,                    IsCrew=true };
-	var bowman      = { Name="$EnemyBow$",       Inventory=[Bow, Arrow],  Energy=30, Bounty=10, Color=0xff80ff80, Skin=CSKIN_Steampunk, Backpack=0,                    IsCrew=true };
-	var artillery   = { Name="$EnemyArtillery$", Inventory=Firestone,     Energy=10, Bounty=25, Color=0xffffff80, Skin=CSKIN_Steampunk, Backpack=0, Vehicle=Catapult,  IsCrew=true };
-	var ballooner   = { Name="$EnemyBalloon$",   Inventory=Sword,         Energy=30, Bounty=15, Color=0xff008000, Skin=CSKIN_Default,               Vehicle=Balloon };
-	var rocketeer   = { Name="$EnemyRocket$",    Inventory=[Bow, Arrow],  Energy=15, Bounty=15, Color=0xffffffff, Skin=CSKIN_Steampunk,             Vehicle=Boomattack };
-	var boomattack  = { Type=Boomattack, Bounty=2 };
-	var boomattackf = { Type=Boomattack, Bounty=15, Speed=300 };
+	var pilot       = { Name="$EnemyPilot$",     Inventory = Rock,          Energy = 30, Bounty = 20, Color = 0xff0000ff, Skin = CSKIN_Alchemist, Backpack = 0, Vehicle = Airship };
+	var swordman    = { Name="$EnemyCrewman$",   Inventory = Sword,         Energy = 50, Bounty = 15, Color = 0xffff0000, Skin = CSKIN_Default,   Backpack = 0,                    IsCrew = true };
+	var defender    = { Name="$EnemyDefender$",  Inventory=[Shield, Axe], Energy = 50, Bounty = 10, Color = 0xff00ff00, Skin = CSKIN_Farmer,    Backpack = 0,                    IsCrew = true };
+	var bowman      = { Name="$EnemyBow$",       Inventory=[Bow, Arrow],  Energy = 30, Bounty = 10, Color = 0xff80ff80, Skin = CSKIN_Steampunk, Backpack = 0,                    IsCrew = true };
+	var artillery   = { Name="$EnemyArtillery$", Inventory = Firestone,     Energy = 10, Bounty = 25, Color = 0xffffff80, Skin = CSKIN_Steampunk, Backpack = 0, Vehicle = Catapult,  IsCrew = true };
+	var ballooner   = { Name="$EnemyBalloon$",   Inventory = Sword,         Energy = 30, Bounty = 15, Color = 0xff008000, Skin = CSKIN_Default,               Vehicle = Balloon };
+	var rocketeer   = { Name="$EnemyRocket$",    Inventory=[Bow, Arrow],  Energy = 15, Bounty = 15, Color = 0xffffffff, Skin = CSKIN_Steampunk,             Vehicle = DefenseBoomAttack };
+	var boomattack  = { Type = DefenseBoomAttack, Bounty = 2 };
+	var boomattackf = { Type = DefenseBoomAttack, Bounty = 15, Speed = 300 };
 
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
-			{ Name = "$WaveFirst$", Bounty = 1, Enemies = 
-			new boomattack   {  Num= 1, Interval=10, PosX = 0, PosY = 500 },
+		{ Name = "$WaveFirst$", Bounty = 1, Enemies = 
+			new boomattack   {  Num= 1, Interval = 10, PosX = 0, PosY = 500 },
 			Arrows = { X = 0, Y = 500 },
 			Chest = { Item = GoldBar, Value = 25 }
 		}, { Name = "$WaveSecond$", Bounty = 30, Enemies = 
-			[new boomattack  {  Num= 3, Interval=10, PosX = 0,    PosY = 500 },
-			new boomattack   {  Num= 3, Interval=10, PosX = 2000, PosY = 500 },],
+			[new boomattack  {  Num= 3, Interval = 10, PosX = 0,    PosY = 500 },
+			new boomattack   {  Num= 3, Interval = 10, PosX = 2000, PosY = 500 },],
 			Arrows = [{ X = 0, Y = 500 },{ X = 2000, Y = 500 }]
 		}, { Name = "$WaveThird$", Bounty = 10, Enemies = 
 			new rocketeer    {  Num= 8, PosX = 0, PosY = 500 },
 			Arrows = { X = 0, Y = 500 }
 		}, { Name = "$WaveFourth$", Bounty = 15, Enemies = 
-			[new rocketeer   {  Num= 8, Interval=10, PosX = 0,    PosY = 500 },
-			new rocketeer    {  Num= 8, Interval=10, PosX = 2000, PosY = 500 },],
+			[new rocketeer   {  Num= 8, Interval = 10, PosX = 0,    PosY = 500 },
+			new rocketeer    {  Num= 8, Interval = 10, PosX = 2000, PosY = 500 },],
 			Arrows = [{ X = 0, Y = 500 },{ X = 2000, Y = 500 }]
 		}, { Name = "$WaveFifth$", Bounty = 20, Enemies = 
 			[new boomattack  {  Num= 10,           PosX = 1000, PosY = 2000 },

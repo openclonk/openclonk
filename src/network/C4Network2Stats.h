@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,7 @@
 #ifndef INC_C4Network2Stats
 #define INC_C4Network2Stats
 
-#include "C4Application.h"
-#include "StdBuf.h"
-
-#include <algorithm>
+#include "game/C4Application.h"
 
 // (int) value by time function
 class C4Graph
@@ -32,11 +29,11 @@ public:
 
 private:
 	StdStrBuf szTitle;
-	DWORD dwColor;
+	DWORD dwColor{0x7fff0000};
 
 public:
 	C4Graph();
-	virtual ~C4Graph() { }
+	virtual ~C4Graph() = default;
 
 	void SetTitle(const char *szNewTitle) { szTitle.Copy(szNewTitle); }
 	void SetColorDw(DWORD dwClr) { dwColor = dwClr; }
@@ -71,25 +68,25 @@ class C4TableGraph : public C4Graph
 private:
 	// recorded backlog
 	int iBackLogLength;
-	ValueType *pValues;
-	ValueType fMultiplier; // multiplicative factor used for all value returns
-	mutable ValueType *pAveragedValues; // equals pValues if no average is being calculated
+	ValueType *pValues{nullptr};
+	ValueType fMultiplier{1}; // multiplicative factor used for all value returns
+	mutable ValueType *pAveragedValues{nullptr}; // equals pValues if no average is being calculated
 
 	// currently valid backlog timeframe
-	int iBackLogPos; // position of next entry to be written
-	bool fWrapped; // if true, the buffer has been cycled already
+	int iBackLogPos{0}; // position of next entry to be written
+	bool fWrapped{false}; // if true, the buffer has been cycled already
 
 	TimeType iInitialStartTime; // initial table start time; used to calc offset in buffer
 	TimeType iTime; // next timeframe to be recorded
 	mutable TimeType iAveragedTime; // last timeframe for which average has been calculated
 	StdStrBuf szDumpFile; // if set, the buffer is dumped to file regularly
-	TimeType iAvgRange;   // range used for averaging
+	TimeType iAvgRange{1};   // range used for averaging
 
 public:
 	enum { DefaultBlockLength = 256 }; // default backlog
 
 	C4TableGraph(int iBackLogLength=DefaultBlockLength, TimeType iStartTime = 0);
-	~C4TableGraph();
+	~C4TableGraph() override;
 
 	// flush dump; reset time, etc
 	void Reset(TimeType iToTime);
@@ -97,16 +94,16 @@ public:
 	void SetDumpFile(StdStrBuf &szFile) { szDumpFile = szFile; }
 
 	// retrieve timeframe covered by backlog
-	virtual TimeType GetStartTime() const; // inclusively
-	virtual TimeType GetEndTime() const;   // exclusively
+	TimeType GetStartTime() const override; // inclusively
+	TimeType GetEndTime() const override;   // exclusively
 
 	// retrieve values within backlog timeframe - guarantueed to be working inside [GetStartTime(), GetEndTime()[
-	virtual ValueType GetValue(TimeType iAtTime) const; // retrieve averaged value!
+	ValueType GetValue(TimeType iAtTime) const override; // retrieve averaged value!
 	ValueType GetAtValue(TimeType iAtTime) const; // retrieve not-averaged value
 	void SetAvgValue(TimeType iAtTime, ValueType iValue) const; // overwrite avg value at time - considered const because it modifies mutable only
-	virtual ValueType GetMedianValue(TimeType iStartTime, TimeType iEndTime) const; // median within [iStartTime, iEndTime[
-	virtual ValueType GetMinValue() const;
-	virtual ValueType GetMaxValue() const;
+	ValueType GetMedianValue(TimeType iStartTime, TimeType iEndTime) const override; // median within [iStartTime, iEndTime[
+	ValueType GetMinValue() const override;
+	ValueType GetMaxValue() const override;
 
 	// record a value for this frame; increases time by one
 	void RecordValue(ValueType iValue);
@@ -115,13 +112,13 @@ public:
 	virtual bool DumpToFile(const StdStrBuf &rszFilename, bool fAppend) const;
 
 	// base graph has always just one series (self)
-	virtual int GetSeriesCount() const { return 1; }
-	virtual const C4Graph *GetSeries(int iIndex) const { return iIndex ? NULL : this; }
+	int GetSeriesCount() const override { return 1; }
+	const C4Graph *GetSeries(int iIndex) const override { return iIndex ? nullptr : this; }
 
-	virtual void SetAverageTime(int iToTime);
-	virtual void Update() const; // make sure average times are correctly calculated
+	void SetAverageTime(int iToTime) override;
+	void Update() const override; // make sure average times are correctly calculated
 
-	virtual void SetMultiplier(ValueType fToVal) { fMultiplier = fToVal; }
+	void SetMultiplier(ValueType fToVal) override { fMultiplier = fToVal; }
 };
 
 // A graph collection; grouping similar graphs
@@ -130,36 +127,36 @@ class C4GraphCollection : public C4Graph, private std::vector<C4Graph *>
 {
 private:
 	// if 0, keep individual for each graph
-	int iCommonAvgTime;
-	ValueType fMultiplier;
+	int iCommonAvgTime{0};
+	ValueType fMultiplier{0};
 public:
-	C4GraphCollection() : iCommonAvgTime(0), fMultiplier(0) {}
+	C4GraphCollection() = default;
 
 	// retrieve max timeframe covered by all graphs
-	virtual C4Graph::TimeType GetStartTime() const;
-	virtual C4Graph::TimeType GetEndTime() const;
+	C4Graph::TimeType GetStartTime() const override;
+	C4Graph::TimeType GetEndTime() const override;
 
 	// must be called on base series only!
-	virtual C4Graph::ValueType GetValue(C4Graph::TimeType iAtTime) const { assert(0); return 0; }
-	virtual C4Graph::ValueType GetMedianValue(C4Graph::TimeType iStartTime, C4Graph::TimeType iEndTime) const { assert(0); return 0; }
+	C4Graph::ValueType GetValue(C4Graph::TimeType iAtTime) const override { assert(0); return 0; }
+	C4Graph::ValueType GetMedianValue(C4Graph::TimeType iStartTime, C4Graph::TimeType iEndTime) const override { assert(0); return 0; }
 
 	// get overall min/max for all series
-	virtual C4Graph::ValueType GetMinValue() const;
-	virtual C4Graph::ValueType GetMaxValue() const;
+	C4Graph::ValueType GetMinValue() const override;
+	C4Graph::ValueType GetMaxValue() const override;
 
 	// retrieve child (or grandchild) graphs
-	virtual int GetSeriesCount() const;
-	virtual const C4Graph *GetSeries(int iIndex) const;
+	int GetSeriesCount() const override;
+	const C4Graph *GetSeries(int iIndex) const override;
 
 	void AddGraph(C4Graph *pAdd) { push_back(pAdd); if (iCommonAvgTime) pAdd->SetAverageTime(iCommonAvgTime); if (fMultiplier) pAdd->SetMultiplier(fMultiplier); }
 	void RemoveGraph(const C4Graph *pRemove) { iterator i=std::find(begin(), end(), pRemove); if (i!=end()) erase(i); }
 
 	// update all children
-	virtual void Update() const;
+	void Update() const override;
 
 	// force values for all children
-	virtual void SetAverageTime(int iToTime);
-	virtual void SetMultiplier(ValueType fToVal);
+	void SetAverageTime(int iToTime) override;
+	void SetMultiplier(ValueType fToVal) override;
 };
 
 // network stat collection wrapper
@@ -192,14 +189,14 @@ protected:
 
 public:
 	C4Network2Stats();
-	virtual ~C4Network2Stats();
+	~C4Network2Stats() override;
 
 	// periodic callbacks
 	void ExecuteFrame();
 	void ExecuteSecond();
 	void ExecuteControlFrame();
 
-	virtual void OnSec1Timer() { ExecuteSecond(); }
+	void OnSec1Timer() override { ExecuteSecond(); }
 
 	C4Graph *GetGraphByName(const StdStrBuf &rszName, bool &rfIsTemp);
 };

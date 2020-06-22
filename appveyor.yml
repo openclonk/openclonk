@@ -1,0 +1,32 @@
+version: "{build}"
+pull_requests:
+  do_not_increment_build_number: true
+shallow_clone: true
+
+cache: ..\openclonk-cache
+
+image: Visual Studio 2017
+configuration: RelWithDebInfo
+platform:
+  - x64
+
+install:
+  - ps: "& $env:APPVEYOR_BUILD_FOLDER\\tools\\ci\\appv-Install.ps1"
+before_build:
+  - ps: "& $env:APPVEYOR_BUILD_FOLDER\\tools\\ci\\appv-BeforeBuild.ps1"
+build:
+  project: ../openclonk-build/openclonk.sln
+  parallel: true
+  verbosity: minimal
+
+# The after_build and test_script scripts need to be called in a real
+# powershell instance because they call into the MSBuild API, which has issues
+# finding its data files when called from AppVeyor's powershell host, because
+# it attempts to read the application config instead of the registry to find
+# them (starting with MSBuild 15, which ships with Visual Studio 2017).
+after_build:
+  - cmd: powershell -NoLogo -NoProfile -ExecutionPolicy Unrestricted -Command "& $env:APPVEYOR_BUILD_FOLDER\\tools\\ci\\appv-AfterBuild.ps1"
+test_script:
+  - cmd: powershell -NoLogo -NoProfile -ExecutionPolicy Unrestricted -Command "& $env:APPVEYOR_BUILD_FOLDER\\tools\\ci\\appv-Test.ps1"
+
+deploy: off

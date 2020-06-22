@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -32,11 +32,11 @@
 #ifndef INC_C4PlayerInfo
 #define INC_C4PlayerInfo
 
-#include "C4PacketBase.h"
-#include "C4Network2Res.h"
-#include "C4Constants.h"
-#include "C4InputValidation.h"
-#include "C4Id.h"
+#include "config/C4Constants.h"
+#include "lib/C4InputValidation.h"
+#include "network/C4PacketBase.h"
+#include "network/C4Network2Res.h"
+#include "object/C4Id.h"
 
 // information about one player at a client
 class C4PlayerInfo
@@ -45,65 +45,63 @@ public:
 	// player flags
 	enum Flags
 	{
-		PIF_Joined         = 1<<0,   // player has joined the game
-		PIF_Removed        = 1<<2,   // player has been removed
-		PIF_HasRes         = 1<<3,   // pRes is set
-		PIF_JoinIssued     = 1<<4,   // flag for host to mark a player for which the join is issued
-		PIF_TempFile       = 1<<5,   // player file is temporary and to be deleted after join recreation
-		PIF_InScenarioFile = 1<<6,   // player file is present within the scenario; res is not to be used
-		PIF_JoinedForSavegameOnly = 1<<7, // player file has been specified to take over a savegame player; do not join as normal player if association fails
-		PIF_Disconnected   = 1<<8,   // the player was removed because his client disconnected
-		PIF_Won            = 1<<9,   // player survived until game end (for game evaluation only)
-		PIF_VotedOut       = 1<<10,  // player was removed from the round after a successful voting
-		PIF_AttributesFixed= 1<<11, // player color and name aren't changed on collision
-		PIF_NoScenarioInit = 1<<12, // do not call ScenariInit for this player
-		PIF_NoEliminationCheck = 1<<13, // do not eliminate player if crew is empty
-		PIF_Invisible      = 1<<14,  // do not show in lobby and menus
+		PIF_Joined = 1 << 0,   // player has joined the game
+		PIF_Removed = 1 << 2,   // player has been removed
+		PIF_HasRes = 1 << 3,   // pRes is set
+		PIF_JoinIssued = 1 << 4,   // flag for host to mark a player for which the join is issued
+		PIF_TempFile = 1 << 5,   // player file is temporary and to be deleted after join recreation
+		PIF_InScenarioFile = 1 << 6,   // player file is present within the scenario; res is not to be used
+		PIF_JoinedForSavegameOnly = 1 << 7, // player file has been specified to take over a savegame player; do not join as normal player if association fails
+		PIF_Disconnected = 1 << 8,   // the player was removed because his client disconnected
+		PIF_Won = 1 << 9,   // player survived until game end (for game evaluation only)
+		PIF_VotedOut = 1 << 10,  // player was removed from the round after a successful voting
+		PIF_AttributesFixed = 1 << 11, // player color and name aren't changed on collision
+		PIF_NoScenarioInit = 1 << 12, // do not call ScenariInit for this player
+		PIF_NoEliminationCheck = 1 << 13, // do not eliminate player if crew is empty
+		PIF_Invisible = 1 << 14,  // do not show in lobby and menus
+		PIF_NoScenarioSave = 1 << 15,  // not saved in SavePlayerInfos.txt if "save as scenario" is performed
 
 		// flags to be synchronized via network and saved into player info
-		PIF_SyncFlags = PIF_Joined | PIF_Removed | PIF_HasRes | PIF_InScenarioFile | PIF_JoinedForSavegameOnly | PIF_Disconnected | PIF_Won | PIF_VotedOut | PIF_AttributesFixed | PIF_NoScenarioInit | PIF_NoEliminationCheck | PIF_Invisible,
+		PIF_SyncFlags = PIF_Joined | PIF_Removed | PIF_HasRes | PIF_InScenarioFile | PIF_JoinedForSavegameOnly | PIF_Disconnected | PIF_Won | PIF_VotedOut | PIF_AttributesFixed | PIF_NoScenarioInit | PIF_NoEliminationCheck | PIF_Invisible | PIF_NoScenarioSave,
 
 		// flags to be copied from savegame-player for takeover
-		PIF_SavegameTakeoverFlags = PIF_Joined | PIF_Removed | PIF_JoinIssued | PIF_AttributesFixed | PIF_NoScenarioInit | PIF_NoEliminationCheck | PIF_Invisible
+		PIF_SavegameTakeoverFlags = PIF_Joined | PIF_Removed | PIF_JoinIssued | PIF_AttributesFixed | PIF_NoScenarioInit | PIF_NoEliminationCheck | PIF_Invisible | PIF_NoScenarioSave,
 	};
 
 	// player attributes used in attribute conflict resolver
 	enum Attribute { PLRATT_Color=0, PLRATT_Name=1, PLRATT_Last=2 };
 	enum AttributeLevel { PLRAL_Current, PLRAL_Original, PLRAL_Alternate };
 private:
-	uint32_t dwFlags; // DWORD-mask of C4PlayerInfoFlags-constants
-	C4PlayerType eType;         // user or script player
+	uint32_t dwFlags{0}; // DWORD-mask of C4PlayerInfoFlags-constants
+	C4PlayerType eType{C4PT_User};         // user or script player
 
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameNoEmpty> sName;     // player name
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> sForcedName; // player name if a new name is forced e.g. because the current name appeared twice
-	int32_t iID;          // unique ID set by host
+	int32_t iID{0};          // unique ID set by host
 	C4Network2Res::Ref pRes;    // player resource to load from
 	C4Network2ResCore ResCore;  // core of resource to load from
 	StdCopyStrBuf szFilename;   // source filename for local players
-	uint32_t dwColor;           // player color
-	uint32_t dwOriginalColor, dwAlternateColor; // original player color wish
-	int32_t idSavegamePlayer;   // ID of associated savegame player
-	int32_t idTeam;             // team ID
+	uint32_t dwColor{0xffffffff};           // player color
+	uint32_t dwOriginalColor{0}, dwAlternateColor{0}; // original player color wish
+	int32_t idSavegamePlayer{0};   // ID of associated savegame player
+	int32_t idTeam{0};             // team ID
 	StdCopyStrBuf szAuthID;     // authentication ID (for league server, will be cleared on successful join)
-	int32_t iInGameNumber, iInGameJoinFrame, iInGamePartFrame; // information about player in game
+	int32_t iInGameNumber{-1}, iInGameJoinFrame{-1}, iInGamePartFrame{-1}; // information about player in game
 	C4ID idExtraData;           // extra data for script players
 
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> sLeagueAccount; // account name on league server
-	int32_t iLeagueScore;       // score on league server at join time
-	int32_t iLeagueRank;        // rank on league server at join time
-	int32_t iLeagueRankSymbol;  // symbolization of the player's rank
+	int32_t iLeagueScore{0};       // score on league server at join time
+	int32_t iLeagueRank{0};        // rank on league server at join time
+	int32_t iLeagueRankSymbol{0};  // symbolization of the player's rank
 	int32_t iLeagueScoreProjected;// score on league server in case of win
-	int32_t iLeagueProjectedGain; // projected league score increase if game is won - -1 for unknown; valid values always positive
+	int32_t iLeagueProjectedGain{-1}; // projected league score increase if game is won - -1 for unknown; valid values always positive
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> sClanTag; // clan ("team") tag
-	int32_t iLeaguePerformance; // script-set league performance value, only set temporarily for masterserver end reference
+	int32_t iLeaguePerformance{0}; // script-set league performance value, only set temporarily for masterserver end reference
 	StdCopyStrBuf sLeagueProgressData; // level progress data as reported by league
 
 public:
 	C4PlayerInfo()                           // construct empty
-			:  dwFlags(0), eType(C4PT_User), iID(0), pRes(0), szFilename(), dwColor(0xffffffff),
-			dwOriginalColor(0xffffffff), dwAlternateColor(0), idSavegamePlayer(0), idTeam(0), iInGameNumber(-1),
-			iInGameJoinFrame(-1), iInGamePartFrame(-1), idExtraData(C4ID::None), sLeagueAccount(""),
-			iLeagueScore(0), iLeagueRank(0), iLeagueRankSymbol(0), iLeagueProjectedGain(-1), iLeaguePerformance(0) { }
+			: pRes(nullptr), szFilename(), idExtraData(C4ID::None), sLeagueAccount("") { }
 
 	void Clear();                            // clear fields
 
@@ -167,6 +165,7 @@ public:
 	bool HasJoined() const { return !!(dwFlags & PIF_Joined); }    // return whether player has joined
 	bool IsJoined() const { return HasJoined() && !(dwFlags & PIF_Removed); } // return whether player is currently in the game
 	bool HasJoinIssued() const { return !!(dwFlags & (PIF_Joined | PIF_JoinIssued)); } // return whether player join is in the queue already (or performed long ago, even)
+	bool HasJoinPending() const { return !(dwFlags & (PIF_Joined | PIF_Removed)); } // return whether player join should be done but has not been performed yet
 	bool IsUsingColor() const { return !IsRemoved() && !idSavegamePlayer; } //return whether the player is actually using the player color
 	bool IsUsingName() const { return !IsRemoved() && !sLeagueAccount.getLength(); } //return whether the player is actually using the player name (e.g. not if league name is used)
 	bool IsUsingAttribute(Attribute eAttr) const { if (eAttr == PLRATT_Color) return IsUsingColor(); else return IsUsingName(); }
@@ -175,6 +174,7 @@ public:
 	bool IsAttributesFixed() const { return !!(dwFlags & PIF_AttributesFixed); }
 	bool IsInvisible() const { return !!(dwFlags & PIF_Invisible); }
 	bool IsScenarioInitDesired() const { return !(dwFlags & PIF_NoScenarioInit); }
+	bool IsScenarioSaveDesired() const { return !(dwFlags & PIF_NoScenarioSave); }
 	C4ID GetScriptPlayerExtraID() const { return idExtraData; }
 	bool IsNoEliminationCheck() const { return !!(dwFlags & PIF_NoEliminationCheck); }
 	bool HasAutoGeneratedColor() { return dwColor != dwOriginalColor; } // whether the player got a new color assigned due to color conflict
@@ -209,12 +209,12 @@ class C4ClientPlayerInfos
 {
 private:
 	// std::vector...
-	int32_t iPlayerCount;               // number of clients registered into the list
-	int32_t iPlayerCapacity;            // size of pClients-array
-	C4PlayerInfo **ppPlayers;       // array of registered client information
+	int32_t iPlayerCount{0};               // number of clients registered into the list
+	int32_t iPlayerCapacity{0};            // size of pClients-array
+	C4PlayerInfo **ppPlayers{nullptr};       // array of registered client information
 	void GrowList(size_t iByVal); // increase list capacity
 
-	int32_t iClientID;          // ID of client described by this packet
+	int32_t iClientID{-1};          // ID of client described by this packet
 
 	// flags for this packet
 	enum Flags
@@ -225,10 +225,10 @@ private:
 		CIF_Developer   = 1<<3, // set for developer hosts (by regkey); client side check only!
 		CIF_Removed     = 1<<4 // client was removed
 	};
-	uint32_t dwFlags; // bit mask of the above flags
+	uint32_t dwFlags{0}; // bit mask of the above flags
 
 public:
-	C4ClientPlayerInfos(const char *szJoinFilenames=NULL, bool fAdd=false, C4PlayerInfo *pAddInfo=NULL); // ctor; sets local data (or makes an add-player-packet if filename is given) if par is true
+	C4ClientPlayerInfos(const char *szJoinFilenames=nullptr, bool fAdd=false, C4PlayerInfo *pAddInfo=nullptr); // ctor; sets local data (or makes an add-player-packet if filename is given) if par is true
 	C4ClientPlayerInfos(const C4ClientPlayerInfos &rCopy); // copy ctor
 	~C4ClientPlayerInfos() { Clear(); }                   // dtor
 
@@ -282,7 +282,7 @@ public:
 
 	C4PacketPlayerInfoUpdRequest(const C4ClientPlayerInfos &rInfo) : Info(rInfo) {} // ctor
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 // * PID_PlayerInfoUpd
@@ -291,13 +291,13 @@ class C4PacketPlayerInfo : public C4PacketBase
 {
 public:
 	C4ClientPlayerInfos Info; // info for clients to be updated
-	bool fIsRecreationInfo;   // if set, this info packet describes savegame recreation players
+	bool fIsRecreationInfo{false};   // if set, this info packet describes savegame recreation players
 
-	C4PacketPlayerInfo() : Info(), fIsRecreationInfo(false) { } // std ctor
+	C4PacketPlayerInfo() : Info() { } // std ctor
 	C4PacketPlayerInfo(const C4ClientPlayerInfos &rCopyInfos, bool fRecreationPlayers) // ctor
 			: Info(rCopyInfos), fIsRecreationInfo(fRecreationPlayers) { };
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 // player info list
@@ -306,12 +306,12 @@ class C4PlayerInfoList
 {
 private:
 	// std::vector...
-	int32_t iClientCount;               // number of clients registered into the list
-	int32_t iClientCapacity;            // size of pClients-array
-	C4ClientPlayerInfos **ppClients; // array of registered client information
+	int32_t iClientCount{0};               // number of clients registered into the list
+	int32_t iClientCapacity{0};            // size of pClients-array
+	C4ClientPlayerInfos **ppClients{nullptr}; // array of registered client information
 	void GrowList(size_t iByVal); // increase list capacity
 
-	int32_t iLastPlayerID;              // last ID given to a player
+	int32_t iLastPlayerID{0};              // last ID given to a player
 
 	enum MatchingLevel { PML_PlrFileName=0, PML_PlrName, PML_PrefColor, PML_Any };
 
@@ -356,10 +356,10 @@ public:
 	// query functions
 	int32_t GetInfoCount() const { return iClientCount; }    // get number of registered client infos
 	C4ClientPlayerInfos *GetIndexedInfo(int32_t iIndex) const // get client player infos by indexed
-	{ return (ppClients && Inside<int32_t>(iIndex, 0, iClientCount-1)) ? ppClients[iIndex] : NULL; }
+	{ return (ppClients && Inside<int32_t>(iIndex, 0, iClientCount-1)) ? ppClients[iIndex] : nullptr; }
 	C4ClientPlayerInfos **GetInfoPtrByClientID(int32_t iClientID) const; // get info for a specific client ID
 	C4ClientPlayerInfos *GetInfoByClientID(int32_t iClientID) const
-	{ C4ClientPlayerInfos **ppNfo = GetInfoPtrByClientID(iClientID); return ppNfo ? *ppNfo : NULL; }
+	{ C4ClientPlayerInfos **ppNfo = GetInfoPtrByClientID(iClientID); return ppNfo ? *ppNfo : nullptr; }
 	C4PlayerInfo *GetPlayerInfoByIndex(int32_t index) const;  // get player info by index (for running through all players regardless of clients or ids)
 	C4PlayerInfo *GetPlayerInfoByID(int32_t id) const;        // get player info by unique player ID
 	C4PlayerInfo *GetPlayerInfoByID(int32_t id, int32_t *pidClient) const;  // get player info by unique player ID, and assign associated client
@@ -369,13 +369,14 @@ public:
 	C4PlayerInfo *GetActivePlayerInfoByName(const char *szName);    // find info by name (case insensitive)
 	int32_t GetPlayerCount() const;                           // get number of players on all clients
 	int32_t GetJoinIssuedPlayerCount() const;                 // get number of players with PIF_JoinIssued-flag set
+	int32_t GetJoinPendingPlayerCount() const;                 // get number of players with PIF_JoinIssued-flag but not joined or removed flag set
 	int32_t GetActivePlayerCount(bool fCountInvisible) const;                     // get number of players that have not been removed
 	StdStrBuf GetActivePlayerNames(bool fCountInvisible, int32_t iAtClientID=-1) const;                   // get a comma-separated list of players that have not been removed yet
 	int32_t GetActiveScriptPlayerCount(bool fCountSavegameResumes, bool fCountInvisible) const;               // get number of script players that have not been removed
 	C4PlayerInfo *GetPrimaryInfoByClientID(int32_t iClientID) const
 	{
 		C4ClientPlayerInfos *pInfoPkt = GetInfoByClientID(iClientID);
-		if (!pInfoPkt) return NULL;
+		if (!pInfoPkt) return nullptr;
 		return pInfoPkt->GetPlayerInfo(0);
 	}
 	C4PlayerInfo *FindSavegameResumePlayerInfo(const C4PlayerInfo *pMatchInfo, MatchingLevel mlMatchStart, MatchingLevel mlMatchEnd) const; // automatic savegame player association: Associate by name (or prefcolor, if none matches)
@@ -386,7 +387,7 @@ public:
 	{ *ppRemoveInfo = ppClients[--iClientCount]; /* maybe redundant self-assignment; no vector shrink */ }
 
 public:
-	bool Load(C4Group &hGroup, const char *szFromFile, class C4LangStringTable *pLang=NULL); // clear self and load from group file
+	bool Load(C4Group &hGroup, const char *szFromFile, class C4LangStringTable *pLang=nullptr); // clear self and load from group file
 	bool Save(C4Group &hGroup, const char *szToFile); // save to group file
 
 	// external ID counter manipulation used by C4Game

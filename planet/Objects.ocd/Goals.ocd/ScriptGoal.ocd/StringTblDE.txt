@@ -1,2 +1,11 @@
 Name=Scriptziel
 Description=Script goal description: please change me
+PropDescription=Beschreibung
+PropDescriptionHelp=Beschreibungstext der angezeigt wird, wenn ein Spieler das Spielziel anklickt.
+Picture=Bild
+PictureHelp=Grafik, die ueber die Spielzielgrafik gelegt wird.
+SetScriptGoalData=Spielzieldaten setzen
+SetScriptGoalDataDesc=Setzt Nachricht und Bild eines Script-Spielzieles.
+Goal=Spielziel
+Fulfilled=Erfuellt
+FulfilledHelp=Bestimmt, ob das Spielziel erfuellt ist. Wenn alle Spielziele erfuellt sind, wird die Runde beendet.

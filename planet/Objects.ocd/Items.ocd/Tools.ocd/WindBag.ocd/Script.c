@@ -7,44 +7,27 @@
 
 local fill_amount;
 
+/*-- Engine Callbacks --*/
 
-protected func Initialize()
+func Initialize()
 {
 	SetR(-45);
 	AddEffect("IntReload", this, 100, 1, this);
-	return;
 }
 
-protected func Hit()
+func Hit()
 {
 	Sound("Hits::GeneralHit?");
-	return;
 }
-
-public func GetCarryMode(clonk) { return CARRY_Musket; }
-
-public func GetCarryTransform()
-{
-	return Trans_Mul(Trans_Rotate(220, 0, 1, 0), Trans_Rotate(30, 0, 0, 1), Trans_Rotate(-26, 1, 0, 0));
-}
-
-public func GetCarryPhase() { return 600; }
-
-public func IsInventorProduct() { return true; }
-
 
 /*-- Usage --*/
 
-func RejectUse(object clonk)
+public func DefaultCrosshairAngle(object clonk, int d)
 {
-	return clonk->GetProcedure() == "ATTACH";
-}
-
-// used by this object
-func ReadyToBeUsed(proplist data)
-{
-	var clonk = data.clonk;
-	return !RejectUse(clonk) && !GetEffect("IntReload", this);
+	// Easy mode for gamepad users: automatically boost a jump.
+	if (clonk->GetYDir() < -10)
+		return Angle(0, 0, -clonk->GetXDir(), -clonk->GetYDir(), 10);
+	return 0;
 }
 
 protected func ControlUse(object clonk, x, y)
@@ -60,6 +43,10 @@ protected func ControlUse(object clonk, x, y)
 	return true;
 }
 
+func ReadyToBeUsed(proplist data)
+{
+	return !GetEffect("IntReload", this);
+}
 
 /*-- Loading --*/
 
@@ -69,7 +56,7 @@ public func DoFullLoad()
 	return;
 }
 
-public func FxIntReloadStart(object target, proplist effect, int temp)
+func FxIntReloadStart(object target, proplist effect, int temp)
 {
 	if (temp)
 		return FX_OK;
@@ -78,16 +65,16 @@ public func FxIntReloadStart(object target, proplist effect, int temp)
 	return FX_OK;
 }
 
-public func FxIntReloadTimer(object target, proplist effect, int time)
+func FxIntReloadTimer(object target, proplist effect, int time)
 {
 	if (fill_amount > MaxIntake)
 		return FX_Execute_Kill;
 		
-	if (GBackSolid(0,0) || GBackLiquid(0,0))
+	if (GBackSolid(0, 0) || GBackLiquid(0, 0))
 	{
 		if (effect.sound)
 		{
-			Sound("Objects::Windbag::Charge", false, nil, nil, -1);
+			Sound("Objects::Windbag::Charge", {loop_count = -1});
 			Sound("Objects::Windbag::ChargeStop");
 			effect.sound = false;
 		}
@@ -104,7 +91,7 @@ public func FxIntReloadTimer(object target, proplist effect, int time)
 	{
 		if (!effect.sound)
 		{
-			Sound("Objects::Windbag::Charge", false, nil, nil, 1);
+			Sound("Objects::Windbag::Charge", {loop_count = 1});
 			effect.sound = true;
 		}
 		
@@ -121,22 +108,21 @@ public func FxIntReloadTimer(object target, proplist effect, int time)
 	return FX_OK;
 }
 
-public func FxIntReloadStop(object target, proplist effect, int reason, bool temp)
+func FxIntReloadStop(object target, proplist effect, int reason, bool temp)
 {
 	if (temp)
 		return FX_OK;
 	if (effect.sound)
 	{
-		Sound("Objects::Windbag::Charge", false, nil, nil, -1);	
+		Sound("Objects::Windbag::Charge", {loop_count = -1});
 		Sound("Objects::Windbag::ChargeStop");
 	}
 	return FX_OK;
 }
 
-
 /*-- Blasting --*/
 
-private func BlastWind(object clonk, int x, int y)
+public func BlastWind(object clonk, int x, int y)
 {
 	if (fill_amount <= 0)
 	{
@@ -146,10 +132,9 @@ private func BlastWind(object clonk, int x, int y)
 	}	
 	// The blast is handled by an effect.
 	AddEffect("IntBurstWind", this, 100, 1, this, nil, clonk, x, y);
-	return;
 }
 
-public func FxIntBurstWindStart(object target, proplist effect, int temp, object clonk, int x, int y)
+func FxIntBurstWindStart(object target, proplist effect, int temp, object clonk, int x, int y)
 {
 	if (temp)
 		return FX_OK;
@@ -176,7 +161,7 @@ public func FxIntBurstWindStart(object target, proplist effect, int temp, object
 	return FX_OK;
 }
 
-public func FxIntBurstWindTimer(object target, proplist effect, int time)
+func FxIntBurstWindTimer(object target, proplist effect, int time)
 {
 	var real_time = time + 1;
 	if (real_time > 8)
@@ -218,7 +203,7 @@ public func FxIntBurstWindTimer(object target, proplist effect, int time)
 	return FX_OK;
 }
 
-public func FxIntBurstWindStop(object target, proplist effect, int reason, bool temp)
+func FxIntBurstWindStop(object target, proplist effect, int reason, bool temp)
 {
 	if (temp)
 		return FX_OK;
@@ -228,22 +213,61 @@ public func FxIntBurstWindStop(object target, proplist effect, int reason, bool 
 	return FX_OK;
 }
 
-public func DrawParticleRing(int r, int x, int y)
+func DrawParticleRing(int r, int x, int y)
 {
 	for (var angle = 0; angle < 360; angle += 15)
 		CreateParticle("SphereSpark", x + Cos(angle, r), y + Sin(angle, r), 0, 0, 36, { Size = 2 });
-	return;
+}
+
+/*-- Production --*/
+
+public func IsInventorProduct() { return true; }
+
+/*-- Display --*/
+
+public func GetCarryMode(object clonk)
+{
+	return CARRY_Blunderbuss;
+}
+
+public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_on_back)
+{
+	if (idle)
+	{
+		if (!second_on_back)
+			return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(0,-3000));
+		else
+			return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(3000,-3000), Trans_Rotate(-30, 0, 1));
+	}
+	if (nohand)
+		return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(0, 3000));
+
+	return Trans_Mul(Trans_Rotate(220, 0, 1, 0), Trans_Rotate(30, 0, 0, 1), Trans_Rotate(-26, 1, 0, 0));
+}
+
+public func GetCarryPhase() { return 600; }
+
+
+/*-- Saving --*/
+
+public func SaveScenarioObject(props, ...)
+{
+	if (!inherited(props, ...)) return false;
+	// Save fully loaded.
+	if (fill_amount == this.MaxIntake) props->AddCall("FullLoad", this, "DoFullLoad");
+	return true;
 }
 
 
-/*-- Properties --*/
-
-protected func Definition(def) 
+public func Definition(def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(1500), Trans_Rotate(150, 0, 0, 1), Trans_Rotate(-170, 1, 0, 0), Trans_Rotate(10, 0, 1, 0)), def);
 }
 
+/*-- Properties --*/
+
 local Name = "$Name$";
 local Description = "$Description$";
-local Collectible = 1;
+local Collectible = true;
 local MaxIntake = 30;
+local Components = {Cloth = 1, Metal = 1};

@@ -2,13 +2,11 @@
 
 #appendto Sequence
 
-static npc_pyrit, g_cannon, g_cannoneer;
-
 func Intro_Init()
 {
 	this.plane = CreateObjectAbove(Airplane, 0, 800);
 	this.plane->SetColor(0xa04000);
-	this.plane.health = 9999999;
+	this.plane.HitPoints = 9999999;
 	this.plane.intro_seq = this;
 	
 	this.pilot = npc_pyrit = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
@@ -22,10 +20,11 @@ func Intro_Init()
 	this.pilot->SetDir(DIR_Left);
 	this.pilot->SetObjectLayer(this.pilot);
 	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));
-	
+
 	this.dialogue = this.pilot->SetDialogue("Pyrit");
 	this.dialogue->SetInteraction(false);
 
+	this.plane->PlaneMount(this.pilot);
 	this.plane->FaceRight();
 	this.plane.PlaneDeath = this.Intro_PlaneDeath;
 }
@@ -36,7 +35,7 @@ func Intro_Start(object hero)
 	this.plane->StartInstantFlight(90, 40);
 
 	SetViewTarget(this.pilot);
-	SetPlayerZoomByViewRange(NO_OWNER, 200,100, PLRZOOM_Set); // zoom out from plane
+	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set); // zoom out from plane
 	
 	return ScheduleNext(50);
 }
@@ -45,7 +44,7 @@ func Intro_JoinPlayer(int plr)
 {
 	if (this.intro_closed) return false; // too late for join - just join in village
 	var crew;
-	for(var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = GetCrew(plr, index); ++index)
 	{
 		crew->Enter(this.dialogue);
 	}
@@ -54,7 +53,7 @@ func Intro_JoinPlayer(int plr)
 
 func Intro_1()
 {
-	SetPlayerZoomByViewRange(NO_OWNER, 800,600, PLRZOOM_Set); // zoom out from plane
+	SetPlayerZoomByViewRange(NO_OWNER, 800, 600, PLRZOOM_Set); // zoom out from plane
 	MessageBoxAll("$MsgIntro1$", this.pilot, true); // we've reached the castle
 	return ScheduleNext(10);
 }
@@ -85,7 +84,7 @@ func Intro_5()
 	// Wait until placed diagonally above cannon
 	var dx = this.plane->GetX() - g_cannon->GetX();
 	var dy = this.plane->GetY() - g_cannon->GetY();
-	var r = Angle(0,0,dx+30,dy,g_cannon.angPrec); // aim a bit ahead
+	var r = Angle(0, 0, dx + 30, dy, g_cannon.angPrec); // aim a bit ahead
 	if (dx < dy)
 	{
 		r = g_cannon->ConvertAngle(r);
@@ -110,7 +109,7 @@ func Intro_6()
 	this.projectile->DoExplode();
 	this.plane->SetMeshMaterial("CrashedAirplane");
 	this.plane->CancelFlight();
-	RemoveEffect("IntPlane", this.plane);
+	this.plane->RemovePlaneControl();
 	this.plane->SetRDir(-10);
 	// Calc fling direction to land near flagpole
 	var tx = 135 - this.plane->GetX();
@@ -157,7 +156,7 @@ func Intro_Stop()
 	g_cannoneer->DoEnergy(10000);
 	g_cannoneer->AddEnergyBar();
 	g_cannoneer.SpecialDeathMessage = "$DeathOfBrutus$";
-	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set);
+	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set);
 	return true;
 }
 
@@ -167,14 +166,14 @@ func Intro_PlaneHit()
 	Sound("Objects::Plane::PlaneCrash", true);
 	var particles = Particles_Smoke(true);
 	particles.Size = PV_Linear(PV_Random(20, 60), PV_Random(50, 100));
-	CreateParticle("Smoke", PV_Random(-30,30), PV_Random(-30,30), PV_Random(-60, 60), PV_Random(-20,0), PV_Random(200, 500), particles, 20);
+	CreateParticle("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(-60, 60), PV_Random(-20, 0), PV_Random(200, 500), particles, 20);
 	particles.Size = PV_Linear(PV_Random(50, 80), PV_Random(100, 200));
-	CreateParticle("Smoke", PV_Random(-30,30), PV_Random(-30,30), PV_Random(-20, 20), PV_Random(-20,0), PV_Random(100, 200), particles, 20);
-	for (var iplr=0,plr; iplr<GetPlayerCount(C4PT_User); ++iplr)
+	CreateParticle("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(-20, 20), PV_Random(-20, 0), PV_Random(100, 200), particles, 20);
+	for (var iplr = 0, plr; iplr<GetPlayerCount(C4PT_User); ++iplr)
 	{
 		plr = GetPlayerByIndex(iplr, C4PT_User);
-		var icrew=0,crew;
-		while (crew=GetCrew(plr, icrew++))
+		var icrew = 0, crew;
+		while (crew = GetCrew(plr, icrew++))
 		{
 			crew->Exit(0,-5, 0, Random(3)-1, Random(5)-6);
 			crew->SetAction("Tumble");
@@ -183,7 +182,7 @@ func Intro_PlaneHit()
 	npc_pyrit->Exit(0,-5, 0, -1, -2);
 	npc_pyrit->SetAction("Tumble");
 	this.Hit = this.intro_seq.plane_Hit;
-	this.MeshTransformation=Trans_Mul(Trans_Rotate(10,0,2,1), Airplane.MeshTransformation);
+	this.MeshTransformation = Trans_Mul(Trans_Rotate(10, 0, 2, 1), Airplane.MeshTransformation);
 	this.intro_seq->ScheduleNext(50);
 	SetObjectLayer(this); // plane is broken
 	return true;

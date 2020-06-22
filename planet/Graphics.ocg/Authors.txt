@@ -13,3 +13,6 @@ StartupPlrSelBG.jpg
 StartupScenSelBG.jpg)
 
 Loader1.jpg             - Nachtfalter
+
+ControllerIcons.png     - Nicolae Berbece (http://opengameart.org/content/free-keyboard-and-controllers-prompts-pack)
+                          License: CC0

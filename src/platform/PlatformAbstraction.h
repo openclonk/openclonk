@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,11 +20,13 @@
 #ifndef INC_PLATFORMABSTRACTION
 #define INC_PLATFORMABSTRACTION
 
+#include <vector>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif // HAVE_CONFIG_H
 
-#if defined(USE_WIN32_WINDOWS) || (defined(_WIN32) && defined(USE_GTK))
+#if defined(USE_WIN32_WINDOWS)
 #define USE_WGL
 #endif
 
@@ -72,15 +74,8 @@
 #endif
 
 
-
-// C++0x nullptr
-#undef NULL
-#define NULL nullptr
-
-
-
 // Integer dataypes
-#include <stdint.h>
+#include <cstdint>
 
 
 #ifdef HAVE_UNISTD_H
@@ -95,10 +90,15 @@ typedef ptrdiff_t ssize_t;
 #define GNUC_FORMAT_ATTRIBUTE_O __attribute__ ((format (printf, 2, 3)))
 #define ALWAYS_INLINE inline __attribute__ ((always_inline))
 #define NORETURN __attribute__ ((noreturn))
-#else
+#elif defined(_MSC_VER)
 #define GNUC_FORMAT_ATTRIBUTE
 #define GNUC_FORMAT_ATTRIBUTE_O
 #define ALWAYS_INLINE __forceinline
+#define NORETURN __declspec(noreturn)
+#else
+#define GNUC_FORMAT_ATTRIBUTE
+#define GNUC_FORMAT_ATTRIBUTE_O
+#define ALWAYS_INLINE inline
 #define NORETURN
 #endif
 
@@ -169,6 +169,9 @@ bool IsGermanSystem();
 
 // open a weblink in an external browser
 bool OpenURL(const char* szURL);
+
+// reopen the engine with given parameters
+bool RestartApplication(std::vector<const char *> parameters);
 
 #ifdef _WIN32
 #include <io.h>

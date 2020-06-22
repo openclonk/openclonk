@@ -9,3 +9,6 @@ Found20=Found 20 gold bars
 Achieve5=Bronze bar achieved!
 Achieve10=Silver bar achieved!
 Achieve20=Gold bar achieved!
+
+Guard=Guard
+TreasureHunter=Treasure hunter

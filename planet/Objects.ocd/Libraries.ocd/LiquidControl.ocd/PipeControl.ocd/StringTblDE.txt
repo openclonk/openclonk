@@ -1,0 +1,36 @@
+MenuPipeControl=Leitungen
+
+MsgConnectSource=Zufluss anschließen
+MsgConnectDrain=Abfluss anschließen
+MsgConnectNeutral=Rohr anschließen
+DescConnectSource=Schließt ein Zuflussrohr an.
+DescConnectDrain=Schließt ein Abflussrohr an.
+DescConnectNeutral=Schließt ein Rohr an.
+
+MsgCutSource=Zufluss trennen
+MsgCutDrain=Abfluss trennen
+MsgCutNeutral=Rohr trennen
+DescCutSource=Entfernt das Zuflussrohr.
+DescCutDrain=Entfernt das Abflussrohr.
+DescCutNeutral=Entfernt das angeschlossene Rohr.
+
+MsgConnectedTo=(verbunden mit {{%i}})
+MsgConnectedToMultiple=(verbunden mit {{%i}} und {{%i}})
+DescConnectedTo=Dieses Rohr ist momentan verbunden mit {{%i}}.
+DescConnectedToMultiple=Dieses Rohr ist momentan verbunden mit {{%i}} und {{%i}}.
+
+MsgSwapSourceDrain=Wechsele Zufluss und Abfluss
+DescSwapSourceDrain=Wechselt das Zuflussrohr mit dem Abflussrohr. 
+
+MsgConnectedPipe=Rohr angeschlossen.
+MsgPipeAlreadyConnected=Dieses Rohr ist bereits an %s angeschlossen.
+MsgPipeProhibited=Dieses Rohr kann nicht an %s angeschlossen werden.
+MsgHasPipes=Es können keine weiteren Rohre an %s angeschlossen werden. Bereits vorhanden: %s.
+MsgAirPipeProhibited=Luftrohre können nicht an %s angeschlossen werden.
+MsgDrainPipeProhibited=Abflussrohre können nicht an %s angeschlossen werden.
+MsgNeutralPipeProhibited=Beliebige Rohre können nicht an %s angeschlossen werden.
+MsgSourcePipeProhibited=Zuflussrohre können nicht an %s angeschlossen werden.
+MsgPipeAir=Luftrohr
+MsgPipeDrain=Abflussrohr
+MsgPipeNeutral=beliebiges Rohr
+MsgPipeSource=Zuflussrohr

@@ -1,7 +1,7 @@
 [Head]
 Title=DeadlyGrotto
 Icon=24
-Version=6,0
+Version=8,0
 Difficulty=50
 
 [Definitions]

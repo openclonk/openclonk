@@ -1,0 +1,4 @@
+Name=Objekt-Spawnpunkt
+Description=Erzeugt einen Gegenstand im Inventar von Clonks, die durch den Punkt hindurchlaufen.
+SpawnID=Gegenstand
+SpawnIDHelp=Objekt, das der Spieler ins Inventar bekommt.

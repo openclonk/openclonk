@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,10 +20,7 @@
 #ifndef INC_C4Id
 #define INC_C4Id
 
-#include "StdAdaptors.h"
-#include <map>
-#include <string>
-#include <vector>
+#include "lib/StdAdaptors.h"
 
 class C4ID
 {
@@ -37,18 +34,16 @@ private:
 	static NamesList names;
 	void assign(const std::string &s);
 	template<size_t N>
-	explicit C4ID(const char (&s)[N]) { assign(s); }
+	explicit C4ID(const char (&s)[N]) { assign(s); } // @suppress("Class members should be properly initialized"): The call to assign() initializes 'v'
 public:
 	static const C4ID None; // Invalid ID
-		DEPRECATED static const C4ID Flag;
-	DEPRECATED static const C4ID Conkit; // Construction kit
 	static const C4ID Clonk;
-	static const C4ID Melee;
 	static const C4ID Bubble;
+	static const C4ID EditorBase;
 
 	C4ID(): v(None.v) {}
-	C4ID(const C4ID &other): v(other.v) {}
-	C4ID &operator =(const C4ID &other) { v = other.v; return *this; }
+	C4ID(const C4ID &other) = default;
+	C4ID &operator =(const C4ID &other) = default;
 
 	explicit C4ID(const std::string &s);
 	explicit C4ID(const StdStrBuf &s) { assign(s.getData()); }
@@ -78,14 +73,14 @@ public:
 	// Compare names instead of v directly so that a sequence of IDs is synchronous
 	inline bool operator ==(const C4ID &other) const { return names[v] == names[other.v]; }
 	inline bool operator !=(const C4ID &other) const { return names[v] != names[other.v]; }
-	inline bool operator <(const C4ID &other) const { return names[v] < names[other.v]; }
-	inline bool operator >(const C4ID &other) const { return names[v] > names[other.v]; }
+	inline bool operator <(const C4ID &other)  const { return names[v] < names[other.v];  }
+	inline bool operator >(const C4ID &other)  const { return names[v] > names[other.v];  }
 	inline bool operator <=(const C4ID &other) const { return names[v] <= names[other.v]; }
 	inline bool operator >=(const C4ID &other) const { return names[v] >= names[other.v]; }
 
 	// Safe bool
 	typedef size_t C4ID::*safe_bool_type;
-	inline operator safe_bool_type() const { return v == None.v ? 0 : &C4ID::v; }
+	inline operator safe_bool_type() const { return v == None.v ? nullptr : &C4ID::v; }
 };
 
 #endif

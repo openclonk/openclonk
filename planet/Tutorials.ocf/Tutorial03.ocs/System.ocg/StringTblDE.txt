@@ -32,7 +32,7 @@ DlgFarmerRebuild=Das tue ich!
 # Dialogue: Lookout
 DlgLookoutHello=Hallo, warum stehst du hier oben?
 DlgLookoutProtecting=Dies ist mein Posten. Ich halte Ausschau, für den Fall, dass die dunkle Fraktion wieder angreift.
-DlgLookoutMusket=Trägst du deshalb die Muskete?
+DlgLookoutBlunderbuss=Trägst du deshalb die Donnerbüchse?
 DlgLookoutNoChance=Ja, aber ich denke nicht, dass ich gegen diese Typen eine Chance habe.
 DlgLookoutNoShow=Dann lass uns hoffen, dass sie nicht wiederkommen!
 

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -27,7 +27,7 @@ public:
 	// denumerated null pointer which can be repeatedly denumerated.
 	static const C4ObjectPtr Null;
 
-	C4ObjectPtr() {} // uninitialized
+	C4ObjectPtr() = default; // uninitialized
 
 	C4ObjectPtr(C4Object* pObj)
 #ifndef NDEBUG

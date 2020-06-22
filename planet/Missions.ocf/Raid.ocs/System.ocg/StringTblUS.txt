@@ -162,7 +162,7 @@ Pyrit20=Uh, look underground I guess.
 
 Clonko1=Hello stranger, what brings you to Wipf Town?
 Clonko2=I'm looking for Pyrit.
-Clonko3=It's the guy in red hammering at the catapult. I wonder what he's doing there?
+Clonko3=It's the guy in blue hammering at the catapult. I wonder what he's doing there?
 Clonko4=Thank you.
 
 Clonko100=Hi, do you have any oil?

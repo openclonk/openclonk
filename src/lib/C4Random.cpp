@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,44 +18,58 @@
 /* Network-safe random number generator */
 
 #include "C4Include.h"
-#include <C4Random.h>
-#include <C4Record.h>
+#include "lib/C4Random.h"
+
+#include <random>
+
+#include <pcg/pcg_random.hpp>
 
 int RandomCount = 0;
-static unsigned int RandomHold = 0;
 
-void FixedRandom(DWORD dwSeed)
+static pcg32 SeededRng()
 {
-	// for SafeRandom
-	srand((unsigned)time(NULL));
-	RandomHold = dwSeed;
+	pcg_extras::seed_seq_from<std::random_device> seed_source;
+	return pcg32(seed_source);
+}
+
+static pcg32 RandomRng, UnsyncedRandomRng = SeededRng();
+
+void FixedRandom(uint64_t seed)
+{
+	RandomRng.seed(seed);
 	RandomCount = 0;
 }
 
-int Random(int iRange)
+uint32_t Random()
 {
-	if (Config.General.DebugRec)
-	{
-		// next pseudorandom value
-		RandomCount++;
-		C4RCRandom rc;
-		rc.Cnt=RandomCount;
-		rc.Range=iRange;
-		if (iRange<=0)
-			rc.Val=0;
-		else
-		{
-			RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
-			rc.Val = RandomHold % iRange;
-		}
-		AddDbgRec(RCT_Random, &rc, sizeof(rc));
-		return rc.Val;
-	}
-	else
-	{
-		RandomCount++;
-		if (iRange<=0) return 0;
-		RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
-		return RandomHold % iRange;
-	}
+	uint32_t result = RandomRng();
+	RecordRandom(UINT32_MAX, result);
+	return result;
 }
+
+uint32_t Random(uint32_t iRange)
+{
+	if (!iRange) return 0u;
+	uint32_t result = RandomRng(iRange);
+	RecordRandom(iRange, result);
+	return result;
+}
+
+uint32_t UnsyncedRandom()
+{
+	return UnsyncedRandomRng();
+}
+
+uint32_t UnsyncedRandom(uint32_t iRange)
+{
+	if (!iRange) return 0u;
+	return UnsyncedRandomRng(iRange);
+}
+
+uint32_t SeededRandom(uint64_t iSeed, uint32_t iRange)
+{
+	if (!iRange) return 0;
+	pcg32 rng(iSeed);
+	return rng(iRange);
+}
+

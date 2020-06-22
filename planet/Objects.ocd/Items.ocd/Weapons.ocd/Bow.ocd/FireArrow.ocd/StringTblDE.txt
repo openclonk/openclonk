@@ -1,2 +1,2 @@
 Name=Feuerpfeile
-Description=Feuerige Munition f�r den Bogen.
+Description=Feuerige Munition für den Bogen.

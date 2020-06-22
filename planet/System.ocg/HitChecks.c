@@ -1,13 +1,13 @@
-/*--
-		HitCheck.c
-		Authors: Newton, Boni
-	
-		Effect for hit checking.
-		Facilitates any hit check of a projectile. The Projectile hits anything
-		which is either alive or returns for IsProjectileTarget(object projectile,
-		object shooter) true. If the projectile hits something, it calls
-		HitObject(object target) in the projectile.
---*/
+/**
+	HitCheck.c
+	Effect for hit checking.
+	Facilitates any hit check of a projectile. The Projectile hits anything
+	which is either alive or returns for IsProjectileTarget(object projectile,
+	object shooter) true. If the projectile hits something, it calls
+	HitObject(object target) in the projectile.
+
+	@author Newton, Boni
+*/
 
 global func FxHitCheckStart(object target, proplist effect, int temp, object by_obj, bool never_shooter)
 {
@@ -67,12 +67,12 @@ global func FxHitCheckDoCheck(object target, proplist effect)
 		{
 			// Excludes
 			if (!obj) continue; // hit callback of one object might have removed other objects
-			if(obj == target) continue;
-			if(obj == shooter) continue;
+			if (obj == target) continue;
+			if (obj == shooter) continue;
 
 			// Unlike in hazard, there is no NOFF rule (yet)
 			// CheckEnemy
-			//if(!CheckEnemy(obj,target)) continue;
+			//if (!CheckEnemy(obj, target)) continue;
 
 			// IsProjectileTarget will be hit (defaults to true for OCF_Alive).
 			if (obj->~IsProjectileTarget(target, shooter))

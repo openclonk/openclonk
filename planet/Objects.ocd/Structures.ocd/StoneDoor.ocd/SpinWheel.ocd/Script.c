@@ -1,65 +1,48 @@
 /*-- Spin Wheel --*/
 
-local targetdoor, temp_light;
+#include Library_Switch
 
 public func Initialize()
 {
 	SetAction("Still");
 }
 
-public func SetStoneDoor(object door)
-{
-	targetdoor = door;
-	return true;
-}
-
 public func ControlUp(object clonk)
 {
-	if (GetAction() == "Still" && targetdoor)
+	if (GetAction() == "Still" && GetSwitchTarget())
 	{
-		if (clonk)
-		{
-			SetPlrView(clonk->GetController(), targetdoor);
-			if (temp_light) temp_light->RemoveObject();
-			var y_off = targetdoor->~GetFloorOffset();
-			temp_light = Global->CreateLight(targetdoor->GetX(), targetdoor->GetY() + y_off, 30, Fx_Light.LGT_Temp, clonk->GetController(), 30, 50);
-		}
-		targetdoor->OpenDoor();
+		SetSwitchState(true, clonk);
 		SetAction("SpinLeft");
 		Sound("Structures::StoneGate::Chain");
 	}
+	// Action last; it may delete the door/clonk/etc.
+	UserAction->EvaluateAction(up_action, this, clonk);
 }
 
 public func ControlDown(object clonk)
 {
-	if (GetAction() == "Still" && targetdoor)
+	if (GetAction() == "Still" && GetSwitchTarget())
 	{
-		if (clonk)
-		{
-			SetPlrView(clonk->GetController(), targetdoor);
-			if (temp_light) temp_light->RemoveObject();
-			var y_off = targetdoor->~GetFloorOffset();
-			temp_light = Global->CreateLight(targetdoor->GetX(), targetdoor->GetY() + y_off, 30, Fx_Light.LGT_Temp, clonk->GetController(), 30, 50);
-		}
-		targetdoor->CloseDoor();
+		SetSwitchState(false, clonk);
 		SetAction("SpinRight");
 		Sound("Structures::StoneGate::Chain");
 	}
+	// Action last; it may delete the door/clonk/etc.
+	UserAction->EvaluateAction(down_action, this, clonk);
 }
 
 public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
-	if (targetdoor) props->AddCall("Target", this, "SetStoneDoor", targetdoor);
+	if (up_action || down_action) props->AddCall("Action", this, "SetActions", up_action, down_action);
 	return true;
 }
 
-func ConnectNearestDoor()
+public func SetActions(new_up_action, new_down_action)
 {
-	// EditCursor helper command: Connect to nearest door. Return connected door.
-	var door = FindObject(Find_ID(StoneDoor), Sort_Distance());
-	if (door) SetStoneDoor(door);
-	return door;
+	up_action = new_up_action;
+	down_action = new_down_action;
+	return true;
 }
 
 local ActMap = {
@@ -94,12 +77,22 @@ local ActMap = {
 local Name = "$Name$";
 local Touchable = 2;
 local EditCursorCommands = ["ControlUp()", "ControlDown()", "ConnectNearestDoor()"];
-local Plane = 600;
+local Plane = 200;
+local Components = {Wood = 3, Metal = 1};
+local up_action, down_action; // Custom editor-selected actions on switch handling
 
 func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(800), Trans_Translate(0,0,0),Trans_Rotate(-20,1,0,0),Trans_Rotate(-30,0,1,0)), def);
-	SetProperty("MeshTransformation", Trans_Rotate(-13,0,1,0), def);
+	// Graphics
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(800), Trans_Translate(0, 0, 0),Trans_Rotate(-20, 1, 0, 0),Trans_Rotate(-30, 0, 1, 0)), def);
+	SetProperty("MeshTransformation", Trans_Rotate(-13, 0, 1, 0), def);
+	// Editor properties
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.up_action = new UserAction.Prop { Name="$UpAction$" };
+	def.EditorProps.down_action = new UserAction.Prop { Name="$DownAction$" };
+	// Editor actions
+	if (!def.EditorActions) def.EditorActions = {};
+	def.EditorActions.SwitchLeft = { Name = "$ControlUp$", Command = "ControlUp()" };
+	def.EditorActions.SwitchRight = { Name = "$ControlDown$", Command = "ControlDown()" };
+	return _inherited(def, ...);
 }
-
-

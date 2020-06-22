@@ -1,0 +1,2 @@
+MsgCableBroke=Seil gerissen
+Name=Seilbahnseil

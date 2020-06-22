@@ -5,19 +5,19 @@
 
 local grow_stage;
 
-private func SeedChance() { return 1000; }
-private func SeedOffset() { return 10; }
+local plant_seed_chance = 10;
+local plant_seed_offset = 10;
 
 private func SickleHarvesting() { return false; }
 
 protected func Construction()
 {
 	var graphic = Random(6);
-	if(graphic)
+	if (graphic)
 		SetGraphics(Format("%d",graphic));
-	_inherited();
+	_inherited(...);
 
-	if(GetCon() < 100) SetCon(100);
+	if (GetCon() < 100) SetCon(100);
 }
 
 protected func Initialize()
@@ -69,6 +69,8 @@ local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 1;
 local ContactIncinerate = 3;
+local Components = {Moss = 4};
+
 local ActMap = {
 	Grow = {
 		Prototype = Action,

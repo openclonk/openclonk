@@ -7,7 +7,7 @@
     <title>ShakeViewport</title>
     <category>Environment</category>
     <subcat>Effects</subcat>
-    <version>6.0 OC</version>
+    <version>6.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -36,7 +36,10 @@
     </syntax>
     <desc>Shake the player viewports near the given position. This disorienting effect is used for earthquakes, explosions
 and other rumbling effects. The further away the player is from the source, the less his viewport is shaken. The 
-strength falls off linearly by distance from 100% to 0% when the player is [range] pixels away.</desc>
+strength falls off linearly by distance from 100% to 0% when the player is [range] pixels away.
+The accumulated strength of all shake sources is limited to a distortion of at most 500 pixels per player.</desc>
     <related><funclink>SetViewOffset</funclink></related>
   </func>
+  <author>Newton</author><date>2015-01</date>
+  <author>Marky</author><date>2019-04</date>
 </funcs>

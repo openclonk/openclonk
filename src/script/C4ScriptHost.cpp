@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,19 +17,23 @@
 
 /* Handles script file components (calls, inheritance, function maps) */
 
-#include <C4Include.h>
-#include <C4ScriptHost.h>
+#include "C4Include.h"
+#include "script/C4ScriptHost.h"
 
-#include <C4Def.h>
+#include "object/C4Def.h"
+#include "script/C4AulCompiler.h"
+#include "script/C4AulParse.h"
+#include "script/C4AulScriptFunc.h"
+#include "script/C4AulScriptFunc.h"
+#include "script/C4Effect.h"
 
 /*--- C4ScriptHost ---*/
 
 C4ScriptHost::C4ScriptHost()
 {
-	Script = NULL;
-	stringTable = 0;
+	Script = nullptr;
+	stringTable = nullptr;
 	SourceScripts.push_back(this);
-	LocalNamed.Reset();
 	// prepare include list
 	IncludesResolved = false;
 	Resolving=false;
@@ -38,33 +42,130 @@ C4ScriptHost::C4ScriptHost()
 }
 C4ScriptHost::~C4ScriptHost()
 {
+	Unreg();
 	Clear();
 }
 
 void C4ScriptHost::Clear()
 {
-	C4AulScript::Clear();
-	ComponentHost.Clear();
+	UnlinkOwnedFunctions();
+	C4ComponentHost::Clear();
+	ast.reset();
 	Script.Clear();
-	LocalNamed.Reset();
 	LocalValues.Clear();
+	DeleteOwnedPropLists();
 	SourceScripts.clear();
 	SourceScripts.push_back(this);
 	if (stringTable)
 	{
 		stringTable->DelRef();
-		stringTable = NULL;
+		stringTable = nullptr;
 	}
 	// remove includes
 	Includes.clear();
 	Appends.clear();
+	// reset flags
+	State = ASS_NONE;
+	enabledWarnings.clear();
+}
+
+void C4ScriptHost::UnlinkOwnedFunctions()
+{
+	// Remove owned functions from their parents. This solves a problem
+	// where overloading a definition would unload the C4ScriptHost, but
+	// keep around global functions, which then contained dangling pointers.
+	for (const auto &box : ownedFunctions)
+	{
+		assert(box.GetType() == C4V_Function);
+		C4AulScriptFunc *func = box._getFunction()->SFunc();
+		C4PropList *parent = func->Parent;
+		if (parent == GetPropList())
+			continue;
+		assert(parent == &::ScriptEngine);
+		C4Value v;
+		parent->GetPropertyByS(func->Name, &v);
+		if (v.getFunction() == func)
+		{
+			// If the function we're deleting is the top-level function in
+			// the inheritance chain, promote the next one in its stead;
+			// if there is no overloaded function, remove the property.
+			parent->Thaw();
+			if (func->OwnerOverloaded)
+				parent->SetPropertyByS(func->Name, C4VFunction(func->OwnerOverloaded));
+			else
+				parent->ResetProperty(func->Name);
+		}
+		else
+		{
+			C4AulScriptFunc *func_chain = v.getFunction()->SFunc();
+			assert(func_chain != func);
+			while (func_chain)
+			{
+				// Unlink the removed function from the inheritance chain
+				if (func_chain->OwnerOverloaded == func)
+				{
+					func_chain->OwnerOverloaded = func->OwnerOverloaded;
+					func->OwnerOverloaded = nullptr; // func_chain now takes care of this.
+					func->DecRef(); // decrease rc because func_chain no longer has a reference to func.
+					break;
+				}
+				assert(func_chain->OwnerOverloaded && "Removed function not found in inheritance chain");
+				func_chain = func_chain->OwnerOverloaded->SFunc();
+			}
+		}
+	}
+	ownedFunctions.clear();
+}
+
+void C4ScriptHost::DeleteOwnedPropLists()
+{
+	// delete all static proplists associated to this script host.
+	// Note that just clearing the vector is not enough in case of
+	// cyclic references.
+	for (C4Value& value: ownedPropLists)
+	{
+		C4PropList* plist = value.getPropList();
+		if (plist)
+		{
+			if (plist->Delete()) delete plist;
+			else plist->Clear();
+		}
+	}
+	ownedPropLists.clear();
+}
+
+void C4ScriptHost::Unreg()
+{
+	// remove from list
+	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
+	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
+	Prev = Next = nullptr;
+	Engine = nullptr;
+}
+
+void C4ScriptHost::Reg2List(C4AulScriptEngine *pEngine)
+{
+	// already regged? (def reloaded)
+	if (Engine) return;
+	// reg to list
+	if ((Engine = pEngine))
+	{
+		if ((Prev = Engine->ChildL))
+			Prev->Next = this;
+		else
+			Engine->Child0 = this;
+		Engine->ChildL = this;
+	}
+	else
+		Prev = nullptr;
+	Next = nullptr;
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
                         const char *szLanguage, class C4LangStringTable *pLocalTable)
 {
 	// Base load
-	bool fSuccess = ComponentHost.Load(hGroup,szFilename,szLanguage);
+	bool fSuccess = C4ComponentHost::Load(hGroup,szFilename,szLanguage);
 	// String Table
 	if (stringTable != pLocalTable)
 	{
@@ -73,7 +174,7 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
 		if (stringTable) stringTable->AddRef();
 	}
 	// set name
-	ScriptName.Ref(ComponentHost.GetFilePath());
+	ScriptName.Ref(GetFilePath());
 	// preparse script
 	MakeScript();
 	// Success
@@ -112,11 +213,11 @@ void C4ScriptHost::MakeScript()
 	// create script
 	if (stringTable)
 	{
-		stringTable->ReplaceStrings(ComponentHost.GetDataBuf(), Script);
+		stringTable->ReplaceStrings(GetDataBuf(), Script);
 	}
 	else
 	{
-		Script.Ref(ComponentHost.GetDataBuf());
+		Script.Ref(GetDataBuf());
 	}
 
 	// preparse script
@@ -126,33 +227,40 @@ void C4ScriptHost::MakeScript()
 bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 {
 	// this?
-	if (SEqualNoCase(szPath, ComponentHost.GetFilePath()) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
+	if (SEqualNoCase(szPath, GetFilePath()) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
 	{
 		// try reload
 		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
 		if (GetParentPath(szPath, szParentPath))
 			if (ParentGrp.Open(szParentPath))
-				if (Load(ParentGrp, NULL, szLanguage, stringTable))
+				if (Load(ParentGrp, nullptr, szLanguage, stringTable))
 					return true;
 	}
 	return false;
 }
 
-void C4ScriptHost::SetError(const char *szMessage)
+std::string C4ScriptHost::Translate(const std::string &text) const
 {
-
+	if (stringTable)
+		return stringTable->Translate(text);
+	throw C4LangStringTable::NoSuchTranslation(text);
 }
-
 
 /*--- C4ExtraScriptHost ---*/
 
 C4ExtraScriptHost::C4ExtraScriptHost(C4String *parent_key_name):
-		ParserPropList(C4PropList::NewStatic(NULL, NULL, parent_key_name))
+		ParserPropList(C4PropList::NewStatic(nullptr, nullptr, parent_key_name))
 {
+}
+
+C4ExtraScriptHost::~C4ExtraScriptHost()
+{
+	Clear();
 }
 
 void C4ExtraScriptHost::Clear()
 {
+	C4ScriptHost::Clear();
 	ParserPropList._getPropList()->Clear();
 }
 
@@ -218,12 +326,12 @@ C4PropListStatic * C4DefScriptHost::GetPropList() { return Def; }
 class C4PropListScen: public C4PropListStatic
 {
 public:
-	C4PropListScen(const C4PropListStatic * parent, C4String * key): C4PropListStatic(NULL, parent, key)
+	C4PropListScen(const C4PropListStatic * parent, C4String * key): C4PropListStatic(nullptr, parent, key)
 	{
 		C4PropList * proto = C4PropList::NewStatic(ScriptEngine.GetPropList(), this, &::Strings.P[P_Prototype]);
 		C4PropListStatic::SetPropertyByS(&::Strings.P[P_Prototype], C4VPropList(proto));
 	}
-	virtual void SetPropertyByS(C4String * k, const C4Value & to)
+	void SetPropertyByS(C4String * k, const C4Value & to) override
 	{
 		if (k == &Strings.P[P_Prototype])
 		{
@@ -237,12 +345,12 @@ public:
 /*--- C4GameScriptHost ---*/
 
 C4GameScriptHost::C4GameScriptHost(): ScenPrototype(0), ScenPropList(0) { }
-C4GameScriptHost::~C4GameScriptHost() { }
+C4GameScriptHost::~C4GameScriptHost() = default;
 
 bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
 {
 	assert(ScriptEngine.GetPropList());
-	C4PropListStatic * pScen = new C4PropListScen(NULL, &::Strings.P[P_Scenario]);
+	C4PropListStatic * pScen = new C4PropListScen(nullptr, &::Strings.P[P_Scenario]);
 	ScenPropList.SetPropList(pScen);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
 	ScenPrototype.SetPropList(pScen->GetPrototype());
@@ -253,7 +361,7 @@ bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangS
 bool C4GameScriptHost::LoadData(const char * f, const char * d, C4LangStringTable * t)
 {
 	assert(ScriptEngine.GetPropList());
-	C4PropListStatic * pScen = new C4PropListScen(NULL, &::Strings.P[P_Scenario]);
+	C4PropListStatic * pScen = new C4PropListScen(nullptr, &::Strings.P[P_Scenario]);
 	ScenPropList.SetPropList(pScen);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
 	ScenPrototype.SetPropList(pScen->GetPrototype());
@@ -266,12 +374,19 @@ void C4GameScriptHost::Clear()
 	C4ScriptHost::Clear();
 	ScenPropList.Set0();
 	ScenPrototype.Set0();
+	delete pScenarioEffects; pScenarioEffects=nullptr;
 }
 
 C4PropListStatic * C4GameScriptHost::GetPropList()
 {
 	C4PropList * p = ScenPrototype._getPropList();
-	return p ? p->IsStatic() : 0;
+	return p ? p->IsStatic() : nullptr;
+}
+
+void C4GameScriptHost::Denumerate(C4ValueNumbers * numbers)
+{
+	ScenPropList.Denumerate(numbers);
+	if (pScenarioEffects) pScenarioEffects->Denumerate(numbers);
 }
 
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)

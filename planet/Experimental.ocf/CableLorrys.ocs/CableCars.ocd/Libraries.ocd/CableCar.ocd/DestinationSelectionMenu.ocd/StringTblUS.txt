@@ -1,0 +1,5 @@
+Name=Destination Selection Menu
+Description=
+SelectDestination=Select a destination:
+SendTo=Send the cable car to %s
+InfoETA=ETA to destination: %ds.

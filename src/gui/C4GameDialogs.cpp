@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,11 +15,10 @@
  */
 // main game dialogs (abort game dlg, observer dlg)
 
-#include <C4Include.h>
-#include <C4GameDialogs.h>
+#include "C4Include.h"
+#include "gui/C4GameDialogs.h"
 
-#include <C4Game.h>
-#include <C4Network2.h>
+#include "network/C4Network2.h"
 
 bool C4AbortGameDialog::is_shown = false;
 
@@ -29,11 +28,10 @@ bool C4AbortGameDialog::is_shown = false;
 C4AbortGameDialog::C4AbortGameDialog()
 		: C4GUI::ConfirmationDialog(LoadResStr("IDS_HOLD_ABORT"),
 		                            LoadResStr("IDS_DLG_ABORT"),
-		                            NULL,
+		                            nullptr,
 		                            MessageDialog::btnYesNo,
 		                            true,
-		                            C4GUI::Ico_Exit),
-		fGameHalted(false)
+		                            C4GUI::Ico_Exit)
 {
 	is_shown = true; // assume dlg will be shown, soon
 }

@@ -24,6 +24,8 @@ protected func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 protected func Initialize()
 {
 	// Create a helper object for the wheel.
@@ -76,6 +78,7 @@ public func Wind2Turn()
 	// Only produce power if fully constructed.
 	if (GetCon() < 100) 
 		return;
+	var current_wind = GetWeightedWind();
 	// Determine the current power production.	
 	var power = 0;
 	if (!wheel->Stuck() && !wheel->HasStopped())
@@ -83,6 +86,10 @@ public func Wind2Turn()
 		// Produced power ranges from 0 to 80 in steps of 10.
 		power = Abs(wheel->GetRDir(MinRevolutionTime() / 90));
 		power = BoundBy((10 * power + 60) / 125 * 10, 0, 80);	
+
+		// Make some sounds.
+		if (Random(10 + Abs(current_wind)) < 5 && !Random(5))
+			Sound(["Hits::Materials::Wood::WoodCreak?","Structures::HingeCreak?"][Random(2)], false, nil, nil, nil, 75);
 	}
 	// Update the power consumption if the produced power has changed.
 	if (last_power != power)
@@ -93,11 +100,7 @@ public func Wind2Turn()
 			RegisterPowerRequest(this->PowerNeed());
 	}
 	// Adjust the wheel speed.
-	var current_wind = GetWeightedWind();
 	wheel->SetRDir(current_wind * 90, MinRevolutionTime());
-	// Make some sounds.
-	if (Abs(current_wind) >= 10 && Random(15 - Abs(current_wind / 10)) < 5)
-		Sound(["Hits::Materials::Wood::WoodCreak?","Structures::HingeCreak?"][Random(2)], false, nil, nil, nil, 75);
 	return;
 }
 
@@ -117,7 +120,7 @@ private func IsProduct(id product_id)
 	return product_id->~IsWindmillProduct();
 }
 
-private func ProductionTime(id toProduce) { return 290; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 290; }
 
 public func OnProductionStart(id product)
 {
@@ -170,7 +173,7 @@ public func OnProductEjection(object product)
 	product->SetPosition(GetX() - 25 * GetCalcDir(), GetY() + 40);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
-	Sound("Pop");
+	Sound("Structures::EjectionPop");
 	return;
 }
 
@@ -190,7 +193,7 @@ local ActMap = {
 		Name = "Default",
 		Procedure = DFA_NONE,
 		Directions = 2,
-		FlipDir = 1,
+		//FlipDir = 1,
 		Length = 1,
 		Delay = 0,
 		FacetBase = 1,
@@ -201,10 +204,13 @@ local ActMap = {
 protected func Definition(def) 
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000, 0, 7000), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(30, 0, 1, 0)), def);
+	return _inherited(def, ...);
 }
 
 local ContainBlast = true;
 local BlastIncinerate = 100;
+local FireproofContainer = true;
 local HitPoints = 70;
 local Name = "$Name$";
 local Description = "$Description$";
+local Components = {Rock = 6, Wood = 2};

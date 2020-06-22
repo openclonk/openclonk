@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,7 +16,7 @@
 #ifndef INC_C4PacketBase
 #define INC_C4PacketBase
 
-#include "C4NetIO.h"
+#include "network/C4NetIO.h"
 
 // *** packet base class
 
@@ -33,7 +33,7 @@ public:
 	// conversion (using above functions)
 	C4NetIOPacket pack(const C4NetIO::addr_t &addr = C4NetIO::addr_t()) const;
 	C4NetIOPacket pack(uint8_t cStatus, const C4NetIO::addr_t &addr = C4NetIO::addr_t()) const;
-	void unpack(const C4NetIOPacket &Pkt, char *pStatus = NULL);
+	void unpack(const C4NetIOPacket &Pkt, char *pStatus = nullptr);
 
 };
 
@@ -54,13 +54,13 @@ struct C4NetFilenameAdapt
 		pComp->Value(FileName);
 #else
 		StdCopyStrBuf FileName2;
-		if (pComp->isDecompiler() && FileName)
+		if (pComp->isSerializer() && FileName)
 		{
 			FileName2.Copy(FileName);
 			SReplaceChar(FileName2.getMData(),DirectorySeparator,'\\');
 		}
 		pComp->Value(FileName2);
-		if (pComp->isCompiler())
+		if (pComp->isDeserializer())
 		{
 			FileName.Take(FileName2);
 			SReplaceChar(FileName.getMData(),'\\',DirectorySeparator);
@@ -108,6 +108,9 @@ enum C4PacketType
 
 	// activation request
 	PID_ClientActReq  = 0x13,
+
+	// request to perform TCP simultaneous open
+	PID_TCPSimOpen    = 0x14,
 
 	// all data a client needs to get started
 	PID_JoinData      = 0x15,
@@ -165,9 +168,14 @@ enum C4PacketType
 
 	CID_EMMoveObj     = CID_First | 0x30,
 	CID_EMDrawTool    = CID_First | 0x31,
+	CID_ReInitScenario= CID_First | 0x32,
+	CID_EditGraph     = CID_First | 0x33,
 
 	CID_DebugRec      = CID_First | 0x40,
 	CID_MenuCommand   = CID_First | 0x41,
+
+	// Note: There are some more packet types in src/netpuncher/C4PuncherPacket.h
+	// They have been picked to be distinct from these for safety, not for necessary.
 };
 
 // packet classes
@@ -186,7 +194,7 @@ enum C4PacketHandlerID
 	PH_C4Network2ClientList   = 1 << 3,   // client list class
 	PH_C4Network2Players      = 1 << 4,   // player list class
 	PH_C4Network2ResList      = 1 << 5,   // resource list class
-	PH_C4GameControlNetwork   = 1 << 6      // network control class
+	PH_C4GameControlNetwork   = 1 << 6,   // network control class
 };
 
 
@@ -218,13 +226,15 @@ protected:
 	StdCopyBuf Data;
 public:
 	C4PktBuf();
-	C4PktBuf(const C4PktBuf &rCopy);
-	C4PktBuf(const StdBuf &rCpyData);
+	C4PktBuf(const C4PktBuf &rCopy) { *this = rCopy; }
+	C4PktBuf(const StdBuf &rCpyData) { *this = rCpyData; }
+	C4PktBuf &operator =(const C4PktBuf &rCopy);
+	C4PktBuf &operator =(const StdBuf &rCopy);
 
 	size_t getSize() const { return Data.getSize(); }
 	const void *getData() const { return Data.getData(); }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 // "identified" packet: packet with packet type id
@@ -235,15 +245,15 @@ public:
 	C4IDPacket();
 	C4IDPacket(C4PacketType eID, C4PacketBase *pPkt, bool fTakePkt = true);
 	C4IDPacket(const C4IDPacket &Packet2);
-	~C4IDPacket();
+	~C4IDPacket() override;
 
 protected:
-	C4PacketType eID;
-	C4PacketBase *pPkt;
-	bool fOwnPkt;
+	C4PacketType eID{PID_None};
+	C4PacketBase *pPkt{nullptr};
+	bool fOwnPkt{true};
 
 	// used by C4PacketList
-	C4IDPacket *pNext;
+	C4IDPacket *pNext{nullptr};
 
 public:
 	C4PacketType  getPktType() const { return eID; }
@@ -254,7 +264,7 @@ public:
 	void Default();
 	void Set(C4PacketType eType, C4PacketBase *pPkt);
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 // list of identified packets
@@ -263,10 +273,10 @@ class C4PacketList : public C4PacketBase
 public:
 	C4PacketList();
 	C4PacketList(const C4PacketList &List2);
-	virtual ~C4PacketList();
+	~C4PacketList() override;
 
 protected:
-	C4IDPacket *pFirst, *pLast;
+	C4IDPacket *pFirst{nullptr}, *pLast{nullptr};
 
 public:
 	C4IDPacket *firstPkt() const { return pFirst; }
@@ -286,6 +296,6 @@ public:
 	void Remove(C4IDPacket *pPkt);
 	void Delete(C4IDPacket *pPkt);
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 #endif // INC_C4PacketBase

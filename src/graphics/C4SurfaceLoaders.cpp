@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,13 +17,13 @@
 
 /* Extension to C4Surface that handles bitmaps in C4Group files */
 
-#include <C4Include.h>
-#include <C4Surface.h>
+#include "C4Include.h"
+#include "graphics/C4Surface.h"
 
-#include <C4GroupSet.h>
-#include <C4Group.h>
-#include <C4Log.h>
-#include <StdPNG.h>
+#include "c4group/C4GroupSet.h"
+#include "c4group/C4Group.h"
+#include "graphics/StdPNG.h"
+#include "lib/StdColors.h"
 
 bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool fNoErrIfNotFound, int iFlags)
 {
@@ -34,7 +34,7 @@ bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool 
 	if (!*szExt)
 	{
 		// no extension: Default to extension that is found as file in group
-		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", NULL };
+		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", nullptr };
 		int i = 0; const char *szExt;
 		while ((szExt = extensions[i++]))
 		{
@@ -57,7 +57,7 @@ bool C4Surface::LoadAny(C4GroupSet &hGroupset, const char *szName, bool fOwnPal,
 	if (!*szExt)
 	{
 		// no extension: Default to extension that is found as file in group
-		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", NULL };
+		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", nullptr };
 		int i = 0; const char *szExt;
 		while ((szExt = extensions[i++]))
 		{
@@ -165,52 +165,46 @@ bool C4Surface::ReadPNG(CStdStream &hGroup, int iFlags)
 	if (!Create(png.iWdt, png.iHgt, iFlags)) return false;
 	// lock for writing data
 	if (!Lock()) return false;
-	if (textures.empty())
+	if (!texture)
 	{
 		Unlock();
 		return false;
 	}
 	// write pixels
-	for (int tY = 0; tY * iTexSize < Hgt; ++tY) for (int tX = 0; tX * iTexSize < Wdt; ++tX)
-		{
-			assert (tX>=0 && tY>=0 && tX<iTexX && tY<iTexY);
-			// Get Texture and lock it
-			C4TexRef *pTexRef = &textures[tY*iTexX + tX];
-			if (!pTexRef->Lock()) continue;
-			// At the edges, not the whole texture is used
-			int maxY = std::min(iTexSize, Hgt - tY * iTexSize), maxX = std::min(iTexSize, Wdt - tX * iTexSize);
-			for (int iY = 0; iY < maxY; ++iY)
-			{
-				// The global, not texture-relative position
-				int rY = iY + tY * iTexSize;
+	// Get Texture and lock it
+	if (!texture->Lock()) return false;
+	int maxX = std::min(Wdt, iTexSize);
+	int maxY = std::min(Hgt, iTexSize);
+	for (int iY = 0; iY < maxY; ++iY)
+	{
 #ifndef __BIG_ENDIAN__
-				if (png.iClrType == PNG_COLOR_TYPE_RGB_ALPHA)
-				{
-					// Optimize the easy case of a png in the same format as the display
-					// 32 bit
-					DWORD *pPix=(DWORD *) (((char *) pTexRef->texLock.pBits) + iY * pTexRef->texLock.Pitch);
-					memcpy (pPix, png.GetRow(rY) + tX * iTexSize, maxX * 4);
-					int iX = maxX;
-					while (iX--) { if (((BYTE *)pPix)[3] == 0x00) *pPix = 0x00000000; ++pPix; }
-				}
-				else
-#endif
-				{
-					// Loop through every pixel and convert
-					for (int iX = 0; iX < maxX; ++iX)
-					{
-						uint32_t dwCol = png.GetPix(iX + tX * iTexSize, rY);
-						// if color is fully transparent, ensure it's black
-						if (dwCol>>24 == 0x00) dwCol=0x00000000;
-						// set pix in surface
-						DWORD *pPix=(DWORD *) (((char *) pTexRef->texLock.pBits) + iY * pTexRef->texLock.Pitch + iX * 4);
-						*pPix=dwCol;
-					}
-				}
-			}
-			pTexRef->Unlock();
+		if (png.iClrType == PNG_COLOR_TYPE_RGB_ALPHA)
+		{
+			// Optimize the easy case of a png in the same format as the display
+			// 32 bit
+			DWORD *pPix=(DWORD *) (((char *) texture->texLock.pBits.get()) + iY * texture->texLock.Pitch);
+			memcpy (pPix, png.GetRow(iY), maxX * sizeof(*pPix));
+			int iX = maxX;
+			while (iX--) { if (((BYTE *)pPix)[3] == 0x00) *pPix = 0x00000000; ++pPix; }
 		}
+		else
+#endif
+		{
+			// Loop through every pixel and convert
+			for (int iX = 0; iX < maxX; ++iX)
+			{
+				uint32_t dwCol = png.GetPix(iX, iY);
+				// if color is fully transparent, ensure it's black
+				if (dwCol>>24 == 0x00) dwCol=0x00000000;
+				// set pix in surface
+				DWORD *pPix=(DWORD *) (((char *) texture->texLock.pBits.get()) + iY * texture->texLock.Pitch + iX * 4);
+				*pPix=dwCol;
+			}
+		}
+	}
+	
 	// unlock
+	texture->Unlock();
 	Unlock();
 	// return if successful
 	return fSuccess;
@@ -233,8 +227,6 @@ bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha
 
 /* JPEG loading */
 
-#ifndef USE_CONSOLE
-
 // Some distributions ship jpeglib.h with extern "C", others don't - gah.
 extern "C"
 {
@@ -242,7 +234,7 @@ extern "C"
 #undef FAR
 #include <jpeglib.h>
 }
-#include <setjmp.h>
+#include <csetjmp>
 
 // Straight from the libjpeg example
 struct my_error_mgr
@@ -364,13 +356,3 @@ bool C4Surface::ReadJPEG(CStdStream &hGroup, int iFlags)
 	// return if successful
 	return true;
 }
-
-#else // ifndef USE_CONSOLE
-
-bool C4Surface::ReadJPEG(CStdStream &, int) {
-	// Dummy surface
-	if (!Create(1, 1)) return false;
-	return true;
-}
-
-#endif // USE_CONSOLE

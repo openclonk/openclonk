@@ -107,6 +107,7 @@ func StartMenu(plr)
 	menu->AddItem(Clonk, "Test Multiple Windows (Player List)", nil, Scenario, "StartPlayerListTest", "Shows how to display a permanent info dialogue.");
 	menu->AddItem(Lorry, "Tests Two Grid Menus (Trade Menu)", nil, Scenario, "StartTransferTest", "Shows how to work with two grid menus.");
 	menu->AddItem(Sproutberry, "Test HP Bars (HP Bars!)", nil, Scenario, "StartHPBarTest", "HP BARS!!!");
+	menu->AddItem(Crate, "Test mixed grid layout.", nil, Scenario, "StartMixedGridTest", "Grid menu with differently-sized items.");
 	
 	active_menu = GuiOpen(main_menu);
 }
@@ -126,7 +127,7 @@ func StartMultipleListTest()
 	};
 	GuiAddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
-	var inventory = [[Sword, Axe, Club], [IronBomb, Dynamite, Boompack, Firestone], [Bow, Musket, Javelin], [Shield, Bread, Sproutberry, CookedMushroom]];
+	var inventory = [[Sword, Axe, Club], [IronBomb, Dynamite, Boompack, Firestone], [Bow, Blunderbuss, Javelin], [Shield, Bread, Sproutberry, CookedMushroom]];
 	var x = ["0%", "50%", "0%", "50%"], y = ["0%", "0%", "50%", "50%"], w = ["50%", "100%", "50%", "100%"], h = ["50%", "50%", "100%", "100%"];
 	for (var i = 0; i < 4; ++i)
 	{
@@ -212,7 +213,7 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 				ID = 1,
 				Target = scenoptions_dummies[0],
 				// this is also a test for updating children by name
-				icon = {Left="50%-4em", Right="50%+4em", Bottom="5em", Top="1em", Symbol=Clonk},
+				icon = {Left="50%-4em", Right="50%+4em", Bottom="5em", Top="1em", Symbol = Clonk},
 				textwindow =
 				{
 					Top = "6em",
@@ -459,4 +460,39 @@ func OnHPBarClose()
 	RemoveEffect("FoolAroundWithHPBar");
 	HP_bar_menu = nil;
 	Log("HP bar off!");
+}
+
+/* ------------------- mixed grid menu test ---------------*/
+func StartMixedGridTest()
+{
+	GuiClose(active_menu);
+	
+	var menu = 
+	{
+		toptext = {Bottom = "2em", Text="GUI_TightGridLayout", Style = GUI_TextHCenter},
+		top = {Top = "2em", Bottom = "50%", Margin = "0.5em", Style = GUI_TightGridLayout, Decoration = GUI_MenuDeco},
+		bottomtext = {Top = "50%", Bottom = "50% + 2em", Text="GUI_GridLayout", Style = GUI_TextHCenter}, 
+		bottom = {Top = "50% + 2em", Margin = "0.5em", Style = GUI_GridLayout, Decoration = GUI_MenuDeco},
+		BackgroundColor = RGBa(0, 0, 0, 128),
+	};
+	GuiAddCloseButton(menu, Scenario, "CloseCurrentMenu");
+	
+	var seed = 1;
+	for (var i = 0; i < 50; ++i)
+	{
+		seed = ((seed * 17) + 7) % 1357;
+		var w = (seed % 4) + 1;
+		seed = ((seed * 23) + 13)% 1357;
+		var h = (seed % 4) + 1;
+		var item = 
+		{
+			Right = Format("%dem", w),
+			Bottom = Format("%dem", h),
+			Priority = i + 1,
+			BackgroundColor = HSL(seed % 255, 200, 200)
+		};
+		GuiAddSubwindow(item, menu.top);
+		GuiAddSubwindow(item, menu.bottom);
+	}
+	active_menu = GuiOpen(menu);
 }

@@ -1,0 +1,3 @@
+Post1=Left: Clunker valley|Right over the lake: Wipf Town
+Post2=Left: Clunker valley|Right over the lake: Wipf Town
+

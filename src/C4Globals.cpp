@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,19 +16,20 @@
 
 /* Global interdependent objects */
 
-#include <C4Include.h>
-#include "C4Application.h"
-#include "C4Aul.h"
-#include "C4Console.h"
-#include <C4DefList.h>
-#include "C4FullScreen.h"
-#include "C4GraphicsSystem.h"
-#include "C4Game.h"
-#include "C4GameObjects.h"
-#include "C4MouseControl.h"
-#include "C4Network2.h"
-#include "C4PropList.h"
-#include "C4StringTable.h"
+#include "C4Include.h"
+#include "game/C4Application.h"
+#include "script/C4Aul.h"
+#include "editor/C4Console.h"
+#include "object/C4DefList.h"
+#include "game/C4FullScreen.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Game.h"
+#include "object/C4GameObjects.h"
+#include "c4group/C4LangStringTable.h"
+#include "gui/C4MouseControl.h"
+#include "network/C4Network2.h"
+#include "script/C4PropList.h"
+#include "script/C4StringTable.h"
 
 #ifdef _DEBUG
 C4Set<C4PropList *> C4PropList::PropLists;
@@ -37,6 +38,7 @@ C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
 C4Set<C4PropListScript *> C4PropListScript::PropLists;
 std::vector<C4PropListNumbered *> C4PropListNumbered::ShelvedPropLists;
 int32_t C4PropListNumbered::EnumerationIndex = 0;
+C4LangStringTable C4LangStringTable::system_string_table;
 C4StringTable  Strings;
 C4AulScriptEngine ScriptEngine;
 C4Application  Application;

@@ -11,12 +11,12 @@
 
 #include Library_Rope
 
-static const Ladder_MaxParticles = 15;
-static const Ladder_Iterations = 10;
-static const Ladder_Precision = 100;
-static const Ladder_SegmentLength = 5;
-static const Ropeladder_Segment_LeftXOffset = 200;
-static const Ropeladder_Segment_RightXOffset = -100;
+local Ladder_MaxParticles = 15;
+local Ladder_Iterations = 10;
+local Ladder_Precision = 100;
+local Ladder_SegmentLength = 5;
+local Ropeladder_Segment_LeftXOffset = 200;
+local Ropeladder_Segment_RightXOffset = -100;
 
 local MaxSegmentCount;
 
@@ -53,7 +53,7 @@ public func ControlUse(object clonk, int x, int y)
 			Unroll(-1, COMD_Left);
 		}
 	}
-	else if(clonk->GetAction() == "Hangle")
+	else if (clonk->GetAction() == "Hangle")
 	{
 		Exit(0, 0);
 		Unroll(dir, COMD_Up);
@@ -318,7 +318,7 @@ public func UpdateLines()
 		var start = GetRopeConnectPosition(i, 0, 0, angle, oldangle);
 		var end   = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
 
-		var diff = Vec_Sub(end,start);
+		var diff = Vec_Sub(end, start);
 		var diffangle = Vec_Angle(diff, [0, 0]);
 		var point = Vec_Add(start, Vec_Div(diff, 2));
 		var length = Vec_Length(diff) * 125 / Ladder_Precision;
@@ -329,7 +329,7 @@ public func UpdateLines()
 		var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
 		var end   = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
 		
-		var diff = Vec_Sub(end,start);
+		var diff = Vec_Sub(end, start);
 		var diffangle = Vec_Angle(diff, [0, 0]);
 		var point = Vec_Add(start, Vec_Div(diff, 2));
 		var length = Vec_Length(diff) * 1000 / Ladder_Precision / 8;
@@ -351,55 +351,55 @@ public func GetRopeConnectPosition(int index, bool right, bool end, int angle, i
 		right = !right;
 	if (!end)
 	{
-		var start = [0, 0];
+		var ladder_start = [0, 0];
 		if (!right)
 		{
 			if (index >= 2)
 			{
-				start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
-				start[0] += -Cos(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
-				start[1] += -Sin(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+				ladder_start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
+				ladder_start[0] += -Cos(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+				ladder_start[1] += -Sin(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
 			}
 			else
 			{
-				start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
-				start[0] += -Cos(GetR(), 188) + Sin(GetR(), 113);
-				start[1] += -Sin(GetR(), 188) - Cos(GetR(), 113);
+				ladder_start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
+				ladder_start[0] += -Cos(GetR(), 188) + Sin(GetR(), 113);
+				ladder_start[1] += -Sin(GetR(), 188) - Cos(GetR(), 113);
 			}
 		}
 		else
 		{
 			if (index >= 2)
 			{
-				start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
-				start[0] += -Cos(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
-				start[1] += -Sin(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+				ladder_start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
+				ladder_start[0] += -Cos(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+				ladder_start[1] += -Sin(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
 			}
 			else
 			{
-				start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
-				start[0] += Cos(GetR(), 188) + Sin(GetR(), 113);
-				start[1] += Sin(GetR(), 188) - Cos(GetR(), 113);
+				ladder_start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
+				ladder_start[0] += Cos(GetR(), 188) + Sin(GetR(), 113);
+				ladder_start[1] += Sin(GetR(), 188) - Cos(GetR(), 113);
 			}
 		}
-		return start;
+		return ladder_start;
 	}
 	else
 	{
-		var end = [0, 0];
+		var ladder_end = [0, 0];
 		if (!right)
 		{
-			end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
-			end[0] += -Cos(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
-			end[1] += -Sin(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+			ladder_end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
+			ladder_end[0] += -Cos(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+			ladder_end[1] += -Sin(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
 		}
 		else
 		{
-			end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
-			end[0] += -Cos(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
-			end[1] += -Sin(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+			ladder_end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
+			ladder_end[0] += -Cos(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+			ladder_end[1] += -Sin(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
 		}
-		return end;
+		return ladder_end;
 	}
 }
 
@@ -436,12 +436,12 @@ public func OnLadderClimb(object clonk, int index)
 	if (index > 2 && index < lib_rope_particle_count - 3)
 	{
 		lib_rope_particles[index-2].x -= dir * Ladder_Precision / 5;
-		lib_rope_particles[index+2].x += dir * Ladder_Precision / 5;
+		lib_rope_particles[index + 2].x += dir * Ladder_Precision / 5;
 	}
-	else if(index > 2 && index < lib_rope_particle_count - 2)
+	else if (index > 2 && index < lib_rope_particle_count - 2)
 	{
 		lib_rope_particles[index-2].x -= dir * Ladder_Precision / 5;
-		lib_rope_particles[index+1].x += dir * Ladder_Precision / 5;
+		lib_rope_particles[index + 1].x += dir * Ladder_Precision / 5;
 	}
 	return;
 }
@@ -501,3 +501,4 @@ local ActMap = {
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
+local Components = {Wood = 2/*, Rope = 1*/};

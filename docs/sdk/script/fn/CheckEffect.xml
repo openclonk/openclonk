@@ -6,7 +6,7 @@
   <func>
     <title>CheckEffect</title>
     <category>Effects</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -63,7 +63,7 @@
     <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>
-      <funclink>AddEffect</funclink>
+      <funclink>CreateEffect</funclink>
       <funclink>GetEffectCount</funclink>
       <funclink>EffectCall</funclink>
       <funclink>GetEffect</funclink>

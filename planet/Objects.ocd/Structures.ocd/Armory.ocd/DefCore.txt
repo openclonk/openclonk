@@ -1,16 +1,15 @@
 [DefCore]
 id=Armory
-Version=6,0
+Version=8,0
 Category=C4D_Structure
 Width=95
 Height=52
 Offset=-47,-26
 Vertices=8
-VertexX=-1,20,30,43,20,0,-20,-43
-VertexY=-13,-15,-14,24,24,24,24,24
+VertexX=  0,-30, 30,43,20, 0,-20,-43
+VertexY=-15,-13,-13,24,24,24, 24, 24
 VertexFriction=50,50,50,100,100,100,100,100
 Mass=4500
-Components=Wood=3;Metal=2;Loam=2
 Exclusive=1
 Construction=1
 IncompleteActivity=1

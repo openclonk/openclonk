@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,26 +17,26 @@
 // a wrapper class to DirectDraw surfaces
 
 #include "C4Include.h"
-#include <CSurface8.h>
+#include "graphics/CSurface8.h"
 
-#include <Bitmap256.h>
-#include <CStdFile.h>
-#include <StdColors.h>
+#include "graphics/Bitmap256.h"
+#include "c4group/CStdFile.h"
+#include "lib/StdColors.h"
 
 CSurface8::CSurface8()
 {
 	Wdt=Hgt=Pitch=0;
 	ClipX=ClipY=ClipX2=ClipY2=0;
-	Bits=NULL;
-	pPal=NULL;
+	Bits=nullptr;
+	pPal=nullptr;
 }
 
 CSurface8::CSurface8(int iWdt, int iHgt)
 {
 	Wdt=Hgt=Pitch=0;
 	ClipX=ClipY=ClipX2=ClipY2=0;
-	Bits=NULL;
-	pPal=NULL;
+	Bits=nullptr;
+	pPal=nullptr;
 	Create(iWdt, iHgt);
 }
 
@@ -48,10 +48,10 @@ CSurface8::~CSurface8()
 void CSurface8::Clear()
 {
 	// clear bitmap-copy
-	delete [] Bits; Bits=NULL;
+	delete [] Bits; Bits=nullptr;
 	// clear pal
 	delete pPal;
-	pPal=NULL;
+	pPal=nullptr;
 }
 
 void CSurface8::Box(int iX, int iY, int iX2, int iY2, int iCol)
@@ -192,7 +192,7 @@ void CSurface8::MapBytes(BYTE *bpMap)
 	for (int cnt=0; cnt<Wdt*Hgt; cnt++) SetPix(cnt%Wdt, cnt/Wdt, bpMap[GetPix(cnt%Wdt, cnt/Wdt)]);
 }
 
-void CSurface8::GetSurfaceSize(int &irX, int &irY)
+void CSurface8::GetSurfaceSize(int &irX, int &irY) const
 {
 	// simply assign stored values
 	irX=Wdt;
@@ -250,6 +250,6 @@ void CSurface8::SetBuffer(BYTE *pbyToBuf, int Wdt, int Hgt, int Pitch)
 
 void CSurface8::ReleaseBuffer()
 {
-	this->Bits = NULL;
+	this->Bits = nullptr;
 	Clear();
 }

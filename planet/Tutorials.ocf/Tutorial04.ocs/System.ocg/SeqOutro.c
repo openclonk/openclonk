@@ -19,6 +19,7 @@ public func Outro_Init(int for_plr)
 	this.pilot1->Enter(this.airplane1);
 	this.pilot1->SetAction("Walk");
 	this.pilot1->SetColor(0xff000000);
+	this.airplane1->PlaneMount(this.pilot1);
 	this.airplane1->FaceRight();
 	this.airplane1->StartInstantFlight(90, 15);
 	this.airplane1->SetXDir(12);
@@ -32,6 +33,7 @@ public func Outro_Init(int for_plr)
 	this.pilot2->Enter(this.airplane2);
 	this.pilot2->SetAction("Walk");
 	this.pilot2->SetColor(0xff000000);
+	this.airplane2->PlaneMount(this.pilot2);
 	this.airplane2->FaceRight();
 	this.airplane2->StartInstantFlight(90, 15);
 	this.airplane2->SetXDir(12);
@@ -45,13 +47,13 @@ public func Outro_Init(int for_plr)
 	this.henchman1->Enter(this.airplane1);
 	this.henchman1->SetAction("Walk");
 	this.henchman1->SetColor(0xff000000);
-	this.henchman1->CreateContents(Musket)->CreateContents(LeadShot);
+	this.henchman1->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
 	this.henchman2 = CreateObject(Clonk);
 	this.henchman2->SetAlternativeSkin("Leather");
 	this.henchman2->Enter(this.airplane2);
 	this.henchman2->SetAction("Walk");
 	this.henchman2->SetColor(0xff000000);
-	this.henchman2->CreateContents(Musket)->CreateContents(LeadShot);
+	this.henchman2->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
 	
 	// Another henchman which will control the lookout.
 	this.henchman3 = CreateObject(Clonk);
@@ -59,7 +61,7 @@ public func Outro_Init(int for_plr)
 	this.henchman3->Enter(this.airplane2);
 	this.henchman3->SetAction("Walk");
 	this.henchman3->SetColor(0xff000000);
-	this.henchman3->CreateContents(Musket)->CreateContents(LeadShot);
+	this.henchman3->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
 	
 	// The faction leader which will do the talking.
 	this.leader = CreateObject(Clonk);
@@ -68,7 +70,7 @@ public func Outro_Init(int for_plr)
 	this.leader->Enter(this.airplane1);
 	this.leader->SetAction("Walk");
 	this.leader->SetColor(0xff000000);
-	this.leader->CreateContents(Musket)->CreateContents(LeadShot);
+	this.leader->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
 	
 	// There is also a kidnapper on an airship with a lorry to collect the wipfs.
 	// The third henchman shoots down the balloons.
@@ -133,10 +135,10 @@ public func Outro_4()
 	balloon->ControlUseStart(this.henchman2);
 	this.henchman2->GetActionTarget()->ControlDown(this.henchman2);
 	// Let henchmen aim at the farmer.
-	AddEffect("AimMusketAt", this.henchman1, 100, 1, this, nil, this.farmer, 356);
-	AddEffect("AimMusketAt", this.henchman2, 100, 1, this, nil, this.farmer, 356);
+	AddEffect("AimBlunderbussAt", this.henchman1, 100, 1, this, nil, this.farmer, 356);
+	AddEffect("AimBlunderbussAt", this.henchman2, 100, 1, this, nil, this.farmer, 356);
 	// Let leader aim at the village head.
-	AddEffect("AimMusketAt", this.leader, 100, 1, this, nil, this.village_head);
+	AddEffect("AimBlunderbussAt", this.leader, 100, 1, this, nil, this.village_head);
 	return ScheduleNext(78);
 }
 
@@ -154,7 +156,7 @@ public func Outro_5()
 public func Outro_6()
 {
 	// Third henchman aims at lookout
-	AddEffect("AimMusketAt", this.henchman3, 100, 1, this, nil, this.lookout, 280);
+	AddEffect("AimBlunderbussAt", this.henchman3, 100, 1, this, nil, this.lookout, 280);
 	return ScheduleNext(100);
 }
 
@@ -172,7 +174,7 @@ public func Outro_8()
 public func Outro_9()
 {
 	// Third henchman tells lookout to drop the weapon.
-	this.henchman3->Message("$MsgHenchman3DropMusket$");
+	this.henchman3->Message("$MsgHenchman3DropBlunderbuss$");
 	return ScheduleNext(18);
 }
 
@@ -285,7 +287,7 @@ public func Outro_19()
 	ScheduleCall(this.henchman1, "RemoveObject", 120, 0);
 	ScheduleCall(boompack, "RemoveObject", 120, 0);
 	
-	RemoveEffect("AimMusketAt", this.leader);
+	RemoveEffect("AimBlunderbussAt", this.leader);
 	return ScheduleNext(36);
 }
 
@@ -315,7 +317,7 @@ public func Outro_22()
 
 public func Outro_Stop()
 {
-	// Fulfill the wormhole destruction goal.
+	// Fulfill the tutorial goal.
 	var goal = FindObject(Find_ID(Goal_Tutorial));
 	if (goal)
 		goal->Fulfill();
@@ -325,31 +327,31 @@ public func Outro_Stop()
 
 /*-- Effects --*/
 
-public func FxAimMusketAtStart(object target, proplist effect, int temp, object aim, int length)
+public func FxAimBlunderbussAtStart(object target, proplist effect, int temp, object aim, int length)
 {
 	if (temp)
 		return FX_OK;
 	effect.aim_target = aim;
 	effect.aim_length = length;
-	effect.musket = FindObject(Find_ID(Musket), Find_Container(target));
-	effect.musket.loaded = true;
-	effect.musket->ControlUseStart(target, effect.aim_target->GetX() - target->GetX(), effect.aim_target->GetY() - target->GetY());
+	effect.blunderbuss = FindObject(Find_ID(Blunderbuss), Find_Container(target));
+	effect.blunderbuss.loaded = true;
+	effect.blunderbuss->ControlUseStart(target, effect.aim_target->GetX() - target->GetX(), effect.aim_target->GetY() - target->GetY());
 	return FX_OK;
 }
 
-public func FxAimMusketAtTimer(object target, proplist effect, int time)
+public func FxAimBlunderbussAtTimer(object target, proplist effect, int time)
 {
-	effect.musket->ControlUseHolding(target, effect.aim_target->GetX() - target->GetX(), effect.aim_target->GetY() - target->GetY());
+	effect.blunderbuss->ControlUseHolding(target, effect.aim_target->GetX() - target->GetX(), effect.aim_target->GetY() - target->GetY());
 	if (effect.aim_length != nil && time >= effect.aim_length)
 		return FX_Execute_Kill;	
 	return FX_OK;
 }
 
-public func FxAimMusketAtStop(object target, proplist effect, int reason, bool temp)
+public func FxAimBlunderbussAtStop(object target, proplist effect, int reason, bool temp)
 {
 	if (temp)
 		return FX_OK;
-	effect.musket->ControlUseCancel(target, effect.aim_target->GetX() - target->GetX(), effect.aim_target->GetY() - target->GetY());
+	effect.blunderbuss->ControlUseCancel(target, effect.aim_target->GetX() - target->GetX(), effect.aim_target->GetY() - target->GetY());
 	return FX_OK;
 }
 
@@ -419,14 +421,16 @@ public func FxMoveAirshipToWipfTimer(object target, proplist effect, int time)
 	if (Abs(this.airship->GetX() - right_wipf->GetX()) < 8)
 	{
 		this.airship->ControlStop(this.kidnapper);
-		// Shoot musket.
+		// Shoot blunderbuss.
 		if (!right_wipf.shot)
 		{
-			var musket = FindObject(Find_ID(Musket), Find_Container(this.henchman3));
-			musket.loaded = true;
-			musket->ControlUseStart(target, right_wipf->GetX() - this.henchman3->GetX(), right_wipf->GetY() - this.henchman3->GetY() - 24);
-			musket->ControlUseHolding(target, right_wipf->GetX() - this.henchman3->GetX(), right_wipf->GetY() - this.henchman3->GetY() - 24);
-			musket->ControlUseStop(target, right_wipf->GetX() - this.henchman3->GetX(), right_wipf->GetY() - this.henchman3->GetY() - 24);
+			var blunderbuss = FindObject(Find_ID(Blunderbuss), Find_Container(this.henchman3));
+			blunderbuss.BulletsPerShot = 1;
+			blunderbuss.BulletSpread = 0;
+			blunderbuss.loaded = true;
+			blunderbuss->ControlUseStart(target, right_wipf->GetX() - this.henchman3->GetX(), right_wipf->GetY() - this.henchman3->GetY() - 24);
+			blunderbuss->ControlUseHolding(target, right_wipf->GetX() - this.henchman3->GetX(), right_wipf->GetY() - this.henchman3->GetY() - 24);
+			blunderbuss->ControlUseStop(target, right_wipf->GetX() - this.henchman3->GetX(), right_wipf->GetY() - this.henchman3->GetY() - 24);
 			right_wipf.shot = true;
 		}
 		return FX_OK;

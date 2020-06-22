@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,7 @@
 #ifndef INC_CSTDFILE
 #define INC_CSTDFILE
 
-#include <stdio.h>
-#include <StdSync.h> // for StdThreadCheck
+#include "platform/StdSync.h" // for StdThreadCheck
 #include <zlib.h> // for gzFile
 
 const int CStdFileBufSize = 4096;
@@ -32,15 +31,15 @@ public:
 	virtual bool Read(void *pBuffer, size_t iSize) = 0;
 	virtual bool Advance(int iOffset) = 0;
 	// Get size. compatible with c4group!
-	virtual size_t AccessedEntrySize() = 0;
-	virtual ~CStdStream() {}
+	virtual size_t AccessedEntrySize() const = 0;
+	virtual ~CStdStream() = default;
 };
 
 class CStdFile: public CStdStream
 {
 public:
 	CStdFile();
-	~CStdFile();
+	~CStdFile() override;
 	bool Status;
 	char Name[_MAX_PATH+1];
 protected:
@@ -56,20 +55,20 @@ public:
 	bool Create(const char *szFileName, bool fCompressed=false, bool fExecutable=false, bool fMemory=false);
 	bool Open(const char *szFileName, bool fCompressed=false);
 	bool Append(const char *szFilename, bool text=false); // append (uncompressed only)
-	bool Close(StdBuf **ppMemory = NULL);
+	bool Close(StdBuf **ppMemory = nullptr);
 	bool Default();
-	bool Read(void *pBuffer, size_t iSize) { return Read(pBuffer, iSize, 0); }
+	bool Read(void *pBuffer, size_t iSize) override { return Read(pBuffer, iSize, nullptr); }
 	bool Read(void *pBuffer, size_t iSize, size_t *ipFSize);
 	bool Write(const void *pBuffer, int iSize);
 	bool WriteString(const char *szStr);
 	bool Rewind();
-	bool Advance(int iOffset);
+	bool Advance(int iOffset) override;
 	int Seek(long int offset, int whence); // seek in file by offset and stdio-style SEEK_* constants. Only implemented for uncompressed files.
 	long int Tell(); // get current file pos. Only implemented for uncompressed files.
 	bool IsOpen() const { return hFile || hgzFile; }
 	// flush contents to disk
 	inline bool Flush() { if (ModeWrite && BufferLoad) return SaveBuffer(); else return true; }
-	size_t AccessedEntrySize();
+	size_t AccessedEntrySize() const override;
 protected:
 	void ClearBuffer();
 	int LoadBuffer();

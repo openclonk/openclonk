@@ -1,16 +1,15 @@
 [DefCore]
 id=ChemicalLab
-Version=6,0
+Version=8,0
 Category=C4D_Structure
 Width=50
 Height=52
 Offset=-25,-26
 Vertices=7
-VertexX=-1,10,20,23,10,-10,-23
-VertexY=-17,-25,-14,25,25,25,25
+VertexX=  0,-20, 20,23,10,-10,-23
+VertexY=-20,-14,-14,25,25, 25, 25
 VertexFriction=50,50,50,100,100,100,100
 Mass=4500
-Components=Wood=3;Metal=2
 Exclusive=1
 Construction=1
 IncompleteActivity=1

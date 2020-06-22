@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,24 +15,22 @@
  */
 // network statistics and information dialogs
 
-#include <C4Include.h>
-#include <C4Network2Stats.h>
+#include "C4Include.h"
+#include "network/C4Network2Stats.h"
 
-#include <C4Game.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4Network2.h>
-#include <C4GameControl.h>
+#include "control/C4GameControl.h"
+#include "network/C4Network2.h"
+#include "object/C4GameObjects.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 C4Graph::C4Graph()
-		: szTitle(LoadResStr("IDS_NET_GRAPH")), dwColor(0x7fff0000)
+		: szTitle(LoadResStr("IDS_NET_GRAPH")) 
 {
 }
 
 C4TableGraph::C4TableGraph(int iBackLogLength, int iStartTime)
-		: iBackLogLength(iBackLogLength), pValues(NULL), fMultiplier(1), pAveragedValues(NULL), iBackLogPos(0), fWrapped(false)
-		, iInitialStartTime(iStartTime), iTime(iStartTime), iAveragedTime(iStartTime), iAvgRange(1)
+		: iBackLogLength(iBackLogLength), iInitialStartTime(iStartTime), iTime(iStartTime), iAveragedTime(iStartTime)
 {
 	// create value buffer
 	assert(iBackLogLength);
@@ -263,37 +261,37 @@ C4Graph::ValueType C4GraphCollection::GetMaxValue() const
 int C4GraphCollection::GetSeriesCount() const
 {
 	int iCount = 0;
-	for (const_iterator i = begin(); i != end(); ++i) iCount += (*i)->GetSeriesCount();
+	for (auto i : *this) iCount += i->GetSeriesCount();
 	return iCount;
 }
 
 const C4Graph *C4GraphCollection::GetSeries(int iIndex) const
 {
-	for (const_iterator i = begin(); i != end(); ++i)
+	for (auto i : *this)
 	{
-		int iCnt = (*i)->GetSeriesCount();
-		if (iIndex < iCnt) return (*i)->GetSeries(iIndex);
+		int iCnt = i->GetSeriesCount();
+		if (iIndex < iCnt) return i->GetSeries(iIndex);
 		iIndex -= iCnt;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void C4GraphCollection::Update() const
 {
 	// update all child graphs
-	for (const_iterator i = begin(); i != end(); ++i) (*i)->Update();
+	for (auto i : *this) i->Update();
 }
 
 void C4GraphCollection::SetAverageTime(int iToTime)
 {
 	if ((iCommonAvgTime = iToTime))
-		for (iterator i = begin(); i != end(); ++i) (*i)->SetAverageTime(iToTime);
+		for (auto & i : *this) i->SetAverageTime(iToTime);
 }
 
 void C4GraphCollection::SetMultiplier(ValueType fToVal)
 {
 	if ((fMultiplier = fToVal))
-		for (iterator i = begin(); i != end(); ++i) (*i)->SetMultiplier(fToVal);
+		for (auto & i : *this) i->SetMultiplier(fToVal);
 }
 
 
@@ -318,14 +316,14 @@ C4Network2Stats::C4Network2Stats()
 	statActions.SetTitle(LoadResStr("IDS_NET_APM"));
 	statActions.SetAverageTime(100);
 	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->CreateGraphs();
-	C4Network2Client *pClient = NULL;
+	C4Network2Client *pClient = nullptr;
 	while ((pClient = ::Network.Clients.GetNextClient(pClient))) pClient->CreateGraphs();
 }
 
 C4Network2Stats::~C4Network2Stats()
 {
 	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->ClearGraphs();
-	C4Network2Client *pClient = NULL;
+	C4Network2Client *pClient = nullptr;
 	while ((pClient = ::Network.Clients.GetNextClient(pClient))) pClient->ClearGraphs();
 	Application.Remove(this);
 }
@@ -341,7 +339,7 @@ void C4Network2Stats::ExecuteSecond()
 	statNetI.RecordValue(C4Graph::ValueType(::Network.NetIO.getProtIRate(P_TCP) + ::Network.NetIO.getProtIRate(P_UDP)));
 	statNetO.RecordValue(C4Graph::ValueType(::Network.NetIO.getProtORate(P_TCP) + ::Network.NetIO.getProtORate(P_UDP)));
 	// pings for all clients
-	C4Network2Client *pClient = NULL;
+	C4Network2Client *pClient = nullptr;
 	while ((pClient = ::Network.Clients.GetNextClient(pClient))) if (pClient->getStatPing())
 		{
 			int iPing=0;
@@ -385,7 +383,7 @@ C4Graph *C4Network2Stats::GetGraphByName(const StdStrBuf &rszName, bool &rfIsTem
 	if (SEqualNoCase(rszName.getData(), "control")) return &statControls;
 	if (SEqualNoCase(rszName.getData(), "apm")) return &statActions;
 	// no match
-	return NULL;
+	return nullptr;
 }
 
 // MassGraph.SetDumpFile(StdStrBuf("C:\\test.txt"));

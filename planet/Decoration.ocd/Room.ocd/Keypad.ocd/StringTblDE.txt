@@ -1,0 +1,28 @@
+Name=Ziffernblock
+Description=Richtiger Kennzahl eingeben um ein Ereignis aus zu lösen.
+
+MsgEnterCode=Kennzahl eingeben:
+MsgEnterNewCode=Neue Kennzahl:
+MsgConfirmCode=Kennzahl bestätigen:
+MsgNoCode=<c ffff00>Ziffernblock hat kein Kennzahl!</c>
+MsgCorrectCode=<c 00ff00>Richtiger Kennzahl!</c>
+MsgWrongCode=<c ff0000>Falscher Kennzahl!</c>
+MsgCodeReset=<c 00ff00>Kennzahl wurde zurück gesetzt!</c>
+MsgCodeConfirmed=<c 00ff00>Kennzahl bestätigt, jetzt zurücksetzen.</c>
+
+TooltipDigit=Gebe Nummer ein.
+TooltipCheck=Kontrolliere die eingebene Kennzahl.
+TooltipClose=Schließe das Ziffernblock.
+TooltipClearLast=Entferne die letzte Nummer.
+TooltipClearCode=Eingegebene Kennzahl löschen.
+TooltipResetCode=Die Kennzahl des Ziffernblocks zurücksetzen.
+
+KeypadCode=Kennzahl
+OnCorrectCodeAction=Aktion 'richtige Kennzahl'
+OnWrongCodeAction=Aktion 'falsche Kennzahl'
+HelpKeypadCode=Gib den Kennzahl ein der vom Spieler eingetippt werden muss (darf nur Zahlen enthalten).
+HelpKeypadTarget=Tür die geöffnet wird wenn den richtigen Kennzahl eingegeben wird.
+HelpOnCorrectCodeAction=Aktion die ausgeführt wird wenn die richtige Kennzahl eingegeben wird.
+HelpOnWrongCodeAction=Aktion die ausgeführt wird wenn eine falsche Kennzahl eingegeben wird.
+WarningKeypadCodeNonDigit=WARNUNG: Kennzahl vom Ziffernblock (%s) enthält Charaktere die nicht Zahlen sind, Kennzahl wird nicht gesetzt.
+WarningKeypadCodeLong=WARNUNG: Kennzahl vom Ziffernblock ist zu lang, nur %s wird gesetzt.

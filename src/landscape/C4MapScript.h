@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,12 +20,14 @@
 #ifndef INC_C4MapScript
 #define INC_C4MapScript
 
-#include <C4ComponentHost.h>
-#include <C4Aul.h>
-#include <C4ScriptHost.h>
-#include <C4Rect.h>
-#include <CSurface8.h>
-#include <C4Landscape.h>
+#include "c4group/C4ComponentHost.h"
+#include "graphics/CSurface8.h"
+#include "landscape/C4Landscape.h"
+#include "lib/C4Rect.h"
+#include "script/C4Aul.h"
+#include "script/C4ScriptHost.h"
+
+bool FnParTexCol(C4String *mattex, uint8_t& fg, uint8_t& bg);
 
 // mattex masks: Array of bools for each possible material-texture index
 class C4MapScriptMatTexMask
@@ -57,7 +59,7 @@ protected:
 	bool GetXYProps(const C4PropList *props, C4PropertyName k, int32_t *out_xy, bool zero_defaults);
 public:
 	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const = 0;
-	virtual ~C4MapScriptAlgo() {}
+	virtual ~C4MapScriptAlgo() = default;
 };
 
 // List of possible algorithms. Also registered as script constants in void C4MapScriptHost::InitFunctionMap.
@@ -70,9 +72,10 @@ enum C4MapScriptAlgoType
 	MAPALGO_RndChecker = 10,
 
 	MAPALGO_Rect       = 20,
-	MAPALGO_Ellipsis   = 21,
+	MAPALGO_Ellipsis   = 21, // This is "MAPALGO_Ellipse", but misspelled. Use will result in a warning.
 	MAPALGO_Polygon    = 22,
 	MAPALGO_Lines      = 23,
+	MAPALGO_Ellipse    = 24,
 
 	MAPALGO_And        = 30,
 	MAPALGO_Or         = 31,
@@ -96,7 +99,7 @@ public:
 	C4MapScriptAlgoLayer(const C4MapScriptLayer *layer) : layer(layer) {}
 	C4MapScriptAlgoLayer(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_RndChecker: checkerboard on which areas are randomly set or unset
@@ -107,7 +110,7 @@ class C4MapScriptAlgoRndChecker : public C4MapScriptAlgo
 public:
 	C4MapScriptAlgoRndChecker(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Rect: 1 for pixels contained in rect, 0 otherwise
@@ -117,18 +120,18 @@ class C4MapScriptAlgoRect : public C4MapScriptAlgo
 public:
 	C4MapScriptAlgoRect(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
-// MAPALGO_Ellipsis: 1 for pixels within ellipsis, 0 otherwise
-class C4MapScriptAlgoEllipsis : public C4MapScriptAlgo
+// MAPALGO_Ellipse: 1 for pixels within ellipse, 0 otherwise
+class C4MapScriptAlgoEllipse : public C4MapScriptAlgo
 {
 	int32_t cx,cy;
 	int32_t wdt,hgt;
 public:
-	C4MapScriptAlgoEllipsis(const C4PropList *props);
+	C4MapScriptAlgoEllipse(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Polygon: 1 for pixels within polygon or on border, 0 otherwise
@@ -142,7 +145,7 @@ class C4MapScriptAlgoPolygon : public C4MapScriptAlgo
 public:
 	C4MapScriptAlgoPolygon(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Lines: 1 for pixels on stripes in direction ("X","Y"). Stripe distance "Distance". Optional offset "OffX", "OffY"
@@ -153,7 +156,7 @@ class C4MapScriptAlgoLines : public C4MapScriptAlgo
 public:
 	C4MapScriptAlgoLines(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // base class for algo that takes one or more operands
@@ -163,7 +166,7 @@ protected:
 	std::vector<C4MapScriptAlgo *> operands;
 public:
 	C4MapScriptAlgoModifier(const C4PropList *props, int32_t min_ops=0, int32_t max_ops=0);
-	virtual ~C4MapScriptAlgoModifier() { Clear(); }
+	~C4MapScriptAlgoModifier() override { Clear(); }
 	void Clear();
 };
 
@@ -173,7 +176,7 @@ class C4MapScriptAlgoAnd : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoAnd(const C4PropList *props) : C4MapScriptAlgoModifier(props) { }
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Or: First nonzero operand
@@ -182,7 +185,7 @@ class C4MapScriptAlgoOr : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoOr(const C4PropList *props) : C4MapScriptAlgoModifier(props) { }
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Not: 1 if operand is 0, 0 otherwise.
@@ -191,7 +194,7 @@ class C4MapScriptAlgoNot : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoNot(const C4PropList *props) : C4MapScriptAlgoModifier(props,1,1) { }
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Xor: If exactly one of the two operands is nonzero, return it. Otherwise, return zero.
@@ -200,7 +203,7 @@ class C4MapScriptAlgoXor : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoXor(const C4PropList *props) : C4MapScriptAlgoModifier(props,2,2) { }
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Offset: Base layer shifted by ox,oy
@@ -210,7 +213,7 @@ class C4MapScriptAlgoOffset : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoOffset(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Scale: Base layer scaled by sx,sy percent from fixed point cx,cy
@@ -220,7 +223,7 @@ class C4MapScriptAlgoScale : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoScale(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Rotate: Base layer rotated by angle r around point ox,oy
@@ -231,7 +234,7 @@ class C4MapScriptAlgoRotate : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoRotate(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Turbulence: move by a random offset iterations times
@@ -241,7 +244,7 @@ class C4MapScriptAlgoTurbulence : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoTurbulence(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Border: Border of operand layer
@@ -252,7 +255,7 @@ class C4MapScriptAlgoBorder : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoBorder(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // MAPALGO_Filter: Original color of operand if it's marked to go through filter. 0 otherwise.
@@ -262,30 +265,46 @@ class C4MapScriptAlgoFilter : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoFilter(const C4PropList *props);
 
-	virtual bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
+};
+
+class C4MapScriptAlgoSetMaterial : public C4MapScriptAlgo {
+	C4MapScriptAlgo *inner;
+	uint8_t fg, bg;
+public:
+	C4MapScriptAlgoSetMaterial(C4MapScriptAlgo *inner, int fg, int bg);
+	~C4MapScriptAlgoSetMaterial() override;
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
 // layer of a script-controlled map
 // C4M_MaxTexIndex can be used to mark Sky
 class C4MapScriptLayer : public C4PropListNumbered
 {
-	CSurface8 *fg_surface;
-	CSurface8 *bg_surface;
-	bool surface_owned;
+	std::unique_ptr<CSurface8> fg_surface;
+	std::unique_ptr<CSurface8> bg_surface;
 protected:
 	class C4MapScriptMap *map;
 
 public:
 	C4MapScriptLayer(C4PropList *prototype, C4MapScriptMap *map);
-	virtual ~C4MapScriptLayer() { ClearSurface(); }
-	virtual C4MapScriptLayer * GetMapScriptLayer() { return this; }
+	~C4MapScriptLayer() override { ClearSurface(); }
+	C4MapScriptLayer * GetMapScriptLayer() override { return this; }
 	class C4MapScriptMap *GetMap() { return map; }
 
 	// Surface management
 	bool CreateSurface(int32_t wdt, int32_t hgt);
 	void ClearSurface();
-	void ReleaseSurface(CSurface8*& fg, CSurface8*& bg) { surface_owned=false; fg = fg_surface; bg = bg_surface; } // return surface and mark it as not owned by self
-	void SetSurface(CSurface8 *fg, CSurface8* bg) { ClearSurface(); fg_surface=fg; bg_surface=bg; UpdateSurfaceSize(); }
+	void SetSurfaces(std::unique_ptr<CSurface8> fg, std::unique_ptr<CSurface8> bg)
+	{
+		fg_surface = std::move(fg);
+		bg_surface = std::move(bg);
+		UpdateSurfaceSize();
+	}
+	std::pair<std::unique_ptr<CSurface8>, std::unique_ptr<CSurface8>> ReleaseSurfaces()
+	{
+		return std::make_pair(std::move(fg_surface), std::move(bg_surface));
+	}
 	bool HasSurface() const { return fg_surface && fg_surface->Bits && bg_surface && bg_surface->Bits; }
 
 	// Size management
@@ -315,10 +334,10 @@ class C4MapScriptMap : public C4MapScriptLayer
 {
 	std::list<C4MapScriptLayer *> layers;
 public:
-	C4MapScriptMap(C4PropList *prototype) : C4MapScriptLayer(prototype, NULL) { map=this; }
-	~C4MapScriptMap() { Clear(); }
+	C4MapScriptMap(C4PropList *prototype) : C4MapScriptLayer(prototype, nullptr) { map=this; }
+	~C4MapScriptMap() override { Clear(); }
 	void Clear();
-	virtual C4MapScriptMap * GetMapScriptMap() { return this; }
+	C4MapScriptMap * GetMapScriptMap() override { return this; }
 
 	C4MapScriptLayer *CreateLayer(int32_t wdt, int32_t hgt);
 };
@@ -328,23 +347,23 @@ public:
 class C4MapScriptHost : public C4ScriptHost
 {
 private:
-	C4PropListStaticMember *LayerPrototype, *MapPrototype;
+	C4PropListStaticMember *LayerPrototype{nullptr}, *MapPrototype{nullptr};
 
 	C4MapScriptMap *CreateMap();
 public:
 	C4MapScriptHost();
-	~C4MapScriptHost();
+	~C4MapScriptHost() override;
 	void InitFunctionMap(C4AulScriptEngine *pEngine);
-	virtual void AddEngineFunctions();
-	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
-	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
+	void AddEngineFunctions() override;
+	bool Load(C4Group &, const char *, const char *, C4LangStringTable *) override;
+	bool LoadData(const char *, const char *, C4LangStringTable *) override;
 	void Clear();
-	virtual C4PropListStatic * GetPropList();
-	bool InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTexMap, C4MaterialMap *pMatMap, uint32_t iPlayerCount, CSurface8 **pmap_fg_surface, CSurface8** pmap_bg_surface);
+	C4PropListStatic * GetPropList() override;
+	bool InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTexMap, C4MaterialMap *pMatMap, uint32_t iPlayerCount, std::unique_ptr<CSurface8> *pmap_fg_surface, std::unique_ptr<CSurface8>* pmap_bg_surface);
 	C4PropListStatic *GetLayerPrototype() { return LayerPrototype; }
 
-	C4TextureMap* pTexMap;
-	C4MaterialMap* pMatMap;
+	C4TextureMap* pTexMap{nullptr};
+	C4MaterialMap* pMatMap{nullptr};
 };
 
 extern C4MapScriptHost MapScript;

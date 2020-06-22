@@ -1,18 +1,41 @@
 Name=Pumpe
-Description=Die Pumpe kann beliebige Fl�ssigkeiten von A nach B pumpen. Pumpt sie Fl�ssigkeiten abw�rts, erzeugt sie dabei sogar ein wenig Strom.
+Description=Die Pumpe kann beliebige Flüssigkeiten von A nach B pumpen. Pumpt sie Flüssigkeiten abwärts, erzeugt sie dabei sogar ein wenig Strom.
 MsgTurnOff=Pumpe abschalten
 MsgTurnOn=Pumpe anschalten
 MsgCutSource=Zufluss trennen
 MsgCutDrain=Abfluss trennen
-DescTurnOff=Schaltet die Pumpe ab, so dass keine Fl�ssigkeiten mehr transportiert werden.
-DescTurnOn=Aktiviert das Pumpen wieder. Daf�r muss mindestens ein Zufluss angeschlossen sein.
+DescTurnOff=Schaltet die Pumpe ab, so dass keine Flüssigkeiten mehr transportiert werden.
+DescTurnOn=Aktiviert das Pumpen wieder. Dafür muss mindestens ein Zufluss angeschlossen sein.
 DescCutSource=Entfernt das Zuflussrohr. Die Pumpe kann dann nicht mehr pumpen.
 DescCutDrain=Entfernt das Abflussrohr. Es wird dann direkt zur Pumpe gepumpt.
+MsgConnectSource=Zufluss anschließen
+MsgConnectDrain=Abfluss anschließen
+DescConnectSource=Schließt ein Zuflussrohr an die Pumpe an. Die Pumpe bezieht dann Flüssigkeiten von diesem Rohr.
+DescConnectDrain=Schließt ein Abflussrohr an die Pumpe an. Die Pumpe pumpt dann in dieses Rohr.
 Control=Pumpensteuerung
 
-StateOk=Die Pumpe l�uft.
+StateOk=Die Pumpe läuft.
 StateNoSource=Es ist kein Zufluss angeschlossen.
-StateNoInput=Es gibt keine Fl�ssigkeiten zu pumpen.
+StateNoInput=Es gibt keine Flüssigkeiten zu pumpen.
 StateNoOutput=Der Abfluss ist verstopft.
 StateNoPower=Die Pumpe hat keinen Strom.
+StateNoAir=Der Luftzufluss ist verstopft.
+StateNoAirNeed=Es gibt keinen Luftbedarf.
 StateTurnedOff=Die Pumpe wurde ausgeschaltet.
+
+MsgSourcePipeProhibited=Zuflussrohre können nicht an die Pumpe angeschlossen werden.
+MsgDrainPipeProhibited=Abflussrohre können nicht an die Pumpe angeschlossen werden.
+MsgAirPipeProhibited=Die Pumpe hat bereits ein Abflussrohr, es ist kein Platz für ein Luftrohr.
+MsgCreatedSource=Zuflussrohr angeschlossen.
+MsgCreatedDrain=Abflussrohr angeschlossen.
+MsgCreatedAirDrain=Luftrohr angeschlossen.
+MsgHasPipes=Die Pumpe hat schon ein Zu- und Abflussrohr.
+
+PumpMaterials=Pumpe Materialien
+MsgEnableMaterial=Schalte das Pumpen von Material %s ein.
+MsgDisableMaterial=Schalte das Pumpen von Material %s aus.
+
+MsgCutAirPipe=Luftrohr trennen
+MsgConnectAirPipe=Luftrohr anschließen
+DescCutAirPipe=Entfernt das Luftrohr.
+DescConnectAirPipe=Schließt ein Luftrohr an.

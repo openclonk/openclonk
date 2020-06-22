@@ -1,3 +1,3 @@
  Defense
 
-In defense scenarios, one or more players must defend cooperatively against increasing waves on attackers. Enemies give bounty and weapons and utilities can be upgraded.
+In defense scenarios, one or more players must defend cooperatively against increasing waves of attackers. Enemies give bounty and weapons and utilities can be upgraded.

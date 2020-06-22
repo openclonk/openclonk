@@ -18,3 +18,16 @@ material Lorry
 		}
 	}
 }
+material Lorry_Damaged
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture lorryDamaged.jpg
+			}
+		}
+	}
+}

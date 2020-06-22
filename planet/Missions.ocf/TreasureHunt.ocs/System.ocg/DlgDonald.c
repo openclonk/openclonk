@@ -2,8 +2,6 @@
 
 /* Donald dialogue */
 
-static g_golden_shovel;
-
 func Dlg_Donald_1(object clonk)
 {
 	if (g_golden_shovel)

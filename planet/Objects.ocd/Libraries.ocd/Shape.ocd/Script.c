@@ -10,15 +10,27 @@
 
 local BaseShape;
 
+// Returns the area in squared pixels covered by the shape. Works for all specific shapes by using their functionality.
+public func GetArea()
+{
+	var check_rect = this->GetBoundingRectangle();
+	var area = 0;
+	for (var x = check_rect.x; x < check_rect.x + check_rect.wdt; x++)
+		for (var y = check_rect.y; y < check_rect.y + check_rect.hgt; y++)
+			if (this->IsPointContained(x, y))
+				area++;
+	return area;
+}
+
 /* Rectangle shape */
 
-local BaseRectangle; // properties x,y,w,h
+local BaseRectangle; // properties x, y, w, h
 
 // Point contained in rectangle?
 private func BaseRectangle_IsPointContained(int x, int y)
 {
-	//return ((x-this.x+this.w)/this.w) * ((y-this.y+this.h)/this.h) == 1 && x>=this.x;
-	return x>=this.x && y>=this.y && x<this.x+this.w && y<this.y+this.h;
+	//return ((x-this.x + this.wdt)/this.wdt) * ((y-this.y + this.hgt)/this.hgt) == 1 && x>=this.x;
+	return x>=this.x && y>=this.y && x<this.x + this.wdt && y<this.y + this.hgt;
 }
 
 // bounding rectangle is just self
@@ -27,24 +39,39 @@ private func BaseRectangle_GetBoundingRectangle() { return this; }
 private func BaseRectangle_Find_In(context)
 {
 	if (!context) context = Global;
-	return context->Find_InRect(this.x, this.y, this.w, this.h);
+	return context->Find_InRect(this.x, this.y, this.wdt, this.hgt);
 }
 
 private func BaseRectangle_Find_At(context)
 {
 	if (!context) context = Global;
-	return context->Find_AtRect(this.x, this.y, this.w, this.h);
+	return context->Find_AtRect(this.x, this.y, this.wdt, this.hgt);
 }
 
 private func BaseRectangle_GetRandomPoint(proplist result)
 {
-	if (this.w<=0 || this.h <=0) return false;
-	result.x = this.x + Random(this.w);
-	result.y = this.y + Random(this.h);
+	if (this.wdt<=0 || this.hgt <=0) return false;
+	result.x = this.x + Random(this.wdt);
+	result.y = this.y + Random(this.hgt);
 	return true;
 }
 
-/** Constructor of rectangle area. (x,y) is included; (x+w,y+h) is excluded.
+private func BaseRectangle_GetArea()
+{
+	return this.wdt * this.hgt;
+}
+
+private func BaseRectangle_ToString()
+{
+	return Format("Shape->Rectangle(%d, %d, %d, %d)", this.x, this.y, this.wdt, this.hgt);
+}
+
+private func BaseRectangle_IsFullMap()
+{
+	return !this.x && !this.y && this.wdt == LandscapeWidth() && this.hgt == LandscapeHeight();
+}
+
+/** Constructor of rectangle area. (x, y) is included; (x + w, y + h) is excluded.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
  @par w Rectangle width
@@ -53,27 +80,27 @@ private func BaseRectangle_GetRandomPoint(proplist result)
 */
 public func Rectangle(int x, int y, int w, int h)
 {
-	return new BaseRectangle { x=x, y=y, w=w, h=h };
+	return new BaseRectangle { x = x, y = y, wdt = w, hgt = h };
 }
 
 
 /* Circle shape */
 
-local BaseCircle; // properties cx,cy,xr,yr
+local BaseCircle; // properties cx, cy, r
 
-// point contained in rectangle?
+// point contained in circle?
 private func BaseCircle_IsPointContained(int x, int y)
 {
-	x-=this.cx; y-=this.cy;
-	var r=this.r;
+	x -= this.cx; y -= this.cy;
+	var r = this.r;
 	return x*x + y*y <= r*r;
 }
 
 // bounding rectangle
 private func BaseCircle_GetBoundingRectangle()
 {
-	var r=this.r;
-	return new Shape.BaseRectangle { x=this.cx-r, y=this.cy-r, w=r*2+1, h=r*2+1 };
+	var r = this.r;
+	return new Shape.BaseRectangle { x = this.cx-r, y = this.cy-r, wdt = r*2 + 1, hgt = r*2 + 1 };
 }
 
 private func BaseCircle_GetRandomPoint(proplist result)
@@ -81,13 +108,24 @@ private func BaseCircle_GetRandomPoint(proplist result)
 	// Make sure radius circles are weighed equally
 	var r2 = this.r * this.r + 1;
 	if (r2>0x7fff) // for large numbers, the random function doesn't work
-		r2 = Random(0x8000) + Random(r2/0x8000+1) * 0x8000;
+		r2 = Random(0x8000) + Random(r2/0x8000 + 1) * 0x8000;
 	else
 		r2 = Random(r2);
 	var r = Sqrt(r2), a = Random(360);
 	result.x = this.cx + Sin(a, r);
 	result.y = this.cy + Cos(a, r);
 	return true;
+}
+
+public func BaseCircle_GetArea()
+{
+	// Is aleady covered by general method, but this direct calculation for a simple circle is faster.
+	var area = 0;
+	for (var x = 0; x <= this.r; x++)
+		for (var y = 1; y <= this.r; y++)
+			if (x*x + y*y <= this.r*this.r)
+				area++;
+	return 4 * area + 1;
 }
 
 /** Constructor of circular area.
@@ -98,7 +136,7 @@ private func BaseCircle_GetRandomPoint(proplist result)
 */
 public func Circle(int cx, int cy, int r)
 {
-	return new BaseCircle { cx=cx, cy=cy, r=r };
+	return new BaseCircle { cx = cx, cy = cy, r = r };
 }
 
 
@@ -118,32 +156,35 @@ private func BaseIntersection_IsPointContained(int x, int y)
 private func BaseIntersection_GetBoundingRectangle()
 {
 	// Bounding rectangle of intersection
-	var result, rt;
+	var result;
 	for (var area in this.areas)
-		if (rt = area->GetBoundingRectangle())
+	{
+		var rt = area->GetBoundingRectangle();
+		if (rt)
 		{
 			// first bounds determine area
 			if (!result)
 			{
-				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, w = rt.w, h = rt.h};
+				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, wdt = rt.wdt, hgt = rt.hgt};
 			}
 			else
 			{
 				// following bounds reduce area
-				if (rt.x + rt.w < result.x + result.w) result.w = Max(rt.x + rt.w - result.x);
-				if (rt.y + rt.h < result.y + result.h) result.h = Max(rt.y + rt.h - result.y);
+				if (rt.x + rt.wdt < result.x + result.wdt) result.wdt = Max(rt.x + rt.wdt - result.x);
+				if (rt.y + rt.hgt < result.y + result.hgt) result.hgt = Max(rt.y + rt.hgt - result.y);
 				if (rt.x > result.x)
 				{
-					result.w = Max(result.w - rt.x + result.x);
+					result.wdt = Max(result.wdt - rt.x + result.x);
 					result.x = rt.x;
 				}
 				if (rt.y > result.y)
 				{
-					result.h = Max(result.h - rt.y + result.y);
+					result.hgt = Max(result.hgt - rt.y + result.y);
 					result.y = rt.y;
 				}
 			}
 		}
+	}
 	return result;
 }
 
@@ -182,7 +223,7 @@ public func Intersect(proplist c1, proplist c2, ...)
 	// Intersection of one area?
 	if (!c2) return c1;
 	// Otherwise, built array
-	var areas = [c1, c2], i=1, area;
+	var areas = [c1, c2], i = 1, area;
 	while (area = Par(++i)) areas[i] = area;
 	return new BaseIntersection { areas = areas };
 }
@@ -204,32 +245,35 @@ private func BaseCombination_IsPointContained(int x, int y)
 private func BaseCombination_GetBoundingRectangle()
 {
 	// Bounding rectangle of combination
-	var result, rt;
+	var result;
 	for (var area in this.areas)
-		if (rt = area->GetBoundingRectangle())
+	{
+		var rt =  area->GetBoundingRectangle();
+		if (rt)
 		{
 			// first bounds determine area
 			if (!result)
 			{
-				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, w = rt.w, h = rt.h};
+				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, wdt = rt.wdt, hgt = rt.hgt};
 			}
 			else
 			{
 				// following bounds enlarge area
-				if (rt.x + rt.w > result.x + result.w) result.w = rt.x + rt.w - result.x;
-				if (rt.y + rt.h > result.y + result.h) result.h = rt.y + rt.h - result.y;
+				if (rt.x + rt.wdt > result.x + result.wdt) result.wdt = rt.x + rt.wdt - result.x;
+				if (rt.y + rt.hgt > result.y + result.hgt) result.hgt = rt.y + rt.hgt - result.y;
 				if (rt.x < result.x)
 				{
-					result.w += result.x - rt.x;
+					result.wdt += result.x - rt.x;
 					result.x = rt.x;
 				}
 				if (rt.y < result.y)
 				{
-					result.h += result.y - rt.y;
+					result.hgt += result.y - rt.y;
 					result.y = rt.y;
 				}
 			}
 		}
+	}
 	return result;
 }
 
@@ -251,7 +295,7 @@ public func Combine(proplist c1, proplist c2, ...)
 	// Combination of one area?
 	if (!c2) return c1;
 	// Otherwise, built array
-	var areas = [c1, c2], i=1, area;
+	var areas = [c1, c2], i = 1, area;
 	while (area = Par(++i)) areas[i] = area;
 	return new BaseCombination { areas = areas };
 }
@@ -305,20 +349,28 @@ public func Subtract(proplist in, proplist ex)
 public func Definition(def)
 {
 	// Initialize function pointers in shape classes
-	BaseShape = {};
+	BaseShape =
+	{
+		GetArea = Shape.GetArea
+	};
 	BaseRectangle = new BaseShape
 	{
+		Type = "rect",
 		IsPointContained = Shape.BaseRectangle_IsPointContained,
 		GetBoundingRectangle = Shape.BaseRectangle_GetBoundingRectangle,
 		GetRandomPoint = Shape.BaseRectangle_GetRandomPoint,
+		GetArea = Shape.BaseRectangle_GetArea,
 		Find_In = Shape.BaseRectangle_Find_In,
 		Find_At = Shape.BaseRectangle_Find_At,
+		ToString = Shape.BaseRectangle_ToString,
+		IsFullMap = Shape.BaseRectangle_IsFullMap
 	};
 	BaseCircle = new BaseShape
 	{
 		IsPointContained = Shape.BaseCircle_IsPointContained,
 		GetBoundingRectangle = Shape.BaseCircle_GetBoundingRectangle,
 		GetRandomPoint = Shape.BaseCircle_GetRandomPoint,
+		GetArea = Shape.BaseCircle_GetArea
 	};
 	BaseIntersection = new BaseShape
 	{
@@ -356,7 +408,7 @@ public func LandscapeRectangle()
 }
 
 
-/** Constructor of rectangle area. (x,y) is included; (x+w,y+h) is excluded. Automatically flips rectangles of negative size in any dimension.
+/** Constructor of rectangle area. (x, y) is included; (x + w, y + h) is excluded. Automatically flips rectangles of negative size in any dimension.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
  @par w Rectangle width
@@ -366,15 +418,15 @@ public func LandscapeRectangle()
 global func Rectangle(int x2, int y2, int w2, int h2)
 {
 	// normalize
-	if(w2 < 0)
+	if (w2 < 0)
 	{
 		x2 += w2;
 		w2 = -w2;
 	}
-	if(h2 < 0)
+	if (h2 < 0)
 	{
 		y2 += h2;
 		h2 = - h2;
 	}
-	return new Shape.BaseRectangle {x = x2, y = y2, w = w2, h = h2};
+	return new Shape.BaseRectangle {x = x2, y = y2, wdt = w2, hgt = h2};
 }

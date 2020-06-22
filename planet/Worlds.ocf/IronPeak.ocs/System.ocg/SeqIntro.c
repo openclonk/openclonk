@@ -13,6 +13,7 @@ public func Intro_Init()
 	this.pilot->SetAction("Walk");
 	this.pilot->SetDir(DIR_Right);
 	this.pilot->SetColor(0xffcc11aa);
+	this.airplane->PlaneMount(this.pilot);
 	this.airplane->FaceRight();
 	this.airplane->StartInstantFlight(60, 15);
 	this.airplane->SetXDir(12);
@@ -97,7 +98,7 @@ public func Intro_5()
 	
 	if (HasLandingSpace(all_balloons[0]->GetX(), all_balloons[0]->GetY()))
 		for (var balloon in all_balloons)
-			balloon->ControlJump();
+			balloon->Deflate();
 	else
 		for (var balloon in all_balloons)
 			balloon->ControlRight();

@@ -1,8 +1,9 @@
 #appendto Basement
 #appendto WoodenBridge
+#appendto ElevatorCase
 
 protected func Initialize()
 {
-	_inherited();
+	_inherited(...);
 	SetHalfVehicleSolidMask(true);
 }

@@ -7,7 +7,7 @@
     <title>C4D_Vehicle</title>
     <category>Objects</category>
     <subcat>Category</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int </rtype></syntax>
     <desc>Unused Object category.</desc>
     <related>

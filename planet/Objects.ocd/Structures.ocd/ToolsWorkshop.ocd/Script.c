@@ -15,6 +15,8 @@ public func Construction(object creator)
 	return _inherited(creator, ...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 public func Initialize()
 {
 	hold_production = false;
@@ -28,7 +30,7 @@ public func IsProduct(id product_id)
 	return product_id->~IsToolProduct();
 }
 
-private func ProductionTime(id toProduce) { return 150; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 150; }
 public func PowerNeed() { return 40; }
 
 public func OnProductionStart(id product)
@@ -60,7 +62,7 @@ public func OnProductionFinish(id product)
 
 protected func FxWorkingTimer()
 {
-	if(!hold_production)
+	if (!hold_production)
 		Smoking();
 	return 1;
 }
@@ -89,15 +91,18 @@ local ActMap = {
 		FlipDir = 1,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		NextAction = "Default",
 	},
 };
 func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000, 0, 7000),Trans_Rotate(-20, 1, 0, 0),Trans_Rotate(30, 0, 1, 0)), def);
+	return _inherited(def, ...);
 }
 local Name = "$Name$";
 local Description ="$Description$";
 local ContainBlast = true;
 local BlastIncinerate = 100;
+local FireproofContainer = true;
 local HitPoints = 70;
+local Components = {Wood = 3, Metal = 2};

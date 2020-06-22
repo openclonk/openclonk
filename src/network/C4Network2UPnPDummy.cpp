@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2012-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2012-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,7 +17,7 @@
 #include "C4Include.h"
 #include "network/C4Network2UPnP.h"
 
-C4Network2UPnP::C4Network2UPnP() {}
-C4Network2UPnP::~C4Network2UPnP() {}
+C4Network2UPnP::C4Network2UPnP() = default;
+C4Network2UPnP::~C4Network2UPnP() = default;
 void C4Network2UPnP::AddMapping(C4Network2IOProtocol, uint16_t, uint16_t) {}
 void C4Network2UPnP::ClearMappings() {}

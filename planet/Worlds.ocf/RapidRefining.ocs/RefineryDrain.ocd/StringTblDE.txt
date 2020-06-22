@@ -1,0 +1,9 @@
+Name=Raffineriezufluss
+Description=Verbinde das Abflussrohr einer Pumpe mit diesem Gebäude, um Öl zur Raffinerie zu pumpen. Mehrere Rohre können an den Raffineriezufluss angeschlossen werden.
+
+MsgOilOverview=Ölübersicht
+MsgOilPumped=Ölmenge: %d {{Oil}}.
+MsgOilDescription=Bis jetzt wurden %d {{Oil}} zur Raffinerie gepumpt.
+
+MsgConnectedPipe=Rohr angeschlossen.
+MsgPipeProhibited=Zuflussrohre können nicht an den Raffinerie angeschlossen werden.

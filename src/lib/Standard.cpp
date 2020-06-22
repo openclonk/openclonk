@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,6 +18,7 @@
 /* All kinds of valuable helpers */
 
 #include "C4Include.h"
+#include "lib/Standard.h"
 
 //------------------------------------- Basics ----------------------------------------
 
@@ -32,13 +33,35 @@ int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2)
 	return dist;
 }
 
-int Angle(int iX1, int iY1, int iX2, int iY2)
+// Angle between points (iX1, iY1) and (iX2, iY2) with range [0, 360), angle = 0 means vertically upward and increasing angles in clockwise direction.
+int32_t Angle(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iPrec)
 {
-	int iAngle = (int) ( 180.0 * atan2( float(Abs(iY1-iY2)), float(Abs(iX1-iX2)) ) / M_PI );
-	if (iX2>iX1 )
-		{ if (iY2<iY1) iAngle = 90-iAngle; else iAngle = 90+iAngle; }
+	int32_t iAngle;
+	int32_t dx = iX2 - iX1, dy = iY2 - iY1;
+	if (!dx)
+	{
+		if (dy > 0) return 180 * iPrec;
+		else return 0;
+	}
+	if (!dy)
+	{
+		if (dx > 0) return 90 * iPrec;
+		else return 270 * iPrec;
+	}
+
+	iAngle = static_cast<int32_t>(180.0 * iPrec * atan2(static_cast<double>(Abs(dy)), static_cast<double>(Abs(dx))) / M_PI);
+
+	if (iX2 > iX1)
+	{
+		if (iY2 < iY1) iAngle = (90 * iPrec) - iAngle;
+		else iAngle = (90 * iPrec) + iAngle;
+	}
 	else
-		{ if (iY2<iY1) iAngle = 270+iAngle; else iAngle = 270-iAngle; }
+	{
+		if (iY2 < iY1) iAngle = (270 * iPrec) + iAngle;
+		else iAngle = (270 * iPrec) - iAngle;
+	}
+	
 	return iAngle;
 }
 
@@ -94,8 +117,9 @@ static int ToNumber(char c)
 
 //------------------------------- Strings ------------------------------------------------
 
-int32_t StrToI32(const char *s, int base, const char **scan_end)
+int32_t StrToI32(const char *str, int base, const char **scan_end)
 {
+	const char *s = str;
 	int sign = 1;
 	int32_t result = 0;
 	if (*s == '-')
@@ -107,6 +131,12 @@ int32_t StrToI32(const char *s, int base, const char **scan_end)
 	{
 		s++;
 	}
+	if (!*s)
+	{
+		// Abort if there are no digits to parse
+		if (scan_end) *scan_end = str;
+		return 0;
+	}
 	while (IsNumber(*s,base))
 	{
 		int value = ToNumber(*s++);
@@ -114,7 +144,7 @@ int32_t StrToI32(const char *s, int base, const char **scan_end)
 		result *= base;
 		result += value;
 	}
-	if (scan_end != 0L) *scan_end = s;
+	if (scan_end != nullptr) *scan_end = s;
 	result *= sign;
 	return result;
 }
@@ -122,7 +152,9 @@ int32_t StrToI32(const char *s, int base, const char **scan_end)
 void SCopy(const char *szSource, char *sTarget, size_t iMaxL)
 {
 	if (szSource == sTarget) return;
-	if (!sTarget) return; *sTarget=0; if (!szSource) return;
+	if (!sTarget) return;
+	*sTarget=0;
+	if (!szSource) return;
 	while (*szSource && (iMaxL>0))
 		{ *sTarget=*szSource; iMaxL--; szSource++; sTarget++; }
 	*sTarget=0;
@@ -131,14 +163,18 @@ void SCopy(const char *szSource, char *sTarget, size_t iMaxL)
 void SCopy(const char *szSource, char *sTarget)
 {
 	if (szSource == sTarget) return;
-		if (!sTarget) return; *sTarget=0; if (!szSource) return;
-		strcpy(sTarget,szSource);
+	if (!sTarget) return;
+	*sTarget=0;
+	if (!szSource) return;
+	strcpy(sTarget,szSource);
 }
 
 void SCopyUntil(const char *szSource, char *sTarget, char cUntil, int iMaxL, int iIndex)
 {
 	if (szSource == sTarget) return;
-	if (!sTarget) return; *sTarget=0; if (!szSource) return;
+	if (!sTarget) return;
+	*sTarget=0;
+	if (!szSource) return;
 	while ( *szSource && ((*szSource!=cUntil) || (iIndex>0)) && (iMaxL!=0) )
 		{ *sTarget=*szSource; if (*szSource==cUntil) iIndex--; szSource++; sTarget++; iMaxL--; }
 	*sTarget=0;
@@ -334,7 +370,7 @@ const char *SSearch(const char *szString, const char *szIndex)
 {
 	const char *cscr;
 	size_t indexlen,match=0;
-	if (!szString || !szIndex) return NULL;
+	if (!szString || !szIndex) return nullptr;
 	indexlen=SLen(szIndex);
 	for (cscr=szString; cscr && *cscr; cscr++)
 	{
@@ -342,14 +378,14 @@ const char *SSearch(const char *szString, const char *szIndex)
 		else match=0;
 		if (match>=indexlen) return cscr+1;
 	}
-	return NULL;
+	return nullptr;
 }
 
 const char *SSearchNoCase(const char *szString, const char *szIndex)
 {
 	const char *cscr;
 	size_t indexlen,match=0;
-	if (!szString || !szIndex) return NULL;
+	if (!szString || !szIndex) return nullptr;
 	indexlen=SLen(szIndex);
 	for (cscr=szString; cscr && *cscr; cscr++)
 	{
@@ -357,14 +393,14 @@ const char *SSearchNoCase(const char *szString, const char *szIndex)
 		else match=0;
 		if (match>=indexlen) return cscr+1;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void SWordWrap(char *szText, char cSpace, char cSepa, int iMaxLine)
 {
 	if (!szText) return;
 	// Scan string
-	char *cPos,*cpLastSpace=NULL;
+	char *cPos,*cpLastSpace=nullptr;
 	int iLineRun=0;
 	for (cPos=szText; *cPos; cPos++)
 	{
@@ -383,25 +419,25 @@ void SWordWrap(char *szText, char cSpace, char cSepa, int iMaxLine)
 
 const char *SAdvanceSpace(const char *szSPos)
 {
-	if (!szSPos) return NULL;
+	if (!szSPos) return nullptr;
 	while (IsWhiteSpace(*szSPos)) szSPos++;
 	return szSPos;
 }
 
 const char *SRewindSpace(const char *szSPos, const char *pBegin)
 {
-	if (!szSPos || !pBegin) return NULL;
+	if (!szSPos || !pBegin) return nullptr;
 	while (IsWhiteSpace(*szSPos))
 	{
 		szSPos--;
-		if (szSPos<pBegin) return NULL;
+		if (szSPos<pBegin) return nullptr;
 	}
 	return szSPos;
 }
 
 const char *SAdvancePast(const char *szSPos, char cPast)
 {
-	if (!szSPos) return NULL;
+	if (!szSPos) return nullptr;
 	while (*szSPos)
 	{
 		if (*szSPos==cPast) { szSPos++; break; }
@@ -529,7 +565,7 @@ bool SAddModule(char *szList, const char *szModule, bool fCaseSensitive)
 	// Safety / no empties
 	if (!szList || !szModule || !szModule[0]) return false;
 	// Already a module?
-	if (SIsModule(szList,szModule,NULL,fCaseSensitive)) return false;
+	if (SIsModule(szList,szModule,nullptr,fCaseSensitive)) return false;
 	// New segment, add string
 	SNewSegment(szList);
 	SAppend(szModule,szList);
@@ -602,7 +638,7 @@ bool SWildcardMatchEx(const char *szString, const char *szWildcard)
 	if (!szString || !szWildcard) return false;
 	// match char-wise
 	const char *pWild = szWildcard, *pPos = szString;
-	const char *pLWild = NULL, *pLPos = NULL; // backtracking
+	const char *pLWild = nullptr, *pLPos = nullptr; // backtracking
 	while (*pWild || pLWild)
 		// string wildcard?
 		if (*pWild == '*')
@@ -622,22 +658,6 @@ bool SWildcardMatchEx(const char *szString, const char *szWildcard)
 	// match complete if both strings are fully matched
 	return !*pWild && !*pPos;
 }
-
-/* Some part of the Winapi */
-
-#ifdef NEED_FALLBACK_ATOMIC_FUNCS
-static CStdCSec SomeMutex;
-long InterlockedIncrement(long * var)
-{
-	CStdLock Lock(&SomeMutex);
-	return ++(*var);
-}
-long InterlockedDecrement(long * var)
-{
-	CStdLock Lock(&SomeMutex);
-	return --(*var);
-}
-#endif
 
 // UTF-8 conformance checking
 namespace
@@ -797,4 +817,29 @@ int GetCharacterCount(const char * s)
 		else assert(false);
 	}
 	return l;
+}
+
+std::string vstrprintf(const char *format, va_list args)
+{
+	va_list argcopy;
+	va_copy(argcopy, args);
+	int size = vsnprintf(nullptr, 0, format, argcopy);
+	if (size < 0)
+		throw std::invalid_argument("invalid argument to strprintf");
+	va_end(argcopy);
+	std::string s;
+	s.resize(size + 1);
+	size = vsnprintf(&s[0], s.size(), format, args);
+	assert(size >= 0);
+	s.resize(size);
+	return s;
+}
+
+std::string strprintf(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	std::string s = vstrprintf(format, args);
+	va_end(args);
+	return s;
 }

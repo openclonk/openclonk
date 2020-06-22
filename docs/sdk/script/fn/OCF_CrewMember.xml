@@ -7,7 +7,7 @@
     <title>OCF_CrewMember</title>
     <category>Objects</category>
     <subcat>OCF</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Object character flag: the object can be made a crew member or already is a crew member, meaning the corresponding DefCore flag is set and the object is alive.</desc>
     <remark>
@@ -18,7 +18,6 @@
         <li>Will use modified jumping (also short jumps) even if the PathFinder value in DefCore is not set.</li>
         <li>Can be attacked via the Attack command.</li>
         <li>Failed commands will produce failure messages and xFailed calls in the command target.</li>
-        <li>Will automatically add Acquire commands if a BUILD action requires material. BuildNeedsMaterial calls are not made.</li>
         <li>Right mouse clicks will show Context* script functions as menu entries if the controller is the owner.</li>
         <li>The object name is displayed if seen by another allied player and enabled in the options.</li>
         <li>The object can not be sold.</li>

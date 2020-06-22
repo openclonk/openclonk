@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,7 +18,7 @@
 #ifndef INC_C4MainMenu
 #define INC_C4MainMenu
 
-#include "C4Menu.h"
+#include "gui/C4Menu.h"
 
 // Menu identification constants for main menus
 enum
@@ -35,7 +35,7 @@ class C4MainMenu : public C4Menu
 public:
 	C4MainMenu();
 
-	virtual void Default();
+	void Default() override;
 
 protected:
 	int32_t Player;
@@ -58,15 +58,15 @@ public:
 	bool ActivateObserver();
 
 protected:
-	virtual bool MenuCommand(const char *szCommand, bool fIsCloseCommand);
+	bool MenuCommand(const char *szCommand, bool fIsCloseCommand) override;
 
-	virtual bool DoRefillInternal(bool &rfRefilled);
+	bool DoRefillInternal(bool &rfRefilled) override;
 
-	virtual void OnSelectionChanged(int32_t iNewSelection);
-	virtual void OnUserSelectItem(int32_t Player, int32_t iIndex);
-	virtual void OnUserEnter(int32_t Player, int32_t iIndex, bool fRight);
-	virtual void OnUserClose();
-	virtual int32_t GetControllingPlayer() { return Player; }
+	void OnSelectionChanged(int32_t iNewSelection) override;
+	void OnUserSelectItem(int32_t Player, int32_t iIndex) override;
+	void OnUserEnter(int32_t Player, int32_t iIndex, bool fRight) override;
+	void OnUserClose() override;
+	int32_t GetControllingPlayer() override { return Player; }
 
 public:
 	bool ActivateCommand(int32_t iPlayer, const char *szCommand);

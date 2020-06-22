@@ -1,0 +1,6 @@
+[Head]
+Title=DefaultWorld
+
+[Weather]
+Climate=0
+YearSpeed=0

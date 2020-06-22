@@ -14,7 +14,6 @@
 # used by c4script and by the unit tests
 set(C4SCRIPT_SOURCES
 	../include/c4script/c4script.h
-	../src/lib/C4SimpleLog.cpp
 	../src/C4Include.cpp
 	../src/script/C4ScriptStandalone.cpp
     ../src/script/C4ScriptStandaloneStubs.cpp
@@ -23,7 +22,7 @@ set(C4SCRIPT_SOURCES
 # Look for GTest and GMock
 # GMock's source package ships GTest too, so look for it first
 find_path(GMOCK_ROOT
-    NAMES "src/gmock-all.cc" "gmock/gmock-all.cc"
+    NAMES "gmock-all.cc" "src/gmock-all.cc" "gmock/gmock-all.cc"
     PATHS "/usr/src/gmock"
     )
 find_path(GMOCK_INCLUDE_DIR
@@ -103,10 +102,18 @@ endfunction()
 if (GTEST_FOUND AND GMOCK_FOUND)
     enable_testing()
 
+    create_test(StdMeshMath
+        SOURCES
+        "../src/lib/StdMeshMath.cpp"
+        "../src/lib/StdMeshMath.h"
+        "math/StdMeshVectorTest.cpp"
+        "math/StdMeshQuaternionTest.cpp"
+        )
+
     AUX_SOURCE_DIRECTORY("${CMAKE_CURRENT_LIST_DIR}" TESTS_SOURCES)
     add_executable(tests EXCLUDE_FROM_ALL ${TESTS_SOURCES} ${C4SCRIPT_SOURCES})
-	set_property(TARGET "tests" PROPERTY FOLDER "Testing")
-    target_link_libraries(tests gtest libc4script libmisc)
+    set_property(TARGET "tests" PROPERTY FOLDER "Testing")
+    target_link_libraries(tests gtest gmock libmisc libc4script)
     if(UNIX AND NOT APPLE)
 	    target_link_libraries(tests rt)
     endif()
@@ -120,6 +127,11 @@ if (GTEST_FOUND AND GMOCK_FOUND)
 			aul/AulTest.h
 			aul/AulMathTest.cpp
 			aul/AulPredefinedFunctionTest.cpp
+			aul/AulDeathTest.cpp
+			aul/AulDiagnosticsTest.cpp
+			aul/AulSyntaxTest.cpp
+			aul/AulSyntaxTestDetail.h
+			aul/ErrorHandler.h
             ../src/script/C4ScriptStandaloneStubs.cpp
             ../src/script/C4ScriptStandalone.cpp
         LIBRARIES

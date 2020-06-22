@@ -1,0 +1,2 @@
+Name=Chippyflint
+Description=Spawnt Chippies.

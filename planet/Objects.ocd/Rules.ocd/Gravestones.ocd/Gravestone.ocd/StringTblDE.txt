@@ -3,3 +3,5 @@ Description=Da wo clonks ruhen.
 
 Epitaph=Hier liegt
 ReadInscription=Lese Grabinschrift
+Inscription=Grabinschrift
+InscriptionHelp=Legt den Text fest, den der Spieler auf diesem Grabstein lesen kann.

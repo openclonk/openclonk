@@ -7,7 +7,7 @@
     <title>C4D_Background</title>
     <category>Objects</category>
     <subcat>Category</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int </rtype></syntax>
     <desc>Object category: object is drawn behind the landscape. Useful for effects like clouds or celestial bodies.</desc>
     <remark>This category does not work in the old 8 bit graphics system.</remark>

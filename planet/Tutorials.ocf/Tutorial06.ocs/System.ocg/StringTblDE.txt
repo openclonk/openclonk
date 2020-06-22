@@ -1,0 +1,11 @@
+# Dialogue: village head
+DlgVillageHeadGrateful=Ich bin dir dankebar, dass du es geschafft hast, uns hierher, ins Himmelsdorf, zu bringen.
+DlgVillageHeadWhatToDo=Ja, es ist gut, dass uns die Dorfbewohner helfen wollen.
+DlgVillageHeadPower=In der Tat, bitte hilf ihnen, ihre Energieversorgung wiederherzustellen.
+DlgVillageHeadIWill=Natürlich!
+DlgVillageHeadAfterwards=Okay, dann können wir nach getaner Arbeit ein paar Clunker bekommen.
+
+# Sequence: intro
+
+
+# Sequence: outro

@@ -1,4 +1,0 @@
-Name=Basis Neustart
-Name2=Neustart am Flaggenmast
-Description=Du wirst in der nächstliegenden Basis wiederbelebt, wenn ausreichend Clonks und Clunker vorhanden sind.
-Description2=Du wirst am nächstliegenden Flaggenmast wiederbelebt.

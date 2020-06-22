@@ -6,8 +6,18 @@
   <func>
     <title>GetEnergy</title>
     <category>Objects</category>
-    <version>5.1 OC</version>
-    <syntax><rtype>int</rtype></syntax>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>exact</name>
+          <desc>If <code>true</code>, the exact energy value is returned (since 9.0 OC).</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
     <desc>Returns the current energy value of an object. 100% representing the maximum physical value of 100,000</desc>
     <remark>For living beings, \"energy\" stands for health, in buildings it stands for electrical charge.</remark>
     <related>
@@ -15,4 +25,5 @@
     </related>
   </func>
   <author>jwk</author><date>2002-06</date>
+  <author>Marky</author><date>2018-12</date>
 </funcs>

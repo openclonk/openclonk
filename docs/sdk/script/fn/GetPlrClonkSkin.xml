@@ -6,7 +6,7 @@
   <func>
     <title>GetPlrClonkSkin</title>
     <category>Player</category>
-    <version>5.2 OC</version>
+    <version>2.0 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>

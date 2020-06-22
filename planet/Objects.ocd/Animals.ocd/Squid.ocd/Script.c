@@ -7,6 +7,7 @@
 */
 
 #include Library_ForceField
+#include Library_Edible
 
 
 static const SQUID_SWIM_MAX_SPEED = 30;
@@ -71,6 +72,8 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	return f; // return last created fish
 }
 
+public func IsAnimal() { return true; }
+
 public func Construction()
 {
 	current_orientation = [0, -2, 1];
@@ -101,7 +104,7 @@ public func Construction()
 	
 	_inherited(...);
 	
-	// setup of the force fields after the call to inherited()
+	// setup of the force fields after the call to inherited(...)
 	SetDefaultForceFieldMaxDistance(SQUID_VISION_MAX_RANGE);
 	SetDefaultForceFieldTTD(36 * 4);
 	SetMaxEmitterNumber(7);
@@ -136,7 +139,7 @@ public func Death()
 {
 	RemoveTimer(this.UpdateSwim);
 	RemoveTimer(this.Activity);
-	AddTimer(this.Decaying, 500);
+	Decay();
 	this.Collectible = true;
 	this.MeshTransformation = base_transform;
 	
@@ -153,18 +156,6 @@ public func CatchBlow()
 		DoInk();
 	else if (ink_level > 500 && !Random(5))
 		DoInk();
-}
-
-private func Decaying()
-{
-	if (GetCon()<20) RemoveObject(); else DoCon(-5);
-	return true;
-}
-
-public func ControlUse(object clonk, int iX, int iY)
-{
-	clonk->Eat(this);
-	return true;
 }
 
 public func NutritionalValue() { if (!GetAlive()) return 15; else return 0; }
@@ -303,8 +294,8 @@ private func UpdateSwim()
 	
 	// the animation to play depends on the speed of the squid
 	var is_fast = velocity >= SQUID_SWIM_MAX_SPEED/3;
-	if (is_fast && !is_in_idle_animation); // no change needed
-	else if (!is_fast && is_in_idle_animation); // ok, too
+	if (is_fast && !is_in_idle_animation) {} // no change needed
+	else if (!is_fast && is_in_idle_animation) {} // ok, too
 	else
 	{
 		var current_weight = GetAnimationWeight(movement_animation_node);
@@ -423,7 +414,7 @@ private func DoInk()
 	};
 	CreateParticle("SmokeThick", 0, 0, PV_Random(-40, 40), PV_Random(-40, 40), PV_Random(36, 100), particles, 64);
 	// Make squid invisible for some time. Also inverse behavior during invisibility.
-	AddEffect("Invisibility", this, 1, 2, this, 0, particles);
+	AddEffect("Invisibility", this, 1, 2, this, nil, particles);
 	// Drain Clonks' breath a bit faster when in ink.
 	AddEffect("IntInkBlob", nil, 1, 5, nil, GetID(), GetX(), GetY());
 }
@@ -497,7 +488,7 @@ Swim = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	NextAction = "Swim",
 	StartCall = "StartSwim"
 },
@@ -510,7 +501,7 @@ Walk = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Walk",
@@ -526,7 +517,7 @@ Jump = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Jump",
@@ -540,7 +531,7 @@ Dead = {
 	Speed = 10,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Hold",
@@ -553,11 +544,13 @@ local Description = "$Description$";
 local MaxEnergy = 80000;
 local MaxBreath = 360; // 360 =ten seconds
 local Placement = 1;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local BreatheWater = 1;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;
 
-public func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
+public func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(0, -1600, 0), Trans_Rotate(20, 1, 0, 0), Trans_Rotate(70, 0, 1, 0));
 }
 

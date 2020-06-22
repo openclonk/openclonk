@@ -1,2 +1,13 @@
 Name=Luftschiff
 Description=Aerostatisches Reise- und Transportfahrzeug. Warnung: Enthält brennbare Gase. Von Zündquellen fernhalten - nicht rauchen. Vor Beschädigungen schützen. Darf nicht in die Hände von Kindern gelangen.
+None=Keiner
+NoPilotHelp=Das Luftschiff steht ohne Pilot in der Luft.
+ClonkPilotHelp=Ein Clonk steuert das Luftschiff.
+Pilot=Pilot
+PilotHelp=Clonktyp, der das Luftschiff steuert.
+FlySpeed=Fluggeschwindigkeit
+FlySpeedHelp=Wie schnell das Luftschiff fliegen kann.
+Crew=Crew
+CrewHelp=Weitere Clonks auf dem Luftschiff.
+HitPoints=Lebenspunkte
+HitPointsHelp=Ab wie viel Schaden das Luftschiff brennt.

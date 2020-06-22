@@ -1,2 +1,0 @@
-Name=Neu starten
-Description=Diese Spielregel erlaubt dem Spieler nochmal von vorne zu beginnen.

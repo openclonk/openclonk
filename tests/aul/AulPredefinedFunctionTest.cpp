@@ -31,8 +31,8 @@ using ::testing::_;
 TEST_F(AulPredefFunctionTest, Translate)
 {
 	// Expect the engine to warn when it can't find a translation
-	LogMock log;
-	EXPECT_CALL(log, DebugLogF(R"(WARNING: Translate: no translation for string "%s")", _));
+	::testing::NiceMock<LogMock> log;
+	EXPECT_CALL(log, DebugLogF(testing::StrEq(R"(WARNING: Translate: no translation for string "%s")"), _));
 	EXPECT_CALL(log, DebugLog(StartsWith(" by: "))).Times(AnyNumber()); // ignore stack trace
 
 	EXPECT_EQ(C4VString("a"), RunExpr("Translate(\"a\")"));
@@ -139,6 +139,31 @@ TEST_F(AulPredefFunctionTest, Abs)
 	EXPECT_EQ(C4VINT_MIN, RunExpr("Abs(2147483648)"));
 	EXPECT_EQ(C4VINT_MAX, RunExpr("Abs(-2147483647)"));
 	EXPECT_EQ(C4VINT_MAX, RunExpr("Abs(2147483647)"));
+}
+
+TEST_F(AulPredefFunctionTest, CreateEffect)
+{
+	EXPECT_EQ(C4VInt(3), RunScript("local A = { Start=func() { this.Magicnumber = 3; } }; func Main() { return CreateEffect(A, 1).Magicnumber; }"));
+	EXPECT_EQ(C4VInt(3), RunScript("local A = { Construction=func() { this.Magicnumber = 3; } }; func Main() { return CreateEffect(A, 1).Magicnumber; }"));
+}
+
+TEST_F(AulPredefFunctionTest, ParseInt)
+{
+	auto ParseInt = [this](const std::string &value) { return RunExpr("ParseInt(\"" + value + "\")"); };
+	EXPECT_EQ(C4VInt(0), ParseInt("0"));
+	EXPECT_EQ(C4VInt(0), ParseInt("-0"));
+	EXPECT_EQ(C4VInt(0), ParseInt("+0"));
+	EXPECT_EQ(C4VINT_MIN, ParseInt("-2147483648"));
+	EXPECT_EQ(C4VINT_MAX, ParseInt("2147483647"));
+
+	EXPECT_EQ(C4VNull, ParseInt(""));
+	EXPECT_EQ(C4VNull, ParseInt("-"));
+	EXPECT_EQ(C4VNull, ParseInt("+"));
+	EXPECT_EQ(C4VNull, ParseInt("--23"));
+	EXPECT_EQ(C4VNull, ParseInt("-+1234"));
+	EXPECT_EQ(C4VNull, ParseInt("a"));
+	EXPECT_EQ(C4VNull, ParseInt("0a"));
+	EXPECT_EQ(C4VNull, ParseInt("2147483647a"));
 }
 
 TEST_F(AulPredefFunctionTest, Trivial)

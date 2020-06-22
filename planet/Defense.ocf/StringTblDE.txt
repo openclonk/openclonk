@@ -1,1 +1,3 @@
-Completed=Abgeschlossen
+AchievementBasic=Gut verteidigt!
+AchievementTough=Hartnäckige Verteidigung!
+AchievementRockSolid=Felsenfeste Verteidigung!

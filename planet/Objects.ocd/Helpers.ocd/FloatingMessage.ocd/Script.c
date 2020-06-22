@@ -5,7 +5,7 @@
 	setters:
 	SetColor(r, g, b, a)
 	SetMessage(msg)
-	FadeOut(speed, step=1)
+	FadeOut(speed, step = 1)
 		every 'speed' frames the alpha of the message is increased by 'step'
 */
 
@@ -16,7 +16,7 @@ Float = {
 	Procedure = DFA_FLOAT,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 }
 };
 
@@ -30,21 +30,21 @@ local alpha;
 
 func SetMessage(m)
 {
-	msg=m;
+	msg = m;
 	Update();
 }
 
 func FadeOut(int speed, step)
 {
-	if(step==nil)step=1;
-	var e=AddEffect("FadeOut", this, 1, speed, this);
-	e.step=step;
+	if (step == nil)step = 1;
+	var e = AddEffect("FadeOut", this, 1, speed, this);
+	e.step = step;
 }
 
 func FxFadeOutTimer(target, effect)
 {
 	alpha -= effect.step;
-	if(alpha < 5) return RemoveObject();
+	if (alpha < 5) return RemoveObject();
 	Update();
 	return 1;
 }
@@ -52,10 +52,10 @@ func FxFadeOutTimer(target, effect)
 
 func SetColor(int r2, g2, b2, a)
 {
-	r=r2;
-	g=g2;
-	b=b2;
-	if(a != nil) alpha=a;
+	r = r2;
+	g = g2;
+	b = b2;
+	if (a != nil) alpha = a;
 	Update();
 }
 
@@ -70,7 +70,7 @@ public func Initialize()
 	SetAction("Float");
 	SetComDir(COMD_None);
 	SetSpeed(0, -20);
-	alpha=255;
+	alpha = 255;
 	r = 255;
 	g = 255;
 	b = 255;

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -23,12 +23,11 @@
 // class declarations
 class C4AbstractApp;
 class C4Action;
-struct C4AulBCC;
+class C4AulBCC;
 class C4AulDefFunc;
 class C4AulExec;
 class C4AulFunc;
 struct C4AulParSet;
-class C4AulScript;
 struct C4AulScriptContext;
 class C4AulScriptEngine;
 class C4AulScriptFunc;
@@ -81,6 +80,7 @@ class C4MaterialList;
 class C4MaterialMap;
 class C4Menu;
 class C4MenuItem;
+class C4MeshDenumerator;
 class C4MouseControl;
 class C4NameList;
 class C4Network2Client;
@@ -147,12 +147,18 @@ class CStdVectorFont;
 class CSurface8;
 class StdCompiler;
 class StdMesh;
+class StdMeshAnimation;
+class StdMeshAnimationUpdate;
 class StdMeshBone;
 class StdMeshInstance;
+class StdMeshInstanceAnimationNode;
 class StdMeshMaterial;
+class StdMeshMaterialUpdate;
 class StdMeshMatManager;
 class StdMeshMatrix;
 class StdMeshSkeletonLoader;
+class StdMeshUpdate;
+class StdStrBuf;
 
 namespace C4GameLobby
 {

@@ -1,33 +1,71 @@
 /**
 	Chippy
 	Small, lovely creatures.
+	
+	@author Zapper
 */
+
+#include Library_Animal
 
 local Name = "$Name$";
 local Description = "$Description$";
+local animal_reproduction_area_size = 800;
+local animal_reproduction_rate = 200;
+local animal_max_count = 10;
 
 // Remember the attachee to be able to detach again.
 local attach_object, attached_mesh;
 // Remember the energy sucked to frequently spawn offsprings.
 local energy_sucked;
 
-public func Construction()
+private func Place(int amount, proplist rectangle, proplist settings)
+{
+	var max_tries = 4 * amount;
+	var loc_area = nil;
+	if (rectangle) 
+		loc_area = Loc_InArea(rectangle);
+	var chippies = [];
+	var loc_mat = Loc_Material("Acid");
+	if (settings && settings.mat)
+		loc_mat = settings.mat;
+	while ((amount > 0) && (--max_tries > 0))
+	{
+		var spot = FindLocation(loc_mat, Loc_Space(5), loc_area);
+		if (!spot)
+			continue;
+		
+		var chippie = CreateObject(this, spot.x, spot.y, NO_OWNER);
+		if (!chippie) 
+			continue;
+		
+		if (chippie->Stuck())
+		{
+			chippie->RemoveObject();
+			continue;
+		}
+		PushBack(chippies, chippie);
+		--amount;
+	}
+	// Return a list of all created chippies.
+	return chippies;
+}
+
+public func Construction(...)
 {
 	AddEffect("Activity", this, 1, 10, this);
 	SetAction("Walk");
-	if (GetOwner() == NO_OWNER)
-		SetCreatureControlled();
 	energy_sucked = 0;
-	return true;
+	return _inherited(...);
 }
 
 public func Destruction()
 {
 	if (GetAction() == "Clawing")
 		StopClawing();
+	return _inherited(...);
 }
 
-public func Death()
+public func Death(int killed_by)
 {
 	var particles = 
 	{
@@ -68,15 +106,15 @@ private func StopClawing()
 private func FxClawingTimer(target, effect, time)
 {
 	var e = GetActionTarget();
-	if(!e) return SetAction("Jump");
+	if (!e) return SetAction("Jump");
 	
-	if((!e->GetAlive()) || GBackSemiSolid())
+	if ((!e->GetAlive()) || GBackSemiSolid())
 	{
 		SetAction("Jump");
 		return;
 	}
 	
-	if(!Random(3))
+	if (!Random(3))
 	{
 		var damage = GetCon() * 10;
 		e->DoEnergy(-damage, true, FX_Call_EngGetPunched, GetOwner());
@@ -89,7 +127,7 @@ private func FxClawingTimer(target, effect, time)
 		}
 		
 		// Grow and prosper.
-		if (GetCon() < 150 && !Random(10))
+		if (GetCon() < 150 && !Random(5))
 		{
 			DoCon(1);
 			DoEnergy(5);
@@ -100,14 +138,14 @@ private func FxClawingTimer(target, effect, time)
 private func StartJump()
 {
 	RotateGraphics(0, false);
-	if(!GetEffect("DmgShock", this) && !GetEffect("JumpCheck", this))
+	if (!GetEffect("DmgShock", this) && !GetEffect("JumpCheck", this))
 		AddEffect("JumpCheck", this, 1, 4, this);
 }
 
 private func FxJumpCheckTimer(target, effect, time)
 {
-	var e = FindObject(Find_AtPoint(), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()));
-	if(e)
+	var e = FindObject(Find_AtPoint(), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()));
+	if (e)
 	{
 		ClawTo(e);
 		return -1;
@@ -181,25 +219,25 @@ private func Jump()
 
 private func FxActivityTimer(target, effect, time)
 {
-	if((GetAction() == "Jump") || (GetAction() == "Claw"))
+	if ((GetAction() == "Jump") || (GetAction() == "Claw"))
 	{
 		return 1;
 	}
 	
-	if(GetComDir() != COMD_Stop)
-		if(!Random(5)) Jump();
+	if (GetComDir() != COMD_Stop)
+		if (!Random(5)) Jump();
 	
-	if(!GetEffect("DmgShock", this) && !GBackSemiSolid())
+	if (!GetEffect("DmgShock", this) && !GBackSemiSolid())
 	{
-		for(var enemy in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Sort_Distance()))
+		for (var enemy in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()), Sort_Distance()))
 		{
-			if(!PathFree(GetX(), GetY(), enemy->GetX(), enemy->GetY())) continue;
+			if (!PathFree(GetX(), GetY(), enemy->GetX(), enemy->GetY())) continue;
 			
-			if(enemy->GetX() < GetX())
+			if (enemy->GetX() < GetX())
 				SetComDir(COMD_Left);
 			else SetComDir(COMD_Right);
 			
-			if(ObjectDistance(this, enemy) < 20)
+			if (ObjectDistance(this, enemy) < 20)
 			{
 				SetAction("Jump");
 				var a = Angle(GetX(), GetY(), enemy->GetX(), enemy->GetY());
@@ -209,9 +247,9 @@ private func FxActivityTimer(target, effect, time)
 			return 1;
 		}
 
-		if(GetEffect("DoDance", this))
+		if (GetEffect("DoDance", this))
 		{
-			if(GetAction() == "Walk")
+			if (GetAction() == "Walk")
 			{
 				SetComDir(COMD_Stop);
 				Jump();
@@ -219,31 +257,23 @@ private func FxActivityTimer(target, effect, time)
 			}
 		}
 		else
-		if(!Random(20) && !GetEffect("DanceCooldown", this))
+		if (!Random(20) && !GetEffect("DanceCooldown", this))
 		{
 			Sound("Animals::Chippie::Talk*");
 			
 			var cnt = 0;
-			for(var obj in FindObjects(Find_Distance(100), Find_ID(GetID()), Find_Allied(GetOwner()), Sort_Distance()))
+			for (var obj in FindObjects(Find_Distance(100), Find_ID(GetID()), Find_Allied(GetOwner()), Sort_Distance()))
 			{
-				if(++cnt > 5) break;
+				if (++cnt > 5) break;
 				obj->AddEffect("DoDance", obj, 1, 35*5, obj);
 				obj->AddEffect("DanceCooldown", obj, 1, 35*10, obj);
-			}
-			
-			if(!GetEffect("EggCooldown", this))
-			{
-				if(!Random(10))
-				{
-					LayEgg();
-				}
 			}
 		}
 	}
 	
-	if(!Random(5))
+	if (!Random(5))
 	{
-		if(Random(2))
+		if (Random(2))
 			SetComDir(COMD_Right);
 		else SetComDir(COMD_Left);
 	} else SetComDir(COMD_Stop);
@@ -253,27 +283,46 @@ private func FxActivityTimer(target, effect, time)
 
 private func FxActivityDamage(target, effect, dmg)
 {
-	if(dmg > 0) return dmg;
+	if (dmg > 0) return dmg;
 	AddEffect("DmgShock", this, 1, 35*5, this);
 	return dmg;
 }
 
+private func SpecialReproduction()
+{
+	LayEgg();
+	// Always return true even if laying egg failed. Otherwise mammalian reproduction is performed.
+	return true;
+}
+
 private func LayEgg()
 {
-	if(GetEffect("DmgShock", this)) return;
+	if (GetEffect("DmgShock", this)) return;
+	if (GetEffect("EggCooldown", this)) return;
 	var o = CreateObject(Chippie_Egg, 0, 0, GetOwner());
 	o->SetSpeed(-GetXDir(), -GetYDir());
 	o->SetCon(50);
 	o->StartGrowth(10);
 	AddEffect("EggCooldown", this, 1, 35*30, this);
+	return o;
 }
+
+// Chippies grow (solely) via sucking blood (their size influences the damage they do).
+public func GrowthSpeed() { return 0; }
 
 local MaxEnergy = 10000;
 local MaxBreath = 10000;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local ContactIncinerate = 15;
-local CorrosionResist = 1;
+local CorrosionResist = true;
 local BorderBound = C4D_Border_Sides;
+local ContactCalls = true;
+
+public func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(1000, -700, 0), Trans_Scale(1400), Trans_Rotate(-10, 1, 0, 0), Trans_Rotate(50, 0, 1, 0));
+	return _inherited(def, ...);
+}
 
 local ActMap = {
 Walk = {
@@ -354,7 +403,6 @@ Jump = {
 	Length = 20,
 	Delay = 2,
 	Animation = "Move",
-	PhaseCall = "CheckStuck",
 	StartCall = "StartJump",
 	EndCall = "EndJump",
 	AbortCall = "EndJump"

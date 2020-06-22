@@ -3,7 +3,7 @@ global func SetPlrKnowledge(int plr, ...)
 {
 	if (!GetType(plr) || (plr == NO_OWNER))
 	{
-		for (var i=0; i<GetPlayerCount(); ++i)
+		for (var i = 0; i<GetPlayerCount(); ++i)
 			SetPlrKnowledge(GetPlayerByIndex(i), ...);
 		return true;
 	}

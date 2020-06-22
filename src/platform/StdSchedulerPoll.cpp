@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,23 +15,15 @@
  */
 
 #include "C4Include.h"
-#include "StdScheduler.h"
+#include "platform/StdScheduler.h"
 
 #ifdef HAVE_POLL_H
-#include <stdio.h>
-#include <assert.h>
-#include <errno.h>
-#include <fcntl.h>
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
 #ifdef HAVE_SHARE_H
 #include <share.h>
 #endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#include <map>
 
 // Is this process currently signaled?
 bool StdSchedulerProc::IsSignaled()
@@ -149,7 +141,7 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 			auto tProcTick = proc->GetNextTick(tNow);
 			if (tProcTick <= tNow)
 			{
-				struct pollfd * pfd = 0;
+				struct pollfd * pfd = nullptr;
 				if (fds_for_proc.find(proc) != fds_for_proc.end())
 					pfd = &fds[fds_for_proc[proc].first];
 				if (!proc->Execute(0, pfd))

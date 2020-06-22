@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,11 +15,10 @@
  */
 /* Handles Music Files */
 
-#include <C4Include.h>
-#include <C4MusicFile.h>
+#include "C4Include.h"
+#include "platform/C4MusicFile.h"
 
-#include <C4Application.h>
-#include <C4Log.h>
+#include "game/C4Application.h"
 
 #if AUDIO_TK == AUDIO_TK_OPENAL
 #if defined(__APPLE__)
@@ -30,7 +29,7 @@
 // This is an ugly hack to make FreeALUT not dllimport everything.
 #define _XBOX
 #endif
-#include <alut.h>
+#include <AL/alut.h>
 #undef _XBOX
 #endif
 #define alErrorCheck(X) do { X; { ALenum err = alGetError(); if (err) LogF("al error: %s (%x)", #X, err); } } while (0)
@@ -72,8 +71,8 @@ bool C4MusicFile::Init(const char *szFile)
 
 #if AUDIO_TK == AUDIO_TK_SDL_MIXER
 C4MusicFileSDL::C4MusicFileSDL():
-		Data(NULL),
-		Music(NULL)
+		Data(nullptr),
+		Music(nullptr)
 {
 }
 
@@ -122,7 +121,7 @@ bool C4MusicFileSDL::Play(bool loop, double max_resume_time)
 			return false;
 		}
 		// Mix_FreeMusic frees the RWop
-		Music = Mix_LoadMUS_RW(SDL_RWFromConstMem(Data, filesize));
+		Music = Mix_LoadMUS_RW(SDL_RWFromConstMem(Data, filesize), 1);
 		if (!Music)
 		{
 			LogF("SDL_mixer: %s", SDL_GetError());
@@ -148,13 +147,13 @@ void C4MusicFileSDL::Stop(int fadeout_ms)
 	if (Music)
 	{
 		Mix_FreeMusic(Music);
-		Music = NULL;
+		Music = nullptr;
 	}
 	RemTempFile();
 	if (Data)
 	{
 		delete[] Data;
-		Data = NULL;
+		Data = nullptr;
 	}
 }
 
@@ -174,11 +173,10 @@ void C4MusicFileSDL::SetVolume(int iLevel)
 /* Ogg Vobis */
 
 C4MusicFileOgg::C4MusicFileOgg() :
-	playing(false), streaming_done(false), loaded(false), channel(0), current_section(0), byte_pos_total(0), volume(1.0f),
-	is_loading_from_file(false), last_source_file_pos(0), last_playback_pos_sec(0), last_interruption_time()
+	last_interruption_time()
 {
-	for (size_t i=0; i<num_buffers; ++i)
-		buffers[i] = 0;
+	for (unsigned int & buffer : buffers)
+		buffer = 0;
 }
 
 C4MusicFileOgg::~C4MusicFileOgg()
@@ -248,7 +246,7 @@ bool C4MusicFileOgg::Init(const char *strFile)
 	}
 
 	// open using callbacks either to memory or to file loader
-	if (ov_open_callbacks(data_source, &ogg_file, NULL, 0, callbacks) != 0)
+	if (ov_open_callbacks(data_source, &ogg_file, nullptr, 0, callbacks) != 0)
 	{
 		ov_clear(&ogg_file);
 		return false;
@@ -302,10 +300,10 @@ StdStrBuf C4MusicFileOgg::GetDebugInfo() const
 	result.AppendFormat("[%.0lf]", last_playback_pos_sec);
 	result.AppendChar('[');
 	bool sec = false;
-	for (auto i = categories.cbegin(); i != categories.cend(); ++i)
+	for (const auto & category : categories)
 	{
 		if (sec) result.AppendChar(',');
-		result.Append(i->getData());
+		result.Append(category.getData());
 		sec = true;
 	}
 	result.AppendChar(']');
@@ -442,8 +440,8 @@ bool C4MusicFileOgg::HasCategory(const char *szcat) const
 {
 	if (!szcat) return false;
 	// check all stored categories
-	for (auto i = categories.cbegin(); i != categories.cend(); ++i)
-		if (WildcardMatch(szcat, i->getData()))
+	for (const auto & category : categories)
+		if (WildcardMatch(szcat, category.getData()))
 			return true;
 	return false;
 }

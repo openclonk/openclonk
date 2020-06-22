@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,11 +16,11 @@
 // generic user interface
 // container for a dynamic number of vertically stacked controls
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4MouseControl.h>
-#include <algorithm>
+#include "graphics/C4Draw.h"
+#include "gui/C4MouseControl.h"
 
 namespace C4GUI
 {
@@ -30,7 +30,7 @@ namespace C4GUI
 // ListBox
 
 	ListBox::ListBox(const C4Rect &rtBounds, int32_t iMultiColItemWidth) : Control(rtBounds), iMultiColItemWidth(iMultiColItemWidth), iColCount(1)
-			, pSelectedItem(NULL), pSelectionChangeHandler(NULL), pSelectionDblClickHandler(NULL), fDrawBackground(true), fDrawBorder(false), fSelectionDisabled(false)
+			, pSelectedItem(nullptr), pSelectionChangeHandler(nullptr), pSelectionDblClickHandler(nullptr), fDrawBackground(true), fDrawBorder(false), fSelectionDisabled(false)
 	{
 		// calc client rect
 		UpdateOwnPos();
@@ -42,23 +42,23 @@ namespace C4GUI
 		pKeyContext = new C4KeyBinding(C4KeyCodeEx(K_MENU), "GUIListBoxContext", KEYSCOPE_Gui,
 		                               new ControlKeyCB<ListBox>(*this, &ListBox::KeyContext), C4CustomKey::PRIO_Ctrl);
 		C4CustomKey::CodeList keys;
-		keys.push_back(C4KeyCodeEx(K_UP));
-		if (Config.Controls.GamepadGuiControl) keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Up)));
+		keys.emplace_back(K_UP);
+		if (Config.Controls.GamepadGuiControl) ControllerKeys::Up(keys);
 		pKeyUp = new C4KeyBinding(keys, "GUIListBoxUp", KEYSCOPE_Gui,
 		                          new ControlKeyCB<ListBox>(*this, &ListBox::KeyUp), C4CustomKey::PRIO_Ctrl);
 		keys.clear();
-		keys.push_back(C4KeyCodeEx(K_DOWN));
-		if (Config.Controls.GamepadGuiControl) keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+		keys.emplace_back(K_DOWN);
+		if (Config.Controls.GamepadGuiControl) ControllerKeys::Down(keys);
 		pKeyDown = new C4KeyBinding(keys, "GUIListBoxDown", KEYSCOPE_Gui,
 		                            new ControlKeyCB<ListBox>(*this, &ListBox::KeyDown), C4CustomKey::PRIO_Ctrl);
 		keys.clear();
-		keys.push_back(C4KeyCodeEx(K_LEFT));
-		if (Config.Controls.GamepadGuiControl) keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Left)));
+		keys.emplace_back(K_LEFT);
+		if (Config.Controls.GamepadGuiControl) ControllerKeys::Left(keys);
 		pKeyLeft = new C4KeyBinding(keys, "GUIListBoxLeft", KEYSCOPE_Gui,
 		                            new ControlKeyCB<ListBox>(*this, &ListBox::KeyLeft), C4CustomKey::PRIO_Ctrl);
 		keys.clear();
-		keys.push_back(C4KeyCodeEx(K_RIGHT));
-		if (Config.Controls.GamepadGuiControl) keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Right)));
+		keys.emplace_back(K_RIGHT);
+		if (Config.Controls.GamepadGuiControl) ControllerKeys::Right(keys);
 		pKeyRight = new C4KeyBinding(keys, "GUIListBoxRight", KEYSCOPE_Gui,
 		                             new ControlKeyCB<ListBox>(*this, &ListBox::KeyRight), C4CustomKey::PRIO_Ctrl);
 		pKeyPageUp = new C4KeyBinding(C4KeyCodeEx(K_PAGEUP), "GUIListBoxPageUp", KEYSCOPE_Gui,
@@ -71,11 +71,11 @@ namespace C4GUI
 		                           new ControlKeyCB<ListBox>(*this, &ListBox::KeyEnd), C4CustomKey::PRIO_Ctrl);
 		// "activate" current item
 		keys.clear();
-		keys.push_back(C4KeyCodeEx(K_RETURN));
-		keys.push_back(C4KeyCodeEx(K_RETURN, KEYS_Alt));
+		keys.emplace_back(K_RETURN);
+		keys.emplace_back(K_RETURN, KEYS_Alt);
 		if (Config.Controls.GamepadGuiControl)
 		{
-			keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
+			ControllerKeys::Ok(keys);
 		}
 		pKeyActivate = new C4KeyBinding(keys, "GUIListActivate", KEYSCOPE_Gui,
 		                                new ControlKeyCB<ListBox>(*this, &ListBox::KeyActivate), C4CustomKey::PRIO_Ctrl);
@@ -153,7 +153,7 @@ namespace C4GUI
 				{
 					// reset selection
 					Element *pPrevSelectedItem = pSelectedItem;
-					pSelectedItem = NULL;
+					pSelectedItem = nullptr;
 					// get client component the mouse is over
 					iX -= GetMarginLeft(); iY -= GetMarginTop();
 					iY += pClientWindow->GetScrollY();
@@ -479,7 +479,7 @@ namespace C4GUI
 		// clear selection var
 		if (pChild == pSelectedItem)
 		{
-			pSelectedItem = NULL;
+			pSelectedItem = nullptr;
 			SelectionChanged(false);
 		}
 		// position update in AfterElementRemoval
@@ -573,7 +573,7 @@ namespace C4GUI
 	void ListBox::SelectionChanged(bool fByUser)
 	{
 		// selections disabled?
-		if (fSelectionDisabled) { pSelectedItem = NULL; return; }
+		if (fSelectionDisabled) { pSelectedItem = nullptr; return; }
 		// any selection?
 		if (pSelectedItem)
 		{

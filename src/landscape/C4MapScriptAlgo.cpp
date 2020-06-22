@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,9 +17,9 @@
 
 /* Handles scripted map creation */
 
-#include <C4Include.h>
-#include <C4MapScript.h>
-#include <C4Random.h>
+#include "C4Include.h"
+#include "landscape/C4MapScript.h"
+#include "lib/C4Random.h"
 
 C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par);
 
@@ -38,7 +38,7 @@ bool C4MapScriptAlgo::GetXYProps(const C4PropList *props, C4PropertyName k, int3
 	if ((arr = val.getArray()))
 	{
 		if (arr->GetSize() != 2)
-			throw C4AulExecError(FormatString("C4MapScriptAlgo: Expected either integer or array with two integer elements in property \"%s\".", Strings.P[k].GetCStr()).getData());
+			throw C4AulExecError(FormatString(R"(C4MapScriptAlgo: Expected either integer or array with two integer elements in property "%s".)", Strings.P[k].GetCStr()).getData());
 		out_xy[0] = arr->GetItem(0).getInt();
 		out_xy[1] = arr->GetItem(1).getInt();
 	}
@@ -54,7 +54,7 @@ C4MapScriptAlgoLayer::C4MapScriptAlgoLayer(const C4PropList *props)
 	// Get MAPALGO_Layer properties
 	C4PropList *layer_pl = props->GetPropertyPropList(P_Layer);
 	if (!layer_pl || !(layer = layer_pl->GetMapScriptLayer()))
-		throw C4AulExecError("C4MapScriptAlgoLayer: Expected layer in \"Layer\" property.");
+		throw C4AulExecError(R"(C4MapScriptAlgoLayer: Expected layer in "Layer" property.)");
 }
 
 bool C4MapScriptAlgoLayer::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
@@ -116,9 +116,9 @@ bool C4MapScriptAlgoRect::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_
 	return rect.Contains(x, y);
 }
 
-C4MapScriptAlgoEllipsis::C4MapScriptAlgoEllipsis(const C4PropList *props)
+C4MapScriptAlgoEllipse::C4MapScriptAlgoEllipse(const C4PropList *props)
 {
-	// Get MAPALGO_Ellipsis properties
+	// Get MAPALGO_Ellipse properties
 	cx = props->GetPropertyInt(P_X);
 	cy = props->GetPropertyInt(P_Y);
 	wdt = Abs(props->GetPropertyInt(P_Wdt));
@@ -127,11 +127,11 @@ C4MapScriptAlgoEllipsis::C4MapScriptAlgoEllipsis(const C4PropList *props)
 	if (!hgt) hgt = wdt;
 }
 
-bool C4MapScriptAlgoEllipsis::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
+bool C4MapScriptAlgoEllipse::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
-	// Evaluate MAPALGO_Ellipsis at x,y: Return 1 for pixels within ellipsis, 0 otherwise
+	// Evaluate MAPALGO_Ellipse at x,y: Return 1 for pixels within ellipse, 0 otherwise
 	// warning: overflows for large values (wdt or hgt >=256)
-	// but who would draw such large ellipsis anyway?
+	// but who would draw such large ellipse anyway?
 	uint64_t dx = Abs((cx-x)*hgt), dy = Abs((cy-y)*wdt);
 	return dx*dx+dy*dy < uint64_t(wdt)*wdt*hgt*hgt;
 }
@@ -143,7 +143,7 @@ C4MapScriptAlgoPolygon::C4MapScriptAlgoPolygon(const C4PropList *props)
 	props->GetProperty(P_X, &vptx); props->GetProperty(P_Y, &vpty);
 	C4ValueArray *ptx = vptx.getArray(), *pty = vpty.getArray();
 	if (!ptx || !pty || ptx->GetSize() != pty->GetSize())
-		throw C4AulExecError("C4MapScriptAlgoPolygon: Expected two equally sized int arrays in properties \"X\" and \"Y\".");
+		throw C4AulExecError(R"(C4MapScriptAlgoPolygon: Expected two equally sized int arrays in properties "X" and "Y".)");
 	poly.resize(ptx->GetSize());
 	for (int32_t i=0; i<ptx->GetSize(); ++i)
 	{
@@ -195,7 +195,7 @@ C4MapScriptAlgoLines::C4MapScriptAlgoLines(const C4PropList *props)
 	// Get MAPALGO_Lines properties
 	lx = props->GetPropertyInt(P_X);
 	ly = props->GetPropertyInt(P_Y);
-	if (!lx && !ly) throw C4AulExecError("C4MapScriptAlgoLines: Invalid direction vector. Either \"X\" or \"Y\" must be nonzero!");
+	if (!lx && !ly) throw C4AulExecError(R"(C4MapScriptAlgoLines: Invalid direction vector. Either "X" or "Y" must be nonzero!)");
 	ox = props->GetPropertyInt(P_OffX);
 	oy = props->GetPropertyInt(P_OffY);
 		// use sync-safe distance function to calculate line width
@@ -240,7 +240,7 @@ C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_
 		n = ops->GetSize();
 	}
 	if (!ops || n<min_ops || (max_ops && n>max_ops))
-		throw C4AulExecError(FormatString("C4MapScriptAlgo: Expected between %d and %d operands in property \"Op\".", (int)min_ops, (int)max_ops).getData());
+		throw C4AulExecError(FormatString(R"(C4MapScriptAlgo: Expected between %d and %d operands in property "Op".)", (int)min_ops, (int)max_ops).getData());
 	operands.resize(n);
 	try
 	{
@@ -249,7 +249,7 @@ C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_
 		for (int32_t i=0; i<n; ++i)
 		{
 			C4MapScriptAlgo *new_algo = FnParAlgo(ops->GetItem(i).getPropList());
-			if (!new_algo) throw C4AulExecError(FormatString("C4MapScriptAlgo: Operand %d in property \"Op\" not valid.", (int)i).getData());
+			if (!new_algo) throw C4AulExecError(FormatString(R"(C4MapScriptAlgo: Operand %d in property "Op" not valid.)", (int)i).getData());
 			operands[i] = new_algo;
 		}
 	}
@@ -263,7 +263,7 @@ C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_
 void C4MapScriptAlgoModifier::Clear()
 {
 	// Child algos are owned by this algo, so delete them
-	for (std::vector<C4MapScriptAlgo *>::iterator i=operands.begin(); i != operands.end(); ++i) delete *i;
+	for (auto & operand : operands) delete operand;
 	operands.clear();
 }
 
@@ -271,9 +271,9 @@ bool C4MapScriptAlgoAnd::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t
 {
 	// Evaluate MAPALGO_And at x,y: 
 	// Return 0 if any of the operands is 0. Otherwise, returns value of last operand.
-	bool val=0;
-	for (std::vector<C4MapScriptAlgo *>::const_iterator i=operands.begin(); i != operands.end(); ++i)
-		if (!(val=(**i)(x, y, fg, bg)))
+	bool val=false;
+	for (auto operand : operands)
+		if (!(val=(*operand)(x, y, fg, bg)))
 			return false;
 	return val;
 }
@@ -283,8 +283,8 @@ bool C4MapScriptAlgoOr::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t&
 	// Evaluate MAPALGO_Or at x,y: 
 	// Return first nonzero operand
 	bool val;
-	for (std::vector<C4MapScriptAlgo *>::const_iterator i=operands.begin(); i != operands.end(); ++i)
-		if ((val=(**i)(x, y, fg, bg)))
+	for (auto operand : operands)
+		if ((val=(*operand)(x, y, fg, bg)))
 			return val;
 	// If all operands are zero, return zero.
 	return false;
@@ -343,8 +343,8 @@ bool C4MapScriptAlgoScale::operator () (int32_t x, int32_t y, uint8_t& fg, uint8
 {
 	// Evaluate MAPALGO_Scale at x,y: 
 	assert(operands.size()==1);
-	// Return base layer scaled by sx,sy percent from fixed point cx,cy
-	return (*operands[0])((x-cx)*100/sx+cx,(y-cy)*100/sy+cy, fg, bg);
+	// Return base layer scaled by sx,sy percent from fixed point cx-.5,cy-.5
+	return (*operands[0])((((x-cx)*2+1)*50-sx/2)/sx+cx,(((y-cy)*2+1)*50-sy/2)/sy+cy, fg, bg);
 }
 
 C4MapScriptAlgoRotate::C4MapScriptAlgoRotate(const C4PropList *props) : C4MapScriptAlgoModifier(props,1,1)
@@ -373,7 +373,8 @@ C4MapScriptAlgoTurbulence::C4MapScriptAlgoTurbulence(const C4PropList *props) : 
 	if (!seed) seed = Random(65536);
 	GetXYProps(props, P_Amplitude, amp, true);
 	GetXYProps(props, P_Scale, scale, true);
-	if (!scale[0]) scale[0] = 10; if (!scale[1]) scale[1] = 10;
+	if (!scale[0]) scale[0] = 10;
+	if (!scale[1]) scale[1] = 10;
 	if (!amp[0] && !amp[1]) { amp[0] = amp[1] = 10; }
 	iterations = props->GetPropertyInt(P_Iterations);
 	if (!iterations) iterations = 2;
@@ -487,10 +488,26 @@ bool C4MapScriptAlgoFilter::operator () (int32_t x, int32_t y, uint8_t& fg, uint
 	return filter(fg, bg);
 }
 
-C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
+C4MapScriptAlgoSetMaterial::C4MapScriptAlgoSetMaterial(C4MapScriptAlgo *inner, int fg, int bg)
+	: inner(inner), fg(fg), bg(bg)
 {
-	// Convert script function parameter to internal C4MapScriptAlgo class. Also resolve all parameters and nested child algos.
-	if (!algo_par) return NULL;
+	assert(inner);
+	/* member initializers only */
+}
+
+C4MapScriptAlgoSetMaterial::~C4MapScriptAlgoSetMaterial() {
+	delete inner;
+}
+
+bool C4MapScriptAlgoSetMaterial::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const {
+	bool result = (*inner)(x, y, fg, bg);
+	fg = this->fg;
+	bg = this->bg;
+	return result;
+}
+
+static C4MapScriptAlgo *FnParAlgoInner(C4PropList *algo_par)
+{
 	// if algo is a layer, take that directly
 	C4MapScriptLayer *algo_layer = algo_par->GetMapScriptLayer();
 	if (algo_layer) return new C4MapScriptAlgoLayer(algo_layer);
@@ -507,7 +524,9 @@ C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
 	case MAPALGO_Scale:       return new C4MapScriptAlgoScale(algo_par);
 	case MAPALGO_Rotate:      return new C4MapScriptAlgoRotate(algo_par);
 	case MAPALGO_Rect:        return new C4MapScriptAlgoRect(algo_par);
-	case MAPALGO_Ellipsis:    return new C4MapScriptAlgoEllipsis(algo_par);
+	case MAPALGO_Ellipsis:    DebugLog("WARNING: MAPALGO_Ellipsis is deprecated. Use MAPALGO_Ellipse instead.");
+	                          /* fallthru */
+	case MAPALGO_Ellipse:     return new C4MapScriptAlgoEllipse(algo_par);
 	case MAPALGO_Polygon:     return new C4MapScriptAlgoPolygon(algo_par);
 	case MAPALGO_Lines:       return new C4MapScriptAlgoLines(algo_par);
 	case MAPALGO_Turbulence:  return new C4MapScriptAlgoTurbulence(algo_par);
@@ -516,5 +535,24 @@ C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
 	default:
 		throw C4AulExecError(FormatString("got invalid algo: %d", algo_par->GetPropertyInt(P_Algo)).getData());
 	}
-	return NULL;
+	return nullptr;
+}
+
+C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
+{
+	// Convert script function parameter to internal C4MapScriptAlgo class. Also resolve all parameters and nested child algos.
+	if (!algo_par) return nullptr;
+
+	C4MapScriptAlgo *inner = FnParAlgoInner(algo_par);
+
+	// if the Material property is set, use that material:
+	C4String *material = algo_par->GetPropertyStr(P_Material);
+	if (material) { // set inner material by wrapping with SetMaterial algo.
+		uint8_t fg = 0, bg = 0;
+		if (!FnParTexCol(material, fg, bg))
+			throw C4AulExecError("Invalid Material in map script algorithm.");
+		return new C4MapScriptAlgoSetMaterial(inner, fg, bg);
+	}
+
+	return inner; // otherwise, just return the original algo
 }

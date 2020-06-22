@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,9 +19,9 @@
 #ifndef C4LEAGUE_H_INCLUDED
 #define C4LEAGUE_H_INCLUDED
 
-#include <C4Network2Reference.h>
-#include <C4Gui.h>
-#include <SHA1.h>
+#include "lib/SHA1.h"
+#include "gui/C4Gui.h"
+#include "network/C4Network2Reference.h"
 
 #define C4League_Name_Valid_Characters "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD9\xDA\xDB\xDC\xDD\xDF\xE0\xE1\xE2\xE3\xE4\xE5\xE6\xE7\xE8\xE9\xEA\xEB\xEC\xED\xEE\xEF\xF0\xF1\xF2\xF3\xF4\xF5\xF6\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF\x20\x2E\x2D\x5F"
 
@@ -75,7 +75,7 @@ class C4LeagueReportDisconnectHead : public C4LeagueRequestHead
 private:
 	C4LeagueDisconnectReason eReason;
 public:
-	C4LeagueReportDisconnectHead(const char *szCSID, C4LeagueDisconnectReason eReason) : C4LeagueRequestHead(C4LA_ReportDisconnect, szCSID, NULL), eReason(eReason) {}
+	C4LeagueReportDisconnectHead(const char *szCSID, C4LeagueDisconnectReason eReason) : C4LeagueRequestHead(C4LA_ReportDisconnect, szCSID, nullptr), eReason(eReason) {}
 
 public:
 	void CompileFunc(StdCompiler *pComp);
@@ -84,7 +84,7 @@ public:
 class C4LeagueRequestHeadEnd : public C4LeagueRequestHead
 {
 public:
-	C4LeagueRequestHeadEnd(C4LeagueAction eAction, const char *szCSID, const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL)
+	C4LeagueRequestHeadEnd(C4LeagueAction eAction, const char *szCSID, const char *szRecordName = nullptr, const BYTE *pRecordSHA = nullptr)
 			: C4LeagueRequestHead(eAction, szCSID), RecordName(szRecordName)
 	{
 		if (pRecordSHA)
@@ -102,7 +102,7 @@ public:
 class C4LeagueResponseHead
 {
 public:
-	C4LeagueResponseHead() { }
+	C4LeagueResponseHead() = default;
 
 private:
 	StdCopyStrBuf Status;
@@ -190,10 +190,10 @@ private:
 		StdCopyStrBuf Account;
 		StdCopyStrBuf FBID;
 		FBIDItem *pNext;
-	} *pFirst;
+	} *pFirst{nullptr};
 
 public:
-	C4LeagueFBIDList() : pFirst(NULL) {}
+	C4LeagueFBIDList() = default;
 	~C4LeagueFBIDList() { Clear(); }
 	void Clear();
 	void RemoveFBIDByAccount(const char *szAccount);
@@ -207,11 +207,11 @@ class C4LeagueClient : public C4Network2RefClient
 
 private:
 	StdCopyStrBuf CSID;
-	C4LeagueAction eCurrAction;
+	C4LeagueAction eCurrAction{C4LA_None};
 	C4LeagueFBIDList FBIDList;
 
 public:
-	C4LeagueClient() : C4Network2RefClient(), CSID(), eCurrAction(C4LA_None) { }
+	C4LeagueClient() : C4Network2RefClient(), CSID() { }
 	const char *getCSID() const { return CSID.getData(); }
 	C4LeagueAction getCurrentAction() const { return eCurrAction; }
 	void ResetCurrentAction() { eCurrAction = C4LA_None; }
@@ -229,7 +229,7 @@ public:
 	bool GetEndReply(StdStrBuf *pMessage, class C4RoundResultsPlayers *pRoundResults);
 
 	// Action "Auth"
-	bool Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount = NULL, const char *szNewPassword = NULL, bool fRememberLogin = false);
+	bool Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount = nullptr, const char *szNewPassword = nullptr, bool fRememberLogin = false);
 	bool GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrBuf *pAccount, bool *pRegister, StdStrBuf *pLoginToken);
 
 	// Action "Join"
@@ -250,10 +250,9 @@ private:
 	C4GUI::Button *pBtnOK, *pBtnAbort;
 	int32_t iEdtPassSpace;
 	StdStrBuf strPlayerName;
-	bool fRememberLogin;
 public:
 	C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister, bool fRememberLogin);
-	~C4LeagueSignupDialog() {}
+	~C4LeagueSignupDialog() override = default;
 
 	const char *GetAccount() { return pEdtAccount->GetText(); }
 	bool HasPass() { return !pChkPassword || pChkPassword->GetChecked(); }
@@ -261,7 +260,7 @@ public:
 	bool GetRememberLogin() { return pChkRememberLogin && pChkRememberLogin->GetChecked(); }
 
 	// check for errors (overridden)
-	virtual void UserClose(bool fOK);
+	void UserClose(bool fOK) override;
 
 	// show modal league dialog to query password for player; return
 	static bool ShowModal(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, StdStrBuf *psAccount, StdStrBuf *psPass, bool fWarnThirdParty, bool fRegister, bool *pfRememberLogin);

@@ -11,6 +11,7 @@
 		ID: submenu ID. Unique in combination with the target == this
 		obj: last object that was shown here
 		hand: bool, whether select with a hand
+		quick: bool, whether this is the quick switch slot
 */
 
 // HUD margin and size in tenths of em.
@@ -21,6 +22,71 @@ static const GUI_Controller_InventoryBar_IconMargin = 5;
 local inventory_slots;
 local inventory_gui_menu;
 local inventory_gui_id;
+
+/* GUI creation */
+
+// For custom HUD graphics overload the following function as deemed fit.
+
+func AssembleInventoryButton(int max_slots, int slot_number, proplist slot_info)
+{
+	// The gui already exists, only update it with a new submenu
+	var pos = CalculateButtonPosition(slot_number, max_slots);
+
+	return
+	{
+		Target = this,
+		slot_number =
+		{
+			Priority = 3, // Make sure the slot number is drawn above the icon.
+			Style = GUI_TextTop,
+			Text = Format("%2d", slot_info.slot + 1)
+		},
+		quick_switch = // Shows quick switch control key if this is the quick switch slot
+		{
+			Priority = 3,
+			Style = GUI_NoCrop | GUI_TextHCenter | GUI_TextBottom,
+			Left = "-50%",
+			Right = "150%",
+			Top = Format(" %s%s", "20%", ToEmString(-2)),
+			Bottom = "20%",
+			Text = { Std = "", Quick = Format("<c dddd00>[%s]</c>", GetPlayerControlAssignment(GetOwner(), CON_QuickSwitch, true)), Selected = "" }
+		},
+		Style = GUI_NoCrop,
+		ID = slot_info.ID,
+		Symbol = {Std = Icon_Menu_Circle, Quick = Icon_Menu_Circle, Selected = Icon_Menu_CircleHighlight},
+		Left = pos.Left, Top = pos.Top, Right = pos.Right, Bottom = pos.Bottom,
+		count =
+		{
+			ID = 1000 + slot_info.ID,
+			Style = GUI_TextRight | GUI_TextBottom,
+			Text = nil,
+			Priority = 2
+		},
+		// Prepare (invisible) extra-slot display circle.
+		extra_slot =
+		{
+			Top = ToEmString(GUI_Controller_InventoryBar_IconSize),
+			Bottom = ToEmString(GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconSize/2),
+			Style = GUI_TextLeft,
+			Text = nil,
+			symbol =// used to display an infinity sign if necessary (Icon_Number)
+			{
+				Right = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
+				GraphicsName = "Inf",
+			},
+			circle =// shows the item in the extra slot
+			{
+				Left = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
+				Symbol = nil,
+				symbol = {}
+			}
+		},
+		overlay = // Custom inventory overlays can be shown here.
+		{
+			ID = 2000 + slot_info.ID
+		}
+	};
+}
 
 /* Creation / Destruction */
 
@@ -97,7 +163,7 @@ private func UpdateInventory()
 {
 	// only display if we have a clonk and it's not disabled
 	var clonk = GetCursor(GetOwner());
-	if(!clonk || !clonk->GetCrewEnabled())
+	if (!clonk || !clonk->GetCrewEnabled())
 	{
 		if (inventory_gui_menu.Player != NO_OWNER)
 		{
@@ -119,6 +185,7 @@ private func UpdateInventory()
 
 	// update inventory-slots
 	var hand_item_pos = clonk->~GetHandItemPos(0);
+	var quick_switch_slot = clonk->~GetQuickSwitchSlot();
 
 	for (var slot_info in inventory_slots)
 	{
@@ -134,12 +201,14 @@ private func UpdateInventory()
 			custom_overlay = item->~GetInventoryIconOverlay();
 		}
 		var needs_selection = hand_item_pos == slot_info.slot;
+		var needs_quick_switch = quick_switch_slot == slot_info.slot;
 		var has_extra_slot = item && item->~HasExtraSlot();
-		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || (stack_count != slot_info.last_count) || has_extra_slot || slot_info.had_custom_overlay || custom_overlay)
+		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || (needs_quick_switch != slot_info.quick) || (stack_count != slot_info.last_count) || has_extra_slot || slot_info.had_custom_overlay || custom_overlay)
 		{
 			// Hide or show extra-slot display?
 			var extra_slot_player = NO_OWNER;
 			var extra_symbol = nil;
+			var extra_symbol_stack_count = nil;
 			var contents = nil;
 			var extra_slot_background_symbol = nil;
 			if (has_extra_slot)
@@ -147,7 +216,16 @@ private func UpdateInventory()
 				// Show!
 				contents = item->Contents(0);
 				if (contents)
-					extra_symbol = contents->GetID();
+				{
+					extra_symbol = contents;
+					// Stack count: either actual stack count or stacked object count.
+					extra_symbol_stack_count = contents->~GetStackCount();
+					if (extra_symbol_stack_count == nil)
+					{
+					    // Stack count fallback to actually stacked objects
+					    extra_symbol_stack_count = item->ContentsCount(contents->GetID());
+					}
+				}
 				extra_slot_player = GetOwner();
 				extra_slot_background_symbol = Icon_Menu_Circle;
 				// And attach tracker..
@@ -163,11 +241,11 @@ private func UpdateInventory()
 			}
 			// What to display in the extra slot?
 			var extra_text = nil, number_symbol = nil;
-			if (extra_symbol && contents->~GetStackCount())
+			if (extra_symbol && extra_symbol_stack_count)
 			{
-				if (contents->IsInfiniteStackCount())
+				if (contents->~IsInfiniteStackCount())
 					number_symbol = Icon_Number;
-				else extra_text = Format("%dx", contents->GetStackCount());
+				else extra_text = Format("%dx", extra_symbol_stack_count);
 			}
 			
 			// Close a possible lingering custom overlay for that slot.
@@ -225,10 +303,12 @@ private func UpdateInventory()
 			GuiUpdate(update, inventory_gui_id, slot_info.ID, this);
 
 			var tag = "Std";
+			if (needs_quick_switch) tag = "Quick";
 			if (needs_selection) tag = "Selected";
 			GuiUpdateTag(tag, inventory_gui_id, slot_info.ID, this);
 
 			slot_info.hand = needs_selection;
+			slot_info.quick = needs_quick_switch;
 			slot_info.obj = item;
 			slot_info.empty = !item;
 		}
@@ -275,58 +355,14 @@ private func CreateNewInventoryButton(int max_slots)
 		slot = slot_number,
 		ID = slot_number + 1,
 		hand = false,
+		quick = false,
 		obj = nil,
 		empty = true
 	};
 	PushBack(inventory_slots, slot_info);
 
-	// The gui already exists, only update it with a new submenu
-	var pos = CalculateButtonPosition(slot_number, max_slots);
+	var slot = AssembleInventoryButton(max_slots, slot_number, slot_info);
 
-	var slot =
-	{
-		Target = this,
-		slot_number =
-		{
-			Priority = 3, // Make sure the slot number is drawn above the icon.
-			Style = GUI_TextTop,
-			Text = Format("%2d", slot_info.slot + 1)
-		},
-		Style = GUI_NoCrop,
-		ID = slot_info.ID,
-		Symbol = {Std = Icon_Menu_Circle, Selected = Icon_Menu_CircleHighlight},
-		Left = pos.Left, Top = pos.Top, Right = pos.Right, Bottom = pos.Bottom,
-		count =
-		{
-			ID = 1000 + slot_info.ID,
-			Style = GUI_TextRight | GUI_TextBottom,
-			Text = nil,
-			Priority = 2
-		},
-		// Prepare (invisible) extra-slot display circle.
-		extra_slot =
-		{
-			Top = ToEmString(GUI_Controller_InventoryBar_IconSize),
-			Bottom = ToEmString(GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconSize/2),
-			Style = GUI_TextLeft,
-			Text = nil,
-			symbol =// used to display an infinity sign if necessary (Icon_Number)
-			{
-				Right = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
-				GraphicsName = "Inf",
-			},
-			circle =// shows the item in the extra slot
-			{
-				Left = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
-				Symbol = nil,
-				symbol = {}
-			}
-		},
-		overlay = // Custom inventory overlays can be shown here.
-		{
-			ID = 2000 + slot_info.ID
-		}
-	};
 	GuiUpdate({_new_icon = slot}, inventory_gui_id);
 }
 

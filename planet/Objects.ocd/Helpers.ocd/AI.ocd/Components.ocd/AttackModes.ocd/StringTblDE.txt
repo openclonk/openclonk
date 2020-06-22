@@ -1,0 +1,6 @@
+AttackMode=Waffe
+AttackModeHelp=Legt die Waffe und den Angriffsmodus dieses KI-Gegners fest.
+Default=Automatisch
+DefaultHelp=Benutzt immer die beste Waffe im Inventar.
+AttackWith=Angriff mit %s.
+AttackWithAmmo=Angriff mit %s und %s.

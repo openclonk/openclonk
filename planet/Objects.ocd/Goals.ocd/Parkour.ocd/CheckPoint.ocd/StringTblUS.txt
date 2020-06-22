@@ -1,7 +1,35 @@
 Name=Checkpoint
+Description=Control point for the parkour game goal.
+NameStart=Checkpoint start
+NameFinish=Checkpoint finish
 
 #Log messages
 MsgClearedOrdered=%s has passed checkpoint %d, unfortunately %d players were there before.
 MsgClearedCheck=%s has passed a checkpoint, %d players have beaten him to there.
 MsgClearedOrderedFirst=%s is the first to pass checkpoint %d.
 MsgClearedCheckFirst=%s was the first one to pass this checkpoint.
+
+NoGoalWarning=WARNING: No parkour goal placed. Parkour checkpoints require a goal.
+SelectPrev=Select <<
+SelectPrevHelp=Selects the checkpoint before this one.
+SelectNext=Select >>
+SelectNextHelp=Selects the checkpoint after this one.
+ReorderPrev=Sort <<
+ReorderPrevHelp=Swaps the checkpoint with the one before this one.
+ReorderNext=Sort >>
+ReorderNextHelp=Swaps the checkpoint with the one after this one.
+
+Respawn=Respawn here
+RespawnHelp=Whether clonks respawn here on death.
+Check=Required
+CheckHelp=Whether this checkpoint is required to finish the parkour goal.
+Ordered=Sorted
+OrderedHelp=Whether this checkpoint must be reached in order.
+Team=Team
+TeamHelp=Whether all players of a team need to reach this checkpoint.
+OnCleared=Action: CP reached
+OnClearedHelp=Action to be executed once for each player who clears this checkpoint.
+OnFirstCleared=Action: CP reached first
+OnFirstClearedHelp=Action to be executed when the first player clears this checkpoint.
+OnRespawn=Aktion: Respawn
+OnRespawnHelp=Action to be executed when a player respawns at this checkpoint.
