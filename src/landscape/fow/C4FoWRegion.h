@@ -22,7 +22,7 @@
 #include "player/C4Player.h"
 #include "landscape/fow/C4FoW.h"
 #ifndef USE_CONSOLE
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 #endif
 
 class C4Surface;

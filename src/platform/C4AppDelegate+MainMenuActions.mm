@@ -14,7 +14,7 @@
  */
 
 #define GL_SILENCE_DEPRECATION
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 
 #include "C4Include.h"
 #include "editor/C4Console.h"

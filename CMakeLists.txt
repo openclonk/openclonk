@@ -276,14 +276,8 @@ endif()
 
 if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 	find_package(OpenGL)
-	find_package(GLEW REQUIRED)
-	include_directories(${GLEW_INCLUDE_DIRS})
-	add_definitions(${GLEW_DEFINITIONS})
-# On some platforms, GLEW declares the userParam parameter of
-# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
-# Test which one works here.
-	set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
-	CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
+	find_package(Epoxy REQUIRED)
+	include_directories(${Epoxy_INCLUDE_DIRS})
 endif()
 
 if(NOT C4GROUP_TOOL_ONLY)
@@ -1238,7 +1232,7 @@ if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 		${SDL2_LIBRARIES}
 		${Audio_LIBRARIES}
 		${GETOPT_LIBRARIES}
-		${GLEW_LIBRARIES}
+		${Epoxy_LIBRARIES}
 		${OPENGL_LIBRARIES}
 		${TinyXML_LIBRARIES}
 		${X11_LIBRARIES}

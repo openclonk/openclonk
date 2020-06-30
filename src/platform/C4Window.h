@@ -310,6 +310,7 @@ public:
 #elif defined(USE_SDL_MAINLOOP)
 	SDL_Window * window;
 	void HandleSDLEvent(SDL_WindowEvent &e);
+	std::vector<int> available_samples;
 #endif
 #ifdef USE_WGL
 	HWND renderwnd;

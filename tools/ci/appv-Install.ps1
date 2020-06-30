@@ -93,7 +93,9 @@ try {
     # If you want to use the build dependencies for yourself, please note that
     # this archive is a tarbomb, i.e. it doesn't contain a single root directory
     Update-BuildCache 'https://www.nosebud.de/~nh/openclonk/appveyor-deps.tar.xz'
+    Update-BuildCache 'https://www.openclonk.org/builds/appveyor-deps-epoxy.tar.xz'
     cmake -E tar xJ $cache_path\appveyor-deps.tar.xz
+    cmake -E tar xJ $cache_path\appveyor-deps-epoxy.tar.xz
 } finally {
     popd
 }

@@ -60,7 +60,7 @@ void CStdGLCtx::SelectCommon()
 
 #ifdef USE_WGL
 
-#include <GL/wglew.h>
+#include <epoxy/wgl.h>
 
 static PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 static HGLRC hrc = nullptr;
@@ -73,7 +73,7 @@ static HGLRC hrc = nullptr;
 static std::vector<int> EnumeratePixelFormats(HDC hdc)
 {
 	std::vector<int> result;
-	if(!wglGetPixelFormatAttribivARB) return result;
+	if(!epoxy_has_wgl_extension(hdc, "WGL_ARB_pixel_format")) return result;
 
 	int n_formats;
 	int attributes = WGL_NUMBER_PIXEL_FORMATS_ARB;
@@ -269,14 +269,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 		try
 		{
 			tempContext = std::make_unique<GLTempContext>();
-			glewExperimental = GL_TRUE;
-			GLenum err = glewInit();
-			if(err != GLEW_OK)
-			{
-				// Problem: glewInit failed, something is seriously wrong.
-				pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-				return false;
-			}
 		}
 		catch (const WinAPIError &e)
 		{
@@ -325,7 +317,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 			else
 			{
 				// create context
-				if (wglCreateContextAttribsARB)
+				if (epoxy_has_wgl_extension(hDC, "WGL_ARB_create_context"))
 				{
 					{
 						const int attribs[] = {
@@ -372,17 +364,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 	if (hrc)
 	{
 		Select();
-		// After selecting the new context, we have to reinitialize GLEW to
-		// update its function pointers - the driver may elect to expose
-		// different extensions depending on the context attributes
-		glewExperimental = GL_TRUE;
-		GLenum err = glewInit();
-		if (err != GLEW_OK)
-		{
-			// Uh. This is a problem.
-			pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-			return false;
-		}
 
 		this_context = contexts.insert(contexts.end(), this);
 		return true;
@@ -394,6 +375,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 
 std::vector<int> CStdGLCtx::EnumerateMultiSamples() const
 {
+	assert(hrc != 0);
 	std::vector<int> result;
 	std::vector<int> vec = EnumeratePixelFormats(hDC);
 	for(int i : vec)
@@ -484,14 +466,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	}
 	// No luck at all?
 	if (!Select(true)) return false;
-	// init extensions
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-	}
 
 	this_context = contexts.insert(contexts.end(), this);
 	return true;
@@ -568,15 +542,6 @@ bool CStdGLCtxQt::Init(C4Window *window, C4AbstractApp *app)
 			return false;
 
 		if (!Select(true)) return false;
-
-		// init extensions
-		glewExperimental = GL_TRUE;
-		GLenum err = glewInit();
-		if (GLEW_OK != err)
-		{
-			// Problem: glewInit failed, something is seriously wrong.
-			return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-		}
 	}
 	else
 	{

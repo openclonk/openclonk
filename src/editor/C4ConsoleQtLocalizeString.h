@@ -21,7 +21,7 @@
 #ifdef WITH_QT_EDITOR
 
 #include "C4Include.h" // needed for automoc
-#include "editor/C4ConsoleGUI.h" // for glew.h
+#include "editor/C4ConsoleGUI.h" // for OpenGL
 #include "editor/C4ConsoleQt.h"
 #include "ui_C4ConsoleQtLocalizeString.h"
 

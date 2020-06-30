@@ -54,6 +54,30 @@ static void SetMultisamplingAttributes(int samples)
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, samples);
 }
 
+// TODO: This is pretty slow and looks weird on Wayland
+static void EnumerateMultiSamplesSDL(std::vector<int>& samples)
+{
+	int max_samples;
+	glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
+	// we seem to get 0 sometimes, default to trying up to 16
+	max_samples = std::max(max_samples, 16);
+	samples.clear();
+	for (int s = 2; s <= max_samples; s *= 2)
+	{
+		// Not all multisampling options seem to work. Verify by creating a hidden window.
+		SetMultisamplingAttributes(s);
+		SDL_Window *wnd = SDL_CreateWindow("OpenClonk Test Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 100, 100, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+		if (wnd)
+		{
+			SDL_DestroyWindow(wnd);
+			samples.push_back(s);
+		}
+		else
+			break;
+	}
+	SetMultisamplingAttributes(Config.Graphics.MultiSampling);
+}
+
 C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	eKind = windowKind;
@@ -75,9 +99,7 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, /*REQUESTED_GL_CTX_MINOR*/ 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, (Config.Graphics.DebugOpenGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0));
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	std::vector<int> available_samples {};
-	if (Config.Graphics.MultiSampling > 0)
-		EnumerateMultiSamples(available_samples, Config.Graphics.MultiSampling);
+	EnumerateMultiSamplesSDL(available_samples);
 	int samples = 0; // Default to initializing without AA if nothing was available
 	for (auto e : available_samples)
 		if (samples < e && e <= Config.Graphics.MultiSampling)
@@ -125,24 +147,7 @@ void C4Window::Clear()
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples, int min_expected) const
 {
-	int max_samples;
-	glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
-	max_samples = std::max(max_samples, min_expected);
-	samples.clear();
-	for (int s = 2; s <= max_samples; s *= 2)
-	{
-		// Not all multisampling options seem to work. Verify by creating a hidden window.
-		SetMultisamplingAttributes(s);
-		SDL_Window *wnd = SDL_CreateWindow("OpenClonk Test Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 100, 100, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-		if (wnd)
-		{
-			SDL_DestroyWindow(wnd);
-			samples.push_back(s);
-		}
-		else
-			break;
-	}
-	SetMultisamplingAttributes(Config.Graphics.MultiSampling);
+	samples = available_samples;
 }
 
 bool C4Window::StorePosition(const char *, const char *, bool) { return true; }
