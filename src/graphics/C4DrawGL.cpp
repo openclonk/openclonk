@@ -205,6 +205,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	uniformNames[C4SSU_AmbientTex] = "ambientTex";
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_AmbientColor] = "ambientColor";
 	uniformNames[C4SSU_MaterialAmbient] = "materialAmbient"; // unused
 	uniformNames[C4SSU_MaterialDiffuse] = "materialDiffuse"; // unused
 	uniformNames[C4SSU_MaterialSpecular] = "materialSpecular"; // unused
@@ -418,6 +419,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		call.AllocTexUnit(C4SSU_AmbientTex);
 		glBindTexture(GL_TEXTURE_2D, pFoW->getFoW()->Ambient.Tex);
 		call.SetUniform1f(C4SSU_AmbientBrightness, pFoW->getFoW()->Ambient.GetBrightness());
+		call.SetUniform3fv(C4SSU_AmbientColor, 1, pFoW->getFoW()->Ambient.GetColorRGB());
 
 		float ambientTransform[6];
 		pFoW->getFoW()->Ambient.GetFragTransform(vpRect, ClipRect, OutRect, ambientTransform);

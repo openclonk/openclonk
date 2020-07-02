@@ -1242,6 +1242,23 @@ static long FnGetAmbientBrightness(C4PropList * _this)
 	return static_cast<long>(::Landscape.GetFoW()->Ambient.GetBrightness() * 100. + 0.5);
 }
 
+static void FnSetAmbientColor(C4PropList * _this, long iValue)
+{
+	if (::Landscape.HasFoW())
+	{
+		::Landscape.GetFoW()->Ambient.SetColor(iValue);
+	}
+}
+
+static long FnGetAmbientColor(C4PropList * _this)
+{
+	if (::Landscape.HasFoW())
+	{
+		return ::Landscape.GetFoW()->Ambient.GetColor();
+	}
+	return 0xffffffff;
+}
+
 static void FnSetSeason(C4PropList * _this, long iSeason)
 {
 	::Weather.SetSeason(iSeason);
@@ -2851,6 +2868,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(LandscapeHeight);
 	F(SetAmbientBrightness);
 	F(GetAmbientBrightness);
+	F(SetAmbientColor);
+	F(GetAmbientColor);
 	F(SetSeason);
 	F(GetSeason);
 	F(SetClimate);
