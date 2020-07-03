@@ -1,0 +1,2 @@
+Name=Communicateur de cristal
+Description=Dispositif de communication longue portée.

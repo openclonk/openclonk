@@ -1,0 +1,5 @@
+# Intro sequence messages
+MsgPeacefulPlace=Hé %s, qu'en pensez-vous ? Cela ressemble à un endroit paisible où nous pouvons installer notre mine d'or.
+MsgSettlement=En effet %s, il y a une forêt qui nous permet de construire une colonie et selon les rumeurs il doit y avoir beaucoup d'or.
+MsgToBeRich=Parfait, installons-nous ici et devenons riches {{Icon_Wealth}}{{Idol}}{{Icon_Wealth}}!
+

@@ -1,0 +1,2 @@
+Name=Bûche
+Description=Needed for construction or as fuel.

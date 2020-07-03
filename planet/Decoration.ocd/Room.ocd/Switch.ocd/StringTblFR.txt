@@ -1,0 +1,9 @@
+Name=Levier
+Description=Ouvre et ferme des portes et d'autres choses. Attraper et appuyer sur les touches directionnelles pour contrôler.
+MsgStuck=Bloqué:(
+SwitchLeft=Levier gauche
+SwitchRight=Levier droit
+Rotate=Tourner
+LeftAction=Action gauche
+RightAction=Action droite
+

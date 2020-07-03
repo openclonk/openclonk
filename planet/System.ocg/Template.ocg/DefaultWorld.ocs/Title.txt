@@ -1,2 +1,4 @@
 DE:Standardwelt
 US:Default World
+FR:Monde par défaut
+

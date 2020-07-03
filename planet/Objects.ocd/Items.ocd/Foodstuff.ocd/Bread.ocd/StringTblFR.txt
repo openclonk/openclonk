@@ -1,0 +1,2 @@
+Name=Pain
+Description=Ce délicieux repas restaure beaucoup la santé du clonk. Appuyez sur [Utiliser] pour manger le pain.

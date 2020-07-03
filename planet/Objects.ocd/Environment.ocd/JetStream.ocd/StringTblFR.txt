@@ -1,0 +1,9 @@
+Name=Jetstream
+Description=Un canal éolien qui pousse, dans une certaine direction, des clonks, des objets et des véhicules d'une zone. Le vent se déplace de cette position d'objet vers un point cible.
+Speed=Vitesse
+SpeedHelp=À quelle vitesse les objets solides seront poussés. La vitesse maximale est de 200.
+Width=Largeur
+WidthHelp=Extension perpendiculaire à la direction du vent. La largeur maximale est de 80.
+TargetOffset=Point cible
+TargetOffsetHelp=Point de terminaison du jet stream.
+

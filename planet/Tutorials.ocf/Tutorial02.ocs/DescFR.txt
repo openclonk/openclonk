@@ -1,0 +1,8 @@
+Bombardement d'obstacles
+
+Votre petit ami s'est échappé une fois de plus, mais cette fois, il est coincé et a besoin de vous.
+
+Objectif: trouver et libérer votre petit ami à poils.
+
+Ce tutoriel explique: l'inventaire, comment ramasser, laisser tomber, lancer et utiliser des objets.
+

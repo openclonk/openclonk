@@ -1,2 +1,4 @@
 DE:Rasches Raffinieren
 US:Rapid Refining
+FR:Raffinage rapide
+

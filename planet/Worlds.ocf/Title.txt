@@ -1,2 +1,4 @@
 DE:Welten
 US:Worlds
+FR:Mondes
+

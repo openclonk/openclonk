@@ -1,0 +1,3 @@
+Concierge1=Bienvenue %s, au parc d'attractions Boomshire. Veuillez rester sur le chemin. Chaque fois que vous êtes perdu, recherchez la lumière.
+
+OpenChest=Ouvrir le coffre

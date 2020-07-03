@@ -1,0 +1,2 @@
+Name=Acide bouillonnant
+Description=Fait bouillonner l'acide sur la carte.

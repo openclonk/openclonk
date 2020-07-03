@@ -1,1 +1,3 @@
 US:#1060: Incorrectly formatted TexMap causes nullpointer deref
+FR:#1060: TextMap mal formatée et provoquant un nullpointer deref
+

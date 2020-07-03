@@ -1,0 +1,2 @@
+Name=Parchemin de boule de feu
+Description=Lancez une boule de feu sur vos ennemis.

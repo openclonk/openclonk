@@ -1,2 +1,4 @@
 DE:Ressourcen
 US:Resources
+FR:Ressources
+

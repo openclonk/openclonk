@@ -1,0 +1,2 @@
+Name=Champignon cuit
+Description=Ce repas fantastique restaure une partie de la santé du clonk. Appuyez sur [Utiliser] pour manger le champignon.

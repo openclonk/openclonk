@@ -1,0 +1,51 @@
+MsgWave=Vague %d
+MsgWaveCleared=Vague %d terminée !
+MsgOutOfRelaunchs=%s n'a plus de relance.
+MsgRelaunch=Relance %s.
+
+EnemyPilot=Pilote
+EnemyCrewman=Homme d'équipage
+EnemyDefender=Combattant du bouclier
+EnemyBow=Archer
+EnemyArtillery=Artillier
+EnemyBalloon=Parachutiste
+EnemyRocket=Lanceur de rocket
+
+WaveFirst=Seulement l'avant-garde
+WaveSecond=Escadron de fusées
+WaveThird=Chevaucheurs de fusées
+WaveFourth=Escadron de chevaucheurs de fusée
+WaveFifth=Barreur de dirigeable
+WaveSixth=Force aérienne
+WaveSeventh=Largage de parachutes
+WaveEighth=Force aérienne musclée
+WaveNinth=Force d'intervention
+WaveTenth=Attaque totale
+
+TeamAttackers=Attaquants
+TeamDefenders=Défenseurs
+
+HomebaseWeapons=Armes
+HomebaseItems=Objets
+HomebaseTechnology=Technologie
+HomebaseUpgrades=Mises à jour
+HomebaseArtifacts=Artéfacts
+
+HomebaseDescBow=Portée moyenne, faibles dégâts. Flèches sans fin.
+HomebaseDescJavelin=Portée courte, dégâts importants. Javelots sans fin.
+HomebaseDescBlunderbuss=Portée élevée, dégâts moyens. Balles sans fin.
+HomebaseDescGrenadeLauncher=Lance des bombes sur les ennemis. Bombes infinies.
+HomebaseDescWindBag=Envoie des souffles d'air pour faire décoller les ennemis.
+HomebaseDescHammer=Pour construire des tours défensives et d'autres bâtiments.
+
+HomebaseLoadSpeed=Vitesse de chargement
+HomebaseDescLoadSpeed=Réduit le temps de rechargement des armes à distance (toutes).
+HomebaseShootingStrength=Force de tir.
+HomebaseDescShootingStrength=Renforce les armes, les fait tirer plus loin (sauf tromblon).
+HomebaseLife=Énergie vitale
+HomebaseDescLife=Rend votre clonk capable de subir plus de dégâts.
+HomebaseAdvancedWeapons=Armes avancées
+HomebaseDescAdvancedWeapons=Déverrouille plus d'armes et d'améliorations.
+HomebaseMasterWeapons=Armes de maître
+HomebaseDescMasterWeapons=Déverrouille plus d'armes et améliorations
+

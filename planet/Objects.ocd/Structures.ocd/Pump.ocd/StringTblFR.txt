@@ -1,0 +1,41 @@
+Name=Pompe
+Description=La pompe peut transporter du liquide de A à B. Si elle pompe des liquides vers le bas, elle génère même un peu d'énergie.
+MsgTurnOff=Arrêtez la pompe
+MsgTurnOn=Démarrez la pompe
+MsgCutSource=Couper la source
+MsgCutDrain=Couper le drain
+DescTurnOff=Désactive la pompe pour qu'aucun liquide ne soit transporté.
+DescTurnOn=Réactive le pompage. Un pompage réussi nécessite au moins un tuyau source connecté.
+DescCutSource=Supprime le tuyau source. La pompe ne pourra pas continuer à pomper sans tuyau source.
+DescCutDrain=Enlève le tuyau de vidange. Les liquides seront pompés directement vers la pompe.
+MsgConnectSource=Connecter la source
+MsgConnectDrain=Connecter le drain
+DescConnectSource=Connecte un tuyau source à la pompe. La pompe obtient alors le liquide de ce tuyau.
+DescConnectDrain=Connecte un tuyau de vidange à la pompe. La pompe dirige ensuite le liquide à travers ce tuyau.
+Control=Contrôle de la pompe
+
+StateOk=La pompe fonctionne.
+StateNoSource=Aucun tuyau source n'est connecté.
+StateNoInput=La pompe n'a pas de liquide à pomper.
+StateNoOutput=Le tuyau de vidange est bouché.
+StateNoPower=La pompe n'est pas alimentée.
+StateNoAir=Le tuyau de la source d'air est bouché.
+StateNoAirNeed=Il n'y a pas besoin d'air.
+StateTurnedOff=La pompe a été arrêtée.
+
+MsgSourcePipeProhibited=Impossible de connecter le tuyau source.
+MsgDrainPipeProhibited=Impossible de connecter le tuyau de vidange.
+MsgAirPipeProhibited=La pompe a déjà un tuyau de vidange et ne peut pas prendre de tuyau d'air.
+MsgCreatedSource=Tuyau source connecté.
+MsgCreatedDrain=Tuyau de vidange connecté.
+MsgCreatedAirDrain=Tuyau d'air connecté.
+MsgHasPipes=La pompe a déjà une source et un tuyau de vidange.
+
+PumpMaterials=Matériaux de la pompe
+MsgEnableMaterial=Activez le pompage du matériau %s.
+MsgDisableMaterial=Désactivez le pompage du matériau %s.
+
+MsgCutAirPipe=Couper le tuyau d'air
+MsgConnectAirPipe=Connectez le tuyau d'air
+DescCutAirPipe=Supprime le tuyau d'air.
+DescConnectAirPipe=Connecte un tuyau d'air.

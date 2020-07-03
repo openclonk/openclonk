@@ -1,0 +1,6 @@
+Name=Construire un communicateur en cristal
+
+#Goal window
+MsgGoalFulfilled=Félicitations, le communicateur de cristal est terminé.
+MsgGoalUnfulfilled=Trouvez les composants manquants et apportez-les au chantier de construction du communicateur de cristal !
+

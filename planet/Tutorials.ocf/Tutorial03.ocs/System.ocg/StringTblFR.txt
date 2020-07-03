@@ -1,0 +1,42 @@
+# Dialogue: Lumberjack
+DlgLumberjackHello=Bonjour je suis %s, le bucheron de ce petit village.
+DlgLumberjackReply=Mon nom est %s, vous avez l'air triste.
+DlgLumberjackSawmill=Oui, en effet. Ma scierie a été détruite et je n'arrive pas à trouver de pierres pour la reconstruire. M'aideriez vous ?
+DlgLumberjackRock=Oui, je vais vous trouver de la pierre.
+DlgLumberjackTalkToOthers=Merci, peut-être pourriez vous maintenant aider un des autres villageois.
+DlgLumberjackWellDone=Merci beaucoup, pour avoir reconstruit la scierie. Puis-je faire quelque chose pour vous ? 
+DlgLumberjackFavor=En fait vous pouvez, j'ai besoin de bois auriez-vous une hache ?
+DlgLumberjackMines=Non, mais j'ai laissé ma hache dans les mines alors que j'y étais caché durant l'attaque.
+DlgLumberjackLook=D'accord, je vais y jeter un coup d'œil.
+
+# Dialogue: Fireman
+DlgFiremanOutOfWay=<c ff0000>Au feu !</c> Dégagez !
+DlgFiremanLastFire=Pfiou! C'était le dernier foyer !
+DlgFiremanGoodJob=Bon travail! Avez-vous été attaqué ?
+DlgFiremanEvilGuys=Oui, notre village l'a été. Les assaillants ont pris quelques-uns de nos wipfs.
+DlgFiremanFurryFriend=Mauvaise nouvelle ! J'espère qu'ils ne prendront pas mon petit ami poilu ! Comment puis-je vous aider ?
+DlgFiremanFlagpole=Nous devons construire un nouveau mât pour reconnecter l'alimentation électrique à notre village.
+
+# Dialogue: Builder
+DlgBuilderHello=Salut ! Mon nom est %s et je suis un constructeur.
+DlgBuilderReply=Vous avez donc beaucoup de travail. Avez-vous besoin d'un coup de main ?
+DlgBuilderFlagpole=Oui, pouvez-vous construire un mât par ici ?
+DlgBuilderWhyHere=Bien sûr, mais pourquoi ici ?
+DlgBuilderConnect=Parce que le mât fournira une connection électrique entre l'éolienne et l'élévateur.
+
+# Dialogue: Farmer
+DlgFarmerHello=Hey ! Est-ce que mon wipf est à l'abri ici ?
+DlgFarmerYesSafe=Oui, il l'est, je garderai un oeil dessus. Êtes-vous en train de nous aider à la reconstruction ?
+DlgFarmerRebuild=Exactement !
+
+# Dialogue: Lookout
+DlgLookoutHello=Hello, que faisez-vous ici ?
+DlgLookoutProtecting=Je surveille les attaques de la faction malfaisante.
+DlgLookoutBlunderbuss=Est-ce pour cela que vous portez un tromblon ?
+DlgLookoutNoChance=Oui, mais je ne crois pas avoir la moindre chance face à ces êtres malfaisants.
+DlgLookoutNoShow=Espérons qu'ils ne reviennent pas alors.
+
+# Dialogue: Village head
+DlgVillageHeadHello=Je suis le chef du village.
+DlgVillageHeadHere=Que faites-vous ici ?
+DlgVillageHeadOverview=Je suis en train de faire un aperçu des dégâts. Revenez plus tard, j'aurai une mission pour vous.

@@ -1,0 +1,3 @@
+Name=Poteau de pont
+Description=Tient le pont de corde.
+MsgRetractBridge=Rentrez le pont de corde.

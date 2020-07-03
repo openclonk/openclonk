@@ -1,0 +1,5 @@
+NoPlrKnowledge=Aucun plan de construction
+Construction=Construction
+Production=Production
+Name=Arsenal
+Description=C'est là que les armes sont produites, grandes et petites.

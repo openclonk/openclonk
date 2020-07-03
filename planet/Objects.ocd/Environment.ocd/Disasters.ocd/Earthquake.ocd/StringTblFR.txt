@@ -1,0 +1,6 @@
+Name=Tremblement de terre
+LaunchEarthquake=Tremblement de terre
+LaunchEarthquakeHelp=Secoue le sol, projette des objets et fait tomber des matériaux meubles.
+PositionHelp=Là où la terre tremble.
+Strength=Force
+StrengthHelp=Rayon et force de la secousse.

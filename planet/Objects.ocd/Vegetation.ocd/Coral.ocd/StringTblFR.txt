@@ -1,0 +1,3 @@
+Name=Corail
+Description=Pousse sous l'eau et, une fois collecté, peut même être mangé.
+

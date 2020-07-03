@@ -1,0 +1,2 @@
+Name=Rocher
+Description=Blesse les Clonks et endommage les bâtiments.

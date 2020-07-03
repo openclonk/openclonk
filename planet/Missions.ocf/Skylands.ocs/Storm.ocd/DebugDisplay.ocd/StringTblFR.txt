@@ -1,0 +1,1 @@
+Name=Affichage du débogage

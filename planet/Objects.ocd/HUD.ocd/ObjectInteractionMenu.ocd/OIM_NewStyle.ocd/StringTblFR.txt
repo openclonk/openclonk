@@ -1,0 +1,15 @@
+TooltipClose=Fermer
+
+TooltipSettings=Ouvrir les paramètres
+TooltipSettingsClose=Fermer les paramètres
+
+TooltipBackground=Basculer la transparence d'arrière-plan
+
+TooltipHideText=Masquer les légendes
+TooltipShowText=Afficher les légendes
+
+TooltipWithSaturation=Afficher les couleurs du menu
+TooltipWithoutSaturation=Masquer les couleurs du menu
+
+TooltipTransferAllLeft=Transférez l'inventaire vers la gauche.
+TooltipTransferAllRight=Transférez l'inventaire vers la droite.

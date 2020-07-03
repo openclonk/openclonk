@@ -1,0 +1,42 @@
+Name=Parkour
+
+#Goal window
+MsgParkour=Ce parkour a plus de %d points de contrôle. Vérifiez le tableau de bord pour le nombre de points de contrôle terminés par joueur.
+MsgParkourWon=Félicitations, vous avez gagné ce parkour !
+MsgParkourWonTeam=Félicitations, votre équipe a gagné ce parkour !
+MsgParkourLost=Vous avez perdu ce parkour.
+MsgParkourLostTeam=Votre équipe a perdu ce parkour.
+
+#Respawn
+MsgRespawn0=%s essaie à nouveau.
+MsgRespawn1=%s est mort.
+MsgRespawn2=Haha, %s !
+MsgRespawn3=Nous pleurons %s.
+MsgNewRespawn=Vous allez maintenant réapparaître ici.
+
+#Short Description
+MsgShortDesc=Terminé : %d%
+
+#Scoreboard
+MsgCaptionX=Parkour over %d checkpoints.
+MsgCaptionNone=Parkour sans points de contrôle.
+
+#Best time
+MsgBestTime=%s a établi un nouveau record personnel de %s.
+
+#Evaluation data
+MsgEvalPlrWon=%s a gagné le  parkour en %s.
+MsgEvalTeamWon=l'équipe %s a gagné le parkour en %s.
+MsgEvalPlayerX=Vous avez passé %d des %d points de contrôle.
+MsgEvalPlayerAll=Vous avez passé tous les point de contrôle.
+
+#Editor
+OnCleared=Action : PC atteint
+OnClearedHelp=Action à exécuter une fois pour chaque joueur ayant passé un point de contrôle.
+OnFirstCleared=Action : PC atteint en premier.
+OnFirstClearedHelp=Action à exécuter quand le premier joueur a passé un point de contrôle.
+OnRespawn=Action : Réapparaître
+OnRespawnHelp=Action à exécuter quand un joueur réapparaît sur un point de contrôle.
+ResetAllCleared=Point de contrôle réinitialisé
+ResetAllClearedHelp=Réinitialiser l'avancée de tous les points de contrôle pour tous les joueurs.
+

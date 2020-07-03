@@ -1,2 +1,4 @@
 DE:Stromproblematik
 US:Power Problems
+FR:Problèmes d'alimentation
+

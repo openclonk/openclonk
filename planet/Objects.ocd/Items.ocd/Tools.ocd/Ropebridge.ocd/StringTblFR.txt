@@ -1,0 +1,5 @@
+Name=Pont de corde
+Description=Pont de corde court qui peut couvrir de petits espaces dans le paysage. Appuyez une fois sur [Utiliser] pour placer l'extrémité gauche du pont et une autre fois pour placer celle de droite.
+MsgBridgeLong=Le poteau ne peut pas être placé ici, le pont serait trop long.
+MsgBridgeShort=Le poteau ne peut pas être placé ici, le pont serait trop court.
+MsgBridgeUneven=Le poteau ne peut pas être placé ici, le pont serait trop inégal.

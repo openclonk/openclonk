@@ -1,0 +1,3 @@
+Name=Appeler le dirigeable
+MsgCallAirship=Appeler le dirigeable
+MsgStopAirship=Arrêter le dirigeable

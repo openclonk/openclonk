@@ -1,0 +1,8 @@
+La grotte du voleur
+
+Archibald, le chef du village, vous emmène avec lui dans un voyage dans un village voisin pour demander de l'aide. Sur votre chemin, vous tombez sur un gars qui a perdu sa maison à cause de voleurs. Pour vous rendre dans l'autre village, vous devez traverser la grotte où se cachent ces voleurs.
+
+Goal: Frayez-vous un chemin à travers la grotte du voleur.
+
+Tutorial explains: des armes comme l'arc, le javelot, l'épée et le bouclier.
+

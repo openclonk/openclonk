@@ -1,0 +1,21 @@
+HitPoints=Points de dégâts
+NoFlag=Pas de mât à portée
+Indestructible=Indestructible
+
+Invincible=La structure est invincible.
+Damage=Dommage
+NotDamaged=Intact.
+SlightlyDamaged=Légèrement endommagé.
+HeavilyDamaged=Fortement endommagé.
+Repair=Réparer
+RepairRequires=La réparation nécessite un marteau et les matériaux suivants: |
+NoRepairNecessary=La réparation n'est pas nécessaire pour le moment.|Si la structure est endommagée, vous pouvez trouver une liste des matériaux nécessaires ici.
+YouNeedAHammer=Tu as besoin d'un marteau.
+YouNeedMaterials=Vous avez besoin de certains des matériaux nécessaires pour réparer cette structure.
+
+MsgNotFullyConstructed=%s n'est pas encore entièrement construit.|Il n'y a aucune interaction possible à ce stade.
+
+Flip=Retourner
+FlipHelp=Miroite la structure.
+Basement=Fondation
+BasementHelp=Ajoute une fondation à la structure.

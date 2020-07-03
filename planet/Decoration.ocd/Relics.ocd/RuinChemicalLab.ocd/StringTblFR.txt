@@ -1,0 +1,2 @@
+Name=Labo chimique en ruines
+Description=Reliques d'un viel endroit.

@@ -1,0 +1,2 @@
+Name=Protection de statue
+Description=Défendre la statue contre les attaques ennemies !

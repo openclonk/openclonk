@@ -1,0 +1,5 @@
+Name=Points d'argent
+
+#Goal window
+MsgGoalFulfilled=%d points de richesse atteints!
+MsgGoalUnfulfilled=Seuls %d points de richesse sur %d ont été atteints.

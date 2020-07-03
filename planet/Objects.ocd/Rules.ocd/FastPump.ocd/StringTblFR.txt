@@ -1,0 +1,3 @@
+Name=Pompe rapide
+Description=Les pompes ont une vitesse de pompage alternative (généralement plus rapide).
+EditorPropPumpSpeed=Vitesse de la pompe

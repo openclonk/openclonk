@@ -1,0 +1,5 @@
+Name=Construction
+
+#Goal window
+MsgGoalFulfilled=Vous avez construit les objets requis.
+MsgGoalUnFulfilled=Les objets suivants doivent encore être construits : %s.

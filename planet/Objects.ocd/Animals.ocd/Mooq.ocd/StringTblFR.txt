@@ -1,0 +1,2 @@
+Name=Mooq
+Description=Mignonne petite créature. Aime la lave.

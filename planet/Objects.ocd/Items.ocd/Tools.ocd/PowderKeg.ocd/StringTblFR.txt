@@ -1,0 +1,4 @@
+Name=Baril de poudre
+Description=Munitions pour le canon.
+RemainingPowder=Poudre restante
+

@@ -1,0 +1,3 @@
+NamePlrTeam=Joueurs
+NameCrysTeam=Cristaux
+

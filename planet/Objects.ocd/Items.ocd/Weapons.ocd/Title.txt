@@ -1,2 +1,4 @@
 DE:Waffen
 US:Weapons
+FR:Armes
+

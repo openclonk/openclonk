@@ -1,0 +1,5 @@
+Name=Mêlée
+
+MsgGoalFulfilled=Tous les adversaires ont été éliminés.
+MsgGoalUnfulfilled=Il y a toujours %d adversaires dans le jeu.
+

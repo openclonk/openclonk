@@ -1,2 +1,4 @@
 DE:Cable Lorries
 US:Cable Lorries
+FR:Câble de chariot
+

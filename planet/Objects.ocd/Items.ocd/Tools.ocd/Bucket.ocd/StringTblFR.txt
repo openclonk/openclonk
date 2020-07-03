@@ -1,0 +1,4 @@
+Name=Seau
+Description=Le seau recueille automatiquement la terre lorsque vous creusez la terre avec la pelle. Utilisez-le comme matériau pour les ponts ou d'autres tâches similaires. Pelleter à travers la terre pour remplir automatiquement le seau. Appuyez sur [Utiliser] pour vider la terre.
+UsageHotTip=Le seau est vide. Utilisez la pelle pour creuser la terre pour le remplir.
+

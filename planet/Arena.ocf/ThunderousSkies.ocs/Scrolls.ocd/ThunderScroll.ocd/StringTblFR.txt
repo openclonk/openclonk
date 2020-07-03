@@ -1,0 +1,2 @@
+Name=Parchemin de foudre
+Description=Appelez un éclair dévastateur d'en haut!

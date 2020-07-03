@@ -1,0 +1,2 @@
+Name=Acide
+Description=Représente un seul pixel de matériau d'acide.

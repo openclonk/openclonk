@@ -1,2 +1,4 @@
 DE:Clonkomotive
 US:Clonkomotive
+FR:Clonkomotive
+

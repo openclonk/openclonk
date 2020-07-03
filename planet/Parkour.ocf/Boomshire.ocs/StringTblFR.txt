@@ -1,0 +1,12 @@
+RelaunchMsg0=%s essaie encore.
+RelaunchMsg1=%s est mort.
+RelaunchMsg2=Haha, %s!
+RelaunchMsg3=Nous pleurons %s.
+NameConcierge=Bonne Mine
+MsgChestOpened=J'ai ouvert un coffre ! (%d/%d)
+Found4=4 coffres trouvés
+Found7=7 coffres trouvés
+Found14=14 coffres trouvés
+Achieve4=Coffre en bronze terminé !
+Achieve7=Coffre en argent terminé !
+Achieve14=Coffre en or terminé !

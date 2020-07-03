@@ -1,0 +1,3 @@
+Name=Puka
+Description=Mignonne petite créature mais extrêmement dangereuse près de l'eau.
+

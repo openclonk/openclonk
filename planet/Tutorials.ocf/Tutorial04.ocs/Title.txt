@@ -1,2 +1,4 @@
 DE:Bergbauwerkzeuge
 US:Mining Tools
+FR:Outils miniers
+

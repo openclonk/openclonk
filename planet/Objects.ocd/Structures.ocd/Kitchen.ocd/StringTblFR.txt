@@ -1,0 +1,5 @@
+NoPlrKnowledge=Aucun plan de construction
+Construction=Construction
+Production=Production
+Name=Cuisine
+Description=Un endroit pour préparer divers repas.

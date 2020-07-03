@@ -1,0 +1,3 @@
+Name=Levier
+Description=Ouvre et ferme des portes et d'autres choses. Attraper et appuyer sur les touches directionnelles pour contrôler.
+

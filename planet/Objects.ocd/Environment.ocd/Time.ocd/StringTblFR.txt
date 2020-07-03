@@ -1,0 +1,5 @@
+Time=Temps
+Description=Contrôle l'heure du jour et les effets de nuit correspondants.
+TimeHelp=Heure actuelle de la journée en minutes depuis minuit.
+CycleSpeed=Vitesse de cycle quotidienne
+CycleSpeedHelp=Vitesse du cycle jour/nuit en secondes par "pulsation". Par défaut 30.

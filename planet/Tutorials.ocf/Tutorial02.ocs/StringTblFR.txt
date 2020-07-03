@@ -1,0 +1,27 @@
+# Goal Description
+MsgGoalName=Libérez votre Wipf
+MsgGoalDescription=Trouvez votre petit ami à poils, libérez-le et amenez-le au prochain lieu.
+
+# Dialogue options
+MsgNextTutorial=&Tutoriel suivant
+MsgNextTutorialDesc=Commencer le tutoriel suivant.
+MsgRepeatRound=&Recommencer cette étape
+MsgRepeatRoundDesc=Recommencer ce scénario.
+
+# Tutorial messages
+MsgTutorialIntro=Il semblerait que votre Roger se soit encore perdu, c'est tout un personnage ! Les Wipfs ont tendance à passer un certain temps sous terre à cause de leur envie de creuser, donc vous pourriez le trouver là-bas. Pour l'instant, allez à droite.
+MsgTutorialShovel=Il y a une pelle là-bas ! Les Clonks ont besoin d'équipement pour effectuer certaines tâches, la pelle est utile pour creuser. Prenez la pelle en vous tenant devant et en appuyant sur [%s].
+MsgTutorialInventory=Maintenant la pelle est dans votre inventaire, dans les emplacements en haut de l'écran. L'objet que vous avez sélectionné est mis en surbrillance et peut être utilisé. Pour sélectionner un autre objet, appuyez sur la touche numérique correspondante  (%s) ou utilisez %s pour parcourir l'inventaire.  
+MsgTutorialDigging=Maintenant que vous tenez la pelle, vous feriez mieux de l'utiliser. Maintenez [%s] enfoncé pour utiliser l'objet actuellement sélectionné. Sélectionnez la pelle et vous pouvez commencer à creuser dans la direction vers laquelle vous pointez.
+MsgTutorialFirestones=Faites attention !  La matière rougeâtre ci-devant est dangereuse. Si vous la creusez, des pierres de feu apparaîtront. Celles-ci sont fragiles et hautement explosives. Heureusement, le clonk les ramasse automatiquement lorsqu'ils sont à portée de main. Assurez-vous d'en ramasser quelques-uns, cela pourrait être utile.
+MsgTutorialFoundWipf=Vous avez presque trouvé votre petit Roger, mais un amas de rochers vous barre le chemin. Vous ne pouvez pas creuser dans les rochers, vous devez donc les faires exploser. Jeter quelques pierres de feu sur les rochers. Mais gardez vos distances ! Cliquer sur [%s] dans la direction vers laquelle vous voulez les lancer.
+MsgTutorialBlastedRock=Bien joué ! Vous avez détruit les rochers et retrouvé votre ami ! Il semble épuisé, apportez lui de quoi manger. Par exemple, des champignons dans les grottes autour. Pour déposer un objet appuyez sur [%s] ou la combinaison de touche pour un emplacement d'inventaire différent. Déposez la nourriture lorsque vous êtes proche de Roger.
+MsgTutorialFedWipf=Cela lui a fait du bien! Et il est à nouveau parti... Essayez également de trouver une sortie.
+MsgTutorialDigOutLoam=Dans cette direction ! Ces objets oranges ci-devant son des morceau de loam, creusez et collectez-en un peu. Le loam peut être utilisé pour construire des ponts de terre. Maintenez [%s] enfoncé pour construire un pont dans la direction du curseur de la souris.
+MsgTutorialFragileBridge=Attendez une seconde...  Ce pont paraît hautement fragile et il y a de l'acide en-dessous; ce qui est très dangereux. Vous devriez laisser votre wipf passer en premier pour tester le pont vu qu'il est plus léger.
+MsgTutorialMakeLoamBridge=Je vous l'avais dit, il était fragile après tout, heureusement que votre ami l'a fait. Utilisez des morceaux de loam pour construire un pont pour passer au-dessus de l'acide en toute sécurité et prendre votre ami à poils. Sélectionnez du loam et maintenez  [%s] enfoncé pour construire un pont de terre dans la direction de la souris.
+MsgTutorialCompleted=Bien joué !  Passons au prochain tutoriel.
+
+# Wipf name
+WipfName=Roger
+WipfDescription=Votre petit ami poilu.

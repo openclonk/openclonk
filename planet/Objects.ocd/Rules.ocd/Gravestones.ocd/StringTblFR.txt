@@ -1,0 +1,2 @@
+Name=Pierres tombales
+Description=Des pierres tombales sont créées pour couvrir le cadavre d'un clonk, fournissant des monuments aux morts.

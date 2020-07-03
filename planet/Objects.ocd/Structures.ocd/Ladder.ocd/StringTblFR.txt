@@ -1,0 +1,4 @@
+Name=Échelle
+TopHandle=Extrémité supérieure
+BottomHandle=Extrémité inférieure
+

@@ -1,0 +1,6 @@
+Name=Enrouleur de câble
+Description=Appuyez sur [Utiliser] devant un endroit à relier et une seconde fois devant le second endroit à relier pour connecter ensemble. Les endroits à connecter ne peuvent l'être que par un câble droit.
+TxtNoNewLine=Impossible de créer un nouveau câble ici.
+TxtCableRemoval=Câble déconnecté.
+TxtDoubleCable=Ces endroits sont déjà connectés.
+TxtConnect=Câble connectés|à %s

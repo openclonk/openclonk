@@ -1,0 +1,14 @@
+ Perforation à l'acide
+
+Le comte Helmi a commandé la construction de nouvelles douves pour améliorer la défense de son noble domaine. Malheureusement pour son grand projet, l'ingrédient le plus important fait défaut : l'acide. Il vous somme d'en récupérer dans le plus proche volcan. Et "Non", vous a-t-il dit, "La lave est hors de question, c'est complètement démodé !".
+
+Objectif : Remplir le bassin de droite avec de l'acide.
+
+Astuces :
+- Vous ne pouvez pas construire de structures à portée du cristal de puissance
+- la longueur des tuyau de pompage est limité dans cette aventure.
+- Puisqu'il n'y a pas de centrale électrique disponible et que des cristaux de puissance sont sur le chemin, vous devez réfléchir à la façon dont vous pouvez obtenir de l'énergie dans la grotte.
+- Les pompes génèrent de l'énergie lorsqu'elles pompes vers le bas.
+
+
+

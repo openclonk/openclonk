@@ -1,0 +1,110 @@
+TooltipObjectspawn=Faire apparaître des objets
+TooltipLandscapeBrush=Dessiner le terrain
+TooltipMarker=Marqueur
+TooltipMapGen=Générateur de carte
+TooltipTweaks=Triches et autres trucs sympa
+TooltipGodsHand=Cet objet vous placera dans la main de Dieu (pour le changer, choisissez un objet différent dans le menu).
+
+OSCatProductionResources=Ressources
+OSCatFoodstuff=Nourritures
+OSCatLiquids=Liquides
+OSCatTools=Outils
+OSCatWeapons=Armes
+OSCatExplosives=Explosifs
+OSCatVehicles=Véhicules
+OSCatAnimals=Animaux
+OSCatPlants=Plantes
+OSCatGodTools=Les outils de Dieu
+
+OSHintTarget=Astuce! Ici, vous pouvez sélectionner où les objets seront créés. Choisissez "La main de Dieu" pour sélectionner quel objet vous voulez créer avec la main de Dieu.
+
+OSTargetClonk=Cible: Clonk/Inventaire
+OSTargetGodsHand=Cible: La main de Dieu
+OSTargetClonkTT=L'objet sera placé dans l'inventaire des clonks si possible.
+OSTargetGodsHandTT=L'objet peut maintenant être mis dans la main de DIeu.
+
+MatEarth=Terre
+MatEarthSpongy=Terre (spongieuse)
+MatEarthRoot=Earth (root)
+MatSand=Sable
+MatSandDry=Sable sec
+MatIce=Glace
+MatIce2=Glace (différente)
+MatSnow=Neige
+MatRock=Rocher
+MatRockSmooth=Rocher (lisse)
+MatGranite=Granite
+MatOre=Minerai
+MatGold=Or
+MatCoal=Charbon
+MatFirestone=Pierre de feu
+MatRuby=Rubis
+MatAmethyst=Améthyste
+MatAshes=Cendres
+MatBrick=Brique
+MatBrickSoft=Brique (douce)
+MatEverrock=Everrock
+MatWater=Eau
+MatAcid=Acide
+MatLava=Lave
+MatDuroLava=Magma
+MatOil=Huile
+MatTunnel=Tunnel (arrière plan)
+MatTunnelBrick=Tunnel de brique (arrière plan)
+
+MatBgSky=Ciel
+MatBgTunnel=Tunnel
+MatBgBricks=Brique
+
+MBMaterialFg=Matériau
+MBMaterialBg=Matériau d'arrière plan
+MBBrushSize=Taille de la brosse
+MBBrushMode=Mode de la brosse
+
+MBBrushModeBrush=Brosse
+MBBrushModeQuad=Carré
+MBBrushModeErase=Effaceur
+
+MarkerNotSet=Marqueur non positionné
+PlaceMarker=Positionner le marqueur
+RemoveMarker=Oter le marqueur
+GoToMarker=Se téléporter
+
+MapGenButtonGenerate=Générer la carte!
+MapGenSizeWidth=largeur de la carte
+MapGenSizeHeight=hauteur de la carte
+MapGenMapType=type de la carte
+MapGenGoal=but du jeu
+
+MapGenTPEmpty=Vide
+MapGenTPFlatland=Terrain plan
+MapGenTPHills=Vallées
+MapGenTPMountains=Montagnes
+
+MapGenGoalNone=Aucun but
+MapGenGoalMining=Collecte
+MapGenGoalExpansion=Expansion
+
+TweakInvincible=Invincibilité  (Mode Dieu)
+OptActivate=Activer
+OptDeactivate=Déactiver
+TweakInvincible_Activated=%s est maintenant invincible
+TweakInvincible_Deactivated=%s n'est plus invincible
+
+TweakSkinChoose=Choisir une apparence
+OptSkin1=Aventurier
+OptSkin2=Steampunk
+OptSkin3=Alchimiste
+OptSkin4=Fermier
+
+# Goal
+MsgGoalName=Bac à sable
+MsgGoalDescription=Vous n'avez pas choisi un objectif,  vous pourrez simplement expérimenter et vous amuser! L'hôte peut activer ou désactiver le mode Dieu avec la commande /godmode off/host/all dans la fenêtre de discussion.
+
+# Message board
+MessageBoardOnlyHost=Seul l'hôte peut modifier l'option du mode Dieu.
+MessageBoardModeOff=Le mode Dieu est maintenant éteint.
+MessageBoardModeHost=L'hôte est maintenant en mode Dieu.
+MessageBoardModeAll=Tous les joueurs sont en mode Dieu.
+MessageBoardInvalidPar=Mauvais paramètre, la commande valide est /godmode off/host/all.
+

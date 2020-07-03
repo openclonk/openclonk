@@ -1,0 +1,6 @@
+TxtConstructions=Construction: %s
+TxtBlocked=Construction bloquée par %s
+TxtNoSiteHere=Impossible de créer le chantier ici !
+TxtNeeds=Besoins de construction
+Name=Marteau
+Description=Appuyez sur [Utiliser] pour construire un bâtiment.

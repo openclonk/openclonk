@@ -1,0 +1,48 @@
+Intro1=Pyrit, pourquoi devons-nous voler dans les nuages?
+Intro2=Vous m'avez dit de voler plus haut après que nous ayons failli nous écraser sur le volcan.
+Intro3=C'est horriblement turbulent ici.
+Intro4=En effet, la condensation de l'eau dans les nuages libère de l'énergie qui chauffe l'air.
+Intro5=Merci pour la conférence. Pouvons-nous maintenant voler encore plus bas ?
+Intro6=D'abord c'est trop turbulent quand je vole bas au dessus du volcan et maintenant c'est trop turbulent quand je vole haut dans les nuages.
+Intro7=Pourquoi ne dirigez-vous pas l'avion vous-même ?
+Intro8=...
+Intro9=Bien. Échangeons nos places.
+Intro10=Aaaah
+
+Intro20=Ouch.
+Intro21=Oh, un ami est tombé du ciel. Salut l'ami ! Je m'appelle mardi.
+Intro22=Mince. Avez-vous vu notre avion? Je l'ai accidentellement abandonné.
+Intro23=Le ciel est toujours nuageux ici. Nous ne verrons aucun avion et les avions ne nous verront pas.
+Intro24=Arf ! Mais j'ai besoin que Pyrit me trouve en quelque sorte.
+Intro25=Ce qui atterrit sur l'île reste sur l'île. Exactement comme moi.
+Intro26=N'y a-t-il pas moyen de faire un feu ou quelque chose ?
+Intro27=Du feu ? Cela ne servira à rien. Le bois de coco ne brûle pas bien et ne sera pas vu à travers les nuages.
+Intro28=Mais ... nous pourrions utiliser mon <c ffff00>communicateur en cristal</c> !
+Intro29=Ça m'a l'air bien. Où est-ce ?
+Intro30=Je suis content sur cette île. Pourquoi devrais-je construire un appareil de communication ? J'ai fait des plans mais je n'ai pas pris la peine de finir de le construire.
+Intro31=Le site et les plans pour le terminer se trouvent à l'extrémité est de cette île. Il faut juste du métal et des gemmes.
+Intro32=Le métal semble assez facile ? Où puis-je trouver les gemmes ?
+Intro33=Les poissons parlent parfois de réserves de gemmes profondément sous le fond de l'océan. Peut-être pouvez-vous les exploiter ?
+Intro34=Les poissons te parlent ?
+Intro35=Si vous écoutez attentivement, même les noix de coco parlent !
+Intro36=D'accord ... je vais voir si je peux terminer cette construction.
+
+Tuesday1=Salut l'ami. Comment puis-je vous aider ?
+TuesdayQCommunicator=Comment utiliser le communicateur ?
+TuesdayACommunicator=Apportez simplement les matériaux nécessaires sur le chantier. Il devrait fonctionner automatiquement une fois terminé.
+TuesdayQGems=Où puis-je trouver des gemmes ?
+TuesdayAGems=Essayez de plonger sous terre.
+TuesdayQFish=Pouvez-vous dire au poisson de s'en aller ?
+TuesdayAFish=Je suis quelqu'un qui écoute. Je n'impose pas de restrictions aux créatures libres de ce monde.
+TuesdayQWater=L'eau est trop profonde. Comment puis-je atteindre les joyaux?
+TuesdayAWater=Vous pouvez essayer de construire des kits muraux {{WallKit}} dans l'atelier d'outils {{ToolsWorkshop}}. Les kits muraux peuvent être utilisés pour construire des murs stables sous l'eau, vous protéger des poissons et donner de la place pour respirer.
+TuesdayAWater2=À l'aide de kits muraux et d'une pompe, vous pourrez peut-être résoudre vos problèmes.
+TuesdayQBye=Au revoir
+
+Outro1=La machine est terminée ! Je me demande si ça marche.
+Outro2=Cela semble bon. Envoyons un signal de sauvetage ...
+Outro3=Je me demande si quelqu'un nous a entendus.
+Outro4=Hé, n'est-ce pas nos amis bloqués?
+Outro5=Hourra, nous sommes sauvés !
+Outro6=Allons, mes amis,  dirigeons-nous vers la Montagne d'Or !
+

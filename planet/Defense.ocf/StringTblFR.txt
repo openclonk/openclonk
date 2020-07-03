@@ -1,0 +1,4 @@
+
+AchievementBasic=Bien défendu!
+AchievementTough=Défense solide!
+AchievementRockSolid=Défense infranchissable!

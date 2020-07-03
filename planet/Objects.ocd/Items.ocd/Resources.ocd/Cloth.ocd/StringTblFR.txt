@@ -1,0 +1,2 @@
+Name=Tissu
+Description=Matériel de base pour les objets liés au tissu.

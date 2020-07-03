@@ -1,0 +1,4 @@
+Didacticiel
+
+Bienvenue dans le monde d'OpenClonk. Ce dossier de scénario contient les tutoriels. Cette suite de scenarii fournit une introduction essentielle des contrôles de Clonk. Après avoir terminé les tutoriels, vous devriez avoir une bonne base pour vous engager dans les batailles ou coopérer avec d'autres pour construire des colonies et partir à l'aventure. Dans ces tutoriels, vous embarquerez dans une petite aventure à l'aide de précieux messages du didacticiel.  Si vous voulez cacher ces messages, vous pouvez basculer la présence du didacticiel en appuyant sur la touche G de votre clavier.
+
