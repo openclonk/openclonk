@@ -101,7 +101,7 @@ script:
 
 after_success:
     - >
-      if [ "$UPLOAD_SNAPSHOT" = 1 ]; then
+      if [ "$UPLOAD_SNAPSHOT" = 1 ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         case "$TRAVIS_OS_NAME" in
           linux)
             echo "Creating AppImage..." &&
