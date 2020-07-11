@@ -1062,7 +1062,7 @@ C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByIndex(int32_t index) const
 C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByID(int32_t id) const
 {
 	// must be a valid ID
-	assert(id);
+	assert(id >= 0);
 	// check all packets for a player
 	for (int32_t i=0; i<iClientCount; ++i)
 	{
@@ -1077,7 +1077,7 @@ C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByID(int32_t id) const
 C4ClientPlayerInfos *C4PlayerInfoList::GetClientInfoByPlayerID(int32_t id) const
 {
 	// get client info that contains a specific player
-	assert(id);
+	assert(id >= 0);
 	for (int32_t i=0; i<iClientCount; ++i)
 	{
 		int32_t j=0; C4PlayerInfo *pInfo;
@@ -1091,7 +1091,7 @@ C4ClientPlayerInfos *C4PlayerInfoList::GetClientInfoByPlayerID(int32_t id) const
 C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByID(int32_t id, int32_t *pidClient) const
 {
 	// must be a valid ID
-	assert(id); assert(pidClient);
+	assert(id >= 0); assert(pidClient);
 	// check all packets for a player
 	for (int32_t i=0; i<iClientCount; ++i)
 	{
@@ -1110,7 +1110,7 @@ C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByID(int32_t id, int32_t *pidClient
 C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoBySavegameID(int32_t id) const
 {
 	// must be a valid ID
-	assert(id);
+	assert(id >= 0);
 	// check all packets for a player
 	for (int32_t i=0; i<iClientCount; ++i)
 	{
