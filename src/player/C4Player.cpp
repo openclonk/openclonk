@@ -43,8 +43,10 @@
 #include "object/C4ObjectMenu.h"
 #include "platform/C4GamePadCon.h"
 #include "player/C4PlayerList.h"
+#include "player/C4PlayerScript.h"
+#include "script/C4AulDefFunc.h"
 
-C4Player::C4Player() : C4PlayerInfoCore()
+C4Player::C4Player() : C4PlayerInfoCore(), C4PropList(GetPropListPrototype(C4PlayerScript::PROTOTYPE_NAME_SCRIPT))
 {
 	Filename[0] = 0;
 	ID = 0;
@@ -70,6 +72,7 @@ C4Player::C4Player() : C4PlayerInfoCore()
 	ZoomLimitMinVal = ZoomLimitMaxVal = ZoomVal = Fix0;
 	ViewLock = true;
 	SoundModifier.Set0();
+	SetPropertyByS(::Strings.RegString("Data"), C4VPropList(C4PropList::New()));
 }
 
 C4Player::~C4Player()
@@ -84,6 +87,21 @@ C4Player::~C4Player()
 		pMsgBoardQuery = pNext;
 	}
 	ClearControl();
+}
+
+C4PropList* C4Player::GetPropListPrototype(const char *name)
+{
+	C4Value temp;
+	if (!::ScriptEngine.GetGlobalConstant(name, &temp))
+	{
+		throw NeedPlayerContext(FormatString("Global constant %s not defined", name).getData());
+	}
+	C4PropList * p = temp.getPropList();
+	if (!p)
+	{
+		throw NeedPlayerContext(FormatString("Global constant %s is not a proplist anymore", name).getData());
+	}
+	return p;
 }
 
 bool C4Player::ObjectInCrew(C4Object *tobj)
@@ -519,9 +537,6 @@ bool C4Player::ScenarioInit()
 	// any team selection is over now
 	Status = PS_Normal;
 
-	// Wealth, home base materials, abilities
-	Wealth=0;
-
 	// Starting position
 	int32_t ptx = -1;
 	int32_t pty = -1;
@@ -609,29 +624,6 @@ void C4Player::SetFoW(bool fEnable)
 {
 	// set flag
 	fFogOfWar = fEnable;
-}
-
-bool C4Player::DoWealth(int32_t iChange)
-{
-	if (LocalControl)
-	{
-		if (iChange>0) StartSoundEffect("UI::Cash");
-		if (iChange<0) StartSoundEffect("UI::UnCash");
-	}
-	SetWealth(Wealth+iChange);
-
-	return true;
-}
-
-bool C4Player::SetWealth(int32_t iVal)
-{
-	if (iVal == Wealth) return true;
-
-	Wealth=Clamp<int32_t>(iVal,0,1000000000);
-
-	::Game.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(ID));
-
-	return true;
 }
 
 void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget, bool immediate_position)
@@ -969,7 +961,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(ZoomVal,             "ZoomVal",              Fix0));
 	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
 	pComp->Value(mkNamingAdapt(ShowStartup,         "ShowStartup",          false));
-	pComp->Value(mkNamingAdapt(Wealth,              "Wealth",               0));
 	pComp->Value(mkNamingAdapt(CurrentScore,        "Score",                0));
 	pComp->Value(mkNamingAdapt(InitialScore,        "InitialScore",         0));
 	pComp->Value(mkNamingAdapt(ObjectsOwned,        "ObjectsOwned",         0));
@@ -1069,7 +1060,6 @@ void C4Player::DefaultRuntimeData()
 	ViewX=ViewY=0;
 	ViewTarget=nullptr;
 	ShowStartup=true;
-	Wealth=0;
 	CurrentScore=InitialScore=0;
 	ObjectsOwned=0;
 	Cursor=ViewCursor=nullptr;
@@ -1782,4 +1772,101 @@ void C4Player::SetSoundModifier(C4PropList *new_modifier)
 	}
 	// update in sound system
 	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, ID);
+}
+
+static void ProtectReadonlyProperty(C4String *k)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_ID:                  throw new C4AulExecError("player: ID is read-only");
+			case P_Name:                throw new C4AulExecError("player: Name is read-only");
+			case P_Type:                throw new C4AulExecError("player: Type is read-only");
+			case P_CrewSkin:            throw new C4AulExecError("player: CrewSkin is read-only");
+			case P_ExtraID:             throw new C4AulExecError("player: ExtraID is read-only");
+			case P_InitialScore:        throw new C4AulExecError("player: InitialScore is read-only");
+			case P_ZoomLimit_MaxHeight: throw new C4AulExecError("player: ZoomLimit is read-only");
+			case P_ZoomLimit_MaxValue:  throw new C4AulExecError("player: ZoomLimit is read-only");
+			case P_ZoomLimit_MaxWidth:  throw new C4AulExecError("player: ZoomLimit is read-only");
+			case P_ZoomLimit_MinHeight: throw new C4AulExecError("player: ZoomLimit is read-only");
+			case P_ZoomLimit_MinValue:  throw new C4AulExecError("player: ZoomLimit is read-only");
+			case P_ZoomLimit_MinWidth:  throw new C4AulExecError("player: ZoomLimit is read-only");
+		}
+	}
+}
+
+void C4Player::SetPropertyByS(C4String * k, const C4Value & to)
+{
+	ProtectReadonlyProperty(k);
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Score: CurrentScore = to.getInt(); return;
+		}
+	}
+	C4PropList::SetPropertyByS(k, to);
+}
+
+void C4Player::ResetProperty(C4String * k)
+{
+	ProtectReadonlyProperty(k);
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Score: CurrentScore = InitialScore; return;
+		}
+	}
+	C4PropList::ResetProperty(k);
+}
+
+bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_ID:           *pResult = C4VInt(ID);               return true;
+			case P_Name:         *pResult = C4VString(Name);          return true;
+			case P_Type:         *pResult = C4VInt(GetType());        return true;
+			case P_CrewSkin:     *pResult = C4VInt(PrefClonkSkin);    return true;
+			case P_InitialScore: *pResult = C4VInt(InitialScore);     return true;
+			case P_Score:        *pResult = C4VInt(CurrentScore);     return true;
+			case P_ZoomLimit_MaxWidth:  *pResult = C4VInt((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX); return true;
+	        case P_ZoomLimit_MaxHeight: *pResult = C4VInt(ZoomLimitMaxHgt); return true;
+	        case P_ZoomLimit_MaxValue:  *pResult = C4VInt(fixtoi(ZoomLimitMaxVal, 100)); return true;
+	        case P_ZoomLimit_MinWidth:  *pResult = C4VInt((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX); return true;
+	        case P_ZoomLimit_MinHeight: *pResult = C4VInt(ZoomLimitMinHgt); return true;
+	        case P_ZoomLimit_MinValue:  *pResult = C4VInt(fixtoi(ZoomLimitMinVal, 100)); return true;
+			case P_ExtraID: // Gives me a error: jump to case label [-fpermissive] caused by the line *info if I use this at any of the earlier cases..
+				C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(ID); // see GetInfo(), but I got a compile error using it
+				*pResult = info ? C4VPropList(C4Id2Def(info->GetScriptPlayerExtraID())) : C4VNull;
+				return true;
+		}
+	}
+	return C4PropList::GetPropertyByS(k, pResult);
+}
+
+C4ValueArray * C4Player::GetProperties() const
+{
+	C4ValueArray * a = C4PropList::GetProperties();
+	int i;
+	i = a->GetSize();
+	a->SetSize(i + 13);
+	(*a)[i++] = C4VString(&::Strings.P[P_ID]);
+	(*a)[i++] = C4VString(&::Strings.P[P_Name]);
+	(*a)[i++] = C4VString(&::Strings.P[P_Type]);
+	(*a)[i++] = C4VString(&::Strings.P[P_CrewSkin]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ExtraID]);
+	(*a)[i++] = C4VString(&::Strings.P[P_InitialScore]);
+	(*a)[i++] = C4VString(&::Strings.P[P_Score]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MaxHeight]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MaxValue]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MaxWidth]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MinHeight]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MinValue]);
+	(*a)[i++] = C4VString(&::Strings.P[P_ZoomLimit_MinWidth]);
+	return a;
 }

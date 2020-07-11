@@ -6,7 +6,7 @@
   <func>
     <title>GetPlayerControlAssignment</title>
     <category>Player</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>string</rtype>
       <params>
@@ -34,12 +34,14 @@
     </syntax>
     <desc>Returns the name of the key, mouse of joystick button assigned to a control for a player. If the player number is invalid, <code>nil</code> is returned. For unassigned or invalid controls, "" is returned.</desc>
     <remark>For network games and replays, the returned value is not synchronized. If the function is called for a remote player or during replay, "" is always returned for valid player numbers.</remark>
+    <remark>In 9.0 OC this function was discontinued because it can be retrieved from the player directly via <funclink>GetPlayer</funclink> and <code>GetControlAssignment</code>.</remark>
     <examples>
       <example>
-        <code><funclink>Message</funclink>("Press &lt;c ffff00&gt;%s&lt;/c&gt; to walk left!", GetPlayerControlAssignment(<funclink>GetPlayerByIndex</funclink>(0, C4PT_User), CON_Left, true, true));</code>
+        <code><funclink>Message</funclink>("Press &lt;c ffff00&gt;%s&lt;/c&gt; to walk left!", <funclink>GetPlayer</funclink>(<funclink>GetPlayerByIndex</funclink>(0, C4PT_User))-&gt;GetControlAssignment(CON_Left, true, true));</code>
         <text>Tells the first player how to walk left.</text>
       </example>
     </examples>
   </func>
   <author>Sven2</author><date>2012-04</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

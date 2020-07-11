@@ -27,6 +27,7 @@
 #include "object/C4ObjectList.h"
 #include "object/C4ObjectPtr.h"
 #include "script/C4Value.h"
+#include "script/C4PropList.h"
 
 const int32_t C4PVM_Cursor    = 0,
               C4PVM_Target    = 1,
@@ -45,7 +46,7 @@ static const int C4VP_DefViewRangeX    = 300,
 static const int C4FOW_DefLightRangeX = 300,
                  C4FOW_DefLightFadeoutRangeX = 80;
 
-class C4Player: public C4PlayerInfoCore
+class C4Player: public C4PlayerInfoCore, public C4PropList
 {
 	class HostilitySet : public std::set<const C4Player*>
 	{
@@ -111,7 +112,6 @@ public:
 	int32_t ZoomLimitMinWdt,ZoomLimitMinHgt,ZoomLimitMaxWdt,ZoomLimitMaxHgt,ZoomWdt,ZoomHgt; // zoom limits and last zoom set by script
 	C4Real ZoomLimitMinVal,ZoomLimitMaxVal,ZoomVal; // direct zoom values. 
 	// Game
-	int32_t Wealth;
 	int32_t CurrentScore,InitialScore;
 	int32_t ObjectsOwned;
 	HostilitySet Hostility;
@@ -174,8 +174,6 @@ public:
 	static bool Strip(const char *szFilename, bool fAggressive);
 	bool Message(const char *szMsg);
 	bool ObjectInCrew(C4Object *tobj);
-	bool DoWealth(int32_t change);
-	bool SetWealth(int32_t val);
 	bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
 	bool IsHostileTowards(const C4Player *opponent) const;
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
@@ -258,6 +256,16 @@ private:
 public:
 	// custom scenario achievements
 	bool GainScenarioAchievement(const char *achievement_id, int32_t value, const char *scen_name_override=nullptr);
+	// Handle custom proplist properties
+	C4Player * GetPlayer() override { return this; } // Required by template magic
+	void SetPropertyByS(C4String * k, const C4Value & to) override;
+	void ResetProperty(C4String * k) override;
+	bool GetPropertyByS(const C4String *k, C4Value *pResult) const override;
+	C4ValueArray * GetProperties() const override;
+	
+private:
+	// Register script functions to the proplist by setting this prototype
+	static C4PropList* GetPropListPrototype(const char *name);
 };
 
 #endif

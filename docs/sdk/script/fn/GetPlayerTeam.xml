@@ -6,7 +6,7 @@
   <func>
     <title>GetPlayerTeam</title>
     <category>Player</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -18,6 +18,7 @@
       </params>
     </syntax>
     <desc>Returns the team number of a player. If the player is not in a team, 0 is returned.</desc>
+    <remark>This function was discontinued in 9.0 OC, because it can be retrieved from <funclink>GetPlayer</funclink> by calling <code>GetTeam</code>.</funclink>
     <related>
       <emlink href="scenario/Teams.html">Teams</emlink>
       <funclink>SetPlayerTeam</funclink>
@@ -25,4 +26,5 @@
   </func>
   <author>Sven2</author><date>2006-03</date>
   <author>Clonkonaut</author><date>2008-04</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

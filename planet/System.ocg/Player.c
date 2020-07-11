@@ -5,6 +5,17 @@
 	@author timi, Maikel, Joern, Zapper, Randrian
 */
 
+static const Player = new _Player
+{
+	// _Player contains all the scripting functions for players
+	// Player is the prototype for all players and can be expanded
+	// with data or functions.
+
+	// Functions
+	GetName = Global.GetName,  // No need to redefine this in the engine
+
+};
+
 // Returns the player number of player_name, or none if there is no such player. (written by timi for CR/CE/CP)
 // documented in /docs/sdk/script/fn
 global func GetPlayerByName(string player_name)
@@ -129,6 +140,34 @@ global func GetPlayers(int player_type, int team)
 global func DoWealth(int player, int value)
 {
 	return SetWealth(player, value + GetWealth(player));
+}
+
+global func GetWealth(int player_nr, int value)
+{
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		return player.Data.Wealth;
+	}
+	else
+	{
+		return nil;
+	}
+}
+
+global func SetWealth(int player_nr, int value)
+{
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		player.Data.Wealth = BoundBy(value, 0, 1000000000);
+		GameCallEx("OnWealthChanged", player_nr);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 // checks whether two players are allied - that means they are not hostile and neither of them is NO_OWNER

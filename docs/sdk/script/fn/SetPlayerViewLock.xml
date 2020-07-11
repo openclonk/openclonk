@@ -7,7 +7,7 @@
     <title>SetPlayerViewLock</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -24,13 +24,14 @@
       </params>
     </syntax>
     <desc>Disabled or enabled locked view for one or all players. If the view is locked, the player cannot scroll around to explore the map.</desc>
+    <remark>In 9.0 OC this function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetViewLocked()</code>.</remark>
     <examples>
       <example>
         <code>func InitializePlayer(int plr)
 {
   <funclink>SetPlayerZoomByViewRange</funclink>(plr, 1000, 0, PLRZOOM_LimitMin);
   <funclink>SetPlayerZoomByViewRange</funclink>(plr, 1000, 0, PLRZOOM_LimitMax);
-  SetPlayerViewLock(plr, true);
+  <funclink>GetPlayer</funclink>-&gt;SetViewLocked(true);
   return true;
 }</code>
         <text>Code for a scenario script: Players can see exactly 1000 pixels wide around their Clonk and cannot scroll further.</text>
@@ -44,4 +45,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2010-09</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

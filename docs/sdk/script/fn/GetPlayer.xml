@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayer</title>
+    <category>Player</category>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>proplist</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>ID of the player to get.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the player proplist. If the specified player number is invalid, <code>nil</code> is returned.</desc>
+    <text>
+      <table>
+        <caption id="PropertiesTable">Player Properties</caption>
+        <rowh>
+          <col>Name</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col><code>ID</code></col>
+          <col>int</col>
+          <col>The player ID, see <funclink>GetPlayerID</funclink>, read-only.</col>
+        </row>
+        <row>
+          <col><code>Name</code></col>
+          <col>string</col>
+          <col>Name of the player, read-only.</col>
+        </row>
+        <row>
+          <col><code>CrewSkin</code></col>
+          <col>int</col>
+          <col>The number of the crew skin/appearance from the player profile, read-only.</col>
+        </row>
+        <row>
+          <col><code>Data</code></col>
+          <col>proplist</col>
+          <col>Storage space for all the player specific data for this scenario.</col>
+        </row>
+        <row>
+          <col><code>ExtraID</code></col>
+          <col>id</col>
+          <col>The extra ID of a <emlink href="script/ScriptPlayers.html">Script Player</emlink>, is nil for user controlled players.</col>
+        </row>
+        <row>
+          <col><code>InitialScore</code></col>
+          <col>int</col>
+          <col>The score value that was saved in the player profile at the beginning of the round, read-only.</col>
+        </row>
+        <row>
+          <col><code>Score</code></col>
+          <col>int</col>
+          <col>The current score of this player.</col>
+        </row>
+        <row>
+          <col><code>Type</code></col>
+          <col>int</col>
+          <col>Type of the player, read-only. See <a href="#PlayerTypesTable">Player Types</a></col>
+        </row>
+        <row>
+          <col><code>ZoomLimit_MaxWidth</code></col>
+          <col>int</col>
+          <col>Maximum width of landscape in viewport, i.e. how far the player can view if zoomed out as far as possible. May be zero if <code>ZoomLimit_MaxHeight</code> is nonzero and zoom limits are determined by maximum view height only.</col>
+        </row>
+        <row>
+          <col><code>ZoomLimit_MaxHeight</code></col>
+          <col>int</col>
+          <col>Maximum height of landscape in viewport. May be zero if <code>ZoomLimit_MaxWidth</code> is nonzero.</col>
+        </row>
+        <row>
+          <col><code>ZoomLimit_MinWidth</code></col>
+          <col>int</col>
+          <col>Minimum width of landscape in viewport, i.e. how far the player can view if zoomed in as far as possible. May be zero if <code>ZoomLimit_MinHeight</code> is nonzero and zoom limits are determined by minimum view height only.</col>
+        </row>
+        <row>
+          <col><code>ZoomLimit_MinHeight</code></col>
+          <col>int</col>
+          <col>Minimum height of landscape in viewport. May be zero if <code>ZoomLimit_MinWidth</code> is nonzero.</col>
+        </row>
+        <row>
+          <col><code>ZoomLimit_MaxValue</code></col>
+          <col>int</col>
+          <col>Maximum zoom if set as a direct pixel-to-landscape correspondance value using <funclink>SetPlayerZoom</funclink> function. Zero if a direct zoom value is not specified.</col>
+        </row>
+        <row>
+          <col><code>ZoomLimit_MinValue</code></col>
+          <col>int</col>
+          <col>Minimum zoom if set as a direct pixel-to-landscape correspondance value using <funclink>SetPlayerZoom</funclink> function. Zero if a direct zoom value is not specified.</col>
+        </row>
+      </table>
+    </text>
+    <text>
+      <table>
+        <caption id="PlayerTypesTable">Player Types</caption>
+        <rowh>
+          <col>Constant</col>
+          <col>Value</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>C4PT_User</col>
+          <col>1</col>
+          <col>User-controlled player.</col>
+        </row>
+        <row>
+          <col>C4PT_Script</col>
+          <col>2</col>
+          <col>Script-controlled player; i.e. AI player.</col>
+        </row>
+      </table>
+    </text>
+    <examples>
+      <example>
+        <code>protected func InitializePlayer(int player)
+  {
+  // Is it a script player?
+  if (GetPlayer(player).Type == C4PT_Script)
+    // then create an AI controller object for that player
+    <funclink>CreateObject</funclink>(SomeAIController, 50,50, player);
+	return true;
+  }</code>
+        <text>Scenario script: when a script player joins, an object of definition SomeAIController is created (owned by the joining script player). This object might now control all clonks owned by this player.</text>
+      </example>
+      <example>
+        <code>func ReduceSight(proplist player)
+{
+  SetPlayerZoomByViewRange(player.ID, player.ZoomLimit_MaxWidth/2, player.ZoomLimit_MaxHeight/2, PLRZOOM_LimitMax);
+  return true;
+}
+</code>
+        <text>Halves the view range of a player.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="ScriptPlayers.html">Script Player</emlink>
+      <funclink>CreateScriptPlayer</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2020-05</date>
+</funcs>

@@ -109,40 +109,13 @@ static long FnGetGravity(C4PropList * _this)
 	return fixtoi(::Landscape.GetGravity() * 100);
 }
 
-static C4String *FnGetPlayerName(C4PropList * _this, long player_nr)
+static C4PropList *FnGetPlayer(C4PropList * _this, long player_nr)
 {
 	if (!ValidPlr(player_nr))
 	{
 		return nullptr;
 	}
-	return String(::Players.Get(player_nr)->GetName());
-}
-
-static long FnGetPlayerType(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return 0;
-	}
-	return player->GetType();
-}
-
-static long FnGetPlayerColor(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	return player ? player->ColorDw : 0;
-}
-
-// undocumented!
-static Nillable<long> FnGetPlrClonkSkin(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (player)
-	{
-		return player->PrefClonkSkin;
-	}
-	return C4Void();
+	return ::Players.Get(player_nr);
 }
 
 static Nillable<long> FnGetX(C4PropList * _this, long precision)
@@ -998,49 +971,6 @@ static bool FnSetHostility(C4PropList * _this, long player_nr1, long player_nr2,
 	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(player_nr1), C4VInt(player_nr2), C4VBool(hostile), C4VBool(old_hostility)), true);
 	return true;
 }
-
-static bool FnSetPlrView(C4PropList * _this, long player_nr, C4Object *target, bool immediate_position)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return false;
-	}
-	::Players.Get(player_nr)->SetViewMode(C4PVM_Target, target, immediate_position);
-	return true;
-}
-
-static long FnGetPlrViewMode(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return -1;
-	}
-	if (::Control.SyncMode())
-	{
-		return -1;
-	}
-	return ::Players.Get(player_nr)->ViewMode;
-}
-
-static void FnResetCursorView(C4PropList * _this, long player_nr, bool immediate_position)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (player)
-	{
-		player->ResetCursorView(immediate_position);
-	}
-}
-
-static C4Object *FnGetPlrView(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player || player->ViewMode != C4PVM_Target)
-	{
-		return nullptr;
-	}
-	return player->ViewTarget;
-}
-
 // flags for SetPlayerZoom* calls
 static const int PLRZOOM_Direct     = 0x01,
                  PLRZOOM_NoIncrease = 0x04,
@@ -1089,30 +1019,6 @@ static bool FnSetPlayerZoomByViewRange(C4PropList * _this, long player_nr, long 
 	return true;
 }
 
-static C4PropList *FnGetPlayerZoomLimits(C4PropList * _this, long player_nr)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return nullptr;
-	}
-	// collect limits in a prop list
-	// if neither width not height is set for zoom limits, return engine defaults.
-	C4PropList *result = C4PropList::New();
-	if (!result)
-	{
-		return nullptr;
-	}
-	result->SetPropertyByS(::Strings.RegString("MaxWidth"), C4VInt((player->ZoomLimitMaxWdt || player->ZoomLimitMaxHgt) ? player->ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX));
-	result->SetPropertyByS(::Strings.RegString("MaxHeight"), C4VInt(player->ZoomLimitMaxHgt));
-	result->SetPropertyByS(::Strings.RegString("MaxValue"), C4VInt(fixtoi(player->ZoomLimitMaxVal, 100)));
-	result->SetPropertyByS(::Strings.RegString("MinWidth"), C4VInt((player->ZoomLimitMinWdt || player->ZoomLimitMinHgt) ? player->ZoomLimitMinWdt : C4VP_DefMinViewRangeX));
-	result->SetPropertyByS(::Strings.RegString("MinHeight"), C4VInt(player->ZoomLimitMinHgt));
-	result->SetPropertyByS(::Strings.RegString("MinValue"), C4VInt(fixtoi(player->ZoomLimitMinVal, 100)));
-	return result;
-}
-
 static bool FnSetPlayerZoom(C4PropList * _this, long player_nr, long zoom, long precision, long flags)
 {
 	// parameter safety. 0/0 means "reset to default".
@@ -1158,29 +1064,6 @@ static bool FnSetPlayerZoom(C4PropList * _this, long player_nr, long zoom, long 
 	return true;
 }
 
-static bool FnSetPlayerViewLock(C4PropList * _this, long player_nr, bool is_locked)
-{
-	// special player NO_OWNER: apply to all players
-	if (player_nr == NO_OWNER)
-	{
-		for (C4Player *player = ::Players.First; player; player=player->Next)
-		{
-			if (player->ID != NO_OWNER) // can't happen, but would be a crash if it did...
-			{
-				FnSetPlayerViewLock(_this, player->ID, is_locked);
-			}
-		}
-		return true;
-	}
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return false;
-	}
-	player->SetViewLocked(is_locked);
-	return true;
-}
-
 static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 {
 	return ::Definitions.GetDef(iIndex);
@@ -1200,55 +1083,6 @@ static C4String * FnGetDefinitionGroupPath(C4PropList * _this)
 		return nullptr;
 	}
 	return ::Strings.RegString(def->ConsoleGroupPath.getData());
-}
-
-static long FnGetWealth(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return 0;
-	return ::Players.Get(player_nr)->Wealth;
-}
-
-static bool FnSetWealth(C4PropList * _this, long player_nr, long value)
-{
-	if (!ValidPlr(player_nr)) return false;
-	::Players.Get(player_nr)->SetWealth(value);
-	return true;
-}
-
-static long FnDoPlayerScore(C4PropList * _this, long player_nr, long change)
-{
-	if (!ValidPlr(player_nr)) return false;
-	return ::Players.Get(player_nr)->DoScore(change);
-}
-
-static long FnGetPlayerScore(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return 0;
-	return ::Players.Get(player_nr)->CurrentScore;
-}
-
-static long FnGetPlayerScoreGain(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return 0;
-	return ::Players.Get(player_nr)->CurrentScore - ::Players.Get(player_nr)->InitialScore;
-}
-
-static C4Object *FnGetHiRank(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return nullptr;
-	return ::Players.Get(player_nr)->GetHiRankActiveCrew();
-}
-
-static C4Object *FnGetCrew(C4PropList * _this, long player_nr, long index)
-{
-	if (!ValidPlr(player_nr)) return nullptr;
-	return ::Players.Get(player_nr)->Crew.GetObject(index);
-}
-
-static long FnGetCrewCount(C4PropList * _this, long player_nr)
-{
-	if (!ValidPlr(player_nr)) return 0;
-	return ::Players.Get(player_nr)->Crew.ObjectCount();
 }
 
 static long FnGetPlayerCount(C4PropList * _this, long type)
@@ -1276,51 +1110,6 @@ static long FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 	}
 	if (!player) return NO_OWNER;
 	return player->ID;
-}
-
-static long FnEliminatePlayer(C4PropList * _this, long player_nr, bool remove_direct)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return false;
-	}
-	// direct removal?
-	if (remove_direct)
-	{
-		// do direct removal (no fate)
-		if (::Control.isCtrlHost())
-		{
-			::Players.CtrlRemove(player_nr, false);
-		}
-		return true;
-		}
-	else
-	{
-		// do regular elimination
-		if (player->Eliminated)
-		{
-			return false;
-		}
-		player->Eliminate();
-	}
-	return true;
-}
-
-// undocumented!
-static bool FnSurrenderPlayer(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player)
-	{
-		return false;
-	}
-	if (player->Eliminated)
-	{
-		return false;
-	}
-	player->Surrender();
-	return true;
 }
 
 // undocumented!
@@ -1373,50 +1162,6 @@ static bool FnCreateScriptPlayer(C4PropList * _this, C4String *name, long dwColo
 	// add to queue!
 	Game.PlayerInfos.DoPlayerInfoUpdate(&JoinPkt);
 	// always successful for sync reasons
-	return true;
-}
-
-static C4Object *FnGetCursor(C4PropList * _this, long player_nr)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	// invalid player?
-	if (!player)
-	{
-		return nullptr;
-	}
-	return player->Cursor;
-}
-
-// undocumented!
-static C4Object *FnGetViewCursor(C4PropList * _this, long player_nr)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	// get viewcursor
-	return player ? player->ViewCursor : nullptr;
-}
-
-static bool FnSetCursor(C4PropList * _this, long player_nr, C4Object *obj, bool no_select_arrow)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player || (obj && !obj->Status) || (obj && obj->CrewDisabled)) return false;
-	player->SetCursor(obj, !no_select_arrow);
-	return true;
-}
-
-// undocumented!
-static bool FnSetViewCursor(C4PropList * _this, long player_nr, C4Object *obj)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	// invalid player?
-	if (!player)
-	{
-		return false;
-	}
-	// set viewcursor
-	player->ViewCursor = obj;
 	return true;
 }
 
@@ -1670,17 +1415,6 @@ static bool FnAbortMessageBoard(C4PropList * _this, C4Object *obj, long player_n
 	::MessageInput.AbortMsgBoardQuery(obj, player_nr);
 	// abort for it
 	return player->RemoveMessageBoardQuery(obj);
-}
-
-static void FnSetFoW(C4PropList * _this, bool enabled, long player_nr)
-{
-	// safety
-	if (!ValidPlr(player_nr))
-	{
-		return;
-	}
-	// set enabled
-	::Players.Get(player_nr)->SetFoW(!!enabled);
 }
 
 static long FnSetMaxPlayer(C4PropList * _this, long player_count)
@@ -2016,49 +1750,6 @@ static long FnGetTime(C4PropList * _this)
 	// check network, record, etc
 	if (::Control.SyncMode()) return 0;
 	return C4TimeMilliseconds::Now().AsInt();
-}
-
-static C4Value FnSetPlrExtraData(C4PropList * _this, int player_nr, C4String * DataName, const C4Value & Data)
-{
-	const char * strDataName = FnStringPar(DataName);
-	// do not allow data type C4V_Array or C4V_C4Object
-	if (Data.GetType() != C4V_Nil &&
-	    Data.GetType() != C4V_Int &&
-	    Data.GetType() != C4V_Bool &&
-	    Data.GetType() != C4V_String) return C4VNull;
-	C4Player* pPlayer = ::Players.Get(player_nr);
-	if (!pPlayer) return C4Value();
-	// no name list created yet?
-	if (!pPlayer->ExtraData.pNames)
-		// create name list
-		pPlayer->ExtraData.CreateTempNameList();
-	// data name already exists?
-	long ival;
-	if ((ival = pPlayer->ExtraData.pNames->GetItemNr(strDataName)) != -1)
-		pPlayer->ExtraData[ival] = Data;
-	else
-	{
-		// add name
-		pPlayer->ExtraData.pNames->AddName(strDataName);
-		// get val id & set
-		if ((ival = pPlayer->ExtraData.pNames->GetItemNr(strDataName)) == -1) return C4Value();
-		pPlayer->ExtraData[ival] = Data;
-	}
-	// ok, return the value that has been set
-	return Data;
-}
-
-static C4Value FnGetPlrExtraData(C4PropList * _this, int player_nr, C4String * DataName)
-{
-	const char *strDataName = FnStringPar(DataName);
-	C4Player* pPlayer = ::Players.Get(player_nr);
-	if (!pPlayer) return C4Value();
-	// no name list?
-	if (!pPlayer->ExtraData.pNames) return C4Value();
-	long ival;
-	if ((ival = pPlayer->ExtraData.pNames->GetItemNr(strDataName)) == -1) return C4Value();
-	// return data
-	return pPlayer->ExtraData[ival];
 }
 
 // undocumented!
@@ -2504,83 +2195,6 @@ static bool FnSetPreSend(C4PropList * _this, long iToVal, C4String *pNewName)
 	return true;
 }
 
-static long FnGetPlayerTeam(C4PropList * _this, long player_nr)
-{
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player) return 0;
-	// search team containing this player
-	C4Team *pTeam = Game.Teams.GetTeamByPlayerID(player->ID);
-	if (pTeam) return pTeam->GetID();
-	// special value of -1 indicating that the team is still to be chosen
-	if (player->IsChosingTeam()) return -1;
-	// No team.
-	return 0;
-}
-
-static bool FnSetPlayerTeam(C4PropList * _this, long player_nr, long idNewTeam, bool fNoCalls)
-{
-	// no team changing in league games
-	if (Game.Parameters.isLeague()) return false;
-	// get player
-	C4Player *player = ::Players.Get(player_nr);
-	if (!player) return false;
-	C4PlayerInfo *pPlrInfo = player->GetInfo();
-	if (!pPlrInfo) return false;
-	// already in that team?
-	if (player->Team == idNewTeam) return true;
-	// ask team setting if it's allowed (also checks for valid team)
-	if (!Game.Teams.IsJoin2TeamAllowed(idNewTeam, pPlrInfo->GetType())) return false;
-	// ask script if it's allowed
-	if (!fNoCalls)
-	{
-		if (!!::Game.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(player_nr, idNewTeam), true, true))
-			return false;
-	}
-	// exit previous team
-	C4Team *pOldTeam = Game.Teams.GetTeamByPlayerID(player->ID);
-	int32_t idOldTeam = 0;
-	if (pOldTeam)
-	{
-		idOldTeam = pOldTeam->GetID();
-		pOldTeam->RemovePlayerByID(player->ID);
-	}
-	// enter new team
-	if (idNewTeam)
-	{
-		C4Team *pNewTeam = Game.Teams.GetGenerateTeamByID(idNewTeam);
-		if (pNewTeam)
-		{
-			pNewTeam->AddPlayer(*pPlrInfo, true);
-			idNewTeam = pNewTeam->GetID();
-		}
-		else
-		{
-			// unknown error
-			player->Team = idNewTeam = 0;
-		}
-	}
-	// update hositlities if this is not a "silent" change
-	if (!fNoCalls)
-	{
-		player->SetTeamHostility();
-	}
-	// do callback to reflect change in scenario
-	if (!fNoCalls)
-		::Game.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(player_nr, idNewTeam, idOldTeam), true);
-	return true;
-}
-
-// undocumented!
-static C4PropList *FnGetScriptPlayerExtraID(C4PropList * _this, long player_number)
-{
-	C4Player *plr = ::Players.Get(player_number);
-	if (!plr) return nullptr;
-	C4PlayerInfo *info = plr->GetInfo();
-	if (!info) return nullptr;
-	return C4Id2Def(info->GetScriptPlayerExtraID());
-}
-
 // undocumented!
 static long FnGetTeamConfig(C4PropList * _this, long iConfigValue)
 {
@@ -2837,82 +2451,6 @@ static bool FnSetNextScenario(C4PropList * _this, C4String *szNextMission, C4Str
 	return true;
 }
 
-static long FnGetPlayerControlState(C4PropList * _this, long player_nr, long iControl, bool fMovedState)
-{
-	// get control set to check
-	C4PlayerControl *pCheckCtrl = nullptr;
-	if (player_nr != NO_OWNER)
-	{
-		C4Player *player = ::Players.Get(player_nr);
-		if (player)
-		{
-			pCheckCtrl = &(player->Control);
-		}
-	}
-	// invalid player or no controls
-	if (!pCheckCtrl) return 0;
-	// query control
-	const C4PlayerControl::CSync::ControlDownState *pControlState = pCheckCtrl->GetControlDownState(iControl);
-	// no state means not down
-	if (!pControlState) return 0;
-	// otherwise take either down-value or moved-value
-	return fMovedState ? pControlState->MovedState.iStrength : pControlState->DownState.iStrength;
-}
-
-// undocumented!
-static bool FnSetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl, bool is_enabled)
-{
-	// get control set to check
-	C4PlayerControl *plrctrl = nullptr;
-	if (iplr != NO_OWNER)
-	{
-		C4Player *plr = ::Players.Get(iplr);
-		if (plr)
-		{
-			plrctrl = &(plr->Control);
-		}
-	}
-	// invalid player or no controls
-	if (!plrctrl) return false;
-	// invalid control
-	if (ctrl >= int32_t(Game.PlayerControlDefs.GetCount())) return false;
-	// query
-	return plrctrl->SetControlDisabled(ctrl, !is_enabled);
-}
-
-// undocumented!
-static bool FnGetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl)
-{
-	// get control set to check
-	C4PlayerControl *plrctrl = nullptr;
-	if (iplr != NO_OWNER)
-	{
-		C4Player *plr = ::Players.Get(iplr);
-		if (plr)
-		{
-			plrctrl = &(plr->Control);
-		}
-	}
-	// invalid player or no controls
-	if (!plrctrl) return false;
-	return !plrctrl->IsControlDisabled(ctrl);
-}
-
-// undocumented!
-static C4String *FnGetPlayerControlAssignment(C4PropList * _this, long player, long control, bool human_readable, bool short_name)
-{
-	// WARNING: As many functions returning strings, the result is not sync safe!
-	// "" is returned for invalid controls to make the obvious if (GetPlayerControlAssignmentName(...)) not cause a sync loss
-	// get desired assignment from parameters
-	C4Player *plr = ::Players.Get(player);
-	if (!plr) return nullptr; // invalid player
-	if (!plr->ControlSet) return String(""); // player has no control (remote player)
-	C4PlayerControlAssignment *assignment = plr->ControlSet->GetAssignmentByControl(control);
-	if (!assignment) return String("");
-	// get assignment as readable string
-	return String(assignment->GetKeysAsString(human_readable, short_name).getData());
-}
-
 // strength: 0-1000, length: milliseconds
 static bool FnPlayRumble(C4PropList * _this, long player, long strength, long length)
 {
@@ -3033,10 +2571,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetY);
 	F(GetDefinition);
 	F(GetDefinitionGroupPath);
-	F(GetPlayerName);
-	F(GetPlayerType);
-	F(GetPlayerColor);
-	F(GetPlrClonkSkin);
+	F(GetPlayer);
 	F(CreateObject);
 	F(CreateObjectAbove);
 	F(CreateConstruction);
@@ -3049,15 +2584,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(Music);
 	F(MusicLevel);
 	F(SetPlayList);
-	F(SetPlrView);
-	F(GetPlrViewMode);
-	F(ResetCursorView);
-	F(GetPlrView);
-	F(GetWealth);
-	F(SetWealth);
-	F(DoPlayerScore);
-	F(GetPlayerScore);
-	F(GetPlayerScoreGain);
 	F(GetWind);
 	F(SetWind);
 	F(GetTemperature);
@@ -3070,22 +2596,13 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetHostility);
 	F(PlaceVegetation);
 	F(GameOver);
-	F(GetHiRank);
-	F(GetCrew);
-	F(GetCrewCount);
 	F(GetPlayerCount);
 	F(GetPlayerByIndex);
-	F(EliminatePlayer);
-	F(SurrenderPlayer);
 	F(GetLeagueScore);
 	F(SetLeaguePerformance);
 	F(SetLeagueProgressData);
 	F(GetLeagueProgressData);
 	F(CreateScriptPlayer);
-	F(GetCursor);
-	F(GetViewCursor);
-	F(SetCursor);
-	F(SetViewCursor);
 	F(GetMaterial);
 	F(GetBackMaterial);
 	F(GetTexture);
@@ -3110,9 +2627,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetClimate);
 	F(GetClimate);
 	F(SetPlayerZoomByViewRange);
-	F(GetPlayerZoomLimits);
 	F(SetPlayerZoom);
-	F(SetPlayerViewLock);
 	F(GainScenarioAccess);
 	F(IsNetwork);
 	F(IsEditor);
@@ -3120,7 +2635,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	::AddFunc(p, "TestMessageBoard", FnTestMessageBoard, false);
 	::AddFunc(p, "CallMessageBoard", FnCallMessageBoard, false);
 	::AddFunc(p, "AbortMessageBoard", FnAbortMessageBoard, false);
-	F(SetFoW);
 	F(SetMaxPlayer);
 	F(Object);
 	F(GetTime);
@@ -3155,9 +2669,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(LoadScenarioSection);
 	F(SetViewOffset);
 	::AddFunc(p, "SetPreSend", FnSetPreSend, false);
-	F(GetPlayerTeam);
-	F(SetPlayerTeam);
-	F(GetScriptPlayerExtraID);
 	F(GetTeamConfig);
 	F(GetTeamName);
 	F(GetTeamColor);
@@ -3181,10 +2692,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(PathFree);
 	F(PathFree2);
 	F(SetNextScenario);
-	F(GetPlayerControlState);
-	F(SetPlayerControlEnabled);
-	F(GetPlayerControlEnabled);
-	F(GetPlayerControlAssignment);
 	F(PlayRumble);
 	F(StopRumble);
 	F(GetStartupPlayerCount);
@@ -3199,8 +2706,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetPlayerVal);
 	F(GetPlayerInfoCoreVal);
 	F(GetMaterialVal);
-	F(SetPlrExtraData);
-	F(GetPlrExtraData);
 	F(PV_Linear);
 	F(PV_Random);
 	F(PV_Direction);
@@ -3306,6 +2811,10 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 
 	{ "C4PT_User"                 ,C4V_Int,      C4PT_User },
 	{ "C4PT_Script"               ,C4V_Int,      C4PT_Script },
+
+	{ "C4PVM_Cursor"              ,C4V_Int,      C4PVM_Cursor },
+	{ "C4PVM_Target"              ,C4V_Int,      C4PVM_Target },
+	{ "C4PVM_Scrolling"           ,C4V_Int,      C4PVM_Scrolling },
 
 	{ "CSPF_FixedAttributes"      ,C4V_Int,      CSPF_FixedAttributes },
 	{ "CSPF_NoScenarioInit"       ,C4V_Int,      CSPF_NoScenarioInit },

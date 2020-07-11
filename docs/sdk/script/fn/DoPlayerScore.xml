@@ -6,7 +6,7 @@
   <func>
     <title>DoPlayerScore</title>
     <category>Player</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -23,10 +23,12 @@
       </params>
     </syntax>
     <desc>Changes the player score of a player.</desc>
+    <remark>In 9.0 OC this function was discontinued, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
     <examples>
       <example>
-        <code>DoScore(0, -100);</code>
-        <text>Deducts 100 points from this player.</text>
+        <code>DoPlayerScore(0, -100);</code>
+        <code><funclink>GetPlayer</funclink>(0).Score -= 100;</code>
+        <text>Deducts 100 points from this player, old and new implementation.</text>
       </example>
     </examples>
     <related>
@@ -36,4 +38,5 @@
   </func>
   <author>Sven2</author><date>2001-11</date>
   <author>Sven2</author><date>2010-04</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

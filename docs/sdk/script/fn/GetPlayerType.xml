@@ -6,7 +6,7 @@
   <func>
     <title>GetPlayerType</title>
     <category>Player</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -39,6 +39,7 @@
 
     </desc>
     <remark>If the specified player number is invalid, the return value is 0.</remark>
+    <remark>In 9.0 OC this function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> by accessing the proplist property "Type".</remark>
     <examples>
       <example>
         <code>protected func InitializePlayer(int player)
@@ -58,4 +59,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2007-12</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>
