@@ -131,10 +131,9 @@ bool operator==(const C4Reloc::const_iterator& a, const C4Reloc::const_iterator&
 {
 	if (!a.subdirIters.empty()) return false;
 	if (!b.subdirIters.empty()) return false;
-	if (a.pathListIter != b.pathListIter)
-		return false;
-	return true;
+	return a.pathListIter == b.pathListIter;
 }
+
 bool operator!=(const C4Reloc::const_iterator& a, const C4Reloc::const_iterator& b)
 {
 	return !(a == b);
