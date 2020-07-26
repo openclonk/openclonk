@@ -320,6 +320,7 @@ private:
 	C4KeyBinding *pKeyRefresh, *pKeyBack, *pKeyForward;
 	
 	C4GUI::Button *btnInstall, *btnRemove;
+	C4GUI::IconButton* buttonShowInstalled{ nullptr };
 	C4GUI::Edit *pSearchFieldEdt;
 	struct _filters
 	{
@@ -353,7 +354,7 @@ protected:
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(); }
 	void OnSearchOnlineBtn(C4GUI::Control *btn) { KeyRefresh(); }
 	void OnInstallModBtn(C4GUI::Control *btn) { DoOK(); }
-	void OnShowInstalledBtn(C4GUI::Control *btn) { UpdateList(false, true); }
+	void OnShowInstalledBtn(C4GUI::Control *btn);
 	void OnUninstallModBtn(C4GUI::Control *btn) { CheckRemoveMod(); }
 	void OnUpdateAllBtn(C4GUI::Control *btn) { CheckUpdateAll(); }
 	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(); }

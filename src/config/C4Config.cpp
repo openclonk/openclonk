@@ -55,7 +55,7 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *compiler)
 
 	// deliberately not grandfathering UserPath setting, since it was written to config by default
 	compiler->Value(mkNamingAdapt(s(ConfigUserPath),   "UserDataPath",       "", false, true));
-	pComp->Value(mkNamingAdapt(s(ModsDataPath),     "ModsDataPath",       "", false, true));
+	compiler->Value(mkNamingAdapt(s(ModsDataPath),     "ModsDataPath",       "", false, true));
 	// assimilate old data
 	compiler->Value(mkNamingAdapt(s(Adopt.PlayerPath), "PlayerPath",       ""));
 

@@ -629,6 +629,7 @@ IDS_MODS_SEARCH_ONLINE=Online suchen
 IDS_MODS_SEARCH_ONLINE_DESC=Durchsucht die Onlinedatenbank entsprechend dem Suchtext und den Filtern (Hotkey F5).
 IDS_MODS_SHOWINSTALLED=Installierte anzeigen
 IDS_MODS_SHOWINSTALLED_DESC=Listet alle lokal installierten Mods auf.
+IDS_MODS_SHOWINSTALLED_HINT=Szenarien von installierten Mods können in der Szenarienliste beim Starten eines lokalen oder online Spieles gefunden werden.
 IDS_MODS_SORT=Sortieren nach...
 IDS_MODS_SORT_DATE_UP=Neuste zuerst
 IDS_MODS_SORT_DATE_DOWN=Älteste zuerst

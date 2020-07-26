@@ -1149,6 +1149,7 @@ namespace C4GUI
 		void SetFacet(const C4Facet &rCpy, uint32_t dwClr=0u) { fctIcon = rCpy; }
 		void SetColor(uint32_t dwClr) { fHasClr=true; this->dwClr=dwClr; }
 		void SetHighlight(bool fToVal) { fHighlight=fToVal; }
+		bool GetHighlight() const { return fHighlight; }
 	};
 
 	// button using arrow image
