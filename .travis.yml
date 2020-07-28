@@ -2,9 +2,8 @@
 
 language: cpp
 dist: trusty
-sudo: required # for Qt libraries. Additionally, the virtualization builds are more stable and have better single core performance.
 
-matrix:
+jobs:
   include:
     # "Legacy" build: oldest supported gcc and cmake
     - os: linux
@@ -12,7 +11,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.9', 'build-essential', 'cmake3', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'libgtest-dev']
+          packages: ['g++-4.9', 'build-essential', 'cmake3', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libepoxy-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'libgtest-dev']
       env: 
           - OLD_CMAKE=1
           - CCOMPILER=gcc-4.9 
@@ -28,7 +27,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - sourceline: ppa:beineri/opt-qt596-trusty
-          packages: ['g++-5', 'build-essential', 'libpng-dev', 'libjpeg-dev', 'libfreetype6-dev', 'libglew-dev', 'libreadline-dev', 'libsdl2-dev', 'qt59base', 'libalut-dev', 'libvorbis-dev', 'libopenal-dev', 'libdw-dev', 'libgtest-dev', 'ninja-build']
+          packages: ['g++-5', 'build-essential', 'libpng-dev', 'libjpeg-dev', 'libfreetype6-dev', 'libepoxy-dev', 'libreadline-dev', 'libsdl2-dev', 'qt59base', 'libalut-dev', 'libvorbis-dev', 'libopenal-dev', 'libdw-dev', 'libgtest-dev', 'ninja-build']
       env:
           - CCOMPILER=gcc-5
           - CXXCOMPILER=g++-5
@@ -44,13 +43,28 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
-          packages: ['clang-3.8', 'build-essential', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libc++-dev', 'libc++1', 'libgtest-dev']
+          packages: ['clang-3.8', 'build-essential', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libepoxy-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libc++-dev', 'libc++1', 'libgtest-dev']
       env: 
           - CCOMPILER=clang-3.8 
           - CXXCOMPILER=clang++-3.8 
           - CXX_FLAGS="-stdlib=libc++ -fcolor-diagnostics" 
           - TYPE=Debug 
           - BSYS="Ninja#ninja -k30"
+
+    # macOS build
+    - os: osx
+      compiler: clang
+      osx_image: xcode11.3
+      install:
+          - brew upgrade pkg-config  # https://github.com/Homebrew/brew/issues/5068, presumably can be removed soon
+          - brew install freealut libepoxy libogg libvorbis sdl2
+      env:
+          - CXX_FLAGS="-fcolor-diagnostics"
+          - TYPE=RelWithDebInfo
+          - BSYS="Unix Makefiles#make -k"
+          - CMAKE_FLAGS="-DDEPLOY_QT_LIBRARIES=1 -DCMAKE_PREFIX_PATH=/usr/local/opt/openal-soft;/usr/local/opt/qt"
+          - OLD_CMAKE=1
+          - UPLOAD_SNAPSHOT=1
 
 before_install:
     - for t in test mock; do wget https://github.com/google/google$t/archive/release-1.7.0.tar.gz -Og$t.tgz && tar xvf g$t.tgz; done 
@@ -87,9 +101,19 @@ script:
 
 after_success:
     - >
-      [ "$UPLOAD_SNAPSHOT" = 1 ] && 
-      echo "Creating AppImage..." &&
-      tools/create_appimage.sh &&
-      echo "Uploading snapshot..." &&
-      tools/upload_snapshot.sh OpenClonk-x86_64.AppImage OpenClonk-x86_64.AppImage.zsync ||
-      echo "Snapshot creation has failed"
+      if [ "$UPLOAD_SNAPSHOT" = 1 ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+        case "$TRAVIS_OS_NAME" in
+          linux)
+            echo "Creating AppImage..." &&
+            tools/create_appimage.sh &&
+            echo "Uploading snapshot..." &&
+            tools/upload_snapshot.sh OpenClonk-x86_64.AppImage OpenClonk-x86_64.AppImage.zsync ||
+            echo "Snapshot creation has failed"
+            ;;
+          osx)
+            zip -r openclonk.app.zip openclonk.app &&
+            tools/upload_snapshot.sh openclonk.app.zip ||
+            echo "Snapshot creation has failed"
+            ;;
+        esac
+      fi

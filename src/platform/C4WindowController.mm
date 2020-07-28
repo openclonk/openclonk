@@ -13,7 +13,9 @@
  * for the above references.
  */
 
-#include <GL/glew.h>
+#define GL_SILENCE_DEPRECATION
+#include <epoxy/gl.h>
+#import <AppKit/AppKit.h>
 
 #include "C4Include.h"
 #include "game/C4Application.h"
@@ -26,16 +28,11 @@
 #import "graphics/C4DrawGLMac.h"
 #import "editor/C4EditorWindowController.h"
 #import "platform/C4AppDelegate.h"
-#import "AppKit/NSOpenGL.h"
 
-static SInt32 osVersion()
+bool lionAndBeyond()
 {
-	SInt32 ver;
-	Gestalt(gestaltSystemVersion, &ver);
-	return ver;
+    return NSAppKitVersionNumber >= NSAppKitVersionNumber10_7;
 }
-
-bool lionAndBeyond() {return osVersion() >= 0x1070;}
 
 #ifdef USE_COCOA
 
@@ -47,7 +44,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 @end
 
 @implementation ClonkScreenfillingWindow
-- (BOOL) canBecomeKeyWindow;
+- (BOOL) canBecomeKeyWindow
 {
 	return YES; // a resounding one
 }
@@ -84,7 +81,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 {
 	return
 		[self isFullScreen] ||
-		(lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask);
+		(lionAndBeyond() && (self.window.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
 - (void) setFullscreen:(BOOL)fullscreen
@@ -99,7 +96,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 		if (![self isFullScreen])
 		{
 			NSRect fullscreenRect = NSScreen.mainScreen.frame;
-			fullscreenWindow = [[ClonkScreenfillingWindow alloc] initWithContentRect:fullscreenRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES];
+			fullscreenWindow = [[ClonkScreenfillingWindow alloc] initWithContentRect:fullscreenRect styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:YES];
 			[fullscreenWindow setLevel:NSMainMenuWindowLevel+1];
 			[fullscreenWindow setOpaque:YES];
 			[fullscreenWindow setHidesOnDeactivate:YES];

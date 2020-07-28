@@ -2859,6 +2859,46 @@ static bool FnSetAttachTransform(C4Object *Obj, long iAttachNumber, C4ValueArray
 	return true;
 }
 
+static Nillable<C4ValueArray*> FnGetBoneNames(C4PropList * _this) {
+	C4Object *obj = Object(_this);
+
+	auto fnMakeC4ValueArray = [](const size_t len, const std::function<C4Value(size_t i)> iterable) -> C4ValueArray* {
+		auto retval = new C4ValueArray(len);
+		for (size_t i = 0; i < len; ++i) {
+			retval->SetItem(i, iterable(i));
+		}
+		return retval;
+	};
+
+	if (!obj)
+	{
+		if (!_this || !_this->GetDef())
+		{
+			throw NeedNonGlobalContext("GetBoneNames");
+		}
+		// Called in definition context -> Use definition default mesh
+		C4Def *def = _this->GetDef();
+		if (!def->Graphics.IsMesh()) 
+		{
+			return C4Void();
+		}
+		const StdMeshSkeleton & skeleton = def->Graphics.Mesh->GetSkeleton();
+		const std::function<C4Value(size_t i)> fnGetBoneName = [&skeleton](size_t i = 0) { return C4VString(skeleton.GetBone(i).Name); };
+		return fnMakeC4ValueArray(skeleton.GetNumBones(), fnGetBoneName);
+	}
+	else
+	{
+		// Called in object context: Use current object mesh
+		if (!obj->pMeshInstance)
+		{
+			return C4Void();
+		}
+		const StdMeshSkeleton & skeleton = obj->pMeshInstance->GetMesh().GetSkeleton();
+		const std::function<C4Value(size_t i)> fnGetBoneName = [&skeleton](size_t i = 0) { return C4VString(skeleton.GetBone(i).Name); };
+		return fnMakeC4ValueArray(skeleton.GetNumBones(), fnGetBoneName);;
+	}
+}
+
 static Nillable<C4String*> FnGetMeshMaterial(C4PropList * _this, int iSubMesh)
 {
 	// Called in object or definition context?
@@ -3443,6 +3483,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	F(DetachMesh);
 	F(SetAttachBones);
 	F(SetAttachTransform);
+	F(GetBoneNames);
 	F(GetMeshMaterial);
 	F(SetMeshMaterial);
 	F(CreateParticleAtBone);

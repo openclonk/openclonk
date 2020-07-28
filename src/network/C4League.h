@@ -250,7 +250,6 @@ private:
 	C4GUI::Button *pBtnOK, *pBtnAbort;
 	int32_t iEdtPassSpace;
 	StdStrBuf strPlayerName;
-	bool fRememberLogin;
 public:
 	C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister, bool fRememberLogin);
 	~C4LeagueSignupDialog() override = default;

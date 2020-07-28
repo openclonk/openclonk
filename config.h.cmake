@@ -71,10 +71,6 @@
 /* MP3 music */
 #cmakedefine USE_MP3 1
 
-/* Define to 1 if the userParam parameter to GLDEBUGPROCARB is const, as the
-   spec requires. */
-#cmakedefine GLDEBUGPROCARB_USERPARAM_IS_CONST 1
-
 /* Glib */
 #cmakedefine WITH_GLIB 1
 

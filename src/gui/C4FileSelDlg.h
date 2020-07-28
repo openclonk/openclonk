@@ -77,7 +77,7 @@ public:
 	{
 	private:
 		typedef ListItem BaseClass;
-		class C4GUI::Icon *pIco; class C4GUI::Label *pLbl;
+		class C4GUI::Label *pLbl;
 		class C4GUI::CheckBox *pCheck;
 		class C4KeyBinding *pKeyCheck; // space activates/deactivates selected file
 		bool fGrayed;

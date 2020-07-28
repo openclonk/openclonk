@@ -21,7 +21,7 @@
 
 #include <pcg/pcg_random.hpp>
 #ifndef USE_CONSOLE
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 #endif
 #include "graphics/C4Shader.h"
 

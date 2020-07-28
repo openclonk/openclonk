@@ -66,7 +66,6 @@ namespace C4GameLobby
 	class ScenDesc : public C4GUI::Window, private C4ApplicationSec1Timer
 	{
 	private:
-		C4GUI::Label *pTitle;            // scenario title or warning label if unloaded
 		C4GUI::TextWindow *pDescBox;     // scenario description box
 		bool fDescFinished;              // if set, scenario resource has been loaded
 
@@ -85,7 +84,6 @@ namespace C4GameLobby
 	class MainDlg : public C4GUI::FullscreenDialog, private C4ApplicationSec1Timer
 	{
 	private:
-		time_t tLastPingUpdate; // time when pings were updated last time
 		enum CountdownState { CDS_None=0, CDS_LongCountdown=1, CDS_Countdown=2, CDS_Start=3 } eCountdownState; // nonzero when a packet was received that the game is about to start (starts elevator sound, etc.)
 		int32_t iBackBufferIndex;   // chat message history index
 		C4KeyBinding *pKeyHistoryUp, *pKeyHistoryDown; // keys used to scroll through chat history

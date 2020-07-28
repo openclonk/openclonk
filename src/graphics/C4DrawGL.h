@@ -24,7 +24,7 @@
 #include "platform/C4windowswrapper.h"
 #endif
 
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 
 #ifdef USE_COCOA
 #import "platform/ObjectiveCAssociated.h"
@@ -226,6 +226,8 @@ protected:
 	// VAO IDs currently in use.
 	std::set<unsigned int> VAOIDs;
 	std::set<unsigned int>::iterator NextVAOID;
+
+	bool has_khr_debug;
 
 public:
 	// Create a new (unique) VAO ID. A VAO ID is a number that identifies

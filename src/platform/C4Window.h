@@ -289,7 +289,7 @@ public:
 	virtual bool ReInit(C4AbstractApp* pApp);
 
 	// Creates a list of available samples for multisampling
-	virtual void EnumerateMultiSamples(std::vector<int>& samples) const;
+	virtual void EnumerateMultiSamples(std::vector<int>& samples, int min_expected = 0) const;
 
 	bool StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize = true);
 	bool RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden = false);
@@ -310,6 +310,7 @@ public:
 #elif defined(USE_SDL_MAINLOOP)
 	SDL_Window * window;
 	void HandleSDLEvent(SDL_WindowEvent &e);
+	std::vector<int> available_samples;
 #endif
 #ifdef USE_WGL
 	HWND renderwnd;

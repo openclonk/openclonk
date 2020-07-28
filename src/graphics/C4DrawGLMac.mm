@@ -13,7 +13,8 @@
  * for the above references.
  */
 
-#include <GL/glew.h> // Somehow, C4Include manages to include gltypes.h on the autobuild hosts, which makes glew.h choke if not included first. I don't understand it, and I don't want to.
+#define GL_SILENCE_DEPRECATION
+#include <epoxy/gl.h>
 #include "C4Include.h"
 #include "game/C4GraphicsSystem.h"
 #include "gui/C4MouseControl.h"
@@ -145,28 +146,28 @@
 int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 {
 	*modifierFlags = [event modifierFlags]; // should be compatible since MK_* constants mirror the NS* constants
-	if ([event modifierFlags] & NSCommandKeyMask)
+	if ([event modifierFlags] & NSEventModifierFlagCommand)
 	{
 		// treat cmd and ctrl the same
-		*modifierFlags |= NSControlKeyMask;
+		*modifierFlags |= NSEventModifierFlagControl;
 	}
 	switch (event.type)
 	{
-		case NSLeftMouseDown:
+		case NSEventTypeLeftMouseDown:
 			return [event clickCount] > 1 ? C4MC_Button_LeftDouble : C4MC_Button_LeftDown;
-		case NSLeftMouseUp:
+		case NSEventTypeLeftMouseUp:
 			return C4MC_Button_LeftUp;
-		case NSRightMouseDown:
+		case NSEventTypeRightMouseDown:
 			return [event clickCount] > 1 ? C4MC_Button_RightDouble : C4MC_Button_RightDown;
-		case NSRightMouseUp:
+		case NSEventTypeRightMouseUp:
 			return C4MC_Button_RightUp;
-		case NSLeftMouseDragged: case NSRightMouseDragged:
+		case NSEventTypeLeftMouseDragged: case NSEventTypeRightMouseDragged:
 			return C4MC_Button_None; // sending mouse downs all the time when dragging is not the right thing to do
-		case NSOtherMouseDown:
+		case NSEventTypeOtherMouseDown:
 			return C4MC_Button_MiddleDown;
-		case NSOtherMouseUp:
+		case NSEventTypeOtherMouseUp:
 			return C4MC_Button_MiddleUp;
-		case NSScrollWheel:
+		case NSEventTypeScrollWheel:
 			return C4MC_Button_Wheel;
 		default:
 			break;
@@ -212,7 +213,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	if (::MouseControl.IsViewport(viewport) && Console.EditCursor.GetMode() == C4CNS_ModePlay)
 	{	
 		DWORD keyMask = flags;
-		if ([event type] == NSScrollWheel)
+		if ([event type] == NSEventTypeScrollWheel)
 		{
 			// TODO: We could evaluate the full smooth scrolling
 			// information, but zoom and inventory scrolling don't
@@ -252,7 +253,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 
 - (void) magnifyWithEvent:(NSEvent *)event
 {
-	if (Game.IsRunning && (event.modifierFlags & NSAlternateKeyMask) == 0)
+	if (Game.IsRunning && (event.modifierFlags & NSEventModifierFlagOption) == 0)
 	{
 		C4Viewport* viewport = self.controller.viewport;
 		if (viewport)
@@ -299,9 +300,9 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	Game.DoKeyboardInput(
 		[event keyCode]+CocoaKeycodeOffset, // offset keycode by some value to distinguish between those special key defines
 		type,
-		[event modifierFlags] & NSAlternateKeyMask,
-		([event modifierFlags] & NSControlKeyMask) || ([event modifierFlags] & NSCommandKeyMask),
-		[event modifierFlags] & NSShiftKeyMask,
+		[event modifierFlags] & NSEventModifierFlagOption,
+		([event modifierFlags] & NSEventModifierFlagControl) || ([event modifierFlags] & NSEventModifierFlagCommand),
+		[event modifierFlags] & NSEventModifierFlagShift,
 		false, NULL
 	);
 
@@ -333,13 +334,13 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	C4KeyCode key = (C4KeyCode)([event keyCode] + CocoaKeycodeOffset);
 	int modifier = 0;
 	if (key == K_SHIFT_L || key == K_SHIFT_R)
-		modifier = NSShiftKeyMask;
+		modifier = NSEventModifierFlagShift;
 	if (key == K_CONTROL_L || key == K_CONTROL_R)
-		modifier = NSControlKeyMask;
+		modifier = NSEventModifierFlagControl;
 	if (key == K_COMMAND_L || key == K_COMMAND_R)
-		modifier = NSCommandKeyMask;
+		modifier = NSEventModifierFlagCommand;
 	if (key == K_ALT_L || key == K_ALT_R)
-		modifier = NSAlternateKeyMask;
+		modifier = NSEventModifierFlagOption;
 
 	if (modifier != 0)
 	{
@@ -572,7 +573,7 @@ void CStdGLCtx::Clear(bool multisample_change)
 	}
 }
 
-void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples, int) const
 {
 	[C4OpenGLView enumerateMultiSamples:samples];
 }
@@ -589,19 +590,12 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	setObjectiveCObject(ctx);
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
-	// init extensions
-	glewExperimental = GL_TRUE; // Init GL 3.0+ function pointers
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-	}
 	// set the openglview's context
 	auto controller = pWindow->objectiveCObject<C4WindowController>();
 	if (controller && controller.openGLView)
 	{
 		[controller.openGLView setContext:ctx];
+		[ctx setView:controller.openGLView];
 	}
 
 	this_context = contexts.insert(contexts.end(), this);

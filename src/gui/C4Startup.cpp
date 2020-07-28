@@ -24,6 +24,7 @@
 #include "graphics/C4FontLoader.h"
 #include "graphics/C4GraphicsResource.h"
 #include "gui/C4StartupAboutDlg.h"
+#include "gui/C4StartupLegalDlg.h"
 #include "gui/C4StartupMainDlg.h"
 #include "gui/C4StartupNetDlg.h"
 #include "gui/C4StartupOptionsDlg.h"
@@ -160,6 +161,9 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 		break;
 	case SDID_About:
 		pToDlg = new C4StartupAboutDlg();
+		break;
+	case SDID_Legal:
+		pToDlg = new C4StartupLegalDlg();
 		break;
 	case SDID_PlrSel:
 		pToDlg = new C4StartupPlrSelDlg();

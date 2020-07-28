@@ -17,7 +17,8 @@
 // based on SDL implementation
 
 #include "C4ForbidLibraryCompilation.h"
-#include <GL/glew.h>
+#define GL_SILENCE_DEPRECATION
+#include <epoxy/gl.h>
 
 #include "C4Include.h"
 #include "platform/C4Window.h"
@@ -109,7 +110,7 @@ bool C4AbstractApp::FlushMessages()
 
 	while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, TRUE) == kCFRunLoopRunHandledSource);
 	NSEvent* event;
-	while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSEventTrackingRunLoopMode dequeue:YES]) != nil)
+	while ((event = [NSApp nextEventMatchingMask:NSEventMaskAny untilDate:[NSDate distantPast] inMode:NSEventTrackingRunLoopMode dequeue:YES]) != nil)
 	{
 		[NSApp sendEvent:event];
 		[NSApp updateWindows];
@@ -167,7 +168,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 	ActualFullscreenX = iXRes;
 	ActualFullscreenY = iYRes;
 	[C4OpenGLView setSurfaceBackingSizeOf:[C4OpenGLView mainContext] width:ActualFullscreenX height:ActualFullscreenY];
-	if ((window.styleMask & NSFullScreenWindowMask) == 0)
+	if ((window.styleMask & NSWindowStyleMaskFullScreen) == 0)
 	{
 		[window setResizeIncrements:NSMakeSize(1.0, 1.0)];
 		pWindow->SetSize(iXRes, iYRes);

@@ -590,7 +590,7 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 
 void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 {
-#if C4NET2IO_DUMP_LEVEL > 0
+#if C4NET2IO_DUMP_LEVEL > 1
 	auto tTime = C4TimeMilliseconds::Now();
 #endif
 #if(C4NET2IO_DUMP_LEVEL > 1)

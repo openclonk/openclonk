@@ -160,7 +160,6 @@ class C4ChatDlg : public C4GUI::Dialog
 private:
 	static C4ChatDlg *pInstance;
 	class C4ChatControl *pChatCtrl;
-	C4GUI::Button *pBtnClose;
 
 public:
 	C4ChatDlg();

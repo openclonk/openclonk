@@ -24,41 +24,17 @@
 
 void C4PropList::AddRef(C4Value *pRef)
 {
-#ifdef _DEBUG
-	C4Value * pVal = FirstRef;
-	while (pVal)
-	{
-		assert(pVal != pRef);
-		pVal = pVal->NextRef;
-	}
-#endif
-	pRef->NextRef = FirstRef;
-	FirstRef = pRef;
+	assert(Refs.count(pRef) == 0);
+	Refs.insert(pRef);
 }
 
-void C4PropList::DelRef(const C4Value * pRef, C4Value * pNextRef)
+void C4PropList::DelRef(C4Value * pRef)
 {
-	assert(FirstRef);
-	// References to objects never have HasBaseArray set
-	if (pRef == FirstRef)
-	{
-		FirstRef = pNextRef;
-		if (pNextRef) return;
-	}
-	else
-	{
-		C4Value *pPrev = FirstRef;
-		while (pPrev->NextRef != pRef)
-		{
-			pPrev = pPrev->NextRef;
-			assert(pPrev);
-		}
-		pPrev->NextRef = pNextRef;
-		return;
-	}
+	auto erased = Refs.erase(pRef);
+	assert(erased == 1);
 	// Only pure script proplists are garbage collected here, host proplists
 	// like definitions and effects have their own memory management.
-	if (Delete()) delete this;
+	if (Refs.empty() && Delete()) delete this;
 }
 
 C4PropList * C4PropList::New(C4PropList * prototype)
@@ -284,7 +260,7 @@ void C4PropList::ThawRecursively()
 {
 	//thaw self and all owned properties
 	Thaw();
-	C4PropListStatic *s = IsStatic();
+	//C4PropListStatic *s = IsStatic();
 	//if (s) LogF("Thaw: %s", s->GetDataString().getData());
 	auto prop_names = GetUnsortedProperties(nullptr, ::ScriptEngine.GetPropList());
 	for (auto prop_name : prop_names)
@@ -311,18 +287,13 @@ C4PropListStatic *C4PropList::FreezeAndMakeStaticRecursively(std::vector<C4Value
 		this_static = NewStatic(GetPrototype(), parent, key);
 		this_static->Properties.Swap(&Properties); // grab properties
 		this_static->Status = Status;
-		C4Value holder = C4VPropList(this);
-		while (FirstRef && FirstRef->NextRef)
-		{
-			C4Value *ref = FirstRef;
-			if (ref == &holder) ref = ref->NextRef;
+		RefSet pre_freeze_refs{Refs}; // copy to avoid iterator validity headaches
+		C4Value holder = C4VPropList(this); // add another reference to prevent premature deletion
+		for (C4Value * ref : pre_freeze_refs)
 			ref->SetPropList(this_static);
-		}
 		// store reference
 		if (prop_lists)
-		{
 			prop_lists->push_back(C4VPropList(this_static));
-		}
 		// "this" should be deleted as holder goes out of scope
 	}
 	// Iterate over sorted list of elements to make static
@@ -361,14 +332,12 @@ void C4PropList::Denumerate(C4ValueNumbers * numbers)
 
 C4PropList::~C4PropList()
 {
-	while (FirstRef)
+	for (C4Value * Ref : Refs)
 	{
 		// Manually kill references so DelRef doesn't destroy us again
-		FirstRef->Data = nullptr; FirstRef->Type = C4V_Nil;
-		C4Value *ref = FirstRef;
-		FirstRef = FirstRef->NextRef;
-		ref->NextRef = nullptr;
+		Ref->Data = nullptr; Ref->Type = C4V_Nil;
 	}
+	Refs.clear();
 #ifdef _DEBUG
 	assert(PropLists.Has(this));
 	PropLists.Remove(this);
@@ -1100,7 +1069,7 @@ template<> template<>
 unsigned int C4Set<C4PropListScript *>::Hash<C4PropListScript *>(C4PropListScript * const & e)
 {
 	// since script prop lists are only put in the set for reference keeping, just hash by pointer
-	// but use only some of the more significant bits because 
+	// but use only some of the more significant bits because
 	uintptr_t hash = reinterpret_cast<uintptr_t>(e);
 	return (unsigned int)(hash / 63);
 }

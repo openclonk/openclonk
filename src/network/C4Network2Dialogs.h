@@ -142,7 +142,7 @@ private:
 		// subcomponents
 		C4GUI::Label *pDesc;       // connection description
 		C4GUI::Label *pPing;       // connection ping
-		C4GUI::IconButton *pReconnectBtn, *pDisconnectBtn; // buttons to restore/destroy connection
+		C4GUI::IconButton *pDisconnectBtn; // button to destroy connection
 
 	public:
 		ConnectionListItem(class C4Network2ClientListBox *pForDlg, int32_t iClientID, int32_t iConnectionID); // ctor

@@ -100,7 +100,7 @@ void C4Network2ResCore::Clear()
 	iID = iDerID = -1;
 	fLoadable = false;
 	FileName.Clear();
-	iFileSize = iFileCRC = iContentsCRC = ~0;
+	iFileSize = iFileCRC = iContentsCRC = ~0u;
 	fHasFileSHA = false;
 }
 
@@ -250,7 +250,7 @@ int32_t C4Network2ResChunkData::GetChunkToRetrieve(const C4Network2ResChunkData 
 	// invert to get everything that should be retrieved
 	C4Network2ResChunkData ChData2; ChData.GetNegative(ChData2);
 	// select chunk (random)
-	int32_t iRetrieveChunk = UnsyncedRandom(ChData2.getPresentChunkCnt());
+	uint32_t iRetrieveChunk = UnsyncedRandom(ChData2.getPresentChunkCnt());
 	// return
 	return ChData2.getPresentChunk(iRetrieveChunk);
 }
@@ -1271,11 +1271,9 @@ void C4Network2ResChunk::CompileFunc(StdCompiler *pComp)
 // *** C4Network2ResList
 
 C4Network2ResList::C4Network2ResList()
-		: ResListCSec(this),
-		iNextResID((-1) << 16)
-{
-
-}
+		: ResListCSec(this)
+		, iNextResID((~0u) << 16)
+{}
 
 C4Network2ResList::~C4Network2ResList()
 {
@@ -1502,14 +1500,17 @@ void C4Network2ResList::OnClientConnect(C4Network2IOConnection *pConn) // by mai
 	SendDiscover(pConn);
 }
 
+template<class T>
+const T& GetPkt(const C4PacketBase *pPacket) {
+	// Wish we had templated lambdas yet
+	assert(pPacket);
+	return static_cast<const T&>(*pPacket);
+}
+
 void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Network2IOConnection *pConn)
 {
 	// security
 	if (!pConn) return;
-
-#define GETPKT(type, name) \
-    assert(pPacket); const type &name = \
-     static_cast<const type &>(*pPacket);
 
 	switch (cStatus)
 	{
@@ -1517,7 +1518,7 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 	case PID_NetResDis: // resource discover
 	{
 		if (!pConn->isOpen()) break;
-		GETPKT(C4PacketResDiscover, Pkt);
+		auto Pkt = GetPkt<C4PacketResDiscover>(pPacket);
 		// search matching resources
 		CStdShareLock ResListLock(&ResListCSec);
 		for (C4Network2Res *pRes = pFirst; pRes; pRes = pRes->pNext)
@@ -1531,7 +1532,7 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 	case PID_NetResStat: // resource status
 	{
 		if (!pConn->isOpen()) break;
-		GETPKT(C4PacketResStatus, Pkt);
+		auto Pkt = GetPkt<C4PacketResStatus>(pPacket);
 		// matching resource?
 		CStdShareLock ResListLock(&ResListCSec);
 		C4Network2Res *pRes = getRes(Pkt.getResID());
@@ -1543,7 +1544,7 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 
 	case PID_NetResDerive: // resource derive
 	{
-		GETPKT(C4Network2ResCore, Core);
+		auto Core = GetPkt<C4Network2ResCore>(pPacket);
 		if (Core.getDerID() < 0) break;
 		// Check if there is a anonymous derived resource with matching parent.
 		CStdShareLock ResListLock(&ResListCSec);
@@ -1555,7 +1556,7 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 
 	case PID_NetResReq: // resource request
 	{
-		GETPKT(C4PacketResRequest, Pkt);
+		auto Pkt = GetPkt<C4PacketResRequest>(pPacket);
 		// find resource
 		CStdShareLock ResListLock(&ResListCSec);
 		C4Network2Res *pRes = getRes(Pkt.getReqID());
@@ -1566,7 +1567,7 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 
 	case PID_NetResData: // a chunk of data is coming in
 	{
-		GETPKT(C4Network2ResChunk, Chunk);
+		auto Chunk = GetPkt<C4Network2ResChunk>(pPacket);
 		// find resource
 		CStdShareLock ResListLock(&ResListCSec);
 		C4Network2Res *pRes = getRes(Chunk.getResID());
@@ -1575,7 +1576,6 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 	}
 	break;
 	}
-#undef GETPKT
 }
 
 void C4Network2ResList::OnTimer()

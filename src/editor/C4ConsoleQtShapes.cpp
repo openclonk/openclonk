@@ -599,7 +599,6 @@ void C4ConsoleQtGraph::GraphData::RemoveEdge(int32_t edge_index)
 	// Validity check
 	if (edge_index < 0 || edge_index >= edges.size()) return;
 	// Kill the edge
-	Edge removed_edge = edges[edge_index];
 	edges.erase(edges.begin() + edge_index);
 }
 

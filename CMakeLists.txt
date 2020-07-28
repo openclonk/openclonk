@@ -157,7 +157,8 @@ if(WIN32 AND MINGW)
 endif()
 
 if(APPLE)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc -headerpad_max_install_names")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -headerpad_max_install_names")
 endif()
 
 ############################################################################
@@ -275,14 +276,8 @@ endif()
 
 if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 	find_package(OpenGL)
-	find_package(GLEW REQUIRED)
-	include_directories(${GLEW_INCLUDE_DIRS})
-	add_definitions(${GLEW_DEFINITIONS})
-# On some platforms, GLEW declares the userParam parameter of
-# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
-# Test which one works here.
-	set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
-	CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
+	find_package(Epoxy REQUIRED)
+	include_directories(${Epoxy_INCLUDE_DIRS})
 endif()
 
 if(NOT C4GROUP_TOOL_ONLY)
@@ -362,6 +357,19 @@ if(NOT C4GROUP_TOOL_ONLY)
 endif()
 
 ############################################################################
+# native tools
+############################################################################
+IF(CMAKE_CROSSCOMPILING)
+	SET(IMPORT_NATIVE_TOOLS "IMPORT_NATIVE_TOOLS-NOTFOUND" CACHE FILEPATH "Export file from a native build")
+	INCLUDE(${IMPORT_NATIVE_TOOLS})
+	SET(native_c4group native-c4group)
+	SET(native_oc-licenses-into-code native-oc-licenses-into-code)
+ELSE()
+	SET(native_c4group c4group)
+	SET(native_oc-licenses-into-code oc-licenses-into-code)
+ENDIF()
+
+############################################################################
 # generated source files
 ############################################################################
 if(NOT C4GROUP_TOOL_ONLY)
@@ -384,6 +392,35 @@ if(NOT C4GROUP_TOOL_ONLY)
 		VERBATIM
 	)
 endif()
+
+IF(NOT CMAKE_CROSSCOMPILING)
+	add_executable(oc-licenses-into-code tools/generate_license_headers.cpp)
+	if (NOT C4GROUP_TOOL_ONLY)
+		set_target_properties(oc-licenses-into-code PROPERTIES EXCLUDE_FROM_ALL On)
+	endif()
+endif()
+set(OC_LICENSE_LIST
+	TRADEMARK "Clonk Trademark"
+	COPYING "OpenClonk Engine Engine License"
+	planet/COPYING "OpenClonk Game Content License"
+	licenses/xiph.txt "OGG Library"
+	licenses/getopt.txt "Getopt Library"
+	licenses/apache.txt "Various Libraries"
+	licenses/LGPL.txt "Various Libraries"
+	thirdparty/pcg/pcg_random.hpp "PCG Random number generator"
+	thirdparty/timsort/README.rst "Timsort"
+)
+if(HAVE_BACKWARD)
+	set(OC_LICENSE_LIST ${OC_LICENSE_LIST} thirdparty/backward-cpp/LICENSE.txt "backward-cpp Stack Trace Pretty Printer")
+endif()
+set(OC_LICENSES ${CMAKE_CURRENT_BINARY_DIR}/OCLicenses.cpp)
+add_custom_command(
+	OUTPUT ${OC_LICENSES}
+	COMMENT "Generating OCLicenses.cpp"
+	COMMAND ${native_oc-licenses-into-code} ${OC_LICENSES} ${OC_LICENSE_LIST}
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	DEPENDS COPYING TRADEMARK planet/COPYING ${native_oc-licenses-into-code}
+)
 
 ############################################################################
 # Mac OS bundle setup
@@ -573,6 +610,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4ScriptGuiWindow.h
 	src/gui/C4StartupAboutDlg.cpp
 	src/gui/C4StartupAboutDlg.h
+	src/gui/C4StartupLegalDlg.cpp
+	src/gui/C4StartupLegalDlg.h
 	src/gui/C4Startup.cpp
 	src/gui/C4Startup.h
 	src/gui/C4StartupMainDlg.cpp
@@ -875,6 +914,7 @@ set(MAPE_SOURCES
 	src/mape/window.h
 	mape-resource.c
 )
+set_property(SOURCE mape-resource.c PROPERTY SKIP_AUTOGEN ON)
 
 # source files specific to an operating system
 if(APPLE)
@@ -883,7 +923,6 @@ if(APPLE)
 		src/platform/C4FileMonitorMac.mm
 		src/platform/C4AppDelegate.h
 		src/platform/C4AppDelegate.mm
-		src/platform/StdSchedulerMac.mm
 		src/platform/ObjectiveCAssociated.h
 	)
 	list(APPEND OC_GUI_SOURCES ${OC_BUNDLE_RESOURCES})
@@ -1028,6 +1067,7 @@ src/platform/StdFile.h
 src/platform/StdRegistry.cpp
 src/platform/StdRegistry.h
 src/platform/StdScheduler.cpp
+$<$<BOOL:${APPLE}>:src/platform/StdSchedulerMac.mm>
 src/platform/StdSchedulerWin32.cpp
 src/platform/StdSchedulerPoll.cpp
 src/platform/StdScheduler.h
@@ -1036,6 +1076,7 @@ src/platform/C4TimeMilliseconds.h
 src/zlib/gzio.c
 src/zlib/gzio.h
 src/zlib/zutil.h
+${OC_LICENSES}
 
 	# pcg is a header-only library which we're listing solely so MSVC shows
 	# the sources in the solution explorer. We could use an INTERFACE library
@@ -1191,7 +1232,7 @@ if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 		${SDL2_LIBRARIES}
 		${Audio_LIBRARIES}
 		${GETOPT_LIBRARIES}
-		${GLEW_LIBRARIES}
+		${Epoxy_LIBRARIES}
 		${OPENGL_LIBRARIES}
 		${TinyXML_LIBRARIES}
 		${X11_LIBRARIES}
@@ -1217,7 +1258,7 @@ if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 				windeployqt(openclonk)
 			elseif(APPLE)
 				include(DeployQt)
-				macdeployqt(nitroshare-client)
+				macdeployqt(openclonk)
 			endif()
 		endif()
 	endif()
@@ -1266,6 +1307,10 @@ if(GTK3_FOUND AND GTK3_gtksourceview_FOUND AND NOT HEADLESS_ONLY AND NOT C4GROUP
 	target_compile_options(mape PRIVATE ${GTK3_COMPILE_DEFINITIONS} ${GTK3_gtksourceview_COMPILE_DEFINITIONS})
 	set_property(TARGET mape PROPERTY FOLDER "Utilities")
 	target_include_directories(mape PRIVATE ${GTK3_INCLUDE_DIRS} ${GTK3_gtksourceview_INCLUDE_DIRS})
+	target_link_directories(mape PRIVATE
+		${GTK3_LIBRARY_DIRS}
+		${GTK3_gtksourceview_LIBRARY_DIRS}
+	)
 	target_link_libraries(mape
 		${GTK3_LIBRARIES}
 		${GTK3_gtksourceview_LIBRARIES}
@@ -1485,22 +1530,7 @@ endif()
 
 # Export native tools for later use in cross-compile builds
 IF(NOT CMAKE_CROSSCOMPILING)
-	EXPORT(TARGETS c4group FILE ${CMAKE_BINARY_DIR}/NativeToolsExport.cmake NAMESPACE native- )
-ENDIF()
-
-# When cross-compiling, import c4group from a native build
-IF(CMAKE_CROSSCOMPILING)
-	FIND_PROGRAM(C4GROUP_PATH NAMES c4group PATHS)
-
-	IF (NOT C4GROUP_PATH)
-		SET(IMPORT_NATIVE_TOOLS "IMPORT_NATIVE_TOOLS-NOTFOUND" CACHE FILEPATH "Export file from a native build")
-		INCLUDE(${IMPORT_NATIVE_TOOLS})
-		SET(native_c4group native-c4group)
-	ELSE()
-		SET(native_c4group ${C4GROUP_PATH})
-	ENDIF()
-ELSE()
-	SET(native_c4group c4group)
+	EXPORT(TARGETS c4group oc-licenses-into-code FILE ${CMAKE_BINARY_DIR}/NativeToolsExport.cmake NAMESPACE native- )
 ENDIF()
 
 if(NOT C4GROUP_TOOL_ONLY)

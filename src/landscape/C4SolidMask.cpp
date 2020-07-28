@@ -308,7 +308,7 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 					// check for any contact to own SolidMask - attach-directions, bottom - "stuck" (CNAT_Center) is ignored, because that causes problems with things being stuck in basements :(
 					int iVtx = 0;
 					for (; iVtx < pObj->Shape.VtxNum; ++iVtx)
-						if (pObj->Shape.GetVertexContact(iVtx, pObj->Action.t_attach | CNAT_Bottom, pObj->GetX(), pObj->GetY(), DensityProvider(pForObject, *this)))
+						if (pObj->Shape.GetVertexContact(iVtx, pObj->Action.t_attach | CNAT_Bottom, pObj->GetX(), pObj->GetY(), DensityProvider(*this)))
 							break;
 					if (iVtx == pObj->Shape.VtxNum) continue; // no contact
 					// contact: Add object to list

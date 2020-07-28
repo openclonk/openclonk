@@ -33,6 +33,7 @@
 #include "object/C4MeshDenumerator.h"
 
 
+#ifndef USE_CONSOLE
 static void DrawVertex(C4Facet &cgo, float tx, float ty, int32_t col, int32_t contact)
 {
 	if (Inside<int32_t>(tx,cgo.X,cgo.X+cgo.Wdt) && Inside<int32_t>(ty,cgo.Y,cgo.Y+cgo.Hgt))
@@ -42,6 +43,7 @@ static void DrawVertex(C4Facet &cgo, float tx, float ty, int32_t col, int32_t co
 		if (contact) pDraw->DrawFrameDw(cgo.Surface,tx-1.5,ty-1.5,tx+1.5,ty+1.5,C4RGB(0xff, 0xff, 0xff));
 	}
 }
+#endif
 
 void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 {

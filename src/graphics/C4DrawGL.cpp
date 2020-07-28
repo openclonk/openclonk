@@ -73,13 +73,7 @@ namespace
 		}
 	}
 
-#ifdef GLDEBUGPROCARB_USERPARAM_IS_CONST
-#define USERPARAM_CONST const
-#else
-#define USERPARAM_CONST
-#endif
-
-	void GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, USERPARAM_CONST void* userParam)
+	void GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
 	{
 		const char *msg_source = MsgSourceToStr(source);
 		const char *msg_type = MsgTypeToStr(type);
@@ -92,8 +86,6 @@ namespace
 #endif
 	}
 }
-
-#undef USERPARAM_CONST
 
 CStdGL::CStdGL():
 	NextVAOID(VAOIDs.end())
@@ -274,10 +266,8 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 
 void CStdGL::ObjectLabel(uint32_t identifier, uint32_t name, int32_t length, const char * label)
 {
-#ifdef GL_KHR_debug
-	if (glObjectLabel)
+	if (has_khr_debug)
 		glObjectLabel(identifier, name, length, label);
-#endif
 }
 
 CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
@@ -300,16 +290,20 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 		pMainCtx = pCtx;
 		LogF("  gl: Create first %scontext...", Config.Graphics.DebugOpenGL ? "debug " : "");
 	}
-	bool success = pCtx->Init(pWindow, pApp);
-	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)
+	if (!pCtx->Init(pWindow, pApp))
+	{
+		Log("  gl: failed to create context.");
+		delete pCtx;
+		return NULL;
+	}
+	has_khr_debug = epoxy_has_gl_extension("GL_KHR_debug") || epoxy_gl_version() >= 43;
+	if (Config.Graphics.DebugOpenGL && (has_khr_debug || epoxy_has_gl_extension("GL_ARB_debug_output")))
 	{
 		if (first_ctx) Log("  gl: Setting OpenGLDebugProc callback");
-		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-#ifdef GL_KHR_debug
-		if (GLEW_KHR_debug)
+		glDebugMessageCallback(&OpenGLDebugProc, nullptr);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		if (has_khr_debug)
 			glEnable(GL_DEBUG_OUTPUT);
-#endif
 	}
 	// First context: Log some information about hardware/drivers
 	// Must log after context creation to get valid results
@@ -323,7 +317,7 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 		if (Config.Graphics.DebugOpenGL)
 		{
 			// Dump extension list
-			if (glGetStringi)
+			if (epoxy_is_desktop_gl() && epoxy_gl_version() >= 30)
 			{
 				GLint gl_extension_count = 0;
 				glGetIntegerv(GL_NUM_EXTENSIONS, &gl_extension_count);
@@ -347,14 +341,6 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 				LogSilentF("GLExt: %s", gl_extensions ? gl_extensions : "");
 			}
 		}
-		if (!success)
-		{
-			pApp->MessageDialog("Error while initializing OpenGL. Check the log file for more information. This usually means your GPU is too old.");
-		}
-	}
-	if (!success)
-	{
-		delete pCtx; Error("  gl: Error creating secondary context!"); return nullptr;
 	}
 	// creation selected the new context - switch back to previous context
 	RenderTarget = nullptr;

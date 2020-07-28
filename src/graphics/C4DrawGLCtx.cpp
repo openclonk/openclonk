@@ -25,8 +25,10 @@
 
 #ifndef USE_CONSOLE
 
+#if defined(USE_WGL) || defined(USE_SDL_MAINLOOP)
 static const int REQUESTED_GL_CTX_MAJOR = 3;
 static const int REQUESTED_GL_CTX_MINOR = 2;
+#endif
 
 std::list<CStdGLCtx*> CStdGLCtx::contexts;
 
@@ -58,7 +60,7 @@ void CStdGLCtx::SelectCommon()
 
 #ifdef USE_WGL
 
-#include <GL/wglew.h>
+#include <epoxy/wgl.h>
 
 static PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 static HGLRC hrc = nullptr;
@@ -71,7 +73,7 @@ static HGLRC hrc = nullptr;
 static std::vector<int> EnumeratePixelFormats(HDC hdc)
 {
 	std::vector<int> result;
-	if(!wglGetPixelFormatAttribivARB) return result;
+	if(!epoxy_has_wgl_extension(hdc, "WGL_ARB_pixel_format")) return result;
 
 	int n_formats;
 	int attributes = WGL_NUMBER_PIXEL_FORMATS_ARB;
@@ -79,7 +81,7 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 
 	for(int i = 1; i < n_formats+1; ++i)
 	{
-		int new_attributes[] = { WGL_DRAW_TO_WINDOW_ARB, WGL_SUPPORT_OPENGL_ARB, WGL_DOUBLE_BUFFER_ARB, WGL_COLOR_BITS_ARB, WGL_DEPTH_BITS_ARB, WGL_STENCIL_BITS_ARB, WGL_AUX_BUFFERS_ARB, WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB };
+		int new_attributes[] = { WGL_DRAW_TO_WINDOW_ARB, WGL_SUPPORT_OPENGL_ARB, WGL_DOUBLE_BUFFER_ARB, WGL_COLOR_BITS_ARB, WGL_DEPTH_BITS_ARB, WGL_STENCIL_BITS_ARB, WGL_AUX_BUFFERS_ARB, WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB, WGL_PIXEL_TYPE_ARB };
 		const unsigned int nnew_attributes = sizeof(new_attributes)/sizeof(int);
 
 		int new_results[nnew_attributes];
@@ -91,6 +93,10 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 		// however, when choosing it then texturing does not work anymore. I am not
 		// exactly sure what the cause of that is, so let's not choose that one for now.
 		if(new_results[4] > 24) continue;
+
+		// ensure that we get an RGB buffer. otherwise we might end up with a float buffer, which messes up gamma.
+		if (new_results[9] != WGL_TYPE_RGBA_ARB) 
+			continue;
 
 		// Multisampling with just one sample is equivalent to no-multisampling,
 		// so don't include that in the result.
@@ -263,14 +269,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 		try
 		{
 			tempContext = std::make_unique<GLTempContext>();
-			glewExperimental = GL_TRUE;
-			GLenum err = glewInit();
-			if(err != GLEW_OK)
-			{
-				// Problem: glewInit failed, something is seriously wrong.
-				pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-				return false;
-			}
 		}
 		catch (const WinAPIError &e)
 		{
@@ -319,7 +317,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 			else
 			{
 				// create context
-				if (wglCreateContextAttribsARB)
+				if (epoxy_has_wgl_extension(hDC, "WGL_ARB_create_context"))
 				{
 					{
 						const int attribs[] = {
@@ -366,17 +364,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 	if (hrc)
 	{
 		Select();
-		// After selecting the new context, we have to reinitialize GLEW to
-		// update its function pointers - the driver may elect to expose
-		// different extensions depending on the context attributes
-		glewExperimental = GL_TRUE;
-		GLenum err = glewInit();
-		if (err != GLEW_OK)
-		{
-			// Uh. This is a problem.
-			pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-			return false;
-		}
 
 		this_context = contexts.insert(contexts.end(), this);
 		return true;
@@ -388,6 +375,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 
 std::vector<int> CStdGLCtx::EnumerateMultiSamples() const
 {
+	assert(hrc != 0);
 	std::vector<int> result;
 	std::vector<int> vec = EnumeratePixelFormats(hDC);
 	for(int i : vec)
@@ -478,14 +466,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	}
 	// No luck at all?
 	if (!Select(true)) return false;
-	// init extensions
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-	}
 
 	this_context = contexts.insert(contexts.end(), this);
 	return true;
@@ -562,15 +542,6 @@ bool CStdGLCtxQt::Init(C4Window *window, C4AbstractApp *app)
 			return false;
 
 		if (!Select(true)) return false;
-
-		// init extensions
-		glewExperimental = GL_TRUE;
-		GLenum err = glewInit();
-		if (GLEW_OK != err)
-		{
-			// Problem: glewInit failed, something is seriously wrong.
-			return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-		}
 	}
 	else
 	{

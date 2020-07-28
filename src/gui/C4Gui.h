@@ -1284,10 +1284,10 @@ namespace C4GUI
 
 	private:
 		void Deselect(); // clear selection range
-		void ClearText();    // remove all the text
 
 	public:
 		bool InsertText(const char *szText, bool fUser); // insert text at cursor pos (returns whether all text could be inserted)
+		void ClearText();    // remove all the text
 		void DeleteSelection(); // deletes the selected text. Adjust cursor position if necessary
 		bool SetText(const char *szText, bool fUser) { ClearText(); return InsertText(szText, fUser); }
 		void SetPasswordMask(char cNewPasswordMask) { cPasswordMask = cNewPasswordMask; } // mask edit box contents using the given character

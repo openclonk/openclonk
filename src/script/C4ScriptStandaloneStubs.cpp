@@ -61,5 +61,3 @@ bool C4Reloc::Open(C4Group&, char const*) const { return false; }
 void C4Def::IncludeDefinition(C4Def*) {}
 bool EraseItemSafe(const char *szFilename) {return false;}
 void AddDbgRec(C4RecordChunkType, const void *, int) {}
-
-void RecordRandom(uint32_t range, uint32_t val) { }

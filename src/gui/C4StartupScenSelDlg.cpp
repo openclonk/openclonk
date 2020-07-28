@@ -1442,6 +1442,22 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	pScenSelCaption = new C4GUI::Label("", caBookLeft.GetFromTop(rScenSelCaptionFont.GetLineHeight()), ACenter, ClrScenarioItem, &rScenSelCaptionFont, false);
 	pSheetBook->AddElement(pScenSelCaption);
 	pScenSelCaption->SetToolTip(LoadResStr("IDS_DLGTIP_SELECTSCENARIO"));
+
+	// search bar
+	const char *labelText = LoadResStr("IDS_DLG_SEARCH");
+	int32_t width = 100;
+	int32_t height; // there's no point in specifying a default height - it's set by GetTextExtent, and we can't know how high the text is
+	::GraphicsResource.TextFont.GetTextExtent(labelText, width, height, true);
+	C4GUI::ComponentAligner caSearchBar(caBookLeft.GetFromBottom(height), 0, 0);
+	auto *searchLabel = new C4GUI::WoodenLabel(labelText, caSearchBar.GetFromLeft(width + 10), C4GUI_Caption2FontClr, &::GraphicsResource.TextFont);
+	searchLabel->SetToolTip(LoadResStr("IDS_DLGTIP_SEARCHLIST"));
+	pSheetBook->AddElement(searchLabel);
+
+	searchBar = new C4GUI::CallbackEdit<C4StartupScenSelDlg>(caSearchBar.GetAll(), this, &C4StartupScenSelDlg::OnSearchBarEnter);
+	searchBar->SetToolTip(LoadResStr("IDS_DLGTIP_SEARCHLIST"));
+	pSheetBook->AddElement(searchBar);
+
+	// scenario selection list box
 	pScenSelList = new C4GUI::ListBox(caBookLeft.GetAll());
 	pScenSelList->SetToolTip(LoadResStr("IDS_DLGTIP_SELECTSCENARIO"));
 	pScenSelList->SetDecoration(false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
@@ -1499,9 +1515,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	SetFocus(pScenSelList, false);
 
 	// key bindings
-	C4CustomKey::CodeList keys;
-	keys.emplace_back(K_BACK); keys.emplace_back(K_LEFT);
-	pKeyBack = new C4KeyBinding(keys, "StartupScenSelFolderUp", KEYSCOPE_Gui,
+	pKeyBack = new C4KeyBinding(C4KeyCodeEx(K_LEFT), "StartupScenSelFolderUp", KEYSCOPE_Gui,
 	                            new C4GUI::DlgKeyCB<C4StartupScenSelDlg>(*this, &C4StartupScenSelDlg::KeyBack), C4CustomKey::PRIO_CtrlOverride);
 	pKeyRefresh = new C4KeyBinding(C4KeyCodeEx(K_F5), "StartupScenSelReload", KEYSCOPE_Gui,
 	                               new C4GUI::DlgKeyCB<C4StartupScenSelDlg>(*this, &C4StartupScenSelDlg::KeyRefresh), C4CustomKey::PRIO_CtrlOverride);
@@ -1616,8 +1630,15 @@ void C4StartupScenSelDlg::UpdateList()
 		for (C4ScenarioListLoader::Entry *pEnt = pScenLoader->GetFirstEntry(); pEnt; pEnt = pEnt->GetNext())
 		{
 			if (pEnt->IsHidden()) continue; // no UI entry at all for hidden items
-			ScenListItem *pEntItem = new ScenListItem(pScenSelList, pEnt);
-			if (pEnt == pOldSelection) pScenSelList->SelectEntry(pEntItem, false);
+			if (!SLen(searchBar->GetText()) || SSearchNoCase(pEnt->GetName().getData(), searchBar->GetText()))
+			{
+				ScenListItem *pEntItem = new ScenListItem(pScenSelList, pEnt);
+				if (pEnt == pOldSelection) pScenSelList->SelectEntry(pEntItem, false);
+			}
+			else if (pEnt == pOldSelection)
+			{
+				pOldSelection = nullptr;
+			}
 		}
 		// set title of current folder
 		// but not root
@@ -1773,6 +1794,7 @@ bool C4StartupScenSelDlg::OpenFolder(C4ScenarioListLoader::Folder *pNewFolder)
 {
 	// open it through loader
 	if (!pScenLoader) return false;
+	searchBar->ClearText();
 	bool fSuccess = pScenLoader->Load(pNewFolder, false);
 	UpdateList();
 	UpdateSelection();
@@ -1811,6 +1833,7 @@ bool C4StartupScenSelDlg::DoBack(bool fAllowClose)
 	// if in a subfolder, try backtrace folders first
 	if (pScenLoader && pScenLoader->FolderBack())
 	{
+		searchBar->ClearText();
 		UpdateList();
 		UpdateSelection();
 		return true;
