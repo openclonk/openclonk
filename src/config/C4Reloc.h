@@ -52,6 +52,7 @@ public:
 		~const_iterator() = default;
 		const_iterator& operator++(); //prefix increment
 		const PathInfo & operator*() const;
+		const PathInfo * operator->() const { return &(**this); }
 
 		const_iterator &operator=(const const_iterator &other)
 		{
