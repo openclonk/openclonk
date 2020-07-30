@@ -99,12 +99,12 @@ public:
 	C4Value            &GlobalSoundModifier; // contains proplist for sound modifier to be applied to all new sounds played
 
 	char CurrentScenarioSection[C4MaxName+1];
-	char ScenarioFilename[_MAX_PATH+1];
+	char ScenarioFilename[_MAX_PATH_LEN];
 	StdCopyStrBuf ScenarioTitle;
-	char PlayerFilenames[20*_MAX_PATH+1];
-	char DefinitionFilenames[20*_MAX_PATH+1];
-	char DirectJoinAddress[_MAX_PATH+1];
-	char DirectJoinTempFilename[_MAX_PATH + 1];
+	char PlayerFilenames[20*_MAX_PATH_LEN];
+	char DefinitionFilenames[20*_MAX_PATH_LEN];
+	char DirectJoinAddress[_MAX_PATH_LEN];
+	char DirectJoinTempFilename[_MAX_PATH_LEN];
 	std::unique_ptr<C4Network2Reference> pJoinReference;
 	int32_t StartupPlayerCount;
 	int32_t StartupTeamCount;
@@ -127,7 +127,7 @@ public:
 	StdStrBuf TempScenarioFile;
 	bool fPreinited{false}; // set after PreInit has been called; unset by Clear and Default
 	int32_t FrameCounter;
-	int32_t iTick2,iTick3,iTick5,iTick10,iTick35,iTick255,iTick1000;
+	int32_t iTick2, iTick3, iTick5, iTick10, iTick35, iTick255, iTick1000;
 	bool TimeGo;
 	int32_t Time;
 	int32_t StartTime;
@@ -153,24 +153,24 @@ public:
 	void Abort(bool fApproved = false); // hard-quit on Esc+Y (/J/O)
 	void Evaluate();
 	void ShowGameOverDlg();
-	bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog=nullptr, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
-	bool DoKeyboardInput(C4KeyCodeEx Key, C4KeyEventType eEventType, class C4GUI::Dialog *pForDialog=nullptr, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
-	void DrawCrewOverheadText(C4TargetFacet &cgo, int32_t iPlayer);
-	void FixRandom(uint64_t iSeed);
+	bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType event_type, bool alt, bool ctrl, bool shift, bool repeated, class C4GUI::Dialog *for_dialog = nullptr, bool fPlrCtrlOnly = false, int32_t strength = -1);
+	bool DoKeyboardInput(C4KeyCodeEx key, C4KeyEventType event_type, class C4GUI::Dialog *for_dialog = nullptr, bool fPlrCtrlOnly = false, int32_t strength = -1);
+	void DrawCrewOverheadText(C4TargetFacet &cgo, int32_t player_nr);
+	void FixRandom(uint64_t seed);
 	bool Init();
 	bool PreInit();
 	void SetScenarioFilename(const char*);
 	bool HasScenario() { return *DirectJoinAddress || *ScenarioFilename || RecordStream.getSize(); }
 	bool Execute();
-	C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
+	C4Player *JoinPlayer(const char *filename, int32_t at_client, const char *at_client_name, C4PlayerInfo *info);
 	void OnPlayerJoinFinished();
 	bool DoGameOver();
 	bool CanQuickSave();
-	bool QuickSave(const char *strFilename, const char *strTitle, bool fForceSave=false);
-	void SetInitProgress(float fToProgress);
-	void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // update anything that's dependant on screen resolution
+	bool QuickSave(const char *filename, const char *title, bool force_save = false);
+	void SetInitProgress(float to_progress);
+	void OnResolutionChanged(unsigned int res_x, unsigned int res_y); // update anything that's dependent on screen resolution
 	void OnKeyboardLayoutChanged();
-	void InitFullscreenComponents(bool fRunning);
+	void InitFullscreenComponents(bool is_running);
 	bool ToggleChat();
 	// Pause
 	bool TogglePause();
@@ -178,51 +178,51 @@ public:
 	bool Unpause();
 	bool IsPaused();
 	// Network
-	void Synchronize(bool fSavePlayerFiles);
+	void Synchronize(bool save_player_files);
 	void SyncClearance();
 	// Editing
-	bool DropFile(const char *szFilename, float iX, float iY);
-	bool DropDef(C4ID id, float iX, float iY);
-	bool ReloadFile(const char *szPath);
+	bool DropFile(const char *filename, float x, float y);
+	bool DropDef(C4ID id, float x, float y);
+	bool ReloadFile(const char *filepath);
 	bool ReloadDef(C4ID id);
-	bool ReloadParticle(const char *szName);
+	bool ReloadParticle(const char *name);
 	// Object functions
-	void ClearPointers(C4Object *cobj);
-	C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
-	                       int32_t x=50, int32_t y=50, int32_t r=0, bool grow_from_center=false,
-	                       C4Real xdir=Fix0, C4Real ydir=Fix0, C4Real rdir=Fix0, int32_t iController=NO_OWNER);
-	C4Object *CreateObject(C4ID type, C4Object *pCreator, int32_t owner=NO_OWNER,
-	                       int32_t x=50, int32_t y=50, int32_t r=0, bool grow_from_center=false,
-	                       C4Real xdir=Fix0, C4Real ydir=Fix0, C4Real rdir=Fix0, int32_t iController=NO_OWNER);
+	void ClearPointers(C4Object *obj);
+	C4Object *CreateObject(C4PropList * type, C4Object *creator, int32_t owner = NO_OWNER,
+	                       int32_t x = 50, int32_t y = 50, int32_t r = 0, bool grow_from_center = false,
+	                       C4Real xdir = Fix0, C4Real ydir = Fix0, C4Real rdir = Fix0, int32_t controller = NO_OWNER);
+	C4Object *CreateObject(C4ID type, C4Object *creator, int32_t owner = NO_OWNER,
+	                       int32_t x = 50, int32_t y = 50, int32_t r = 0, bool grow_from_center = false,
+	                       C4Real xdir = Fix0, C4Real ydir = Fix0, C4Real rdir = Fix0, int32_t controller = NO_OWNER);
 	C4Object *CreateObjectConstruction(C4PropList * type,
-	                                   C4Object *pCreator,
+	                                   C4Object *creator,
 	                                   int32_t owner,
-	                                   int32_t ctx=0, int32_t bty=0,
-	                                   int32_t con=1, bool terrain=false);
-	C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
-	                           int32_t tx=50, int32_t ty=50);
-	C4Object *FindConstuctionSiteBlock(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
-	C4Object *FindObject(C4Def * pDef,
-	                     int32_t iX=0, int32_t iY=0, int32_t iWdt=0, int32_t iHgt=0,
-	                     DWORD ocf=OCF_All,
-	                     C4Object *pFindNext=nullptr);
+	                                   int32_t center_x = 0, int32_t bottom_y = 0,
+	                                   int32_t con = 1, bool adjust_terrain = false);
+	C4Object *CreateInfoObject(C4ObjectInfo *info, int32_t owner,
+	                           int32_t x = 50, int32_t y = 50);
+	C4Object *FindConstuctionSiteBlock(int32_t x, int32_t y, int32_t wdt, int32_t hgt);
+	C4Object *FindObject(C4Def * def,
+	                     int32_t x = 0, int32_t y = 0, int32_t wdt = 0, int32_t hgt = 0,
+	                     DWORD ocf = OCF_All,
+	                     C4Object *find_next = nullptr);
 	C4Object *FindVisObject( // find object in view at pos, regarding parallaxity and visibility (but not distance)
-	  float tx, float ty, int32_t iPlr, const C4Facet &fctViewportGame, const C4Facet &fctViewportGUI,
-	  float iX, float iY,
+	  float x, float y, int32_t player_nr, const C4Facet &viewport_game, const C4Facet &viewport_gui,
+	  float game_x, float game_y,
 	  DWORD category,
 	  float gui_x, float gui_y);
 	int32_t ObjectCount(C4ID id);
-	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER, C4ValueArray *out_objects=nullptr);
-	C4Object *PlaceVegetation(C4PropList *def, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth, C4PropList *shape_proplist, C4PropList * out_pos_proplist);
+	void CastObjects(C4ID id, C4Object *creator, int32_t num, int32_t level, int32_t x, int32_t y, int32_t owner = NO_OWNER, int32_t controller = NO_OWNER, C4ValueArray *out_objects = nullptr);
+	C4Object *PlaceVegetation(C4PropList *def, int32_t x, int32_t y, int32_t wdt, int32_t hgt, int32_t growth, C4PropList *shape_proplist, C4PropList * out_pos_proplist);
 	C4Object *PlaceAnimal(C4PropList *def);
-	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = nullptr, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
+	C4Value GRBroadcast(const char *function, C4AulParSet *pars = nullptr, bool pass_error = false, bool reject_test = false);  // call function in scenario script and all goals/rules/environment objects
 
-	bool LoadScenarioSection(const char *szSection, DWORD dwFlags);
+	bool LoadScenarioSection(const char *section_name, DWORD flags);
 	bool CreateSectionFromTempFile(const char *section_name, const char *temp_filename);
 
-	bool DrawTextSpecImage(C4Facet& fctTarget, const char *szSpec, class C4DrawTransform* pTransform, uint32_t dwClr=0xff);
-	float GetTextSpecImageAspect(const char* szSpec);
-	bool DrawPropListSpecImage(C4Facet& fctTarget, C4PropList *pSpec);
+	bool DrawTextSpecImage(C4Facet& target, const char *spec, class C4DrawTransform* transform, uint32_t color = 0xff);
+	float GetTextSpecImageAspect(const char* spec);
+	bool DrawPropListSpecImage(C4Facet& target, C4PropList *spec);
 	bool SpeedUp();
 	bool SlowDown();
 	bool InitKeyboard(); // register main keyboard input functions
@@ -242,7 +242,7 @@ protected:
 	void InitValueOverloads();
 	void InitEnvironment();
 	void CloseScenario();
-	void DeleteObjects(bool fDeleteInactive);
+	void DeleteObjects(bool delete_inactive);
 	void ExecObjects();
 	void Ticks();
 	bool CheckObjectEnumeration();
@@ -251,9 +251,9 @@ public:
 	bool LoadAdditionalSystemGroup(class C4Group &parent_group);
 	bool SaveGameTitle(C4Group &hGroup);
 protected:
-	bool InitGame(C4Group &hGroup, InitMode init_mode, bool fLoadSky, C4ValueNumbers *);
+	bool InitGame(C4Group &group, InitMode init_mode, bool load_sky, C4ValueNumbers *);
 	bool InitGameFinal(InitMode init_mode);
-	bool InitNetworkFromAddress(const char *szAddress);
+	bool InitNetworkFromAddress(const char *address);
 	bool InitNetworkFromReferenceFile(const char *temp_filename);
 	bool InitNetworkFromReference(const C4Network2Reference &Reference);
 	bool InitNetworkHost();
@@ -268,22 +268,22 @@ protected:
 	bool GameOverCheck();
 	bool PlaceInEarth(C4ID id);
 public:
-	void CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers *);
-	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool fSaveSync, C4ValueNumbers *);
+	void CompileFunc(StdCompiler *compiler, CompileSettings settings, C4ValueNumbers *);
+	bool SaveData(C4Group &group, bool save_section, bool save_exact, bool save_sync, C4ValueNumbers *);
 protected:
-	bool CompileRuntimeData(C4Group &hGroup, InitMode init_mode, bool exact, bool sync, C4ValueNumbers *);
+	bool CompileRuntimeData(C4Group &group, InitMode init_mode, bool exact, bool sync, C4ValueNumbers *);
 
 	// Object function internals
-	C4Object *NewObject( C4PropList *ndef, C4Object *pCreator,
+	C4Object *NewObject( C4PropList *def, C4Object *creator,
 	                     int32_t owner, C4ObjectInfo *info,
-	                     int32_t tx, int32_t ty, int32_t tr,
+	                     int32_t x, int32_t y, int32_t r,
 	                     C4Real xdir, C4Real ydir, C4Real rdir,
-						 int32_t con, int32_t iController, bool grow_from_center);
-	void ClearObjectPtrs(C4Object *tptr);
+						 int32_t con, int32_t controller, bool grow_from_center);
+	void ClearObjectPtrs(C4Object *to_obj);
 	void ObjectRemovalCheck();
 
 	bool ToggleDebugMode(); // dbg modeon/off if allowed
-	bool ActivateMenu(const char *szCommand); // exec given menu command for first local player
+	bool ActivateMenu(const char *command); // exec given menu command for first local player
 
 public:
 	bool ToggleChart(); // chart dlg on/off
@@ -299,9 +299,9 @@ public:
 extern C4Game         Game;
 
 // a global wrapper
-inline StdStrBuf GetKeyboardInputName(const char *szKeyName, bool fShort = false, int32_t iIndex = 0)
+inline StdStrBuf GetKeyboardInputName(const char *key_name, bool abbreviated = false, int32_t index = 0)
 {
-	return Game.KeyboardInput.GetKeyCodeNameByKeyName(szKeyName, fShort, iIndex);
+	return Game.KeyboardInput.GetKeyCodeNameByKeyName(key_name, abbreviated, index);
 }
 
 

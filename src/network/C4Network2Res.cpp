@@ -659,7 +659,7 @@ bool C4Network2Res::CalculateSHA()
 	// already present?
 	if (Core.hasFileSHA()) return true;
 	// get the file
-	char szStandalone[_MAX_PATH + 1];
+	char szStandalone[_MAX_PATH_LEN];
 	if (!GetStandalone(szStandalone, _MAX_PATH, false))
 		SCopy(szFile, szStandalone, _MAX_PATH);
 	// get the hash
@@ -686,7 +686,7 @@ C4Network2Res::Ref C4Network2Res::Derive()
 
 	CStdLock FileLock(&FileCSec);
 	// Save back original file name
-	char szOrgFile[_MAX_PATH+1];
+	char szOrgFile[_MAX_PATH_LEN];
 	SCopy(szFile, szOrgFile, _MAX_PATH);
 	bool fOrgTempFile = fTempFile;
 
@@ -739,8 +739,8 @@ bool C4Network2Res::FinishDerive() // by main thread
 	CStdLock FileLock(&FileCSec);
 	// Save back data
 	int32_t iDerID = Core.getDerID();
-	char szName[_MAX_PATH+1]; SCopy(Core.getFileName(), szName, _MAX_PATH);
-	char szFileC[_MAX_PATH+1]; SCopy(szFile, szFileC, _MAX_PATH);
+	char szName[_MAX_PATH_LEN]; SCopy(Core.getFileName(), szName, _MAX_PATH);
+	char szFileC[_MAX_PATH_LEN]; SCopy(szFile, szFileC, _MAX_PATH);
 	// Set by file
 	if (!SetByFile(szFileC, fTempFile, getType(), pParent->nextResID(), szName))
 		return false;
@@ -1149,7 +1149,7 @@ bool C4Network2Res::OptimizeStandalone(bool fSilent)
 		// copy to temp file, if needed
 		if (!fTempFile && SEqual(szFile, szStandalone))
 		{
-			char szNewStandalone[_MAX_PATH + 1];
+			char szNewStandalone[_MAX_PATH_LEN];
 			if (!pParent->FindTempResFileName(szStandalone, szNewStandalone))
 				{ if (!fSilent) Log("OptimizeStandalone: could not find free name for temporary file!"); return false; }
 			if (!C4Group_CopyItem(szStandalone, szNewStandalone))
@@ -1670,7 +1670,7 @@ void C4Network2ResList::OnResComplete(C4Network2Res *pRes)
 bool C4Network2ResList::CreateNetworkFolder()
 {
 	// get network path without trailing backslash
-	char szNetworkPath[_MAX_PATH+1];
+	char szNetworkPath[_MAX_PATH_LEN];
 	SCopy(Config.AtNetworkPath(""), szNetworkPath, _MAX_PATH);
 	TruncateBackslash(szNetworkPath);
 	// but make sure that the configured path has one
@@ -1710,7 +1710,7 @@ bool C4Network2ResList::FindTempResFileName(const char *szFilename, char *pTarge
 	// file name is free?
 	if (!ItemExists(pTarget)) return true;
 	// find another file name
-	char szFileMask[_MAX_PATH+1];
+	char szFileMask[_MAX_PATH_LEN];
 	SCopy(pTarget, szFileMask, GetExtension(pTarget)-1-pTarget);
 	SAppend("_%d", szFileMask, _MAX_PATH);
 	SAppend(GetExtension(pTarget)-1, szFileMask, _MAX_PATH);

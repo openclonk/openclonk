@@ -99,7 +99,7 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 
 private:
-	char Definition[C4S_MaxDefinitions][_MAX_PATH+1];
+	char Definition[C4S_MaxDefinitions][_MAX_PATH_LEN];
 };
 
 

@@ -421,7 +421,7 @@ bool C4Player::Save()
 	LogF(LoadResStr("IDS_PRC_SAVEPLR"), Config.AtRelativePath(Filename));
 	::GraphicsSystem.MessageBoard->EnsureLastMessage();
 	// copy player to save somewhere else
-	char szPath[_MAX_PATH + 1];
+	char szPath[_MAX_PATH_LEN];
 	SCopy(Config.AtTempPath(C4CFN_TempPlayer), szPath, _MAX_PATH);
 	MakeTempFilename(szPath);
 	// For local players, we save over the old player file, as there might

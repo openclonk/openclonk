@@ -112,7 +112,7 @@ bool C4Record::Start(bool fInitial)
 
 	// various infos
 	StdStrBuf sDemoFolder(C4CFN_Records);
-	char sScenName[_MAX_FNAME+ 1]; SCopy(GetFilenameOnly(Game.Parameters.Scenario.getFile()), sScenName, _MAX_FNAME);
+	char sScenName[_MAX_FNAME_LEN]; SCopy(GetFilenameOnly(Game.Parameters.Scenario.getFile()), sScenName, _MAX_FNAME);
 
 	// remove trailing numbers from scenario name (e.g. from savegames) - could we perhaps use C4S.Head.Origin instead...?
 	char *pScenNameEnd = sScenName + SLen(sScenName);
@@ -146,12 +146,12 @@ bool C4Record::Start(bool fInitial)
 		return false;
 
 	// open control record file
-	char szCtrlRecFilename[_MAX_PATH+1 + _MAX_FNAME];
+	char szCtrlRecFilename[_MAX_PATH_LEN + _MAX_FNAME];
 	sprintf(szCtrlRecFilename, "%s" DirSep C4CFN_CtrlRec, sFilename.getData());
 	if (!CtrlRec.Create(szCtrlRecFilename)) return false;
 
 	// open log file in record
-	char szLogRecFilename[_MAX_PATH+1 + _MAX_FNAME];
+	char szLogRecFilename[_MAX_PATH_LEN + _MAX_FNAME];
 	sprintf(szLogRecFilename, "%s" DirSep C4CFN_LogRec, sFilename.getData());
 	if (!LogRec.Create(szLogRecFilename)) return false;
 
@@ -1167,7 +1167,7 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 	StdBuf InitialData = *chunkIter->pFileData;
 
 	// Put to temporary file and unpack
-	char szInitial[_MAX_PATH+1] = "~initial.tmp";
+	char szInitial[_MAX_PATH_LEN] = "~initial.tmp";
 	MakeTempFilename(szInitial);
 	if (!InitialData.SaveToFile(szInitial) ||
 	    !C4Group_UnpackDirectory(szInitial))
@@ -1182,7 +1182,7 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 
 	// Copy original scenario
 	const char *szOrigin = Initial.Head.Origin.getData();
-	char szRecord[_MAX_PATH + 1];
+	char szRecord[_MAX_PATH_LEN];
 	SCopy(szStream, szRecord, _MAX_PATH);
 	if (GetExtension(szRecord))
 		*(GetExtension(szRecord) - 1) = 0;

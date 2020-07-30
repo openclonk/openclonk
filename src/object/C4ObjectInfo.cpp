@@ -91,7 +91,7 @@ bool C4ObjectInfo::Load(C4Group &hGroup)
 bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 {
 	// Set group file name; rename if necessary
-	char szTempGroup[_MAX_PATH+1];
+	char szTempGroup[_MAX_PATH_LEN];
 	SCopy(Name, szTempGroup, _MAX_PATH);
 	MakeFilenameFromTitle(szTempGroup);
 	SAppend(".oci", szTempGroup, _MAX_PATH); // TODO: File extension again, this time with a dot

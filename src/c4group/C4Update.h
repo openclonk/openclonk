@@ -27,7 +27,7 @@ class C4UpdatePackageCore
 public:
 	int32_t RequireVersion[4] = { 0, 0, 0, 0 };
 	char Name[C4MaxName + 1] = { 0 };
-	char DestPath[_MAX_PATH + 1] = { 0 };
+	char DestPath[_MAX_PATH_LEN] = { 0 };
 	int32_t GrpUpdate = 0;
 	int32_t UpGrpCnt = 0; // number of file versions that can be updated by this package
 	uint32_t GrpChks1[C4UP_MaxUpGrpCnt] = { 0 }, GrpChks2 = 0;

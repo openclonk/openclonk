@@ -420,7 +420,7 @@ void C4Def::LoadMeshMaterials(C4Group &hGroup, C4DefGraphicsPtrBackup *gfx_backu
 	// Load all mesh materials from this folder
 	C4DefAdditionalResourcesLoader loader(hGroup);
 	hGroup.ResetSearch();
-	char MaterialFilename[_MAX_PATH + 1]; *MaterialFilename = 0;
+	char MaterialFilename[_MAX_PATH_LEN]; *MaterialFilename = 0;
 	
 	for (const auto &mat : mesh_materials)
 	{

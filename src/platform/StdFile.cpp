@@ -57,7 +57,7 @@ const char *GetFilename(const char *szPath)
 const char* GetFilenameOnly(const char *strFilename)
 {
 	// Get filename to static buffer
-	static char strBuffer[_MAX_PATH + 1];
+	static char strBuffer[_MAX_PATH_LEN];
 	SCopy(GetFilename(strFilename), strBuffer);
 	// Truncate extension
 	RemoveExtension(strBuffer);
@@ -146,7 +146,7 @@ void RealPath(const char *szFilename, char *pFullFilename)
 	free(wpath);
 #else
 	char *pSuffix = nullptr;
-	char szCopy[_MAX_PATH + 1];
+	char szCopy[_MAX_PATH_LEN];
 	for (;;)
 	{
 		// Try to convert to full filename. Note this might fail if the given file doesn't exist
@@ -199,7 +199,7 @@ bool GetParentPath(const char *szFilename, char *szBuffer)
 
 bool GetParentPath(const char *szFilename, StdStrBuf *outBuf)
 {
-	char buf[_MAX_PATH+1]; *buf='\0';
+	char buf[_MAX_PATH_LEN]; *buf='\0';
 	if (!GetParentPath(szFilename, buf)) return false;
 	outBuf->Copy(buf);
 	return true;
@@ -639,7 +639,7 @@ const char *GetWorkingDirectory()
 	delete[] widebuf;
 	return buffer.getData();
 #else
-	static char buf[_MAX_PATH+1];
+	static char buf[_MAX_PATH_LEN];
 	return getcwd(buf,_MAX_PATH);
 #endif
 }
@@ -709,7 +709,7 @@ bool DirectoryExists(const char *szFilename)
 {
 	// Ignore trailing slash or backslash, except when we are probing the
 	// root directory '/'.
-	char bufFilename[_MAX_PATH + 1];
+	char bufFilename[_MAX_PATH_LEN];
 	if (szFilename && szFilename[0])
 	{
 		unsigned int len = SLen(szFilename);
@@ -750,7 +750,7 @@ bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttrib
 #ifdef _WIN32
 	if (_wmkdir(GetWideChar(szTarget))!=0) return false;
 	// Copy contents to target directory
-	char contents[_MAX_PATH+1];
+	char contents[_MAX_PATH_LEN];
 	SCopy(szSource,contents); AppendBackslash(contents);
 	SAppend("*",contents);
 	_wfinddata_t fdt; intptr_t hfdt;
@@ -758,7 +758,7 @@ bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttrib
 	{
 		do
 		{
-			char itemsource[_MAX_PATH+1],itemtarget[_MAX_PATH+1];
+			char itemsource[_MAX_PATH_LEN],itemtarget[_MAX_PATH_LEN];
 			SCopy(szSource,itemsource); AppendBackslash(itemsource); SAppend(StdStrBuf(fdt.name).getData(),itemsource);
 			SCopy(szTarget,itemtarget); AppendBackslash(itemtarget); SAppend(StdStrBuf(fdt.name).getData(),itemtarget);
 			if (!CopyItem(itemsource,itemtarget, fResetAttributes)) status=false;
@@ -770,7 +770,7 @@ bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttrib
 	if (mkdir(szTarget,0777)!=0) return false;
 	DIR * d = opendir(szSource);
 	dirent * ent;
-	char itemsource[_MAX_PATH+1],itemtarget[_MAX_PATH+1];
+	char itemsource[_MAX_PATH_LEN],itemtarget[_MAX_PATH_LEN];
 	while ((ent = readdir(d)))
 	{
 		SCopy(szSource,itemsource); AppendBackslash(itemsource); SAppend(ent->d_name,itemsource);
@@ -788,7 +788,7 @@ bool EraseDirectory(const char *szDirName)
 	if (SEqual(GetFilename(szDirName),".")
 	    || SEqual(GetFilename(szDirName),".."))
 		return true;
-	char path[_MAX_PATH+1];
+	char path[_MAX_PATH_LEN];
 #ifdef _WIN32
 	// Get path to directory contents
 	SCopy(szDirName,path); SAppend(R"(\*.*)",path);
@@ -878,7 +878,7 @@ bool MoveItem(const char *szSource, const char *szTarget)
 
 bool ItemIdentical(const char *szFilename1, const char *szFilename2)
 {
-	char szFullFile1[_MAX_PATH+1],szFullFile2[_MAX_PATH+1];
+	char szFullFile1[_MAX_PATH_LEN],szFullFile2[_MAX_PATH_LEN];
 	RealPath(szFilename1, szFullFile1); RealPath(szFilename2, szFullFile2);
 #ifdef _WIN32
 	if (SEqualNoCase(szFullFile1,szFullFile2)) return true;
@@ -1069,7 +1069,7 @@ int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *))
 {
 	if (!szDirName || !fnCallback)
 		return 0;
-	char szFilename[_MAX_PATH+1];
+	char szFilename[_MAX_PATH_LEN];
 	SCopy(szDirName,szFilename);
 	bool fHasWildcard = (SCharPos('*', szFilename)>=0);
 	if (!fHasWildcard) // parameter without wildcard: Append "/*.*" or "\*.*"

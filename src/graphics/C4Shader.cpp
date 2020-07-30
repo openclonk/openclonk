@@ -496,7 +496,7 @@ bool C4Shader::Refresh()
 	// Process file reloading.
 	for (auto& Source : sourcesToUpdate)
 	{
-		char szParentPath[_MAX_PATH+1]; C4Group Group;
+		char szParentPath[_MAX_PATH_LEN]; C4Group Group;
 		StdStrBuf Shader;
 		GetParentPath(Source.getData(),szParentPath);
 		if(!Group.Open(szParentPath) ||

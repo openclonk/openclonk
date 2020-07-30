@@ -1046,7 +1046,7 @@ void C4StartupOptionsDlg::OnResetConfigBtn(C4GUI::Control *btn)
 		return;
 	// reset cfg
 	Config.Default();
-	Config.fConfigLoaded = true;
+	Config.ConfigLoaded = true;
 	// engine must be restarted now, because some crucial fields such as resolution and used gfx engine do not match their initialization
 	Application.Quit();
 }

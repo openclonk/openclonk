@@ -394,7 +394,7 @@ C4ClientPlayerInfos::C4ClientPlayerInfos(const char *szJoinFilenames, bool fAdd,
 			ppPlayers = new C4PlayerInfo *[iPlayerCapacity];
 			if (szJoinFilenames)
 			{
-				char szPlrFile[_MAX_PATH+1];
+				char szPlrFile[_MAX_PATH_LEN];
 				for (int32_t i=0; i<iPlayerCapacity; ++i)
 					if (SGetModule(szJoinFilenames, i, szPlrFile, _MAX_PATH))
 					{

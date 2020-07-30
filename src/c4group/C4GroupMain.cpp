@@ -35,7 +35,7 @@ extern bool fQuiet;
 bool fRecursive = false;
 bool fRegisterShell = false;
 bool fUnregisterShell = false;
-char strExecuteAtEnd[_MAX_PATH + 1] = "";
+char strExecuteAtEnd[_MAX_PATH_LEN] = "";
 
 int iResult = 0;
 
@@ -97,7 +97,7 @@ void PrintGroupInternals(C4Group &grp, int indent_level = 0)
 	const C4GroupHeader &head = grp.GetHeader();
 	int indent = indent_level * 4;
 
-	printf("%*sHead.id: '%s'\n", indent, "", head.id);
+	printf("%*sHead.id: '%s'\n", indent, "", head.Id);
 	printf("%*sHead.Ver1: %d\n", indent, "", head.Ver1);
 	printf("%*sHead.Ver2: %d\n", indent, "", head.Ver2);
 	printf("%*sHead.Entries: %d\n", indent, "", head.Entries);
