@@ -16,7 +16,7 @@ OSCatAnimals=Animaux
 OSCatPlants=Plantes
 OSCatGodTools=Les outils de Dieu
 
-OSHintTarget=Astuce! Ici, vous pouvez sélectionner où les objets seront créés. Choisissez "La main de Dieu" pour sélectionner quel objet vous voulez créer avec la main de Dieu.
+OSHintTarget=Astuce! Ici, vous pouvez sélectionner où les objets seront créés. Choisissez \"La main de Dieu\" pour sélectionner quel objet vous voulez créer avec la main de Dieu.
 
 OSTargetClonk=Cible: Clonk/Inventaire
 OSTargetGodsHand=Cible: La main de Dieu
