@@ -65,7 +65,7 @@ bool C4Language::Init()
 	C4Reloc::iterator iter;
 	for(iter = Reloc.begin(); iter != Reloc.end(); ++iter)
 	{
-		langPath.Copy((*iter).strBuf + DirSep + C4CFN_Languages);
+		langPath.Copy(iter->strBuf + DirSep + C4CFN_Languages);
 		if(ItemExists(langPath.getData()))
 		{
 			if(DirectoryExists(langPath.getData()))

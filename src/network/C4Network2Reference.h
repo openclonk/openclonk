@@ -133,6 +133,7 @@ private:
 	// Address information
 	C4NetIO::addr_t ServerAddr, ServerAddrFallback, PeerAddr;
 	StdCopyStrBuf Server, RequestPath;
+	std::string headerAcceptedResponseType = "";
 
 	bool fBinary{false};
 	bool fBusy{false}, fSuccess{false}, fConnected{false};
@@ -185,7 +186,8 @@ public:
 	void Clear();
 
 	bool SetServer(const char *szServerAddress);
-
+	enum ResponseType { NoPreference, XML };
+	void SetExpectedResponseType(ResponseType type);
 	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
 
 	// Overridden

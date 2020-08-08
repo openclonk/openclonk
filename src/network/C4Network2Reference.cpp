@@ -480,6 +480,7 @@ bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
 		  "POST %s HTTP/1.0\r\n"
 		  "Host: %s\r\n"
 		  "Connection: Close\r\n"
+		  "%s"
 		  "Content-Length: %lu\r\n"
 		  "Content-Type: text/plain; charset=utf-8\r\n"
 		  "Accept-Charset: utf-8\r\n"
@@ -489,6 +490,7 @@ bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
 		  "\r\n",
 		  RequestPath.getData(),
 		  Server.getData(),
+		  headerAcceptedResponseType.c_str(),
 		  static_cast<unsigned long>(Data.getSize()),
 		  Config.General.LanguageEx);
 	else
@@ -496,6 +498,7 @@ bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
 		  "GET %s HTTP/1.0\r\n"
 		  "Host: %s\r\n"
 		  "Connection: Close\r\n"
+		  "%s"
 		  "Accept-Charset: utf-8\r\n"
 		  "Accept-Encoding: gzip\r\n"
 		  "Accept-Language: %s\r\n"
@@ -503,6 +506,7 @@ bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
 		  "\r\n",
 		  RequestPath.getData(),
 		  Server.getData(),
+		  headerAcceptedResponseType.c_str(),
 		  Config.General.LanguageEx);
 	// Compose query
 	Request.Take(Header.GrabPointer(), Header.getLength());
@@ -589,6 +593,20 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 	// Done
 	ResetError();
 	return true;
+}
+
+void C4Network2HTTPClient::SetExpectedResponseType(C4Network2HTTPClient::ResponseType type)
+{
+	switch (type)
+	{
+	case C4Network2HTTPClient::ResponseType::XML:
+		headerAcceptedResponseType = "Accept:application/xml\r\n";
+		break;
+	case C4Network2HTTPClient::ResponseType::NoPreference: // fallthrough
+	default:
+		headerAcceptedResponseType = "";
+		break;
+	};
 }
 
 // *** C4Network2UpdateClient
