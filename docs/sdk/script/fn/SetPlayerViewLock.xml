@@ -24,7 +24,7 @@
       </params>
     </syntax>
     <desc>Disabled or enabled locked view for one or all players. If the view is locked, the player cannot scroll around to explore the map.</desc>
-    <remark>In 9.0 OC this function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetViewLocked()</code>.</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetViewLocked()</code>.</remark>
     <examples>
       <example>
         <code>func InitializePlayer(int plr)

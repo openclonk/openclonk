@@ -30,7 +30,7 @@
       </params>
     </syntax>
     <desc>Centers a player's view to the specified object. The view will follow this object until the next player command.</desc>
-    <remark>In 9.0 OC this function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetViewTarget()</code>.</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetViewTarget()</code>.</remark>
     <examples>
       <example>
         <code>local enemy;

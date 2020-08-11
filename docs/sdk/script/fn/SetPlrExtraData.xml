@@ -30,7 +30,7 @@
     <desc>With this function additional data can be saved in player's file. This can be used to preserve values across scenarios, for example for RPGs or highscores. If successful, the saved value is returned.</desc>
     <remark>No objects or arrays may be saved.</remark>
     <remark>Because all scenarios use the same storage, the name for the data should be prefixed with the scenario name or your developer id.</remark>
-    <remark>This function was discontinued in 9.0 OC, replace it by calling <code><funclink>GetPlayer</funclink>()-gt;SetExtraData(data_name, data);</code>.</remark>
+    <remark>This function was deprecated in 9.0 OC, replace it by calling <code><funclink>GetPlayer</funclink>()-gt;SetExtraData(data_name, data);</code>.</remark>
     <examples>
       <example>
         <code>func SaveWealth()

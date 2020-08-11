@@ -27,7 +27,7 @@
       </ul>
     </desc>
     <remark>As mouse scrolling behaviour differs on every computer, this function always returns -1 whenever in Record, Replay, or network game mode.</remark>
-    <remark>In 9.0 OC this function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>GetViewMode()</code>.</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>GetViewMode()</code>.</remark>
     <related>
       <funclink>SetPlrView</funclink>
       <funclink>GetPlrView</funclink>

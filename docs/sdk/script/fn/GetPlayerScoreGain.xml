@@ -18,7 +18,7 @@
       </params>
     </syntax>
     <desc>Returns the gain of player score since the beginning of the round.</desc>
-    <remark>In 9.0 OC this function was discontinued, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
     <related>
       <funclink>DoPlayerScore</funclink>
       <funclink>GetPlayerScore</funclink>

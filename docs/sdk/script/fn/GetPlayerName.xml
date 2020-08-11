@@ -18,7 +18,7 @@
       </params>
     </syntax>
     <desc>Returns the name of a player. If the specified player number is invalid, <code>nil</code> is returned. Thus this function can also be used to determine whether a player of a given number exists.</desc>
-    <remark>In 9.0 OC this function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <funclink>GetName</funclink> or via the proplist property "Name".</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <funclink>GetName</funclink> or via the proplist property "Name".</remark>
     <related>
       <funclink>GetTaggedPlayerName</funclink>
       <funclink>GetPlayerByName</funclink>

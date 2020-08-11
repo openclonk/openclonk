@@ -13,7 +13,7 @@
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>ID of the player to get.</desc>
+          <desc>Number of the player to get.</desc>
         </param>
       </params>
     </syntax>
@@ -34,7 +34,7 @@
         <row>
           <col><code>Name</code></col>
           <col>string</col>
-          <col>Name of the player, read-only.</col>
+          <col>Name of the player, read-only. See <funclink>GetName</funclink>, <funclink>GetPlayerName</funclink>.</col>
         </row>
         <row>
           <col><code>CrewSkin</code></col>
@@ -54,47 +54,155 @@
         <row>
           <col><code>InitialScore</code></col>
           <col>int</col>
-          <col>The score value that was saved in the player profile at the beginning of the round, read-only.</col>
+          <col>The score value that was saved in the player profile at the beginning of the round, read-only. See <funclink>GetPlayerScoreGain</funclink>.</col>
         </row>
         <row>
           <col><code>Score</code></col>
           <col>int</col>
-          <col>The current score of this player.</col>
+          <col>The current score of this player. See <funclink>GetPlayerScore</funclink>, <funclink>DoPlayerScore</funclink>.</col>
         </row>
         <row>
           <col><code>Type</code></col>
           <col>int</col>
-          <col>Type of the player, read-only. See <a href="#PlayerTypesTable">Player Types</a></col>
+          <col>Type of the player, read-only. See <a href="#PlayerTypesTable">Player Types</a>, <funclink>GetPlayerType</funclink></col>
         </row>
         <row>
           <col><code>ZoomLimit_MaxWidth</code></col>
           <col>int</col>
-          <col>Maximum width of landscape in viewport, i.e. how far the player can view if zoomed out as far as possible. May be zero if <code>ZoomLimit_MaxHeight</code> is nonzero and zoom limits are determined by maximum view height only.</col>
+          <col>Maximum width of landscape in viewport, i.e. how far the player can view if zoomed out as far as possible. May be zero if <code>ZoomLimit_MaxHeight</code> is nonzero and zoom limits are determined by maximum view height only. See <funclink>GetPlayerZoomLimits</funclink>.</col>
         </row>
         <row>
           <col><code>ZoomLimit_MaxHeight</code></col>
           <col>int</col>
-          <col>Maximum height of landscape in viewport. May be zero if <code>ZoomLimit_MaxWidth</code> is nonzero.</col>
+          <col>Maximum height of landscape in viewport. May be zero if <code>ZoomLimit_MaxWidth</code> is nonzero. See <funclink>GetPlayerZoomLimits</funclink>.</col>
         </row>
         <row>
           <col><code>ZoomLimit_MinWidth</code></col>
           <col>int</col>
-          <col>Minimum width of landscape in viewport, i.e. how far the player can view if zoomed in as far as possible. May be zero if <code>ZoomLimit_MinHeight</code> is nonzero and zoom limits are determined by minimum view height only.</col>
+          <col>Minimum width of landscape in viewport, i.e. how far the player can view if zoomed in as far as possible. May be zero if <code>ZoomLimit_MinHeight</code> is nonzero and zoom limits are determined by minimum view height only. See <funclink>GetPlayerZoomLimits</funclink>.</col>
         </row>
         <row>
           <col><code>ZoomLimit_MinHeight</code></col>
           <col>int</col>
-          <col>Minimum height of landscape in viewport. May be zero if <code>ZoomLimit_MinWidth</code> is nonzero.</col>
+          <col>Minimum height of landscape in viewport. May be zero if <code>ZoomLimit_MinWidth</code> is nonzero. See <funclink>GetPlayerZoomLimits</funclink>.</col>
         </row>
         <row>
           <col><code>ZoomLimit_MaxValue</code></col>
           <col>int</col>
-          <col>Maximum zoom if set as a direct pixel-to-landscape correspondance value using <funclink>SetPlayerZoom</funclink> function. Zero if a direct zoom value is not specified.</col>
+          <col>Maximum zoom if set as a direct pixel-to-landscape correspondance value using <funclink>SetPlayerZoom</funclink> function. Zero if a direct zoom value is not specified. See <funclink>GetPlayerZoomLimits</funclink>.</col>
         </row>
         <row>
           <col><code>ZoomLimit_MinValue</code></col>
           <col>int</col>
-          <col>Minimum zoom if set as a direct pixel-to-landscape correspondance value using <funclink>SetPlayerZoom</funclink> function. Zero if a direct zoom value is not specified.</col>
+          <col>Minimum zoom if set as a direct pixel-to-landscape correspondance value using <funclink>SetPlayerZoom</funclink> function. Zero if a direct zoom value is not specified. See <funclink>GetPlayerZoomLimits</funclink>.</col>
+        </row>
+      </table>
+    </text>
+      <table>
+        <caption id="FunctionsTable">Player Functions</caption>
+        <rowh>
+          <col>Name</col>
+          <col>Documentation / Deprecated Function</col>
+        </rowh>
+        <row>
+          <col><code>Eliminate</code></col>
+          <col><funclink>EliminatePlayer</funclink></col>
+        </row>
+        <row>
+          <col><funclink>GetColor</funclink></col>
+          <col><funclink>GetPlayerColor</funclink></col>
+        </row>
+        <row>
+          <col><code>GetControlAssignment</code></col>
+          <col><funclink>GetPlayerControlAssignment</funclink></col>
+        </row>
+        <row>
+          <col><funclink>GetControlEnabled</funclink></col>
+          <col>-</col>
+        </row>
+        <row>
+          <col><code>GetControlState</code></col>
+          <col><funclink>GetPlayerControlState</funclink></col>
+        </row>
+        <row>
+          <col><funclink>GetCrew</funclink></col>
+          <col><funclink>GetCrew</funclink></col>
+        </row>
+        <row>
+          <col><funclink>GetCrewCount</funclink></col>
+          <col><funclink>GetCrewCount</funclink></col>
+        </row>
+        <row>
+          <col><funclink>GetCrewMembers</funclink></col>
+          <col>-</col>
+        </row>
+        <row>
+          <col><funclink>GetCursor</funclink></col>
+          <col><funclink>GetCursor</funclink></col>
+        </row>
+        <row>
+          <col><code>GetExtraData</code></col>
+          <col><funclink>GetPlrExtraData</funclink></col>
+        </row>
+        <row>
+          <col><funclink>GetHiRank</funclink></col>
+          <col><funclink>GetHiRank</funclink></col>
+        </row>
+        <row>
+          <col><code>GetTeam</code></col>
+          <col><funclink>GetPlayerTeam</funclink></col>
+        </row>
+        <row>
+          <col><funclink>GetViewCursor</funclink></col>
+          <col>-</col>
+        </row>
+        <row>
+          <col><code>GetViewMode</code></col>
+          <col><funclink>GetPlrViewMode</funclink></col>
+        </row>
+        <row>
+          <col><code>GetViewTarget</code></col>
+          <col><funclink>GetPlrView</funclink></col>
+        </row>
+        <row>
+          <col><funclink>ResetCursorView</funclink></col>
+          <col>-</col>
+        </row>
+        <row>
+          <col><funclink>SetControlEnabled</funclink></col>
+          <col>-</col>
+        </row>
+        <row>
+          <col><funclink>SetCursor</funclink></col>
+          <col><funclink>SetCursor</funclink></col>
+        </row>
+        <row>
+          <col><code>SetExtraData</code></col>
+          <col><funclink>SetPlrExtraData</funclink></col>
+        </row>
+        <row>
+          <col><funclink>SetFoW</funclink></col>
+          <col><funclink>SetFoW</funclink></col>
+        </row>
+        <row>
+          <col><code>SetTeam</code></col>
+          <col><funclink>SetPlayerTeam</funclink></col>
+        </row>
+        <row>
+          <col><funclink>SetViewCursor</funclink></col>
+          <col>-</col>
+        </row>
+        <row>
+          <col><code>SetViewLocked</code></col>
+          <col><funclink>SetPlayerViewLock</funclink></col>
+        </row>
+        <row>
+          <col><code>SetViewTarget</code></col>
+          <col><funclink>SetPlrView</funclink></col>
+        </row>
+        <row>
+          <col><funclink>Surrender</funclink></col>
+          <col>-</col>
         </row>
       </table>
     </text>

@@ -22,7 +22,7 @@
         </param>
       </params>
     </syntax>
-    <remark>In 9.0 OC the global function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>Eliminate</code>.</remark>
+    <remark>In 9.0 OC the global function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>Eliminate</code>.</remark>
     <desc>Eliminates a player. The round counts as 'lost' for all eliminated players.</desc>
     <examples>
       <example>
