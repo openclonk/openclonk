@@ -320,32 +320,32 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 {
     C4PropListStatic* prototype = new C4PropListStatic(nullptr, nullptr, ::Strings.RegString(PROTOTYPE_NAME_ENGINE));
 	engine->RegisterGlobalConstant(PROTOTYPE_NAME_ENGINE, C4VPropList(prototype));
-	#define F(f) ::AddFunc(prototype, #f, Fn##f)
-		F(Eliminate);
-		F(GetColor);
-		F(GetControlAssignment);
-		F(GetControlEnabled);
-		F(GetControlState);
-		F(GetCursor);
-	    F(GetCrew);
-	    F(GetCrewCount);
-	    F(GetCrewMembers);
-		F(GetExtraData);
-		F(GetHiRank);
-        F(GetTeam);
-		F(GetViewCursor);
-	    F(GetViewMode);
-	    F(GetViewTarget);
-		F(ResetCursorView);
-		F(SetControlEnabled);
-		F(SetCursor);
-		F(SetExtraData);
-	    F(SetFoW);
-        F(SetTeam);
-		F(SetViewCursor);
-		F(SetViewLocked);
-	    F(SetViewTarget);
-		F(Surrender);
-	#undef F
+#define F(f) ::AddFunc(prototype, #f, Fn##f)
+	F(Eliminate);
+	F(GetColor);
+	F(GetControlAssignment);
+	F(GetControlEnabled);
+	F(GetControlState);
+	F(GetCursor);
+	F(GetCrew);
+	F(GetCrewCount);
+	F(GetCrewMembers);
+	F(GetExtraData);
+	F(GetHiRank);
+	F(GetTeam);
+	F(GetViewCursor);
+	F(GetViewMode);
+	F(GetViewTarget);
+	F(ResetCursorView);
+	F(SetControlEnabled);
+	F(SetCursor);
+	F(SetExtraData);
+	F(SetFoW);
+	F(SetTeam);
+	F(SetViewCursor);
+	F(SetViewLocked);
+	F(SetViewTarget);
+	F(Surrender);
+#undef F
 	prototype->Freeze();
 }
