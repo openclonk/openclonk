@@ -43,7 +43,7 @@ global func EliminatePlayer(int player_nr, bool remove_direct)
 	var player = GetPlayer(player_nr);
 	if (player)
 	{
-		return player->Eliminate();
+		return player->Eliminate(remove_direct);
 	}
 	else
 	{
@@ -65,7 +65,7 @@ global func GetCrew(int player_nr, int index)
 	}
 }
 
-global func GetCrewCount(int player_nr, int index)
+global func GetCrewCount(int player_nr)
 {
 	LogLegacyWarning("GetCrewCount", "GetPlayer(player)->GetCrewCount()", VERSION_10_0_OC);
 	var player = GetPlayer(player_nr);
@@ -131,7 +131,7 @@ global func GetPlayerControlAssignment(int player_nr, int ctrl, bool human_reada
 	}
 	else
 	{
-		return "";
+		return nil;
 	}
 }
 
@@ -397,7 +397,7 @@ global func SetPlrView(int player_nr, object target, bool immediate)
 	var player = GetPlayer(player_nr);
 	if (player)
 	{
-		return player->SetCursor(target, immediate);
+		return player->SetViewTarget(target, immediate);
 	}
 	else
 	{
