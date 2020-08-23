@@ -1992,11 +1992,11 @@ bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
 			case P_InitialScore: *pResult = C4VInt(InitialScore);     return true;
 			case P_Score:        *pResult = C4VInt(CurrentScore);     return true;
 			case P_ZoomLimit_MaxWidth:  *pResult = C4VInt((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX); return true;
-	        case P_ZoomLimit_MaxHeight: *pResult = C4VInt(ZoomLimitMaxHgt); return true;
-	        case P_ZoomLimit_MaxValue:  *pResult = C4VInt(fixtoi(ZoomLimitMaxVal, 100)); return true;
-	        case P_ZoomLimit_MinWidth:  *pResult = C4VInt((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX); return true;
-	        case P_ZoomLimit_MinHeight: *pResult = C4VInt(ZoomLimitMinHgt); return true;
-	        case P_ZoomLimit_MinValue:  *pResult = C4VInt(fixtoi(ZoomLimitMinVal, 100)); return true;
+			case P_ZoomLimit_MaxHeight: *pResult = C4VInt(ZoomLimitMaxHgt); return true;
+			case P_ZoomLimit_MaxValue:  *pResult = C4VInt(fixtoi(ZoomLimitMaxVal, 100)); return true;
+			case P_ZoomLimit_MinWidth:  *pResult = C4VInt((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX); return true;
+			case P_ZoomLimit_MinHeight: *pResult = C4VInt(ZoomLimitMinHgt); return true;
+			case P_ZoomLimit_MinValue:  *pResult = C4VInt(fixtoi(ZoomLimitMinVal, 100)); return true;
 			case P_ExtraID: // Gives me a error: jump to case label [-fpermissive] caused by the line *info if I use this at any of the earlier cases..
 				C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(ID); // see GetInfo(), but I got a compile error using it
 				*pResult = info ? C4VPropList(C4Id2Def(info->GetScriptPlayerExtraID())) : C4VNull;
