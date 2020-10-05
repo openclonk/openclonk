@@ -1999,7 +1999,7 @@ bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
 			case P_ZoomLimit_MinValue:  *pResult = C4VInt(fixtoi(ZoomLimitMinVal, 100)); return true;
 			case P_ExtraID:
 			{
-				C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(ID); // see GetInfo(), but I got a compile error using it
+				C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(ID);
 				*pResult = info ? C4VPropList(C4Id2Def(info->GetScriptPlayerExtraID())) : C4VNull;
 				return true;
 			}

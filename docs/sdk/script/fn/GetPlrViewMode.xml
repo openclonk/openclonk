@@ -23,7 +23,7 @@
       <ul>
         <li>C4PVM_Cursor = 0: Cursor - The player view follows the currently selected clonk (see <funclink>GetCursor</funclink>, <funclink>SetViewCursor</funclink>).</li>
         <li>C4PVM_Target = 1: Target - The player view follows the object set by <funclink>SetPlrView</funclink>. Also see <funclink>GetPlrView</funclink>.</li>
-        <li>C4PVM_Scrolling = 2: Scroll - The player is scrolling his view using the mouse.</li>
+        <li>C4PVM_Scrolling = 2: Scroll - The player is scrolling their view using the mouse.</li>
       </ul>
     </desc>
     <remark>As mouse scrolling behaviour differs on every computer, this function always returns -1 whenever in Record, Replay, or network game mode.</remark>

@@ -2,6 +2,9 @@
 Icon=1
 Title=Sharks
 
+[Player1]
+Crew=Clonk=1;
+
 [Landscape]
 NoScan=1
 MapZoom=12
