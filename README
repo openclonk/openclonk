@@ -11,6 +11,7 @@ install CMake from http://www.cmake.org/.
 
 Additionally, OpenClonk depends on a number of third-party libraries:
   - zlib (http://zlib.net/)
+  - curl (https://curl.haxx.se/)
   - libpng (http://www.libpng.org/pub/png/libpng.html)
   - libjpeg-turbo (http://sourceforge.net/projects/libjpeg-turbo/files/)
   - FreeType (http://www.freetype.org/)
@@ -50,3 +51,4 @@ Packaging Notes for OpenClonk 9.0
 =================================
 In OpenClonk 9.0, the following dependencies changed:
   - Epoxy replaces GLEW. This should resolve issues with Wayland.
+  - curl is a new dependency.
