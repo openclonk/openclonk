@@ -19,7 +19,7 @@
 
 func Construction()
 {
-	if(this.inventory == nil)
+	if (this.inventory == nil)
 		this.inventory = {};
 	this.inventory.quick_slot = 1;
 	this.inventory.hotkey_down = nil;
@@ -47,7 +47,7 @@ func OnDropped(object obj)
 func RejectCollect(id objid, object obj)
 {
 	var rejected = _inherited(objid, obj, ...);
-	if(rejected) return rejected;
+	if (rejected) return rejected;
 	
 	// Allow collection only if called via clonk->Collect, to prevent picking up stuff on the ground.
 	// Make an exception for containers, though.
@@ -64,7 +64,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_QuickSwitch && status == CONS_Down)
 	{
 		// but ignore quickswitch if we have more than 1 hand-slot
-		if(this.HandObjects > 1)
+		if (this.HandObjects > 1)
 			return inherited(plr, ctrl, x, y, strength, repeat, status, ...);;
 		
 		// A number key (hotkey) is pressed, change quick switch slot
@@ -363,7 +363,7 @@ private func FindNextPickupObject(object start_from, int x_dir)
 	if (index != -1)
 	{
 		// Previous item was found in the list.
-		// Cycle through list to the right (x_dir==1) or left (x_dir==-1)
+		// Cycle through list to the right (x_dir == 1) or left (x_dir==-1)
 		index = (index + x_dir) % len;
 	}
 	else

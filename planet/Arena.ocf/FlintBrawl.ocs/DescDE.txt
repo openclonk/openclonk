@@ -1,0 +1,10 @@
+ Flintgemenge
+
+Ein Kampf ohne klassische Waffen: In diesem Szenario bewirft man sich stattdessen mit einer großen Auswahl an Flints.
+
+Ziel: Last Man Standing mit mehreren Runden (Bleibe als Letzter am Leben und gewinne die meisten Runden)
+
+- Der Windbeutel eignet sich nicht nur für große Sprünge, sondern erlaubt es auch, geworfenen Flints einen extra Schub zu geben.
+- Die Kanone ist bereits mit Schießpulver geladen und schussbereit.
+- Vorsicht, es regnet Chippiemeteoriten und der Boden ist offen.
+- Je länger eine Runde dauert, umso stärkere Flints erscheinen im Untergrund.

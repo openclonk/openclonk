@@ -24,13 +24,13 @@ public func GetArea()
 
 /* Rectangle shape */
 
-local BaseRectangle; // properties x,y,w,h
+local BaseRectangle; // properties x, y, w, h
 
 // Point contained in rectangle?
 private func BaseRectangle_IsPointContained(int x, int y)
 {
-	//return ((x-this.x+this.wdt)/this.wdt) * ((y-this.y+this.hgt)/this.hgt) == 1 && x>=this.x;
-	return x>=this.x && y>=this.y && x<this.x+this.wdt && y<this.y+this.hgt;
+	//return ((x-this.x + this.wdt)/this.wdt) * ((y-this.y + this.hgt)/this.hgt) == 1 && x>=this.x;
+	return x>=this.x && y>=this.y && x<this.x + this.wdt && y<this.y + this.hgt;
 }
 
 // bounding rectangle is just self
@@ -71,7 +71,7 @@ private func BaseRectangle_IsFullMap()
 	return !this.x && !this.y && this.wdt == LandscapeWidth() && this.hgt == LandscapeHeight();
 }
 
-/** Constructor of rectangle area. (x,y) is included; (x+w,y+h) is excluded.
+/** Constructor of rectangle area. (x, y) is included; (x + w, y + h) is excluded.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
  @par w Rectangle width
@@ -80,27 +80,27 @@ private func BaseRectangle_IsFullMap()
 */
 public func Rectangle(int x, int y, int w, int h)
 {
-	return new BaseRectangle { x=x, y=y, wdt=w, hgt=h };
+	return new BaseRectangle { x = x, y = y, wdt = w, hgt = h };
 }
 
 
 /* Circle shape */
 
-local BaseCircle; // properties cx,cy,r
+local BaseCircle; // properties cx, cy, r
 
 // point contained in circle?
 private func BaseCircle_IsPointContained(int x, int y)
 {
-	x-=this.cx; y-=this.cy;
-	var r=this.r;
+	x -= this.cx; y -= this.cy;
+	var r = this.r;
 	return x*x + y*y <= r*r;
 }
 
 // bounding rectangle
 private func BaseCircle_GetBoundingRectangle()
 {
-	var r=this.r;
-	return new Shape.BaseRectangle { x=this.cx-r, y=this.cy-r, wdt=r*2+1, hgt=r*2+1 };
+	var r = this.r;
+	return new Shape.BaseRectangle { x = this.cx-r, y = this.cy-r, wdt = r*2 + 1, hgt = r*2 + 1 };
 }
 
 private func BaseCircle_GetRandomPoint(proplist result)
@@ -108,7 +108,7 @@ private func BaseCircle_GetRandomPoint(proplist result)
 	// Make sure radius circles are weighed equally
 	var r2 = this.r * this.r + 1;
 	if (r2>0x7fff) // for large numbers, the random function doesn't work
-		r2 = Random(0x8000) + Random(r2/0x8000+1) * 0x8000;
+		r2 = Random(0x8000) + Random(r2/0x8000 + 1) * 0x8000;
 	else
 		r2 = Random(r2);
 	var r = Sqrt(r2), a = Random(360);
@@ -136,7 +136,7 @@ public func BaseCircle_GetArea()
 */
 public func Circle(int cx, int cy, int r)
 {
-	return new BaseCircle { cx=cx, cy=cy, r=r };
+	return new BaseCircle { cx = cx, cy = cy, r = r };
 }
 
 
@@ -156,9 +156,11 @@ private func BaseIntersection_IsPointContained(int x, int y)
 private func BaseIntersection_GetBoundingRectangle()
 {
 	// Bounding rectangle of intersection
-	var result, rt;
+	var result;
 	for (var area in this.areas)
-		if (rt = area->GetBoundingRectangle())
+	{
+		var rt = area->GetBoundingRectangle();
+		if (rt)
 		{
 			// first bounds determine area
 			if (!result)
@@ -182,6 +184,7 @@ private func BaseIntersection_GetBoundingRectangle()
 				}
 			}
 		}
+	}
 	return result;
 }
 
@@ -220,7 +223,7 @@ public func Intersect(proplist c1, proplist c2, ...)
 	// Intersection of one area?
 	if (!c2) return c1;
 	// Otherwise, built array
-	var areas = [c1, c2], i=1, area;
+	var areas = [c1, c2], i = 1, area;
 	while (area = Par(++i)) areas[i] = area;
 	return new BaseIntersection { areas = areas };
 }
@@ -242,9 +245,11 @@ private func BaseCombination_IsPointContained(int x, int y)
 private func BaseCombination_GetBoundingRectangle()
 {
 	// Bounding rectangle of combination
-	var result, rt;
+	var result;
 	for (var area in this.areas)
-		if (rt = area->GetBoundingRectangle())
+	{
+		var rt =  area->GetBoundingRectangle();
+		if (rt)
 		{
 			// first bounds determine area
 			if (!result)
@@ -268,6 +273,7 @@ private func BaseCombination_GetBoundingRectangle()
 				}
 			}
 		}
+	}
 	return result;
 }
 
@@ -289,7 +295,7 @@ public func Combine(proplist c1, proplist c2, ...)
 	// Combination of one area?
 	if (!c2) return c1;
 	// Otherwise, built array
-	var areas = [c1, c2], i=1, area;
+	var areas = [c1, c2], i = 1, area;
 	while (area = Par(++i)) areas[i] = area;
 	return new BaseCombination { areas = areas };
 }
@@ -402,7 +408,7 @@ public func LandscapeRectangle()
 }
 
 
-/** Constructor of rectangle area. (x,y) is included; (x+w,y+h) is excluded. Automatically flips rectangles of negative size in any dimension.
+/** Constructor of rectangle area. (x, y) is included; (x + w, y + h) is excluded. Automatically flips rectangles of negative size in any dimension.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
  @par w Rectangle width
@@ -412,12 +418,12 @@ public func LandscapeRectangle()
 global func Rectangle(int x2, int y2, int w2, int h2)
 {
 	// normalize
-	if(w2 < 0)
+	if (w2 < 0)
 	{
 		x2 += w2;
 		w2 = -w2;
 	}
-	if(h2 < 0)
+	if (h2 < 0)
 	{
 		y2 += h2;
 		h2 = - h2;

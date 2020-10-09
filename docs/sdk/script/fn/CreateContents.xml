@@ -7,7 +7,7 @@
     <title>CreateContents</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>

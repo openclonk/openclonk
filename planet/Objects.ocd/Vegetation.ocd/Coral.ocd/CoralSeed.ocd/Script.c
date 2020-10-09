@@ -15,7 +15,7 @@ Swim = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	NextAction = "Swim"
 }
 };

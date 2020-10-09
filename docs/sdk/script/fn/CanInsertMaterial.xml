@@ -7,7 +7,7 @@
     <title>CanInsertMaterial</title>
     <category>Landscape</category>
     <subcat>Material</subcat>
-    <version>5.4 OC</version>
+    <version>4.0 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>

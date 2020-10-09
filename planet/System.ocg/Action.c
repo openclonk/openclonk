@@ -14,7 +14,6 @@ static const DFA_HANGLE  =  "HANGLE";
 static const DFA_DIG     =  "DIG";
 static const DFA_SWIM    =  "SWIM";
 static const DFA_THROW   =  "THROW";
-static const DFA_BRIDGE  =  "BRIDGE";
 static const DFA_PUSH    =  "PUSH";
 static const DFA_LIFT    =  "LIFT";
 static const DFA_FLOAT   =  "FLOAT";

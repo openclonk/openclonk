@@ -68,7 +68,7 @@
       <row>
         <col>MissionAccess</col>
         <col>String</col>
-        <col>The scenario will only load if the player gained this password in another scenario. See script function <funclink>GainMissionAccess</funclink>().</col>
+        <col>The scenario will only load if the player gained this password in another scenario. See script function <funclink>GainScenarioAccess</funclink>().</col>
       </row>
       <row>
         <col>Secret</col>

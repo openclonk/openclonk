@@ -85,7 +85,7 @@ func SetMenu(new_menu, bool unclosable)
 	var current_menu = this.control.menu;
 	
 	// no news?
-	if (new_menu) // if new_menu==nil, it is important that we still do the cleaning-up below even if we didn't have a menu before (see MenuClosed())
+	if (new_menu) // if new_menu == nil, it is important that we still do the cleaning-up below even if we didn't have a menu before (see MenuClosed())
 		if (current_menu == new_menu)
 			return;
 	

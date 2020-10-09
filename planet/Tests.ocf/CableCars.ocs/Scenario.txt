@@ -1,0 +1,11 @@
+[Head]
+Title=Cable Cars
+
+[Definitions]
+Definition2=Experimental.ocf\CableLorrys.ocs\CableCars.ocd
+
+[Landscape]
+NoScan=1
+
+[Weather]
+Wind=0,0,-100,100

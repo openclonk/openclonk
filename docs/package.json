@@ -1,0 +1,22 @@
+{
+  "name": "openclonk-docs",
+  "version": "1.0.0",
+  "description": "Developer documentation for OpenClonk",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openclonk/openclonk.git"
+  },
+  "author": "The OpenClonk Team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/openclonk/openclonk/issues"
+  },
+  "homepage": "https://github.com/openclonk/openclonk#readme",
+  "dependencies": {
+    "lunr": "^2.1.6",
+    "xml2js": "^0.4.19"
+  }
+}

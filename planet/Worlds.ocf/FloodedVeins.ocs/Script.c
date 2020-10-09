@@ -175,18 +175,18 @@ private func InitVegetation(int map_size)
 	PlaceGrass(100);
 	
 	// Entrance also location for a small cemetary.
-	CreateObjectAbove(Column, 64, 160)->SetObjDrawTransform(400, 0, 0, 0, 400, 0);
+	CreateObjectAbove(Column, 58, 160)->SetCon(40);
 	for (var x = 72; x < 104; x += RandomX(6, 14))
 		CreateObjectAbove(Clonk_Grave, x, 160)->SetInscriptionMessage("R.I.P.");
-	CreateObjectAbove(Column, 112, 160)->SetObjDrawTransform(400, 0, 0, 0, 400, 0);
+	CreateObjectAbove(Column, 112, 160)->SetCon(40);
 	
 	// Some ferns and mushrooms scattered around the top and middle sections.
 	Fern->Place(12, Shape->Rectangle(0, 0, wdt, 3 * hgt / 8));
 	Mushroom->Place(14, Shape->Rectangle(0, 0, wdt, 3 * hgt / 8));
 	
 	// Create earth materials in big clusters so the whole object arrangement looks a bit less uniform and more interesting.
-	PlaceBatches([Firestone], 3, 100, 5);
-	PlaceBatches([Rock, Loam, Loam], 10, 200, 10);
+	PlaceObjectBatches([Firestone], 3, 100, 5);
+	PlaceObjectBatches([Rock, Loam, Loam], 10, 200, 10);
 	
 	// Place some underwater vegetation in the flooded caves.
 	var place_rect = Shape->Rectangle(50, hgt / 2, wdt - 100, hgt / 2);
@@ -210,23 +210,6 @@ private func InitAnimals(int map_size, int difficulty)
 
 
 /*-- Some helper functions --*/
-
-private func PlaceBatches(array item_ids, int n_per_batch, int batch_radius, int n_batches)
-{
-	// place a number (n_batches) of batches of objects of types item_ids. Each batch has n_per_batch objects.
-	// fewer batches and/or objects may be placed if no space is found
-	var loc, loc2, n_item_ids = GetLength(item_ids), n_created = 0, obj;
-	for (var i = 0; i < n_batches; ++i)
-		if (loc = FindLocation(Loc_Material("Earth")))
-			for (var j = 0; j < n_per_batch; ++j)
-				if (loc2 = FindLocation(Loc_InRect(loc.x - batch_radius,loc.y - batch_radius, batch_radius * 2, batch_radius * 2), Loc_Material("Earth")))
-					if (obj = CreateObjectAbove(item_ids[Random(n_item_ids)], loc2.x, loc2.y))
-					{
-						obj->SetPosition(loc2.x, loc2.y);
-						++n_created;
-					}
-	return n_created;
-}
 
 global func TestGemCount()
 {

@@ -12,13 +12,13 @@ private func FxIntMeteorStart(object target, effect fx, bool temp)
 	fx.smoketrail = 
 	{
 		R = 255,
-		B = PV_KeyFrames(0,  0,100,    30,0,  100,255, 1000,255),
-		G = PV_KeyFrames(0,  0,150,  30,0, 100,255, 1000,255),
+		B = PV_KeyFrames(0,  0, 100,    30, 0,  100, 255, 1000, 255),
+		G = PV_KeyFrames(0,  0, 150,  30, 0, 100, 255, 1000, 255),
 		
 		Alpha = PV_KeyFrames(1000, 0, 0, 30, 255, 1000, 0),
-		Size = PV_Linear(10,30),
+		Size = PV_Linear(10, 30),
 		Stretch = 1000,
-		Phase = PV_Random(0,4),
+		Phase = PV_Random(0, 4),
 		Rotation = PV_Random(-GetR() - 15, -GetR() + 15),
 		DampingX = 1000,
 		DampingY = 1000,
@@ -30,8 +30,8 @@ private func FxIntMeteorStart(object target, effect fx, bool temp)
 	fx.brighttrail = 
 	{
 		Prototype = fx.smoketrail,
-		Alpha = PV_Linear(180,0),
-		Size = PV_Linear(20,30),
+		Alpha = PV_Linear(180, 0),
+		Size = PV_Linear(20, 30),
 		BlitMode = GFX_BLIT_Additive,
 	};
 	fx.frontburn = 
@@ -41,9 +41,9 @@ private func FxIntMeteorStart(object target, effect fx, bool temp)
 		G = 190,
 		
 		Alpha = PV_KeyFrames(0, 0, 0, 500, 25, 1000, 0),
-		Size = PV_Linear(4,5),
+		Size = PV_Linear(4, 5),
 		Stretch = 1000,
-		Phase = PV_Random(0,4),
+		Phase = PV_Random(0, 4),
 		Rotation = PV_Random(-GetR() - 15, -GetR() + 15),
 		DampingX = 800,
 		DampingY = 800,

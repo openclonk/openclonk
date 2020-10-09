@@ -690,16 +690,16 @@ private func FxSparkleTimer(object target, effect fx, int time)
 
 private func CheckTurn()
 {
-	if(GetXDir() < 0) if(GetDir() != DIR_Left) SetDir(DIR_Left);
-	else if(GetXDir() > 0) if(GetDir() != DIR_Right) SetDir(DIR_Right);
+	if (GetXDir() < 0) if (GetDir() != DIR_Left) SetDir(DIR_Left);
+	else if (GetXDir() > 0) if (GetDir() != DIR_Right) SetDir(DIR_Right);
 	
 	var t = false;
-	if(turn_angle == 0 && GetDir() == DIR_Left) t = true;
-	else if(turn_angle == 180 && GetDir() == DIR_Right) t = true;
+	if (turn_angle == 0 && GetDir() == DIR_Left) t = true;
+	else if (turn_angle == 180 && GetDir() == DIR_Right) t = true;
 	
-	if(t)
+	if (t)
 	{
-		if(!GetEffect("IntTurning", this))
+		if (!GetEffect("IntTurning", this))
 			AddEffect("IntTurning", this, 1, 1, this);
 	}
 }
@@ -714,12 +714,12 @@ private func Turn(int dir, bool move)
 			dir = DIR_Left;
 	}
 	
-	if(move)
+	if (move)
 	{
-		if(dir == DIR_Left) SetComDir(COMD_Left);
+		if (dir == DIR_Left) SetComDir(COMD_Left);
 		else SetComDir(COMD_Right);
 	}
-	if(GetDir() == dir) return;
+	if (GetDir() == dir) return;
 	SetXDir(0);
 	SetDir(dir);
 	CheckTurn();
@@ -727,23 +727,23 @@ private func Turn(int dir, bool move)
 
 private func FxIntTurningStart(object target, effect fx, temp)
 {
-	if(temp)
+	if (temp)
 		return true;
 }
 
 private func FxIntTurningTimer(object target, effect fx, int time)
 {
-	if(GetDir() == DIR_Left)
+	if (GetDir() == DIR_Left)
 		turn_angle += 15;
 	else turn_angle -= 15;
 
-	if(turn_angle < 0 || turn_angle > 180)
+	if (turn_angle < 0 || turn_angle > 180)
 	{
 		turn_angle = BoundBy(turn_angle, 0, 180);
-		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
+		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30, 0, 1, 0);
 		return -1;
 	}
-	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
+	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30, 0, 1, 0);
 	return 1;
 }
 

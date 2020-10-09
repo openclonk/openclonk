@@ -36,7 +36,7 @@ protected func Initialize()
 	InitAnimals();
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorials.ocf\\Tutorial02.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial02.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -46,7 +46,7 @@ protected func OnGoalsFulfilled()
 	// Achievement: Tutorial completed.
 	GainScenarioAchievement("TutorialCompleted", 3);
 	// Dialogue options -> next round.
-	SetNextMission("Tutorials.ocf\\Tutorial03.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	SetNextScenario("Tutorials.ocf\\Tutorial03.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }
@@ -315,7 +315,7 @@ global func FxTutorialFirestonesTimer()
 
 global func FxTutorialWipfHoleTimer()
 {
-	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_InRect(368, 496, 72, 56));
+	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_InRect(325, 525, 72, 56));
 	if (clonk)
 	{
 		var plr = clonk->GetOwner();

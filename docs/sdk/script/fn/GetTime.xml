@@ -6,7 +6,7 @@
   <func>
     <title>GetTime</title>
     <category>System</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the time passed since operating system start. Can be used for exact time measurement.</desc>
     <remark>As operating system times will vary on different computers, this function will always return 0 in a network game or playback to avoid synchronization errors.</remark>

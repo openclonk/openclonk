@@ -25,8 +25,8 @@ local controllable;
 func Construction()
 {
 	//flight length
-	fuel=100;
-	dirdev=12;
+	fuel = 100;
+	dirdev = 12;
 	controllable = true;
 }
 
@@ -38,17 +38,17 @@ func Incineration(int caused_by)
 
 func Hit()
 {
-	if(rider)
+	if (rider)
 	{
 		JumpOff(rider);
 	}
 	Sound("Hits::GeneralHit?");
-	if(GetEffect("Flight",this)) DoFireworks();
+	if (GetEffect("Flight",this)) DoFireworks();
 }
 
 func Destruction()
 {
-	if(rider) JumpOff(rider);
+	if (rider) JumpOff(rider);
 }
 
 /*-- Callbacks --*/
@@ -65,12 +65,12 @@ public func HitObject(object target)
 public func OnMount(clonk)
 {
 	var iDir = 1;
-	if(clonk->GetDir() == 1) iDir = -1;
+	if (clonk->GetDir() == 1) iDir = -1;
 	clonk->PlayAnimation("PosRocket", CLONK_ANIM_SLOT_Arms, Anim_Const(0), Anim_Const(1000));
-	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(-1000,2000*iDir,2000), Trans_Rotate(-90*iDir,1,0,0)));
+	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(-1000, 2000*iDir, 2000), Trans_Rotate(-90*iDir, 1, 0, 0)));
 	
 	//Modify picture transform to fit icon on clonk mount
-	this.PictureTransformation = Trans_Mul(Trans_Translate(5000 * clonk->GetDir(),0,0), Trans_Rotate(-20,1,0,0), Trans_Rotate(0,0,0,1), Trans_Rotate(0,0,1,0), Trans_Scale(700));
+	this.PictureTransformation = Trans_Mul(Trans_Translate(5000 * clonk->GetDir(),0, 0), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(0, 0, 0, 1), Trans_Rotate(0, 0, 1, 0), Trans_Scale(700));
 	return true;
 }
 
@@ -101,29 +101,29 @@ public func Fuse()
 
 public func ControlRight()
 {
-	if(controllable)
+	if (controllable)
 		SetRDir(+3);
 	return true;
 }
 
 public func ControlLeft()
 {
-	if(controllable)
+	if (controllable)
 		SetRDir(-3);
 	return true;
 }
 
 public func ControlStop()
 {
-	if(controllable)
+	if (controllable)
 		SetRDir(0);
 	return true;
 }
 
 public func ControlJump(object clonk)
 {
-	if(controllable)
-		JumpOff(clonk,60);
+	if (controllable)
+		JumpOff(clonk, 60);
 	return true;
 }
 
@@ -138,10 +138,10 @@ public func RejectUse(object clonk)
 public func ControlUse(object clonk, int x, int y)
 {
 	// forward control to item
-	if(clonk->GetProcedure()=="ATTACH") return false;
+	if (clonk->GetProcedure()=="ATTACH") return false;
 
-	var angle=Angle(0,0,x,y);
-	Launch(angle,clonk);
+	var angle = Angle(0, 0, x, y);
+	Launch(angle, clonk);
 
 	return true;
 }
@@ -149,14 +149,14 @@ public func ControlUse(object clonk, int x, int y)
 func FxFlightTimer(object pTarget, effect, int iEffectTime)
 {
 	// clonk does sense the danger and with great presence of mind jumps of the rocket
-	if(fuel<20 && rider)
+	if (fuel<20 && rider)
 	{
-		JumpOff(rider,30);
+		JumpOff(rider, 30);
 	}
 
-	if(!Random(105)) Sound("Fire::Cracker");
+	if (!Random(105)) Sound("Fire::Cracker");
 
-	if(fuel<=0)
+	if (fuel<=0)
 	{
 		DoFireworks();
 		return;
@@ -164,11 +164,11 @@ func FxFlightTimer(object pTarget, effect, int iEffectTime)
 
 	var ignition = iEffectTime % 9;
 	
-	if(!ignition)
+	if (!ignition)
 	{
-		var angle = GetR()+RandomX(-dirdev,dirdev);
-		SetXDir(3*GetXDir()/4+Sin(angle,24));
-		SetYDir(3*GetYDir()/4-Cos(angle,24));
+		var angle = GetR()+RandomX(-dirdev, dirdev);
+		SetXDir(3*GetXDir()/4 + Sin(angle, 24));
+		SetYDir(3*GetYDir()/4-Cos(angle, 24));
 		SetR(angle);
 	}
 	
@@ -186,19 +186,19 @@ func JumpOff(object clonk, int speed)
 {
 	rider = nil;
 
-	if(!clonk) return;
-	if(!(clonk->GetProcedure() == "ATTACH")) return;
-	if(!(clonk->GetActionTarget() == this)) return;
+	if (!clonk) return;
+	if (!(clonk->GetProcedure() == "ATTACH")) return;
+	if (!(clonk->GetActionTarget() == this)) return;
 	
 	var xdir = 200;
 	var ydir = clonk.JumpSpeed;
 	// which direction does the clonk jump?
-	if(GetRDir() == 0) xdir = 0;
-	if(GetRDir() < 0) xdir = -xdir;
+	if (GetRDir() == 0) xdir = 0;
+	if (GetRDir() < 0) xdir = -xdir;
 	
 	clonk->SetAction("Tumble");
-	clonk->SetXDir(GetXDir(50)+speed*xdir/100,100);
-	clonk->SetYDir(GetYDir(50)-speed*ydir/100,100);
+	clonk->SetXDir(GetXDir(50)+speed*xdir/100, 100);
+	clonk->SetYDir(GetYDir(50)-speed*ydir/100, 100);
 	
 	// Add hit check to explode on mid-air contact.
 	// This increases the military efficacy of the boompack.
@@ -212,7 +212,7 @@ public func Launch(int angle, object clonk, object shooter)
 
 	Exit();
 	Sound("Objects::Boompack::Launch");
-	AddEffect("Flight",this,150,1,this);
+	AddEffect("Flight",this, 150, 1, this);
 	Sound("Objects::Boompack::Fly", false, 60, nil, 1);
 	
 	// Add hit check to explode on mid-air contact.
@@ -222,27 +222,27 @@ public func Launch(int angle, object clonk, object shooter)
 		AddEffect("HitCheck", this, 1, 2, nil, nil, shooter);
 
 	//Ride the rocket!
-	if(clonk)
+	if (clonk)
 	{
 		clonk->SetAction("Ride",this);
-		rider=clonk;
+		rider = clonk;
 		SetOwner(clonk->GetController());
 	}
 
 	var level = 16;
-	var i=0, count = 3+level/8, r = Random(360);
-	while(count > 0 && ++i < count*6) {
-		r += RandomX(40,80);
-		var smokex = +Sin(r,RandomX(level/4,level/2));
-		var smokey = -Cos(r,RandomX(level/4,level/2));
-		if(GBackSolid(smokex,smokey))
+	var i = 0, count = 3 + level/8, r = Random(360);
+	while (count > 0 && ++i < count*6) {
+		r += RandomX(40, 80);
+		var smokex = +Sin(r, RandomX(level/4, level/2));
+		var smokey = -Cos(r, RandomX(level/4, level/2));
+		if (GBackSolid(smokex, smokey))
 			continue;
-		CreateSmokeTrail(2*level,r,smokex,smokey,nil,true);
+		CreateSmokeTrail(2*level, r, smokex, smokey, nil, true);
 		count--;
 	}
 	
 	SetR(angle);
-	SetVelocity(angle,60);
+	SetVelocity(angle, 60);
 	this.Collectible = false;
 }
 
@@ -296,7 +296,7 @@ public func GetCarryPhase() { return 700; }
 
 public func GetCarryTransform(object clonk)
 {
-	if(GetCarrySpecial(clonk))
+	if (GetCarrySpecial(clonk))
 		return Trans_Translate(0, 6500, 0);
 	
 	return Trans_Translate(0, 0, -1500);
@@ -304,7 +304,7 @@ public func GetCarryTransform(object clonk)
 
 public func Definition(def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Translate(-3000, -1000, 0), Trans_Rotate(45,0,0,1),Trans_Rotate(-35,1,0,0),Trans_Scale(1200));
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-3000, -1000, 0), Trans_Rotate(45, 0, 0, 1),Trans_Rotate(-35, 1, 0, 0),Trans_Scale(1200));
 }
 
 /*-- Properties --*/

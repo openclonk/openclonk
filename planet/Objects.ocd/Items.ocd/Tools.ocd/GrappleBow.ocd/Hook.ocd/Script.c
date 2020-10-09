@@ -116,7 +116,7 @@ public func Hit()
 
 public func FxInFlightStart(object target, proplist effect, int temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.x = target->GetX();
 	effect.y = target->GetY();
 }
@@ -150,7 +150,7 @@ public func FxInFlightTimer(object target, proplist effect, int time)
 
 public func Entrance(object container)
 {
-	if(container->GetID() == GrappleBow) return;
+	if (container->GetID() == GrappleBow) return;
 	if (rope)
 		rope->BreakRope();
 	RemoveObject();
@@ -327,8 +327,8 @@ public func FxIntGrappleControlTimer(object target, proplist effect, int time)
 	}
 	else if (effect.ani_mode)
 	{
-		target->SetMeshTransformation(0, CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
-		target->SetMeshTransformation(0, CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
+		target->SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
+		target->SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
 		target->StopAnimation(target->GetRootAnimation(10));
 		if (!target->GetHandAction())
 			target->SetHandAction(0);
@@ -362,8 +362,8 @@ public func FxIntGrappleControlStop(object target, proplist effect, int reason, 
 	if (tmp) 
 		return FX_OK;
 	target->SetTurnType(0);
-	target->SetMeshTransformation(0, CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
- 	target->SetMeshTransformation(0, CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
+	target->SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
+ 	target->SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
 	target->StopAnimation(target->GetRootAnimation(10));
 	if (!target->GetHandAction())
 		target->SetHandAction(0);

@@ -337,15 +337,15 @@ public func Definition(def)
 {
 	if (def == DefenseBoomAttack)
 	{
-		var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
+		var spawn_editor_props = { Type="proplist", Name = def->GetName(), EditorProps= {
 			Rider = new EnemySpawn->GetAICreatureEditorProps(nil, "$NoRiderHelp$") { Name="$Rider$", EditorHelp="$RiderHelp$" },
-			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min=5, Max=10000 },
+			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min = 5, Max = 10000 },
 		} };
 		var spawn_default_values = {
 			Rider = nil,
 			FlySpeed = def.FlySpeed,
 		};
-		EnemySpawn->AddEnemyDef("BoomAttack", { SpawnType=DefenseBoomAttack, SpawnFunction=def.SpawnBoomAttack, OffsetAttackPathByPos=true, GetInfoString=def.GetSpawnInfoString }, spawn_default_values, spawn_editor_props);
+		EnemySpawn->AddEnemyDef("BoomAttack", { SpawnType = DefenseBoomAttack, SpawnFunction = def.SpawnBoomAttack, OffsetAttackPathByPos = true, GetInfoString = def.GetSpawnInfoString }, spawn_default_values, spawn_editor_props);
 	}
 }
 

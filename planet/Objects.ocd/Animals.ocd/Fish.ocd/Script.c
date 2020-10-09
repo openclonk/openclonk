@@ -149,13 +149,13 @@ func InitFuzzyRules()
 	brain->AddSet("wall_range", "close", [[0, 1], [0, 1], [wall_vision_range, 0]]);
 	
 	// RULES
-	brain->AddRule(brain->And(brain->Not("wall_range=close"), "enemy_range=close"), "speed=fast");
-	brain->AddRule(brain->Or("friend_range=close", "food_range=close", "wall_range=close"), "speed=slow");
+	brain->AddRule(brain->And(brain->Not("wall_range = close"), "enemy_range = close"), "speed = fast");
+	brain->AddRule(brain->Or("friend_range = close", "food_range = close", "wall_range = close"), "speed = slow");
 	
-	brain->AddRule(brain->And(brain->Not("wall_range=close"), brain->Or("food=left", brain->And("friend=left", "enemy_range=far", "food_range=far"), "enemy=right")), "swim=left");
-	brain->AddRule(brain->And(brain->Not("wall_range=close"), brain->Or("food=right", brain->And("friend=right", "enemy_range=far", "food_range=far"), "enemy=left")), "swim=right");
-	brain->AddRule(brain->And("left_wall=close", brain->Not("right_wall=close")), "swim=sharp_right");
-	brain->AddRule("right_wall=close", "swim=sharp_left");
+	brain->AddRule(brain->And(brain->Not("wall_range = close"), brain->Or("food = left", brain->And("friend = left", "enemy_range = far", "food_range = far"), "enemy = right")), "swim = left");
+	brain->AddRule(brain->And(brain->Not("wall_range = close"), brain->Or("food = right", brain->And("friend = right", "enemy_range = far", "food_range = far"), "enemy = left")), "swim = right");
+	brain->AddRule(brain->And("left_wall = close", brain->Not("right_wall = close")), "swim = sharp_right");
+	brain->AddRule("right_wall = close", "swim = sharp_left");
 }
 
 
@@ -446,7 +446,7 @@ Swim = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	NextAction = "Swim",
 	StartCall = "StartSwim"
 },
@@ -459,7 +459,7 @@ Walk = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Walk",
@@ -475,7 +475,7 @@ Jump = {
 	Decel = 16,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Jump",
@@ -489,7 +489,7 @@ Dead = {
 	Speed = 10,
 	Length = 1,
 	Delay = 0,
-	FacetBase=1,
+	FacetBase = 1,
 	Directions = 2,
 	FlipDir = 1,
 	NextAction = "Hold",

@@ -199,7 +199,6 @@ private:
 		class ListItem : public C4GUI::Window
 		{
 		private:
-			ControlConfigListBox *parent_list;
 			ControlAssignmentLabel *assignment_label;
 			bool has_extra_spacing; // if true, add a bit of spacing on top of this item to group elements
 
@@ -274,16 +273,25 @@ private:
 	{
 	public:
 		NetworkServerAddressConfig(const C4Rect &rcBounds, const char *szName, int32_t *piConfigEnableValue, char *szConfigAddressValue, int iTabWidth); // ctor
-	private:
+		virtual ~NetworkServerAddressConfig() {};
+	protected:
 		int32_t *piConfigEnableValue; char *szConfigAddressValue;
 		C4GUI::CheckBox *pEnableCheck;
 		C4GUI::Edit *pAddressEdit;
 	public:
-		void OnEnabledCheckChange(C4GUI::Element *pCheckBox); // callback when checkbox is ticked
+		virtual void OnEnabledCheckChange(C4GUI::Element *pCheckBox); // callback when checkbox is ticked
 		void Save2Config(); // controls to config
 
 		static bool GetControlSize(int *piWdt, int *piHgt, int *piTabPos, const char *szForText);
 	} *pLeagueServerCfg;
+
+	class NetworkModDatabaseServerAddressConfig : public NetworkServerAddressConfig
+	{
+	public:
+		NetworkModDatabaseServerAddressConfig(const C4Rect &rcBounds, const char *szName, int32_t *piConfigEnableValue, char *szConfigAddressValue, int iTabWidth); // ctor
+	private:
+		virtual void OnEnabledCheckChange(C4GUI::Element *pCheckBox) override; // callback when checkbox is ticked
+	} *pModDatabaseServerCfg;
 };
 
 

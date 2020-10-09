@@ -49,7 +49,7 @@ public func ActivateEntrance(object clonk)
 		return clonk->Exit();
 
 	// Clonks cannot get into the plane if it is underwater
-	if(GBackLiquid()) return false;
+	if (GBackLiquid()) return false;
 
 	var passengers = ObjectCount(Find_Container(this), Find_OCF(OCF_CrewMember));
 	if (passengers >= MaxPassengerCount) return false;

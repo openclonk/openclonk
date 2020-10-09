@@ -78,10 +78,20 @@ public func GetDynamiteCount()
 public func SetDynamiteCount(int new_count)
 {
 	// Adjust dynamite counts to given amount
-	var dyna;
 	var change = new_count - GetDynamiteCount();
-	if (change > 0) while (change--) CreateContents(Dynamite);
-	if (change < 0) while (change++) if ((dyna = FindObject(Find_ID(Dynamite), Find_Container(this)))) dyna->RemoveObject();
+	if (change > 0)
+	{
+		while (change--)
+			CreateContents(Dynamite);
+	} else if (change < 0)
+	{
+		while (change++)
+		{
+			var dynamite = FindObject(Find_ID(Dynamite), Find_Container(this));
+			if (dynamite)
+				dynamite->RemoveObject();
+		}
+	}
 }
 
 // Empty this box and turn it into an igniter
@@ -200,7 +210,7 @@ public func ControlUse(object clonk, int x, int y)
 
 	// Connect with a fuse: Move last wire to dynamite
 	var wire = FindFuses()[0];
-	if(wire)
+	if (wire)
 		wire->Connect(wire->GetConnectedItem(this), dynamite);
 	// Create new wire from box to dynamite
 	Fuse->Create(dynamite, this);
@@ -235,12 +245,12 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_
 	if (idle)
 	{
 		if (!second_on_back)
-			return Trans_Mul(Trans_Translate(0,3000, 00), Trans_Rotate(-45,0,1));
+			return Trans_Mul(Trans_Translate(0, 3000, 00), Trans_Rotate(-45, 0, 1));
 		else
-			return Trans_Mul(Trans_Translate(-5000,3000), Trans_Rotate(-45,0,1));
+			return Trans_Mul(Trans_Translate(-5000, 3000), Trans_Rotate(-45, 0, 1));
 	}
 	if (nohand)
-		return Trans_Mul(Trans_Translate(0,-3000, -2200), Trans_Rotate(-45,0,1));
+		return Trans_Mul(Trans_Translate(0,-3000, -2200), Trans_Rotate(-45, 0, 1));
 }
 
 public func GetCarryPhase()

@@ -13,8 +13,8 @@ public func Construction(...)
 {
 	StartGrowth(15);
 	fly_anim_len = GetAnimationLength("Fly");
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(0,0, fly_anim_len, 10, ANIM_Loop));
-	this.MeshTransformation = Trans_Rotate(270,1,1,1);
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(0, 0, fly_anim_len, 10, ANIM_Loop));
+	this.MeshTransformation = Trans_Rotate(270, 1, 1, 1);
 	SetAction("Fly");
 
 	// Make butterflies a bit more colorful.
@@ -61,7 +61,7 @@ private func MissionComplete()
 	// Slow animation speed
 	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, fly_anim_len, 20, ANIM_Loop));
 	ScheduleCall(this, "RegularSpeed", wait);
-	SetCommand("Wait", nil,nil,nil,nil, wait);
+	SetCommand("Wait", nil, nil, nil, nil, wait);
 }
 
 private func MissionCompleteFailed()
@@ -93,14 +93,12 @@ private func GetRestingPlace(proplist coordinates)
 	// Try to rest in nearby grass
 	for (var grass in FindObjects(Find_Distance(150), Find_ID(Grass), Sort_Distance()))
 	{
-		if (!Random(2)) continue;
-		break;
-	}
-	if (grass)
-	{
-		coordinates.x = grass->GetX() + Random(4) - 2;
-		coordinates.y = grass->GetY() + 2;
-		return true;
+		if (!Random(2))
+		{
+			coordinates.x = grass->GetX() + Random(4) - 2;
+			coordinates.y = grass->GetY() + 2;
+			return true;
+		}
 	}
 	return false;
 }
@@ -150,14 +148,14 @@ private func FxTurningTimer(object target, proplist effect)
 		effect.step = 75;
 		SetDir(DIR_Left);
 	}
-	this.MeshTransformation = Trans_Mul(Trans_Rotate(270,1,1,1), Trans_Rotate(effect.step,0,0,1));
+	this.MeshTransformation = Trans_Mul(Trans_Rotate(270, 1, 1, 1), Trans_Rotate(effect.step, 0, 0, 1));
 	return FX_OK;
 }
 
 private func FxTurningStop(object target, proplist effect, int reason, bool temp)
 {
 	if (temp) return;
-	this.MeshTransformation = Trans_Rotate(270,1,1,1);
+	this.MeshTransformation = Trans_Rotate(270, 1, 1, 1);
 	SetAction("Fly");
 }
 

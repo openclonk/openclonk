@@ -4,7 +4,7 @@ public func FxFuseBurnTimer(object target, effect fx, int time)
 {
 	if (g_theme != MiamiIce) return inherited(target, fx, time, ...);
 
-	if(!fx.clr)
+	if (!fx.clr)
 		fx.clr = HSL(Random(255), 255, 100);
 
 	// Emit some smoke from the fuse hole.

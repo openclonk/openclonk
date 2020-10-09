@@ -32,7 +32,9 @@ void C4ObjectPtr::CompileFunc(StdCompiler* pComp)
 
 	int32_t nptr = 0;
 	if (!pComp->isDeserializer() && data.ptr)
+	{
 		nptr = data.ptr->Number;
+	}
 	pComp->Value(nptr);
 	if (pComp->isDeserializer())
 	{

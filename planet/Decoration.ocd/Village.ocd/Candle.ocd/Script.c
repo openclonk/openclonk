@@ -12,8 +12,13 @@ protected func Initialize()
 	return SetAction("Shine");
 }
 
+func Definition(proplist def)
+{
+	def.MeshTransformation = Trans_Scale(30);
+}
+
 protected func Construction() {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-35,35),0,10), Trans_Scale(30)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-35, 35),0, 10), GetID().MeshTransformation));
 	objShine = CreateObjectAbove(EnvPack_Candle_Shine, x, y + 10, -1);
 	SetLightRange(80, 60);
 	SetLightColor(FIRE_LIGHT_COLOR);

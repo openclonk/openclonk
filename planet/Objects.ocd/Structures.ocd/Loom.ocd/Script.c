@@ -8,7 +8,7 @@
 local animWork;
 local meshAttach;
 
-public func LampPosition(id def) { return [GetCalcDir()*11,2]; }
+public func LampPosition(id def) { return [GetCalcDir()*11, 2]; }
 
 func Initialize()
 {
@@ -36,7 +36,7 @@ public func PowerNeed() { return 40; }
 
 private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 {
-	if(effect.paused == true) return 1;
+	if (effect.paused == true) return 1;
 
 	var tickAmount = 50;
 	var animSpot = GetAnimationPosition(animWork);
@@ -45,7 +45,7 @@ private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 	var animLength = GetAnimationLength("Working") - 50;
 	
 	//loop anim
-	if(animSpot + tickAmount > animLength){
+	if (animSpot + tickAmount > animLength){
 		SetAnimationPosition(animWork, Anim_Const(animSpot + tickAmount - animLength));
 	}
 	//otherwise, advance animation
@@ -56,7 +56,7 @@ local workEffect;
 
 public func OnProductionStart(id product)
 {
-	workEffect = AddEffect("IntWorkAnim", this, 1,1,this);
+	workEffect = AddEffect("IntWorkAnim", this, 1, 1, this);
 	return _inherited(product, ...);
 }
 
@@ -79,8 +79,8 @@ public func OnProductionFinish(id product)
 }
 
 func Definition(def){
-	SetProperty("MeshTransformation", Trans_Rotate(25, 0,1,0), def);
-	SetProperty("PictureTransformation", Trans_Rotate(65,0,1,0), def);
+	SetProperty("MeshTransformation", Trans_Rotate(25, 0, 1, 0), def);
+	SetProperty("PictureTransformation", Trans_Rotate(65, 0, 1, 0), def);
 	return _inherited(def, ...);
 }
 
@@ -93,7 +93,7 @@ local ActMap = {
 		FlipDir = 1,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		NextAction = "Wait",
 	},
 };

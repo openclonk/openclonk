@@ -35,9 +35,9 @@ protected func Initialize()
 	
 	var waterfall;
 	waterfall = CreateWaterfall(130, 53, 2, "Water");
-	waterfall->SetDirection(4, 0, 3, 6);
+	waterfall->SetDirection(6, 3, 2, 3);
 	waterfall = CreateWaterfall(144, 50, 8, "Water");
-	waterfall->SetDirection(6, 0, 5, 6);
+	waterfall->SetDirection(9, 3, 3, 3);
 	CreateLiquidDrain(100, 315, 10);
 	CreateLiquidDrain(130, 315, 10);
 	CreateLiquidDrain(160, 315, 10);
@@ -128,7 +128,7 @@ public func OnClonkEnteredRelaunch(object clonk)
 public func OnClonkLeftRelaunch(object clonk)
 {
 	clonk->SetPosition(RandomX(120, 160), -20);
-	clonk->Fling(0,5);
+	clonk->Fling(0, 5);
 	return;
 }
 

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2016, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2019, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -30,8 +30,7 @@
 All PropLists can be destroyed while there are still C4Values referencing them, though
 Definitions do not get destroyed during the game. So always check for nullpointers.
 
-The linked list formed by C4PropList::FirstRef and C4Value::NextRef is used to
-change all C4Values referencing the destroyed Proplist to contain nil instead.
+The unordered_set Refs is used to change all C4Values referencing the destroyed Proplist to contain nil instead.
 Objects are also cleaned up via various ClearPointer functions.
 The list is also used as a reference count to remove unused Proplists.
 The exception are C4PropListNumbered and C4Def, which have implicit references
@@ -53,12 +52,17 @@ public:
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	C4String * Key{nullptr};
 	C4Value Value;
-	operator const void * () const { return Key; }
-	C4Property & operator = (void * p)
-	{ assert(!p); if (Key) Key->DecRef(); Key = nullptr; Value.Set0(); return *this; }
+	explicit operator bool() const { return Key != nullptr; }
 	bool operator < (const C4Property &cmp) const { return strcmp(GetSafeKey(), cmp.GetSafeKey())<0; }
 	const char *GetSafeKey() const { if (Key && Key->GetCStr()) return Key->GetCStr(); return ""; } // get key as C string; return "" if undefined. never return nullptr
 };
+
+template<>
+inline bool C4Set<C4Property>::Equals(const C4Property &a, const C4Property &b)
+{
+	return a.Key == b.Key;
+}
+
 class C4PropListNumbered;
 class C4PropList
 {
@@ -153,12 +157,13 @@ public:
 
 protected:
 	C4PropList(C4PropList * prototype = nullptr);
-	void ClearRefs() { while (FirstRef) FirstRef->Set0(); }
+	void ClearRefs() { for( C4Value * ref: RefSet{Refs}) ref->Set0(); assert(Refs.empty()); }
 
 private:
 	void AddRef(C4Value *pRef);
-	void DelRef(const C4Value *pRef, C4Value * pNextRef);
-	C4Value *FirstRef{nullptr}; // No-Save
+	void DelRef(C4Value *pRef);
+	typedef std::unordered_set<C4Value *> RefSet;
+	RefSet Refs;
 	C4Set<C4Property> Properties;
 	C4Value prototype;
 	bool constant{false}; // if true, this proplist is not changeable

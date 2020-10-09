@@ -26,10 +26,10 @@ public func CreateCarryHeavyContents(id obj_id, int amount)
 protected func RejectCollect(id objid, object obj)
 {
 	// Carry heavy only gets picked up if none held already
-	if(this.inventory.force_collection && obj->~IsCarryHeavy())
+	if (this.inventory.force_collection && obj->~IsCarryHeavy())
 	{
 		// Collection of that object magically disabled?
-		if(GetEffect("NoCollection", obj)) return true;
+		if (GetEffect("NoCollection", obj)) return true;
 		
 		// Do callbacks to control effects to see if the effect blocks picking up a carry heavy object.
 		var block_carry_heavy = false;
@@ -53,13 +53,13 @@ protected func RejectCollect(id objid, object obj)
 		return false;
 	}
 
-	return _inherited(objid,obj,...);
+	return _inherited(objid, obj,...);
 }
 
 // Start visual effect when picking up carry heavy objects
 public func Collection2(object obj)
 {
-	if(obj->~IsCarryHeavy()) // we can assume that we don't have a carryheavy object yet. If we do, Scripters are to blame.
+	if (obj->~IsCarryHeavy()) // we can assume that we don't have a carryheavy object yet. If we do, Scripters are to blame.
 	{
 		CarryHeavy(obj);
 		DoLiftCarryHeavy(obj);
@@ -80,7 +80,7 @@ public func GetHandItem(int i)
 public func Ejection(object obj)
 {
 	// carry heavy special treatment
-	if(obj == GetCarryHeavy())
+	if (obj == GetCarryHeavy())
 	{
 		StopCarryHeavy();
 		return true;
@@ -92,7 +92,7 @@ public func Ejection(object obj)
 public func ContentsDestruction(object obj)
 {
 	// check if it was carryheavy
-	if(obj == GetCarryHeavy())
+	if (obj == GetCarryHeavy())
 	{
 		StopCarryHeavy();
 	}
@@ -110,7 +110,7 @@ public func GetExtraInteractions()
 	if (IsCarryingHeavy() && GetAction() == "Walk")
 	{
 		var ch = GetCarryHeavy();
-		PushBack(functions, {Fn = "DropCarryHeavy", Description=ch->GetDropDescription(), Object=this, IconName="", IconID=Icon_LetGo, Priority=1});
+		PushBack(functions, {Fn = "DropCarryHeavy", Description = ch->GetDropDescription(), Object = this, IconName="", IconID = Icon_LetGo, Priority = 1});
 	}
 	return functions;
 }
@@ -131,7 +131,7 @@ public func CarryHeavy(object target)
 
 	lib_carryheavy_obj = target;
 
-	if(target->Contained() != this)
+	if (target->Contained() != this)
 		target->Enter(this);
 
 	// Update attach stuff
@@ -153,7 +153,7 @@ public func CarryHeavy(object target)
 public func DropCarryHeavy()
 {
 	// only if actually possible
-	if(!IsCarryingHeavy())
+	if (!IsCarryingHeavy())
 		return;
 
 	DoDropCarryHeavy(GetCarryHeavy());
@@ -165,7 +165,7 @@ public func DropCarryHeavy()
 // Internal function to clear carryheavy-status
 private func StopCarryHeavy()
 {
-	if(!IsCarryingHeavy())
+	if (!IsCarryingHeavy())
 		return;
 
 	lib_carryheavy_obj = nil;
@@ -174,7 +174,7 @@ private func StopCarryHeavy()
 
 /* Lifting / dropping effect */
 
-local lib_carryheavy_lifttime = 45;
+local lib_carryheavy_lifttime = 22;
 
 private func DoLiftCarryHeavy(object obj)
 {
@@ -208,14 +208,14 @@ private func FxIntLiftHeavyStart(object me, proplist effect, bool tmp, object to
 	me->SetHandAction(1);
 	SetAction("Stand");
 	//Stop the clonk if he is moving
-	if(GetXDir() != 0) SetXDir();
+	if (GetXDir() != 0) SetXDir();
 
 	//Attach the mesh of the object. It is not displayed normally because the
 	//hands are told they have an action in the next few lines
 	effect.mesh = AttachMesh(to_lift, "pos_tool1", to_lift->GetCarryBone(), to_lift->~GetCarryTransform(this));
 
 	//Play the animation of the clonk picking up the object
-	effect.anim = PlayAnimation("CarryArmsPickup", CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0, GetAnimationLength("CarryArmsPickup"), lib_carryheavy_lifttime, ANIM_Remove), Anim_Const(1000));
+	effect.anim = PlayAnimation("CarryArmsPickup", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength("CarryArmsPickup"), lib_carryheavy_lifttime, ANIM_Remove), Anim_Const(1000));
 
 	effect.obj = to_lift;
 }
@@ -223,12 +223,12 @@ private func FxIntLiftHeavyStart(object me, proplist effect, bool tmp, object to
 private func FxIntLiftHeavyTimer(object me, proplist effect, int time)
 {
 	//If the clonk moves, he'll stop lifting and drop the object
-	if(time < lib_carryheavy_lifttime)
+	if (time < lib_carryheavy_lifttime)
 	{
 		// first 2/3 of time, clonk will drop the object
-		if(time < lib_carryheavy_lifttime * 2 / 3)
+		if (time < lib_carryheavy_lifttime * 2 / 3)
 		{
-			if(GetAction() != "Stand" || me->IsJumping() || Abs(GetXDir()) > 0)
+			if (GetAction() != "Stand" || me->IsJumping() || Abs(GetXDir()) > 0)
 			{
 				effect.fail = true;
 				return FX_Execute_Kill;
@@ -236,34 +236,34 @@ private func FxIntLiftHeavyTimer(object me, proplist effect, int time)
 		}
 		else
 		{
-			if(GetAction() != "Stand")
+			if (GetAction() != "Stand")
 				return FX_Execute_Kill;
 		}
 	}
 	//When the clonk has finished lifting, remove movement-restrictions
-	if(time >= lib_carryheavy_lifttime)
+	if (time >= lib_carryheavy_lifttime)
 		return FX_Execute_Kill;
 	// Object got moved out during lifting
-	if(!effect.obj || effect.obj->Contained() != this)
+	if (!effect.obj || effect.obj->Contained() != this)
 		return FX_Execute_Kill;
 }
 
 private func FxIntLiftHeavyStop(object me, proplist effect)
 {
 	// If failed, drop the object
-	if(effect.fail && effect.obj && effect.obj->Contained() == this)
-		effect.obj->Exit(0,9);
+	if (effect.fail && effect.obj && effect.obj->Contained() == this)
+		effect.obj->Exit(0, 9);
 
 	DetachMesh(effect.mesh);
 	StopAnimation(effect.anim);
 	me->SetTurnForced(-1);
 	me->SetHandAction(0);
-	if(GetAction() == "Stand") SetAction("Walk");
+	if (GetAction() == "Stand") SetAction("Walk");
 }
 
 private func FxIntDropHeavyStart(object me, proplist effect, bool tmp, object to_lift)
 {
-	if(GetEffect("IntCarryHeavy"))
+	if (GetEffect("IntCarryHeavy"))
 		RemoveEffect("IntCarryHeavy", this, nil, true);
 
 	//Stop the clonk from moving, and tell the clonk's control library
@@ -272,7 +272,7 @@ private func FxIntDropHeavyStart(object me, proplist effect, bool tmp, object to
 	me->SetHandAction(1);
 	SetAction("Stand");
 	//Stop the clonk if he is moving
-	if(GetXDir() != 0) SetXDir();
+	if (GetXDir() != 0) SetXDir();
 
 	//Attach the mesh of the object. It is not displayed normally because the
 	//hands are told they have an action in the next few lines
@@ -299,12 +299,12 @@ private func FxIntDropHeavyTimer(object me, proplist effect, int time)
 private func FxIntDropHeavyStop(object me, proplist effect)
 {
 	// Drop the object
-	if(effect.obj && effect.obj->Contained() == this)
-		effect.obj->Exit(0,9);
+	if (effect.obj && effect.obj->Contained() == this)
+		effect.obj->Exit(0, 9);
 
 	DetachMesh(effect.mesh);
 	StopAnimation(effect.anim);
 	me->SetTurnForced(-1);
 	me->SetHandAction(0);
-	if(GetAction() == "Stand") SetAction("Walk");
+	if (GetAction() == "Stand") SetAction("Walk");
 }

@@ -29,18 +29,18 @@ func Place(int amount, proplist area, proplist settings)
 	settings.growth = settings.growth ?? 100000;
 		
 	var plants = [];
-	while(amount > 0)
+	while (amount > 0)
 	{
 		// place some sprout berries
 		var bush = PlaceVegetation(SproutBerryBush, 0, 0, LandscapeWidth(), LandscapeHeight(), 100000, area);
-		if(!bush) break;
+		if (!bush) break;
 		--amount;
 		PushBack(plants, bush);
 		var cluster = Random(3) + 3;
-		while(cluster > 0 && amount > 0)
+		while (cluster > 0 && amount > 0)
 		{
 			var p = PlaceVegetation(SproutBerryBush, bush->GetX() - 200, bush->GetY() - 200, 400, 400, 100000);
-			if(!p) break;
+			if (!p) break;
 			--amount;
 			--cluster;
 			PushBack(plants, p);
@@ -63,7 +63,7 @@ private func Initialize()
 	ScheduleCall(this, "PostInit", 1);
 	
 	// no instant berries!
-	AddEffect("DontFlower", this, 1, 35 * SproutBerryBush_average_flower_time + RandomX(-400,400), this);
+	AddEffect("DontFlower", this, 1, 35 * SproutBerryBush_average_flower_time + RandomX(-400, 400), this);
 	AddTimer("Sprout", 40);
 }
 
@@ -77,7 +77,7 @@ func GrowNormally()
 // scenario initialization?
 func PostInit()
 {
-	if(GetEffect("GrowNormally", this)) return;
+	if (GetEffect("GrowNormally", this)) return;
 	QuickSprout();
 	// some starting water
 	saved_water = (SproutBerryBush_water_per_sprout * 3) / 2;
@@ -85,7 +85,7 @@ func PostInit()
 
 func QuickSprout()
 {
-	for(var i = 0; i < 3; ++i)
+	for (var i = 0; i < 3; ++i)
 	{
 		var sprout = CreateObjectAbove(SproutBerryBush_Sprout, 0, 15, GetOwner());
 		++sprout_count;
@@ -97,20 +97,20 @@ func Sprout()
 {
 	// sprouts need water
 	// however - could explode when too much water around
-	if(saved_water < SproutBerryBush_water_per_sprout*2)
+	if (saved_water < SproutBerryBush_water_per_sprout*2)
 	{
 		// get ground position
 		var i = 1;
-		for(; i < 10; i += 2)
+		for (; i < 10; i += 2)
 		{
-			if(GBackSolid(0, last_checked_y + i)) break;
+			if (GBackSolid(0, last_checked_y + i)) break;
 		}
 		last_checked_y += i - 2;
-		if(GBackSolid(0, last_checked_y))
+		if (GBackSolid(0, last_checked_y))
 		{
-			for(var i = 0; i > -10;--i)
+			for (var i = 0; i > -10;--i)
 			{
-				if(!GBackSolid(0, last_checked_y + i))
+				if (!GBackSolid(0, last_checked_y + i))
 				{
 					last_checked_y += i;
 					break;
@@ -122,31 +122,31 @@ func Sprout()
 		saved_water += amnt;
 		
 		// can't sprout anyway
-		if(saved_water < SproutBerryBush_water_per_sprout)
+		if (saved_water < SproutBerryBush_water_per_sprout)
 			return;
 	}
 	
-	if(Random(4)) return;
+	if (Random(4)) return;
 	
 	
 	// might start flower time
-	if(!GetEffect("DontFlower", this))
+	if (!GetEffect("DontFlower", this))
 	{
-		if(!Random(4)) StartSeason();
+		if (!Random(4)) StartSeason();
 	}
 	
 	// don't sprout no more?
-	if(sprout_count >= max_sprouts) return;
+	if (sprout_count >= max_sprouts) return;
 	// one still growing?
-	if(grown_sprouts_count != sprout_count) return;
+	if (grown_sprouts_count != sprout_count) return;
 	
 	// still owie?
-	if(GetEffect("Hurt", this)) return;
+	if (GetEffect("Hurt", this)) return;
 	
 	// old bush grows stronger!
-	if(sprout_evolve_counter >= SproutBerryBush_evolve_steps_per_new_sprout)
+	if (sprout_evolve_counter >= SproutBerryBush_evolve_steps_per_new_sprout)
 	{
-		if(max_sprouts < SproutBerryBush_max_sprouts)
+		if (max_sprouts < SproutBerryBush_max_sprouts)
 			++ max_sprouts;
 		sprout_evolve_counter -= SproutBerryBush_evolve_steps_per_new_sprout;
 	}
@@ -160,13 +160,13 @@ func Sprout()
 
 func StartSeason(int time)
 {
-	if(time == nil)
+	if (time == nil)
 		time = 35 * 8;
 	// blooming time!
 	AddEffect("Flower", this, 1, time, this);
 	
 	// no new season now!
-	AddEffect("DontFlower", this, 1, 35 * SproutBerryBush_average_flower_time + RandomX(-200,200), this);
+	AddEffect("DontFlower", this, 1, 35 * SproutBerryBush_average_flower_time + RandomX(-200, 200), this);
 }
 
 func SproutFullyGrown(object which)
@@ -182,14 +182,14 @@ func IsFlowerTime()
 func LoseSprout(object which)
 {
 	--sprout_count;
-	if(which->IsFullyGrown())
+	if (which->IsFullyGrown())
 		--grown_sprouts_count;
 		
 	// that hurt, we should not sprout immediatly again
 	AddEffect("Hurt", this, 1, 35*5);
 	
 	// awwww
-	if(sprout_count <= 0)
+	if (sprout_count <= 0)
 		RemoveObject();
 }
 

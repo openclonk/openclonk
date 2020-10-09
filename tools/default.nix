@@ -21,7 +21,7 @@ pkgs.stdenv.mkDerivation rec {
   dontStrip = true;
 
   buildInputs = with pkgs; [
-    SDL2 libvorbis libogg libjpeg libpng freetype glew tinyxml
+    SDL2 libvorbis libogg libjpeg libpng freetype epoxy tinyxml
     openal freealut readline
   ] ++ stdenv.lib.optional withEditor qt5.full;
 
@@ -50,7 +50,6 @@ pkgs.stdenv.mkDerivation rec {
 
   postInstall = ''
     mkdir -p $out/bin
-    ln -s $out/games/openclonk $out/bin/
   '';
 
 

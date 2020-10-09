@@ -72,8 +72,10 @@ public func FindInventoryWeapon(effect fx)
 		return true; 
 	}
 	// Make a bomber out of those who carry the powderkeg.
-	if (fx.weapon = fx.Target->FindContents(PowderKeg)) 
+	var keg = fx.Target->FindContents(PowderKeg);
+	if (keg)
 	{
+		fx.weapon = keg;
 		fx.is_siege = true;
 		fx.strategy = this.ExecuteBomber;
 		return true;

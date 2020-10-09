@@ -1,6 +1,6 @@
-TxtConnectLine=Connect line
-TxtNoNewLine=Cannot create a new line here.
-TxtLineRemoval=Power line disconnected.
-TxtConnect=Power line connected|to %s
 Name=Cable reel
-Description=Press [Use] in front of a structure and another time in front of another structure to connect both with a power line.
+Description=Press [Use] in front of a cable station and another time in front of another cable station to connect both with a cable. The cable stations may only be connected with a straight cable.
+TxtNoNewLine=Cannot create a new cable here.
+TxtCableRemoval=Cable disconnected.
+TxtDoubleCable=Stations are already connected.
+TxtConnect=Cable connected|to %s

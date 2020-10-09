@@ -138,6 +138,7 @@ public:
 
 		EndpointAddress() { Clear(); }
 		EndpointAddress(const EndpointAddress &other) : HostAddress() { SetAddress(other); }
+		EndpointAddress& operator=(const EndpointAddress &other) { SetAddress(other); return *this; }
 		EndpointAddress(const HostAddress &host, uint16_t port = IPPORT_NONE) : HostAddress(host) { SetPort(port); }
 		EndpointAddress(HostAddress::SpecialAddress addr, uint16_t port = IPPORT_NONE) : HostAddress(addr) { SetPort(port); }
 		explicit EndpointAddress(const StdStrBuf &addr) { SetAddress(addr); }
@@ -338,6 +339,18 @@ public:
 	C4NetIOTCP();
 	~C4NetIOTCP() override;
 
+	// Socket is an unconnected, but bound socket.
+	class Socket
+	{
+		SOCKET sock;
+		Socket(SOCKET s) : sock(s) { }
+		friend class C4NetIOTCP;
+	public:
+		~Socket();
+		// GetAddress returns the address the socket is bound to.
+		C4NetIO::addr_t GetAddress();
+	};
+
 	// *** interface
 
 	// * not multithreading safe
@@ -349,6 +362,8 @@ public:
 	bool Execute(int iMaxTime = TO_INF, pollfd * readyfds = nullptr) override;
 
 	// * multithreading safe
+	std::unique_ptr<Socket> Bind(const addr_t &addr);
+	bool Connect(const addr_t &addr, std::unique_ptr<Socket> socket);
 	bool Connect(const addr_t &addr) override;
 	bool Close(const addr_t &addr) override;
 
@@ -473,6 +488,9 @@ protected:
 	// *** implementation
 
 	bool Listen(uint16_t inListenPort);
+
+	SOCKET CreateSocket(addr_t::AddressFamily family);
+	bool Connect(const addr_t &addr, SOCKET nsock);
 
 	Peer *Accept(SOCKET nsock = INVALID_SOCKET, const addr_t &ConnectAddr = addr_t());
 	Peer *GetPeer(const addr_t &addr);

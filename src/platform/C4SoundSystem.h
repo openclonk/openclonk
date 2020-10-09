@@ -55,6 +55,7 @@ public:
 protected:
 	C4Group SoundFile;
 	C4SoundEffect *FirstSound{nullptr}; // TODO: Add a hash map for sound lookup. Also add a global list for all running sound instances.
+	bool initialized{false};
 	void ClearEffects();
 	C4SoundEffect* GetEffect(const char *szSound);
 	int32_t RemoveEffect(const char *szFilename);

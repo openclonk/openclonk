@@ -26,7 +26,7 @@ public func FxMoveTimer()
 		return FX_Execute_Kill;
 	}
 
-	var target_angle = Angle(0,0,xpos,ypos)*10;
+	var target_angle = Angle(0, 0, xpos, ypos)*10;
 
 	if (!Visible() && !InDeadzone())
 	{
@@ -55,7 +55,7 @@ public func FxMoveTimer()
 	crew->TriggerHoldingControl();
 }
 
-private func AnalogStrength() { return BoundBy(Sqrt(xpos*xpos+ypos*ypos), 0, PLRCON_MaxStrength); }
+private func AnalogStrength() { return BoundBy(Sqrt(xpos*xpos + ypos*ypos), 0, PLRCON_MaxStrength); }
 private func InDeadzone() { return AnalogStrength() < CURSOR_Deadzone(); }
 private func Visible() { return this.Visibility != VIS_None; }
 
@@ -77,7 +77,7 @@ private func CreateMoveEffect(object clonk)
 	crew = clonk;
 	UpdatePosition();
 	RemoveEffect("Move",this);
-	AddEffect("Move",this,1,1,this);
+	AddEffect("Move",this, 1, 1, this);
 }
 
 public func StartAim(object clonk, int default_angle, object GUImenu)
@@ -89,7 +89,7 @@ public func StartAim(object clonk, int default_angle, object GUImenu)
 	{
 		SetCategory(C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax);
 		menu = GUImenu;
-		this["Parallaxity"] = [0,0];
+		this["Parallaxity"] = [0, 0];
 	}
 	else
 	{
@@ -106,13 +106,13 @@ public func StartAim(object clonk, int default_angle, object GUImenu)
 
 private func UpdatePosition()
 {
-	var x = +Sin(angle,CURSOR_Radius,10);
-	var y = -Cos(angle,CURSOR_Radius,10);
+	var x = +Sin(angle, CURSOR_Radius, 10);
+	var y = -Cos(angle, CURSOR_Radius, 10);
 	
 	if (menu)
-		SetPosition(menu->GetX()+x,menu->GetY()+y);
+		SetPosition(menu->GetX()+x, menu->GetY()+y);
 	else
-		SetPosition(crew->GetX()+x,crew->GetY()+y);
+		SetPosition(crew->GetX()+x, crew->GetY()+y);
 		
 	crew->UpdateVirtualCursorPos();
 }
@@ -120,7 +120,7 @@ private func UpdatePosition()
 private func MirrorCursor()
 {
 	return;
-	angle = -Normalize(angle,-1800,10);
+	angle = -Normalize(angle,-1800, 10);
 }
 
 public func StopAim()
@@ -143,17 +143,17 @@ public func IsActive()
 public func Aim(int ctrl, object clonk, int strength, int repeat, int status)
 {
 	// start (stealth) aiming
-	if(!GetEffect("Move",this))
+	if (!GetEffect("Move",this))
 		CreateMoveEffect(clonk);
 
 	// aiming with analog pad
 	if (status == CONS_Moved &&
 		(ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight))
 	{
-		if(ctrl == CON_AimAxisUp) ypos = -strength;
-		if(ctrl == CON_AimAxisDown) ypos = strength;
-		if(ctrl == CON_AimAxisLeft) xpos = -strength;
-		if(ctrl == CON_AimAxisRight) xpos = strength;
+		if (ctrl == CON_AimAxisUp) ypos = -strength;
+		if (ctrl == CON_AimAxisDown) ypos = strength;
+		if (ctrl == CON_AimAxisLeft) xpos = -strength;
+		if (ctrl == CON_AimAxisRight) xpos = strength;
 		return true;
 	}
 	return false;
@@ -161,16 +161,16 @@ public func Aim(int ctrl, object clonk, int strength, int repeat, int status)
 
 public func Direction(int ctrl)
 {
-	if(!crew) return;
+	if (!crew) return;
 	
-	angle = Normalize(angle,-1800,10);
-	//Message("%d, %d",this,angle,ctrl);
-	if(ctrl == CON_Left)
-		if(angle > 0)
+	angle = Normalize(angle,-1800, 10);
+	//Message("%d, %d",this, angle, ctrl);
+	if (ctrl == CON_Left)
+		if (angle > 0)
 			MirrorCursor();
 		
-	if(ctrl == CON_Right)
-		if(angle < 0)
+	if (ctrl == CON_Right)
+		if (angle < 0)
 			MirrorCursor();		
 	
 	return;

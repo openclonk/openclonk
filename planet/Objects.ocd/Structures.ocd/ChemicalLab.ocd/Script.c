@@ -7,7 +7,7 @@
 
 local hold_production;
 
-public func LampPosition(id def) { return [GetCalcDir()*24,2]; }
+public func LampPosition(id def) { return [GetCalcDir()*24, 2]; }
 
 func Construction(object creator)
 {
@@ -55,7 +55,7 @@ public func OnProductionFinish(id product)
 
 protected func FxWorkingTimer()
 {
-	if(!hold_production)
+	if (!hold_production)
 		Smoking();
 }
 
@@ -73,7 +73,7 @@ local ActMap = {
 		FlipDir = 1,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		NextAction = "Default",
 	},
 };

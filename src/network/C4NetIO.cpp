@@ -1151,20 +1151,77 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 	return true;
 }
 
-bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr) // (mt-safe)
+C4NetIOTCP::Socket::~Socket()
+{
+	if (sock != INVALID_SOCKET)
+		closesocket(sock);
+}
+
+C4NetIO::addr_t C4NetIOTCP::Socket::GetAddress()
+{
+	sockaddr_in6 addr;
+	socklen_t address_len = sizeof addr;
+	C4NetIO::addr_t result;
+	if (::getsockname(sock, (sockaddr*) &addr, &address_len) != SOCKET_ERROR)
+	{
+		result.SetAddress((sockaddr*) &addr);
+	}
+	return result;
+}
+
+SOCKET C4NetIOTCP::CreateSocket(addr_t::AddressFamily family)
 {
 	// create new socket
-	SOCKET nsock = ::socket(addr.GetFamily() == HostAddress::IPv6 ? AF_INET6 : AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
+	SOCKET nsock = ::socket(family == HostAddress::IPv6 ? AF_INET6 : AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
 	if (nsock == INVALID_SOCKET)
 	{
 		SetError("socket creation failed", true);
-		return false;
+		return INVALID_SOCKET;
 	}
 
-	if (addr.GetFamily() == HostAddress::IPv6)
+	if (family == HostAddress::IPv6)
 		if (!InitIPv6Socket(nsock))
-			return false;
+		{
+			closesocket(nsock);
+			return INVALID_SOCKET;
+		}
 
+	return nsock;
+}
+
+std::unique_ptr<C4NetIOTCP::Socket> C4NetIOTCP::Bind(const C4NetIO::addr_t &addr) // (mt-safe)
+{
+	SOCKET nsock = CreateSocket(addr.GetFamily());
+	if (nsock == INVALID_SOCKET) return nullptr;
+
+	// bind the socket to the given address
+	if (::bind(nsock, &addr, addr.GetAddrLen()) == SOCKET_ERROR)
+	{
+		SetError("binding the socket failed", true);
+		closesocket(nsock);
+		return nullptr;
+	}
+	return std::unique_ptr<Socket>(new Socket(nsock));
+}
+
+bool C4NetIOTCP::Connect(const addr_t &addr, std::unique_ptr<Socket> socket) // (mt-safe)
+{
+	SOCKET nsock = socket->sock;
+	socket->sock = INVALID_SOCKET;
+	return Connect(addr, nsock);
+}
+
+bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr) // (mt-safe)
+{
+	// create new socket
+	SOCKET nsock = CreateSocket(addr.GetFamily());
+	if (nsock == INVALID_SOCKET) return false;
+
+	return Connect(addr, nsock);
+}
+
+bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr, SOCKET nsock) // (mt-safe)
+{
 #ifdef STDSCHEDULER_USE_EVENTS
 	// set event
 	if (::WSAEventSelect(nsock, Event, FD_CONNECT) == SOCKET_ERROR)
@@ -3803,7 +3860,7 @@ void C4NetIOUDP::DoCheck() // (mt-safe)
 void C4NetIOUDP::OpenDebugLog()
 {
 	const char *szFileBase = "NetIOUDP%d.log";
-	char szFilePath[_MAX_PATH + 1];
+	char szFilePath[_MAX_PATH_LEN];
 	for (int i = 0; i < 1000; i++)
 	{
 		sprintf(szFilePath, szFileBase, i);

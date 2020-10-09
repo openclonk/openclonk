@@ -159,6 +159,7 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 		for (var inv in ForceToInventoryArray(prop_enemy.Inventory))
 		{
 			// Special way to pick up carry heavy objects instantly.
+			var inv_obj;
 			if (inv->~IsCarryHeavy() && (enemy->GetOCF() & OCF_CrewMember))
 				inv_obj = enemy->CreateCarryHeavyContents(inv);
 			else
@@ -288,7 +289,7 @@ local Swordsman = new DefaultEnemy
 	Inventory = [Sword, Helmet],
 	Energy = 30,
 	Bounty = 20,
-	Color=0xff0000ff
+	Color = 0xff0000ff
 };
 
 // A clonk with bow and arrow.

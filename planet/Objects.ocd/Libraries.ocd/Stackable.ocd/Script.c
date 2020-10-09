@@ -422,8 +422,8 @@ public func Definition(def, ...)
 	_inherited(def, ...);
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.count = { Name="$Count$", Type="enum", AsyncGet="GetEditorStackCount", Set="SetEditorStackCount", Options=[
-		{ Name=Format("$DefaultStack$", def->InitialStackCount()), Value=def->InitialStackCount() },
-		{ Name="$CustomStack$", Type=C4V_Int, Value=def->InitialStackCount(), Delegate={ Type="int", Min=1/*, Max=def->MaxStackCount()*/ } }, // there's no reason to restrict the max stack in editor
+		{ Name = Format("$DefaultStack$", def->InitialStackCount()), Value = def->InitialStackCount() },
+		{ Name="$CustomStack$", Type = C4V_Int, Value = def->InitialStackCount(), Delegate={ Type="int", Min = 1/*, Max = def->MaxStackCount()*/ } }, // there's no reason to restrict the max stack in editor
 		{ Name="$Infinite$", Value="infinite" }
 		]};
 }

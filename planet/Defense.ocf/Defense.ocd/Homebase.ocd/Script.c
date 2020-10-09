@@ -51,7 +51,7 @@ public func Construction(...)
 	requirement_names = {};
 	last_buy_idx = -1;
 	// Buy menu
-	buy_menu = CreateObject(GUI_BuyMenu, 0,0, GetOwner());
+	buy_menu = CreateObject(GUI_BuyMenu, 0, 0, GetOwner());
 	buy_menu->SetHomebase(this);
 	// Get available items
 	GameCall("FillHomebase", this);
@@ -74,7 +74,7 @@ public func SetQuickbuyItems(array list)
 
 public func AddCaption(string title, array requirements)
 {
-	return AddHomebaseItem({is_caption = true, title=title, requirements=requirements});
+	return AddHomebaseItem({is_caption = true, title = title, requirements = requirements});
 }
 
 public func AddHomebaseItem(proplist entry)
@@ -91,7 +91,7 @@ public func AddHomebaseItem(proplist entry)
 	var idx = GetLength(base_material);
 	base_material[idx] = entry;
 	var quickbuy_idx = GetIndexOf(g_quickbuy_items, entry.item);
-	if (quickbuy_idx >= 0) entry.hotkey = GetPlayerControlAssignment(GetOwner(), CON_QuickBuy0+quickbuy_idx, true);
+	if (quickbuy_idx >= 0) entry.hotkey = GetPlayerControlAssignment(GetOwner(), CON_QuickBuy0 + quickbuy_idx, true);
 	UpdateIndexedItem(idx);
 	return entry;
 }
@@ -107,10 +107,11 @@ public func UpdateIndexedItem(int index)
 			for (var req in entry.requirements)
 				if (!techs[req])
 					available = false;
+		var tier;
 		if (entry.tiers)
 		{
-			var tier = techs[entry.tech];
-			entry.graphic = Format(entry.graphics, tier+1);
+			tier = techs[entry.tech];
+			entry.graphic = Format(entry.graphics, tier + 1);
 			entry.cost = entry.costs[tier];
 		}
 		if (entry.is_caption)
@@ -138,7 +139,7 @@ public func GetEntryInformation(int entry_idx)
 	{
 		if (!entry.base_name) entry.base_name = entry.name;
 		var tier = techs[entry.tech];
-		entry.name = Format("%s ($Tier$ %d/%d)", entry.base_name, tier+1, entry.tiers);
+		entry.name = Format("%s ($Tier$ %d/%d)", entry.base_name, tier + 1, entry.tiers);
 	}
 	// Compose info message
 	// Info message: Requirements
@@ -312,7 +313,7 @@ public func OnNoAmmo(object clonk)
 public func QuickBuyItem(id item)
 {
 	// Find item in buy list
-	var entry, i=0;
+	var entry, i = 0;
 	for (entry in base_material)
 		if (entry.item == item)
 			break;
@@ -337,11 +338,13 @@ private func GainTechnology(proplist entry)
 	// Technology gain callback.
 	Call(Format("~Gain%s", entry.tech), entry, tier);
 	// Update any related techs that may become available
-	var n = GetLength(base_material), req;
-	for (var i=0; i<n; ++i)
-		if (req = base_material[i].requirements)
-			if (GetIndexOf(req, entry.tech) >= 0)
-				UpdateIndexedItem(i);
+	var n = GetLength(base_material);
+	for (var i = 0; i<n; ++i)
+	{
+		var req = base_material[i].requirements;
+		if (req && GetIndexOf(req, entry.tech) >= 0)
+			UpdateIndexedItem(i);
+	}
 	return true;
 }
 

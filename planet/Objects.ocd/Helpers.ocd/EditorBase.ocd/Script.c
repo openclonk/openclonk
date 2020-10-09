@@ -12,29 +12,29 @@ local CountedID, IDList, AnyDef, IDSet, PlayerNumber, TeamID, PlayerMask;
 local ItemPlusParameter, ItemPlusParameterOptionMap;
 local ItemPlusParameterList;
 
-local DefinitionPriority=100; // Call this definition early to allow EditorProp initialization
+local DefinitionPriority = 100; // Call this definition early to allow EditorProp initialization
 func Definition(def)
 {
 	// Basic properties of all objects
 	def.EditorProps = {
 		Invincibility = { Name = "$Invincibility$", EditorHelp = "$InVincibilityHelp$", Type = "has_effect", Effect = "IntInvincible", Set = "SetInvincibility" },
-		Visibility = { Type = "enum", Name = "$Visibility$", EditorHelp = "$VisibilityHelp$", Options = [ { Name="$Unknown$", Value=-1 }, { Name="$DefaultVisible$" }, { Name="$Visible$", Value=VIS_All }, { Name="$Invisible$", Value=VIS_None }, { Name="$EditorVisible$", Value=VIS_Editor } ] },
+		Visibility = { Type = "enum", Name = "$Visibility$", EditorHelp = "$VisibilityHelp$", Options = [ { Name="$Unknown$", Value=-1 }, { Name="$DefaultVisible$" }, { Name="$Visible$", Value = VIS_All }, { Name="$Invisible$", Value = VIS_None }, { Name="$EditorVisible$", Value = VIS_Editor } ] },
 		PlayerColor = { Name="$PlayerColor$", EditorHelp="$PlayerColorHelp$", Type = "color", AsyncGet = "GetColor", Set = "SetColor" },
 		ClrModulation = { Name="$ClrModulation$", EditorHelp="$ClrModulationHelp$", Type = "color", AsyncGet = "GetClrModulation", Set = "SetClrModulation" },
 		BlitMode = { Name="$BlitMode$", EditorHelp="$BlitModeHelp$", Type = "enum", AsyncGet = "GetObjectBlitMode", Set = "SetObjectBlitMode", Options = [
 			{ Name="$Unknown$", Value=-1 },
-			{ Name="$Default$", Value=0 },
-			{ Name="$Additive$", Value=GFX_BLIT_Additive|GFX_BLIT_Custom },
-			{ Name="$Mod2$", EditorHelp="$Mod2Help$", Value=GFX_BLIT_Mod2|GFX_BLIT_Custom },
-			{ Name="$Wireframe$", EditorHelp="$WireframeHelp$", Value=GFX_BLIT_Wireframe|GFX_BLIT_Custom } ] },
+			{ Name="$Default$", Value = 0 },
+			{ Name="$Additive$", Value = GFX_BLIT_Additive | GFX_BLIT_Custom },
+			{ Name="$Mod2$", EditorHelp="$Mod2Help$", Value = GFX_BLIT_Mod2 | GFX_BLIT_Custom },
+			{ Name="$Wireframe$", EditorHelp="$WireframeHelp$", Value = GFX_BLIT_Wireframe | GFX_BLIT_Custom } ] },
 		Name = { Name="$Name$", Type = "string", AsyncGet = "GetName", Set = "SetName" },
 		CustomInitializationScript = { Type = "string", Name = "$CustomInitialization$", EditorHelp = "$CustomInitializationHelp$" }
 	};
-	// Property delegate types
-	CountedID = { Type = "proplist", Display = "{{count}}x{{id}}", DefaultValue = { count=1, id=nil }, Name = "$IDListEntry$", EditorProps = {
+	// Property delegate types; initialize via new EditorBase.<Property> {} to avoid accidental changes to the EditorBase list, as proplists are a reference
+	CountedID = { Type = "proplist", Display = "{{count}}x{{id}}", Name = "$IDListEntry$", EditorProps = {
 		count = { Type = "int", Min = 1 },
 		id = { Type = "def" } } };
-	IDList = { Name = "ID list", Type = "array", Display = 3, Elements = CountedID };
+	IDList = { Name = "ID list", Type = "array", Display = 3, DefaultValue = { count = 1, id = nil }, Elements = CountedID };
 	AnyDef = { Type = "def" };
 	IDSet = { Name = "ID set", Type = "array", Display = 5, Elements = AnyDef };
 	PlayerNumber = { Type="int" };
@@ -42,13 +42,13 @@ func Definition(def)
 	PlayerMask = { Name="$PlayerMask$", Type="enum", OptionKey="Option", Options = [
 		{ Name="$None$" },
 		{ Name="$All$", Value={ Option="all" } },
-		{ Name="$Specific$", Value={ Option="number" }, ValueKey="Data", Delegate=PlayerNumber },
-		{ Name="$Team$", Value={ Option="team" }, ValueKey="Data", Delegate=TeamID },
+		{ Name="$Specific$", Value={ Option="number" }, ValueKey="Data", Delegate = PlayerNumber },
+		{ Name="$Team$", Value={ Option="team" }, ValueKey="Data", Delegate = TeamID },
 		] };
 	// Item plus extra stuff (contents, stack, etc.)
 	ItemPlusParameterOptionMap = {};
-	ItemPlusParameter = { Name="$Item", Type="enum", Sorted=true, Options = [ { Name="$Nothing$", Priority=50 } ] };
-	var itemdef, i = 0, n = 0, option, contents_def, j, n2, contents_defs, mat;
+	ItemPlusParameter = { Name="$Item", Type="enum", Sorted = true, Options = [ { Name="$Nothing$", Priority = 50 } ] };
+	var itemdef, i = 0, n = 0, option, contents_def, j, n2, contents_defs;
 	while ((itemdef = GetDefinition(i++)))
 		if (itemdef.Collectible || itemdef->~GetLiquidType())
 		{
@@ -57,7 +57,7 @@ func Definition(def)
 				group = ReplaceString(group, "Objects/Items/", ""); // Shortcut this group since most items will be here
 			else
 				group = "$Other$";
-			option = { Name=itemdef->GetName(), Group=group, Value=itemdef };
+			option = { Name = itemdef->GetName(), Group = group, Value = itemdef };
 			var def_id = Format("%i", itemdef);
 			ItemPlusParameterOptionMap[def_id] = option;
 			// Test various kinds of extra parameters for new items
@@ -67,15 +67,18 @@ func Definition(def)
 				j = 0; n2 = 0;
 				contents_defs = [{Name="$Nothing$"}];
 				while ((contents_def = GetDefinition(j++)))
-					if ((mat = contents_def->~GetLiquidType()))
+				{
+					var mat = contents_def->~GetLiquidType();
+					if (mat)
 						if (itemdef->IsLiquidContainerForMaterial(mat))
 							contents_defs[++n2] = contents_def;
+				}
 				if (n2)
 				{
-					option.Value = { ItemPlusParameter="liquid", ID=itemdef };
+					option.Value = { ItemPlusParameter="liquid", ID = itemdef };
 					option.OptionKey = "ID";
 					option.ValueKey = "Liquid";
-					option.Delegate = { Name="$Liquid$", Type="enum", Sorted=true, Options=contents_defs }; // Options resolved later uisng ItemPlusParameterOptionMap
+					option.Delegate = { Name="$Liquid$", Type="enum", Sorted = true, Options = contents_defs }; // Options resolved later uisng ItemPlusParameterOptionMap
 				}
 			}
 			else if (itemdef.ExtraSlotFilter)
@@ -89,21 +92,21 @@ func Definition(def)
 							contents_defs[++n2] = contents_def;
 				if (n2)
 				{
-					option.Value = { ItemPlusParameter="contents", ID=itemdef };
+					option.Value = { ItemPlusParameter="contents", ID = itemdef };
 					option.OptionKey = "ID";
 					option.ValueKey = "Contents";
-					option.Delegate = { Name="$Contents$", Type="enum", Sorted=true, Options=contents_defs }; // Options resolved later uisng ItemPlusParameterOptionMap
+					option.Delegate = { Name="$Contents$", Type="enum", Sorted = true, Options = contents_defs }; // Options resolved later uisng ItemPlusParameterOptionMap
 				}
 			}
 			else if (itemdef->~IsStackable())
 			{
 				// Stackable: Offer stack count
-				option.Value = { ItemPlusParameter="stack", ID=itemdef };
+				option.Value = { ItemPlusParameter="stack", ID = itemdef };
 				option.OptionKey = "ID";
 				option.ValueKey = "StackCount";
 				option.Delegate = { Name="$Contents$", Type="enum", Options=[
-					{ Name=Format("$DefaultStack$", itemdef->InitialStackCount()) },
-					{ Name="$CustomStack$", Type=C4V_Int, Value=itemdef->InitialStackCount(), Delegate={ Type="int", Min=1/*, Max=itemdef->MaxStackCount()*/ } }, // there's no reason to restrict the max stack in editor
+					{ Name = Format("$DefaultStack$", itemdef->InitialStackCount()) },
+					{ Name="$CustomStack$", Type = C4V_Int, Value = itemdef->InitialStackCount(), Delegate={ Type="int", Min = 1/*, Max = itemdef->MaxStackCount()*/ } }, // there's no reason to restrict the max stack in editor
 					{ Name="$InfiniteStack$", Value="infinite" }
 					]};
 			}
@@ -118,9 +121,9 @@ func Definition(def)
 			{
 				var option_item = ItemPlusParameterOptionMap[Format("%i", option.Delegate.Options[i])] ?? option.Delegate.Options[i];
 				if (option_item.Prototype == Global)
-					option.Delegate.Options[i] = { Name=option_item->GetName(), Value=option_item }; // Regular definition
+					option.Delegate.Options[i] = { Name = option_item->GetName(), Value = option_item }; // Regular definition
 				else
-					option.Delegate.Options[i] = new option_item { Group=nil }; // Definition with extra parameter
+					option.Delegate.Options[i] = new option_item { Group = nil }; // Definition with extra parameter
 			}
 	ItemPlusParameterList = { Name = "$ItemPlusParameterList$", Type = "array", Display = 3, Elements = ItemPlusParameter };
 	return true;
@@ -142,7 +145,7 @@ public func EvaluatePlayerMask(proplist mask, int player)
 public func EvaluatePlayers(proplist mask)
 {
 	if (!mask) return [];
-	var result = [], n=0;
+	var result = [], n = 0;
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
@@ -156,8 +159,8 @@ public func GetConditionalIDList(string condition, string name, proplist default
 {
 	var counted_id = { Type = "proplist", Display = "{{count}}x{{id}}", Name = Format("$Entry$", name), EditorProps = {
 		count = { Type = "int", Min = 1 },
-		id = { Type = "def", Filter=condition } } };
-	return { Name = name, Type = "array", Display = 3, DefaultValue = { count=1, id=default_id }, Elements = counted_id, EditorHelp = help };
+		id = { Type = "def", Filter = condition } } };
+	return { Name = name, Type = "array", Display = 3, DefaultValue = { count = 1, id = default_id }, Elements = counted_id, EditorHelp = help };
 }
 
 // Create item specieid in ItemsPlusParameters delegate

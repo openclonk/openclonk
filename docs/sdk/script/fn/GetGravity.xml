@@ -6,7 +6,7 @@
   <func>
     <title>GetGravity</title>
     <category>Global</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the current gravity in 1/100 pixel/tick².</desc>
     <examples>

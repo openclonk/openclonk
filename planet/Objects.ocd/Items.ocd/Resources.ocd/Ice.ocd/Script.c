@@ -16,28 +16,34 @@ protected func Construction()
 protected func Check()
 {
 	if (GetTemperature() <= 0 && GetMaterial() == Material("Water") && GetCon() < 100)
-		Freeze();
-	// Don't do anything af
+		Freeze(1);
 	if (GetTemperature() > 0)
-		Melt();
+		Melt(1);
 }
 
-private func Melt()
+private func Melt(int strength)
 {
-	CastPXS("Water", 2, 0);
-	DoCon(-1);
+	CastPXS("Water", 2 * strength, 0);
+	DoCon(-strength);
 }
 
-private func Freeze()
+private func Freeze(int strength)
 {
-	ExtractMaterialAmount(0, 0, Material("Water"), 2);
-	DoCon(1);
+	ExtractMaterialAmount(0, 0, Material("Water"), 2 * strength);
+	DoCon(strength);
+}
+
+public func OnInIncendiaryMaterial()
+{
+	// Melt a bit faster in incendiary materials.
+	return Melt(8);
 }
 
 func CanConvertToLiquidType() { return "Water"; }
 func GetLiquidAmount() { return GetCon()*2; }
 
-local Collectible = 1;
+local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
+local MaterialIncinerate = true;
 local Plane = 450;

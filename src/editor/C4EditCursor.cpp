@@ -880,7 +880,13 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	if (Mode == C4CNS_ModeCreateObject && has_mouse_hover && creator_def)
 	{
 		C4TargetFacet cgo_creator;
-		cgo_creator.Set(cgo.Surface, X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY,
+		// Add the shape's offset and the shape's width / 2 (or height, resp.).
+		// This does nothing for most objects, where these two sum up to 0.
+		// However, for some objects, this fixes the preview, so it actually lines up with
+		// the position where it is placed.
+		cgo_creator.Set(cgo.Surface,
+			X + cgo.X - cgo.TargetX + creator_def->Shape.x + creator_def->Shape.Wdt / 2,
+			Y + cgo.Y - cgo.TargetY + creator_def->Shape.y + creator_def->Shape.Hgt / 2,
 			creator_def->Shape.Wdt, creator_def->Shape.Hgt, 0, 0, cgo.Zoom, 0, 0);
 		if (!creator_overlay)
 		{
@@ -1120,8 +1126,8 @@ void C4EditCursor::AppendMenuItem(int num, const StdStrBuf & label)
 
 bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 {
-	bool fObjectSelected = !!selection.GetObject();
 #ifdef USE_WIN32_WINDOWS
+	bool fObjectSelected = !!selection.GetObject();
 	POINT point; GetCursorPos(&point);
 	HMENU hContext = GetSubMenu(hMenu,0);
 	SetMenuItemEnable(hContext, IDM_VIEWPORT_DELETE, fObjectSelected && Console.Editing);

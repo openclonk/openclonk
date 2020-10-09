@@ -68,12 +68,6 @@
         <col>Behaviour according to <emlink href="definition/actmap.html">activity</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
-      <row id="BRIDGE">
-        <col>DFA_BRIDGE</col>
-        <col>Bridge building</col>
-        <col>According to <emlink href="script/fn/SetComDir.html">ComDir</emlink>. Bridge material is a material number in <emlink href="script/fn/SetActionData.html">Data</emlink>.</col>
-        <col>CNAT_Bottom</col>
-      </row>
       <row id="PUSH">
         <col>DFA_PUSH</col>
         <col>Pushing</col>
@@ -114,4 +108,5 @@
   </text>
   <text>Procedures are hardcoded in the engine and are from older times in which is was not yet possible to implement the same functionality in script. Most procedures represent highly complex behaviour which is useful only for clonks.</text>
   <author>Sven2</author><date>2002-04</date>
+  <author>Marky</author><date>2019-04</date>
 </doc>

@@ -22,6 +22,7 @@
 #include "C4Version.h"
 #include "c4group/C4Update.h"
 #include "platform/StdRegistry.h"
+#include "C4Licenses.h"
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"
 #endif
@@ -34,7 +35,7 @@ extern bool fQuiet;
 bool fRecursive = false;
 bool fRegisterShell = false;
 bool fUnregisterShell = false;
-char strExecuteAtEnd[_MAX_PATH + 1] = "";
+char strExecuteAtEnd[_MAX_PATH_LEN] = "";
 
 int iResult = 0;
 
@@ -43,7 +44,7 @@ bool EraseItemSafe(const char *szFilename)
 	return false;
 }
 
-void DisplayGroup(const C4Group &grp, const char *filter = nullptr)
+void DisplayGroup(C4Group &grp, const char *filter = nullptr)
 {
 	const C4GroupHeader &head = grp.GetHeader();
 	
@@ -52,9 +53,12 @@ void DisplayGroup(const C4Group &grp, const char *filter = nullptr)
 	uint32_t crc = 0;
 	bool crc_valid = GetFileCRC(grp.GetFullName().getData(), &crc);
 	if (crc_valid)
-		printf("CRC: %u (%X)\n", crc, crc);
+		printf("File CRC: %u (%X) ", crc, crc);
 	else
-		printf("CRC: <error accessing file>\n");
+		printf("File CRC: <error accessing file> ");
+
+	uint32_t contents_crc = grp.EntryCRC32();
+	printf("Contents CRC: %u (%X)\n", contents_crc, contents_crc);
 
 	// Find maximum file name length (matching filter)
 	size_t max_fn_len = 0;
@@ -93,7 +97,7 @@ void PrintGroupInternals(C4Group &grp, int indent_level = 0)
 	const C4GroupHeader &head = grp.GetHeader();
 	int indent = indent_level * 4;
 
-	printf("%*sHead.id: '%s'\n", indent, "", head.id);
+	printf("%*sHead.id: '%s'\n", indent, "", head.Id);
 	printf("%*sHead.Ver1: %d\n", indent, "", head.Ver1);
 	printf("%*sHead.Ver2: %d\n", indent, "", head.Ver2);
 	printf("%*sHead.Entries: %d\n", indent, "", head.Entries);
@@ -466,6 +470,16 @@ int main(int argc, char *argv[])
 				break;
 				// Execute at end
 			case 'x': SCopy(argv[i] + 3, strExecuteAtEnd, _MAX_PATH); break;
+				// Show licenses
+			case 'L':
+			{
+				fQuiet = false;
+				std::string sep{"\n=================================\n"};
+				for (const auto& license : OCLicenses)
+					if (license.path.substr(0, 7) != "planet/")
+						Log((sep + license.path + ": " + license.name + sep + license.content + "\n").c_str());
+				return 0;
+			}
 				// Unknown
 			default:
 				fprintf(stderr, "Unknown option %s\n", argv[i]);
@@ -541,6 +555,7 @@ int main(int argc, char *argv[])
 		printf("Options:  -v Verbose -r Recursive\n");
 		printf("          -i Register shell -u Unregister shell\n");
 		printf("          -x:<command> Execute shell command when done\n");
+		printf("          -L Show licenses and exit\n");
 		printf("\n");
 		printf("Examples: c4group pack.ocg -x\n");
 		printf("          c4group update.ocu -g ver1.ocf ver2.ocf New_Version\n");

@@ -43,7 +43,7 @@ func FxIntEarthquakeControlSaveScen(obj, fx, props)
 	return true;
 }
 
-// Launches an earthquake with epicenter (x,y) in global coordinates.
+// Launches an earthquake with epicenter (x, y) in global coordinates.
 global func LaunchEarthquake(int x, int y, int strength)
 {
 	// Earthquake should start in solid.
@@ -138,7 +138,7 @@ local Name = "$Name$";
 
 public func Definition(def, ...)
 {
-	UserAction->AddEvaluator("Action", "Disasters", "$LaunchEarthquake$", "$LaunchEarthquakeHelp$", "launch_earthquake", [def, def.EvalAct_LaunchEarthquake], { Strength={Function="int_constant", Value=50} }, { Type="proplist", Display="{{Position}}, {{Strength}}", EditorProps = {
+	UserAction->AddEvaluator("Action", "Disasters", "$LaunchEarthquake$", "$LaunchEarthquakeHelp$", "launch_earthquake", [def, def.EvalAct_LaunchEarthquake], { Strength={Function="int_constant", Value = 50} }, { Type="proplist", Display="{{Position}}, {{Strength}}", EditorProps = {
 		Position = new UserAction.Evaluator.Position { EditorHelp="$PositionHelp$" },
 		Strength = new UserAction.Evaluator.Integer { Name="$Strength$", EditorHelp="$StrengthHelp$" },
 		} } );

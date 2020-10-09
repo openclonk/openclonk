@@ -6,7 +6,7 @@
   <const>
     <title>NO_OWNER</title>
     <category>Player</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Player number: no player. This constant can be used to indicate 'no ownership' in cases such as <funclink>CreateObject</funclink>.</desc>
     <examples>

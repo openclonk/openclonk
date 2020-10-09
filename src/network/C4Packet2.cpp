@@ -84,6 +84,7 @@ const C4PktHandlingData PktHandlingData[] =
 
 	// C4Network2ClientList (main thread)
 	{ PID_Addr,         PC_Network, "Client Address",             false,  false,  PH_C4Network2ClientList,  PKT_UNPACK(C4PacketAddr)        },
+	{ PID_TCPSimOpen,   PC_Network, "TCP simultaneous open req",  false,  false,  PH_C4Network2ClientList,  PKT_UNPACK(C4PacketTCPSimOpen)  },
 
 
 	// C4Network2ResList (network thread)
@@ -167,14 +168,15 @@ void C4PacketBase::unpack(const C4NetIOPacket &Pkt, char *pStatus)
 
 C4PktBuf::C4PktBuf() = default;
 
-C4PktBuf::C4PktBuf(const C4PktBuf &rCopy) : C4PacketBase(rCopy)
-{
-	Data.Copy(rCopy.Data);
-}
-
-C4PktBuf::C4PktBuf(const StdBuf &rCpyData)
+C4PktBuf& C4PktBuf::operator=(const StdBuf &rCpyData)
 {
 	Data.Copy(rCpyData);
+	return *this;
+}
+C4PktBuf& C4PktBuf::operator=(const C4PktBuf &rCopy)
+{
+	Data.Copy(rCopy.Data);
+	return *this;
 }
 
 void C4PktBuf::CompileFunc(StdCompiler *pComp)
@@ -220,7 +222,8 @@ void C4IDPacket::Default()
 
 void C4IDPacket::Clear()
 {
-	if (fOwnPkt) delete pPkt; pPkt = nullptr;
+	if (fOwnPkt) delete pPkt;
+	pPkt = nullptr;
 	eID = PID_None;
 }
 
@@ -234,7 +237,8 @@ void C4IDPacket::CompileFunc(StdCompiler *pComp)
 		if (!pComp->Name(getPktName()))
 			{ pComp->excCorrupt("C4IDPacket: Data value needed! Packet data missing!"); return; }
 		// Delete old packet
-		if (fOwnPkt) delete pPkt; pPkt = nullptr;
+		if (fOwnPkt) delete pPkt;
+		pPkt = nullptr;
 		if (eID == PID_None) return;
 		// Search unpacking function
 		for (const C4PktHandlingData *pPData = PktHandlingData; pPData->ID != PID_None; pPData++)

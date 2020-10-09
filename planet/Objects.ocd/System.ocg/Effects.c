@@ -40,7 +40,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	var star_size = PV_KeyFrames(0, 0, 0, 500, level * 2, 1000, 0);
 	var shockwave_size = PV_Linear(0, level * 4);
 	
-	CreateParticle("SmokeDirty", PV_Random(x - 10,x + 10), PV_Random(y - 10, y + 10), 0, PV_Random(-2, 0), PV_Random(50, 100), {Prototype = ExplosionParticles_Smoke, Size = smoke_size}, Max(2, wilderness_level / 10));
+	CreateParticle("SmokeDirty", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), 0, PV_Random(-2, 0), PV_Random(50, 100), {Prototype = ExplosionParticles_Smoke, Size = smoke_size}, Max(2, wilderness_level / 10));
 	CreateParticle("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = ExplosionParticles_BlastSmoothBackground, Size = blast_smooth_size}, smoothness_level / 5);
 	CreateParticle("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = ExplosionParticles_BlastSmooth, Size = blast_smooth_size}, smoothness_level / 5);
 	CreateParticle("Dust", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), 0, 0, PV_Random(18, 25), {Prototype = ExplosionParticles_Blast, Size = blast_size}, smoothness_level / 5);
@@ -48,7 +48,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	CreateParticle("Shockwave", x, y, 0, 0, 15, {Prototype = ExplosionParticles_Shockwave, Size = shockwave_size}, nil);
 	
 	// cast either some sparks on land or bubbles under water
-	if(GBackLiquid(x, y) && Global.CastBubbles)
+	if (GBackLiquid(x, y) && Global.CastBubbles)
 	{
 		Global->CastBubbles(level * 7 / 10, level, x, y);
 	}

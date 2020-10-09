@@ -13,10 +13,10 @@ local MaxContentsCount = 12;
 
 public func GetCarryTransform(clonk)
 {
-	if(GetCarrySpecial(clonk))
+	if (GetCarrySpecial(clonk))
 		return Trans_Translate(1000, -6500, 0);
 		
-	return Trans_Mul(Trans_Translate(1500, 0, -1500),Trans_Rotate(180,1,0,0));
+	return Trans_Mul(Trans_Translate(1500, 0, -1500),Trans_Rotate(180, 1, 0, 0));
 }
 public func GetCarryPhase() { return 900; }
 

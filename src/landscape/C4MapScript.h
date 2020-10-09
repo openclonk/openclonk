@@ -27,6 +27,8 @@
 #include "script/C4Aul.h"
 #include "script/C4ScriptHost.h"
 
+bool FnParTexCol(C4String *mattex, uint8_t& fg, uint8_t& bg);
+
 // mattex masks: Array of bools for each possible material-texture index
 class C4MapScriptMatTexMask
 {
@@ -70,9 +72,10 @@ enum C4MapScriptAlgoType
 	MAPALGO_RndChecker = 10,
 
 	MAPALGO_Rect       = 20,
-	MAPALGO_Ellipsis   = 21,
+	MAPALGO_Ellipsis   = 21, // This is "MAPALGO_Ellipse", but misspelled. Use will result in a warning.
 	MAPALGO_Polygon    = 22,
 	MAPALGO_Lines      = 23,
+	MAPALGO_Ellipse    = 24,
 
 	MAPALGO_And        = 30,
 	MAPALGO_Or         = 31,
@@ -120,13 +123,13 @@ public:
 	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 
-// MAPALGO_Ellipsis: 1 for pixels within ellipsis, 0 otherwise
-class C4MapScriptAlgoEllipsis : public C4MapScriptAlgo
+// MAPALGO_Ellipse: 1 for pixels within ellipse, 0 otherwise
+class C4MapScriptAlgoEllipse : public C4MapScriptAlgo
 {
 	int32_t cx,cy;
 	int32_t wdt,hgt;
 public:
-	C4MapScriptAlgoEllipsis(const C4PropList *props);
+	C4MapScriptAlgoEllipse(const C4PropList *props);
 
 	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
@@ -262,6 +265,15 @@ class C4MapScriptAlgoFilter : public C4MapScriptAlgoModifier
 public:
 	C4MapScriptAlgoFilter(const C4PropList *props);
 
+	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
+};
+
+class C4MapScriptAlgoSetMaterial : public C4MapScriptAlgo {
+	C4MapScriptAlgo *inner;
+	uint8_t fg, bg;
+public:
+	C4MapScriptAlgoSetMaterial(C4MapScriptAlgo *inner, int fg, int bg);
+	~C4MapScriptAlgoSetMaterial() override;
 	bool operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const override;
 };
 

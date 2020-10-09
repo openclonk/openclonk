@@ -65,5 +65,5 @@ private func SpawnerBoil()
 public func Definition(def, ...)
 {
 	_inherited(def, ...);
-	def.EditorProps.area.Options[1].Delegate.Color=0x30ff30;
+	def.EditorProps.area.Options[1].Delegate.Color = 0x30ff30;
 }

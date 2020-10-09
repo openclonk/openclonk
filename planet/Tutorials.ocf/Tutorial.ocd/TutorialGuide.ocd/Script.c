@@ -60,7 +60,7 @@ public func ShowGuideMessage(int show_index)
 // Hides the guide and its menu to the player.
 public func HideGuide()
 {
-	if (this.Visibility = VIS_Owner)
+	if (this.Visibility == VIS_Owner)
 	{
 		// Change visibility and do script callback.
 		this.Visibility = VIS_None;
@@ -72,7 +72,7 @@ public func HideGuide()
 // Shows the guide and its menu to the player, if it was hidden before.
 public func ShowGuide()
 {
-	if (this.Visibility = VIS_None)
+	if (this.Visibility == VIS_None)
 	{
 		// Change visibility and do script callback.
 		this.Visibility = VIS_Owner;

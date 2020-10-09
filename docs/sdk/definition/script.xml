@@ -60,18 +60,18 @@
         </row>
         <row id="Hit">
           <literal_col>Hit</literal_col>
-          <col></col>
-          <col>When the object collides with the landscape or is collected at high velocity (&gt;=15).</col>
+          <col>int x_dir, int y_dir</col>
+          <col>When the object collides with the landscape or is collected at high velocity (&gt;=15). The velocity parameters are provided with precision 100, instead of the default 10.</col>
         </row>
         <row id="Hit2">
           <literal_col>Hit2</literal_col>
-          <col></col>
-          <col>Like Hit, with speeds &gt;= 20 (see <emlink href="script/fn/OCF_HitSpeed2.html">OCF_HitSpeed2</emlink>).</col>
+          <col>int x_dir, int y_dir</col>
+          <col>Like Hit, with speeds &gt;= 20 (see <emlink href="script/fn/OCF_HitSpeed2.html">OCF_HitSpeed2</emlink>). The velocity parameters are provided with precision 100, instead of the default 10.</col>
         </row>
         <row id="Hit3">
           <literal_col>Hit3</literal_col>
-          <col></col>
-          <col>Like Hit, with speeds &gt;= 60 (see <emlink href="script/fn/OCF_HitSpeed3.html">OCF_HitSpeed3</emlink>).</col>
+          <col>int x_dir, int y_dir</col>
+          <col>Like Hit, with speeds &gt;= 60 (see <emlink href="script/fn/OCF_HitSpeed3.html">OCF_HitSpeed3</emlink>). The velocity parameters are provided with precision 100, instead of the default 10.</col>
         </row>
         <row id="Grab">
           <literal_col>Grab</literal_col>
@@ -568,4 +568,5 @@ local EditorProps = {
   <author>matthes</author><date>2004-07</date>
   <author>Clonkonaut</author><date>2008-04</date>
   <author>Sven2</author><date>2013-12</date>
+  <author>Marky</author><date>2019-07</date>
 </doc>

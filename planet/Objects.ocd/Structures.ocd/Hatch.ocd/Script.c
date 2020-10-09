@@ -12,7 +12,6 @@ local opened = false;
 
 func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(0,-10000), Trans_Rotate(-10,0,1,0), Trans_Rotate(-8,1,0,0)));
 	SetCategory(C4D_StaticBack);
 
 	return _inherited(...);
@@ -23,7 +22,7 @@ func Initialize()
 	// If the hatch has not been properly combined with a basement, we might want to correct that
 	if (!GetBasement())
 	{
-		var basements = FindObjects(Find_AtRect(-1,0, 2,4), Find_Func("IsBasement"), Sort_Distance());
+		var basements = FindObjects(Find_AtRect(-1, 0, 2, 4), Find_Func("IsBasement"), Sort_Distance());
 		for (var basement in basements)
 		{
 			if (!basement->GetParent() && basement->GetWidth() == 40)
@@ -183,7 +182,7 @@ func ChangeSolidMask()
 		return;
 	if (GetAction() == "Close") // Upon closing, the solid mask must reappear instantaneously
 	                            // to prevent clonks from getting stuck
-		return SetSolidMask(0,0, 26,4, 0,11);
+		return SetSolidMask(0, 0, 26, 4, 0, 11);
 
 	var phase = GetPhase();
 	var width = 26 - 8*phase;
@@ -193,7 +192,7 @@ func ChangeSolidMask()
 		width -= 2;
 	}
 
-	SetSolidMask(0,0, width,4, 0,11);
+	SetSolidMask(0, 0, width, 4, 0, 11);
 }
 
 func ClosingTimer()
@@ -227,7 +226,8 @@ func CloseForReal()
 
 func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,-3000,-5000), Trans_Rotate(-30,1,0,0), Trans_Rotate(30,0,1,0), Trans_Translate(1000,1,0)), def);
+	def.MeshTransformation = Trans_Mul(Trans_Translate(0,-10000), Trans_Rotate(-10, 0, 1, 0), Trans_Rotate(-8, 1, 0, 0));
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,-3000,-5000), Trans_Rotate(-30, 1, 0, 0), Trans_Rotate(30, 0, 1, 0), Trans_Translate(1000, 1, 0)), def);
 	return _inherited(def);
 }
 

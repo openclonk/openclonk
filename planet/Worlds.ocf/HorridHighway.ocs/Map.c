@@ -168,7 +168,7 @@ public func DrawMiddleIsland(proplist map, int highway_height)
 	var width = 22;
 	var height = 72;
 	
-	var island = {Algo = MAPALGO_Ellipsis, X = map.Wdt / 2, Y = map.Hgt / 2, Wdt = width / 2, Hgt = height / 2};
+	var island = {Algo = MAPALGO_Ellipse, X = map.Wdt / 2, Y = map.Hgt / 2, Wdt = width / 2, Hgt = height / 2};
 	island = {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 8, Iterations = 2, Seed = Random(65536), Op = island};
 	Draw("Everrock", island);
 	
@@ -200,8 +200,8 @@ public func DrawSmallIslands(proplist map)
 	var x1 = 4 * map.Wdt / 11 + RandomX(-3, 3);
 	var x2 = 7 * map.Wdt / 11 + RandomX(-3, 3);
 	var y = 10 * map.Hgt / 11;
-	var island1 = {Algo = MAPALGO_Ellipsis, X = x1, Y = y, Wdt = width / 2, Hgt = height};
-	var island2 = {Algo = MAPALGO_Ellipsis, X = x2, Y = y, Wdt = width / 2, Hgt = height};
+	var island1 = {Algo = MAPALGO_Ellipse, X = x1, Y = y, Wdt = width / 2, Hgt = height};
+	var island2 = {Algo = MAPALGO_Ellipse, X = x2, Y = y, Wdt = width / 2, Hgt = height};
 	island1 = {Algo = MAPALGO_And, Op = [island1, {Algo = MAPALGO_Rect, X = 0, Y = 0, Wdt = map.Wdt, Hgt = y}]};
 	island2 = {Algo = MAPALGO_And, Op = [island2, {Algo = MAPALGO_Rect, X = 0, Y = 0, Wdt = map.Wdt, Hgt = y}]};
 	island1 = {Algo = MAPALGO_Or, Op = [island1, {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 10, Iterations = 3, Seed = Random(65536), Op = island1}]};

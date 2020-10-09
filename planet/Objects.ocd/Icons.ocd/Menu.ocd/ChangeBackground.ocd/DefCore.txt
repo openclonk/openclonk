@@ -1,0 +1,8 @@
+[DefCore]
+id=Icon_ChangeBackground
+Version=8,0
+Category=C4D_StaticBack
+Width=128
+Height=128
+Offset=-64,-64
+HideInCreator=true

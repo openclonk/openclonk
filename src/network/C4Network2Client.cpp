@@ -22,6 +22,9 @@
 #include "network/C4Network2Stats.h"
 #include "player/C4PlayerList.h"
 
+#include <thread>
+#include <chrono>
+
 // *** C4Network2Client
 
 C4Network2Client::C4Network2Client(C4Client *pClient)
@@ -135,6 +138,17 @@ bool C4Network2Client::DoConnectAttempt(C4Network2IO *pIO)
 	// save attempt
 	AddrAttempts[iBestAddress]++; iNextConnAttempt = time(nullptr) + C4NetClientConnectInterval;
 	auto addr = Addr[iBestAddress].getAddr();
+
+	// try TCP simultaneous open if the stars align right
+	if (addr.GetFamily() == C4NetIO::addr_t::IPv6 && // address needs to be IPv6...
+	    !addr.IsLocal() && !addr.IsPrivate() &&      // ...global unicast...
+	    Addr[iBestAddress].getProtocol() == P_TCP && // ...TCP,
+	    !TcpSimOpenSocket &&                         // there is no previous request,
+	    pParent->GetLocal()->getID() < getID())      // and make sure that only one client per pair initiates a request.
+	{
+		DoTCPSimultaneousOpen(pIO, C4Network2Address());
+	}
+
 	std::set<int> interfaceIDs;
 	if (addr.IsLocal())
 	    interfaceIDs = Network.Clients.GetLocal()->getInterfaceIDs();
@@ -152,6 +166,45 @@ bool C4Network2Client::DoConnectAttempt(C4Network2IO *pIO)
 	return false;
 }
 
+bool C4Network2Client::DoTCPSimultaneousOpen(class C4Network2IO *pIO, const C4Network2Address &addr)
+{
+	if (!pIO->getNetIO(P_TCP)) return false;
+
+	// Did we already bind a socket?
+	if (TcpSimOpenSocket)
+	{
+		LogSilentF("Network: connecting client %s on %s with TCP simultaneous open...", getName(), addr.getAddr().ToString().getData());
+		return pIO->ConnectWithSocket(addr.getAddr(), addr.getProtocol(), pClient->getCore(), std::move(TcpSimOpenSocket));
+	}
+	else
+	{
+		// No - bind one, inform peer, and schedule a connection attempt.
+		auto NetIOTCP = dynamic_cast<C4NetIOTCP*>(pIO->getNetIO(P_TCP));
+		auto bindAddr = pParent->GetLocal()->IPv6AddrFromPuncher;
+		// We need to know an address that works.
+		if (bindAddr.IsNull()) return false;
+		bindAddr.SetPort(0);
+		TcpSimOpenSocket = NetIOTCP->Bind(bindAddr);
+		auto boundAddr = TcpSimOpenSocket->GetAddress();
+		LogSilentF("Network: %s TCP simultaneous open request for client %s from %s...", addr.isIPNull() ? "initiating" : "responding to",
+				getName(), boundAddr.ToString().getData());
+		// Send address we bound to to the client.
+		if (!SendMsg(MkC4NetIOPacket(PID_TCPSimOpen, C4PacketTCPSimOpen(pParent->GetLocal()->getID(), C4Network2Address(boundAddr, P_TCP)))))
+			return false;
+		if (!addr.isIPNull())
+		{
+			// We need to delay the connection attempt a bit. Unfortunately,
+			// waiting for the next tick would usually take way too much time.
+			// Instead, we block the main thread for a very short time and hope
+			// that noone notices...
+			int ping = getMsgConn()->getLag();
+			std::this_thread::sleep_for(std::chrono::milliseconds(std::min(ping / 2, 10)));
+			DoTCPSimultaneousOpen(pIO, addr);
+		}
+		return true;
+	}
+}
+
 bool C4Network2Client::hasAddr(const C4Network2Address &addr) const
 {
 	// Note that the host only knows its own address as 0.0.0.0, so if the real address is being added, that can't be sorted out.
@@ -164,6 +217,22 @@ bool C4Network2Client::hasAddr(const C4Network2Address &addr) const
 void C4Network2Client::ClearAddr()
 {
 	iAddrCnt = 0;
+}
+
+void C4Network2Client::AddAddrFromPuncher(const C4NetIO::addr_t &addr)
+{
+	AddAddr(C4Network2Address(addr, P_UDP), true);
+	// If the outside port matches the inside port, there is no port translation and the
+	// TCP address will probably work as well.
+	if (addr.GetPort() == Config.Network.PortUDP && Config.Network.PortTCP > 0)
+	{
+		auto tcpAddr = addr;
+		tcpAddr.SetPort(Config.Network.PortTCP);
+		AddAddr(C4Network2Address(tcpAddr, P_TCP), true);
+	}
+	// Save IPv6 address for TCP simultaneous connect.
+	if (addr.GetFamily() == C4NetIO::addr_t::IPv6)
+		IPv6AddrFromPuncher = addr;
 }
 
 bool C4Network2Client::AddAddr(const C4Network2Address &addr, bool fAnnounce)
@@ -505,6 +574,18 @@ void C4Network2ClientList::HandlePacket(char cStatus, const C4PacketBase *pBaseP
 	}
 	break;
 
+	case PID_TCPSimOpen:
+	{
+		GETPKT(C4PacketTCPSimOpen, rPkt)
+		pClient = GetClientByID(rPkt.getClientID());
+		if (pClient)
+		{
+			C4Network2Address addr = rPkt.getAddr();
+			pClient->DoTCPSimultaneousOpen(pIO, addr);
+		}
+	}
+	break;
+
 	}
 
 #undef GETPKT
@@ -522,9 +603,11 @@ void C4Network2ClientList::DoConnectAttempts()
 	// check interval
 	time_t t; time(&t);
 	for (C4Network2Client *pClient = pFirst; pClient; pClient = pClient->getNext())
+	{
 		if (!pClient->isLocal() && !pClient->isRemoved() && pClient->getNextConnAttempt() && pClient->getNextConnAttempt() <= t)
 			// attempt connect
 			pClient->DoConnectAttempt(pIO);
+	}
 }
 
 void C4Network2ClientList::ResetReady()
@@ -555,6 +638,14 @@ void C4Network2ClientList::UpdateClientActivity()
 void C4PacketAddr::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iClientID), "ClientID", C4ClientIDUnknown));
+	pComp->Value(mkNamingAdapt(addr, "Addr"));
+}
+
+// *** C4PacketTCPSimOpen
+
+void C4PacketTCPSimOpen::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(ClientID), "ClientID", C4ClientIDUnknown));
 	pComp->Value(mkNamingAdapt(addr, "Addr"));
 }
 

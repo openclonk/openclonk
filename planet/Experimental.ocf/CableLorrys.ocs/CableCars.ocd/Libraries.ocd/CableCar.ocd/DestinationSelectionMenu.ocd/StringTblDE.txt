@@ -1,2 +1,5 @@
 Name=Zielwahlmenü
 Description=
+SelectDestination=Bestimme das Ziel:
+SendTo=Schicke das Fahrzeug in richtung %s ab
+InfoETA=ETA zum Ziel: %ds.

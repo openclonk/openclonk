@@ -1,6 +1,6 @@
 [Head]
 Icon=26
-Version=8
+Version=9
 Difficulty=10
 MaxPlayer=8
 NoInitialize=true

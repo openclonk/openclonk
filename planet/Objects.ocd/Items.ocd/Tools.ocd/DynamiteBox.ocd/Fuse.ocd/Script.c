@@ -44,11 +44,12 @@ public func GetConnectedItem(object source)
 
 public func StartFusing(object controller)
 {
-	var effect;
-	if (effect = GetEffect("IntFusing", this)) 
+	var fx = GetEffect("IntFusing", this);
+	if (fx) 
 	{
 		// Double fuse start scheduled? Ignore.
-		if (effect.fuse_source == controller) return false;
+		if (fx.fuse_source == controller)
+			return false;
 		// Fuse from both sides not supported
 		return RemoveObject();
 	}
@@ -71,13 +72,13 @@ public func StartFusing(object controller)
 		fuse_call = GetActionTarget(0);
 		fuse_vertex = GetVertexNum()-1;
 	}
-	effect = AddEffect("IntFusing", this, 100, 1, this);
-	effect.fuse_dir = fuse_dir;
-	effect.fuse_source = controller;
-	effect.fuse_call = fuse_call;
-	effect.fuse_vertex = fuse_vertex;
-	effect.fuse_x = GetVertex(fuse_vertex, VTX_X) * 10;
-	effect.fuse_y = GetVertex(fuse_vertex, VTX_Y) * 10;
+	fx = AddEffect("IntFusing", this, 100, 1, this);
+	fx.fuse_dir = fuse_dir;
+	fx.fuse_source = controller;
+	fx.fuse_call = fuse_call;
+	fx.fuse_vertex = fuse_vertex;
+	fx.fuse_x = GetVertex(fuse_vertex, VTX_X) * 10;
+	fx.fuse_y = GetVertex(fuse_vertex, VTX_Y) * 10;
 	return true;
 }
 

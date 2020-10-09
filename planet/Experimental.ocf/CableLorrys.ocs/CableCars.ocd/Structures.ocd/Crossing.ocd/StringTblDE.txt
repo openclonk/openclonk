@@ -3,5 +3,13 @@ Name=Seilbahnkreuzung
 StationSettings=Seilbahneinstellungen
 
 TooltipToggleStation=Bahnhofs-Status umstellen.
+TooltipToggleDropOff=Toggle item dropping status
 
 DescToggleStation=Diese Kreuzung von Hand zu einem Bahnhof oder wieder zu einer Kreuzung umschalten. Nur Bahnhöfe sind als Ziel wählbar und nur am Bahnhöfen können Fahrzeuge aufgesetzt werden.
+DescToggleDropOff=All arriving vehicle are emptied upon arrival at this station (giving it is the final stop). Will also be set as a cable station.
+
+StationUpgrades=Upgrades
+UpgradeChute=Add mining chute.
+DescUpgradeChute=Upgrade the crossing with a mining chute, this makes the crossing a container as well. You need to hold the hammer and one metal {{Metal}} to construct it. 
+YouNeedAHammer=You need a hammer to construct this upgrade.
+YouNeedMetal=You need one metal {{Metal}} for this upgrade.

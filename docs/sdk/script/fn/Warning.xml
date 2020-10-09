@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Warning</title>
+    <category>Developer</category>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>message</name>
+          <desc>Warning message to be displayed, gets the prefix <code>WARNING: </code> from the function.</desc>
+          <optional />
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Additional parameters for text formatting.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Prints out the specified warning message and the call stack, see <funclink>LogCallStack</funclink>, but continues the execution of the function it was called in. This function can e.g. be used to debug scripts.</desc>
+    <related>
+      <funclink>FatalError</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2019-04</date>
+</funcs>

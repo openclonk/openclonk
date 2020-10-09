@@ -1149,6 +1149,7 @@ namespace C4GUI
 		void SetFacet(const C4Facet &rCpy, uint32_t dwClr=0u) { fctIcon = rCpy; }
 		void SetColor(uint32_t dwClr) { fHasClr=true; this->dwClr=dwClr; }
 		void SetHighlight(bool fToVal) { fHighlight=fToVal; }
+		bool GetHighlight() const { return fHighlight; }
 	};
 
 	// button using arrow image
@@ -1284,10 +1285,10 @@ namespace C4GUI
 
 	private:
 		void Deselect(); // clear selection range
-		void ClearText();    // remove all the text
 
 	public:
 		bool InsertText(const char *szText, bool fUser); // insert text at cursor pos (returns whether all text could be inserted)
+		void ClearText();    // remove all the text
 		void DeleteSelection(); // deletes the selected text. Adjust cursor position if necessary
 		bool SetText(const char *szText, bool fUser) { ClearText(); return InsertText(szText, fUser); }
 		void SetPasswordMask(char cNewPasswordMask) { cPasswordMask = cNewPasswordMask; } // mask edit box contents using the given character
@@ -2368,6 +2369,7 @@ namespace C4GUI
 	{
 	protected:
 		ProgressBar *pBar; // progress bar component
+		Label *pLblMessage; // message label
 
 		const char *GetID() override { return "ProgressDialog"; }
 
@@ -2376,6 +2378,7 @@ namespace C4GUI
 
 		void SetProgress(int32_t iToProgress) { pBar->SetProgress(iToProgress); } // change progress
 		bool OnEnter() override { return false; } // don't close on Enter!
+		void SetMessage(const char *szMessage);
 	};
 
 

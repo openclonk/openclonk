@@ -110,7 +110,7 @@ private func InitEnvironment(int map_size, int difficulty)
 	SetSkyParallax(0, 20, 20);
 	SetSkyAdjust(RGBa(225, 255, 205, 191), RGB(63, 200, 0));
 	
-	var map_size_factor = [90,120,140][map_size-1];
+	var map_size_factor = [90, 120, 140][map_size-1];
 
 	// Disasters
 	Meteor->SetChance((difficulty * 11) * map_size_factor / 120);

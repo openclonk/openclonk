@@ -7,7 +7,7 @@
 
 local hold_production;
 
-public func LampPosition(id def) { return [GetCalcDir()*28,4]; }
+public func LampPosition(id def) { return [GetCalcDir()*28, 4]; }
 
 func Construction(object creator)
 {
@@ -51,7 +51,7 @@ public func OnProductionFinish(id product)
 
 protected func FxWorkingTimer()
 {
-	if(!hold_production)
+	if (!hold_production)
 		Smoking();
 }
 
@@ -60,9 +60,9 @@ private func Smoking()
 	var x = 8;
 	var y = -17;
 	if (!Random(2))
-		Smoke(x,y + 4,20);
-	if(!Random(2))
-		CreateParticle("Fire", PV_Random(x-1, x+1), PV_Random(y-2, y+2), 0, PV_Random(-1, 0), PV_Random(18, 36), Particles_Fire(), 2);
+		Smoke(x, y + 4, 20);
+	if (!Random(2))
+		CreateParticle("Fire", PV_Random(x-1, x + 1), PV_Random(y-2, y + 2), 0, PV_Random(-1, 0), PV_Random(18, 36), Particles_Fire(), 2);
 }
 
 func Definition(proplist def)
@@ -80,7 +80,7 @@ local ActMap = {
 		FlipDir = 1,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		NextAction = "Default",
 	},
 };

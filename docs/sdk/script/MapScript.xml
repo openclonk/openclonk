@@ -51,6 +51,8 @@ Blit(layer, [0,0,layer.Wdt/2,layer.Hgt]);</code>
     <text>Algorithms are defined as prop list with the Algo property set to one of the MAPALGO_* constants and additional algorithm parameters set as properties. They can then be passed to one of the drawing functions (Draw or Blit), which will evaluate the algorithm at all positions and draw pixel values accordingly.</text>
     <text>For example, the following code would draw rectangles of earth in a checkerboard pattern:</text>
     <code>Draw("Earth", {Algo=MAPALGO_RndChecker, Wdt=5, Hgt=5});</code>
+    <text>You can also set the material within the algorithm via the Material property. In that case, Blit has to be used for drawing. It is thus possible to use multiple materials within one Blit call.</text>
+    <code>Blit({Material="Earth", Algo=MAPALGO_RndChecker, Wdt=5, Hgt=5});</code>
     <text>In addition to pattern-generating algorithms, there are also modifier algorithms that take other algorithms as parameters. For example, the Turbulence algorithm jumbles all pixels of the underlying algorithm around to create a noisy pattern:</text>
     <code>var checkerboard = {Algo=MAPALGO_RndChecker, Wdt=10, Hgt=10};
 var jumbled_checkerboard = {Algo=MAPALGO_Turbulence, Amplitude=10, Scale=10, Op=checkerboard};
@@ -62,6 +64,17 @@ var copy_layer = Duplicate();
 Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
 </code>
     <text>Note: If you are using the target layer in a drawing command, always draw from a copy. Otherwise, the result is undefined.</text>
+    <text>Algorithms like MAPALGO_Or can be used to combine multiple algorithms. If different materials are set at different pixels of the operands, they will be preserved. The material can also be set later within a such a combination, which overrides the materials of the operands (in case they have been set.)</text>
+    <code>// Draws two gold rectangles
+Blit({Material="Gold", Algo=MAPALGO_Or, Op=[
+	{Algo=MAPALGO_Rect, X=5, Y=0, Wdt=10, Hgt=10},
+	{Algo=MAPALGO_Rect, X=20, Y=0, Wdt=10, Hgt=10}
+]});</code>
+    <code>// Draws a gold and an earth rectangle
+Blit({Algo=MAPALGO_Or, Op=[
+	{Material="Gold", Algo=MAPALGO_Rect, X=5, Y=0, Wdt=10, Hgt=10},
+	{Material="Earth", Algo=MAPALGO_Rect, X=20, Y=0, Wdt=10, Hgt=10}
+]});</code>
     <h>MAPALGO_Layer</h><part>
     <text>Returns the pixel value at the x,y position of the given layer. Instead of passing a MAPALGO_Layer prop list, layers can also be passed directly as algorithms.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
@@ -117,25 +130,26 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Height of rectangle.</col>
           </row>
        </table></text></part>
-    <h>MAPALGO_Ellipsis</h><part>
-    <text>Returns one if the position is in a given ellipsis and zero otherwise.</text>
+    <h>MAPALGO_Ellipse</h><part>
+    <text>Returns one if the position is in a given ellipse and zero otherwise.</text>
+    <text><em>Note: For compatibility reasons, the misspelling &quot;MAPALGO_Ellipsis&quot; is also accepted.</em></text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
             <col>X</col>
             <col>0</col>
-            <col>Horizontal center of ellipsis.</col>
+            <col>Horizontal center of ellipse.</col>
           </row><row>
             <col>Y</col>
             <col>0</col>
-            <col>Vertical center of ellipsis.</col>
+            <col>Vertical center of ellipse.</col>
           </row><row>
             <col>Wdt</col>
             <col>10</col>
-            <col>Horizontal radius of ellipsis.</col>
+            <col>Horizontal radius of ellipse.</col>
           </row><row>
             <col>Hgt</col>
             <col>10</col>
-            <col>Vertical radius of ellipsis</col>
+            <col>Vertical radius of ellipse</col>
           </row>
        </table></text></part>
     <h>MAPALGO_Polygon</h><part>

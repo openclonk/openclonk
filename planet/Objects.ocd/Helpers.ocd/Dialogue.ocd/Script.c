@@ -39,7 +39,7 @@ global func SetDialogue(string name, bool attention)
 	dialogue->InitDialogue(name, this, attention);
 	
 	dialogue->SetObjectLayer(nil);
-	dialogue.Plane = this.Plane+1; // for proper placement of the attention symbol
+	dialogue.Plane = this.Plane + 1; // for proper placement of the attention symbol
 
 	return dialogue;
 }
@@ -323,7 +323,7 @@ private func InDialogue(object clonk)
 
 public func MessageBoxAll(string message, object talker, bool as_message)
 {
-	for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		MessageBox(message, GetCursor(plr), talker, plr, as_message);
@@ -334,7 +334,7 @@ public func MessageBoxAll(string message, object talker, bool as_message)
 public func MessageBoxBroadcast(string message, object clonk, object talker, array options)
 {
 	// message copy to other players
-	for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		if (GetCursor(plr) != clonk)
@@ -351,7 +351,7 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 	// broadcast enabled: message copy to other players
 	if (dlg_broadcast && !as_message)
 	{
-		for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+		for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 		{
 			var other_plr = GetPlayerByIndex(i, C4PT_User);
 			if (GetCursor(other_plr) != clonk)
@@ -391,13 +391,13 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 			var option_text, option_command;
 			if (GetType(option) == C4V_Array)
 			{
-				// Text+Command given
+				// Text + Command given
 				option_text = option[0];
 				option_command = option[1];
 				if (GetChar(option_command) == GetChar("#"))
 				{
 					// Command given as section name: Remove leading # and call section change
-					var ichar=1, ocmd = "", c;
+					var ichar = 1, ocmd = "", c;
 					while (c = GetChar(option_command, ichar++)) ocmd = Format("%s%c", ocmd, c);
 					option_command = Format("CallDialogue(Object(%d), 1, \"%s\")", clonk->ObjectNumber(), ocmd);
 				}
@@ -474,9 +474,9 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 		}
 		else
 		{
-			CustomMessage("", nil, for_player, 0,0, nil, nil, nil, MSG_Right);  // clear prev msg
+			CustomMessage("", nil, for_player, 0, 0, nil, nil, nil, MSG_Right);  // clear prev msg
 		}
-		CustomMessage(message, nil, for_player, xoff,150, nil, GUI_MenuDeco, portrait ?? talker, flags);
+		CustomMessage(message, nil, for_player, xoff, 150, nil, GUI_MenuDeco, portrait ?? talker, flags);
 	}
 
 	return;
@@ -534,7 +534,7 @@ func SaveScenarioObject(props)
 	if (user_dialogue || user_dialogue_progress_mode || user_dialogue_allow_parallel) props->AddCall("UserDialogue", this, "SetUserDialogue", user_dialogue, Format("%v", user_dialogue_progress_mode), user_dialogue_allow_parallel);
 	if (!dlg_interact) props->AddCall("Enabled", this, "SetEnabled", dlg_interact);
 	// Force dependency on all contained objects, so dialogue initialization procedure can access them
-	var i=0, obj;
+	var i = 0, obj;
 	while (obj = dlg_target->Contents(i++)) obj->MakeScenarioSaveName();
 	return true;
 }
@@ -598,7 +598,7 @@ private func EvalAct_Message(proplist props, proplist context)
 	if (props.Options) n_options = GetLength(props.Options);
 	if (n_options)
 	{
-		var options_msg = CreateArray(n_options), i=0;
+		var options_msg = CreateArray(n_options), i = 0;
 		for (var opt in props.Options)
 		{
 			opt._goto = UserAction->EvaluateValue("Integer", opt.Goto, context); // evaluated in UserAction menu callback
@@ -609,7 +609,7 @@ private func EvalAct_Message(proplist props, proplist context)
 	}
 	var text = UserAction->EvaluateString(props.Text, context);
 	// Show message to desired players
-	for(var plr in UserAction->EvaluateValue("PlayerList", props.TargetPlayers, context))
+	for (var plr in UserAction->EvaluateValue("PlayerList", props.TargetPlayers, context))
 	{
 		Dialogue->MessageBox(text, context.triggering_object, speaker, plr, after_message != "next" && !n_options, props._options_msg, context);
 		any_message = true;
@@ -674,28 +674,28 @@ public func Definition(def)
 		Speaker = new UserAction.Evaluator.Object { Name = "$Speaker$" },
 		Text = new UserAction.Evaluator.String { Name="$Text$", EditorHelp="$TextHelp$" },
 		TargetPlayers = new UserAction.Evaluator.PlayerList { Name = "$TargetPlayers$" },
-		AfterMessage = { Type="enum", Options = [{ Name="$ContinueAction$" }, { Name="$WaitForNext$", Value="next" }, { Name="$SuspendAction$", Value="suspend" }, { Name="$StopAction$", Value="stop" }, { Name="$WaitTime$", Value=60, Type=C4V_Int, Delegate={ Type="int", Min=1 } }] },
-		Options = { Name="$Options$", Type="array", Display=3, DefaultValue = { Text = { Function="string_constant", Value="$DefaultOptionText$" }, Goto = { Function="int_constant", Value=0 } }, Elements = { Type="proplist", Display="({{Goto}}) {{Text}}", EditorProps = {
+		AfterMessage = { Type="enum", Options = [{ Name="$ContinueAction$" }, { Name="$WaitForNext$", Value="next" }, { Name="$SuspendAction$", Value="suspend" }, { Name="$StopAction$", Value="stop" }, { Name="$WaitTime$", Value = 60, Type = C4V_Int, Delegate={ Type="int", Min = 1 } }] },
+		Options = { Name="$Options$", Type="array", Display = 3, DefaultValue = { Text = { Function="string_constant", Value="$DefaultOptionText$" }, Goto = { Function="int_constant", Value = 0 } }, Elements = { Type="proplist", Display="({{Goto}}) {{Text}}", EditorProps = {
 			Text = new UserAction.Evaluator.String { Name="$Text$", EditorHelp="$OptionTextHelp$" },
 			Goto = new UserAction.Evaluator.Integer { Name="$Goto$", EditorHelp="$GotoHelp$" }
 			} } }
 		} } );
-	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetAttention$", "$SetAttentionDesc$", "dialogue_set_attention", [def, def.EvalAct_SetAttention], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetAttention$", "$SetAttentionDesc$", "dialogue_set_attention", [def, def.EvalAct_SetAttention], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value = true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
 		Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
 		Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
 		} } );
-	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetEnabled$", "$SetEnabledDesc$", "dialogue_set_enabled", [def, def.EvalAct_SetEnabled], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetEnabled$", "$SetEnabledDesc$", "dialogue_set_enabled", [def, def.EvalAct_SetEnabled], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value = true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
 		Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
 		Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
 		} } );
 	UserAction->AddEvaluator("Object", nil, "$NPC$", "$NPCDesc$", "npc", [def, def.EvalObj_NPC]);
 	// Clonks can create a dialogue
 	if (!Clonk.EditorActions) Clonk.EditorActions = {};
-	Clonk.EditorActions.Dialogue = { Name="$Dialogue$", EditorHelp = "$DialogueHelp$", Command="SetDialogue(\"Editor\", true)", Select=true };
+	Clonk.EditorActions.Dialogue = { Name="$Dialogue$", EditorHelp = "$DialogueHelp$", Command="SetDialogue(\"Editor\", true)", Select = true };
 	// Dialogue EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.dlg_target = { Name="$Target$", EditorHelp="$TargetDesc$", Type="object", Filter="IsClonk", Set="SetDialogueTarget" };
-	def.EditorProps.user_dialogue = { Name="$Dialogue$", EditorHelp="$DialogueDesc$", Type="enum", OptionKey="Function", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil, Value = { Function="sequence", Actions=[] } } ] };
+	def.EditorProps.user_dialogue = { Name="$Dialogue$", EditorHelp="$DialogueDesc$", Type="enum", OptionKey="Function", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group = nil, Value = { Function="sequence", Actions=[] } } ] };
 	def.EditorProps.user_dialogue_allow_parallel = UserAction.PropParallel;
 	def.EditorProps.user_dialogue_progress_mode = UserAction.PropProgressMode;
 	def.EditorProps.dlg_attention = { Name="$Attention$ (!)", EditorHelp="$AttentionDesc$", Type="bool", Set="SetAttention" };
@@ -712,7 +712,7 @@ private func GetDefaultMessageProp(object target_object)
 	else
 	{
 		// Message prop for other dialogue: Default is a triggering clonk message with a "wait for next" option
-		return { Function="message", Speaker = { Function="triggering_clonk" }, TargetPlayers = { Function="triggering_player_list" }, Text = { Function="string_constant", Value="$DefaultMessage$" }, AfterMessage=60, Options=[] };
+		return { Function="message", Speaker = { Function="triggering_clonk" }, TargetPlayers = { Function="triggering_player_list" }, Text = { Function="string_constant", Value="$DefaultMessage$" }, AfterMessage = 60, Options=[] };
 	}
 }
 

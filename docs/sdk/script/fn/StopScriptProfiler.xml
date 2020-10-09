@@ -6,7 +6,7 @@
   <func>
     <title>StopScriptProfiler</title>
     <category>Developer</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>bool</rtype></syntax>
     <desc>Stops the script profiler and writes the result to the log.</desc>
     <remark>The script profiler can be used to measure how much processing time the scripting engine is using for executing certain script functions. This can be useful to find out which parts of a script are mainly slowing down execution in larger scenarios. The profiler measures the execution time between the commands StartScriptProfiler and StopScriptProfiler.</remark>

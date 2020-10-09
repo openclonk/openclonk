@@ -7,7 +7,7 @@
     <title>Sort_Random</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>array</rtype></syntax>
     <desc>Sort criterion: Sorts the found objects randomly.</desc>
     <remark>Sort_Random should not be used together with <funclink>FindObject</funclink> to find a random, matching object. Instead the first object of a <funclink>FindObjects</funclink> search with a SortRandom parameter can be used for instance.</remark>

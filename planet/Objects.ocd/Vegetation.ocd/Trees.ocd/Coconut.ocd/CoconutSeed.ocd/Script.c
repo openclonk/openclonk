@@ -53,8 +53,9 @@ public func Sprout()
 	// No duplicate sprout
 	if (GetEffect("IntGerminate", this)) return false;
 	// Try to sprout a coconut tree.
-	var d = 8, tree;
-	if (tree = PlaceVegetation(Tree_Coconut, -d/2, -d/2, d, d, 100))
+	var d = 8;
+	var tree = PlaceVegetation(Tree_Coconut, -d/2, -d/2, d, d, 100);
+	if (tree)
 	{
 		tree->InitChild(this);
 		this.Collectible = 0;
@@ -81,7 +82,7 @@ protected func Hit(int dx, int dy)
 	if (dy > 1)
 	{
 		if (GetEffect("Bouncy", this)) {
-			SetXDir(RandomX(-5,5));
+			SetXDir(RandomX(-5, 5));
 			SetYDir(dy * 3 / -4, 100);
 		} else
 			SetYDir(dy / -2, 100);

@@ -145,7 +145,7 @@ func RemoveItem(user_ID, int custom_menu_id)
 	custom_menu_id = custom_menu_id ?? menu_id;
 	for (var i = 0; i < GetLength(entries); ++i)
 	{
-		var ID = i+1;
+		var ID = i + 1;
 		if (!entries[i]) continue;
 		if (entries[i][3] != user_ID) continue;
 		GuiClose(custom_menu_id, ID, this);

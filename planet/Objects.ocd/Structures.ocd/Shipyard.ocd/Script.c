@@ -8,7 +8,7 @@
 local animWork;
 local meshAttach;
 
-public func LampPosition(id def) { return [GetCalcDir()*-6,30]; }
+public func LampPosition(id def) { return [GetCalcDir()*-6, 30]; }
 
 public func Initialize()
 {
@@ -49,7 +49,7 @@ public func PowerNeed() { return 80; }
 
 private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 {
-	if(effect.paused == true) return 1;
+	if (effect.paused == true) return 1;
 	
 //	Message("Working...");
 
@@ -60,7 +60,7 @@ private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 	var animLength = GetAnimationLength("Work") - 50;
 	
 	//loop anim
-	if(animSpot + tickAmount > animLength){
+	if (animSpot + tickAmount > animLength){
 		SetAnimationPosition(animWork, Anim_Const(animSpot + tickAmount - animLength));
 	}
 	//otherwise, advance animation
@@ -71,7 +71,7 @@ local workEffect;
 
 public func OnProductionStart(id product)
 {
-	workEffect = AddEffect("IntWorkAnim", this, 1,1,this);
+	workEffect = AddEffect("IntWorkAnim", this, 1, 1, this);
 	return _inherited(product, ...);
 }
 
@@ -109,7 +109,7 @@ local ActMap = {
 		FlipDir = 1,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		NextAction = "Wait",
 	},
 };

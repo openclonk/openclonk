@@ -7,7 +7,7 @@
     <title>Find_ID</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>

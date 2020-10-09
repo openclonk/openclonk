@@ -7,7 +7,7 @@
     <title>Sort_Speed</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>array</rtype></syntax>
     <desc>Sort criterion: Sorts the found objects by their speed. The slowest objects first.</desc>
     <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>

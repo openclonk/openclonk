@@ -8,7 +8,7 @@
 
 public func ControlUse(object pClonk, int ix, int iy)
 {
-	AddEffect("Fireball", nil, 100, 1, nil, GetID(), pClonk->GetOwner(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
+	AddEffect("Fireball", nil, 100, 1, nil, GetID(), pClonk->GetOwner(), Angle(0, 0, ix, iy),pClonk->GetX(), pClonk->GetY());
 	Sound("Fire::Fireball");
 	Sound("Fire::Fireball");
 	RemoveObject();
@@ -19,48 +19,48 @@ public func ControlUse(object pClonk, int ix, int iy)
 
 public func FxFireballStart(pTarget, effect, iTemp, owner, angle, x, y)
 {
-	if(iTemp) return;
-	x+=Sin(angle, 10)+RandomX(-1, 1);
+	if (iTemp) return;
+	x += Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
-	effect.owner=owner;
-	effect.angle=angle;
-	effect.x=x;
-	effect.y=y;
+	effect.owner = owner;
+	effect.angle = angle;
+	effect.x = x;
+	effect.y = y;
 }
 
 public func FxFireballTimer(pTarget, effect, iEffectTime)
 {
-	var angle=effect.angle;
-	var x=effect.x;
-	var y=effect.y;
+	var angle = effect.angle;
+	var x = effect.x;
+	var y = effect.y;
 
 	if	(	iEffectTime>67  ||
-	 		GBackSolid(x,y) ||
+	 		GBackSolid(x, y) ||
 	 		FindObject(
-	 		Find_Distance(16,x,y),
+	 		Find_Distance(16, x, y),
 	 		Find_ID(TargetBalloon)) ||
 	 		FindObject(
 	 		Find_Hostile(effect.owner),
 	 		Find_OCF(OCF_Alive),
 	 		Find_NoContainer(),
-	 		Find_Distance(16,x,y)
+	 		Find_Distance(16, x, y)
 	 		)
 	 	)
 	{
-		CreateObjectAbove(Dynamite,x,y,effect.owner)->Explode(14);
-		for(var i=0; i<=3;i++) CreateObjectAbove(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),effect.owner)->Explode(6+Random(4));
-		var obj=FindObject(Find_Distance(22,x,y),Find_ID(TargetBalloon));
-		if(obj)
+		CreateObjectAbove(Dynamite, x, y, effect.owner)->Explode(14);
+		for (var i = 0; i<=3;i++) CreateObjectAbove(Dynamite, x + Sin(i*120 +x, 13),y-Cos(i*120 +x, 13),effect.owner)->Explode(6 + Random(4));
+		var obj = FindObject(Find_Distance(22, x, y),Find_ID(TargetBalloon));
+		if (obj)
 		{
-			var arw=CreateObjectAbove(Arrow,0,0,effect.owner);
+			var arw = CreateObjectAbove(Arrow, 0, 0, effect.owner);
 			obj->OnProjectileHit(arw);
 			arw->RemoveObject();
 		} 
 		return -1;
 	}	
-	else if(iEffectTime < 70)
+	else if (iEffectTime < 70)
 	{
-		angle+=Sin(iEffectTime*30,18);
+		angle += Sin(iEffectTime*30, 18);
 		var xspeed = Sin(angle, 6);
 		var yspeed = -Cos(angle, 6);
 

@@ -8,7 +8,7 @@ func Initialize()
 func ShowData(array x, array y)
 {
 	while (RemoveVertex()) {}
-	for (var i=0; i<GetLength(x); ++i)
+	for (var i = 0; i<GetLength(x); ++i)
 		AddVertex(x[i], y[i]);
 }
 

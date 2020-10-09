@@ -19,9 +19,9 @@ local score_death_list; // Here the death count of all players is stored, access
 // used by Scoreboard_Relaunch too
 public func ScoreboardCondition(x)
 {
-	if(GetType(x) != C4V_Int) return x;
+	if (GetType(x) != C4V_Int) return x;
 	
-	if(x == -1) return Rule_KillLogs;
+	if (x == -1) return Rule_KillLogs;
 	return x;
 }
 

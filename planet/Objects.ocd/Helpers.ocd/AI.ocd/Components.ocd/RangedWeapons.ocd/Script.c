@@ -115,10 +115,8 @@ private func ExecuteRanged(effect fx)
 	if (fx.is_aggressive && d > 40)
 		fx.Target->SetCommand("MoveTo", nil, fx.target->GetX(), fx.target->GetY());
 	// Might also change target if current is unreachable.
-	var new_target;
 	if (!Random(3))
-		if (new_target = this->FindTarget(fx))
-			fx.target = new_target;
+		fx.target = this->FindTarget(fx) ?? fx.target;
 	return true;
 }
 

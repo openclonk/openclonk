@@ -47,6 +47,7 @@ private:
 	// Address information
 	StdCopyStrBuf URL, ServerName;
 	C4NetIO::addr_t ServerAddr;
+	std::string headerAcceptedResponseType = "";
 
 	StdCopyBuf RequestData;
 
@@ -95,6 +96,8 @@ public:
 	void Clear();
 
 	bool SetServer(const char *szServerAddress);
+	enum ResponseType { NoPreference, XML };
+	void SetExpectedResponseType(ResponseType type);
 
 	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
 

@@ -15,6 +15,9 @@
  * for the above references.
  */
 
+#ifndef INC_C4MeshDenumerator
+#define INC_C4MeshDenumerator
+
 #include "lib/StdMesh.h"
 #include "object/C4ObjectPtr.h"
 
@@ -38,3 +41,5 @@ public:
 };
 
 extern const StdMeshInstance::AttachedMesh::DenumeratorFactoryFunc C4MeshDenumeratorFactory;
+
+#endif

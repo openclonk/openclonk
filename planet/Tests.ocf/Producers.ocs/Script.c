@@ -1,19 +1,19 @@
 /**
 	Producer System
-	Unit tests for the producers system. Invokes tests by calling the 
-	global function Test*_OnStart(int plr) and iterate through all 
+	Unit tests for the producers system. Invokes tests by calling the
+	global function Test*_OnStart(int plr) and iterate through all
 	tests. The test is completed once Test*_Completed() returns
-	true. Then Test*_OnFinished() is called, to be able to reset 
+	true. Then Test*_OnFinished() is called, to be able to reset
 	the scenario for the next test.
-	
+
 	With LaunchTest(int nr) a specific test can be launched when
 	called during runtime. A test can be skipped by calling the
 	function SkipTest().
-	
+
 	@author Maikel (unit test logic), Marky (tests)
 */
 
-static const EXPECTED_TESTS = 15;
+static const EXPECTED_TESTS = 18;
 
 protected func Initialize()
 {
@@ -26,21 +26,21 @@ protected func InitializePlayer(int plr)
 {
 	// Set zoom to full map size.
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
-	
+
 	// No FoW to see everything happening.
 	SetFoW(false, plr);
-	
+
 	// All players belong to the first team.
 	// The second team only exists for testing.
 	SetPlayerTeam(plr, 1);
-		
+	
 	// Move player to the start of the scenario.
 	GetCrew(plr)->SetPosition(120, 150);
-	
+
 	// Some knowledge to construct a flagpole.
 	GetCrew(plr)->CreateContents(Hammer);
 	SetPlrKnowledge(plr, Flagpole);
-	
+
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
 	effect.testnr = 1;
@@ -68,7 +68,7 @@ global func LaunchTest(int nr)
 	}
 	// Finish the currently running test.
 	Call(Format("~Test%d_OnFinished", effect.testnr));
-	// Start the requested test by just setting the test number and setting 
+	// Start the requested test by just setting the test number and setting
 	// effect.launched to false, effect will handle the rest.
 	effect.testnr = nr;
 	effect.launched = false;
@@ -84,7 +84,7 @@ global func SkipTest()
 		return;
 	// Finish the previous test.
 	Call(Format("~Test%d_OnFinished", effect.testnr));
-	// Start the next test by just increasing the test number and setting 
+	// Start the next test by just increasing the test number and setting
 	// effect.launched to false, effect will handle the rest.
 	effect.testnr++;
 	effect.launched = false;
@@ -124,7 +124,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 			return -1;
 		}
 		effect.launched = true;
-	}		
+	}	
 	// Check whether the current test has been finished.
 	if (Call(Format("Test%d_Completed", effect.testnr)))
 	{
@@ -146,9 +146,9 @@ global func Test1_OnStart(int plr)
 {
 	var passed = true;
 	var producer = CreateObject(Foundry);
-	
+
 	Log("Test behaviour of AddToQueue(), ClearQueue() and GetQueue()");
-	
+
 	passed &= doTest("The queue should be empty on initialization. Got %v, expected %v.", GetLength(producer->GetQueue()), 0);
 
 	Log("****** Adding items to the queue");
@@ -157,16 +157,16 @@ global func Test1_OnStart(int plr)
 	passed &= doTest("The queue gets filled when adding things to the queue. Got %d, expected %d.", GetLength(producer->GetQueue()), 1);
 	if (GetLength(producer->GetQueue()) > 0)
 		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 2, false);
-	
+
 	Log("****** Queueing the same product again increases the existing queue");
-	
+
 	producer->AddToQueue(GoldBar, 2);
 	passed &= doTest("Entries stay the same. Got %d, expected %d.", GetLength(producer->GetQueue()), 1);
 	if (GetLength(producer->GetQueue()) > 0)
 		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 4, false);
-	
+
 	Log("****** Queueing the same product again with an infinite count increases the existing queue.");
-	
+
 	producer->AddToQueue(GoldBar, 2, true);
 	passed &= doTest("Entries stay the same. Got %d, expected %d.", GetLength(producer->GetQueue()), 1);
 	if (GetLength(producer->GetQueue()) > 0)
@@ -178,7 +178,7 @@ global func Test1_OnStart(int plr)
 	passed &= doTest("Entries stay the same. Got %d, expected %d.", GetLength(producer->GetQueue()), 1);
 	if (GetLength(producer->GetQueue()) > 0)
 		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 8, false);
-	
+
 	Log("****** Adding more items to the queue, next item should be added to the end.");
 
 	producer->AddToQueue(Loam, 4, false);
@@ -188,7 +188,7 @@ global func Test1_OnStart(int plr)
 		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 8, false);
 		passed &= doTestQueueEntry(producer->GetQueue()[1], Loam, 4, false);
 	}
-	
+
 	Log("****** Adding more infinite items to the queue, next item should be added to the end.");
 
 	producer->AddToQueue(Metal, 0, true);
@@ -199,9 +199,9 @@ global func Test1_OnStart(int plr)
 		passed &= doTestQueueEntry(producer->GetQueue()[1], Loam, 4, false);
 		passed &= doTestQueueEntry(producer->GetQueue()[2], Metal, 0, true);
 	}
-	
+
 	Log("****** Clearing the queue");
-	
+
 	producer->ClearQueue();
 	passed &= doTest("Queue is empty. Got %d entries, expected %d.", GetLength(producer->GetQueue()), 0);
 
@@ -230,45 +230,45 @@ global func Test2_OnStart(int plr)
 	producer->AddToQueue(GoldBar, amount_gold);
 	producer->AddToQueue(Loam, amount_loam);
 	producer->AddToQueue(Metal, amount_metal);
-	
+
 	Log("Testing the behaviour of CycleQueue(), GetQueueIndex(), ModifyQueueIndex()");
-	
+
 	passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, amount_gold, false);
 	passed &= doTestQueueEntry(producer->GetQueue()[1], Loam, amount_loam, false);
 	passed &= doTestQueueEntry(producer->GetQueue()[2], Metal, amount_metal, false);
-	
+
 	Log("****** GetQueueIndex()");
-	
+
 	passed &= doTest("The product 'GoldBar' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(GoldBar), 0);
 	passed &= doTest("The product 'Loam' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Loam), 1);
 	passed &= doTest("The product 'Metal' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Metal), 2);
 	passed &= doTest("The product 'Barrel' is not in the queue. Got %d, expected %d.", producer->GetQueueIndex(Barrel), nil);
 
 	Log("****** CycleQueue(), should move the first item to the end");
-	
+
 	producer->CycleQueue();
 	passed &= doTest("The product 'GoldBar' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(GoldBar), 2);
 	passed &= doTest("The product 'Loam' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Loam), 0);
 	passed &= doTest("The product 'Metal' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Metal), 1);
 
 	Log("****** CycleQueue()");
-	
+
 	producer->CycleQueue();
 	passed &= doTest("The product 'GoldBar' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(GoldBar), 1);
 	passed &= doTest("The product 'Loam' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Loam), 2);
 	passed &= doTest("The product 'Metal' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Metal), 0);
 
 	Log("****** CycleQueue(), queue should be in the original order again");
-	
+
 	producer->CycleQueue();
 	passed &= doTest("The product 'GoldBar' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(GoldBar), 0);
 	passed &= doTest("The product 'Loam' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Loam), 1);
 	passed &= doTest("The product 'Metal' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Metal), 2);
 
 	Log("Testing ModifyQueueIndex()");
-	
+
 	Log("****** Modify amount +1");
-	
+
 	producer->ModifyQueueIndex(0, +1, nil);
 	passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, amount_gold + 1, false);
 
@@ -308,17 +308,17 @@ global func Test2_OnFinished(){	return; }
 global func Test3_OnStart(int plr)
 {
 	var passed = true;
-	
+
 	var producer = CreateObject(Foundry);
-	
+
 	Log("Testing the behaviour of CheckComponent() and GetAvailableComponentAmount()");
-	
+
 	Log("****** Asking amount of material that is not contained.");
-	
+
 	passed &= doTest("Got %d, expected %d.", producer->GetAvailableComponentAmount(Metal), 0);
-	
+
 	Log("****** Asking amount of ordinary material.");
-	
+
 	producer->CreateContents(Ore, 3);
 	passed &= doTest("Got %d ore, expected %d.", producer->GetAvailableComponentAmount(Ore), 3);
 
@@ -356,18 +356,18 @@ global func Test3_OnFinished(){	return; }
 global func Test4_OnStart(int plr)
 {
 	var passed = true;
-	
+
 	Log("Testing the behaviour of CheckFuel()");
-	
+
 	var producer = CreateObject(Foundry);
-	
+
 	Log("****** Without fuel");
-	
+
 	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), false);
 	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
-	
+
 	Log("****** With single object fuel");
-	
+
 	producer->CreateContents(Wood);
 	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), true);
 	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
@@ -385,7 +385,7 @@ global func Test4_OnStart(int plr)
 	producer->FindContents(Wood)->RemoveObject();
 
 	Log("****** With stackable object fuel");
-	
+
 	producer->CreateContents(Oil);
 	producer->FindContents(Oil)->SetStackCount(49);
 	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), false);
@@ -422,15 +422,17 @@ global func Test4_OnFinished(){	return; }
 global func Test5_OnStart(int plr)
 {
 	var passed = true;
-	
+
 	var producer = CreateObject(Foundry);
-	
+
 	Log("Testing the behaviour of ProductionCosts()");
-	
-	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[Ore, 1]]);
-	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[Metal, 1], [Wood, 1]]);
-	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[Flour, 1], [Water, 50]]);
-	
+
+	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[{Resource = Ore, Amount = 1}]]);
+	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[{Resource = Metal, Amount = 1}], [{Resource = Wood, Amount = 1}]]);
+	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[{Resource = Flour, Amount = 1}], [{Resource = Water, Amount = 50}]]);
+	passed &= doTest("Costs for object with a single substitute component (Loam). Got %v, expected %v.", producer->ProductionCosts(Loam), [[{Resource = Earth, Amount = 2}, {Resource = Sand, Amount = 2}], [{Resource = Water, Amount = 60}]]);
+	passed &= doTest("Costs for object with multiple substitute components (TeleGlove). Got %v, expected %v.", producer->ProductionCosts(TeleGlove), [[{Resource = Diamond, Amount = 1}, {Resource = Ruby, Amount = 1}, {Resource = Amethyst, Amount = 1}], [{Resource = Metal, Amount = 2}]]);
+
 	producer->RemoveObject();
 	return passed;
 }
@@ -440,11 +442,11 @@ global func Test5_OnFinished(){	return; }
 global func Test6_OnStart(int plr)
 {
 	var passed = true;
-	Log("Testing the behavior of collection");	
+	Log("Testing the behavior of collection");
 	var producer = CreateObject(Foundry);
-	
+
 	Log("****** Collect an object that is not a component for one of the products");
-	
+
 	// Loam: Earth, Water; Metal: Ore; GoldBar: Nugget
 	var item = CreateObject(Seeds);
 	producer->Collect(item, true);
@@ -452,7 +454,7 @@ global func Test6_OnStart(int plr)
 	if (item) item->RemoveObject();
 
 	Log("****** Collect raw items for the products");
-	
+
 	for (var product in producer->GetProducts())
 	{
 		var i = 0, component;
@@ -465,7 +467,7 @@ global func Test6_OnStart(int plr)
 			i++;
 		}
 	}
-	
+
 	Log("****** Collect items from a bucket");
 
 	var container = CreateObject(Bucket);
@@ -475,7 +477,7 @@ global func Test6_OnStart(int plr)
 	passed &= doTest("Item can be collected. Container is %v, expected %v.", item->Contained(), producer);
 	if (item) item->RemoveObject();
 	if (container) container->RemoveObject();
-	
+
 	Log("****** Collect items from a barrel");
 
 	container = CreateObject(Barrel);
@@ -660,7 +662,7 @@ global func Test11_OnStart(int plr)
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
 	producer->CreateContents(Ore, 5);
 	producer->AddToQueue(Metal, 5);
-	
+
 	var barrelA = CreateObject(Barrel);
 	var barrelB = CreateObject(Barrel);
 	barrelA->PutLiquid("Oil", 300);
@@ -711,7 +713,7 @@ global func Test12_OnStart(int plr)
 		passed &= (amount > 0);
 		if (instance) instance->RemoveObject();
 	}
-	
+
 	effect.passed_test_6 = passed;
 
 	return true;
@@ -752,7 +754,7 @@ global func Test13_Completed()
 
 	if (ObjectCount(Find_ID(Barrel)) == 1
 	 && ObjectCount(Find_ID(Wood)) == 8) return true;
-	
+
 	return false;
 }
 
@@ -785,13 +787,13 @@ global func Test14_Completed()
 
 	var fx = GetEffect("IntTestControl", nil);
 	fx.timer++;
-	
+
 	if (fx.timer >= 120)
 	{
 		FindObject(Find_ID(ToolsWorkshop))->CreateContents(Metal);
 		fx.timer = 100;
 	}
-	
+
 	return false;
 }
 
@@ -812,7 +814,7 @@ global func Test15_OnStart(int plr)
 	var producer = CreateObjectAbove(Foundry, 70, 160, plr);
 	producer->CreateContents(Ore, 5);
 	producer->AddToQueue(Metal, 5);
-	
+
 	// Power consumer: one pump.
 	var pump = CreateObjectAbove(Pump, 124, 160, plr);
 	var source = CreateObjectAbove(Pipe, 176, 292, plr);
@@ -831,8 +833,7 @@ global func Test15_OnStart(int plr)
 
 global func Test15_Completed()
 {
-	if (ObjectCount(Find_ID(Metal)) >= 5) return true;	
-	return false;
+	return ObjectCount(Find_ID(Metal)) >= 5;
 }
 
 global func Test15_OnFinished()
@@ -845,6 +846,113 @@ global func Test15_OnFinished()
 }
 
 
+// Producer with single substitute component
+global func Test16_OnStart(int plr)
+{
+	// Producer: Foundry
+	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
+	// The substitute component
+	producer->CreateContents(Sand, 10);
+	var barrel = CreateObject(Barrel);
+	barrel->PutLiquid(Water, 300); // contains 300 water
+	producer->AddToQueue(Loam, 5); // needs 300 water
+	producer->Collect(barrel, true);
+
+	// Log what the test is about.
+	Log("Objects with single substitute component (loam)");
+	return true;
+}
+
+global func Test16_Completed()
+{
+    // The barrel must not be removed.
+	return ObjectCount(Find_ID(Loam)) >= 5
+	    && ObjectCount(Find_ID(Barrel)) >= 1;
+}
+
+global func Test16_OnFinished()
+{
+	// Remove wind generator, compensator and workshop.
+	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Loam), Find_ID(Barrel)));
+	return;
+}
+
+
+// Producer with mixed single substitute component
+global func Test17_OnStart(int plr)
+{
+	// Producer: Foundry
+	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
+	// The substitute component, the last object should rely on 1 Earth and 1 Sand, which does not substitute here
+	producer->CreateContents(Earth, 5);
+	producer->CreateContents(Sand, 5);
+	var barrel = CreateObject(Barrel);
+	barrel->PutLiquid(Water, 300); // contains 300 water
+	producer->AddToQueue(Loam, 5); // needs 300 water
+	producer->Collect(barrel, true);
+
+	// Log what the test is about.
+	Log("Objects with single substitute component (loam), mixing components is not possible");
+	return true;
+}
+
+global func Test17_Completed()
+{
+	var producer = FindObject(Find_ID(Foundry));
+
+	if (!producer->IsProducing())
+	{
+		producer.test_production_stopped += 1;
+	}
+
+	if (producer.test_production_stopped >= 35)
+	{
+		var passed = true;
+		passed &= doTest("There is %d loam, should be %d", ObjectCount(Find_ID(Loam)), 4);
+	    passed &= doTest("There is %d barrel, should be %d", ObjectCount(Find_ID(Barrel)), 1);
+	    passed &= doTest("There is %d earth, should be %d", ObjectCount(Find_ID(Earth)), 1);
+	    passed &= doTest("There is %d sand, should be %d", ObjectCount(Find_ID(Sand)), 1);
+	    return passed;
+	}
+	return false;
+}
+
+global func Test17_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Loam), Find_ID(Barrel), Find_ID(Sand), Find_ID(Earth)));
+	return;
+}
+
+
+// Producer with multiple substitute components
+global func Test18_OnStart(int plr)
+{
+	// Producer: Foundry
+	var producer = CreateObjectAbove(InventorsLab, 75, 160, plr);
+	// The substitute component, the last object should rely on 1 Earth and 1 Sand, which does not substitute here
+	producer->CreateContents(Metal, 6);
+	producer->CreateContents(Diamond);
+	producer->CreateContents(Ruby);
+	producer->CreateContents(Amethyst);
+	producer->AddToQueue(TeleGlove, 3);
+
+	// Log what the test is about.
+	Log("Objects with multiple substitute components (TeleGlove)");
+	return true;
+}
+
+global func Test18_Completed()
+{
+	return ObjectCount(Find_ID(TeleGlove)) >= 3;
+}
+
+global func Test18_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(InventorsLab), Find_ID(TeleGlove)));
+	return;
+}
+
+
 /*-- Helper Functions --*/
 
 global func doTest(description, returned, expected)
@@ -853,19 +961,33 @@ global func doTest(description, returned, expected)
 	 || GetType(expected) == C4V_Array)
 	{
 		var passed = doTest(Format("Array length should be equal. %s", description), GetLength(returned), GetLength(expected));
-		
+	
 		for (var i = 0; i < GetLength(expected); ++i)
 		{
-			passed &= doTest(Format("*%s", description), returned[i], expected[i]);
-		}		
+			passed &= doTest(Format("* %s", description), returned[i], expected[i]);
+		}
+		// Additional output if the returned values are more than expected
+		for (var i = GetLength(expected); i < GetLength(returned); ++i)
+		{
+			passed &= doTest(Format("* %s", description), returned[i], expected[i]);
+		}
 		return passed;
 	}
 
-	var test = (returned == expected);
-	
+	var test;
+	if (GetType(returned) == C4V_PropList
+	 || GetType(expected) == C4V_PropList)
+	{
+		test = DeepEqual(returned, expected);
+	}
+	else
+	{
+		test = (returned == expected);
+	}
+
 	var predicate = "[Fail]";
 	if (test) predicate = "[Pass]";
-	
+
 	Log(Format("%s %s", predicate, description), returned, expected);
 	return test;
 }

@@ -1,0 +1,63 @@
+[ParameterDef]
+Name=$Rounds$
+Description=$DescRounds$
+ID=Rounds
+Default=4
+
+	[Options]
+		
+		[Option]
+		Name=1
+		Value=1
+		
+		[Option]
+		Name=2
+		Value=2
+		
+		[Option]
+		Name=3
+		Value=3
+		
+		[Option]
+		Name=5
+		Value=5
+		
+		[Option]
+		Name=7
+		Value=7
+		
+		[Option]
+		Name=11
+		Value=11
+
+[ParameterDef]
+Name=Items
+Description=$DescItems$
+ID=ItemAmount
+Default=1
+
+	[Options]
+		
+		[Option]
+		Name=$ItemsNormal$
+		Value=1
+		
+		[Option]
+		Name=$ItemsMany$
+		Value=3
+		
+[ParameterDef]
+Name=$TeamsTogether$
+Description=$DescTeamsTogether$
+ID=TeamsTogether
+Default=1
+
+	[Options]
+		
+		[Option]
+		Name=$Yes$
+		Value=1
+		
+		[Option]
+		Name=$No$
+		Value=0

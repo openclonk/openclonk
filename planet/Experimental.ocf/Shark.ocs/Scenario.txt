@@ -2,9 +2,6 @@
 Icon=1
 Title=Sharks
 
-[Game]
-Goals=MELE=1
-
 [Player1]
 Wealth=10
 Crew=Clonk=1;

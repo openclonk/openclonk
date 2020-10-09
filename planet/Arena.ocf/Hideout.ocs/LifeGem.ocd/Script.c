@@ -28,7 +28,7 @@ func FxSparkleStart(target, effect, temp)
 
 func FxSparkleTimer(target, effect, effect_time)
 {
-	if(this->Contained() || !Random(2)) return FX_OK;
+	if (this->Contained() || !Random(2)) return FX_OK;
 	CreateParticle("MagicRing", 0, 0, 0, 0, effect.Interval, effect.particles, 1);
 	return FX_OK;
 }
@@ -66,23 +66,23 @@ func FxGemHealingStart(target, effect, temp)
 
 func FxGemHealingTimer(target, effect, effect_time)
 {
-	if(target->GetEnergy() >= target->GetMaxEnergy())
+	if (target->GetEnergy() >= target->GetMaxEnergy())
 	{
-		if(effect_time < 36) return 0;
+		if (effect_time < 36) return 0;
 		return -1;
 	}
 	
 	target->DoEnergy(500, true);
 
 	target->CreateParticle("Magic", PV_Random(-5, +5), PV_Random(-8, 8), PV_Random(-1, 1), PV_Random(-10, -5), PV_Random(10, 20), effect.glimmer_particles, 3);
-	if(!Random(10)) effect.switcher = !effect.switcher;
-	if(effect.switcher)
+	if (!Random(10)) effect.switcher = !effect.switcher;
+	if (effect.switcher)
 		target->CreateParticle("MagicSpark", PV_Random(-3, 3), PV_Random(0, 8), PV_Random(-1, 1), PV_Random(-2, -1), PV_Random(20, 30), effect.sparks, 2);
 }
 
 func FxGemHealingDamage(target, effect, damage, cause)
 {
-	if(damage >= 0) return damage;
+	if (damage >= 0) return damage;
 	RemoveEffect(nil, target, effect);
 	
 	// can actually block one source of damage - use wisely

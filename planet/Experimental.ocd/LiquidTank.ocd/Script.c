@@ -8,7 +8,8 @@
 
 #include Library_Structure
 #include Library_Ownable
-#include Library_Tank
+#include Library_LiquidContainer
+#include Library_PipeControl
 
 
 public func Initialize()
@@ -38,32 +39,6 @@ public func IsLiquidContainerForMaterial(string liquid)
 public func GetLiquidContainerMaxFillLevel(liquid_name)
 {
 	return this.LiquidCapacity;
-}
-
-// The liquid tank may have one drain and one source.
-public func QueryConnectPipe(object pipe, bool do_msg)
-{
-	if (GetDrainPipe() && GetSourcePipe())
-	{
-		if (do_msg) pipe->Report("$MsgHasPipes$");
-		return true;
-	}
-	else if (GetSourcePipe() && pipe->IsSourcePipe())
-	{
-		if (do_msg) pipe->Report("$MsgSourcePipeProhibited$");
-		return true;
-	}
-	else if (GetDrainPipe() && pipe->IsDrainPipe())
-	{
-		if (do_msg) pipe->Report("$MsgDrainPipeProhibited$");
-		return true;
-	}
-	else if (pipe->IsAirPipe())
-	{
-		if (do_msg) pipe->Report("$MsgPipeProhibited$");
-		return true;
-	}
-	return false;
 }
 
 // Set to source or drain pipe.
@@ -172,3 +147,8 @@ local HitPoints = 90;
 local Components = {Wood = 3, Metal = 2};
 local LiquidCapacity = 10000;
 local DispersionRate = 40;
+
+// The liquid tank may have one drain and one source.
+local PipeLimit_Air = 0;
+local PipeLimit_Drain = 1;
+local PipeLimit_Source = 1;

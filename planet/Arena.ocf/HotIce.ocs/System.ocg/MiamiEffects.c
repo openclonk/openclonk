@@ -13,11 +13,11 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	// Zero-size explosion doesn't affect anything
 	if (level <= 0) return;
 	
-	if(!silent) //Does object use it's own explosion sound effect?
+	if (!silent) //Does object use it's own explosion sound effect?
 	{
 		// Select sound according to level: from 1 to 3, add the * to allow alternatives.
 		var grade = BoundBy(level / 10 - 1, 1, 3);
-		if(GBackLiquid(x, y))
+		if (GBackLiquid(x, y))
 			SoundAt(Format("Fire::BlastLiquid%d*",grade), x, y);
 		else
 			SoundAt(Format("Fire::Blast%d*", grade), x, y);
@@ -41,7 +41,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	
 	var clr = HSL(Random(255), 255, 100);
 	
-	CreateParticle("SmokeDirty", PV_Random(x - 10,x + 10), PV_Random(y - 10, y + 10), 0, PV_Random(-2, 0), PV_Random(50, 100), {Prototype = Particles_Colored(ExplosionParticles_Smoke, clr), Size = smoke_size}, Max(2, wilderness_level / 10));
+	CreateParticle("SmokeDirty", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), 0, PV_Random(-2, 0), PV_Random(50, 100), {Prototype = Particles_Colored(ExplosionParticles_Smoke, clr), Size = smoke_size}, Max(2, wilderness_level / 10));
 	CreateParticle("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = Particles_Colored(ExplosionParticles_BlastSmoothBackground, clr), Size = blast_smooth_size}, smoothness_level / 5);
 	CreateParticle("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = Particles_Colored(ExplosionParticles_BlastSmooth, clr), Size = blast_smooth_size}, smoothness_level / 5);
 	CreateParticle("Dust", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), 0, 0, PV_Random(18, 25), {Prototype = Particles_Colored(ExplosionParticles_Blast, clr), Size = blast_size}, smoothness_level / 5);
@@ -49,7 +49,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	CreateParticle("Shockwave", x, y, 0, 0, 15, {Prototype = Particles_Colored(ExplosionParticles_Shockwave, clr), Size = shockwave_size}, nil);
 	
 	// cast either some sparks on land or bubbles under water
-	if(GBackLiquid(x, y) && Global.CastBubbles)
+	if (GBackLiquid(x, y) && Global.CastBubbles)
 	{
 		Global->CastBubbles(level * 7 / 10, level, x, y);
 	}
@@ -98,7 +98,7 @@ global func FxSmokeTrailStart(object target, proplist e, int temp, int color)
 		G = c.G,
 		B = c.B,
 		Alpha = PV_KeyFrames(0, 0, alpha/4, 200, alpha, 1000, 0),
-		Rotation = PV_Random(-45,45),
+		Rotation = PV_Random(-45, 45),
 		ForceX = PV_Wind(20),
 		ForceY = PV_Gravity(-10),
 	};

@@ -116,9 +116,9 @@ bool C4MapScriptAlgoRect::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_
 	return rect.Contains(x, y);
 }
 
-C4MapScriptAlgoEllipsis::C4MapScriptAlgoEllipsis(const C4PropList *props)
+C4MapScriptAlgoEllipse::C4MapScriptAlgoEllipse(const C4PropList *props)
 {
-	// Get MAPALGO_Ellipsis properties
+	// Get MAPALGO_Ellipse properties
 	cx = props->GetPropertyInt(P_X);
 	cy = props->GetPropertyInt(P_Y);
 	wdt = Abs(props->GetPropertyInt(P_Wdt));
@@ -127,11 +127,11 @@ C4MapScriptAlgoEllipsis::C4MapScriptAlgoEllipsis(const C4PropList *props)
 	if (!hgt) hgt = wdt;
 }
 
-bool C4MapScriptAlgoEllipsis::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
+bool C4MapScriptAlgoEllipse::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
-	// Evaluate MAPALGO_Ellipsis at x,y: Return 1 for pixels within ellipsis, 0 otherwise
+	// Evaluate MAPALGO_Ellipse at x,y: Return 1 for pixels within ellipse, 0 otherwise
 	// warning: overflows for large values (wdt or hgt >=256)
-	// but who would draw such large ellipsis anyway?
+	// but who would draw such large ellipse anyway?
 	uint64_t dx = Abs((cx-x)*hgt), dy = Abs((cy-y)*wdt);
 	return dx*dx+dy*dy < uint64_t(wdt)*wdt*hgt*hgt;
 }
@@ -373,7 +373,8 @@ C4MapScriptAlgoTurbulence::C4MapScriptAlgoTurbulence(const C4PropList *props) : 
 	if (!seed) seed = Random(65536);
 	GetXYProps(props, P_Amplitude, amp, true);
 	GetXYProps(props, P_Scale, scale, true);
-	if (!scale[0]) scale[0] = 10; if (!scale[1]) scale[1] = 10;
+	if (!scale[0]) scale[0] = 10;
+	if (!scale[1]) scale[1] = 10;
 	if (!amp[0] && !amp[1]) { amp[0] = amp[1] = 10; }
 	iterations = props->GetPropertyInt(P_Iterations);
 	if (!iterations) iterations = 2;
@@ -487,10 +488,26 @@ bool C4MapScriptAlgoFilter::operator () (int32_t x, int32_t y, uint8_t& fg, uint
 	return filter(fg, bg);
 }
 
-C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
+C4MapScriptAlgoSetMaterial::C4MapScriptAlgoSetMaterial(C4MapScriptAlgo *inner, int fg, int bg)
+	: inner(inner), fg(fg), bg(bg)
 {
-	// Convert script function parameter to internal C4MapScriptAlgo class. Also resolve all parameters and nested child algos.
-	if (!algo_par) return nullptr;
+	assert(inner);
+	/* member initializers only */
+}
+
+C4MapScriptAlgoSetMaterial::~C4MapScriptAlgoSetMaterial() {
+	delete inner;
+}
+
+bool C4MapScriptAlgoSetMaterial::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const {
+	bool result = (*inner)(x, y, fg, bg);
+	fg = this->fg;
+	bg = this->bg;
+	return result;
+}
+
+static C4MapScriptAlgo *FnParAlgoInner(C4PropList *algo_par)
+{
 	// if algo is a layer, take that directly
 	C4MapScriptLayer *algo_layer = algo_par->GetMapScriptLayer();
 	if (algo_layer) return new C4MapScriptAlgoLayer(algo_layer);
@@ -507,7 +524,9 @@ C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
 	case MAPALGO_Scale:       return new C4MapScriptAlgoScale(algo_par);
 	case MAPALGO_Rotate:      return new C4MapScriptAlgoRotate(algo_par);
 	case MAPALGO_Rect:        return new C4MapScriptAlgoRect(algo_par);
-	case MAPALGO_Ellipsis:    return new C4MapScriptAlgoEllipsis(algo_par);
+	case MAPALGO_Ellipsis:    DebugLog("WARNING: MAPALGO_Ellipsis is deprecated. Use MAPALGO_Ellipse instead.");
+	                          /* fallthru */
+	case MAPALGO_Ellipse:     return new C4MapScriptAlgoEllipse(algo_par);
 	case MAPALGO_Polygon:     return new C4MapScriptAlgoPolygon(algo_par);
 	case MAPALGO_Lines:       return new C4MapScriptAlgoLines(algo_par);
 	case MAPALGO_Turbulence:  return new C4MapScriptAlgoTurbulence(algo_par);
@@ -517,4 +536,23 @@ C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
 		throw C4AulExecError(FormatString("got invalid algo: %d", algo_par->GetPropertyInt(P_Algo)).getData());
 	}
 	return nullptr;
+}
+
+C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
+{
+	// Convert script function parameter to internal C4MapScriptAlgo class. Also resolve all parameters and nested child algos.
+	if (!algo_par) return nullptr;
+
+	C4MapScriptAlgo *inner = FnParAlgoInner(algo_par);
+
+	// if the Material property is set, use that material:
+	C4String *material = algo_par->GetPropertyStr(P_Material);
+	if (material) { // set inner material by wrapping with SetMaterial algo.
+		uint8_t fg = 0, bg = 0;
+		if (!FnParTexCol(material, fg, bg))
+			throw C4AulExecError("Invalid Material in map script algorithm.");
+		return new C4MapScriptAlgoSetMaterial(inner, fg, bg);
+	}
+
+	return inner; // otherwise, just return the original algo
 }

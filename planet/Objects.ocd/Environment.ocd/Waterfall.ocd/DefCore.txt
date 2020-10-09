@@ -2,3 +2,6 @@
 id=Waterfall
 Version=8,0
 Category=C4D_StaticBack
+Width=32
+Height=32
+Offset=-16,-16

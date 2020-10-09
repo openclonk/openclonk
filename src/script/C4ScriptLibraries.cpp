@@ -28,7 +28,7 @@
 #include "script/C4Aul.h"
 #include "script/C4AulDefFunc.h"
 
-C4ScriptLibrary::C4ScriptLibrary(const char *name) : C4PropListStaticMember(nullptr, nullptr, ::Strings.RegString(name)) {}
+C4ScriptLibrary::C4ScriptLibrary(const char *name) : C4PropListStatic(nullptr, nullptr, ::Strings.RegString(name)) {}
 
 void C4ScriptLibrary::RegisterWithEngine(C4AulScriptEngine *engine)
 {

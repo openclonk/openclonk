@@ -34,7 +34,7 @@ func Initialize(...)
 
 func Hit()
 {
-	if(GetEffect("Flight",this))
+	if (GetEffect("Flight",this))
 	{
 		Stick();
 		Sound("Objects::Weapons::Javelin::HitGround");
@@ -46,7 +46,7 @@ func Hit()
 func Entrance()
 {
 	// reset sticky-vertex
-	SetVertex(2,VTX_Y,0,1);
+	SetVertex(2, VTX_Y, 0, 1);
 }
 
 /*-- Callbacks --*/
@@ -73,7 +73,7 @@ public func HitObject(object obj)
 {
 	var relx = GetXDir() - obj->GetXDir();
 	var rely = GetYDir() - obj->GetYDir();
-	var speed = Sqrt(relx*relx+rely*rely);
+	var speed = Sqrt(relx*relx + rely*rely);
 	
 	var dmg = JavelinStrength() * speed * 1000 / 60;
 
@@ -116,7 +116,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 public func ControlUseHolding(object clonk, ix, iy)
 {
-	var angle = Angle(0,0,ix,iy);
+	var angle = Angle(0, 0, ix, iy);
 	angle = Normalize(angle,-180);
 
 	clonk->SetAimPosition(angle);
@@ -132,7 +132,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 
 public func ControlUseStop(object clonk, ix, iy)
 {
-	if(aiming)
+	if (aiming)
 		clonk->StopAim();
 	return true;
 }
@@ -158,8 +158,8 @@ public func DoThrow(object clonk, int angle)
 	var jav_y = div * ydir / 100 - Cos(angle, speed);
 	
 	SetController(clonk->GetController());
-	javelin->AddEffect("Flight",javelin,1,1,javelin,nil);
-	javelin->AddEffect("HitCheck",javelin,1,1,nil,nil,clonk);	
+	javelin->AddEffect("Flight",javelin, 1, 1, javelin, nil);
+	javelin->AddEffect("HitCheck",javelin, 1, 1, nil, nil, clonk);	
 		
 	javelin->SetXDir(jav_x, 1000);
 	javelin->SetYDir(jav_y, 1000);
@@ -175,7 +175,7 @@ public func DoThrow(object clonk, int angle)
 
 func Stick()
 {
-	if(GetEffect("Flight",this))
+	if (GetEffect("Flight",this))
 	{
 		SetXDir(0);
 		SetYDir(0);
@@ -184,15 +184,15 @@ func Stick()
 		RemoveEffect("Flight",this);
 		RemoveEffect("HitCheck",this);
 		
-		var x=Sin(GetR(),+16);
-		var y=Cos(GetR(),-16);
-		var mat = GetMaterial(x,y);
-		if(mat != -1)
+		var x = Sin(GetR(),+16);
+		var y = Cos(GetR(),-16);
+		var mat = GetMaterial(x, y);
+		if (mat != -1)
 		{
-			//if(GetMaterialVal("DigFree","Material",mat))
+			//if (GetMaterialVal("DigFree","Material",mat))
 			//{
 			// stick in landscape
-			SetVertex(2,VTX_Y,-18,1);
+			SetVertex(2, VTX_Y,-18, 1);
 			//}
 		}
 		return;
@@ -204,7 +204,7 @@ func FxFlightStart(object target, effect fx, int temp)
 	if (temp)
 		return FX_OK;
 	target.Collectible = false;
-	target->SetR(Angle(0,0,target->GetXDir(),target->GetYDir()));
+	target->SetR(Angle(0, 0, target->GetXDir(),target->GetYDir()));
 	target->SetVertex(1, VTX_Y, 0, 1);
 	return FX_OK;
 }
@@ -217,11 +217,11 @@ func FxFlightTimer(object target, effect fx, int time)
 	var newx = GetX();
 	var newy = GetY();
 
-	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
+	var anglediff = Normalize(Angle(oldx, oldy, newx, newy)-GetR(),-180);
 	target->SetRDir(anglediff/2);
 	fx.x = newx;
 	fx.y = newy;
-	target->SetR(Angle(0,0,target->GetXDir(),target->GetYDir()));
+	target->SetR(Angle(0, 0, target->GetXDir(),target->GetYDir()));
 	
 	if (time == 10)
 		target->SetVertex(1, VTX_Y, 13, 1);
@@ -259,16 +259,16 @@ public func GetCarryBone() { return "Javelin"; }
 
 public func GetCarrySpecial(clonk)
 {
-	if(aiming > 0) return "pos_hand2";
+	if (aiming > 0) return "pos_hand2";
 }
 
 public func GetCarryTransform()
 {
-	if(aiming == 1) return Trans_Rotate(180, 0, 0, 1);
+	if (aiming == 1) return Trans_Rotate(180, 0, 0, 1);
 }
 
 func Definition(def, ...) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(40,0,0,1),Trans_Rotate(-10,1,0,0)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(40, 0, 0, 1),Trans_Rotate(-10, 1, 0, 0)),def);
 	return _inherited(def, ...);
 }
 

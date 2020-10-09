@@ -8,7 +8,7 @@
 local radius; //actual effect radius to grab objects
 local radiusparticle; //radius of particles around object
 
-local aiming;
+local is_aiming;
 local anim_spin;
 
 local iAngle;
@@ -74,10 +74,10 @@ public func ControlUseStart(object clonk, ix, iy)
 
 public func ControlUseHolding(object clonk, ix, iy)
 {
-	if(!clonk->HasHandAction() || !aiming || (!clonk->IsWalking() && !clonk->IsJumping()))
+	if (!clonk->HasHandAction() || !is_aiming || (!clonk->IsWalking() && !clonk->IsJumping()))
 	{
 		CancelUse(clonk);
-		return 1;
+		return true;
 	}
 
 	UpdateGloveAngle(clonk, ix, iy);
@@ -85,8 +85,8 @@ public func ControlUseHolding(object clonk, ix, iy)
 	//effects
 	var xs = Sin(Random(359),radiusparticle/2);
 	var ys = -Cos(Random(359),radiusparticle/2);
-	var anglep = Angle(0,0,ix,iy);
-	var distp = Distance(0,0,ix,iy);
+	var anglep = Angle(0, 0, ix, iy);
+	var distp = Distance(0, 0, ix, iy);
 	
 	var particles;
 	if (Random(2)) particles = Particles_ElectroSpark1();
@@ -99,7 +99,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 		
 		//Particles emitting from clonk
 		var wp = 1;
-		if(Random(2)) wp = -1;
+		if (Random(2)) wp = -1;
 		var xp = anglep + RandomX(-3, 3);
 		var yp = anglep + RandomX(-3, 3);
 		var xdir = Sin(xp, 10);
@@ -109,9 +109,9 @@ public func ControlUseHolding(object clonk, ix, iy)
 	}
 
 	var target;
-	if(target_object)
+	if (target_object)
 	{
-		if(Distance(target_object->GetX(), target_object->GetY(), clonk->GetX() + ix, clonk->GetY() + iy) > radius ||
+		if (Distance(target_object->GetX(), target_object->GetY(), clonk->GetX() + ix, clonk->GetY() + iy) > radius ||
 		Distance(target_object->GetX(), target_object->GetY(), clonk->GetX(), clonk->GetY()) > GetTeleGloveReach() ||
 		target_object->~RejectTeleGloveControl(this))
 		{
@@ -120,7 +120,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 		}
 	}
 
-	if(!target_object)
+	if (!target_object)
 	{
 		target = FindObject(Find_Exclude(this),
 					Find_NoContainer(),
@@ -128,9 +128,9 @@ public func ControlUseHolding(object clonk, ix, iy)
 					Find_And(Find_Distance(radius, ix, iy),
 					Find_Distance(GetTeleGloveReach() - 15)),
 					Find_Not(Find_Func("RejectTeleGloveControl", this)),
-					Sort_Distance(ix,iy));
+					Sort_Distance(ix, iy));
 
-		if(target)
+		if (target)
 		{
 			GainedTargetObject(target);
 			target_object = target;
@@ -139,8 +139,8 @@ public func ControlUseHolding(object clonk, ix, iy)
 
 	//Has the object recently been thrown by another player?
 	var e = GetEffect("TeleGloveReleased", target_object);
-	var old_controller; if(e) old_controller = e.controller;
-	if(target_object 
+	var old_controller; if (e) old_controller = e.controller;
+	if (target_object 
 		&& !target_object->Stuck()
 		&& (!e || old_controller == Contained()->GetOwner()))
 	{
@@ -173,7 +173,7 @@ func StartUsage(object clonk)
 {
 	var hand;
 	// which animation to use? (which hand)
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
+	if (clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 	{
 		carry_bone = "pos_hand2";
 		hand = "AimArmsGeneric.R";
@@ -184,16 +184,16 @@ func StartUsage(object clonk)
 		hand = "AimArmsGeneric.L";
 	}
 
-	aiming = 1;
+	is_aiming = true;
 
 	aim_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
 	clonk->UpdateAttach();
 
 
 	//Animations and effects for TeleGlove
-	Sound("Objects::Electrical",nil,nil,nil,+1);
-	PlayAnimation("Opening", -5, Anim_Linear(0,0,GetAnimationLength("Opening"), 10, ANIM_Hold));
-	anim_spin = PlayAnimation("Spin",5, Anim_Linear(0,0,GetAnimationLength("Spin"), 40, ANIM_Loop));
+	Sound("Objects::Electrical",nil, nil, nil,+1);
+	PlayAnimation("Opening", -5, Anim_Linear(0, 0, GetAnimationLength("Opening"), 10, ANIM_Hold));
+	anim_spin = PlayAnimation("Spin",5, Anim_Linear(0, 0, GetAnimationLength("Spin"), 40, ANIM_Loop));
 	
 	// Light effects
 	SetLightRange(50, 10);
@@ -213,19 +213,19 @@ func EndUsage(object clonk)
 // Update the glove aim angle
 func UpdateGloveAngle(object clonk, int x, int y)
 {
-	var angle=Normalize(Angle(0,0, x,y),-180);
-	angle=BoundBy(angle,-150,150);
+	var angle = Normalize(Angle(0, 0, x, y),-180);
+	angle = BoundBy(angle,-150, 150);
 	
-	if(clonk->GetDir() == DIR_Left)
+	if (clonk->GetDir() == DIR_Left)
 	{
-		if(angle > 0) return;
+		if (angle > 0) return;
 	}
 	else
 	{
-		if(angle < 0) return;
+		if (angle < 0) return;
 	}
 
-	iAngle=angle;
+	iAngle = angle;
 
 	clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(iAngle) * 11111/1000));
 	
@@ -259,11 +259,12 @@ public func LostTargetObject(object target)
 protected func CancelUse(object clonk)
 {
 	EndUsage(clonk);
-	Sound("Objects::Electrical",nil,nil,nil,-1);
-	if(aiming = 1) PlayAnimation("Closing", -5, Anim_Linear(0,0,GetAnimationLength("Closing"), 10, ANIM_Hold));
+	Sound("Objects::Electrical",nil, nil, nil,-1);
+	if (is_aiming)
+		PlayAnimation("Closing", -5, Anim_Linear(0, 0, GetAnimationLength("Closing"), 10, ANIM_Hold));
 	StopAnimation(anim_spin);
-	aiming = 0;
-	if(target_object) LostTargetObject(target_object);
+	is_aiming = false;
+	if (target_object) LostTargetObject(target_object);
 	target_object = nil;
 	return true;
 }
@@ -289,13 +290,13 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand)
 		return Trans_Mul(Trans_Rotate(45, 0, 1), Trans_Rotate(25, 0, 0, 1), Trans_Translate(4000, 0, 1000));
 
 	//Left hand's bone is different? I don't know, but this is a work-around.
-	if(carry_bone == "pos_hand1") return Trans_Rotate(180,0,1,0);
-	return Trans_Rotate(-90,0,1,0);
+	if (carry_bone == "pos_hand1") return Trans_Rotate(180, 0, 1, 0);
+	return Trans_Rotate(-90, 0, 1, 0);
 }
 
 func Definition(def)
 {
-	SetProperty("PictureTransformation",Trans_Rotate(-60,1,0,1),def);
+	SetProperty("PictureTransformation",Trans_Rotate(-60, 1, 0, 1),def);
 }
 
 /*-- Properties --*/

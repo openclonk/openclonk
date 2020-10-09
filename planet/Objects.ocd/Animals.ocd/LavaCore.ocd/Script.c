@@ -45,7 +45,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	while ((amount > 0) && (--max_tries > 0))
 	{
 		var spot = FindLocation(Loc_Material("Lava"), Loc_Space(20), loc_area);
-		if(!Random(2))
+		if (!Random(2))
 			spot = FindLocation(Loc_Material("DuroLava"), Loc_Space(20), loc_area);
 		if (!spot) continue;
 		
@@ -417,7 +417,7 @@ local ActMap = {
 		Speed = 10,
 		Length = 1,
 		Delay = 0,
-		FacetBase=1,
+		FacetBase = 1,
 		Directions = 2,
 		FlipDir = 1,
 		NextAction = "Hold",

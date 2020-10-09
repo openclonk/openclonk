@@ -37,7 +37,7 @@ global func Unstick(int range)
 	{
 		for (var i = 1; i <= (range ?? 7); ++i)
 		{
-			for (var d in [[0,-i], [0,i], [-i,0], [i,0]])
+			for (var d in [[0,-i], [0, i], [-i, 0], [i, 0]])
 			{
 				if (!Stuck(d[0], d[1]))
 				{
@@ -91,8 +91,8 @@ global func HalfVehicleFadeJumpStop()
 {
 	if (!this)
 		return FatalError("this function requires object context");
-	var fx;
-	if (fx = GetEffect("IntHalfVehicleFadeJump", this))
+	var fx = GetEffect("IntHalfVehicleFadeJump", this);
+	if (fx)
 		fx.Interval = 1;
 }
 
@@ -105,7 +105,7 @@ global func FxIntHalfVehicleFadeJumpStart(object target, effect fx, int temp)
 	}
 	fx.collideverts = CreateArray();
 	for (var i = target->GetVertexNum(); i-->0;)
-		if(!(target->GetVertex(i, VTX_CNAT) & CNAT_PhaseHalfVehicle)) {
+		if (!(target->GetVertex(i, VTX_CNAT) & CNAT_PhaseHalfVehicle)) {
 			PushBack(fx.collideverts, i);
 			target->SetVertexCNAT(i, CNAT_PhaseHalfVehicle, true);
 		}

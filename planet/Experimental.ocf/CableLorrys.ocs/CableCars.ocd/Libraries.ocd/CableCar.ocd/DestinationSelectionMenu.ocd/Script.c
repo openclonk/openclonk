@@ -11,9 +11,8 @@ local Description = "$Description$";
 // used as a static function
 public func CreateFor(object cursor, object car, object station)
 {
-	if (!cursor) return;
-	if (!car) return;
-	if (!station) return;
+	if (!cursor || !car || !station)
+		return;
 
 	var obj = CreateObject(GUI_DestinationSelectionMenu, AbsX(0), AbsY(0), cursor->GetOwner());
 	obj.Visibility = VIS_Owner;
@@ -41,7 +40,7 @@ public func Hide() { this.Visibility = VIS_None; return true; }
 // Called when the menu is open and the player clicks outside.
 public func OnMouseClick() { return Close(); }
 
-func Destruction()
+public func Destruction()
 {
 	if (menu_id)
 		GuiClose(menu_id);
@@ -56,138 +55,136 @@ public func Init(object cursor, object car, object station)
 	this.cursor = cursor;
 	this.cable_car = car;
 	this.cable_station = station;
-	this.dummy = CreateObject(Dummy, AbsX(station->GetX()), AbsY(station->GetY()), GetOwner());
-	dummy.Visibility = VIS_Owner;
-	dummy->SetLightRange(5, 20);
+	
+	// Create dummy for destination highlighting.
+	this.dummy = CreateDummy(station);
 
-	var dest_list = station->GetDestinationList(nil);
-
-	var dest_menu = {
+	var dest_list = station->GetDestinationList();
+	var dest_menu =
+	{
 		Target = this,
 		Decoration = GUI_MenuDeco,
 		BackgroundColor = RGB(0, 0, 0),
-		Bottom = "3em",
-		Left = "50% - 5em",
-		Right = "50% + 5em",
+		Top = "0%",
+		Bottom = "0%+14em",
+		Left = "0%",
+		Right = "0%+12em",
 		Priority = 1,
 		Player = cursor->GetOwner(),
-		caption = {
+		caption = 
+		{
 			Text = "$SelectDestination$",
 			Bottom = "1em",
 			Priority = 2,
 		},
-		buttons = {
+		buttons = 
+		{
 			Top = "1em",
+			Bottom = "13em",
 			Style = GUI_GridLayout,
 			Priority = 999
+		},
+		info = 
+		{
+			Top = "13em",
+			Text = nil,		
+			Priority = 9999	
 		}
 	};
 
 	FillDestinationButtons(dest_menu, dest_list);
-
 	GuiOpen(dest_menu);
 }
 
-func FillDestinationButtons(proplist menu, array list)
+public func FillDestinationButtons(proplist menu, array dest_list)
 {
-	var priority = 1000;
-	// Left button
-	var left = {
-		Right = "2em",
-		Bottom = "2em",
-		Symbol = Icon_LibraryCableCar,
-		GraphicsName = "LeftGrey",
-		BackgroundColor = { Std = RGB(0, 0, 0), Hover = RGB(100, 30, 30) },
-		Priority = ++priority
-	};
-	if (list[3] > 3)
+	var index = 0;
+	for (var dest in dest_list)
 	{
-		left.OnMouseIn = GuiAction_SetTag("Hover");
-		left.OnMouseOut = GuiAction_SetTag("Std");
-		left.GraphicsName = "Left";
-		left.OnClick = GuiAction_Call(this, "ShiftSelection", list[0]);
-	}
-	// List buttons
-	var list_button = {
-		Right = "2em",
-		Bottom = "2em",
-		BackgroundColor = { Std = RGB(0, 0, 0), Hover = RGB(100, 30, 30) },
-		OnMouseOut = GuiAction_SetTag("Std")
-	};
-	var buttons = CreateArray(3);
-	for (var i = 0; i < 3; i++)
-	{
-		if (list[i])
+		if (!dest)
+			continue;
+		var connected = dest.connected_building;
+		var connected_info = {};
+		if (connected)
 		{
-			buttons[i] = new list_button{
-				Symbol = list[i],
-				Tooltip = Format("$SendTo$", list[i]->GetName()),
-				OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "PreviewDestination", list[i])],
-				OnClick = GuiAction_Call(this, "SelectDestination", list[i]),
-				Priority = ++priority
+			connected_info =
+			{
+				Left = "1em",
+				Top = "1.5em",
+				conn = 
+				{
+					Left = "0.5em",
+					Symbol = connected
+				},
+				symbol_conn =
+				{
+					Right = "1em",
+					Symbol = ConstructionPreviewer_IconCombine
+				}
 			};
-		} else {
-			buttons[i] = new list_button {};
-		}
+		}		
+		menu.buttons[Format("dest%d", index)] = 
+		{
+			Right = "3em",
+			Bottom = "3em",
+			BackgroundColor = { Std = RGB(0, 0, 0), Hover = RGB(100, 30, 30) },
+			OnMouseOut = GuiAction_SetTag("Std"),
+			Symbol = dest,
+			Tooltip = Format("$SendTo$", dest->GetName()),
+			OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "PreviewDestination", dest)],
+			OnClick = GuiAction_Call(this, "SelectDestination", dest),
+			Priority = 1000 + index,
+			connected_to = connected_info
+		};
+		index++;
 	}
-	// Right button
-	var right = {
-		Right = "2em",
-		Bottom = "2em",
-		Symbol = Icon_LibraryCableCar,
-		GraphicsName = "Grey",
-		BackgroundColor = { Std = RGB(0, 0, 0), Hover = RGB(100, 30, 30) },
-		Priority = ++priority
-	};
-	if (list[3] > 3)
-	{
-		right.OnMouseIn = GuiAction_SetTag("Hover");
-		right.OnMouseOut = GuiAction_SetTag("Std");
-		right.GraphicsName = nil;
-		right.OnClick = GuiAction_Call(this, "ShiftSelection", list[2]);
-	}
-	// Assemble
-	menu.buttons.left = left;
-	menu.buttons.first = buttons[0];
-	menu.buttons.second = buttons[1];
-	menu.buttons.third = buttons[2];
-	menu.buttons.right = right;
+	return;
 }
 
-func PreviewDestination(object to_preview, int plr, int menu_id, int submenu_id, object target)
+public func PreviewDestination(object to_preview, int plr, int menu_id, int submenu_id, object target)
 {
-	if (to_preview == nil) return;
-	if (dummy == nil)
-	{
-		dummy = CreateObject(Dummy, AbsX(to_preview->GetX()), AbsY(to_preview->GetY()), GetOwner());
-		dummy.Visibility = VIS_Owner;
-		dummy->SetLightRange(5, 20);
-	}
+	if (!to_preview)
+		return;
+		
+	if (!dummy)
+		dummy = CreateDummy(to_preview);
 
+	// Set view, light and draw the item's graphics in front of it again to achieve a highlighting effect.
 	SetPlrView(plr, to_preview, true);
+	dummy.Plane = to_preview.Plane + 1;
 	dummy->SetPosition(to_preview->GetX(), to_preview->GetY());
-}
-
-func ShiftSelection(object new_middle, int plr, int menu_id, int submenu_id, object target)
-{
-	if (!cable_station) return;
-	if (!menu_id) return;
-
-	var update = { buttons = { } };
-	var list = cable_station->GetDestinationList(new_middle);
-
-	FillDestinationButtons(update, list);
+	dummy->SetVertexXY(0, to_preview->GetVertex(0, VTX_X), to_preview->GetVertex(0, VTX_Y));
+	dummy->SetAction("Attach", to_preview);
+	dummy->SetGraphics(nil, nil, 1, GFXOV_MODE_Object, nil, GFX_BLIT_Additive, to_preview);
+	
+	// Update info on this destination.
+	var eta = this.cable_station->GetLengthToTarget(to_preview) / this.cable_car->GetCableSpeed() / 36;
+	var update = {info = {Text = Format("$InfoETA$", eta)}};
 	GuiUpdate(update, menu_id);
-	Sound("UI::Click", true, nil, plr);
 }
 
-func SelectDestination(object target, int plr, int menu_id, int submenu_id, object target)
+public func SelectDestination(object target, int plr, int menu_id, int submenu_id, object target)
 {
-	if (target == nil) return;
-	if (!cable_car) return;
-
+	if (target == nil || !cable_car)
+		return;
 	cable_car->SetDestination(target);
 	Sound("UI::Click", true, nil, plr);
-
 	RemoveObject();
+}
+
+private func CreateDummy(object for_obj)
+{
+	var new_dummy = CreateObject(Dummy, AbsX(for_obj->GetX()), AbsY(for_obj->GetY()), GetOwner());
+	new_dummy.Visibility = VIS_Owner;
+	new_dummy->SetLightRange(5, 20);
+	new_dummy.ActMap = 
+	{
+		Attach = 
+		{
+			Name = "Attach",
+			Procedure = DFA_ATTACH,
+			FacetBase = 1
+		}
+	};
+	return new_dummy;
 }

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2016, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2018, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -23,10 +23,36 @@
 #include "script/C4ScriptHost.h"
 
 #include <cinttypes>
+#include <deque>
 
 #define C4AUL_Inherited     "inherited"
 #define C4AUL_SafeInherited "_inherited"
 #define C4AUL_DebugBreak    "__debugbreak"
+
+namespace
+{
+	enum class ScriptLinkType
+	{
+		Include,
+		Same,
+		Appendto,
+	};
+}
+static ScriptLinkType GetScriptLinkType(const C4ScriptHost *source_host, const C4ScriptHost *target_host)
+{
+	if (source_host == target_host)
+		return ScriptLinkType::Same;
+
+	const auto &sources = target_host->SourceScripts;
+	const auto source_script_index = std::find(begin(sources), end(sources), source_host);
+	const auto target_script_index = std::find(begin(sources), end(sources), target_host);
+	assert(source_script_index != target_script_index);
+	if (source_script_index < target_script_index)
+		return ScriptLinkType::Include;
+	else if (source_script_index > target_script_index)
+		return ScriptLinkType::Appendto;
+	return ScriptLinkType::Same;
+}
 
 static std::string FormatCodePosition(const C4ScriptHost *source_host, const char *pos, const C4ScriptHost *target_host = nullptr, const C4AulScriptFunc *func = nullptr)
 {
@@ -47,14 +73,14 @@ static std::string FormatCodePosition(const C4ScriptHost *source_host, const cha
 		int line = SGetLine(source_host->GetScript(), pos);
 		int col = SLineGetCharacters(source_host->GetScript(), pos);
 
-		s += strprintf("%s:%d:%d)",
-			source_host->GetFilePath(),
-			line, col
-		);
+		s += strprintf("%s:%d:%d)", source_host->GetFilePath(), line, col);
 	}
 	if (target_host && source_host != target_host)
 	{
-		s += strprintf(" (as #appendto/#include to %s)", target_host->ScriptName.getData());
+		if (GetScriptLinkType(source_host, target_host) == ScriptLinkType::Include)
+			s += strprintf(" (included by %s)", target_host->ScriptName.getData());
+		else
+			s += strprintf(" (appended to %s)", target_host->ScriptName.getData());
 	}
 	return s;
 }
@@ -72,6 +98,12 @@ static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, cons
 #define DIAG(id, msg, enabled) if (warning == C4AulWarningId::id && !enabled) return;
 #include "C4AulWarnings.h"
 #undef DIAG
+	}
+	else if (target_host && GetScriptLinkType(host, target_host) == ScriptLinkType::Include)
+	{
+		// Don't re-emit warnings for an #include'd script, they've already
+		// been shown when the original script was compiled
+		return;
 	}
 	else if (!host->IsWarningEnabled(SPos, warning))
 	{
@@ -175,6 +207,12 @@ class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
 
 	std::stack<Loop> active_loops;
 
+	struct Scope
+	{
+		std::set<std::string> variables;
+	};
+	std::deque<Scope> scopes;
+
 	// The type of the variable on top of the value stack. C4V_Any if unknown.
 	C4V_Type type_of_stack_top = C4V_Any;
 	
@@ -254,6 +292,37 @@ class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
 			}
 		}
 	};
+	
+	class ScopeGuard
+	{
+		// Ensures that the scope stack is properly updated
+		CodegenAstVisitor * const parent;
+	public:
+		explicit ScopeGuard(CodegenAstVisitor *parent) : parent(parent)
+		{
+			parent->scopes.emplace_front();
+		}
+		~ScopeGuard()
+		{
+			parent->scopes.pop_front();
+		}
+
+		// moveable, not copyable
+		ScopeGuard(ScopeGuard &&rhs) = default;
+		ScopeGuard &operator=(ScopeGuard &&) = default;
+
+		ScopeGuard(const ScopeGuard &) = delete;
+		ScopeGuard &operator=(const ScopeGuard &) = delete;
+	};
+	ScopeGuard enterScope() { return ScopeGuard(this); }
+
+	void WarnOnAssignment(const ::aul::ast::ExprPtr &n) const
+	{
+		if (dynamic_cast<const ::aul::ast::AssignmentExpr*>(n.get()) != nullptr)
+		{
+			Warn(target_host, host, n.get(), Fn, C4AulWarningId::suspicious_assignment);
+		}
+	}
 
 public:
 	CodegenAstVisitor(C4ScriptHost *host, C4ScriptHost *source_host) : target_host(host), host(source_host) {}
@@ -1039,6 +1108,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 {
 	StackGuard g(this, 1);
 	assert(Fn);
+	assert(!scopes.empty());
 	C4Value dummy;
 	const char *cname = n->identifier.c_str();
 	C4String *interned = ::Strings.FindString(cname);
@@ -1060,6 +1130,13 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 	}
 	else if (Fn->VarNamed.GetItemNr(cname) != -1)
 	{
+		const bool in_scope = end(scopes) != std::find_if(begin(scopes), end(scopes), [n](const Scope &scope) {
+			return scope.variables.find(n->identifier) != scope.variables.end();
+		});
+		if (!in_scope)
+		{
+			Warn(target_host, host, n, Fn, C4AulWarningId::variable_out_of_scope, cname);
+		}
 		AddVarAccess(n->loc, AB_DUP, Fn->VarNamed.GetItemNr(cname));
 	}
 	// Can't use Fn->Parent->HasProperty here because that only returns true
@@ -1400,6 +1477,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ParExpr *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Block *n)
 {
+	auto scope = enterScope();
 	for (const auto &s : n->children)
 	{
 		StackGuard g(this, 0);
@@ -1415,6 +1493,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Return *n)
 {
 	StackGuard g(this, 0);
 
+	WarnOnAssignment(n->value);
 	SafeVisit(n->value);
 	AddBCC(n->loc, AB_RETURN);
 }
@@ -1433,15 +1512,20 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 	// continue jumps to incr
 	// break jumps to exit
 
+	auto scope = enterScope();
 	if (n->init)
 	{
 		if (SafeVisit(n->init))
 			MaybePopValueOf(n->init);
 	}
-	int cond = -1, condition_jump = -1;
+	int cond = -1;
 	PushLoop();
 	if (n->cond)
 	{
+		// XXX:
+		// Assignments in the condition here should warn as well (like they do in
+		// if conditions) but a ton of code uses those assignments at the moment
+		// and people are divided about allowing it
 		cond = AddJumpTarget();
 		SafeVisit(n->cond);
 		active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
@@ -1484,6 +1568,9 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::RangeLoop *n)
 	// continue jumps to cond
 	// break jumps to exit
 
+	auto scope = enterScope();
+	scopes.front().variables.insert(n->var);
+
 	const char *cname = n->var.c_str();
 	int var_id = Fn->VarNamed.GetItemNr(cname);
 	assert(var_id != -1 && "CodegenAstVisitor: unable to find variable in foreach");
@@ -1511,6 +1598,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::RangeLoop *n)
 void C4AulCompiler::CodegenAstVisitor::EmitFunctionCode(const ::aul::ast::Function *f, const ::aul::ast::Node *n)
 {
 	assert(Fn != nullptr);
+	assert(scopes.empty());
 
 	Fn->ClearCode();
 
@@ -1519,6 +1607,7 @@ void C4AulCompiler::CodegenAstVisitor::EmitFunctionCode(const ::aul::ast::Functi
 		AddBCC(n->loc, AB_STACK, Fn->VarNamed.iSize);
 	stack_height = 0;
 
+	auto scope = enterScope();
 	try
 	{
 		f->body->accept(this);
@@ -1546,11 +1635,16 @@ void C4AulCompiler::CodegenAstVisitor::EmitFunctionCode(const ::aul::ast::Functi
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::DoLoop *n)
 {
+	auto scope = enterScope();
 	int body = AddJumpTarget();
 	PushLoop();
 	if (SafeVisit(n->body))
 		MaybePopValueOf(n->body);
 	int cond = AddJumpTarget();
+	// XXX:
+	// Assignments in the condition here should warn as well (like they do in
+	// if conditions) but a ton of code uses those assignments at the moment
+	// and people are divided about allowing it
 	SafeVisit(n->cond);
 	AddJumpTo(n->loc, AB_COND, body);
 	PopLoop(cond);
@@ -1558,8 +1652,13 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::DoLoop *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::WhileLoop *n)
 {
+	auto scope = enterScope();
 	int cond = AddJumpTarget();
 	PushLoop();
+	// XXX:
+	// Assignments in the condition here should warn as well (like they do in
+	// if conditions) but a ton of code uses those assignments at the moment
+	// and people are divided about allowing it
 	SafeVisit(n->cond);
 	active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
 	if (SafeVisit(n->body))
@@ -1583,6 +1682,8 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Continue *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::If *n)
 {
+	auto scope = enterScope();
+	WarnOnAssignment(n->cond);
 	SafeVisit(n->cond);
 	int jump = AddBCC(n->loc, AB_CONDN);
 	// Warn if we're controlling a no-op ("if (...);")
@@ -1617,6 +1718,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarDecl *n)
 		switch (n->scope)
 		{
 		case ::aul::ast::VarDecl::Scope::Func:
+			scopes.front().variables.insert(dec.name);
 			if (dec.init)
 			{
 				// Emit code for the initializer

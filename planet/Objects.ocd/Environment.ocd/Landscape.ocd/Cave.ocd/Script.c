@@ -33,7 +33,7 @@ public func Place(int amount, proplist area, proplist settings)
 	var height = settings.height ?? 100;
 	var realwidth = 50, realheight = 50;
 	
-	if(width < height)
+	if (width < height)
 	{
 		var aspect = (100 * width) / height;
 		realwidth = (aspect * realheight) / 100;
@@ -60,7 +60,7 @@ public func Place(int amount, proplist area, proplist settings)
 
 	var failsafe = 100;
 	
-	while((--failsafe > 0) && amount > 0)
+	while ((--failsafe > 0) && amount > 0)
 	{
 		var spot = FindLocation(Loc_Solid(), Loc_Func(Landscape_Cave.IsGoodCaveSpot), Loc_InArea(area));
 		if (!spot) continue;

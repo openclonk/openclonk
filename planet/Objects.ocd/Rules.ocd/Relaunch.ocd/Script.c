@@ -191,9 +191,9 @@ public func Initialize()
 private func CheckDescription()
 {
 	// If neutral flagpoles exist, update name and description.
-	if(respawn_at_base)
+	if (respawn_at_base)
 	{
-		if(ObjectCount(Find_ID(Flagpole), Find_Func("IsNeutral")))
+		if (ObjectCount(Find_ID(Flagpole), Find_Func("IsNeutral")))
 		{
 			SetName("$Name2$");
 			this.Description = "$Description2$";
@@ -219,8 +219,9 @@ public func InitializePlayer(int plr)
 	// Check if relaunch is needed.
 	if (!initial_relaunch || !perform_restart)
 		return;	
-	// Scenario script callback.
-	if (GameCallEx("OnPlayerRelaunch", plr, false))
+	// Scenario script and goals callbacks.
+	GameCallEx("OnPlayerRelaunchCountChanged", plr);
+	if (GameCall("OnPlayerRelaunch", plr, false))
 		return;
 	return DoRelaunch(plr, nil, nil, true);
 }
@@ -241,7 +242,9 @@ public func OnClonkDeath(object clonk, int killer)
 			return;
 		}
 	}
-	if (GameCallEx("OnPlayerRelaunch", plr, true))
+	// Scenario script and goals callbacks.
+	GameCallEx("OnPlayerRelaunchCountChanged", plr);
+	if (GameCall("OnPlayerRelaunch", plr, true))
 		return;
 	return DoRelaunch(plr, clonk, nil);
 }
@@ -258,10 +261,11 @@ private func TransferInventory(object from, object to)
 {
 	if (!from || !to) return;
 	// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
-	var i = from->ContentsCount(), contents;
+	var i = from->ContentsCount();
 	while (i--)
 	{
-		if (contents = from->Contents(i))
+		var contents = from->Contents(i);
+		if (contents)
 		{
 			if (contents->~IsDroppedOnDeath(from))
 			{
@@ -358,7 +362,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	
 	if (!GetCursor(plr) || GetCursor(plr) == clonk)
 		SetCursor(plr, new_clonk);
-	new_clonk->DoEnergy(new_clonk.Energy ?? 100000);
+	new_clonk->DoEnergy(new_clonk.MaxEnergy ?? 100000);
 	
 	if (relaunch_time)
 	{
@@ -431,7 +435,7 @@ public func GetPlayerRelaunchCount(int plr)
 
 public func DoPlayerRelaunchCount(int plr, int value)
 {
-	if(HasUnlimitedRelaunches())
+	if (HasUnlimitedRelaunches())
 		return;
 	relaunches[plr] += value;
 	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr]);

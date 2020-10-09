@@ -42,11 +42,14 @@ public func MergeWithStacksIn(object to_building, ...)
 {
 	if (to_building && to_building->~IsProducer() && !to_building->~IsCollectionAllowed(this))
 	{
-		var i = ContentsCount(), contents, num_collected = 0;
+		var i = ContentsCount(), num_collected = 0;
 		while (i--)
-			if (contents = Contents(i))
+		{
+			var contents = Contents(i);
+			if (contents)
 				if (to_building->Collect(contents))
 					++num_collected;
+		}
 		// Return if contents transfer was successful.
 		if (num_collected > 0) return true;
 	}
@@ -101,11 +104,11 @@ public func IsBucketEmpty()
 func PlayBucketAnimation(object clonk)
 {
 	// animation only available for jumping and walking
-	if(!clonk->IsJumping() && !clonk->IsWalking())
+	if (!clonk->IsJumping() && !clonk->IsWalking())
 		return;
 
 	var arm, carry_bone;
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+	if (clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
 		arm = "L";
 		carry_bone = "pos_hand1";
@@ -117,9 +120,9 @@ func PlayBucketAnimation(object clonk)
 	}
 	
 	// figure out the kind of animation to use
-	var length=15;
+	var length = 15;
 	var animation;
-	if(clonk->IsJumping())
+	if (clonk->IsJumping())
 		animation = Format("SwordJump2.%s",arm);
 	else
 		animation = Format("SwordSlash2.%s", arm);
@@ -138,7 +141,7 @@ func Spill(int angle)
 	if (stack_count > 1) material_amount *= stack_count;
 
 	// This will only spray out the material because no solid base to stick it on was found
-	CastPXS(material_name, material_amount, 20, 0,0, angle, 15);
+	CastPXS(material_name, material_amount, 20, 0, 0, angle, 15);
 }
 
 /*-- Production --*/
@@ -161,7 +164,7 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand)
 
 protected func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1100)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500, 400, 0), Trans_Rotate(-10, 1, 0, 0), Trans_Rotate(30, 0, 1, 0), Trans_Rotate(+25, 0, 0, 1), Trans_Scale(1100)),def);
 }
 
 /*-- Properties --*/

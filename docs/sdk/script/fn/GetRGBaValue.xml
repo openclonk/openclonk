@@ -6,7 +6,7 @@
   <func>
     <title>GetRGBaValue</title>
     <category>Arithmetics</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -50,7 +50,7 @@
     </desc>
     <examples>
       <example>
-        <code>GetRGBaValue(<funclink>GetColor</funclink>(<funclink>GetCursor</funclink>()),2);</code>
+        <code>GetRGBaValue(<funclink>GetCursor</funclink>()-><funclink>GetColor</funclink>(), 2);</code>
         <text>Returns the green fraction of the currently selected clonk.</text>
       </example>
     </examples>

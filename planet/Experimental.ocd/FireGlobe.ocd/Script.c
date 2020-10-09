@@ -5,7 +5,7 @@
 */
 
 
-local sx,sy,ex,ey;
+local sx, sy, ex, ey;
 local vis;
 local aimed;
 
@@ -17,27 +17,27 @@ func Construction()
 
 func ControlUse(object clonk, int x, int y)
 {
-	if(!aimed) return false;
+	if (!aimed) return false;
 	
 	// fire fireball
-	var angle = Angle(0,0,x,y);
+	var angle = Angle(0, 0, x, y);
 	Exit();
-	Launch(angle,120,clonk);
-	SetDivert(sx,sy,ex,ey);
+	Launch(angle, 120, clonk);
+	SetDivert(sx, sy, ex, ey);
 	
 	return true;
 }
 
 func ControlUseStart(object clonk, int x, int y)
 {
-	if(aimed) return false;
+	if (aimed) return false;
 
-	sx = x+clonk->GetX();
-	sy = y+clonk->GetY();
+	sx = x + clonk->GetX();
+	sy = y + clonk->GetY();
 	
-	if(vis) vis->RemoveObject();
-	vis = CreateObjectAbove(VisualPath,0,0,clonk->GetOwner());
-	vis->Set(sx,sy,x+clonk->GetX(),y+clonk->GetY());
+	if (vis) vis->RemoveObject();
+	vis = CreateObjectAbove(VisualPath, 0, 0, clonk->GetOwner());
+	vis->Set(sx, sy, x + clonk->GetX(),y + clonk->GetY());
 	vis["Visibility"]=VIS_Owner;
 
 	return true;
@@ -47,27 +47,27 @@ func HoldingEnabled() { return true; }
 
 func ControlUseHolding(object clonk, int x, int y)
 {
-	if(aimed) return false;
+	if (aimed) return false;
 	
-	if(vis) vis->Set(sx,sy,x+clonk->GetX(),y+clonk->GetY());
+	if (vis) vis->Set(sx, sy, x + clonk->GetX(),y + clonk->GetY());
 }
 
 func ControlUseStop(object clonk, int x, int y)
 {
-	if(aimed) return false;
+	if (aimed) return false;
 	
-	ex = x+clonk->GetX();
-	ey = y+clonk->GetY();
+	ex = x + clonk->GetX();
+	ey = y + clonk->GetY();
 	
-	vis->Set(sx,sy,ex,ey);
-	aimed=true;
+	vis->Set(sx, sy, ex, ey);
+	aimed = true;
 	
 	return true;
 }
 
 public func DelLine()
 {
-	if(vis) vis->RemoveObject();
+	if (vis) vis->RemoveObject();
 }
 
 public func Deselection()
@@ -83,13 +83,13 @@ public func Destruction()
 
 public func Launch(int angle, int str, object shooter)
 {
-	var xdir = Sin(angle,str);
+	var xdir = Sin(angle, str);
 	var ydir = Cos(angle,-str);
 	SetXDir(xdir);
 	SetYDir(ydir);
 	
-	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
-	AddEffect("InFlight", this, 1,1, this);
+	AddEffect("HitCheck", this, 1, 1, nil, nil, shooter);
+	AddEffect("InFlight", this, 1, 1, this);
 }
 
 
@@ -117,7 +117,7 @@ public func Hit()
 // rotate arrow according to speed
 public func FxInFlightStart(object target, effect, int temp)
 {
-	if(temp) return;
+	if (temp) return;
 	effect.x = target->GetX();
 	effect.y = target->GetY();
 }
@@ -129,7 +129,7 @@ public func FxInFlightTimer(object target, effect, int time)
 	var newx = target->GetX();
 	var newy = target->GetY();
 
-	if(effect.freeflight)
+	if (effect.freeflight)
 	{
 		var ax = effect.ax;
 		var ay = effect.ay;
@@ -141,7 +141,7 @@ public func FxInFlightTimer(object target, effect, int time)
 		{
 			var angle = Angle(ax, ay, bx, by);
 			var speed = 60;
-			target->SetXDir(Sin(angle,speed));
+			target->SetXDir(Sin(angle, speed));
 			target->SetYDir(-Cos(angle, speed));
 			
 			effect.freeflight = false;
@@ -165,9 +165,9 @@ global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, in
 	var denominator = (BAy*QPx - BAx*QPy);
 	var numerator = (BAx*PAy - BAy*PAx);
 	// parallel!
-	if(denominator == 0)
+	if (denominator == 0)
 	{
-		if(numerator != 0) return nil;
+		if (numerator != 0) return nil;
 		// on same line somewhere
 		else
 		{
@@ -178,14 +178,14 @@ global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, in
 	// in parameter bounds?
 	var Y = 10000 * numerator/denominator;
 	
-	if(!Inside(Y,0,10000)) return nil;
+	if (!Inside(Y, 0, 10000)) return nil;
 
 	// we don't want division by zero...
-	if(BAy != 0) {
+	if (BAy != 0) {
 		numerator = (PAy + Y*QPy/10000);
 		denominator = BAy;
 	}
-	else if(BAx != 0) {
+	else if (BAx != 0) {
 		numerator = (PAx + Y*QPx/10000);
 		denominator = BAx;
 	}
@@ -193,11 +193,11 @@ global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, in
 	// in parameter bounds
 	var X = 10000*numerator / denominator;
 	
-	if(!Inside(X,0,10000)) return nil;
+	if (!Inside(X, 0, 10000)) return nil;
 
 	// this is the point...
-	var x = Ax+X*(BAx)/10000;
-	var y = Ay+X*(BAy)/10000;
+	var x = Ax + X*(BAx)/10000;
+	var y = Ay + X*(BAy)/10000;
 
 	return [x, y];
 }

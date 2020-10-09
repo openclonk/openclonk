@@ -7,7 +7,7 @@
     <title>C4D_Living</title>
     <category>Objects</category>
     <subcat>Category</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int </rtype></syntax>
     <desc>Objects with this category are alive when created.</desc>
     <examples>

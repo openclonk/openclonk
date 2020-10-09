@@ -1,11 +1,16 @@
+/**
+	Column
 
-protected func Initialize()
+	@author
+*/
+
+public func Initialize()
 {
-	SetProperty("MeshTransformation",Trans_Mul(Trans_Scale(150,150,150),Trans_Rotate(Random(360),0,1,0)));
+	this.MeshTransformation = Trans_Mul(this.MeshTransformation, Trans_Rotate(Random(360), 0, 1, 0));
+	return;
 }
 
-
-protected func Damage()
+public func Damage()
 {
 	if (GetDamage() > 80)
 	{
@@ -28,13 +33,18 @@ protected func Damage()
 					comp->SetXDir(Random(3) - 1);
 					comp->SetYDir(Random(3) - 1);
 					comp->SetRDir(Random(3) - 1);
-					comp->SetClrModulation(RGB(240,210,200));	//give rocks the color of brick
+					comp->SetClrModulation(RGB(240, 210, 200));	//give rocks the color of brick
 				}
 				}
 		RemoveObject();
 	}
 	return;
 }
+
+/*-- Properties --*/
+
 local Name = "$Name$";
 local Plane = 200;
 local Components = {Rock = 7};
+local MeshTransformation = [152, 0, 0, 0, 0, 152, 0, 0, 0, 0, 152, 0]; // Trans_Scale(152)
+local PictureTransformation = [152, 0, 0, 0, 0, 152, 0, 0, 0, 0, 152, 0]; // Trans_Scale(152)

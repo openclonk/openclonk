@@ -76,7 +76,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 {
 	int32_t iResult=0;
 	C4Def *nDef = nullptr;
-	char szEntryname[_MAX_FNAME+1];
+	char szEntryname[_MAX_FNAME_LEN];
 	C4Group hChild;
 	bool fPrimaryDef=false;
 	bool fThisSearchMessage=false;
@@ -139,8 +139,8 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			hChild.Close();
 		}
 
-	// load additional system scripts for def groups only
-	if (!fPrimaryDef && fLoadSysGroups) Game.LoadAdditionalSystemGroup(hGroup);
+	// Load additional system scripts: Def groups (primary def), as well as real definitions
+	if (fLoadSysGroups) Game.LoadAdditionalSystemGroup(hGroup);
 
 	if (fThisSearchMessage) { LogF(LoadResStr("IDS_PRC_DEFSLOADED"),iResult); }
 

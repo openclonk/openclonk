@@ -87,25 +87,25 @@ public func Reset(clonk)
 	clonk->SetHandAction(false);
 	clonk->UpdateAttach();
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
-	swingtime=0;
+	swingtime = 0;
 	RemoveEffect("IntPickaxe", clonk);
 }
 
 func DoSwing(object clonk, int ix, int iy)
 {
-	var angle = 180-Angle(0,0,ix,iy);
+	var angle = 180-Angle(0, 0, ix, iy);
 
 	//Creates an imaginary line which runs for 'MaxReach' distance (units in pixels)
 	//or until it hits a solid wall.
-	var iDist=0;
+	var iDist = 0;
 	var x2, y2;
-	while (!GBackSolid((x2=Sin(angle,iDist)), (y2=Cos(angle,iDist))) && iDist < MaxReach)
+	while (!GBackSolid((x2 = Sin(angle, iDist)), (y2 = Cos(angle, iDist))) && iDist < MaxReach)
 	{
 		// Check some additional surrounding pixels in a cone to make hitting single pixels easier.
 		for (var da = -StrikeCone/2; da <= StrikeCone/2; da += 2)
 		{
 			if (Abs(da) < 3) continue;
-			var x3 = Sin(angle+da,iDist), y3 = Cos(angle+da, iDist);
+			var x3 = Sin(angle + da, iDist), y3 = Cos(angle + da, iDist);
 			if (x3 != x2 || y3 != y2)
 			{
 				x2 = x3; y2 = y3;
@@ -117,23 +117,23 @@ func DoSwing(object clonk, int ix, int iy)
 	}
 	
 	//Point of contact, where the pick strikes the landscape
-	var is_solid = GBackSolid(x2,y2);
+	var is_solid = GBackSolid(x2, y2);
 	
 	// alternatively hit certain objects
 	var target_obj = FindObject(Find_AtPoint(x2, y2), Find_Func("CanBeHitByPickaxe"));
 	
 	// notify the object that it has been hit
-	if(target_obj)
+	if (target_obj)
 		target_obj->~OnHitByPickaxe(this, clonk);
 		
 	// special effects only ifhit something
-	if(is_solid || target_obj)
+	if (is_solid || target_obj)
 	{	
-		var mat = GetMaterial(x2,y2);
-		var tex = GetTexture(x2,y2);
+		var mat = GetMaterial(x2, y2);
+		var tex = GetTexture(x2, y2);
 
 		//Is the material struck made of a diggable material?
-		if(is_solid && GetMaterialVal("DigFree","Material",mat))
+		if (is_solid && GetMaterialVal("DigFree","Material",mat))
 		{
 			var clr = GetAverageTextureColor(tex);
 			var particles =
@@ -161,12 +161,12 @@ func DoSwing(object clonk, int ix, int iy)
 				spark.R = PV_Random(0, 128, 2);
 				spark.OnCollision = PC_Bounce();
 			}
-			CreateParticle("StarSpark", x2*9/10,y2*9/10, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(10, 50), spark, 30);
+			CreateParticle("StarSpark", x2*9/10, y2*9/10, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(10, 50), spark, 30);
 			Sound(sound, {pitch = pitch});
 		}
 		
 		// Do blastfree after landscape checks are made. Otherwise, mat always returns as "tunnel"
-		BlastFree(GetX()+x2,GetY()+y2,5,GetController(),MaxPickDensity);
+		BlastFree(GetX()+x2, GetY()+y2, 5, GetController(),MaxPickDensity);
 		
 		// Make sure that new loose objects do not directly hit the Clonk and tumble it.
 		for (var obj in FindObjects(Find_Distance(10, x2, y2), Find_Category(C4D_Object), Find_Layer(), Find_NoContainer()))
@@ -180,19 +180,19 @@ func DoSwing(object clonk, int ix, int iy)
 func FxIntPickaxeTimer(object clonk, proplist effect, int time)
 {
 	++swingtime;
-	if(swingtime >= Pickaxe_SwingTime) // Waits three seconds for animation to run (we could have a clonk swing his pick 3 times)
+	if (swingtime >= Pickaxe_SwingTime) // Waits three seconds for animation to run (we could have a clonk swing his pick 3 times)
 	{
-		DoSwing(clonk,effect.x,effect.y);
+		DoSwing(clonk, effect.x, effect.y);
 		swingtime = 0;
 	}
 	
-	var angle = Angle(0,0,effect.x,effect.y);
+	var angle = Angle(0, 0, effect.x, effect.y);
 	var speed = 50;
 
 	var iPosition = swingtime*180/Pickaxe_SwingTime;
 	speed = speed*(Cos(iPosition-45, 50)**2)/2500;
 	// limit angle
-	angle = BoundBy(angle,65,300);
+	angle = BoundBy(angle, 65, 300);
 	clonk->SetXDir(Sin(angle,+speed),100);
 	clonk->SetYDir(Cos(angle,-speed),100);
 }
@@ -228,7 +228,7 @@ public func GetCarryMode(object clonk, bool idle)
 		return CARRY_Back;
 }
 
-public func GetCarrySpecial(clonk) { if(using == 1) return "pos_hand2"; }
+public func GetCarrySpecial(clonk) { if (using == 1) return "pos_hand2"; }
 
 public func GetCarryTransform()
 {

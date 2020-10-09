@@ -1,6 +1,6 @@
 Sandbox
 
-A scenario to play around with all the cool stuff.
+In this round you can experiment with all objects in the game. Just have fun!
 
 The following tools can be used:
 

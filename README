@@ -14,7 +14,7 @@ Additionally, OpenClonk depends on a number of third-party libraries:
   - libpng (http://www.libpng.org/pub/png/libpng.html)
   - libjpeg-turbo (http://sourceforge.net/projects/libjpeg-turbo/files/)
   - FreeType (http://www.freetype.org/)
-  - The OpenGL Extension Wrangler Library (http://glew.sourceforge.net/)
+  - Epoxy (https://github.com/anholt/libepoxy)
   - FreeALUT (https://github.com/vancegroup/freealut)
   - libogg and libvorbis (https://www.xiph.org/downloads/)
   - Qt >= 5.7 (https://www.qt.io/download-open-source/)
@@ -24,7 +24,7 @@ OS X Specific
 OpenClonk supports OS X versions 10.8 "Mountain Lion" and later.
 If you are using brew (https://github.com/mxcl/homebrew) or MacPorts
 (http://www.macports.org/), the packages you'll have to install are:
-    libjpeg, libpng, freetype, glew, libogg, libvorbis
+    libjpeg, libpng, freetype, epoxy, libogg, libvorbis
 
 Linux Specific
 ==============
@@ -45,3 +45,8 @@ target Windows:
   - OpenAL Soft (http://kcat.strangesoft.net/openal.html)
 To create an installer, you will also need the Nullsoft Install System
 (http://nsis.sourceforge.net/). To create the installer, build the "setup" target.
+
+Packaging Notes for OpenClonk 9.0
+=================================
+In OpenClonk 9.0, the following dependencies changed:
+  - Epoxy replaces GLEW. This should resolve issues with Wayland.

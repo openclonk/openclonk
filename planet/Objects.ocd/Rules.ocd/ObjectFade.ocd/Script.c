@@ -24,7 +24,7 @@ public func DoFadeTime(int to_add)
 
 protected func Initialize() 
 {
-	if(ObjectCount(Find_ID(Rule_ObjectFade), Find_Exclude(this))) {
+	if (ObjectCount(Find_ID(Rule_ObjectFade), Find_Exclude(this))) {
 		FindObject(Find_ID(Rule_ObjectFade), Find_Exclude(this))->DoFadeTime(36);
 		return RemoveObject();
 	}
@@ -91,7 +91,7 @@ public func FxIntFadeOutTimer(object target, effect, int time)
 
 	if (!(target->Contained()) && effect.x == target->GetX() && effect.y == target->GetY())
 	{
-		if(time >= fade_time) 
+		if (time >= fade_time) 
 		{
 			target->RemoveObject();
 			return -1;

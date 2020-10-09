@@ -98,8 +98,10 @@ public func DoBuy(id item, int for_player, int wealth_player, object buyer, bool
 // Sells the object and transfers the wealth to the selling player.
 public func DoSell(object obj, int wealth_player)
 {
-	if (obj->~QueryOnSell(wealth_player, this))
+	if (obj->~QueryRejectSell(wealth_player, this))
+	{
 		return false;
+	}
 
 	// Sell contents first.
 	for (var contents in FindObjects(Find_Container(obj)))
@@ -112,7 +114,7 @@ public func DoSell(object obj, int wealth_player)
 	Sound("UI::Cash", {player = wealth_player});
 	
 	// Add the item to the homebase material.
-	if (!obj->~QueryRebuy(wealth_player, this))
+	if (!obj->~QueryRejectRebuy(wealth_player, this))
 	{
 		this->ChangeBuyableAmount(wealth_player, obj->GetID(), +1);
 	}
@@ -274,11 +276,9 @@ public func OnBuyMenuSelection(id def, extra_data, object clonk)
 
 private func EjectAllContents()
 {
-	var i = ContentsCount();
 	var obj;
-	while (i--) 
-		if (obj = Contents(i))
-			EjectContents(obj);
+	while (obj = Contents())
+		EjectContents(obj);
 }
 
 private func EjectContents(object contents)

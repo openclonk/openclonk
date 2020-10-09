@@ -7,7 +7,7 @@
     <title>SetBridgeActionData</title>
     <category>Objects</category>
     <subcat>Activity</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -34,6 +34,7 @@
       </params>
     </syntax>
     <desc>Sets additional parameters for a currently executed BRIDGE procedure of the calling object.</desc>
+    <remark>Removed in 9.0 OC. You can draw bridges on an object via <emlink href="script/Effects.html">effects</emlink> and <funclink>DrawMaterialQuad</funclink>.</remark>
     <related>
       <funclink>SetAction</funclink>
       <funclink>SetActionData</funclink>
@@ -45,4 +46,5 @@
     </related>
   </func>
   <author>Clonkonaut</author><date>2008-05</date>
+  <author>Marky</author><date>2019-04</date>
 </funcs>

@@ -19,7 +19,7 @@ public func SickleHarvesting() { return true; }
 private func Construction()
 {
 	StartGrowth(this.growth);
-	AddTimer("WaterCheck", 70+Random(10));
+	AddTimer("WaterCheck", 70 + Random(10));
 	AddTimer("WindCheck", 350);
 	swing_anim = PlayAnimation("Swing", 1, Anim_Const(0));
 	return _inherited(...);

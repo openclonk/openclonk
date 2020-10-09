@@ -421,7 +421,7 @@ bool C4Player::Save()
 	LogF(LoadResStr("IDS_PRC_SAVEPLR"), Config.AtRelativePath(Filename));
 	::GraphicsSystem.MessageBoard->EnsureLastMessage();
 	// copy player to save somewhere else
-	char szPath[_MAX_PATH + 1];
+	char szPath[_MAX_PATH_LEN];
 	SCopy(Config.AtTempPath(C4CFN_TempPlayer), szPath, _MAX_PATH);
 	MakeTempFilename(szPath);
 	// For local players, we save over the old player file, as there might
@@ -1515,7 +1515,8 @@ int32_t C4Player::GetSelectedCrewCount()
 void C4Player::EvaluateLeague(bool fDisconnected, bool fWon)
 {
 	// already evaluated?
-	if (LeagueEvaluated) return; LeagueEvaluated=true;
+	if (LeagueEvaluated) return;
+	LeagueEvaluated=true;
 	// set fate
 	C4PlayerInfo *pInfo = GetInfo();
 	if (pInfo)

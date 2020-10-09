@@ -241,7 +241,9 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 		C4String *pStr = Data[1].getStr();
 		if (!pStr) return nullptr;
 		// Construct
-		C4FindObjectProperty *pFO = new C4FindObjectProperty(pStr);
+		C4FindObjectProperty *pFO = Data.GetSize() >= 3
+			? new C4FindObjectProperty(pStr, Data[2])
+			: new C4FindObjectProperty(pStr);
 		// Done
 		return pFO;
 	}
@@ -837,7 +839,7 @@ bool C4FindObjectProperty::Check(C4Object *pObj)
 {
 	assert(Name); // checked in constructor
 	C4Value value;
-	return pObj->GetPropertyByS(Name, &value) && value.getBool();
+	return pObj->GetPropertyByS(Name, &value) && (have_value ? value == Value : value.getBool());
 }
 
 bool C4FindObjectProperty::IsImpossible()

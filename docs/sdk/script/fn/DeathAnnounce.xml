@@ -7,7 +7,7 @@
     <title>DeathAnnounce</title>
     <category>Objects</category>
     <subcat>Living Beings</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>void</rtype></syntax>
     <desc>Displays a death message above the calling object.</desc>
     <related><funclink>Message</funclink></related>

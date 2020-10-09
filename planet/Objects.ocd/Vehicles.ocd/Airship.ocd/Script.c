@@ -52,7 +52,7 @@ func AnimationForward()
 {
 	var i = 50;
 	//Loop animation
-	if(GetAnimationPosition(propanim) + i > GetAnimationLength("Flight"))
+	if (GetAnimationPosition(propanim) + i > GetAnimationLength("Flight"))
 	{
 		SetAnimationPosition(propanim, Anim_Const(GetAnimationPosition(propanim) + i - GetAnimationLength("Flight")));
 		return 1;
@@ -108,7 +108,7 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 			Sound("Structures::FanLoop", {loop_count = 1, pitch = enginesound - 50});
 		}
 	}
-	else if(enginesound)
+	else if (enginesound)
 	{
 		// Fade pitch from 0 to minimum -45, then turn off
 		enginesound = Max(enginesound - 10);
@@ -134,9 +134,9 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 	}
 	
 	//Rise in water
-	//if (GBackLiquid(0,25))
+	//if (GBackLiquid(0, 25))
 		//effect.SpeedY = -10;
-	//if (GBackLiquid(0,25) && !GBackLiquid(0,24) && effect.SpeedY > 1)
+	//if (GBackLiquid(0, 25) && !GBackLiquid(0, 24) && effect.SpeedY > 1)
 		//effect.SpeedY = 0;
 
 	// Turn the airship around if needed
@@ -325,7 +325,7 @@ public func OnDestruction(int change, int cause, int by_player)
 private func AirshipDeath()
 {
 	//First let's create the burnt airship
-	var burntairship = CreateObjectAbove(Airship_Burnt,0,27); //27 pixels down to align ruin with original
+	var burntairship = CreateObjectAbove(Airship_Burnt, 0, 27); //27 pixels down to align ruin with original
 
 	//Now let's copy it's animation, and hold it there
 	var animspot;
@@ -339,7 +339,7 @@ private func AirshipDeath()
 	burntairship->Incinerate(100, GetController());
 
 	// Make sure engine sound is gone
-	Sound("Structures::FanLoop",nil,nil,nil,-1);
+	Sound("Structures::FanLoop",nil, nil, nil,-1);
 
 	// This object has served its purpose.
 	Explode(20);
@@ -369,26 +369,26 @@ local ActMap = {
 
 func Definition(proplist def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0));
+	def.PictureTransformation = Trans_Mul(Trans_Rotate(-25, 1, 0, 0),Trans_Rotate(40, 0, 1, 0));
 	if (def == Airship)
 	{
-		var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
+		var spawn_editor_props = { Type="proplist", Name = def->GetName(), EditorProps= {
 			Pilot = new EnemySpawn->GetAICreatureEditorProps(nil, "$NoPilotHelp$")  { Name="$Pilot$", EditorHelp="$PilotHelp$" },
-			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min=5, Max=10000 },
-			Crew = { Name="$Crew$", EditorHelp="$CrewHelp$", Type="array", Elements=EnemySpawn->GetAICreatureEditorProps(EnemySpawn->GetAIClonkDefaultPropValues("Firestone")) },
-			HitPoints = { Name="$HitPoints$", EditorHelp="$HitPointsHelp$", Type="int", Min=1, Max=1000000 },
+			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min = 5, Max = 10000 },
+			Crew = { Name="$Crew$", EditorHelp="$CrewHelp$", Type="array", Elements = EnemySpawn->GetAICreatureEditorProps(EnemySpawn->GetAIClonkDefaultPropValues("Firestone")) },
+			HitPoints = { Name="$HitPoints$", EditorHelp="$HitPointsHelp$", Type="int", Min = 1, Max = 1000000 },
 		} };
 		var spawn_default_values = {
-			Pilot = { Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues() },
+			Pilot = { Type="Clonk", Properties = EnemySpawn->GetAIClonkDefaultPropValues() },
 			FlySpeed = def.FlySpeed,
-			Crew = [ { Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues("BowArrow", true) } ],
+			Crew = [ { Type="Clonk", Properties = EnemySpawn->GetAIClonkDefaultPropValues("BowArrow", true) } ],
 			HitPoints = def.HitPoints,
 		};
 		EnemySpawn->AddEnemyDef("Airship",
-				{ SpawnType=Airship,
-					SpawnFunction=def.SpawnAirship,
-					OffsetAttackPathByPos=true,
-					GetInfoString=def.GetSpawnInfoString },
+				{ SpawnType = Airship,
+					SpawnFunction = def.SpawnAirship,
+					OffsetAttackPathByPos = true,
+					GetInfoString = def.GetSpawnInfoString },
 			spawn_default_values, spawn_editor_props);
 	}
 }
@@ -397,7 +397,7 @@ private func SpawnAirship(array pos, proplist enemy_data, proplist enemy_def, ar
 {
 	// Spawn the boomattack
 	var airship = CreateObjectAbove(Airship, pos[0], pos[1]+15, g_enemyspawn_player);
-	var rval = [airship], n=1;
+	var rval = [airship], n = 1;
 	if (!airship) return;
 	airship->TurnAirship(attack_path[0].X > pos[0], true);
 	// Airship settings

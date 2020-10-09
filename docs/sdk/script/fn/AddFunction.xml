@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>AddFunction</title>
+    <category>Script</category>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>nil</rtype>
+      <params>
+        <param>
+          <type>func</type>
+          <name>call</name>
+          <desc>This is the function that should be added.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>override</name>
+          <optional />
+          <desc>Overriding an existing function in the target context is not allowed and will lead to a <funclink>FatalError</funclink> if this is set to <code>false</code> (default).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds a function from a proplist, effect, definition, or object to the calling context.</desc>
+    <remark>When using this function be sure that you know what you are doing. Replacing functions can have unintended side effects.</remark>
+    <examples>
+      <example>
+        <code>
+  // Make a specific rock explode if it hits with high velocity!
+  var boom = <funclink>CreateObject</funclink>(Rock);
+  boom-><funclink>AddFunction</funclink>(Firestone.Hit2);
+        </code>
+        <text>This script makes a rock explode like a firestone. Note that only this one specific function is copied, so there will be no fuse effect, for example.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>AddFunctions</funclink>
+      <funclink>GetFunctionName</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2019-04</date>
+</funcs>

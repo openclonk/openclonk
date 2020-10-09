@@ -34,41 +34,41 @@ public func Definition(def)
 	def.EditorProps.starting_knowledge = { Name="$Knowledge$", Type="enum", OptionKey="Option", Options = [
 		{ Name="$None$" },
 		{ Name="$All$", Value={ Option="all" } },
-		{ Name="$AllExcept$", Value={ Option="allexcept", Data=[] }, ValueKey="Data", Delegate=EditorBase.IDSet },
-		{ Name="$Specific$", Value={ Option="idlist", Data=[] }, ValueKey="Data", Delegate=EditorBase.IDSet },
+		{ Name="$AllExcept$", Value={ Option="allexcept", Data=[] }, ValueKey="Data", Delegate = EditorBase.IDSet },
+		{ Name="$Specific$", Value={ Option="idlist", Data=[] }, ValueKey="Data", Delegate = EditorBase.IDSet },
 		] };
 	def.EditorProps.starting_crew = EditorBase->GetConditionalIDList("IsClonk", "$Crew$", Clonk);
 	def.EditorProps.starting_material = new EditorBase.ItemPlusParameterList { Name="$StartingMaterial$", EditorHelp="$StartingMaterialHelp$" };
-	def.EditorProps.starting_wealth = { Name="$Wealth$", Type="int", Min=0 };
+	def.EditorProps.starting_wealth = { Name="$Wealth$", Type="int", Min = 0 };
 	def.EditorProps.starting_base_material = new EditorBase.IDList { Name="$BaseMaterial$", EditorHelp="$BaseMaterialHelp$" };
 	def.EditorProps.clonk_max_contents_count = { Name="$ClonkMaxContentsCount$", EditorHelp="$ClonkMaxContentsCountHelp$", Type="enum", Options = [
-		{ Name=Format("$Default$ (%d)", Clonk.MaxContentsCount) }, { Name="$Custom$", Value=Clonk.MaxContentsCount, Delegate={ Type="int", Min=0, Max=10 } } ] };
+		{ Name = Format("$Default$ (%d)", Clonk.MaxContentsCount) }, { Name="$Custom$", Value = Clonk.MaxContentsCount, Delegate={ Type="int", Min = 0, Max = 10 } } ] };
 	def.EditorProps.clonk_max_energy = { Name="$ClonkMaxEnergy$", EditorHelp="$ClonkMaxEnergyHelp$", Type="enum", Options = [
-		{ Name=Format("$Default$ (%d)", Clonk.MaxEnergy/1000) }, { Name="$Custom$", Value=Clonk.MaxEnergy/1000, Delegate={ Type="int", Min=1, Max=100000 } } ] };
+		{ Name = Format("$Default$ (%d)", Clonk.MaxEnergy/1000) }, { Name="$Custom$", Value = Clonk.MaxEnergy/1000, Delegate={ Type="int", Min = 1, Max = 100000 } } ] };
 	def.EditorProps.respawn_material = { Name="$RespawnMaterial$", Type="enum", Set="SetRespawnMaterial", Save="RespawnMaterial", Options = [
 		{ Name="$None$" },
 		{ Name="$SameAsStartingMaterial$", Value="starting_material" },
-		{ Name="$Custom$", Value=[], Type=C4V_Array, Delegate=new EditorBase.ItemPlusParameterList { Name="$RespawnMaterial$", EditorHelp="$RespawnMaterialHelp$" } },
+		{ Name="$Custom$", Value=[], Type = C4V_Array, Delegate = new EditorBase.ItemPlusParameterList { Name="$RespawnMaterial$", EditorHelp="$RespawnMaterialHelp$" } },
 		] };
 	def.EditorProps.view_lock = { Name="$ViewLock$", Priority = -100, Type="bool" };
 	def.EditorProps.zoom_min = { Name="$ZoomMin$", Set="SetZoomMin", Priority = -101, Type="enum", OptionKey="Option", Options = [
 		{ Name="$Default$" },
-		{ Name="$Custom$", Value=150, Delegate={ Type="int", Min=50, Max=750, Step=50 } }
+		{ Name="$Custom$", Value = 150, Delegate={ Type="int", Min = 50, Max = 750, Step = 50 } }
 	] };
 	def.EditorProps.zoom_max = { Name="$ZoomMax$", Set="SetZoomMax", Priority = -102, Type="enum", OptionKey="Option", Options = [
 		{ Name="$Default$" },
-		{ Name="$Custom$", Value=750, Delegate={ Type="int", Min=150, Max=100000, Step=50 } }
+		{ Name="$Custom$", Value = 750, Delegate={ Type="int", Min = 150, Max = 100000, Step = 50 } }
 	] };
 	def.EditorProps.zoom_set = { Name="$ZoomSet$", Set="SetZoomSet", Priority = -103, Type="enum", OptionKey="Option", Options = [
 		{ Name="$Default$" },
-		{ Name="$Custom$", Value=300, Delegate={ Type="int", Min=150, Max=750, Step=50 } }
+		{ Name="$Custom$", Value = 300, Delegate={ Type="int", Min = 150, Max = 750, Step = 50 } }
 	] };
 	return true;
 }
 
-public func GetDefaultCrew() { return [{id=Clonk, count=1}]; }
+public func GetDefaultCrew() { return [{id = Clonk, count = 1}]; }
 public func GetDefaultMaterial() { return [Shovel, Hammer, Axe]; }
-public func GetDefaultBaseMaterial() { return [{id=Clonk, count=999999}]; }
+public func GetDefaultBaseMaterial() { return [{id = Clonk, count = 999999}]; }
 
 public func Initialize()
 {
@@ -85,7 +85,7 @@ public func Initialize()
 public func SetStartingPlayers(string setting, param)
 {
 	if (setting)
-		starting_players = { Option=setting, Data=param };
+		starting_players = { Option = setting, Data = param };
 	else
 		starting_players = nil; // None
 	return true;
@@ -94,7 +94,7 @@ public func SetStartingPlayers(string setting, param)
 public func SetStartingKnowledge(string setting, param)
 {
 	if (setting)
-		starting_knowledge = { Option=setting, Data=param };
+		starting_knowledge = { Option = setting, Data = param };
 	else
 		starting_knowledge = nil; // None
 	return true;
@@ -108,7 +108,7 @@ public func SetStartingCrew(array new_crew)
 
 public func SetStartingMaterial(array new_material)
 {
-	// ID+count conversion (old style)
+	// ID + count conversion (old style)
 	if (new_material && GetLength(new_material) && new_material[0].id && new_material[0].count && !new_material[0]->~GetName())
 	{
 		starting_material = [];
@@ -295,29 +295,40 @@ private func ApplyCrewSettings(object crew)
 private func InitializeCrew(int plr)
 {
 	// Collect IDs of crew to create
-	var requested_crew = [], n=0, i, obj, idx, def;
+	var requested_crew = [], n = 0;
 	for (var idlist_entry in starting_crew)
-		for (i=0; i<idlist_entry.count; ++i)
+		for (var i = 0; i < idlist_entry.count; ++i)
 			requested_crew[n++] = idlist_entry.id;
 	// Match them to existing crew
-	for (i = GetCrewCount(plr)-1; i>=0; --i)
-		if (obj = GetCrew(plr, i))
-			if ((idx = GetIndexOf(requested_crew, obj->GetID())) >= 0)
+	for (var i = GetCrewCount(plr)-1; i>=0; --i)
+	{
+		var obj = GetCrew(plr, i);
+		if (obj) {
+			var idx = GetIndexOf(requested_crew, obj->GetID());
+			if (idx >= 0)
 			{
 				obj->SetPosition(GetX(), GetY() + GetDefHeight()/2 - obj->GetDefHeight()/2);
 				requested_crew[idx] = nil;
 			}
 			else
 				obj->RemoveObject(); // not in list: Kill
+		}
+	}
 	// Create any missing crew
-	for (def in requested_crew)
+	for (var def in requested_crew)
 		if (def)
-			if (obj = CreateObjectAbove(def, 0, GetDefHeight()/2, plr))
+		{
+			var obj = CreateObjectAbove(def, 0, GetDefHeight()/2, plr);
+			if (obj)
 				obj->MakeCrewMember(plr);
+		}
 	// Apply crew settings
-	for (i = GetCrewCount(plr)-1; i>=0; --i)
-		if (obj = GetCrew(plr, i))
+	for (var i = GetCrewCount(plr)-1; i>=0; --i)
+	{
+		var obj = GetCrew(plr, i);
+		if (obj)
 			ApplyCrewSettings(obj);
+	}
 	// Done!
 	return true;
 }
@@ -345,12 +356,14 @@ private func InitializeMaterial(int plr)
 	// So e.g. each clonk can get one shovel
 	for (var idlist_entry in starting_material)
 	{
-		var best_target = nil, target_score, clonk;
-		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(),GetY()+GetDefHeight()/2, plr);
+		var best_target = nil, target_score;
+		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(), GetY() + GetDefHeight() / 2, plr);
 		if (!obj || !obj.Collectible) continue;
 		var id = idlist_entry.id;
-		for (var j=0; j<GetCrewCount(plr); ++j)
-			if (clonk = GetCrew(plr, j))
+		for (var j = 0; j < GetCrewCount(plr); ++j)
+		{
+			var clonk = GetCrew(plr, j);
+			if (clonk)
 			{
 				var clonk_score = 0;
 				// High penalty: Already has item of same type
@@ -363,6 +376,7 @@ private func InitializeMaterial(int plr)
 					target_score = clonk_score;
 				}
 			}
+		}
 		if (best_target) best_target->Collect(obj); // May fail due to contents full
 	}
 	return true;
@@ -374,7 +388,7 @@ private func InitializeKnowledge(int plr)
 	if (!starting_knowledge) return true; // No knowledge
 	if (starting_knowledge.Option == "all" || starting_knowledge.Option == "allexcept")
 	{
-		var i=0, exceptlist = [];
+		var i = 0, exceptlist = [];
 		if (starting_knowledge.Option == "allexcept") exceptlist = starting_knowledge.Data;
 		while (def = GetDefinition(i++))
 			if (!(def->GetCategory() & (C4D_Rule | C4D_Goal | C4D_Environment)))
@@ -397,9 +411,14 @@ private func InitializeKnowledge(int plr)
 private func InitializeView(int plr)
 {
 	SetPlayerViewLock(plr, view_lock);
-	SetPlayerZoomByViewRange(plr, zoom_min, PLRZOOM_Direct | PLRZOOM_LimitMin);
-	SetPlayerZoomByViewRange(plr, zoom_max, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerZoomByViewRange(plr, zoom_set, PLRZOOM_Direct | PLRZOOM_Set);
+	// Zoom limit "nil" means default limits.
+	SetPlayerZoomByViewRange(plr, zoom_min, zoom_min, PLRZOOM_Direct | PLRZOOM_LimitMin);
+	SetPlayerZoomByViewRange(plr, zoom_max, zoom_max, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	// If no zoom value is specified: Assume what the player has set currently is the default.
+	if (zoom_set != nil)
+	{
+		SetPlayerZoomByViewRange(plr, zoom_set, zoom_set, PLRZOOM_Direct | PLRZOOM_Set);
+	}
 	return true;
 }
 

@@ -39,7 +39,6 @@ const int32_t FollowRange=6,PushToRange=10,DigOutPositionRange=15;
 const int32_t PathRange=20,MaxPathRange=1000;
 const int32_t JumpAngle=35,JumpLowAngle=80,JumpAngleRange=10,JumpHighAngle=0;
 const int32_t FlightAngleRange=60;
-const int32_t DigOutDirectRange=130;
 const int32_t LetGoHangleAngle=110;
 
 StdEnumAdapt<int32_t>::Entry EnumAdaptCommandEntries[C4CMD_Last - C4CMD_First + 2];
@@ -316,8 +315,8 @@ void C4Command::MoveTo()
 			if (cObj->Action.Target)
 				{ cx=cObj->Action.Target->GetX(); cy=cObj->Action.Target->GetY(); }
 		break;
-		// dig, bridge: stop
-	case DFA_DIG: case DFA_BRIDGE:
+		// dig: stop
+	case DFA_DIG:
 		ObjectComStop(cObj);
 		break;
 	}
@@ -1464,7 +1463,8 @@ void C4Command::Clear()
 	Ty=0;
 	Target=Target2=nullptr;
 	UpdateInterval=0;
-	if (Text) Text->DecRef(); Text=nullptr;
+	if (Text) Text->DecRef();
+	Text=nullptr;
 	BaseMode=C4CMD_Mode_SilentSub;
 }
 

@@ -6,7 +6,7 @@
   <func>
     <title>PV_Sin</title>
     <category>Particles</category>
-    <version>5.4.2 OC</version>
+    <version>4.2 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>

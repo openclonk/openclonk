@@ -47,26 +47,26 @@ func SaveScenarioObject(props)
 // The goal is fulfilled if a ruby is in the goal rectangle
 public func IsFulfilled()
 {
-	var winner=NO_OWNER, winners, winner_teams;
+	var winner = NO_OWNER, winners, winner_teams;
 	if (has_winner) return true;
 	for (var ruby in FindObjects(Find_InRect(goal_rect.x, goal_rect.y, goal_rect.wdt, goal_rect.hgt), Find_ID(Ruby)))
 	{
 		if (ruby->Contained()) winner = ruby->Contained()->GetOwner();
-		if (winner==NO_OWNER) winner = ruby->GetController();
-		if (winner==NO_OWNER) continue;
+		if (winner == NO_OWNER) winner = ruby->GetController();
+		if (winner == NO_OWNER) continue;
 		if (!winners) winners = [winner]; else winners[GetLength(winners)] = winner;
 		var team = GetPlayerTeam(winner);
 		if (team) if (!winner_teams) winner_teams = [team]; else winner_teams[GetLength(winner_teams)] = team;
 	}
 	if (!winners) return false;
 	has_winner = true;
-	var iplr=GetPlayerCount();
+	var iplr = GetPlayerCount();
 	while (iplr--)
 	{
 		var plr = GetPlayerByIndex(iplr);
 		// Free view when game is over
 		for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-			SetPlayerZoomByViewRange(plr,LandscapeWidth(),LandscapeWidth(),flag);
+			SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeWidth(),flag);
 		SetPlayerViewLock(plr, false);
 		SetFoW(false, plr);
 		// Eliminate non-winning players

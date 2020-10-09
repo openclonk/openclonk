@@ -50,11 +50,13 @@ bool C4SoundSystem::Init()
 #if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_AllocateChannels(C4MaxSoundInstances);
 #endif
+	initialized = true;
 	return true;
 }
 
 void C4SoundSystem::Clear()
 {
+	initialized = false;
 	ClearEffects();
 	Modifiers.Clear();
 	// Close sound file
@@ -89,7 +91,7 @@ void C4SoundSystem::Execute()
 C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 {
 	// Remember wildcards before adding .* extension - if there are 2 versions with different file extensions, play the last added
-	bool bRandomSound = SCharCount('?',szSndName) || SCharCount('*',szSndName);
+	bool bRandomSound = IsWildcardString(szSndName);
 	// Evaluate sound name
 	char szName[C4MaxSoundName+2+1];
 	SCopy(szSndName,szName,C4MaxSoundName);
@@ -122,15 +124,13 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 C4SoundInstance *C4SoundSystem::NewEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// Sound not active
-	if (!Config.Sound.RXSound) return nullptr;
+	if (!initialized || !Config.Sound.RXSound) return nullptr;
 	// Get sound
 	C4SoundEffect *csfx;
 	if (!(csfx = GetEffect(szSndName)))
 	{
 		// Warn about missing or incorrectly spelled sound to allow finding mistakes earlier.
-#if !defined(USE_CONSOLE)
 		DebugLogF("Warning: could not find sound matching '%s'", szSndName);
-#endif
 		return nullptr;
 	}
 	// Play
@@ -165,8 +165,8 @@ int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, const char *namespace_prefix
 		return LoadEffects(g, namespace_prefix, false);
 	}
 	int32_t iNum=0;
-	char szFilename[_MAX_FNAME+1];
-	char szFileType[_MAX_FNAME+1];
+	char szFilename[_MAX_FNAME_LEN];
+	char szFileType[_MAX_FNAME_LEN];
 	C4SoundEffect *nsfx;
 	// Process segmented list of file types
 	for (int32_t i = 0; SCopySegment(C4CFN_SoundFiles, i, szFileType, '|', _MAX_FNAME); i++)

@@ -20,7 +20,8 @@
 #define INC_C4ConsoleQtShapes
 #ifdef WITH_QT_EDITOR
 
-#include "editor/C4ConsoleGUI.h" // for glew.h
+#include "C4Include.h" // needed for automoc
+#include "editor/C4ConsoleGUI.h" // for OpenGL
 #include "editor/C4ConsoleQt.h"
 #include "script/C4Value.h"
 

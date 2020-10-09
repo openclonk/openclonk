@@ -111,7 +111,7 @@ local Name = "$Name$";
 func Definition(def)
 {
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.construction_list = EditorBase.IDList;
+	def.EditorProps.construction_list = new EditorBase.IDList {};
 	return true;
 }
 

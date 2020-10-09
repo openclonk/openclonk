@@ -102,8 +102,8 @@ struct C4Landscape::P
 	bool Mat2Pal(); // assign material colors to landscape palette
 	void UpdatePixCnt(const C4Landscape *, const C4Rect &Rect, bool fCheck = false);
 	void UpdateMatCnt(const C4Landscape *, C4Rect Rect, bool fPlus);
-	void PrepareChange(const C4Landscape *d, const C4Rect &BoundingBox);
-	void FinishChange(C4Landscape *d, C4Rect BoundingBox);
+	void PrepareChange(const C4Landscape *d, const C4Rect &BoundingBox, bool updateMatCnt = true);
+	void FinishChange(C4Landscape *d, C4Rect BoundingBox, bool updateMatAndPixCnt = true);
 	bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade, uint8_t line_color, uint8_t line_color_bkg);
 	bool DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius, uint8_t line_color, uint8_t line_color_bkg);
 	uint8_t *GetBridgeMatConversion(const C4Landscape *d, int32_t for_material_col) const;
@@ -142,7 +142,8 @@ namespace
 			d = 2 * dx - dy; aincr = 2 * (dx - dy); bincr = 2 * dx; x = x1; y = y1;
 			if (!fnCallback(x, y))
 			{
-				if (lastx) *lastx = x; if (lasty) *lasty = y;
+				if (lastx) *lastx = x;
+				if (lasty) *lasty = y;
 				return false;
 			}
 			for (y = y1 + 1; y <= y2; ++y)
@@ -151,7 +152,8 @@ namespace
 				else d += bincr;
 				if (!fnCallback(x, y))
 				{
-					if (lastx) *lastx = x; if (lasty) *lasty = y;
+					if (lastx) *lastx = x;
+					if (lasty) *lasty = y;
 					return false;
 				}
 			}
@@ -164,7 +166,8 @@ namespace
 			d = 2 * dy - dx; aincr = 2 * (dy - dx); bincr = 2 * dy; x = x1; y = y1;
 			if (!fnCallback(x, y))
 			{
-				if (lastx) *lastx = x; if (lasty) *lasty = y;
+				if (lastx) *lastx = x;
+				if (lasty) *lasty = y;
 				return false;
 			}
 			for (x = x1 + 1; x <= x2; ++x)
@@ -173,7 +176,8 @@ namespace
 				else d += bincr;
 				if (!fnCallback(x, y))
 				{
-					if (lastx) *lastx = x; if (lasty) *lasty = y;
+					if (lastx) *lastx = x;
+					if (lasty) *lasty = y;
 					return false;
 				}
 			}
@@ -483,9 +487,9 @@ void C4Landscape::ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
 {
 	std::vector<int32_t> vertices(GetRectangle(tx, ty, wdt, hgt));
 	C4Rect r(tx, ty, wdt, hgt);
-	p->PrepareChange(this, r);
+	p->PrepareChange(this, r, false);
 	p->ForPolygon(this, &vertices[0], vertices.size() / 2, [this](int32_t x, int32_t y) { return ClearPix(x, y); });
-	p->FinishChange(this, r);
+	p->FinishChange(this, r, false);
 }
 
 int32_t C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object, bool no_dig2objects, bool no_instability_check)
@@ -1697,7 +1701,7 @@ bool C4Landscape::Save(C4Group &hGroup) const
 bool C4Landscape::P::SaveInternal(const C4Landscape *d, C4Group &hGroup) const
 {
 	// Save landscape surface
-	char szTempLandscape[_MAX_PATH + 1];
+	char szTempLandscape[_MAX_PATH_LEN];
 	SCopy(Config.AtTempPath(C4CFN_TempLandscape), szTempLandscape);
 	MakeTempFilename(szTempLandscape);
 	if (!Surface8->Save(szTempLandscape))
@@ -3227,6 +3231,7 @@ bool C4Landscape::FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32
 		// Try to find a way out
 		int i = 1;
 		for (; i < iPushRange; i++)
+		{
 			if (GetDensity(x - i, y) <= mdens)
 			{
 				x -= i; dir = R; break;
@@ -3243,14 +3248,15 @@ bool C4Landscape::FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32
 			{
 				y += i; dir = U; break;
 			}
-			// Not found?
-			if (i >= iPushRange) return false;
-			// Done?
-			if (GetDensity(x, y) < mdens)
-			{
-				fx = x; fy = y;
-				return true;
-			}
+		}
+		// Not found?
+		if (i >= iPushRange) return false;
+		// Done?
+		if (GetDensity(x, y) < mdens)
+		{
+			fx = x; fy = y;
+			return true;
+		}
 	}
 	// Save startpoint of search
 	int32_t sx = x, sy = y, sdir = dir;
@@ -3905,7 +3911,7 @@ BYTE C4Landscape::GetBackMapIndex(int32_t iX, int32_t iY) const
 	return p->MapBkg->GetPix(iX, iY);
 }
 
-void C4Landscape::P::PrepareChange(const C4Landscape *d, const C4Rect &BoundingBox)
+void C4Landscape::P::PrepareChange(const C4Landscape *d, const C4Rect &BoundingBox, const bool updateMatCnt)
 {
 	// move solidmasks out of the way
 	C4Rect SolidMaskRect = BoundingBox;
@@ -3915,10 +3921,10 @@ void C4Landscape::P::PrepareChange(const C4Landscape *d, const C4Rect &BoundingB
 	{
 		pSolid->RemoveTemporary(SolidMaskRect);
 	}
-	UpdateMatCnt(d, BoundingBox, false);
+	if (updateMatCnt) UpdateMatCnt(d, BoundingBox, false);
 }
 
-void C4Landscape::P::FinishChange(C4Landscape *d, C4Rect BoundingBox)
+void C4Landscape::P::FinishChange(C4Landscape *d, C4Rect BoundingBox, const bool updateMatAndPixCnt)
 {
 	// Intersect bounding box with landscape
 	BoundingBox.Intersect(C4Rect(0, 0, Width, Height));
@@ -3926,7 +3932,7 @@ void C4Landscape::P::FinishChange(C4Landscape *d, C4Rect BoundingBox)
 	// update render
 	if (pLandscapeRender)
 		pLandscapeRender->Update(BoundingBox, d);
-	UpdateMatCnt(d, BoundingBox, true);
+	if (updateMatAndPixCnt) UpdateMatCnt(d, BoundingBox, true);
 	// Restore Solidmasks
 	C4Rect SolidMaskRect = BoundingBox;
 	if (pLandscapeRender)
@@ -3936,7 +3942,7 @@ void C4Landscape::P::FinishChange(C4Landscape *d, C4Rect BoundingBox)
 		pSolid->Repair(SolidMaskRect);
 	}
 	C4SolidMask::CheckConsistency();
-	UpdatePixCnt(d, BoundingBox);
+	if (updateMatAndPixCnt) UpdatePixCnt(d, BoundingBox);
 	// update FoW
 	if (pFoW)
 	{

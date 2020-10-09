@@ -43,7 +43,7 @@ public func GetCarryMode(object clonk, bool idle)
 
 public func GetCarryTransform(object clonk, bool idle)
 {
-	if (!idle) return Trans_Rotate(-90,1,0,0);
+	if (!idle) return Trans_Rotate(-90, 1, 0, 0);
 }
 
 func Definition(def)

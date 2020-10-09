@@ -106,7 +106,7 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 				if (!Def->Script.ResolveIncludes(rDefs))
 					continue; // skip this #include
 
-			for (std::list<C4ScriptHost *>::reverse_iterator s = Def->Script.SourceScripts.rbegin(); s != Def->Script.SourceScripts.rend(); ++s)
+			for (auto s = Def->Script.SourceScripts.rbegin(); s != Def->Script.SourceScripts.rend(); ++s)
 			{
 				if (std::find(SourceScripts.begin(), SourceScripts.end(), *s) == SourceScripts.end())
 					SourceScripts.push_front(*s);

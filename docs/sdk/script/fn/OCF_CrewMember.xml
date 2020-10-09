@@ -7,7 +7,7 @@
     <title>OCF_CrewMember</title>
     <category>Objects</category>
     <subcat>OCF</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Object character flag: the object can be made a crew member or already is a crew member, meaning the corresponding DefCore flag is set and the object is alive.</desc>
     <remark>

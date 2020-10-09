@@ -6,7 +6,7 @@
   <func>
     <title>FatalError</title>
     <category>Developer</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -14,7 +14,13 @@
           <type>string</type>
           <name>message</name>
           <desc>Error message to be displayed</desc>
-          <optional/>
+          <optional />
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Additional parameters for text formatting.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
@@ -46,5 +52,6 @@
       <funclink>LogCallStack</funclink>
     </related>
   </func>
+  <author>Marky</author><date>2018-04</date>
   <author>Newton</author><date>2011-09</date>
 </funcs>

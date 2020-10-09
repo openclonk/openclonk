@@ -1,20 +1,27 @@
-/*-- Cable Hoist --*/
+/**
+	Cable Hoist 
+
+	@author Clonkonaut
+*/
 
 #include Library_CableCar
 
 local pickup;
 
-/* Creation */
 
-func Construction()
+/*-- Creation --*/
+
+public func Construction()
 {
-	SetProperty("MeshTransformation",Trans_Rotate(13,0,1,0));
+	this.MeshTransformation = Trans_Rotate(13, 0, 1, 0);
 	SetCableSpeed(1);
+	return _inherited(...);
 }
 
-/* Engine Callbacks */
 
-func Damage(int change, int cause)
+/*-- Engine Callbacks --*/
+
+public func Damage(int change, int cause)
 {
 	if (cause == FX_Call_DmgBlast)
 	{
@@ -26,42 +33,48 @@ func Damage(int change, int cause)
 	}
 }
 
-/* Status */
+
+/*-- Status --*/
 
 public func IsToolProduct() { return true; }
 
-/* Cable Car Library */
 
-func GetCableOffset(array position, int prec)
+/*-- Cable Car Library --*/
+
+public func GetCableOffset(array position, int prec)
 {
-	if (!prec) prec = 1;
+	if (!prec)
+		prec = 1;
 	position[1] += 5 * prec;
 }
 
-func Engaged()
+public func Engaged()
 {
+	this.Touchable = 0;
 	SetAction("OnRail");
 }
 
-func Disengaged()
+public func Disengaged()
 {
+	this.Touchable = 1;
 	SetAction("Idle");
 	if (pickup)
 		DropVehicle();
 }
 
-func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, object clonk)
+public func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, object clonk)
 {
-	if (IsTravelling()) return;
+	if (IsTravelling())
+		return;
 
 	if (!pickup && GetRailTarget())
 	{
 		// Picking up vehicles
-		var vehicles = FindObjects(Find_AtPoint(), Find_Category(C4D_Vehicle), Find_Not(Find_Func("RejectCableHoistPickup", this)), Find_Exclude(this), Find_Func(pickup));
+		var vehicles = FindObjects(Find_AtPoint(), Find_Category(C4D_Vehicle), Find_Not(Find_Func("RejectCableCarPickup", this)), Find_Exclude(this));
 		var i = 0;
 		for (var vehicle in vehicles)
 		{
-			if (GetEffect("CableHoistPickup", vehicle)) continue;
+			if (GetEffect("FxCableHoistPickup", vehicle)) continue;
 
 			var to_pickup = new custom_entry {
 				Priority = 2000 + i,
@@ -73,7 +86,9 @@ func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, obje
 			PushBack(menu_entries, { symbol = vehicle, extra_data = "Pickup", custom = to_pickup });
 			i++;
 		}
-	} else if (pickup && GetRailTarget()) {
+	}
+	else if (pickup && GetRailTarget())
+	{
 		// Drop the vehicle
 		var drop = new custom_entry {
 			Priority = 2000,
@@ -86,53 +101,81 @@ func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, obje
 	}
 }
 
-/* Picking up vehicles */
+public func OnCableCarHover(symbol, extra_data, desc_menu_target, menu_id)
+{
+	if (symbol && extra_data == "Pickup")
+	{
+		GuiUpdate({ Text = Format("$DescPickup$", symbol->GetName()) }, menu_id, 1, desc_menu_target);
+		return;
+	}
+	if (symbol && extra_data == "Drop")
+	{
+		GuiUpdate({ Text = Format("$DescDrop$", symbol->GetName()) }, menu_id, 1, desc_menu_target);
+		return;
+	}
+	return _inherited(symbol, extra_data, desc_menu_target, menu_id, ...);
+}
 
-public func PickupVehicle(object vehicle)
+
+/*-- Picking up vehicles --*/
+
+public func PickupVehicle(object vehicle, bool no_rotation_copy)
 {
 	if (!vehicle) return;
-	if (GetEffect("CableHoistPickup", vehicle)) return;
+	if (GetEffect("FxCableHoistPickup", vehicle)) return;
 	var width = vehicle->GetObjWidth() / 2;
 	var height = vehicle->GetObjHeight() / 2;
 	if (!Inside(GetX(), vehicle->GetX() - width, vehicle->GetX() + width))
 		if (!Inside(GetY(), vehicle->GetY() - height, vehicle->GetY() + height))
 			return;
-
-	AddEffect("CableHoistPickup", vehicle, 1, 1, this);
+	vehicle->CreateEffect(FxCableHoistPickup, 1, 1, this, no_rotation_copy);
+	pickup = vehicle;
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 }
 
 public func DropVehicle()
 {
 	if (!pickup) return;
-	RemoveEffect("CableHoistPickup", pickup);
+	RemoveEffect("FxCableHoistPickup", pickup);
+	pickup = nil;
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 }
 
-func FxCableHoistPickupStart(object vehicle, proplist effect)
+local FxCableHoistPickup = new Effect
 {
-	vehicle->SetPosition(GetX(), GetY()+4);
-	vehicle->SetSpeed(0,0);
-	vehicle->SetR(GetR());
-	vehicle->SetRDir(0);
+	Construction = func(object hoist, bool no_rotation_copy)
+	{
+		this.hoist = hoist;
+		this.vehicle_touchable = Target.Touchable;
+		Target.Touchable = 0;
+		// Follow motion of hoist.
+		this.movement_prec = 100;
+		Target->SetPosition(this.hoist->GetX(this.movement_prec), this.hoist->GetY(this.movement_prec) + 4, false, this.movement_prec);
+		Target->SetSpeed(0, 0);
+		if (!no_rotation_copy)
+		{
+			Target->SetR(this.hoist->GetR());
+			Target->SetRDir(0);
+		}
+	},
+	
+	Timer = func(int time)
+	{
+		// Follow motion of hoist.
+		Target->SetPosition(this.hoist->GetX(this.movement_prec), this.hoist->GetY(this.movement_prec) + 4, false, this.movement_prec);
+		Target->SetSpeed(0, 0);
+	},
+	
+	Destruction = func()
+	{
+		Target.Touchable = this.vehicle_touchable;	
+	}
+};
 
-	pickup = vehicle;
-}
 
-func FxCableHoistPickupTimer(object vehicle, proplist effect)
-{
-	vehicle->SetPosition(GetX(), GetY()+4);
-	vehicle->SetSpeed(0,0);
-}
+/*-- Actions --*/
 
-func FxCableHoistPickupStop(object vehicle, proplist effect)
-{
-	pickup = nil;
-}
-
-/* Actions */
-
-func OnRail()
+public func OnRail()
 {
 	DoMovement();
 }
@@ -155,7 +198,8 @@ local ActMap = {
 		},
 };
 
-/* Callbacks */
+
+/*-- Callbacks --*/
 
 public func GetAttachedVehicle()
 {
@@ -164,56 +208,72 @@ public func GetAttachedVehicle()
 
 // Calls from the stations will mostly be forwarded to the attached vehicle
 
-public func DropContents(proplist station)
+public func DropContents(object station)
 {
 	if (pickup)
 		pickup->DropContents(station);
 }
 
 // Check for available contents
-public func IsAvailable(proplist requested, int amount)
+public func IsAvailable(proplist order)
 {
 	// So far only do something if a lorry is connected, all other vehicles are considered off-limits
 	if (pickup && pickup->~IsLorry())
-		if (pickup->ContentsCount(requested) >= amount)
+		if (pickup->ContentsCount(order.type) >= order.min_amount)
 			return true;
 	return false;
 }
 
 // Called when a station has asked to make a delivery
-public func IsReadyForDelivery(proplist requested, int amount, proplist requesting_station)
+public func IsReadyForDelivery(proplist order, object requesting_station)
 {
+	// Is already on a delivery.
+	if (lib_ccar_delivery)
+		return false;
 	// Only if a lorry is connected
 	if (pickup && pickup->~IsLorry())
 	{
 		// Lorry must have enough space left...
-		if (pickup->ContentsCount() + amount <= pickup.MaxContentsCount)
+		if (pickup->ContentsCount() + order.min_amount <= pickup.MaxContentsCount)
 			return true;
 		// ...or contain the requested objects
-		if (pickup->ContentsCount(requested) >= amount)
+		if (pickup->ContentsCount(order.type) >= order.min_amount)
 			return true;
 	}
 	return false;
 }
 
 // Called when searching for a better option to deliver something
-public func OverridePriority(proplist requested, int amount, proplist requesting_station, proplist best)
+public func OverridePriority(proplist order, object requesting_station, object best_car)
 {
 	// Check if the connected vehicle holds the requested objects and if yes, override the selection
-	if (pickup && pickup->ContentsCount(requested) >= amount)
+	if (pickup && pickup->ContentsCount(order.type) >= order.min_amount)
 		return true;
-
 	return false;
 }
 
-/* Definition */
 
-func Definition(def)
+/*-- Saving --*/
+
+public func SaveScenarioObject(proplist props)
 {
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0)),def);
+	if (!inherited(props, ...))
+		 return false;
+	if (pickup) 
+		props->AddCall("Pickup", this, "PickupVehicle", pickup);
+	return true;
+}
+
+
+/*-- Definition --*/
+
+public func Definition(def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Rotate(-25, 1, 0, 0), Trans_Rotate(40, 0, 1, 0));
 }
 
 local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 1;
 local BorderBound = C4D_Border_Sides;
+local Components = {Metal = 2};

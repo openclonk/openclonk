@@ -53,14 +53,14 @@ global func AddTimer(call_function, int interval)
 // removes a timer from an object that was added earlier with AddTimer. This removes exactly one timer that fits to the name and returns true on success
 global func RemoveTimer(call_function /* name or pointer to the timer to remove */)
 {
-	if(!this)
+	if (!this)
 		return false;
 		
 	var fx, index = 0;
-	while(fx = GetEffect("IntScheduleCall", this, index++))
+	while (fx = GetEffect("IntScheduleCall", this, index++))
 	{
-		if(fx.Function != call_function) continue;
-		if(fx.NoStop != true) continue;
+		if (fx.Function != call_function) continue;
+		if (fx.NoStop != true) continue;
 		RemoveEffect(nil, this, fx);
 		return true;
 	}
@@ -102,15 +102,15 @@ global func FxIntScheduleCallTimer(object obj, effect fx)
 // documented in /docs/sdk/script/fn
 global func ClearScheduleCall(object obj, call_function)
 {
-	var i, fx;
+	var i;
 	// Count downwards from effectnumber, to remove effects.
 	i = GetEffectCount("IntScheduleCall", obj);
-	while (i--)
+	while (i--) {
 		// Check All ScheduleCall-Effects.
-		if (fx = GetEffect("IntScheduleCall", obj, i))
-			// Found right function.
-			if (fx.Function == call_function)
-				// Remove effect.
-				RemoveEffect(nil, obj, fx);
+		var fx = GetEffect("IntScheduleCall", obj, i);
+		if (fx && fx.Function == call_function)
+			// Found right function. Remove effect.
+			RemoveEffect(nil, obj, fx);
+	}
 	return;
 }

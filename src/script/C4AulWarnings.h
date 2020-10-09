@@ -1,7 +1,7 @@
 /*
 * OpenClonk, http://www.openclonk.org
 *
-* Copyright (c) 2017, The OpenClonk Team and contributors
+* Copyright (c) 2017-2018, The OpenClonk Team and contributors
 *
 * Distributed under the terms of the ISC license; see accompanying file
 * "COPYING" for details.
@@ -33,10 +33,12 @@ DIAG(empty_parameter_in_array, "array entry %u is empty", false)
 DIAG(implicit_range_loop_var_decl, "implicit declaration of the loop variable '%s' in a for-in loop is deprecated", true)
 DIAG(non_global_var_is_never_const, "variable '%s' declared as const, but non-global variables are always mutable", true)
 DIAG(variable_shadows_variable, "declaration of %s '%s' shadows %s", true)
+DIAG(variable_out_of_scope, "variable '%s' used outside of its declared scope", true)
 DIAG(redeclaration, "redeclaration of %s '%s'", true)
 DIAG(undeclared_varargs, "use of '%s' in a function forces it to take variable arguments", true)
 DIAG(arg_count_mismatch, "call to '%s' passes %u arguments, of which only %u are used", true)
 DIAG(arg_type_mismatch, "parameter %u of call to '%s' passes %s (%s expected)", true)
 DIAG(empty_if, "empty controlled statement (use '{}' if this is intentional)", true)
+DIAG(suspicious_assignment, "suspicious assignment (was a comparison intended here?)", true)
 
 #pragma pop_macro("DIAG")

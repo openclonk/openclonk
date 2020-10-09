@@ -7,7 +7,7 @@
     <title>ScrollContents</title>
     <category>Objects</category>
     <subcat>Contents</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>object</rtype></syntax>
     <desc>Shifts the contents of an object. This will always shift by exactly one object (as opposed to <funclink>ShiftContents</funclink>). No call to ControlContents is made. Returns a pointer to the object at the front of the contents list after the shift.</desc>
     <related><funclink>ShiftContents</funclink></related>

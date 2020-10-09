@@ -139,7 +139,9 @@ inline DWORD GetClrModulation(DWORD dwSrcClr, DWORD dwDstClr, DWORD &dwBack)
 		int bB=sB+(cB*255)/diffN;
 		dwBack=RGBA(bR, bG, bB, 255);
 	}
-	if (!sR) sR=1; if (!sG) sG=1; if (!sB) sB=1;
+	if (!sR) sR=1;
+	if (!sG) sG=1;
+	if (!sB) sB=1;
 	return RGBA(std::min((int)dR*256/sR, 255), std::min((int)dG*256/sG, 255), std::min((int)dB*256/sB, 255), 255-diffN);
 }
 

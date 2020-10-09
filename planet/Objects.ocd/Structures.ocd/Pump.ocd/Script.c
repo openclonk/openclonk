@@ -12,13 +12,13 @@
 #include Library_Ownable
 #include Library_PowerConsumer
 #include Library_PowerProducer
-#include Library_Tank
+#include Library_LiquidContainer
+#include Library_PipeControl
+#include Library_ResourceSelection
 
 static const PUMP_Menu_Action_Switch_On = "on";
 static const PUMP_Menu_Action_Switch_Off = "off";
 static const PUMP_Menu_Action_Description = "description";
-static const PUMP_Menu_Action_Material_Enable = "material_on";
-static const PUMP_Menu_Action_Material_Disable = "material_off";
 
 
 local animation; // animation handle
@@ -31,7 +31,6 @@ local power_used; // the amount of power currently consumed or (if negative) pro
 local clog_count; // increased when the pump doesn't find liquid or can't insert it. When it reaches max_clog_count, it will put the pump into temporary idle mode.
 local max_clog_count = 5; // note that even when max_clog_count is reached, the pump will search through offsets (but in idle mode)
 
-local pump_materials; // list of materials which may be pumped.
 local accepted_mat; // currently accepted material.
 
 local stored_material_name; //contained liquid
@@ -40,7 +39,6 @@ local stored_material_amount;
 /** This object is a liquid pump, thus pipes can be connected. */
 public func IsLiquidPump() { return true; }
 public func IsLiquidContainer() { return false; }
-public func IsLiquidTank() { return false; }
 
 
 // The pump is rather complex for players. If anything happened, tell it to the player via the interaction menu.
@@ -50,7 +48,8 @@ public func Construction()
 {
 	// Rotate at a 45 degree angle towards viewer and add a litte bit of Random
 	this.MeshTransformation = Trans_Rotate(50 + RandomX(-10, 10), 0, 1, 0);
-	InitMaterialSelection();
+	// Default selection
+	accepted_mat = nil;
 	return _inherited(...);
 }
 
@@ -180,8 +179,8 @@ private func SetInfoMessage(string msg)
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);
 }
 
-static const LIBRARY_TANK_Menu_Action_Cut_AirPipe = "cutairpipe";
-static const LIBRARY_TANK_Menu_Action_Add_AirPipe = "addairpipe";
+static const LIBRARY_PIPE_Menu_Action_Cut_AirPipe = "cutairpipe";
+static const LIBRARY_PIPE_Menu_Action_Add_AirPipe = "addairpipe";
 
 // Extend liquid tank connection interface to air pipes.
 public func GetPipeControlMenuEntries(object clonk)
@@ -194,9 +193,9 @@ public func GetPipeControlMenuEntries(object clonk)
 	{
 		for (var entry in menu_entries)
 		{
-			if (entry.extra_data == LIBRARY_TANK_Menu_Action_Cut_Drain)
+			if (entry.extra_data == LIBRARY_PIPE_Menu_Action_Cut_Drain)
 			{
-				entry.extra_data = LIBRARY_TANK_Menu_Action_Cut_AirPipe;
+				entry.extra_data = LIBRARY_PIPE_Menu_Action_Cut_AirPipe;
 				entry.Priority = 4;
 				entry.custom.image.BackgroundColor = RGB(0, 153, 255);
 				entry.custom.text.Text = GetConnectedPipeMessage("$MsgCutAirPipe$", GetDrainPipe());
@@ -208,18 +207,18 @@ public func GetPipeControlMenuEntries(object clonk)
 	// Add attach air pipe menu entry.
 	var air_pipe = FindAvailablePipe(clonk, Find_Func("IsAirPipe"));
 	if (!drain_pipe && air_pipe)
-		PushBack(menu_entries, GetTankMenuEntry(air_pipe, GetConnectedPipeMessage("$MsgConnectAirPipe$", air_pipe), 4, LIBRARY_TANK_Menu_Action_Add_AirPipe, RGB(0, 153, 255)));
+		PushBack(menu_entries, GetTankMenuEntry(air_pipe, GetConnectedPipeMessage("$MsgConnectAirPipe$", air_pipe), 4, LIBRARY_PIPE_Menu_Action_Add_AirPipe, RGB(0, 153, 255)));
 	return menu_entries;
 }
 
 public func OnPipeControlHover(symbol_or_object, string action, desc_menu_target, menu_id)
 {
-	if (action == LIBRARY_TANK_Menu_Action_Cut_AirPipe)
+	if (action == LIBRARY_PIPE_Menu_Action_Cut_AirPipe)
 	{
 		GuiUpdateText(GetConnectedPipeDescription("$DescCutAirPipe$", GetDrainPipe()), menu_id, 1, desc_menu_target);
 		return;
 	}
-	if (action == LIBRARY_TANK_Menu_Action_Add_AirPipe)
+	if (action == LIBRARY_PIPE_Menu_Action_Add_AirPipe)
 	{
 		GuiUpdateText(GetConnectedPipeDescription("$DescConnectAirPipe$", symbol_or_object), menu_id, 1, desc_menu_target);
 		return;
@@ -227,21 +226,21 @@ public func OnPipeControlHover(symbol_or_object, string action, desc_menu_target
 	return inherited(symbol_or_object, action, desc_menu_target, menu_id, ...);
 }
 
-public func OnPipeControl(symbol_or_object, string action, bool alt)
+public func OnPipeControl(symbol_or_object, string action, object clonk)
 {
-	if (action == LIBRARY_TANK_Menu_Action_Cut_AirPipe)
+	if (action == LIBRARY_PIPE_Menu_Action_Cut_AirPipe)
 	{
-		this->DoCutPipe(GetDrainPipe());
+		this->DoCutPipe(GetDrainPipe(), clonk);
 		UpdateInteractionMenus(this.GetPipeControlMenuEntries);
 		return;
 	}
-	if (action == LIBRARY_TANK_Menu_Action_Add_AirPipe)
+	if (action == LIBRARY_PIPE_Menu_Action_Add_AirPipe)
 	{
 		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Air);
 		UpdateInteractionMenus(this.GetPipeControlMenuEntries);
 		return;
 	}
-	return inherited(symbol_or_object, action, alt, ...);
+	return inherited(symbol_or_object, action, clonk, ...);
 }
 
 
@@ -520,7 +519,7 @@ public func CheckState()
 			SetInfoMessage("$StateNoSource$");
 		SetState("Wait");
 	}
-	else if(IsAirPipeConnected())
+	else if (IsAirPipeConnected())
 	{
 		if (!GetAirSourceOk())
 		{
@@ -553,7 +552,7 @@ public func CheckState()
 	{
 		// Can pump but has no liquid or can't dispense liquid -> wait.
 		var source_mat = GetLiquidSourceMaterial();
-		var source_ok = IsInMaterialSelection(source_mat);
+		var source_ok = IsInResourceSelection(source_mat);
 		var drain_ok = GetLiquidDrainOk(source_mat);
 		if (!source_ok || !drain_ok)
 		{
@@ -696,7 +695,7 @@ private func GetLiquidSourceMaterial()
 	// The source is a liquid container: check which material will be supplied.	
 	if (source_obj->~IsLiquidContainer())
 	{
-		var liquid = source_obj->HasLiquid(pump_materials);
+		var liquid = source_obj->HasLiquid(GetResourceSelection());
 		if (liquid)
 			return liquid->GetLiquidType();
 		return;
@@ -772,7 +771,7 @@ private func SetState(string act)
 	{
 		SetAnimationPosition(animation, Anim_Linear(anim_pos, start, end, 35, ANIM_Loop));
 	}
-	else if(act == "WaitForLiquid")
+	else if (act == "WaitForLiquid")
 	{
 		SetAnimationPosition(animation, Anim_Linear(anim_pos, start, end, 350, ANIM_Loop));
 	}
@@ -810,114 +809,71 @@ func ToggleOnOff(bool no_menu_refresh)
 
 /*-- Material Selection --*/
 
-private func InitMaterialSelection()
+func IsResourceSelectionParent(id child_resource, id parent_resource)
+{
+	return child_resource->~GetParentLiquidType() == parent_resource;
+}
+
+
+func ShowResourceSelectionMenuEntry(id resource)
+{
+	return resource->~IsLiquid() && resource != Library_Liquid;
+}
+
+
+func InitResourceSelection()
 {
 	// Add all liquids to the list of ones allowed to pump.
-	pump_materials = [];
-	var index = 0, def;
-	while (def = GetDefinition(index++))
-		if (def->~IsLiquid() && def != Library_Liquid)
-			PushBack(pump_materials, def);
-	// Accepted mat defaults to nil.
-	accepted_mat = nil;		
-	return;	
+	var index = 0, resource;
+	while (resource = GetDefinition(index++))
+		if (ShowResourceSelectionMenuEntry(resource))
+			AddToResourceSelection(resource);
+	return inherited();
 }
 
-public func SetMaterialSelection(array mats)
-{
-	pump_materials = mats[:];
-	return;
-}
-
-private func RemoveFromMaterialSelection(id mat)
-{
-	// Remove all child materials (DuroLava for lava) as well
-	var def, index;
-	while (def = GetDefinition(index++))
-	{
-		if (def->~GetParentLiquidType() == mat)
-		{
-			RemoveFromMaterialSelection(def);
-		}
-	}
-	return RemoveArrayValue(pump_materials, mat);
-}
-
-private func AddToMaterialSelection(id mat)
-{
-	// Add all child materials (DuroLava for lava) as well
-	var def, index;
-	while (def = GetDefinition(index++))
-	{
-		if (def->~GetParentLiquidType() == mat)
-		{
-			AddToMaterialSelection(def);
-		}
-	}
-	if (IsValueInArray(pump_materials, mat))
-		return;
-	return PushBack(pump_materials, mat);
-}
-
-private func IsInMaterialSelection(/* any */ mat)
+func IsInResourceSelection(/* any */ mat)
 {
 	if (GetType(mat) == C4V_Def)
-		return IsValueInArray(pump_materials, mat);
-	for (var def in pump_materials)
-		if (def->GetLiquidType() == mat)
+	{
+		return inherited(mat);
+	}
+	for (var resource in GetResourceSelection())
+	{
+		if (resource->GetLiquidType() == mat)
 			return true;		
+	}
 	return false;	
 }
 
 public func GetPumpMaterialsMenuEntries(object clonk)
 {
-	var menu_entries = [];
-	// Add materials to the selection.
-	// Ignore those with parent materials, because they will be added/removed together with the parent
-	var index = 0, def;
-	while (def = GetDefinition(index++))
-	{
-		if (def->~IsLiquid() && def != Library_Liquid && !def->~GetParentLiquidType())
-		{
-			var act = PUMP_Menu_Action_Material_Disable;
-			var status = Icon_Ok;
-			var enabled = IsInMaterialSelection(def);
-			if (!enabled)
-			{
-				act = PUMP_Menu_Action_Material_Enable;
-				status = Icon_Cancel;
-			}
-			PushBack(menu_entries, 
-				{symbol = def, extra_data = act, 
-					custom =
-					{
-						Right = "2em", Bottom = "2em",
-						BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
-						Priority = index,
-						status = {Right = "1em", Top = "1em", Symbol = status},
-						image = {Symbol = def}
-				}}
-			);
-		}
-	}
-	return menu_entries;
+	return GetResourceSelectionMenuEntries(clonk);
 }
 
 public func OnPumpMaterialsHover(id symbol, string action, desc_menu_target, menu_id)
 {
 	var text = "";
-	if (action == PUMP_Menu_Action_Material_Enable) text = Format("$MsgEnableMaterial$", symbol->GetName());
-	else if (action == PUMP_Menu_Action_Material_Disable) text = Format("$MsgDisableMaterial$", symbol->GetName());
-	else if (action == PUMP_Menu_Action_Description) text = this.Description;
+	if (action == RESOURCE_SELECT_Menu_Action_Resource_Enable)
+	{
+		text = Format("$MsgEnableMaterial$", symbol->GetName());
+	}
+	else if (action == RESOURCE_SELECT_Menu_Action_Resource_Disable)
+	{
+		text = Format("$MsgDisableMaterial$", symbol->GetName());
+	}
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
 
 public func OnPumpMaterials(symbol_or_object, string action, bool alt)
 {
-	if (action == PUMP_Menu_Action_Material_Enable)
-		AddToMaterialSelection(symbol_or_object);
-	else if (action == PUMP_Menu_Action_Material_Disable)
-		RemoveFromMaterialSelection(symbol_or_object);
+	if (action == RESOURCE_SELECT_Menu_Action_Resource_Enable)
+	{
+		AddToResourceSelection(symbol_or_object);
+	}
+	else if (action == RESOURCE_SELECT_Menu_Action_Resource_Disable)
+	{
+		RemoveFromResourceSelection(symbol_or_object);
+	}
 	UpdateInteractionMenus(this.GetPumpMaterialsMenuEntries);	
 }
 

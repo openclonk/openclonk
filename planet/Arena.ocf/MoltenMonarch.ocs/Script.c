@@ -13,7 +13,7 @@ protected func Initialize()
 	var goal = CreateObject(Goal_KingOfTheHill, 555, 250, NO_OWNER);
 	goal->SetRadius(80);
 	goal->SetPointLimit(6);
-	AddEffect("BlessTheKing",goal,100,1,nil);
+	AddEffect("BlessTheKing",goal, 100, 1, nil);
 	// Objects fade after 7 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
 	CreateObject(Rule_KillLogs);
@@ -21,7 +21,7 @@ protected func Initialize()
 	GetRelaunchRule()->SetLastWeaponUse(false);
 	
 	//make lava collapse
-	CreateObjectAbove(Firestone,625,480);
+	CreateObjectAbove(Firestone, 625, 480);
 
 	// Chests with weapons.
 	CreateObjectAbove(Chest, 320, 80, NO_OWNER)->MakeInvincible();
@@ -50,7 +50,7 @@ protected func Initialize()
 	brick->MoveVertical(0, LandscapeHeight(), 6);
 	AddEffect("LavaBrickReset", brick, 100, 10);
 	
-	AddEffect("DeathByFire",nil,100,2,nil);
+	AddEffect("DeathByFire",nil, 100, 2, nil);
 	return;
 }
 
@@ -73,7 +73,7 @@ global func FxBlessTheKingTimer(object target, effect fx, int timer)
 		if (!fx.koth_location) return FX_OK;
 	}
 	var king = fx.koth_location->GetKing(); 
-	if(king == nil) return 1;
+	if (king == nil) return 1;
 
 	var item = king->GetHandItem(0);
 	if (item) item->~MakeKingSize();
@@ -90,7 +90,7 @@ global func FxDeathByFireStart(object target, effect fx, bool temp)
 
 global func FxDeathByFireTimer(object target, effect fx, int timer)
 {
-	for(var obj in FindObjects(Find_InRect(55,0,50,70), Find_Category(C4D_Object | C4D_Living)))
+	for (var obj in FindObjects(Find_InRect(55, 0, 50, 70), Find_Category(C4D_Object | C4D_Living)))
 	{
 		if (obj->GetAlive())
 			obj->Kill();
@@ -106,7 +106,7 @@ global func FxDeathByFireTimer(object target, effect fx, int timer)
 
 global func FxLavaBrickResetTimer(object target, effect, int timer)
 {
-	if(target->GetY() < 10)
+	if (target->GetY() < 10)
 		target->SetPosition(target->GetX(),LandscapeHeight()-10);
 	return 1;
 }
@@ -114,12 +114,12 @@ global func FxLavaBrickResetTimer(object target, effect, int timer)
 // Refill/fill chests.
 global func FxIntFillChestsStart(object target, effect, int temporary)
 {
-	if(temporary) return 1;
+	if (temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));
 	var w_list = [Bow, Blunderbuss, Shield, Sword, Club, Javelin, Bow, Blunderbuss, Shield, Sword, Club, Javelin, DynamiteBox];
 	
-	for(var chest in chests)
-		for(var i=0; i<4; ++i)
+	for (var chest in chests)
+		for (var i = 0; i<4; ++i)
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
 }
@@ -129,7 +129,7 @@ global func FxIntFillChestsTimer()
 	SetTemperature(100); 
 	var chests = FindObjects(Find_ID(Chest));
 	var w_list = [IronBomb, Rock, IronBomb, Firestone, Firestone, Bow, Blunderbuss, Sword, Javelin];
-	for(var chest in chests)
+	for (var chest in chests)
 		if (chest->ContentsCount() < 5 )
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
@@ -150,7 +150,7 @@ global func CreateChestContents(id obj_id)
 
 public func RelaunchPosition()
 {
-	return [[420,200],[300,440],[130,176],[140,368],[700,192],[670,336],[750,440],[440,392],[45,256]];
+	return [[420, 200],[300, 440],[130, 176],[140, 368],[700, 192],[670, 336],[750, 440],[440, 392],[45, 256]];
 }
 
 func RelaunchWeaponList() { return [Bow, Shield, Sword, Javelin, Blunderbuss, Club]; }

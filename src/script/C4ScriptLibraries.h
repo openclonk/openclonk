@@ -18,7 +18,7 @@
 
 #include "script/C4PropList.h"
 
-class C4ScriptLibrary : public C4PropListStaticMember
+class C4ScriptLibrary : public C4PropListStatic
 {
 public:
 	static void InstantiateAllLibraries(C4AulScriptEngine *engine);

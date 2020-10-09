@@ -1,4 +1,5 @@
 Time=Zeit
+Description=Controls the time of the day and corresponding night time effects.
 TimeHelp=Aktuelle Tageszeit in Minuten seit Mitternacht.
 CycleSpeed=Tagesgeschwindigkeit
 CycleSpeedHelp=Geschwindigkeit des Tag-/Nachtrhythmus in Sekunden pro Tick. Standard 30.

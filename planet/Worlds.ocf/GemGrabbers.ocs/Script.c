@@ -334,10 +334,11 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 	var wdt = LandscapeWidth();
 	var hgt = LandscapeHeight();
 
+	var x, y;
 	for (var i = 0; i < 100; i++)
 	{
-		var x = RandomX(wdt / 2 + xpos - sep, wdt / 2 + xpos + sep);
-		var y = hgt / 2 - 220;
+		x = RandomX(wdt / 2 + xpos - sep, wdt / 2 + xpos + sep);
+		y = hgt / 2 - 220;
 		
 		while (!GBackSolid(x, y) && y < 3 * hgt / 4)
 			y++;	

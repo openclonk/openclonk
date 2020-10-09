@@ -128,7 +128,7 @@ bool C4ScenarioSection::EnsureTempStore(bool fExtractLandscape, bool fExtractObj
 		if (!hGroup.Open(szTmp, true)) { EraseItem(szTmp); return false; }
 		// extract all desired section files
 		Game.ScenarioFile.ResetSearch();
-		char fn[_MAX_FNAME+1]; *fn=0;
+		char fn[_MAX_FNAME_LEN]; *fn=0;
 		while (Game.ScenarioFile.FindNextEntry(C4FLS_Section, fn))
 			if (fExtractLandscape || !WildcardMatch(C4FLS_SectionLandscape, fn))
 				if (fExtractObjects || !WildcardMatch(C4FLS_SectionObjects, fn))

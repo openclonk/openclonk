@@ -22,17 +22,17 @@ local ActMap=
 	{
 		Prototype = Action,
 		Name="Attach",
-		Procedure=DFA_ATTACH,
+		Procedure = DFA_ATTACH,
 		NextAction="Be",
-		Length=1,
-		FacetBase=1,
+		Length = 1,
+		FacetBase = 1,
 		AbortCall = "AttachTargetLost"
 	}
 };
 
 func Init(to, max, cur, timeout, offset, visibility, data)
 {
-	data.color = data.color ?? RGBa(255, 255, 255,200);
+	data.color = data.color ?? RGBa(255, 255, 255, 200);
 	data.back_color = data.back_color ?? RGBa(50, 50, 50, 50);
 	
 	size = data.size ?? 1000;
@@ -45,7 +45,7 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	
 	ring = [];
 	
-	if(timeout_time)
+	if (timeout_time)
 	{
 		var e = AddEffect("TimeOut", this, 1, BoundBy(timeout_time/2, 5, 35), this);
 		e.t = timeout_time;
@@ -55,11 +55,11 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	
 	ring[0] = this;
 	
-	for(var i = 1; i < amount; ++i)
+	for (var i = 1; i < amount; ++i)
 		ring[i] = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 
 	var cnt = 0;
-	for(var obj in ring)
+	for (var obj in ring)
 	{
 		obj->Set(to, 180 / amount + ((cnt * 360) / amount), offset, visibility, size);
 		++cnt;
@@ -74,10 +74,10 @@ func Update()
 	var last_colored = (l * p) / 100;
 	
 	
-	for(var i = 0; i < l; ++i)
+	for (var i = 0; i < l; ++i)
 	{
 		var obj = ring[i];
-		if(i >= last_colored)
+		if (i >= last_colored)
 		{
 			obj->SetClrModulation(back_color);
 		}
@@ -104,7 +104,7 @@ func Set(to, angle, offset, visibility, size)
 }
 
 func Rotate (int r, int xoff, int yoff, size) {
-  var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+  var fsin = Sin(r, 1000), fcos = Cos(r, 1000);
   size = size ?? 1000;
   // set matrix values
   SetObjDrawTransform (

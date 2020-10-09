@@ -25,19 +25,21 @@ const StdMeshInstance::AttachedMesh::DenumeratorFactoryFunc C4MeshDenumeratorFac
 
 void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach)
 {
-	if(pComp->isDeserializer())
+	if (pComp->isDeserializer())
 	{
 		int32_t def;
 		pComp->Value(mkNamingCountAdapt(def, "ChildInstance"));
 
-		if(def)
+		if (def)
 		{
 			C4DefGraphics* pGfx = nullptr;
 			pComp->Value(mkNamingAdapt(C4DefGraphicsAdapt(pGfx), "ChildMesh"));
 			Def = pGfx->pDef;
 
-			if(pGfx->Type != C4DefGraphics::TYPE_Mesh)
+			if (pGfx->Type != C4DefGraphics::TYPE_Mesh)
+			{
 				pComp->excCorrupt("ChildMesh points to non-mesh graphics");
+			}
 			assert(!attach->Child);
 			pComp->Value(mkParAdapt(mkNamingContextPtrAdapt(attach->Child, *pGfx->Mesh, "ChildInstance"), C4MeshDenumeratorFactory));
 			assert(attach->Child != nullptr);
@@ -54,10 +56,13 @@ void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::Attache
 	else
 	{
 		int32_t def = 0;
-		if(Def) ++def;
+		if (Def)
+		{
+			++def;
+		}
 		pComp->Value(mkNamingCountAdapt(def, "ChildInstance"));
 
-		if(Def)
+		if (Def)
 		{
 			assert(attach->OwnChild);
 			C4DefGraphics* pGfx = &Def->Graphics;
@@ -78,18 +83,20 @@ void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach
 	Object.DenumeratePointers();
 
 	// Set child instance of attach after denumeration
-	if(Object)
+	if (Object)
 	{
 		assert(!attach->OwnChild);
 		assert(!attach->Child || attach->Child == Object->pMeshInstance);
-		if(!attach->Child)
+		if (!attach->Child)
+		{
 			attach->Child = Object->pMeshInstance;
+		}
 	}
 }
 
 bool C4MeshDenumerator::ClearPointers(C4Object* pObj)
 {
-	if(Object == pObj)
+	if (Object == pObj)
 	{
 		Object = nullptr;
 		// Return false causes the attached mesh to be deleted by StdMeshInstance

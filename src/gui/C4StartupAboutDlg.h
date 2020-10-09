@@ -33,6 +33,7 @@ protected:
 	void DrawElement(C4TargetFacet &cgo) override;
 	bool KeyBack() { DoBack(); return true; }
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(); }
+	void OnLegalBtn(C4GUI::Control *btn);
 #ifdef WITH_AUTOMATIC_UPDATE
 	void OnUpdateBtn(C4GUI::Control *btn);
 #endif

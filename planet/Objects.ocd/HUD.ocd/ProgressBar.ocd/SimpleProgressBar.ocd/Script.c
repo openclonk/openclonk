@@ -22,10 +22,10 @@ local ActMap=
 	{
 		Prototype = Action,
 		Name="Attach",
-		Procedure=DFA_ATTACH,
+		Procedure = DFA_ATTACH,
 		NextAction="Be",
-		Length=1,
-		FacetBase=1,
+		Length = 1,
+		FacetBase = 1,
 		AbortCall = "AttachTargetLost"
 	}
 };
@@ -41,7 +41,7 @@ func Init(to, max, cur, timeout, offset, visibility, proplist data)
 	height = data.height ?? 5;
 
 	
-	if(timeout_time)
+	if (timeout_time)
 	{
 		var e = AddEffect("TimeOut", this, 1, BoundBy(timeout_time/2, 5, 35), this);
 		e.t = timeout_time;
@@ -69,7 +69,7 @@ func SetBarColor(c, b)
 func FxTimeOutTimer(target, effect, time)
 {
 	effect.t -= effect.Interval;
-	if(effect.t > 0) return 1;
+	if (effect.t > 0) return 1;
 	Close();
 	return -1;
 }
@@ -97,7 +97,7 @@ func SetValue(int to)
 {
 	current = BoundBy(to, 0, maximum);;
 	var e = GetEffect("TimeOut", this);
-	if(e)
+	if (e)
 		e.t = timeout_time;
 	Update();
 }

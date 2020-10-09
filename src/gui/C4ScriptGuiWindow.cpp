@@ -675,8 +675,8 @@ void C4ScriptGuiWindow::Init()
 	props[C4ScriptGuiWindowPropertyName::priority].SetNull();
 	props[C4ScriptGuiWindowPropertyName::player].SetInt(ANY_OWNER);
 
-	wasRemoved = false;
-	closeActionWasExecuted = false;
+	wasRemovedFromParent = false;
+	wasClosed = false;
 	currentMouseState = MouseState::None;
 	target = nullptr;
 	pScrollBar->fAutoHide = true;
@@ -912,8 +912,6 @@ const C4Value C4ScriptGuiWindow::ToC4Value()
 		P_Player,
 		P_Tooltip
 	};
-
-	const int32_t entryCount = sizeof(toSave) / sizeof(int32_t);
 
 	for (int prop : toSave)
 	{
@@ -1162,14 +1160,8 @@ void C4ScriptGuiWindow::ClearPointers(C4Object *pObj)
 {
 	// not removing or clearing anything twice
 	// if this flag is set, the object will not be used after this frame (callbacks?) anyway
-	if (wasRemoved) return;
+	if (wasRemovedFromParent) return;
 
-	if (target == pObj)
-	{
-		Close();
-		return;
-	}
-	
 	// all properties which have anything to do with objects need to be called from here!
 	props[C4ScriptGuiWindowPropertyName::symbolObject].ClearPointers(pObj);
 	props[C4ScriptGuiWindowPropertyName::onClickAction].ClearPointers(pObj);
@@ -1183,6 +1175,12 @@ void C4ScriptGuiWindow::ClearPointers(C4Object *pObj)
 		// increment the iterator before (possibly) deleting the child
 		++iter;
 		child->ClearPointers(pObj);
+	}
+
+	if (target == pObj)
+	{
+		MenuDebugLogF("Closing window (%d, %s, @%p, target: %p) due to target removal.", id, name, this, this->target);
+		Close();
 	}
 }
 
@@ -1290,17 +1288,28 @@ C4ScriptGuiWindow *C4ScriptGuiWindow::GetSubWindow(int32_t childID, C4Object *ch
 
 void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool all)
 {
+	if (isRemovalLockedForClosingCallback())
+	{
+		// We are in potentially dangerous fields here (removing a window while another window is being removed).
+		// This has a decent chance to lead to accessing dead memory.
+		// It might still leave the GUI tree in an incorrect state (with dead target objects). But still better than a direct crash.
+		throw C4AulExecError("Trying to remove script GUI window (or window target) from within window closing callback.");
+	}
+
 	// do a layout update asap
 	if (!all && !IsRoot())
 		RequestLayoutUpdate();
 
 	if (child)
 	{
-		child->wasRemoved = true;
+		child->wasRemovedFromParent = true;
 		if (close) child->Close();
 		if (child->GetID() != 0)
 			ChildWithIDRemoved(child);
 		RemoveElement(static_cast<C4GUI::Element*>(child));
+		MenuDebugLogF("Deleting child (%d, %s, @%p, target: %p) from parent (%d, %s, @%p, target: %p).",
+			child->id, child->name, child, child->target,
+			id, name, this, target);
 		// RemoveElement does NOT delete the child itself.
 		delete child;
 	}
@@ -1310,7 +1319,11 @@ void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool a
 		for (Element * element : *this)
 		{
 			C4ScriptGuiWindow * child = static_cast<C4ScriptGuiWindow*>(element);
-			child->wasRemoved = true;
+			assert(child != nullptr);
+			MenuDebugLogF("Closing child (%d, %s, @%p, target: %p) due to parent (%d, %s, @%p, target: %p) removal.",
+				child->id, child->name, child, child->target,
+				id, name, this, target);
+			child->wasRemovedFromParent = true;
 			child->Close();
 			if (child->GetID() != 0)
 				ChildWithIDRemoved(child);
@@ -1328,25 +1341,28 @@ void C4ScriptGuiWindow::ClearChildren(bool close)
 
 void C4ScriptGuiWindow::Close()
 {
+	// This can only be called once.
+	if (wasClosed)
+		return;
+	wasClosed = true;
 	// first, close all children and dispose of them properly
 	ClearChildren(true);
 
-	if (!closeActionWasExecuted)
+	// make call to target object if applicable
+	C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onCloseAction].GetAction();
+	// only calls are valid actions for OnClose
+	if (action && action->action == C4ScriptGuiWindowActionID::Call)
 	{
-		closeActionWasExecuted = true;
-
-		// make call to target object if applicable
-		C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onCloseAction].GetAction();
-		// only calls are valid actions for OnClose
-		if (action && action->action == C4ScriptGuiWindowActionID::Call)
-		{
-			// close is always syncronized (script call/object removal) and thus the action can be executed immediately
-			// (otherwise the GUI&action would have been removed anyway..)
-			action->ExecuteCommand(action->id, this, NO_OWNER);
-		}
+		// close is always syncronized (script call/object removal) and thus the action can be executed immediately
+		// (otherwise the GUI&action would have been removed anyway..)
+		lockRemovalForClosingCallback();
+		action->ExecuteCommand(action->id, this, NO_OWNER);
+		unlockRemovalForClosingCallback();
 	}
 
-	if (!wasRemoved)
+	target = nullptr;
+
+	if (!wasRemovedFromParent)
 	{
 		assert(GetParent() && "Close()ing GUIWindow without parent");
 		static_cast<C4ScriptGuiWindow*>(GetParent())->RemoveChild(this);
@@ -2055,10 +2071,10 @@ void C4ScriptGuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t
 		if (viewport)
 		{
 			const float guiZoom = viewport->GetGUIZoom();
-			const float x = float(parentOffsetX + rcBounds.x) / guiZoom;
-			const float y = float(parentOffsetY + rcBounds.y) / guiZoom;
-			const float wdt = float(rcBounds.Wdt) / guiZoom;
-			const float hgt = float(rcBounds.Hgt) / guiZoom;
+			const int32_t x = int32_t((parentOffsetX + rcBounds.x) / guiZoom);
+			const int32_t y = int32_t((parentOffsetY + rcBounds.y) / guiZoom);
+			const int32_t wdt = int32_t(rcBounds.Wdt / guiZoom);
+			const int32_t hgt = int32_t(rcBounds.Hgt / guiZoom);
 			::MouseControl.SetTooltipRectangle(C4Rect(x, y, wdt, hgt));
 			::MouseControl.SetTooltipText(*strBuf);
 		}
@@ -2360,4 +2376,19 @@ bool C4ScriptGuiWindow::IsVisibleTo(int32_t player)
 	if (target && !target->IsVisible(player, false)) return false;
 	// Default to visible!
 	return true;
+}
+
+void C4ScriptGuiWindow::lockRemovalForClosingCallback()
+{
+	lockRemovalForClosingCallbackCounter += 1;
+	if (!isMainWindow)
+		static_cast<C4ScriptGuiWindow*>(GetParent())->lockRemovalForClosingCallback();
+}
+
+void C4ScriptGuiWindow::unlockRemovalForClosingCallback()
+{
+	assert(lockRemovalForClosingCallbackCounter > 0);
+	lockRemovalForClosingCallbackCounter -= 1;
+	if (!isMainWindow)
+		static_cast<C4ScriptGuiWindow*>(GetParent())->unlockRemovalForClosingCallback();
 }

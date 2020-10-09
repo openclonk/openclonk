@@ -117,6 +117,7 @@ C4StringTable::C4StringTable()
 	P[P_LineWidth] = "LineWidth";
 	P[P_OffX] = "OffX";
 	P[P_OffY] = "OffY";
+	P[P_Material] = "Material";
 	P[P_Proplist] = "Proplist";
 	P[P_proplist] = "proplist";
 	P[P_FacetBase] = "FacetBase";
@@ -321,7 +322,6 @@ C4StringTable::C4StringTable()
 	P[DFA_DIG] = "DIG";
 	P[DFA_SWIM] = "SWIM";
 	P[DFA_THROW] = "THROW";
-	P[DFA_BRIDGE] = "BRIDGE";
 	P[DFA_PUSH] = "PUSH";
 	P[DFA_LIFT] = "LIFT";
 	P[DFA_FLOAT] = "FLOAT";

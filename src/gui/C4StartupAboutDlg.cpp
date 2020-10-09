@@ -247,6 +247,8 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg(LoadResStr("IDS_DLG_ABOUT"
 	int32_t iButtonWidth = caButtons.GetInnerWidth() / 4;
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_BACK"), caButtons.GetGridCell(0,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnBackBtn));
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_BACKMAIN"));
+	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_DLG_DISPLAYLEGALNOTICE"), caButtons.GetGridCell(1,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnLegalBtn));
+	btn->SetToolTip(LoadResStr("IDS_DLGTIP_DISPLAYLEGALNOTICE"));
 #ifdef WITH_AUTOMATIC_UPDATE
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_CHECKFORUPDATES"), caButtons.GetGridCell(2,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnUpdateBtn));
 	btn->SetToolTip(LoadResStr("IDS_DESC_CHECKONLINEFORNEWVERSIONS"));
@@ -336,3 +338,9 @@ void C4StartupAboutDlg::OnUpdateBtn(C4GUI::Control *btn)
 	C4UpdateDlg::CheckForUpdates(GetScreen());
 }
 #endif
+
+void C4StartupAboutDlg::OnLegalBtn(C4GUI::Control *btn)
+{
+	// advance to screen with license notices and whatnot
+	C4Startup::Get()->SwitchDialog(C4Startup::SDID_Legal);
+}

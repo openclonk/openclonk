@@ -32,9 +32,3 @@ DescBalloonSpawn=Die Clonks fallen mit Ballons vom Himmel.
 
 Rounds=Rundenzahl
 DescRounds=Mehrere Runden spielen
-Stalemate=Unentschieden!
-WinningTeam=Gewinner: %s
-RemainingRounds=Noch %d Runden.
-LastRound=Letzte Runde!
-Tiebreak=Entscheidende Runde!
-BonusRound=Bonusrunde!

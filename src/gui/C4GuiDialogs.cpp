@@ -1009,7 +1009,7 @@ bool MessageDialog::KeyCopy()
 		// use text with line breaks
 		StdStrBuf str;
 		::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_ProgressDlgWdt-3*C4GUI_DefDlgIndent-C4GUI_IconWdt, &str, true);
-		Label *pLblMessage = new Label(str.getData(), caMain.GetAll().GetMiddleX(), caMain.GetAll().y, ACenter, C4GUI_MessageFontClr, &::GraphicsResource.TextFont);
+		pLblMessage = new Label(str.getData(), caMain.GetAll().GetMiddleX(), caMain.GetAll().y, ACenter, C4GUI_MessageFontClr, &::GraphicsResource.TextFont);
 		AddElement(pLblMessage);
 		// place progress bar
 		pBar = new ProgressBar(rtProgressBar, iMaxProgress);
@@ -1021,6 +1021,12 @@ bool MessageDialog::KeyCopy()
 		AddElement(pBtnAbort);
 	}
 
+	void ProgressDialog::SetMessage(const char *szMessage)
+	{
+		StdStrBuf str;
+		::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_ProgressDlgWdt - 3 * C4GUI_DefDlgIndent - C4GUI_IconWdt, &str, true);
+		pLblMessage->SetText(szMessage);
+	}
 
 // --------------------------------------------------
 // Some dialog wrappers in Screen class

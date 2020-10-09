@@ -52,9 +52,9 @@ public func FxIntJetStreamStart(object target, effect, int temp, array stream, i
 		effect.Description = target.Description;
 		effect.target_offset = stream[1];
 		effect.EditorProps = {
-			speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min=1, Max=200 },
-			width = { Name="$Width$", EditorHelp="$WidthHelp$", Type="int", Min=5, Max=80 },
-			target_offset = { Name="$TargetOffset$", EditorHelp="$TargetOffsetHelp$", Type="point", Relative=true, Color=0x008fff, Set="SetTargetOffset" },
+			speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min = 1, Max = 200 },
+			width = { Name="$Width$", EditorHelp="$WidthHelp$", Type="int", Min = 5, Max = 80 },
+			target_offset = { Name="$TargetOffset$", EditorHelp="$TargetOffsetHelp$", Type="point", Relative = true, Color = 0x008fff, Set="SetTargetOffset" },
 		};
 		effect.SetTargetOffset = JetStream.SetFxTargetOffset;
 	}

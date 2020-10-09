@@ -105,17 +105,18 @@ public func Execute(effect fx, int time)
 		// Wake up nearby allies.
 		if (fx.ally_alert_range)
 		{
-			var ally_fx;
 			for (var ally in fx.Target->FindObjects(Find_Distance(fx.ally_alert_range), Find_Exclude(fx.Target), Find_OCF(OCF_CrewMember), Find_Owner(fx.Target->GetOwner())))
-				if (ally_fx = this->GetAI(ally))
-					if (!ally_fx.target)
-					{
-						ally_fx.target = fx.target;
-						ally_fx.alert = ally_fx.time;
-						if (ally_fx.encounter_cb) 
-							if (GameCall(ally_fx.encounter_cb, ally, fx.target))
-								ally_fx.encounter_cb = nil;
-					}
+			{
+				var ally_fx = this->GetAI(ally);
+				if (ally_fx && !ally_fx.target)
+				{
+					ally_fx.target = fx.target;
+					ally_fx.alert = ally_fx.time;
+					if (ally_fx.encounter_cb) 
+						if (GameCall(ally_fx.encounter_cb, ally, fx.target))
+							ally_fx.encounter_cb = nil;
+				}
+			}
 			// Do some messages.
 			this->ExecuteIntruderMessage(fx);		
 			// Waking up works only once. after that, AI might have moved and wake up clonks it shouldn't.
@@ -180,7 +181,7 @@ public func ExecuteArm(effect fx)
 	// Find shield.
 	fx.shield = fx.Target->FindContents(Shield);
 	// Vehicle control overrides all other weapons
-	if (fx.weapon = fx.vehicle)
+	if ((fx.weapon = fx.vehicle) != nil)
 	{
 		if (this->CheckVehicleAmmo(fx, fx.weapon))
 		{

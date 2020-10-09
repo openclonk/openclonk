@@ -1,5 +1,0 @@
-[DefCore]
-id=Library_Tank
-Version=8,0
-Category=C4D_StaticBack
-HideInCreator=true

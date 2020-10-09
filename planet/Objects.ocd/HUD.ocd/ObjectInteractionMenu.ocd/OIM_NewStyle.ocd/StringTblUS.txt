@@ -1,0 +1,15 @@
+TooltipClose=Close
+
+TooltipSettings=Open settings
+TooltipSettingsClose=Close settings
+
+TooltipBackground=Toggle background transparency
+
+TooltipHideText=Hide captions
+TooltipShowText=Show captions
+
+TooltipWithSaturation=Show menu colors
+TooltipWithoutSaturation=Hide menu colors
+
+TooltipTransferAllLeft=Transfer inventory to the left.
+TooltipTransferAllRight=Transfer inventory to the right.

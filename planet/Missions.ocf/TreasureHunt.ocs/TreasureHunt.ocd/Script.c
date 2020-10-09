@@ -12,9 +12,25 @@ local has_gem_task, got_oil, is_fulfilled;
 
 public func IsFulfilled() { return is_fulfilled; }
 
-public func OnGotGemTask() { SetGraphics("Hunt"); SetName("$Name2$"); return has_gem_task = true; }
-public func OnTreasureSold() { SetGraphics(nil); SetName("$Name$"); return got_oil = true; }
-public func OnOilDelivered() { return is_fulfilled = true; }
+public func OnGotGemTask()
+{
+	SetGraphics("Hunt");
+	SetName("$Name2$");
+	has_gem_task = true;
+	return true;
+}
+public func OnTreasureSold()
+{
+	SetGraphics(nil);
+	SetName("$Name$");
+	got_oil = true;
+	return true;
+}
+public func OnOilDelivered()
+{
+	is_fulfilled = true;
+	return true;
+}
 
 public func GetDescription(int plr)
 {

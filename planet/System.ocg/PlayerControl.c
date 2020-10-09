@@ -7,7 +7,7 @@
 
 static const CON_Gamepad_Deadzone = 60;
 static CON_VC_Players;
-static g_player_cursor_pos; // array of [x,y] pos arrays; indexed by player. last cursor pos as sent by CON_CursorPos
+static g_player_cursor_pos; // array of [x, y] pos arrays; indexed by player. last cursor pos as sent by CON_CursorPos
 
 // PlayerControlRelease
 // Called by engine whenever a control is issued
@@ -17,12 +17,12 @@ static g_player_cursor_pos; // array of [x,y] pos arrays; indexed by player. las
 global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, int status)
 {
 	var release = status == CONS_Up;
-	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, status);
+	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x, y, strength, repeat, status);
 	// Control handled by definition? Forward
 	if (spec_id) return spec_id->ForwardedPlayerControl(plr, ctrl, x, y, strength, repeat, status);
 
 	// Forward control to player
-	if (Control2Player(plr,ctrl, x, y, strength, repeat, status)) return true;
+	if (Control2Player(plr, ctrl, x, y, strength, repeat, status)) return true;
 
 	// Forward control to cursor
 	var cursor = GetCursor(plr);
@@ -62,12 +62,12 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 
 				if (ctrl == CON_GUICursor)
 				{
-					cursor->GetMenu()->~UpdateCursor(dx,dy);
+					cursor->GetMenu()->~UpdateCursor(dx, dy);
 					return true;
 				}
 				else if (release == true)
 				{
-					cursor->GetMenu()->~OnMouseClick(dx,dy,ctrl == CON_GUIClick2);
+					cursor->GetMenu()->~OnMouseClick(dx, dy, ctrl == CON_GUIClick2);
 					return false;
 				}
 			}		
@@ -104,7 +104,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 global func InitializePlayerControl(int plr, string controlset_name, bool keyboard, bool mouse, bool gamepad)
 {
 	// VC = VirtualCursor
-	if(!CON_VC_Players)
+	if (!CON_VC_Players)
 		CON_VC_Players = CreateArray();
 		
 	CON_VC_Players[plr] = !mouse;
@@ -150,7 +150,7 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	if (hotkey > 0)
 	{
 		// valid crew number?
-		var crew = GetCrew(plr,hotkey-1);
+		var crew = GetCrew(plr, hotkey-1);
 		if (!crew) return false;
 		// stop previously selected crew
 		StopSelected();
@@ -165,7 +165,7 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	// cursor pos info - store in player values
 	if (ctrl == CON_CursorPos)
 	{
-		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(plr+1);
+		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(plr + 1);
 		g_player_cursor_pos[plr] = [x, y];
 		return true;
 	}
@@ -212,7 +212,7 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 	{
 		fx = GetEffect("*Control*", this, i);
 		if (fx)
-			if (EffectCall(this, fx, "Control", ctrl, x,y,strength, repeat, status))
+			if (EffectCall(this, fx, "Control", ctrl, x, y, strength, repeat, status))
 				return true;
 	}
 	// No effect handled the control
@@ -246,7 +246,7 @@ global func GetEntranceObject()
 
 	// object with an entrance on target position
 	var obj = FindObject(Find_OCF(OCF_Entrance), Find_Layer(GetObjectLayer()), 
-	                     Find_AtPoint(0,0), Find_Exclude(this));
+	                     Find_AtPoint(0, 0), Find_Exclude(this));
 	if (!obj) return nil;
 
 	var x = obj->GetDefCoreVal("Entrance","DefCore",0) + obj->GetX();
@@ -255,23 +255,23 @@ global func GetEntranceObject()
 	var hgt = obj->GetDefCoreVal("Entrance","DefCore",3);
 		
 	// entrance is on the vehicle?
-	if (!Inside(GetX(), x, x+wdt)) return nil;
-	if (!Inside(GetY(), y, y+hgt)) return nil;
+	if (!Inside(GetX(), x, x + wdt)) return nil;
+	if (!Inside(GetY(), y, y + hgt)) return nil;
 	
 	return obj;
 }
 global func NameComDir(comdir)
 {
-	if(comdir == COMD_Stop) return "COMD_Stop";
-	if(comdir == COMD_Up) return "COMD_Up";
-	if(comdir == COMD_UpRight) return "COMD_UpRight";
-	if(comdir == COMD_UpLeft) return "COMD_UpLeft";
-	if(comdir == COMD_Right) return "COMD_Right";
-	if(comdir == COMD_Left) return "COMD_Left";
-	if(comdir == COMD_Down) return "COMD_Down";
-	if(comdir == COMD_DownRight) return "COMD_DownRight";
-	if(comdir == COMD_DownLeft) return "COMD_DownLeft";
-	if(comdir == COMD_None) return "COMD_None";
+	if (comdir == COMD_Stop) return "COMD_Stop";
+	if (comdir == COMD_Up) return "COMD_Up";
+	if (comdir == COMD_UpRight) return "COMD_UpRight";
+	if (comdir == COMD_UpLeft) return "COMD_UpLeft";
+	if (comdir == COMD_Right) return "COMD_Right";
+	if (comdir == COMD_Left) return "COMD_Left";
+	if (comdir == COMD_Down) return "COMD_Down";
+	if (comdir == COMD_DownRight) return "COMD_DownRight";
+	if (comdir == COMD_DownLeft) return "COMD_DownLeft";
+	if (comdir == COMD_None) return "COMD_None";
 }
 // Called when CON_Left/Right/Up/Down controls are issued/released
 // Return whether handled
@@ -305,7 +305,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, int status, b
 		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) //Water jump
 		{
 			if (ctrl == CON_Up) return false;
-			else if(ctrl == CON_Jump) this->ObjectCommand("Jump");
+			else if (ctrl == CON_Jump) this->ObjectCommand("Jump");
 		}
 		if (proc == "SCALE") // Let go from scaling a wall
 		{
@@ -321,7 +321,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, int status, b
 		}
 		else if (proc == "HANGLE") // Let go from hangling the ceiling
 		{
-			if (ctrl == CON_Down) return this->ObjectComLetGo(0,0);
+			if (ctrl == CON_Down) return this->ObjectComLetGo(0, 0);
 		}
 		// Direct turnaround if object is standing still. Valid for any procedure in OC
 		if (!GetXDir())
@@ -405,7 +405,7 @@ global func ShiftCursor(int plr, bool back, bool force)
 	var index = 0;
 	while (index < GetCrewCount(plr))
 	{
-		if (GetCursor(plr) == GetCrew(plr,index)) break;
+		if (GetCursor(plr) == GetCrew(plr, index)) break;
 		index++;
 	}
 	
@@ -431,7 +431,7 @@ global func ShiftCursor(int plr, bool back, bool force)
 			if (index >= GetCrewCount(plr)) index = 0;
 		}
 		++cycle;
-	} while (cycle < maxcycle && !(GetCrew(plr,index)->GetCrewEnabled()));
+	} while (cycle < maxcycle && !(GetCrew(plr, index)->GetCrewEnabled()));
 	
 	// Changing the cursor closes all menus that are associated with the old cursor.
 	// However, if a menu is not closable, then it requires the attention of the player and switching the cursor is disabled..
@@ -458,7 +458,7 @@ global func GetPlayerControlName(int ctrl)
 // Return COMD_*-constant corresponding to current state of passed directional controls
 global func GetPlayerConDir(int plr, int con_left, int con_up, int con_right, int con_down)
 {
-	var x,y;
+	var x, y;
 	if (GetPlayerControlState(plr, con_left))	--x;
 	if (GetPlayerControlState(plr, con_up))		--y;
 	if (GetPlayerControlState(plr, con_right)) ++x;
@@ -466,7 +466,7 @@ global func GetPlayerConDir(int plr, int con_left, int con_up, int con_right, in
 	// Creating an array here for every keypress/release
 	// Would be so cool to have this static const. Guenther?
 	var dir_coms = [COMD_UpLeft, COMD_Up, COMD_UpRight, COMD_Left, COMD_Stop, COMD_Right, COMD_DownLeft, COMD_Down, COMD_DownRight];
-	return dir_coms[y*3+x+4];
+	return dir_coms[y*3 + x+4];
 }
 
 // Returns coordinate directions associated with a COMD_Constant
@@ -474,7 +474,7 @@ global func ComDir2XY(int comd)
 {
 	// Creating an array here for every keypress/release
 	// Would be so cool to have this static const. Guenther?
-	return [[0,0,1,1,1,0,-1,-1,-1][comd], [0,-1,-1,0,1,1,1,0,-1][comd]];
+	return [[0, 0, 1, 1, 1, 0,-1,-1,-1][comd], [0,-1,-1, 0, 1, 1, 1, 0,-1][comd]];
 }
 
 global func ObjectCommand(string command, object target, int tx, int ty, object target2, /*any*/ data)
@@ -511,7 +511,7 @@ global func MouseHover(int player, object leaving, object entering, object dragg
 
 /* Drag & Drop */
 
-// Engine callback on drag&drop: gives the player, the dragged obect and the object which is being dropped(can be nil).
+// Engine callback on drag & drop: gives the player, the dragged obect and the object which is being dropped(can be nil).
 global func MouseDragDrop(int plr, object source, object target)
 {
 	//Log("MouseDragDrop(%d, %s, %s)", plr, source->GetName(), target->GetName());
@@ -538,7 +538,7 @@ global func MouseDragDrop(int plr, object source, object target)
 {
 	var r = inherited(plr, ctrl, spec_id, x, y, strength, repeat, release, ...), rs;
 	if (r) rs = ""; else rs = "!";
-	Log("%s%d, %s, %i, %d, %d, %d, %v, %v", rs, plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, release);
+	Log("%s%d, %s, %i, %d, %d, %d, %v, %v", rs, plr, GetPlayerControlName(ctrl), spec_id, x, y, strength, repeat, release);
 	return r;
 }*/
 

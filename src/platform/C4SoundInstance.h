@@ -17,6 +17,8 @@
 
 /* Helper classes for individual sounds and effects in sound system. */
 
+#ifndef INC_C4SoundInstance
+#define INC_C4SoundInstance
 #include "platform/C4SoundSystem.h"
 
 class C4Object; 
@@ -101,3 +103,4 @@ public:
 	void SetPlayer(int32_t new_player);
 };
 
+#endif

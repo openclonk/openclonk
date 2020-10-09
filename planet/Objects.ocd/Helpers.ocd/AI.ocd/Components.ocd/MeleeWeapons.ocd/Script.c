@@ -78,9 +78,9 @@ private func ExecuteClub(effect fx)
 		return false;
 	}
 	// Are we in range?
-	var x=fx.Target->GetX(), y=fx.Target->GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY();
 	var dx = tx-x, dy = ty-y;
-	if (Abs(dx) <= 10 && PathFree(x,y,tx,ty))
+	if (Abs(dx) <= 10 && PathFree(x, y, tx, ty))
 	{
 		if (Abs(dy) >= 15)
 		{
@@ -96,14 +96,14 @@ private func ExecuteClub(effect fx)
 		{
 			//Message("MeleeWAIT %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
 			// While waiting for the cooldown, we try to evade...
-			this->ExecuteEvade(fx,dx,dy);
+			this->ExecuteEvade(fx, dx, dy);
 			return true;
 		}
 		// OK, attack! Prefer upwards strike
 		dy -= 16;
-		fx.weapon->ControlUseStart(fx.Target, dx,dy);
-		fx.weapon->ControlUseHolding(fx.Target, dx,dy);
-		fx.weapon->ControlUseStop(fx.Target, dx,dy);
+		fx.weapon->ControlUseStart(fx.Target, dx, dy);
+		fx.weapon->ControlUseHolding(fx.Target, dx, dy);
+		fx.weapon->ControlUseStop(fx.Target, dx, dy);
 		return true;
 	}
 	// Not in range. Walk there.
@@ -117,7 +117,7 @@ private func ExecuteBomber(effect fx)
 	// Still carrying the bomb?
 	if (fx.weapon->Contained() != fx.Target)
 	{
-		fx.weapon=nil;
+		fx.weapon = nil;
 		return false;
 	}
 	// Are we in range?

@@ -1,7 +1,7 @@
 protected func Initialize()
 {
 	this.Plane = 400;
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(15,0,10), Trans_Scale(200)));	
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(15, 0, 10), Trans_Scale(200)));	
 	
 }
 

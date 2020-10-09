@@ -45,7 +45,6 @@ protected func ControlUse(object clonk, x, y)
 
 func ReadyToBeUsed(proplist data)
 {
-	var clonk = data.clonk;
 	return !GetEffect("IntReload", this);
 }
 
@@ -71,7 +70,7 @@ func FxIntReloadTimer(object target, proplist effect, int time)
 	if (fill_amount > MaxIntake)
 		return FX_Execute_Kill;
 		
-	if (GBackSolid(0,0) || GBackLiquid(0,0))
+	if (GBackSolid(0, 0) || GBackLiquid(0, 0))
 	{
 		if (effect.sound)
 		{
@@ -241,14 +240,26 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_
 			return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(3000,-3000), Trans_Rotate(-30, 0, 1));
 	}
 	if (nohand)
-		return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(0,3000));
+		return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(0, 3000));
 
 	return Trans_Mul(Trans_Rotate(220, 0, 1, 0), Trans_Rotate(30, 0, 0, 1), Trans_Rotate(-26, 1, 0, 0));
 }
 
 public func GetCarryPhase() { return 600; }
 
-func Definition(def)
+
+/*-- Saving --*/
+
+public func SaveScenarioObject(props, ...)
+{
+	if (!inherited(props, ...)) return false;
+	// Save fully loaded.
+	if (fill_amount == this.MaxIntake) props->AddCall("FullLoad", this, "DoFullLoad");
+	return true;
+}
+
+
+public func Definition(def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(1500), Trans_Rotate(150, 0, 0, 1), Trans_Rotate(-170, 1, 0, 0), Trans_Rotate(10, 0, 1, 0)), def);
 }

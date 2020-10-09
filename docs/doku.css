@@ -1,7 +1,7 @@
 @font-face{
 	font-family: Endeavour;
-	src: url('/Endeavour.eot');
-	src: local('Endeavour'),url('/Endeavour.ttf') format("truetype");
+	/*src: url('/Endeavour.eot');
+	src: local('Endeavour'),url('/Endeavour.ttf') format("truetype");*/
 }
 
 body {
@@ -241,10 +241,6 @@ ul.nav a {
 	color: #ccc;
 	padding: 6px 10px;
 	text-decoration: none;
-}
-
-ul.nav a:hover, ul.nav a:hover {
-	background: #333 url(images/stripe-wide.gif) left repeat-x;
 }
 
 ul.nav li.switchlang img {

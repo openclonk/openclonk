@@ -7,7 +7,7 @@
     <title>GetComponent</title>
     <category>Objects</category>
     <subcat>Components</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>int / id</rtype>
       <params>

@@ -70,8 +70,8 @@ local lovely_tries = 0;
 private func GetAttraction(proplist coordinates)
 {
 	// GetAttraction will only be called for the swarm master, perfect to have just one being make sound
-	if(!Random(30))
-		Sound("Animals::MosquitoBuzz", nil,nil,nil,nil, 200);
+	if (!Random(30))
+		Sound("Animals::MosquitoBuzz", nil, nil, nil, nil, 200);
 
 	if (!lovely_place) lovely_place = CreateArray(3);
 	if (!lovely_place[1])
@@ -132,7 +132,7 @@ private func LookForLovelyPlace()
 		return;
 	}
 	// Water is second best place
-	var water = FindLocation(Loc_InRect(-100,-50,200,100), Loc_Material("Water"), Loc_MaxTries(80));
+	var water = FindLocation(Loc_InRect(-100,-50, 200, 100), Loc_Material("Water"), Loc_MaxTries(80));
 	if (water)
 	{
 		// Try to find the surface

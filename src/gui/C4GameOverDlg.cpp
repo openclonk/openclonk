@@ -242,7 +242,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 C4GameOverDlg::~C4GameOverDlg()
 {
 	Application.Remove(this);
-	delete ppPlayerLists;
+	delete[] ppPlayerLists;
 	is_shown = false;
 }
 

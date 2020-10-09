@@ -60,7 +60,7 @@ protected func InitializePlayer(int plr)
 	{
 		crew->SetPosition(96 + RandomX(-12, 12), LandscapeHeight() - 92);
 		var u = 0;
-		while(crew->Stuck())
+		while (crew->Stuck())
 		{
 			crew->SetPosition(crew->GetX(), crew->GetY()-1);
 			++u;
@@ -144,7 +144,7 @@ private func InitEnvironment(int map_size, int difficulty)
 	for (var i = 0; i < 16 + 4 * difficulty; i++)
 	{
 		var fall = CreateWaterfall(waterfall_x + 2, 0, RandomX(3, 4), "Water");
-		fall->SetDirection(RandomX(10, 12), 8, 8, 8);
+		fall->SetDirection(RandomX(14, 16), 12, 4, 4);
 		fall->SetSoundLocation(LandscapeWidth() / 2, Random(LandscapeHeight()));
 	}
 	var trunk = CreateObjectAbove(Trunk, waterfall_x + 2, 20);

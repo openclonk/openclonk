@@ -12,7 +12,7 @@ global func MaterialDepthCheck(int x, int y, string mat, int depth)
 	var travelled = 0;
 	var matnum = Material(mat);
 
-	while (y+GetY() < LandscapeHeight() && GetMaterial(x, y) == matnum)
+	while (y + GetY() < LandscapeHeight() && GetMaterial(x, y) == matnum)
 	{
 		travelled++;
 		y++;
@@ -28,15 +28,15 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 {
 	var iX, iY;
 	var iMaterial = Material(sMat);
-	for(var i = 0; i < 500; i++)
+	for (var i = 0; i < 500; i++)
 	{
-		iX = AbsX(iXStart+Random(iWidth));
-		iY = AbsY(iYStart+Random(iHeight));
-		if(GetMaterial(iX,iY)==iMaterial &&
-		   GetMaterial(iX+iSize,iY+iSize)==iMaterial &&
-		   GetMaterial(iX+iSize,iY-iSize)==iMaterial &&
-		   GetMaterial(iX-iSize,iY-iSize)==iMaterial &&
-		   GetMaterial(iX-iSize,iY+iSize)==iMaterial
+		iX = AbsX(iXStart + Random(iWidth));
+		iY = AbsY(iYStart + Random(iHeight));
+		if (GetMaterial(iX, iY)==iMaterial &&
+		   GetMaterial(iX + iSize, iY + iSize)==iMaterial &&
+		   GetMaterial(iX + iSize, iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize, iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize, iY + iSize)==iMaterial
 		) {
 			return [iX, iY]; // Location found.
 		}
@@ -68,7 +68,7 @@ global func ExtractLiquid(int x, int y, bool distant_first)
 global func ExtractLiquidAmount(int x, int y, int amount, bool distant_first)
 {
 	var mat = GetMaterial(x, y);
-	if(mat == -1)
+	if (mat == -1)
 		return nil;
 	var density = GetMaterialVal("Density", "Material", mat);
 	if (density < C4M_Liquid || density >= C4M_Solid)

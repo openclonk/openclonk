@@ -45,6 +45,7 @@ std::vector<StdMeshInstance::SerializableValueProvider::IDBase*>* StdMeshInstanc
 
 namespace
 {
+#ifndef USE_CONSOLE
 	// Helper to sort submeshes so that opaque ones appear before non-opaque ones
 	struct StdMeshSubMeshVisibilityCmpPred
 	{
@@ -138,6 +139,7 @@ namespace
 
 		faces.swap(new_faces);
 	}
+#endif
 
 	// Serialize a ValueProvider with StdCompiler
 	struct ValueProviderAdapt
@@ -386,7 +388,7 @@ void StdMeshSkeleton::AddMasterBone(StdMeshBone *bone)
 const StdMeshBone* StdMeshSkeleton::GetBoneByName(const StdStrBuf& name) const
 {
 	// Lookup parent bone
-	for (auto Bone : Bones)
+	for (const auto & Bone : Bones)
 		if (Bone->Name == name)
 			return Bone;
 
@@ -1392,7 +1394,7 @@ StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMeshImpl(StdMeshInstance& 
 
 bool StdMeshInstance::DetachMesh(unsigned int number)
 {
-	return !ScanAttachTree(AttachChildren.begin(), AttachChildren.end(), [this, number](AttachedMeshList::iterator iter)
+	return !ScanAttachTree(AttachChildren.begin(), AttachChildren.end(), [number](AttachedMeshList::iterator iter)
 	{
 		if ((*iter)->Number == number)
 		{

@@ -22,7 +22,7 @@ global func OnFire()
 	if (!this)
 		return false;
 	var effect;
-	if (!(effect=GetEffect("Fire", this)))
+	if (!(effect = GetEffect("Fire", this)))
 		return false;
 	return effect.strength;
 }
@@ -201,7 +201,6 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 	effect.caused_by = caused_by; // used in C4Object::GetFireCause and timer! <- fixme?
 	effect.blasted = blasted;
 	effect.incinerating_obj = incinerating_object;
-	effect.no_burn_decay = target.NoBurnDecay;
 	
 	// store fire particles
 	effect.smoke =
@@ -212,9 +211,9 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 		CollisionVertex = 1000,
 		OnCollision = PC_Stop(),
 		ForceX = PV_Wind(50),
-		DampingX = PV_Linear(900,999),
+		DampingX = PV_Linear(900, 999),
 		ForceY = -7,
-		DampingY = PV_Linear(1000,PV_Random(650,750)),
+		DampingY = PV_Linear(1000, PV_Random(650, 750)),
 		Rotation = PV_Random(0, 359),
 		Phase = PV_Random(0, 3)
 	};
@@ -228,11 +227,11 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 		CollisionVertex = 0,
 		OnCollision = PC_Die(),
 		R = 255,
-		G = PV_Linear(255,200),
+		G = PV_Linear(255, 200),
 		B = PV_Random(0, 100),
-		DampingX=950,
-		DampingY=950,
-		Alpha = PV_Random(40,140),
+		DampingX = 950,
+		DampingY = 950,
+		Alpha = PV_Random(40, 140),
 		BlitMode = GFX_BLIT_Additive
 	};
 	effect.redfiredense =
@@ -248,7 +247,7 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 	effect.flameborder =
 	{
 		R = 255,
-		G = PV_Linear(255,0),
+		G = PV_Linear(255, 0),
 		B = 0,
 		Phase = PV_Random(0, 4),
 		OnCollision = PC_Die(),
@@ -334,7 +333,7 @@ global func FxFireTimer(object target, proplist effect, int time)
 	if (!target) return FX_Execute_Kill;
 	
 	// get cause
-	//if(!GetPlayerName(effect.caused_by)) effect.caused_by=NO_OWNER;;
+	//if (!GetPlayerName(effect.caused_by)) effect.caused_by = NO_OWNER;;
 		
 	// strength changes over time
 	if ((effect.strength < 100) && (time % 8 == 0))
@@ -368,15 +367,15 @@ global func FxFireTimer(object target, proplist effect, int time)
 	if (time % (20 + effect.FreqReduction) == 0)
 	{	
 		// Extinguish when in water-like materials.
-		var mat;
-		if (mat = GetMaterial())
+		var mat = GetMaterial();
+		if (mat)
 		{
 			if (GetMaterialVal("Extinguisher", "Material", mat))
 			{
 				var steam =
 				{
 					Size = PV_Linear(effect.width*2, effect.width*4),
-					Alpha = PV_Linear(87,0),
+					Alpha = PV_Linear(87, 0),
 					R = 255,
 					G = 255,
 					B = 255,
@@ -425,16 +424,17 @@ global func FxFireTimer(object target, proplist effect, int time)
 					continue;
 					
 				var old_fire_value = obj->OnFire();
-				if(old_fire_value < 100) // only if the object was not already fully ablaze
+				if (old_fire_value < 100) // only if the object was not already fully ablaze
 				{
 					// incinerate the other object a bit
-					obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj);
-				
-					// Incinerating other objects weakens the own fire.
-					// This is done in order to make fires spread slower especially as a chain reaction.
-					var min = Min(10, effect.strength);
-					if(effect.strength > 50) min = 50;
-					effect.strength = BoundBy(effect.strength - amount/2, min, 100);
+					if (obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj))
+					{
+						// Incinerating other objects weakens the own fire.
+						// This is done in order to make fires spread slower especially as a chain reaction.
+						var min = Min(10, effect.strength);
+						if (effect.strength > 50) min = 50;
+						effect.strength = BoundBy(effect.strength - amount / 2, min, 100);
+					}
 				}
 			}
 		}
@@ -451,7 +451,7 @@ global func FxFireTimer(object target, proplist effect, int time)
 		if ((time*10) % 120 <= effect.strength)
 		{
 			target->DoDamage(2, FX_Call_DmgFire, effect.caused_by);
-			if (target && !Random(2) && !effect.no_burn_decay)
+			if (target && !Random(2) && !target.NoBurnDecay)
 			{
 				target->DoCon(-1);
 				if (target)
@@ -471,12 +471,12 @@ global func FxFireTimer(object target, proplist effect, int time)
 		// A few red fire particles popping up in the higher area. Does not affect very small flames.
 		if (effect.fire_width + effect.fire_height > 40)
 		{
-			if (!Random(2)) CreateParticle("FireDense", PV_Random(-effect.fire_width, effect.pspeed), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3,3), effect.pspeed, effect.fire_height/2+6, effect.redfiredense);
-			if (!Random(2)) CreateParticle("FireDense", PV_Random(effect.fire_width/2, effect.fire_width), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3,3), effect.pspeed, effect.fire_height/2+6, effect.redfiredense);
+			if (!Random(2)) CreateParticle("FireDense", PV_Random(-effect.fire_width, effect.pspeed), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3, 3), effect.pspeed, effect.fire_height/2 + 6, effect.redfiredense);
+			if (!Random(2)) CreateParticle("FireDense", PV_Random(effect.fire_width/2, effect.fire_width), PV_Random(effect.pspeed, effect.fire_height), PV_Random(-3, 3), effect.pspeed, effect.fire_height/2 + 6, effect.redfiredense);
 		}
 
 		// Smoke
-		CreateParticle("SmokeThick", PV_Random(-effect.fire_width,effect.fire_width), -effect.fire_height, 0, -6, 300, effect.smoke);
+		CreateParticle("SmokeThick", PV_Random(-effect.fire_width, effect.fire_width), -effect.fire_height, 0, -6, 300, effect.smoke);
 
 		// Chaotic particles
 		if (!Random(3) && effect.FreqReduction < 14)

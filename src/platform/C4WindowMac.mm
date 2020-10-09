@@ -13,6 +13,7 @@
  * for the above references.
  */
  
+#define GL_SILENCE_DEPRECATION
 #include "C4Include.h"
 #include "graphics/C4DrawGL.h"
 #include "platform/C4Window.h"
@@ -38,6 +39,7 @@ C4Window::C4Window ():
 
 C4Window::~C4Window () {}
 
+#ifndef WITH_QT_EDITOR
 static NSString* windowXibNameForWindowKind(C4Window::WindowKind kind)
 {
 	switch (kind)
@@ -53,6 +55,7 @@ static NSString* windowXibNameForWindowKind(C4Window::WindowKind kind)
 		return nil;
 	}
 }
+#endif
 
 C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
@@ -216,8 +219,8 @@ C4KeyCode K_PRINT = -100;
 C4KeyCode K_CENTER = -101;
 C4KeyCode K_NUM = -102;
 
-int MK_SHIFT = NSShiftKeyMask;
-int MK_CONTROL = NSControlKeyMask;
-int MK_ALT = NSAlternateKeyMask;
+int MK_SHIFT = NSEventModifierFlagShift;
+int MK_CONTROL = NSEventModifierFlagControl;
+int MK_ALT = NSEventModifierFlagOption;
 
 #endif

@@ -19,6 +19,7 @@
 
 #include "C4Version.h"
 #include "lib/C4InputValidation.h"
+#include <utility>
 
 struct C4GameVersion
 {
@@ -51,8 +52,11 @@ struct C4GameVersion
 inline int CompareVersion(int iVer1, int iVer2,
                           int iRVer1 = C4XVER1, int iRVer2 = C4XVER2)
 {
-	if (iVer1 > iRVer1) return 1; if (iVer1 < iRVer1) return -1;
-	if (iVer2 > iRVer2) return 1; if (iVer2 < iRVer2) return -1;
+	auto ver = std::make_pair(iVer1, iVer2);
+	auto rVer = std::make_pair(iRVer1, iRVer2);
+
+	if (ver < rVer) return -1;
+	if (ver > rVer) return 1;
 	return 0;
 }
 

@@ -2,30 +2,30 @@
 
 func Initialize()
 {
-	SetObjDrawTransform(5000,0,0,0,5000); // scale separately by DrawTransform, because scaling in mesh transform screws up Z clipping
+	SetObjDrawTransform(5000, 0, 0, 0, 5000); // scale separately by DrawTransform, because scaling in mesh transform screws up Z clipping
 	SetAction("Walk");
 	//SetDir(Random(2));
 }
 
 func StartWalk()
 {
-	if(!GetEffect("IntWalk", this))
+	if (!GetEffect("IntWalk", this))
 		AddEffect("IntWalk", this, 1, 1, this);
 }
 
 func StopWalk()
 {
-	if(GetAction() != "Walk") RemoveEffect("IntWalk", this);
+	if (GetAction() != "Walk") RemoveEffect("IntWalk", this);
 }
 
 func Footstep()
 {
-	if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)) == 0)
+	if (GetMaterialVal("DigFree", "Material", GetMaterial(0, 10)) == 0)
 		Sound("Clonk::Movement::StepHard?");
 	else
 	{
 		var dir = Sign(GetXDir());
-		var clr = GetAverageTextureColor(GetTexture(0,10));
+		var clr = GetAverageTextureColor(GetTexture(0, 10));
 		var particles =
 		{
 			Prototype = Particles_Dust(),
@@ -72,6 +72,6 @@ Walk = {
 };
 
 func Definition(def) {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90,0,1,0), Trans_Translate(0,-2500)), def);
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90, 0, 1, 0), Trans_Translate(0,-2500)), def);
 	
 }

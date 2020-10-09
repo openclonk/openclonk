@@ -104,7 +104,7 @@ global func CastObjects(id def, int am, int lev, int x, int y, int angs, int ang
 		obj->SetR(Random(360));
 		obj->SetXDir(xdir);
 		obj->SetYDir(Sin(ang, lev) + RandomX(-3, 3));
-		if(xdir != 0)
+		if (xdir != 0)
 			obj->SetRDir((10 + Random(21)) * (xdir / Abs(xdir)));
 		else
 			obj->SetRDir(-10 + Random(21));
@@ -138,7 +138,7 @@ global func DrawParticleLine(string particle, int x0, int y0, int x1, int y1, in
 	// Create particles.
 	while (i >= 0)
 	{
-		var i1, i2, b;
+		var i1, i2;
 		i2 = i * 256 / prtnum;
 		i1 = 256 - i2;
 
@@ -189,12 +189,12 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 			count = RandomX(2, 4);
 			for (j = 0; j < count; j++)
 			{
-				spot = (plant_size*2 / count) * j + RandomX(-5,5) - plant_size;
+				spot = (plant_size*2 / count) * j + RandomX(-5, 5) - plant_size;
 				y_pos = y;
 				if (!GBackSolid(x + i + spot, y_pos)) continue;
 				while (!GBackSky(x + i + spot, y_pos) && y_pos > 0) y_pos--;
 				if (y_pos == 0) continue;
-				plant = CreateObjectAbove(plants[variance], x + i + spot, y_pos+5, NO_OWNER);
+				plant = CreateObjectAbove(plants[variance], x + i + spot, y_pos + 5, NO_OWNER);
 			}
 			continue;
 		}
@@ -204,7 +204,7 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 		while (!GBackSky(x + i + x_variance, y_pos) && y_pos > 0) y_pos--;
 		if (y_pos == 0) continue;
 
-		plant = CreateObjectAbove(plants[0], x + i + x_variance, y_pos+5, NO_OWNER);
+		plant = CreateObjectAbove(plants[0], x + i + x_variance, y_pos + 5, NO_OWNER);
 		plant->SetCon(growth);
 		if (foreground && !Random(3)) plant.Plane = 510;
 		// Every ~7th plant: double plant!
@@ -214,7 +214,7 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 			if (!GBackSolid(x + i - x_variance, y_pos)) continue;
 			while (!GBackSky(x + i - x_variance, y_pos) && y_pos > 0) y_pos--;
 			if (y_pos == 0) continue;
-			plant = CreateObjectAbove(plants[0], x + i - x_variance, y_pos+5, NO_OWNER);
+			plant = CreateObjectAbove(plants[0], x + i - x_variance, y_pos + 5, NO_OWNER);
 			plant->SetCon(growth);
 			if (foreground && !Random(3)) plant.Plane = 510;
 		}

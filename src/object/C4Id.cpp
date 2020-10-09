@@ -30,10 +30,6 @@ const C4ID C4ID::Clonk(std::string("Clonk"));
 const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
 const C4ID C4ID::EditorBase(std::string("EditorBase"));
 
-// TODO: Remove these eventually, since they are deprecated.
-const C4ID C4ID::Flag(std::string("FLAG"));
-const C4ID C4ID::Conkit(std::string("CNKT"));
-const C4ID C4ID::Melee(std::string("MELE"));
 
 C4ID::C4ID(const std::string &s) { assign(s); }
 
@@ -41,7 +37,9 @@ void C4ID::assign(const std::string &s)
 {
 	LookupTable::const_iterator it = lookup.find(s);
 	if (it != lookup.end())
+	{
 		v = it->second;
+	}
 	else
 	{
 		v = names.size();
@@ -50,17 +48,17 @@ void C4ID::assign(const std::string &s)
 	}
 }
 
-void C4ID::CompileFunc(StdCompiler *pComp)
+void C4ID::CompileFunc(StdCompiler *comp)
 {
-	if (pComp->isSerializer())
+	if (comp->isSerializer())
 	{
 		assert(v < names.size());
-		pComp->String(&names[v][0], names[v].size(), StdCompiler::RCT_ID);
+		comp->String(&names[v][0], names[v].size(), StdCompiler::RCT_ID);
 	}
 	else
 	{
 		char *data;
-		pComp->String(&data, StdCompiler::RCT_ID);
+		comp->String(&data, StdCompiler::RCT_ID);
 		v = C4ID(data).v;
 		StdBuf::DeletePointer(data);
 	}

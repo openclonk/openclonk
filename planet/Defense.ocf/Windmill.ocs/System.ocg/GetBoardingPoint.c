@@ -12,7 +12,7 @@ global func GetBoardingPoint(object target)
 	if (!this) return nil;
 	if (!target) return nil;
 
-	var x,y;
+	var x, y;
 
 	// A rectangle surrounding the islands + some space (30px or so)
 	if (!IslandRectangle) IslandRectangle = Shape->Rectangle(780, 780, 430, 310);
@@ -53,7 +53,7 @@ global func GetBoardingPoint(object target)
 		y = this->GetY();
 	}
 
-	return [x,y];
+	return [x, y];
 }
 
 global func InsideIslandRectangle(object ship)

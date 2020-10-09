@@ -6,7 +6,7 @@
   <func>
     <title>ObjectNumber</title>
     <category>Objects</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the object number of an object. This number always uniquely identifies an object, even in subsequent savegame runs. Using <funclink>Object</funclink> it can be converted back to an object pointer.</desc>
     <examples>

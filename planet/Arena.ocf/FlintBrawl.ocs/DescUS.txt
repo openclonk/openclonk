@@ -1,0 +1,10 @@
+ Flint Brawl
+
+Fight without the usual weapons: In this scenario, everyone throws flints instead.
+
+Goal: Last Man Standing with multiple rounds (Be the one to stay alive longest and win most rounds)
+
+- The wind bag isn't only for getting to the high ground, but can also give an extra push to flying flints.
+- The cannon is loaded with gunpowder and ready to shoot.
+- Be careful, it's raining chippies and you can fall out of the bottom.
+- The longer the round, the stronger the flints that spawn underground.

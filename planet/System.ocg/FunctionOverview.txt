@@ -47,6 +47,10 @@ CastObjects() - Creates one or more objects at a point and scatters them randoml
 CastPSX() - Creates one or more material pixels at a point and scatters them randomly apart.
 DrawParticleLine() - Draws a line of particles between two points.
 
+##### Debug.c:
+
+Warning() - Logs a debug message and call stack.
+
 ##### Explode.c:
 
 Explode() - Object explodes.
@@ -72,6 +76,12 @@ MakeNonFlammable() - Makes the object immune to fire.
 ##### Flag.c:
 
 Library dependent.
+
+##### Functions.c
+
+GetFunctionName() - Gets the plain name of a C4V_Function
+AddFunction() - Adds a function from one object/defininition/effect/proplist to another.
+AddFunctions() - Adds an array of functions from one object/defininition/effect/proplist to another.
 
 ##### GetXVal.c:
 

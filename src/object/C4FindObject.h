@@ -382,8 +382,12 @@ class C4FindObjectProperty : public C4FindObject
 {
 public:
 	C4FindObjectProperty(C4String * Name) : Name(Name) { }
+	C4FindObjectProperty(C4String * Name, const C4Value &Value)
+		: Name(Name), have_value(true), Value(Value) { }
 private:
 	C4String * Name;
+	bool have_value = false;
+	C4Value Value;
 protected:
 	bool Check(C4Object *pObj) override;
 	bool IsImpossible() override;

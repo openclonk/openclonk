@@ -49,7 +49,7 @@ protected func Initialize()
 	chest->CreateContents(Dynamite, 4);
 	chest->CreateContents(Shovel, 2);
 	chest->CreateContents(Hammer, 2);
-	chest->CreateContents(CableLorryReel, 2);
+	chest->CreateContents(CableReel, 2);
 	
 	// Tool workshop on the little mountain.
 	var tools = CreateObjectAbove(ToolsWorkshop, 540, 260);
@@ -150,6 +150,10 @@ protected func InitializePlayer(int plr)
 	// No FOW here.
 	//SetFoW(false, plr);
 	JoinPlayer(plr);
+	// Give all knowledge.
+	var index = 0, def;
+	while (def = GetDefinition(index++))
+		SetPlrKnowledge(plr, def);
 	return;
 }
 

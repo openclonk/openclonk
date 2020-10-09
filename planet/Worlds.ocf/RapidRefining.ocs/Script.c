@@ -156,7 +156,7 @@ private func InitEnvironment(int difficulty)
 	trunk->MakeInvincible();
 	
 	var waterfall = CreateWaterfall(waterfall_x + 22, waterfall_y - 10, 10, "Water");
-	waterfall->SetDirection(2, 0, 3, 6);
+	waterfall->SetDirection(3, 3, 2, 3);
 	waterfall->SetSoundLocation(waterfall_x + 40, waterfall_y + 240);
 	
 	CreateLiquidDrain(8, 1040, 10);

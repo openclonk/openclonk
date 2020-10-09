@@ -14,7 +14,7 @@ func Place(int amount, proplist area, proplist settings)
 		var spot = FindLocation(Loc_Material("Water"), Loc_Wall(CNAT_Bottom), loc_area);
 		if (!spot) continue;
 		
-		var f = CreateObjectAbove(this, spot.x, spot.y, NO_OWNER);
+		CreateObjectAbove(this, spot.x, spot.y, NO_OWNER);
 		--amount;
 	}
 	return true;
@@ -29,7 +29,7 @@ private func Initialize()
 
 private func Check()
 {
-	if(!GBackLiquid()) SetAction("Limp");
+	if (!GBackLiquid()) SetAction("Limp");
 }
 
 // Not moved by tele glove and windbag, in contrast to most plants this plant does not per sé have a vertex that is stuck.

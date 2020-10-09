@@ -29,7 +29,7 @@
 /* The main class of the application, the application's delegate */
 @implementation C4AppDelegate
 
-+ (C4AppDelegate*) instance;
++ (C4AppDelegate*) instance
 {
 	return (C4AppDelegate*)[[NSApplication sharedApplication] delegate];
 }
@@ -233,7 +233,7 @@
 	NSString* formatString;
 	
 	// Already installed?
-	for (C4Reloc::iterator it = Reloc.begin(); it != Reloc.end(); it++)
+	for (C4Reloc::iterator it = Reloc.begin(); it != Reloc.end(); ++it)
 	{
 		if ([addonSupplied hasPrefix:[NSString stringWithCString:(*it).strBuf.getData() encoding:NSUTF8StringEncoding]])
 		{

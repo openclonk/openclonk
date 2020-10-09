@@ -1,0 +1,10 @@
+DescItems=Anzahl der neuen Items.
+ItemsNormal=Normal
+ItemsMany=Viele
+TeamsTogether=Teams vereint
+DescTeamsTogether=Die Spieler eines Teams starten zusammen.
+Yes=Ja
+No=Nein
+
+Rounds=Rundenzahl
+DescRounds=Mehrere Runden spielen

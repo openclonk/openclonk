@@ -1,6 +1,6 @@
-TxtConnectLine=Leitung verbinden
-TxtNoNewLine=Hier kann keine neue Leitung verlegt werden.
-TxtLineRemoval=Stromleitung abgenommen.
-TxtConnect=Stromleitung verbunden|mit %s
 Name=Kabelspule
-Description=Drücke [Benutzen] vor einem Gebäude und ein weiteres Mal vor einem anderen Gebäude, um diese beiden mit einem Stromkabel zu verbinden.
+Description=Drücke [Benutzen] vor einer Seilbahnstation und ein weiteres Mal vor einer anderer Seilbahnstation, um diese beiden mit einem Seil zu verbinden. Die Stationen können nur mit einem geraden Seil verbunden werden.
+TxtNoNewLine=Hier kann kein neues Seil aufgehängt werden.
+TxtCableRemoval=Seil abnehmen.
+TxtDoubleCable=Stationen sind schon verbunden.
+TxtConnect=Seil verbunden|mit %s

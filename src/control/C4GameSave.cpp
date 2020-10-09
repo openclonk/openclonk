@@ -115,7 +115,7 @@ bool C4GameSave::SaveScenarioSections()
 	if (!Game.pScenarioSections) return true;
 	// prepare section filename
 	int iWildcardPos = SCharPos('*', C4CFN_ScenarioSections);
-	char fn[_MAX_FNAME+1];
+	char fn[_MAX_FNAME_LEN];
 	// save all modified sections
 	for (C4ScenarioSection *pSect = Game.pScenarioSections; pSect; pSect = pSect->pNext)
 	{
@@ -239,7 +239,7 @@ bool C4GameSave::SaveDesc(C4Group &hToGroup)
 
 	// Scenario title
 	sBuffer.Append(Game.ScenarioTitle.getData());
-	sBuffer.Append(LineFeed LineFeed);
+	sBuffer.Append("\n\n");
 
 	// OK; each specializations has its own desc format
 	WriteDesc(sBuffer);
@@ -256,7 +256,7 @@ bool C4GameSave::SaveDesc(C4Group &hToGroup)
 void C4GameSave::WriteDescLineFeed(StdStrBuf &sBuf)
 {
 	// paragraph end + cosmetics
-	sBuf.Append(LineFeed LineFeed);
+	sBuf.Append("\n\n");
 }
 
 void C4GameSave::WriteDescDate(StdStrBuf &sBuf, bool fRecord)
@@ -306,7 +306,7 @@ void C4GameSave::WriteDescDefinitions(StdStrBuf &sBuf)
 	// Definition specs
 	if (Game.DefinitionFilenames[0])
 	{
-		char szDef[_MAX_PATH+1];
+		char szDef[_MAX_PATH_LEN];
 		// Desc
 		sBuf.Append(LoadResStr("IDS_DESC_DEFSPECS"));
 		// Get definition modules

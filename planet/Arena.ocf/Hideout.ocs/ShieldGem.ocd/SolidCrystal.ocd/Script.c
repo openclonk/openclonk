@@ -3,7 +3,7 @@
 
 public func Initialize()
 {
-	AddEffect("Selfdestruction", this, 100, 4+Random(2), this, this->GetID());
+	AddEffect("Selfdestruction", this, 100, 4 + Random(2), this, this->GetID());
 	return;
 }
 

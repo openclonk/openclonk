@@ -107,8 +107,8 @@ func InitializeObjects()
 
 	var Chest001 = CreateObjectAbove(Chest, 71, 222);
 
-	var Column001 = CreateObject(Column, 965, 328);
-	Column001->SetPosition(965, 328);
+	var Column001 = CreateObject(Column, 965, 318);
+	Column001->SetPosition(965, 318);
 
 	var Catapult001 = CreateObjectAbove(Catapult, 1063, 225);
 	Catapult001->SetRDir(-3);

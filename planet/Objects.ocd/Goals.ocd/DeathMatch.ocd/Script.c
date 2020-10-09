@@ -31,7 +31,7 @@ protected func OnClonkDeath(object clonk, int killer)
 	_inherited(clonk, killer, ...);
 	// Show scoreboard for a while
 	DoScoreboardShow(1, plr + 1);
-	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
+	Schedule(this, Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
 	NotifyHUD();
 	return;
 }
@@ -41,7 +41,7 @@ public func IsFulfilled()
 	// Check whether someone has reached the limit.
 	var winner = nil;
 	for (var i = 0; i < GetPlayerCount(); i++) 
-		if(GetKillCount(GetPlayerByIndex(i)) >= maxkills)
+		if (GetKillCount(GetPlayerByIndex(i)) >= maxkills)
 			winner = GetPlayerByIndex(i);
 	if (winner == nil)
 		// Otherwise just check if there are no enemies
@@ -61,7 +61,7 @@ public func IsFulfilled()
 
 public func GetDescription(int plr)
 {
-	if(IsFulfilled()) 
+	if (IsFulfilled()) 
 	{
 		if (GetKillCount(plr) >= maxkills) 
 			return "$MsgVictory$";
@@ -82,16 +82,16 @@ public func GetDescription(int plr)
 
 public func Activate(int byplr)
 {
-	if(IsFulfilled()) 
+	if (IsFulfilled()) 
 	{
-		if(GetKillCount(byplr) >= maxkills) MessageWindow("$MsgVictory$", byplr);
+		if (GetKillCount(byplr) >= maxkills) MessageWindow("$MsgVictory$", byplr);
 	} 
 	else 
 	{
 		var score = GetRelativeScore(byplr);
-		if(score.kills > 0)		 MessageWindow(Format("$MsgAhead$",	 score.kills,  GetPlayerName(score.best)), byplr);
-		else if(score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills,GetPlayerName(score.best)), byplr);
-		else if(score.best == byplr) MessageWindow(Format("$MsgYouAreBest$", score.kills), byplr);
+		if (score.kills > 0)		 MessageWindow(Format("$MsgAhead$",	 score.kills,  GetPlayerName(score.best)), byplr);
+		else if (score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills, GetPlayerName(score.best)), byplr);
+		else if (score.best == byplr) MessageWindow(Format("$MsgYouAreBest$", score.kills), byplr);
 		else MessageWindow(Format("$MsgEqual$", GetPlayerName(score.best)), byplr);
 	}
 }
@@ -99,17 +99,17 @@ public func Activate(int byplr)
 private func GetRelativeScore(int player)
 {
 	var bestplayer = -1, bestscore = -1;
-	for(var i = 0; i < GetPlayerCount(); ++i)
+	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i);
-		if(plr != player && ((GetKillCount(plr) > bestscore) || (bestplayer == -1))) {
+		if (plr != player && ((GetKillCount(plr) > bestscore) || (bestplayer == -1))) {
 			bestplayer = plr;
 			bestscore = GetKillCount(plr);
 		}
 	}
 	
 	// special case if there is only one player in the game
-	if(bestplayer == -1)
+	if (bestplayer == -1)
 	{
 		bestplayer = player;
 		bestscore = GetKillCount(player);
@@ -120,19 +120,19 @@ private func GetRelativeScore(int player)
 
 private func GetPlayerTeamScore(int player)
 {
-	if(GetPlayerTeam(player) < 1) return GetKillCount(player);
+	if (GetPlayerTeam(player) < 1) return GetKillCount(player);
 	return GetTeamScore(GetPlayerTeam(player));
 }
 
 private func GetTeamScore(int team) 
 {
-	if(team < 1) return 0;
+	if (team < 1) return 0;
 	var score;
-	for(var i = 0; i < GetPlayerCount(); ++i)
+	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i);
 		var team2 = GetPlayerTeam(plr);
-		if(team == team2)
+		if (team == team2)
 			score += GetKillCount(plr);
 	}
 	return score;

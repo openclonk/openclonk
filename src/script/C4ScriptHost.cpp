@@ -105,6 +105,8 @@ void C4ScriptHost::UnlinkOwnedFunctions()
 				if (func_chain->OwnerOverloaded == func)
 				{
 					func_chain->OwnerOverloaded = func->OwnerOverloaded;
+					func->OwnerOverloaded = nullptr; // func_chain now takes care of this.
+					func->DecRef(); // decrease rc because func_chain no longer has a reference to func.
 					break;
 				}
 				assert(func_chain->OwnerOverloaded && "Removed function not found in inheritance chain");
@@ -228,7 +230,7 @@ bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 	if (SEqualNoCase(szPath, GetFilePath()) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
 	{
 		// try reload
-		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
+		char szParentPath[_MAX_PATH_LEN]; C4Group ParentGrp;
 		if (GetParentPath(szPath, szParentPath))
 			if (ParentGrp.Open(szParentPath))
 				if (Load(ParentGrp, nullptr, szLanguage, stringTable))

@@ -7,7 +7,7 @@
     <title>C4D_StaticBack</title>
     <category>Objects</category>
     <subcat>Category</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int </rtype></syntax>
     <desc>Objects with this category do not move. This is useful for all kinds of stuff, like making sure rule objects don't fall out of the landscape.</desc>
     <related>

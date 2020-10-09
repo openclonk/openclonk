@@ -496,7 +496,7 @@ bool C4Menu::Enter(bool fRight)
 		return true;
 	}
 	// Copy command to buffer (menu might be cleared)
-	char szCommand[_MAX_FNAME+30+1];
+	char szCommand[_MAX_FNAME_LEN+30];
 	SCopy(pItem->Command,szCommand);
 	if (fRight && pItem->Command2[0]) SCopy(pItem->Command2,szCommand);
 

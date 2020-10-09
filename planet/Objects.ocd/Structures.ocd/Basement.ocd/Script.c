@@ -164,7 +164,7 @@ public func Definition(def, ...)
 {
 	_inherited(def, ...);
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.width = { Name="$Width$", Set="SetWidth", Type="int", Min=8, Max=120 };
+	def.EditorProps.width = { Name="$Width$", Set="SetWidth", Type="int", Min = 8, Max = 120 };
 }
 
 

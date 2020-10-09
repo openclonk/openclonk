@@ -4,28 +4,29 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>GainMissionAccess</title>
+    <title>GainScenarioAccess</title>
     <category>System</category>
-    <version>5.1 OC</version>
+    <version>9.0 OC, previously known as GainMissionAccess from 1.0 to 8.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>string</type>
           <name>password</name>
-          <desc>Password to be added to the list.</desc>
+          <desc>This scenario access password will be added to the list.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Adds a password to the list of gained mission access passwords. All players on this computer can then start scenarios which require this password (defined in Scenario.txt). In a sequence of mission scenarios each scenario should give access to the next one.</desc>
+    <desc>Adds a password to the list of gained scenario access passwords. All players on this computer can then start scenarios which require this password (defined in Scenario.txt). In a sequence of mission scenarios each scenario should give access to the next one.</desc>
     <remark>If the engine runs in developer mode, stored registry information is not properly updated. To test this function, start the engine in player mode.</remark>
     <examples>
       <example>
-        <code>GainMissionAccess(&quot;WipfeMonsterSchnee&quot;);</code>
-        <text>Gives the mission password WipfeMosterSchnee to the player.</text>
+        <code>GainScenarioAccess(&quot;WipfeMonsterSchnee&quot;);</code>
+        <text>Gives the scenario access password WipfeMosterSchnee to the player.</text>
       </example>
     </examples>
-    <related><funclink>GetMissionAccess</funclink></related>
+    <related><funclink>GetScenarioAccess</funclink></related>
   </func>
+  <author>Marky</author><date>2018-04</date>
   <author>Sven2</author><date>2001-11</date>
 </funcs>

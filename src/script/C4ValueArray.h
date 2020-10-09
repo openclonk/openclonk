@@ -23,7 +23,7 @@
 class C4ValueArray: public C4RefCnt
 {
 public:
-	enum { MaxSize = 1000000 }; // ye shalt not create arrays larger than that!
+	static const int MaxSize = 1000000; // ye shalt not create arrays larger than that!
 
 	C4ValueArray();
 	C4ValueArray(int32_t inSize);

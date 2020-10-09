@@ -1,0 +1,7 @@
+[DefCore]
+id=Goal_MultiRoundMelee
+Version=8,0
+Category=C4D_StaticBack|C4D_Goal
+Width=64
+Height=64
+Offset=-32,-32

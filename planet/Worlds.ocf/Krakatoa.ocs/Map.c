@@ -184,7 +184,7 @@ public func DrawChasm(proplist map, proplist volcano, proplist chasm)
 	map->DrawMaterial("Granite", chasm_crust, 3, 30);
 	
 	// Draw the gold area in the volcano's core.
-	var core = {Algo = MAPALGO_Ellipsis, X = wdt / 2, Y = hgt, Wdt = wdt / 10, Hgt = hgt / 7};
+	var core = {Algo = MAPALGO_Ellipse, X = wdt / 2, Y = hgt, Wdt = wdt / 10, Hgt = hgt / 7};
 	core = {Algo = MAPALGO_Turbulence, Amplitude = 6, Scale = 6, Iterations = 2, Seed = Random(65536), Op = core};
 	var lines = {Algo = MAPALGO_Lines, X = 4, Y = 0, Distance = 8};
 	lines = {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 12, Iterations = 4, Seed = Random(65536), Op = lines}; 

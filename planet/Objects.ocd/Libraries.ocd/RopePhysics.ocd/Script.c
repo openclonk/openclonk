@@ -276,7 +276,6 @@ public func DoLength(int dolength)
 
 		last_length = GetLastLength();
 	}
-	var i = 0;
 	while (last_length > LIB_ROPE_SegmentLength * LIB_ROPE_Precision * 3 / 2)
 	{
 		lib_rope_particle_count++;
@@ -541,7 +540,7 @@ public func ForcesOnObjects()
 		}
 		if (speed > 150)
 			DoLength(1);
-		else if(speed < 50) 
+		else if (speed < 50) 
 			DoLength(-1); // TODO not just obj 1
 		else 
 			redo = 0;
@@ -632,7 +631,7 @@ private func LogArray()
 		for (var x = 0; x < 20; x++)
 			for (var y = 0; y < 20; y++)
 				if (Distance(0, 0, x, y) == dist)
-					PushBack(test_array, [x,y]);
+					PushBack(test_array, [x, y]);
 	return Log("%v", test_array);
 }
 
@@ -641,7 +640,7 @@ func LogSpeed()
 {
 	// Helperfunction for Debugpurpose
 	var speed_array = [];
-	for(var i = 0; i < lib_rope_particle_count; i++)
+	for (var i = 0; i < lib_rope_particle_count; i++)
 		PushBack(speed_array, Distance(lib_rope_particles[i].x - lib_rope_particles[i].oldx, lib_rope_particles[i].y - lib_rope_particles[i].oldy));
 	return Log("%v", speed_array);
 }

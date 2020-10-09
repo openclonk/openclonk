@@ -17,7 +17,7 @@ func Dlg_Tarzan_Init(object clonk)
 {
 	// Swinging timer
 	var fx = AddEffect("TarzanSwinging", clonk, 1, 7, this);
-	clonk->SetPosition(750,850);
+	clonk->SetPosition(750, 850);
 	fx.bows = FindObjects(Find_ID(GrappleBow), Find_Container(clonk));
 	fx.force_shot = true;
 	return true;
@@ -30,7 +30,7 @@ func FxTarzanSwingingTimer(object c, proplist fx, int time)
 	SetComDir(COMD_Stop);
 	if (fc < fx.wait) return FX_OK;
 	// only if someone is looking
-	if (!fx.force_shot) if (!FindObject(Find_ID(Clonk), Find_InRect(-180,-20,210,90), Find_Not(Find_Owner(NO_OWNER)))) return FX_OK;
+	if (!fx.force_shot) if (!FindObject(Find_ID(Clonk), Find_InRect(-180,-20, 210, 90), Find_Not(Find_Owner(NO_OWNER)))) return FX_OK;
 	// Time to switch grappler?
 	if (fc > fx.switch_time)
 	{
@@ -47,7 +47,7 @@ func FxTarzanSwingingTimer(object c, proplist fx, int time)
 		fx.wait = fc + 40;
 		// The hook is not shot yet - shoot it!
 		// But stay in the middle of the area
-		var shoot_off = BoundBy(670 + Random(130) - GetX(), -50,50);
+		var shoot_off = BoundBy(670 + Random(130) - GetX(), -50, 50);
 		fx.bow->ControlUseStart(c, shoot_off, -50);
 		fx.bow->ControlUseStop(c, shoot_off, -50);
 		fx.switch_time = fc + 70 + Random(40);
@@ -78,7 +78,7 @@ func FxTarzanSwingingTimer(object c, proplist fx, int time)
 	else
 	{
 		// No need to climb? Then swing.
-		if (GetXDir() < 0) grapple_fx.mv_left=1; else grapple_fx.mv_right=1;
+		if (GetXDir() < 0) grapple_fx.mv_left = 1; else grapple_fx.mv_right = 1;
 	}
 	return FX_OK;
 }

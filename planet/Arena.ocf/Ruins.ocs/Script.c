@@ -5,7 +5,7 @@
 	An arena like last man standing round for up to 12 players.
 --*/
 
-static const RUINS_RAIN_PERIOD_TIME=3200;
+static const RUINS_RAIN_PERIOD_TIME = 3200;
 
 protected func Initialize()
 {
@@ -28,31 +28,31 @@ protected func Initialize()
 	
 	// Ropeladders to get to the upper part.
 
-	CreateObjectAbove(Ropeladder, 380, 112, NO_OWNER)->Unroll(-1,0,19);
-	CreateObjectAbove(Ropeladder, 135, 135, NO_OWNER)->Unroll(1,0,16);
+	CreateObjectAbove(Ropeladder, 380, 112, NO_OWNER)->Unroll(-1, 0, 19);
+	CreateObjectAbove(Ropeladder, 135, 135, NO_OWNER)->Unroll(1, 0, 16);
 	
 	// Objects fade after 5 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 
-	AddEffect("DryTime",nil,100,2);
+	AddEffect("DryTime",nil, 100, 2);
 	return;
 }
 
 
 global func FxRainTimer(object pTarget, effect, int timer)
 {
-	if(timer<400)
+	if (timer<400)
 	{
-		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
+		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30, 1, Random(7)-3, 100 + Random(100));
 		return 1;
 	} 
-		for(var i=0; i<(6+Random(3)); i++)
+		for (var i = 0; i<(6 + Random(3)); i++)
 	{
-		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
+		InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30, 1, Random(7)-3, 100 + Random(100));
 	}
-	if(timer>(RUINS_RAIN_PERIOD_TIME+Random(800))) 
+	if (timer>(RUINS_RAIN_PERIOD_TIME + Random(800))) 
 	{
-	AddEffect("DryTime",nil,100,2);
+	AddEffect("DryTime",nil, 100, 2);
 	return -1;	
 	}
 	
@@ -60,15 +60,15 @@ global func FxRainTimer(object pTarget, effect, int timer)
 }
 global func FxDryTimeTimer(object pTarget, effect, int timer)
 {
-	if(timer<(380+Random(300))){
-	InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
+	if (timer<(380 + Random(300))){
+	InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30, 1, Random(7)-3, 100 + Random(100));
 		return 1;
 	}
-	ExtractLiquidAmount(310+Random(50),430+Random(10),6+Random(4));
+	ExtractLiquidAmount(310 + Random(50),430 + Random(10),6 + Random(4));
 	
-	if(!GBackLiquid(335,430))
+	if (!GBackLiquid(335, 430))
 	{
-		AddEffect("Rain",nil,100,2);
+		AddEffect("Rain",nil, 100, 2);
 		return -1;
 	}	
 }
@@ -78,12 +78,12 @@ global func FxDryTimeTimer(object pTarget, effect, int timer)
 // Refill/fill chests.
 global func FxIntFillChestsStart(object target, effect, int temporary)
 {
-	if(temporary) return 1;
+	if (temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));
 	var w_list = [Bow, Blunderbuss, Shield, Sword, Club, GrenadeLauncher, Bow, Blunderbuss, Shield, Sword, Club, GrenadeLauncher, DynamiteBox];
 	
-	for(var chest in chests)
-		for(var i=0; i<4; ++i)
+	for (var chest in chests)
+		for (var i = 0; i<4; ++i)
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
 }

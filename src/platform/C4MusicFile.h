@@ -31,7 +31,7 @@ public:
 	virtual ~C4MusicFile() = default;
 
 	// data
-	char FileName[_MAX_FNAME +1];
+	char FileName[_MAX_FNAME_LEN];
 	C4MusicFile *pNext{nullptr};
 	int LastPlayed{-1};
 	bool NoPlay{false};

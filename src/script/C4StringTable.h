@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2016, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2019, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -145,7 +145,7 @@ template<typename T> class C4Set
 	void ClearTable()
 	{
 		for (unsigned int i = 0; i < Capacity; ++i)
-			Table[i] = nullptr;
+			Table[i] = T{};
 	}
 	void MaintainCapacity()
 	{
@@ -240,13 +240,13 @@ public:
 			r = &Table[++h % Capacity];
 		}
 		assert(*r);
-		*r = nullptr;
+		*r = T{};
 		--Size;
 		// Move entries which might have collided with e
 		while (*(r = &Table[++h % Capacity]))
 		{
 			T m = *r;
-			*r = nullptr;
+			*r = T{};
 			AddInternal(std::move(m));
 		}
 	}
@@ -349,6 +349,7 @@ enum C4PropertyName
 	P_LineWidth,
 	P_OffX,
 	P_OffY,
+	P_Material,
 	P_proplist,
 	P_Proplist,
 	P_FacetBase,
@@ -548,7 +549,6 @@ enum C4PropertyName
 	DFA_DIG,
 	DFA_SWIM,
 	DFA_THROW,
-	DFA_BRIDGE,
 	DFA_PUSH,
 	DFA_LIFT,
 	DFA_FLOAT,

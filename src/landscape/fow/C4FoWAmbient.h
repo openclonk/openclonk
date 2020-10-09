@@ -20,7 +20,7 @@
 
 #include "landscape/C4Landscape.h"
 #ifndef USE_CONSOLE
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 #endif
 
 /**

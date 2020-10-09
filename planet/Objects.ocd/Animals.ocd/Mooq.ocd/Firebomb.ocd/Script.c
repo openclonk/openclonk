@@ -32,14 +32,14 @@ func Hit() {
 }
 
 func Sparkle() {
-    if(Contained())
+    if (Contained())
         return false;
 
     var clusterflight = {
         R = 200 + Random(55),
         G = 200 + Random(55),
         B = 200 + Random(55),
-        Alpha = PV_Linear(255, 0), //AlphaFade=4
+        Alpha = PV_Linear(255, 0), //AlphaFade = 4
         Size = 16, //40
         Phase = PV_Linear(0, 9),
         Rotation = PV_Random(360),
@@ -48,7 +48,7 @@ func Sparkle() {
         //Attach = ATTACH_MoveRelative
     };
 
-    CreateParticle("Clusterflight", 0, 0, RandomX(-2,2),RandomX(-2,2), 36, clusterflight, 1);
+    CreateParticle("Clusterflight", 0, 0, RandomX(-2, 2),RandomX(-2, 2), 36, clusterflight, 1);
 }
 
 

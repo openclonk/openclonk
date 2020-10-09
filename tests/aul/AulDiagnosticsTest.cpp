@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2015-2017, The OpenClonk Team and contributors
+ * Copyright (c) 2015-2018, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -85,6 +85,37 @@ TEST_F(AulDiagnosticsTest, empty_if)
 	}
 }
 
+TEST_F(AulDiagnosticsTest, suspicious_assignment)
+{
+	{
+		EXPECT_WARNING(suspicious_assignment);
+		RunCode("var a = 0; if (a = 0) {}");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment).Times(0);
+		RunCode("var a = 0; if (a == 1) {}");
+		RunCode("var a = 0; if (a += 1) {}");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment).Times(0);
+		RunCode("for (var a = 0; a == 1;) {}");
+		RunCode("for (var a = 0; a != 0;) {}");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment);
+		RunCode("var a = 0; return a = 0;");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment);
+		RunCode("var a = 0; return (a = 0);");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment).Times(0);
+		RunCode("var a = 0; return a == 0;");
+		RunCode("var a = 0; return (a = 0) == 0;");
+	}
+}
+
 TEST_F(AulDiagnosticsTest, arg_count_mismatch)
 {
 	{
@@ -98,6 +129,22 @@ TEST_F(AulDiagnosticsTest, variable_shadows_variable)
 	{
 		EXPECT_WARNING(variable_shadows_variable);
 		RunScript("func Main(f) { var f; }");
+	}
+}
+
+TEST_F(AulDiagnosticsTest, variable_out_of_scope)
+{
+	{
+		EXPECT_WARNING(variable_out_of_scope);
+		RunCode("i = 0; { var i; }");
+	}
+	{
+		EXPECT_WARNING(variable_out_of_scope);
+		RunCode("{ var i; } i = 0;");
+	}
+	{
+		EXPECT_WARNING(variable_out_of_scope).Times(0);
+		RunCode("var i; { i = 0; }");
 	}
 }
 

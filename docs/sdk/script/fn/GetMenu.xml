@@ -7,7 +7,7 @@
     <title>GetMenu</title>
     <category>Objects</category>
     <subcat>Menu</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>id?</rtype></syntax>
     <desc>Returns the id of the menu if the object has an open menu. This is usually the id of the menu symbol (symbol) unless <funclink>CreateMenu</funclink> was used to explicitly use a differing menu id in idMenuID.</desc>
     <remark>A return value of <code>nil</code> means that no valid symbol could be determined. This may happen e.g. if no object pointer was passed during a global call to the function. Engine defined menus such as Buy, Sell, etc. never return valid ids.</remark>

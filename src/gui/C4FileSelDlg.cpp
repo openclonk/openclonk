@@ -559,7 +559,7 @@ void C4PortraitSelDlg::LoaderThread::Execute()
 C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback)
 		: C4FileSelDlg(Config.General.SystemDataPath, FormatString(LoadResStr("IDS_MSG_SELECT"), LoadResStr("IDS_TYPE_PORTRAIT")).getData(), pSelCallback, false)
 {
-	char path[_MAX_PATH+1];
+	char path[_MAX_PATH_LEN];
 	// add common picture locations
 	StdStrBuf strLocation;
 	SCopy(Config.General.UserDataPath, path, _MAX_PATH); TruncateBackslash(path);

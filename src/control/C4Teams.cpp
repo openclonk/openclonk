@@ -671,7 +671,13 @@ void C4TeamList::RecheckTeams()
 	// automatic team distributions only
 	if (!IsRandomTeam()) return;
 	// host decides random teams
-	if (!::Control.isCtrlHost()) return;
+	if (!::Control.isCtrlHost())
+	{
+		// Still make sure that we have the right number of teams on the clients as well so that
+		// GetTeamCount() does not report inconsistent values.
+		EnsureTeamCount();
+		return;
+	}
 	// random teams in auto generate mode? Make sure there are exactly two teams
 	if (IsAutoGenerateTeams() && GetTeamCount() != 2)
 		{
@@ -710,6 +716,19 @@ void C4TeamList::RecheckTeams()
 	}
 }
 
+void C4TeamList::EnsureTeamCount()
+{
+	// in random autogenerate mode, there must be exactly two teams
+	if (IsRandomTeam())
+	{
+		if (IsAutoGenerateTeams() && GetTeamCount() != 2)
+		{
+			ClearTeams();
+			GenerateDefaultTeams(2);
+		}
+	}
+}
+
 void C4TeamList::ReassignAllTeams()
 {
 	assert(::Control.isCtrlHost());
@@ -731,13 +750,7 @@ void C4TeamList::ReassignAllTeams()
 	}
 	// clear players from team lists
 	RecheckPlayers();
-	// in random autogenerate mode, there must be exactly two teams
-	if (IsRandomTeam())
-		if (IsAutoGenerateTeams() && GetTeamCount() != 2)
-			{
-			ClearTeams();
-			GenerateDefaultTeams(2);
-			}
+	EnsureTeamCount();
 	// reassign them
 	idStart = -1;
 	while ((pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(idStart)))

@@ -519,9 +519,8 @@ public func SaveScenarioObject(props)
 	// Checkpoints without a goal? Use regular saving.
 	if (!cp_con)
 	{
-		
-		if (v = GetCPMode()) props->AddCall("Checkpoint", this, "SetCPMode", GetBitmaskNameByValue(v, "PARKOUR_CP_"));
-		if (v = GetCPNumber()) props->AddCall("Checkpoint", this, "SetCPNumber", v);
+		if (GetCPMode()) props->AddCall("Checkpoint", this, "SetCPMode", GetBitmaskNameByValue(GetCPMode(), "PARKOUR_CP_"));
+		if (GetCPNumber()) props->AddCall("Checkpoint", this, "SetCPNumber", GetCPNumber());
 		return true;
 	}
 	else
@@ -550,9 +549,9 @@ public func SaveScenarioObject(props)
 // Editor action callbacks
 local on_cleared, on_first_cleared, on_respawn;
 
-public func SetOnCleared(v) { on_cleared=v; return true; }
-public func SetOnFirstCleared(v) { on_first_cleared=v; return true; }
-public func SetOnRespawn(v) { on_respawn=v; return true; }
+public func SetOnCleared(v) { on_cleared = v; return true; }
+public func SetOnFirstCleared(v) { on_first_cleared = v; return true; }
+public func SetOnRespawn(v) { on_respawn = v; return true; }
 
 // Inividual mode getting/setting functions (for editor)
 public func SetCPRespawn(bool to_val) { return SetCPMode((GetCPMode() & ~PARKOUR_CP_Respawn) | (PARKOUR_CP_Respawn * !!to_val)); }
@@ -593,8 +592,8 @@ public func UpdateEditorHelp()
 }
 
 local EditorActions = {
-	SelectPrev = { Name="$SelectPrev$", EditorHelp="$SelectPrevHelp$", Command="SelectOther(-1)", Select=true },
-	SelectNext = { Name="$SelectNext$", EditorHelp="$SelectNextHelp$", Command="SelectOther(+1)", Select=true },
+	SelectPrev = { Name="$SelectPrev$", EditorHelp="$SelectPrevHelp$", Command="SelectOther(-1)", Select = true },
+	SelectNext = { Name="$SelectNext$", EditorHelp="$SelectNextHelp$", Command="SelectOther(+1)", Select = true },
 	ReorderPrev = { Name="$ReorderPrev$", EditorHelp="$ReorderPrevHelp$", Command="MoveOrder(-1)" },
 	ReordertNext = { Name="$ReorderNext$", EditorHelp="$ReorderNextHelp$", Command="MoveOrder(+1)" }
 };

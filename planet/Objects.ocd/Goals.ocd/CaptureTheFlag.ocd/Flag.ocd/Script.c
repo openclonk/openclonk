@@ -53,10 +53,10 @@ protected func FxFlagAutoPickupTimer(object target, effect)
 		return 1;
 
 	// Find a near clonk which can grab the flag.
-	for(var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20), Sort_Distance()))
+	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20), Sort_Distance()))
 	{
 		var plr = clonk->GetOwner();	
-		if(GetPlayerTeam(plr) != team)
+		if (GetPlayerTeam(plr) != team)
 		{
 			// Fiendly team, grab flag.
 			SetAction("AttachCarrier", clonk);
@@ -69,7 +69,7 @@ protected func FxFlagAutoPickupTimer(object target, effect)
 			// Friendly team can only beam flag if return delay is over.
 			if (target->IsAtBase()) 
 				continue;
-			if(GetEffect("FlagReturnDelay",target))
+			if (GetEffect("FlagReturnDelay",target))
 				continue;
 			target->BeamFlag(true);
 			return 1;
@@ -86,8 +86,8 @@ protected func FxFlagCarriedStart(object target, effect, int temp)
 	ReducePhysicals(target, effect);
 	if (temp) return;
 	
-	effect.x=target->GetX();
-	effect.y=target->GetY();
+	effect.x = target->GetX();
+	effect.y = target->GetY();
 	var trans = Trans_Mul(Trans_Translate(-17000, 0, 0), Trans_Rotate(90, 1, 0, 0));
 	effect.mesh_id = target->AttachMesh(this, "pos_back1", "main", trans);
 	this.Visibility = VIS_None;
@@ -119,8 +119,8 @@ protected func FxFlagCarriedTimer(object target, effect)
 	if (Distance(x, y, newx, newy) > 5)
 	{
 		target->CreateParticle("SphereSpark", 0, 0, 0, 0, PV_Random(36 * 3, 36 * 3 + 10), effect.tracer_particles);
-		effect.x=newx;
-		effect.y=newy;
+		effect.x = newx;
+		effect.y = newy;
 	}
 	// Search for nearby base to drop flag and score a point.
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(20));
@@ -164,7 +164,7 @@ private func ReducePhysicals(object clonk, effect)
 	clonk.JumpSpeed = clonk.JumpSpeed * 8 / 10;
 	var phys = ["Walk"/*, "Scale"*/, "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
-		clonk->PushActionSpeed(phys[i], 8 * clonk.ActMap[phys[i]].Speed / 10);
+		clonk->PushActionSpeed(phys[i], 800, GetID());
 	return;
 }
 
@@ -174,7 +174,7 @@ private func ResetPhysicals(object clonk, effect)
 	clonk.JumpSpeed = effect.clonk_jumpspeed;
 	var phys = ["Walk"/*, "Scale"*/, "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
-		clonk->PopActionSpeed(phys[i]);
+		clonk->PopActionSpeed(phys[i], GetID());
 	return;
 
 }

@@ -51,7 +51,7 @@ func Hit()
 func RejectCollect(id arrowid, object arrows)
 {
 	// arrows are not arrows? decline!
-	if(!(arrows->~IsArrow())) return true;
+	if (!(arrows->~IsArrow())) return true;
 }
 
 /*-- Callbacks --*/
@@ -76,9 +76,9 @@ public func FinishedAiming(object clonk, int angle)
 	iArrowMesh = nil;
 
 	// shoot
-	if(Contents(0))
+	if (Contents(0))
 	{
-		if(Contents(0)->~IsArrow())
+		if (Contents(0)->~IsArrow())
 		{
 			var arrow = Contents(0)->TakeObject();
 			arrow->Launch(angle, shooting_strength, clonk, this);
@@ -118,17 +118,17 @@ public func RejectUse(object clonk)
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// check for ammo
-	if(!Contents(0))
+	if (!Contents(0))
 	{
 		// reload
-		var obj;
-		if(obj = FindObject(Find_Container(clonk), Find_Func("IsArrow")))
+		var obj = FindObject(Find_Container(clonk), Find_Func("IsArrow"));
+		if (obj)
 		{
 			obj->Enter(this);
 		}
 	}
 	
-	if(!Contents(0))
+	if (!Contents(0))
 	{
 		// + sound or message that he doesnt have arrows anymore
 		clonk->CancelUse();
@@ -151,11 +151,11 @@ public func ControlUseStart(object clonk, int x, int y)
 public func ControlUseHolding(object clonk, int x, int y)
 {
 	// Save new angle
-	var angle = Angle(0,0,x,y);
+	var angle = Angle(0, 0, x, y);
 	angle = Normalize(angle,-180);
 
-	if(angle >  160) angle =  160;
-	if(angle < -160) angle = -160;
+	if (angle >  160) angle =  160;
+	if (angle < -160) angle = -160;
 
 	clonk->SetAimPosition(angle);
 	
@@ -196,21 +196,24 @@ public func Reset(clonk)
 func ClonkAimLimit(object clonk, int angle)
 {
 	angle = Normalize(angle,-180);
-	if(Abs(angle) > 160) return false;
-	if(clonk->GetDir() == 1 && angle < 0) return false;
-	if(clonk->GetDir() == 0 && angle > 0) return false;
+	if (Abs(angle) > 160) return false;
+	if (clonk->GetDir() == 1 && angle < 0) return false;
+	if (clonk->GetDir() == 0 && angle > 0) return false;
 	return true;
 }
 
 func FxIntWalkSlowStart(pTarget, effect, fTmp, iValue)
 {
-	if(iValue == nil || iValue == 0) iValue = 84;
-	pTarget->PushActionSpeed("Walk", iValue);
+	if (iValue == nil || iValue == 0)
+	{
+		iValue = 420;
+	}
+	pTarget->PushActionSpeed("Walk", iValue, GetID());
 }
 
 func FxIntWalkSlowStop(pTarget, effect)
 {
-	pTarget->PopActionSpeed("Walk");
+	pTarget->PopActionSpeed("Walk", GetID());
 }
 
 /*-- Production --*/
@@ -230,7 +233,7 @@ public func GetCarryMode(object clonk, bool idle)
 
 public func GetCarrySpecial(clonk)
 {
-	if(fAiming) return "pos_hand2";
+	if (fAiming) return "pos_hand2";
 }
 
 
@@ -241,7 +244,7 @@ public func OnRelaunchCreation()
 
 func Definition(def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Translate(-4000,-2000,4000),Trans_Rotate(180,0,1,0),Trans_Rotate(-45,0,0,1));
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-4000,-2000, 4000),Trans_Rotate(180, 0, 1, 0),Trans_Rotate(-45, 0, 0, 1));
 	return _inherited(def, ...);
 }
 

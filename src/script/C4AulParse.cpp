@@ -69,6 +69,7 @@
 #define C4AUL_TypeString    "string"
 #define C4AUL_TypeArray     "array"
 #define C4AUL_TypeFunction  "func"
+#define C4AUL_TypeAny       "any"
 
 #define C4AUL_True          "true"
 #define C4AUL_False         "false"
@@ -778,12 +779,9 @@ void C4AulParse::UnexpectedToken(const char * Expected)
 void C4AulParse::Parse_WarningPragma()
 {
 	assert(SEqual2(TokenSPos, C4AUL_Warning));
-	assert(std::isspace(TokenSPos[sizeof(C4AUL_Warning) - 1]));
-
-
-	// Read parameters in to string buffer. The sizeof() includes the terminating \0, but
-	// that's okay because we need to skip (at least) one whitespace character anyway.
-	std::string line(TokenSPos + sizeof(C4AUL_Warning), SPos);
+	
+	// Read parameters in to string buffer.
+	std::string line(TokenSPos + sizeof(C4AUL_Warning) - 1, SPos);
 	auto end = line.end();
 	auto cursor = std::find_if_not(begin(line), end, IsWhiteSpace);
 
@@ -794,11 +792,11 @@ void C4AulParse::Parse_WarningPragma()
 	auto start = cursor;
 	cursor = std::find_if(start, end, IsWhiteSpace);
 	bool enable_warning = false;
-	if (std::equal(start, cursor, C4Aul_Warning_enable))
+	if (cursor - start == sizeof(C4Aul_Warning_enable) - 1 && std::equal(start, cursor, C4Aul_Warning_enable))
 	{
 		enable_warning = true;
 	}
-	else if (std::equal(start, cursor, C4Aul_Warning_disable))
+	else if (cursor - start == sizeof(C4Aul_Warning_disable) - 1 && std::equal(start, cursor, C4Aul_Warning_disable))
 	{
 		enable_warning = false;
 	}
@@ -806,6 +804,9 @@ void C4AulParse::Parse_WarningPragma()
 	{
 		throw C4AulParseError(this, FormatString("'" C4Aul_Warning_enable "' or '" C4Aul_Warning_disable "' expected, but found '%s'", std::string(start, cursor).c_str()).getData());
 	}
+
+	if (!pOrgScript) // may be null for DirectExec. We cannot do anything here then.
+		return;
 
 	cursor = std::find_if_not(cursor, end, IsWhiteSpace);
 	if (cursor == end)
@@ -1005,18 +1006,21 @@ void C4AulParse::Parse_Function(::aul::ast::Function *func)
 		}
 		// must be a name or type now
 		Check(ATT_IDTF, "parameter, '...', or ')'");
-		// type identifier?
-		C4V_Type t = C4V_Any;
-		if (SEqual(Idtf, C4AUL_TypeInt)) { t = C4V_Int; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeBool)) { t = C4V_Bool; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeC4ID)) { t = C4V_Def; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeDef)) { t = C4V_Def; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeEffect)) { t = C4V_Effect; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeC4Object)) { t = C4V_Object; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypePropList)) { t = C4V_PropList; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeString)) { t = C4V_String; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeArray)) { t = C4V_Array; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeFunction)) { t = C4V_Function; Shift(); }
+		// Type identifier?
+		// All recognizable tokens must be listed here explicitly,
+		// because unless we shift the function parsing will not work correctly
+		C4V_Type parameter_type = C4V_Any;
+		if (SEqual(Idtf, C4AUL_TypeInt))           { parameter_type = C4V_Int;      Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeBool))     { parameter_type = C4V_Bool;     Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeC4ID))     { parameter_type = C4V_Def;      Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeDef))      { parameter_type = C4V_Def;      Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeEffect))   { parameter_type = C4V_Effect;   Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeC4Object)) { parameter_type = C4V_Object;   Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypePropList)) { parameter_type = C4V_PropList; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeString))   { parameter_type = C4V_String;   Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeArray))    { parameter_type = C4V_Array;    Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeFunction)) { parameter_type = C4V_Function; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeAny))      { parameter_type = C4V_Any;      Shift(); }
 		// a parameter name which matched a type name?
 		std::string par_name;
 		if (TokenType == ATT_BCLOSE || TokenType == ATT_COMMA)
@@ -1030,7 +1034,7 @@ void C4AulParse::Parse_Function(::aul::ast::Function *func)
 			par_name = Idtf;
 			Shift();
 		}
-		func->params.emplace_back(par_name, t);
+		func->params.emplace_back(par_name, parameter_type);
 		// end of params?
 		if (TokenType == ATT_BCLOSE)
 		{
@@ -1373,19 +1377,11 @@ std::unique_ptr<::aul::ast::RangeLoop> C4AulParse::Parse_ForEach()
 	return loop;
 }
 
-static bool GetPropertyByS(const C4PropList * p, const char * s, C4Value & v)
-{
-	C4String * k = Strings.FindString(s);
-	if (!k) return false;
-	return p->GetPropertyByS(k, &v);
-}
-
 std::unique_ptr<::aul::ast::Expr> C4AulParse::Parse_Expression(int iParentPrio)
 {
 	const char *NodeStart = TokenSPos;
 	std::unique_ptr<::aul::ast::Expr> expr;
 	const C4ScriptOpDef * op;
-	C4AulFunc *FoundFn = nullptr;
 	C4Value val;
 	switch (TokenType)
 	{

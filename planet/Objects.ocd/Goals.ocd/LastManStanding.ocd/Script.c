@@ -64,7 +64,7 @@ protected func OnClonkDeath(object clonk, int killer)
 				
 	// Show scoreboard for a while.
 	DoScoreboardShow(1, plr + 1);
-	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
+	Schedule(this, Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
 	return;
 }
 protected func RemovePlayer(int plr)

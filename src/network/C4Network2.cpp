@@ -610,7 +610,7 @@ bool C4Network2::RetrieveScenario(char *szScenario)
 		return false;
 
 	// create unpacked copy of dynamic data
-	char szTempDynamic[_MAX_PATH + 1];
+	char szTempDynamic[_MAX_PATH_LEN];
 	if (!ResList.FindTempResFileName(pDynamic->getFile(), szTempDynamic) ||
 	    !C4Group_CopyItem(pDynamic->getFile(), szTempDynamic) ||
 	    !C4Group_UnpackDirectory(szTempDynamic))
@@ -1023,14 +1023,7 @@ void C4Network2::OnPuncherConnect(C4NetIO::addr_t addr)
 	C4Network2Client *pLocal = Clients.GetLocal();
 	if (pLocal)
 	{
-		pLocal->AddAddr(C4Network2Address(maybe_v4, P_UDP), true);
-		// If the outside port matches the inside port, there is no port translation and the
-		// TCP address will probably work as well.
-		if (addr.GetPort() == Config.Network.PortUDP && Config.Network.PortTCP > 0)
-		{
-			maybe_v4.SetPort(Config.Network.PortTCP);
-			pLocal->AddAddr(C4Network2Address(maybe_v4, P_TCP), true);
-		}
+		pLocal->AddAddrFromPuncher(maybe_v4);
 		// Do not ::Network.InvalidateReference(); yet, we're expecting an ID from the netpuncher
 	}
 	auto family = maybe_v4.GetFamily();
@@ -1185,7 +1178,7 @@ void C4Network2::DrawStatus(C4TargetFacet &cgo)
 			                   pClient->getMsgConn()->getPingTime(),
 			                   pClient->getMsgConn()->getPacketLoss());
 			if (pClient->getMsgConn() != pClient->getDataConn())
-				Stat.AppendFormat( ", Data: %s (%s:%d p%d l%d)",
+				Stat.AppendFormat( ", Data: %s (%s p%d l%d)",
 				                   NetIO.getNetIOName(pClient->getDataConn()->getNetClass()),
 								   pClient->getDataConn()->getPeerAddr().ToString().getData(),
 				                   pClient->getDataConn()->getPingTime(),
@@ -1782,7 +1775,7 @@ bool C4Network2::CreateDynamic(bool fInit)
 	// log
 	Log(LoadResStr("IDS_NET_SAVING"));
 	// compose file name
-	char szDynamicBase[_MAX_PATH+1], szDynamicFilename[_MAX_PATH+1];
+	char szDynamicBase[_MAX_PATH_LEN], szDynamicFilename[_MAX_PATH_LEN];
 	sprintf(szDynamicBase, Config.AtNetworkPath("Dyn%s"), GetFilename(Game.ScenarioFilename), _MAX_PATH);
 	if (!ResList.FindTempResFileName(szDynamicBase, szDynamicFilename))
 		Log(LoadResStr("IDS_NET_SAVE_ERR_CREATEDYNFILE"));
@@ -2061,7 +2054,8 @@ bool C4Network2::InitLeague(bool *pCancel)
 		MasterServerAddress.Clear();
 		Game.Parameters.League.Clear();
 		Game.Parameters.LeagueAddress.Clear();
-		if (pLeagueClient) delete pLeagueClient; pLeagueClient = nullptr;
+		delete pLeagueClient;
+		pLeagueClient = nullptr;
 
 		// Not needed?
 		if (!Config.Network.MasterServerSignUp && !Config.Network.LeagueServerSignUp)

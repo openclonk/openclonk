@@ -176,6 +176,8 @@ bool C4HTTPClient::Query(const StdBuf &Data, bool fBinary)
 	curl_slist *headers = nullptr;
 	headers = curl_slist_append(headers, "Accept-Charset: utf-8");
 	headers = curl_slist_append(headers, FormatString("Accept-Language: %s", Config.General.LanguageEx).getData());
+	if (!headerAcceptedResponseType.empty())
+		headers = curl_slist_append(headers, headerAcceptedResponseType.c_str());
 
 	if (Data.getSize())
 	{
@@ -307,3 +309,18 @@ bool C4HTTPClient::SetServer(const char *szServerAddress)
 	SetError("Malformed URL");
 	return false;
 }
+
+void C4HTTPClient::SetExpectedResponseType(C4HTTPClient::ResponseType type)
+{
+	switch (type)
+	{
+	case C4HTTPClient::ResponseType::XML:
+		headerAcceptedResponseType = "Accept: application/xml";
+		break;
+	case C4HTTPClient::ResponseType::NoPreference: // fallthrough
+	default:
+		headerAcceptedResponseType = "";
+		break;
+	};
+}
+

@@ -15,17 +15,19 @@ local mesh_rotation;
 private func Construction()
 {
 	inherited(...);
-	mesh_rotation = RandomX(0,359);
+	mesh_rotation = RandomX(0, 359);
 	// -12000 offset to fix model origin which is aligned to geometry centre on export instead of blender's given origin :(
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(-12000), Trans_Rotate(mesh_rotation,0,1,0)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(-12000), Trans_Rotate(mesh_rotation, 0, 1, 0)));
 }
 
 private func Seed()
 {
-	if(!IsStanding()) return;
-	if(OnFire()) return;
-	if(GetGrowthValue()) return; // still growing
-	if(coconuts >= MaxCoconuts) return;
+	if (!IsStanding()) return;
+	if (OnFire()) return;
+	if (GetGrowthValue()) return; // still growing
+	// Limit coconuts by attached and dropped coconuts (issue #1916)
+	if (coconuts >= MaxCoconuts) return;
+	if (ObjectCount(Find_ID(Coconut), Find_InRect(GetLeft(), GetTop(), GetObjWidth(), GetObjHeight())) >= MaxCoconuts) return;
 
 	// Always create coconuts; the coconut will determine if it seeds
 	if (Random(10000) < SeedChance())
@@ -45,7 +47,7 @@ private func Seed()
 public func GetTreetopPosition(pos)
 {
 	var offset = Sin(mesh_rotation/2, 20);
-	return Shape->Rectangle(-25+offset,-25, 30,5)->GetRandomPoint(pos);
+	return Shape->Rectangle(-25 + offset,-25, 30, 5)->GetRandomPoint(pos);
 }
 
 public func LostCoconut()
@@ -57,7 +59,7 @@ public func LostCoconut()
 
 public func Definition(def, ...) 
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-27000, -000, 22000), Trans_Rotate(40,0,0,1), Trans_Rotate(-10,1)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-27000, -000, 22000), Trans_Rotate(40, 0, 0, 1), Trans_Rotate(-10, 1)), def);
 	_inherited(def, ...);
 	def.EditorProps.plant_seed_area = nil; // Area doesn't make sense because it's seeding via coconuts
 }

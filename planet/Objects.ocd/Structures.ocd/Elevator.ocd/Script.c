@@ -39,11 +39,11 @@ public func SetDir(new_dir, ...)
 	// Set mesh transformation so that the rope on the mesh fits the rope from the elevator case.
 	if (new_dir == DIR_Left)
 	{
-		this.MeshTransformation = Trans_Rotate(-44,0,1,0);
+		this.MeshTransformation = Trans_Rotate(-44, 0, 1, 0);
 	}
 	else
 	{
-		this.MeshTransformation = Trans_Rotate(-47,0,1,0);
+		this.MeshTransformation = Trans_Rotate(-47, 0, 1, 0);
 	}
 	return r;
 }
@@ -120,15 +120,15 @@ private func CreateRope()
 
 private func Destruction()
 {
-	if(rope) rope->RemoveObject();
-	if(case) case->LostElevator();
+	if (rope) rope->RemoveObject();
+	if (case) case->LostElevator();
 	if (partner) partner->LoseCombination();
 }
 
 public func LostCase()
 {
-	if(partner) partner->LoseCombination();
-	if(rope) rope->RemoveObject();
+	if (partner) partner->LoseCombination();
+	if (rope) rope->RemoveObject();
 
 	StopEngine();
 
@@ -330,7 +330,7 @@ local ActMap = {
 };
 
 private func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(-20,1,0), Trans_Rotate(-20, 0, 1, 0)));
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(-20, 1, 0), Trans_Rotate(-20, 0, 1, 0)));
 	return _inherited(def, ...);
 }
 local Name = "$Name$";

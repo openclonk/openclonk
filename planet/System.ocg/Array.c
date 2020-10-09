@@ -10,7 +10,7 @@
 global func Concatenate(array first, array second)
 {
 	var len_first = GetLength(first);
-	var result = CreateArray(len_first+GetLength(second));
+	var result = CreateArray(len_first + GetLength(second));
 	result[:len_first] = first;
 	result[len_first:] = second;
 	return result;
@@ -31,7 +31,7 @@ global func Subtract(array subject, array subtract)
 				break;
 			}
 		}
-		if(!removed)
+		if (!removed)
 			diff[GetLength(diff)] = obj;
 	}
 	return diff;
@@ -44,7 +44,7 @@ global func RemoveHoles(array leerdammer)
 	var len = GetLength(leerdammer);
 	for (var i = 0; i < len; ++i)
 	{
-		if(leerdammer[i] == nil)
+		if (leerdammer[i] == nil)
 		{
 			++move;
 			continue;
@@ -110,7 +110,7 @@ global func ShuffleArray(array arr)
 	return;
 }
 
-// Takes array of format [[x1,y1], [x2,y2], ...] and returns array [[x1,x2,...],[y1,y2,...]]
+// Takes array of format [[x1, y1], [x2, y2], ...] and returns array [[x1, x2,...],[y1, y2,...]]
 global func TransposeArray(array v)
 {
 	var result = [], i = 0;
@@ -135,7 +135,7 @@ global func RemoveArrayIndex(array arr, int index, bool unstable)
 	if (unstable == true)
 		return RemoveArrayIndexUnstable(arr, index);
 	// move all elements right of index to the left
-	arr[index:] = arr[index+1:];
+	arr[index:] = arr[index + 1:];
 	return true;
 }
 
@@ -202,7 +202,7 @@ global func MoveArrayItems(array arr, array source_indices, int insert_before)
 	}
 	for (var idx in source_indices)
 	{
-		if (idx < 0) idx += (1-(idx+1)/len)*len; // resolve negative indices
+		if (idx < 0) idx += (1-(idx + 1)/len)*len; // resolve negative indices
 		if (idx >= len) continue;
 		if (idx < insert_before) 
 		{
@@ -216,7 +216,7 @@ global func MoveArrayItems(array arr, array source_indices, int insert_before)
 		{
 			// Move element backward
 			val = arr[idx];
-			while (idx-- >= insert_before) arr[idx+1] = arr[idx];
+			while (idx-- >= insert_before) arr[idx + 1] = arr[idx];
 			arr[insert_before] = val;
 			++insert_before;
 		}

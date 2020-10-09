@@ -19,20 +19,20 @@ func Initialize()
 
 	wetness = MOSS_MAXWETNESS;
 	lastpos = CreateArray();
-	AddEffect("MossMoisture",this,100,36,this);
+	AddEffect("MossMoisture",this, 100, 36, this);
 }
 
 public func ControlUse(object clonk, int x, int y, bool box)
 {
-	if(!clonk->~IsWalking()) return true;
+	if (!clonk->~IsWalking()) return true;
 	// Search for ground
 	x = 0; y = 0;
-	if (GBackSemiSolid(x,y)) return true;
-	if (GetMaterial(x,y) != Material("Tunnel")) return true;
+	if (GBackSemiSolid(x, y)) return true;
+	if (GetMaterial(x, y) != Material("Tunnel")) return true;
 	var i = 0;
-	while (!GBackSolid(x,y) && i < 15) { ++y; ++i; }
-	if (!GBackSolid(x,y)) return true;
-	if (GetMaterialVal("Soil", "Material", GetMaterial(x,y)) == 1)
+	while (!GBackSolid(x, y) && i < 15) { ++y; ++i; }
+	if (!GBackSolid(x, y)) return true;
+	if (GetMaterialVal("Soil", "Material", GetMaterial(x, y)) == 1)
 	{
 		// Plant!
 		clonk->DoKneel();
@@ -106,9 +106,9 @@ protected func TryToLichen()
 {
 	if (GetMaterial() != Material("Tunnel")) return false;
 	var y = 0;
-	while (!GBackSolid(0,y) && y < 10) y++;
-	if (!GBackSolid(0,y)) return false;
-	if (!GetMaterialVal("Soil", "Material", GetMaterial(0,y))) return false;
+	while (!GBackSolid(0, y) && y < 10) y++;
+	if (!GBackSolid(0, y)) return false;
+	if (!GetMaterialVal("Soil", "Material", GetMaterial(0, y))) return false;
 	if (FindObject(Find_ID(Lichen), Find_Distance(MOSS_MAXDIST))) return false;
 
 	CreateObjectAbove(Lichen, 0, y, NO_OWNER);
@@ -121,10 +121,10 @@ private func FindNearWater()
 {
 	// Take a random hit within the target area
 	var y = RandomX(-MOSS_MAXDIST, MOSS_MAXDIST);
-	for (var i = 0; i < MOSS_MAXDIST; i+=2)
+	for (var i = 0; i < MOSS_MAXDIST; i += 2)
 	{
 		if (GetMaterial(i, y) == Material("Water")) return true;
-		if (GetMaterial(-i,y) == Material("Water")) return true;
+		if (GetMaterial(-i, y) == Material("Water")) return true;
 	}
 	return false;
 }

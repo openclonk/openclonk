@@ -147,8 +147,8 @@ func InitializeObjects()
 	var SpinWheel003 = CreateObjectAbove(SpinWheel, 1384, 471);
 	SpinWheel003->SetSwitchTarget(StoneDoor003);
 
-	CreateObject(Column, 1197, 551);
-	CreateObject(Column, 1218, 463);
+	CreateObjectAbove(Column, 1197, 551);
+	CreateObjectAbove(Column, 1218, 463);
 
 	CreateObjectAbove(Idol, 1080, 575);
 

@@ -109,6 +109,9 @@ enum C4PacketType
 	// activation request
 	PID_ClientActReq  = 0x13,
 
+	// request to perform TCP simultaneous open
+	PID_TCPSimOpen    = 0x14,
+
 	// all data a client needs to get started
 	PID_JoinData      = 0x15,
 
@@ -223,8 +226,10 @@ protected:
 	StdCopyBuf Data;
 public:
 	C4PktBuf();
-	C4PktBuf(const C4PktBuf &rCopy);
-	C4PktBuf(const StdBuf &rCpyData);
+	C4PktBuf(const C4PktBuf &rCopy) { *this = rCopy; }
+	C4PktBuf(const StdBuf &rCpyData) { *this = rCpyData; }
+	C4PktBuf &operator =(const C4PktBuf &rCopy);
+	C4PktBuf &operator =(const StdBuf &rCopy);
 
 	size_t getSize() const { return Data.getSize(); }
 	const void *getData() const { return Data.getData(); }

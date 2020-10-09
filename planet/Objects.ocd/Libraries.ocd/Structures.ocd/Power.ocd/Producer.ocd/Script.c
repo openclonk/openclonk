@@ -61,6 +61,12 @@ private func UnregisterPowerProduction()
 	return;
 }
 
+// Call this function to see if the producer currently has registere power production.
+private func HasRegisteredPowerProduction()
+{
+	return GetPowerSystem()->IsRegisteredPowerProducer(this);
+}
+
 
 /*-- Callbacks --*/
 	

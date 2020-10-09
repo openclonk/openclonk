@@ -30,12 +30,12 @@ protected func Initialize()
 //some left-overs from Lorry script. Not sure of it's purpose...
 protected func ContactLeft()
 {
-	if(Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
+	if (Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
 }
 
 protected func ContactRight()
 {
-	if(Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
+	if (Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
 }
 
 protected func RejectCollect(id def, object obj)
@@ -68,10 +68,10 @@ public func ControlUseStart(object clonk, int ix, int iy)
 		return true;
 	}
 			
-	if(clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
+	if (clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
 
 	//Animation
-	var r = ConvertAngle(Angle(0,0,ix,iy));
+	var r = ConvertAngle(Angle(0, 0, ix, iy));
 	SetAnimationPosition(animAim, Anim_Const(AnimAngle(r)*3954444/100000)); //conversion. Apparently 90 blender frames is 3559 ogre frames.
 	return true;
 }
@@ -106,12 +106,12 @@ public func ControlUseHolding(object clonk, int ix, int iy)
 {
 	if (!clonk) return true;
 	
-	var r = ConvertAngle(Angle(0,0,ix,iy,angPrec));
+	var r = ConvertAngle(Angle(0, 0, ix, iy, angPrec));
 
-	var iColor = RGB(255,255,255);
+	var iColor = RGB(255, 255, 255);
 	if (!Contents(0) || GetEffect("IntCooldown",this))
-		iColor = RGB(255,0,0);
-	Trajectory->Create(this, GetX() + 5, GetY() + 2, Cos(r - 90 * angPrec, Fire_Velocity,angPrec), Sin(r - 90 * angPrec, Fire_Velocity,angPrec));
+		iColor = RGB(255, 0, 0);
+	Trajectory->Create(this, GetX() + 5, GetY() + 2, Cos(r - 90 * angPrec, Fire_Velocity, angPrec), Sin(r - 90 * angPrec, Fire_Velocity, angPrec));
 
 	SetCannonAngle(r);
 	
@@ -130,23 +130,23 @@ private func AnimAngle(int angle)
 	r = r - GetR();
 	r = Abs(r);
 	r = 180-r-90;
-	r = BoundBy(r,0,90);
+	r = BoundBy(r, 0, 90);
 	return r;
 }
 
 private func ConvertAngle(int angle)
 {
-	var nR = BoundBy(Normalize(angle,-180 * angPrec,angPrec), (-90 * angPrec) + (GetR() * angPrec), (90 * angPrec) + (GetR() * angPrec));
+	var nR = BoundBy(Normalize(angle,-180 * angPrec, angPrec), (-90 * angPrec) + (GetR() * angPrec), (90 * angPrec) + (GetR() * angPrec));
 	//var r2 = nR - GetR() * angPrec;
 	//debug messages
-	//Message(Format("nR = %d|rL = %d",nR,r2));
+	//Message(Format("nR = %d | rL = %d",nR, r2));
 	
 	//Turn the cannon into the pointed direction
-	if(nR - (GetR() * angPrec) < 0 && turnDir == 1) TurnCannon(0);
-	if(nR - (GetR() * angPrec) > 0 && turnDir == 0) TurnCannon(1);
+	if (nR - (GetR() * angPrec) < 0 && turnDir == 1) TurnCannon(0);
+	if (nR - (GetR() * angPrec) > 0 && turnDir == 0) TurnCannon(1);
 	
 	//renormalize the angle to 0/360 from -180/180
-	return Normalize(nR,0,angPrec);
+	return Normalize(nR, 0, angPrec);
 }
 
 public func ControlUseStop(object clonk, int ix, int iy)
@@ -164,21 +164,21 @@ public func ControlUseStop(object clonk, int ix, int iy)
 	}
 
 	//Can't fire if cannon is cooling down or turning
-	if(GetEffect("IntCooldown",this) || GetEffect("IntTurning",this))	return true;
+	if (GetEffect("IntCooldown",this) || GetEffect("IntTurning",this))	return true;
 	
 	if (projectile)
 	{
-		DoFire(projectile, clonk, Angle(0,0,ix,iy,angPrec));
+		DoFire(projectile, clonk, Angle(0, 0, ix, iy, angPrec));
 		var powder = Contents(0)->GetPowderCount();
-		if(powder >= 1 || projectile->~IsSelfPropellent())
+		if (powder >= 1 || projectile->~IsSelfPropellent())
 		{
 			var powderkeg = Contents(0);
 			//If there is a powder keg, take powder from it
 			powderkeg->DoPowderCount(-1);
 			
-			DoFire(projectile, clonk, Angle(0,0,ix,iy, angPrec));
-			AddEffect("IntCooldown",this,1,1,this);
-			if(powderkeg->GetPowderCount() == 0)
+			DoFire(projectile, clonk, Angle(0, 0, ix, iy, angPrec));
+			AddEffect("IntCooldown",this, 1, 1, this);
+			if (powderkeg->GetPowderCount() == 0)
 			{
 				powderkeg->RemoveObject();
 				CreateObjectAbove(Barrel);
@@ -197,20 +197,20 @@ public func ControlUseCancel()
 //Stops the player from shooting for the defined amount of frames
 public func FxIntCooldownTimer(object target, effect, int timer)
 {
-	if(timer > 72) return -1;
+	if (timer > 72) return -1;
 }
 
 
 func ControlLeft(object clonk)
 {
-	if(turnDir == 1){
+	if (turnDir == 1){
 		TurnCannon(0);
 	}
 }
 
 func ControlRight(object clonk)
 {
-	if(turnDir == 0){
+	if (turnDir == 0){
 		TurnCannon(1);
 	}
 }
@@ -219,7 +219,7 @@ public func TurnCannon(int dir, bool instant)
 {
 	turnDir = dir;
 	//Remove any old effect
-	if(GetEffect("IntTurnCannon", this)) RemoveEffect("IntTurnCannon", this);
+	if (GetEffect("IntTurnCannon", this)) RemoveEffect("IntTurnCannon", this);
 	// Instant turn?
 	if (instant)
 	{
@@ -239,11 +239,11 @@ func FxIntTurnCannonTimer(object cannon, proplist effect, int timer)
 {
 	var current = GetAnimationPosition(animTurn);
 	var target = GetAnimationLength("TurnRight");
-	if(turnDir == 1) target = 0;	
+	if (turnDir == 1) target = 0;	
 	var tickAmount = 50;	//by how much the animation will move forward each frame	
 	
 	//advance turn animation
-	if((current != GetAnimationLength("TurnRight") && turnDir == 0) || (current != 0 && turnDir == 1)){
+	if ((current != GetAnimationLength("TurnRight") && turnDir == 0) || (current != 0 && turnDir == 1)){
 		SetAnimationPosition(animTurn, Anim_Const(MoveTowards(current, target, tickAmount)));
 	}
 	else return -1;
@@ -253,21 +253,21 @@ protected func DoFire(object iammo, object clonk, int angle)
 {
 	//Don't excede possible trajectory
 	var r = Normalize(angle,-180 * angPrec, angPrec);
-	if(r > 90 * angPrec + GetR() * angPrec) r = 90 * angPrec + GetR() * angPrec;
-	if(r < -90 * angPrec + GetR() * angPrec) r = -90 * angPrec + GetR() * angPrec;
+	if (r > 90 * angPrec + GetR() * angPrec) r = 90 * angPrec + GetR() * angPrec;
+	if (r < -90 * angPrec + GetR() * angPrec) r = -90 * angPrec + GetR() * angPrec;
 
 	//Send ammo flying
 	iammo->SetR(r / angPrec);
 	iammo->SetRDir(-4 + Random(9));
-	iammo->LaunchProjectile(r, 17, Fire_Velocity, 0,0, angPrec);
+	iammo->LaunchProjectile(r, 17, Fire_Velocity, 0, 0, angPrec);
 	if (clonk)
 		iammo->SetController(clonk->GetController());
 	iammo->~OnCannonShot(this);
 
 	//Particles
 	var dist = 25;
-	var px = Cos(r/angPrec - 90,dist);
-	var py = Sin(r/angPrec - 90,dist) - 4;
+	var px = Cos(r/angPrec - 90, dist);
+	var py = Sin(r/angPrec - 90, dist) - 4;
 	CreateParticle("Flash", px, py, 0, 0, 8, Particles_Flash());
 
 	var x = Sin(r/angPrec, 20);

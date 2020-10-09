@@ -13,7 +13,7 @@
 	The network will then continously search for available power to deliver to
 	this consumer and will notify it via the callbacks
 	 * OnEnoughPower(int amount)
-	 * OnNotEnoughPower()
+	 * OnNotEnoughPower(int amount, bool initial_call)
 	The last callback will be called when the consumer had enough power and the 
 	network stopped delivering to this consumer, due to whatever reason except 
 	the consumer itself unregistering the request for power.
@@ -67,6 +67,12 @@ private func UnregisterPowerRequest()
 	return;
 }
 
+// Call this function to see if the consumer currently requests power.
+private func HasRegisteredPowerRequest()
+{
+	return GetPowerSystem()->IsRegisteredPowerConsumer(this);
+}
+
 // Call this function in the power consuming structure to request and update from
 // the power network of this consumer.
 private func UpdatePowerRequest()
@@ -93,7 +99,7 @@ public func OnEnoughPower(int amount)
 // functionality, since not enough power is available. return inherited(amount, ...)
 // to add the no-power symbol. It is not allowed to (un)register a power request
 // in this callback.
-public func OnNotEnoughPower(int amount)
+public func OnNotEnoughPower(int amount, bool initial_call)
 {
 	// Show the no-power symbol.
 	ShowStatusSymbol(Library_PowerConsumer);

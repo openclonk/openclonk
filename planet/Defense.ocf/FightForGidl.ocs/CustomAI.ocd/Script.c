@@ -40,7 +40,7 @@ private func ExecuteBomber(effect fx)
 	// Still carrying the bomb?
 	if (fx.weapon->Contained() != fx.Target)
 	{
-		fx.weapon=nil;
+		fx.weapon = nil;
 		return false;
 	}
 	// Are we in range?
@@ -113,8 +113,8 @@ func Inventory_GetCarryTransform()
 func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 {
 	// Create enemy (usually a Clonk)
-	var x = xmin+Random(xrange);
-	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY), clonk;
+	var x = xmin + Random(xrange);
+	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x, y, ENEMY), clonk;
 	if (!obj) return nil;
 	obj->SetController(ENEMY);
 	obj->MakeCrewMember(ENEMY);
@@ -156,7 +156,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 	var vehicle;
 	if (enemy.Vehicle)
 	{
-		vehicle = CreateObjectAbove(enemy.Vehicle, x,y);
+		vehicle = CreateObjectAbove(enemy.Vehicle, x, y);
 		obj->SetAction("Push", vehicle);
 	}
 	// Enemy inventory
@@ -198,7 +198,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 		if (g_statue)
 		{
 			CustomAI->SetHome(obj, g_statue->GetX(), g_statue->GetY(), Random(2));
-			CustomAI->SetGuardRange(obj, 0,0,LandscapeWidth(),LandscapeHeight()); // nowhere to run!
+			CustomAI->SetGuardRange(obj, 0, 0, LandscapeWidth(),LandscapeHeight()); // nowhere to run!
 			CustomAI->SetEnemyData(obj, enemy);
 			//	CustomAI->SetGuardRange(obj, g_statue->GetX()-200, g_statue->GetY()-50, 400, 100);
 		}

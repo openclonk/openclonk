@@ -41,7 +41,7 @@ protected func OnClonkDeath(object clonk, int killer)
 	return _inherited(clonk, killer, ...);
 }
 
-protected func OnPlayerRelaunch(int plr)
+protected func OnPlayerRelaunchCountChanged(int plr)
 {
     if (GetRelaunchRule()->HasUnlimitedRelaunches()) return;
 	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule()->GetPlayerRelaunchCount(plr));

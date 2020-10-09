@@ -18,7 +18,7 @@ func InitializeMap(proplist map)
 	DrawRandomPattern2(layer2);
 	StopScriptProfiler();
 	Blit(layer1, [0, 0, layer1.Wdt, layer1.Hgt]);
-	Blit({Algo=MAPALGO_Offset, OffY=map.Hgt / 2, Op=layer2});
+	Blit({Algo = MAPALGO_Offset, OffY = map.Hgt / 2, Op = layer2});
 	return true;
 }
 

@@ -9,7 +9,8 @@
 #include Library_Ownable
 #include Library_Producer
 #include Library_LampPost
-#include Library_Tank
+#include Library_LiquidContainer
+#include Library_PipeControl
 
 
 // Foundry does not need power.
@@ -155,32 +156,6 @@ public func GetLiquidContainerMaxFillLevel(liquid_name)
 	return 300;
 }
 
-// The foundry may have one drain and one source.
-public func QueryConnectPipe(object pipe, bool do_msg)
-{
-	if (GetDrainPipe() && GetSourcePipe())
-	{
-		if (do_msg) pipe->Report("$MsgHasPipes$");
-		return true;
-	}
-	else if (GetSourcePipe() && pipe->IsSourcePipe())
-	{
-		if (do_msg) pipe->Report("$MsgSourcePipeProhibited$");
-		return true;
-	}
-	else if (GetDrainPipe() && pipe->IsDrainPipe())
-	{
-		if (do_msg) pipe->Report("$MsgDrainPipeProhibited$");
-		return true;
-	}
-	else if (pipe->IsAirPipe())
-	{
-		if (do_msg) pipe->Report("$MsgPipeProhibited$");
-		return true;
-	}
-	return false;
-}
-
 // Set to source or drain pipe.
 public func OnPipeConnect(object pipe, string specific_pipe_state)
 {
@@ -234,3 +209,8 @@ local BlastIncinerate = 100;
 local HitPoints = 100;
 local FireproofContainer = true;
 local Components = {Rock = 4, Wood = 2};
+
+// The foundry may have one drain and one source.
+local PipeLimit_Air = 0;
+local PipeLimit_Drain = 1;
+local PipeLimit_Source = 1;

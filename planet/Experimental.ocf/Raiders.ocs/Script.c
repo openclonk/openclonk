@@ -17,7 +17,7 @@ func Initialize()
 
 	// Vegetation
 	Tree_Coniferous->Place(20, Shape->Rectangle(106, 121, 826, 335), { keep_area = true });
-	PlaceGrass(20, 0,106);
+	PlaceGrass(20, 0, 106);
 
 	// The castle
 	CreateObjectAbove(Raiders_CastleBack, 1068, 256, NO_OWNER);

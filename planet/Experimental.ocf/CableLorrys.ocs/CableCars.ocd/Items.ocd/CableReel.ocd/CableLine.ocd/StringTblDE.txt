@@ -1,2 +1,2 @@
-TxtLinebroke=Seil gerissen
+MsgCableBroke=Seil gerissen
 Name=Seilbahnseil

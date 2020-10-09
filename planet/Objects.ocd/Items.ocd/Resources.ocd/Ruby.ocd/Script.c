@@ -16,7 +16,7 @@ func Initialize()
 {
 	AddEffect("Sparkle", this, 1, 30 + RandomX(-3, 3), this);
 	graphics_index = Random(4);
-	if (graphics_index) SetGraphics(Format("%d", graphics_index+1));
+	if (graphics_index) SetGraphics(Format("%d", graphics_index + 1));
 	return true;
 }
 
@@ -35,13 +35,13 @@ func FxSparkleStart(target, effect, temp)
 
 func FxSparkleTimer(target, effect, effect_time)
 {
-	if(this->Contained() || !Random(2)) return FX_OK;
+	if (this->Contained() || !Random(2)) return FX_OK;
 	CreateParticle("MagicRing", 0, 0, 0, 0, effect.Interval, effect.particles, 1);
 	return FX_OK;
 }
 
 func IsValuable() { return true; }
-func QueryRebuy() { return true; }
+func QueryRejectRebuy() { return true; }
 
 func OnSale(int to_player, object sale_base)
 {

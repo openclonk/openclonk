@@ -7,7 +7,7 @@
     <title>GetDefBottom</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Determines the lower limit of an object. This corresponds to the bottom vertex on objects that have vertices and y position + DefCore OffsetY + DefCore Height for objects without vertices.</desc>
     <examples>

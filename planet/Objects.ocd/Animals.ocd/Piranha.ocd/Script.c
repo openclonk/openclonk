@@ -69,12 +69,12 @@ func InitFuzzyRules()
 	brain->AddSet("hunger", "high", [[25, 0], [100, 1], [100, 1]]);
 	
 	// RULES
-	brain->AddRule(brain->And("hunger=high", "food=right"), "swim=right");
-	brain->AddRule(brain->And("hunger=high", "food=left"), "swim=left");
-	brain->AddRule("hunger=high", "speed=fast");
-	brain->AddRule(brain->Or("wall_range=close", "hunger=low"), "speed=slow");
-	brain->AddRule(brain->And("left_wall=close", brain->Not("right_wall=close")), "swim=sharp_right");
-	brain->AddRule("right_wall=close", "swim=sharp_left");
+	brain->AddRule(brain->And("hunger = high", "food = right"), "swim = right");
+	brain->AddRule(brain->And("hunger = high", "food = left"), "swim = left");
+	brain->AddRule("hunger = high", "speed = fast");
+	brain->AddRule(brain->Or("wall_range = close", "hunger = low"), "speed = slow");
+	brain->AddRule(brain->And("left_wall = close", brain->Not("right_wall = close")), "swim = sharp_right");
+	brain->AddRule("right_wall = close", "swim = sharp_left");
 }
 
 

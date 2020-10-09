@@ -2,7 +2,3 @@ Name=Foundry
 Description=In the foundry, ore can be smelted into ingots. Fuel, such as coal, is necessary for this.
 
 MsgConnectedPipe=Connected pipe.
-MsgPipeProhibited=This pipe cannot be connected to the foundry.
-MsgHasPipes=Foundry already has a source and a drain pipe.
-MsgSourcePipeProhibited=Unable to connect source pipe to the foundry.
-MsgDrainPipeProhibited=Unable to connect drain pipe to the foundry.

@@ -210,7 +210,7 @@ protected func ContactRight()
 
 public func TurnWheels()
 {
-	// TODO: Use Anim_X(Dir), keep from timer=1
+	// TODO: Use Anim_X(Dir), keep from timer = 1
 	// TODO: Could also use GetAnimationPosition() instead of these local variables...
 	rot_wheels += GetXDir() * 20;
 	while (rot_wheels < 0) 

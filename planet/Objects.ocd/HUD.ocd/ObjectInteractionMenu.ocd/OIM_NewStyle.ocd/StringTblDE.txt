@@ -1,0 +1,15 @@
+TooltipClose=Schließen
+
+TooltipSettings=Einstellungen öffnen
+TooltipSettingsClose=Einstellungen schließen
+
+TooltipBackground=Hintergrundtransparenz umstellen
+
+TooltipHideText=Überschriften verbergen
+TooltipShowText=Überschriften anzeigen
+
+TooltipWithSaturation=Menüfarben anzeigen
+TooltipWithoutSaturation=Menüfarben ausblenden
+
+TooltipTransferAllLeft=Gesamtes Inventar nach links schieben.
+TooltipTransferAllRight=Gesamtes Inventar nach rechts schieben.

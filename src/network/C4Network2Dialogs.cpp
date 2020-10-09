@@ -311,7 +311,7 @@ void C4Network2ClientListBox::ClientListItem::SetSoundIcon()
 // C4Network2ClientListBox::ConnectionListItem
 
 C4Network2ClientListBox::ConnectionListItem::ConnectionListItem(class C4Network2ClientListBox *pForDlg, int32_t iClientID, int32_t iConnectionID) // ctor
-		: ListItem(pForDlg, iClientID), iConnID(iConnectionID), pDesc(nullptr), pPing(nullptr), pReconnectBtn(nullptr), pDisconnectBtn(nullptr)
+		: ListItem(pForDlg, iClientID), iConnID(iConnectionID), pDesc(nullptr), pPing(nullptr), pDisconnectBtn(nullptr)
 {
 	// get size
 	CStdFont &rUseFont = ::GraphicsResource.TextFont;
@@ -323,14 +323,12 @@ C4Network2ClientListBox::ConnectionListItem::ConnectionListItem(class C4Network2
 	// left indent
 	ca.ExpandLeft(-iIconSize*2);
 	// create subcomponents
-	// reconnect/disconnect buttons
+	// disconnect button
 	if (!Game.Parameters.isLeague())
 	{
 		pDisconnectBtn = new  C4GUI::CallbackButtonEx<C4Network2ClientListBox::ConnectionListItem, C4GUI::IconButton>(C4GUI::Ico_Disconnect, ca.GetFromRight(iIconSize, iIconSize), 0, this, &ConnectionListItem::OnButtonDisconnect);
 		pDisconnectBtn->SetToolTip(LoadResStr("IDS_MENU_DISCONNECT"));
 	}
-	else
-		pDisconnectBtn = nullptr;
 	// ping time
 	int32_t sx=40, sy=iIconSize;
 	rUseFont.GetTextExtent("???? ms", sx,sy, true);
@@ -527,7 +525,8 @@ C4Network2ClientListDlg::C4Network2ClientListDlg()
 
 C4Network2ClientListDlg::~C4Network2ClientListDlg()
 {
-	if (this==pInstance) pInstance=nullptr; Application.Remove(this);
+	if (this==pInstance) pInstance=nullptr;
+	Application.Remove(this);
 }
 
 void C4Network2ClientListDlg::Update()

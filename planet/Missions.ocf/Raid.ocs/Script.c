@@ -98,7 +98,7 @@ func JoinPlayer(int plr, object crew, bool no_placement)
 	if (g_attack_done) tools = [Shovel, Axe]; else tools = [];
 	for (var tool in tools)
 		if (!crew->ContentsCount(tool)) crew->CreateContents(tool);
-	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetCursor(crew->GetOwner(), crew);
 	return true;
 }
@@ -128,8 +128,8 @@ func OnPlaneLoaded(object plane, object oil)
 
 func OnGoalsFulfilled()
 {
-	SetNextMission("Missions.ocf/Crash.ocs");
-	GainMissionAccess("S2Raid");
+	SetNextScenario("Missions.ocf/Crash.ocs");
+	GainScenarioAccess("S2Raid");
 	GainScenarioAchievement("Done");
 	return true; // GameOver done by outro
 }

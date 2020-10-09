@@ -7,7 +7,7 @@
     <title>GetClimate</title>
     <category>Environment</category>
     <subcat>Weather</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the current climate. This is the median, constant temperature. Actual temperature is calculated by adding the current season and TemperatureRange.</desc>
     <remark>The current weather temperature is "Climate - TemperatureRange * cos(Season * Pi / 50)" - the actual temperature approximates this value at a rate of 1 degree per 35 frames.</remark>

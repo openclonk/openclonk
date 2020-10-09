@@ -6,4 +6,7 @@ DescEngage=%s bei %s auf das Seil aufsetzen.
 TooltipGo=Wähle ein Ziel für das Fahrzeug.
 DescGo=Öffnet das Zielwahl-Menü für dieses Fahrzeug. Das Fahrzeug fährt los, sobald ein Ziel ausgewählt wurde.
 
+TooltipDisengage=Das Fahrzeug vom Seil abnehmen.
+DescDisengage=%s bei %s vom Seil abnehmen.
+
 NoStation=Schiebe das Fahrzeug vor eine Station, um es auf ein Seil zu setzen.

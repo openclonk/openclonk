@@ -4,33 +4,34 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>GetMissionAccess</title>
+    <title>GetScenarioAccess</title>
     <category>System</category>
-    <version>5.1 OC</version>
+    <version>9.0 OC, previously known as GetMissionAccess from 1.0 to 8.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>string</type>
-          <name>mission_access</name>
-          <desc>Mission access to be checked.</desc>
+          <name>password</name>
+          <desc>Scenario access password to be checked.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Determines whether the player already has the specified mission access password.</desc>
+    <desc>Determines whether the player already has the specified scenario access password.</desc>
     <remark>In a network game, this function always returns <code>false</code>. Otherwise differing local values might cause synchronization problems.</remark>
     <examples>
       <example>
-        <code><funclink>if</funclink> (!GetMissionAccess(&quot;DasWarHarteArbeit&quot;))
+        <code><funclink>if</funclink> (!GetScenarioAccess(&quot;DasWarHarteArbeit&quot;))
 {
-  <funclink>GainMissionAccess</funclink>(&quot;DasWarHarteArbeit&quot;);
+  <funclink>GainScenarioAccess</funclink>(&quot;DasWarHarteArbeit&quot;);
   <funclink>Message</funclink>(&quot;Congratulations, you are here for the first time!&quot;);
 }</code>
-        <text>Displays a message if the mission access password "DasWarHarteArbeit" was not yet gained and then gives this mission access.</text>
+        <text>Displays a message if the scenario access password "DasWarHarteArbeit" was not yet gained and then grants this scenario access.</text>
       </example>
     </examples>
-    <related><funclink>GainMissionAccess</funclink></related>
+    <related><funclink>GainScenarioAccess</funclink></related>
   </func>
+  <author>Marky</author><date>2018-04</date>
   <author>Sven2</author><date>2001-11</date>
   <author>matthes</author><date>2005-02</date>
 </funcs>

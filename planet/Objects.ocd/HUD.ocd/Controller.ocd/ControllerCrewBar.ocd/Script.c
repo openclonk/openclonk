@@ -508,7 +508,7 @@ public func OnCrewBreathChange(object clonk, int change)
 			{
 				SetNextBreathValue(1000 * breath_val / breath_phys);
 			}
-			else if(change < 0 && breath_val < breath_phys) // Show a warning if decreasing
+			else if (change < 0 && breath_val < breath_phys) // Show a warning if decreasing
 			{
 				IssueWarning(clonk, Icon_Bubbles, "");
 			}
@@ -1126,7 +1126,7 @@ private func RepositionCrewWarnings(int except_index, int change)
 		if (except_index == i)
 			continue;
 		crew_warnings[i] += change;
-		GuiUpdate({ Top = ToEmString(crew_warnings[i]), Bottom = ToEmString(crew_warnings[i] + 10) }, crew_gui_id, 500+i, this);
+		GuiUpdate({ Top = ToEmString(crew_warnings[i]), Bottom = ToEmString(crew_warnings[i] + 10) }, crew_gui_id, 500 + i, this);
 	}
 }
 
@@ -1185,9 +1185,9 @@ private func OpenCrewInfo()
 		{
 			Target = this,
 			Top = ToEmString(y),
-			Bottom = ToEmString(y+20),
+			Bottom = ToEmString(y + 20),
 			Priority = 12,
-			BackgroundColor = { Std = nil, Hover = RGB(200,200,200) },
+			BackgroundColor = { Std = nil, Hover = RGB(200, 200, 200) },
 			OnMouseIn = GuiAction_SetTag("Hover"),
 			OnMouseOut = GuiAction_SetTag("Std"),
 			OnClick = GuiAction_Call(this, "SelectClonk", i),

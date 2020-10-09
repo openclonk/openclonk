@@ -13,9 +13,9 @@ local MaxContentsCount = 0;
 
 public func ObjectControl(int plr, int ctrl)
 {
-	if(IsThrowControl(ctrl))
+	if (IsThrowControl(ctrl))
 		return;
-	if(IsDropControl(ctrl))
+	if (IsDropControl(ctrl))
 		return;
 	
 	return _inherited(plr, ctrl, ...);

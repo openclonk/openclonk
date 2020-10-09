@@ -186,10 +186,10 @@ struct StdStringAdapt
 };
 inline StdStringAdapt mkStringAdapt(char *szString, int iMaxLength, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
 { return StdStringAdapt(szString, iMaxLength, eRawType); }
-#define mkStringAdaptM(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1)
-#define mkStringAdaptMA(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_All)
-#define mkStringAdaptMI(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_Idtf)
-#define mkStringAdaptMIE(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_IdtfAllowEmpty)
+template <size_t size> inline StdStringAdapt mkStringAdaptM(char (&szString)[size]) { return mkStringAdapt(szString, size); }
+template <size_t size> inline StdStringAdapt mkStringAdaptMA(char (&szString)[size]) { return mkStringAdapt(szString, size, StdCompiler::RCT_All); }
+template <size_t size> inline StdStringAdapt mkStringAdaptMI(char (&szString)[size]) { return mkStringAdapt(szString, size, StdCompiler::RCT_Idtf); }
+template <size_t size> inline StdStringAdapt mkStringAdaptMIE(char (&szString)[size]) { return mkStringAdapt(szString, size, StdCompiler::RCT_IdtfAllowEmpty); }
 
 // * std::string adaptor
 struct StdStdStringAdapt
@@ -224,7 +224,15 @@ struct StdRawAdapt
 };
 inline StdRawAdapt mkRawAdapt(void *pData, size_t iSize, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
 { return StdRawAdapt(pData, iSize, eRawType); }
-#define mkRawAdaptM(X) mkRawAdapt(&X, sizeof(X))
+template <typename T>
+inline StdRawAdapt mkRawAdaptM(T &val)
+{
+	// GCC 4.x doesn't support std::is_trivially_copyable
+#if !defined(__GNUC__) || __GNUC__ > 4
+	static_assert(std::is_trivially_copyable<T>::value, "StdRawAdapt: type must be trivially copyable");
+#endif
+	return mkRawAdapt(&val, sizeof(val));
+}
 
 // * Integer Adaptor
 // Stores Integer-like datatypes (Enumerations)
@@ -326,10 +334,12 @@ struct StdArrayAdapt
 };
 template <class T>
 inline StdArrayAdapt<T> mkArrayAdapt(T *pArray, int iSize) { return StdArrayAdapt<T>(pArray, iSize); }
-#define mkArrayAdaptM(A) mkArrayAdapt(A, sizeof(A) / sizeof(*(A)))
+template <class T, size_t size>
+inline StdArrayAdapt<T> mkArrayAdaptM(T (&array)[size]) { return StdArrayAdapt<T>(array, size); }
 template <class T, class M>
 inline StdArrayAdapt<T, M> mkArrayAdaptMap(T *pArray, int iSize, M && map) { return StdArrayAdapt<T, M>(pArray, iSize, std::forward<M>(map)); }
-#define mkArrayAdaptMapM(A, M) mkArrayAdaptMap(A, sizeof(A) / sizeof(*(A)), M)
+template <class T, class M, size_t size>
+inline StdArrayAdapt<T, M> mkArrayAdaptMapM(T (&array)[size], M && map) { return StdArrayAdapt<T, M>(array, size, std::forward<M>(map)); }
 
 // * Array Adaptor (defaulting)
 // Stores a separated list, sets defaults if a value or separator is missing.
@@ -378,10 +388,12 @@ struct StdArrayDefaultAdapt
 };
 template <class T, class D>
 inline StdArrayDefaultAdapt<T, D> mkArrayAdapt(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultAdapt<T, D>(pArray, iSize, rDefault); }
-#define mkArrayAdaptDM(A, D) mkArrayAdapt(A, sizeof(A) / sizeof(*(A)), D)
+template <class T, class D, size_t size>
+inline StdArrayDefaultAdapt<T, D> mkArrayAdaptDM(T (&array)[size], const D &rDefault) { return StdArrayDefaultAdapt<T, D>(array, size, rDefault); }
 template <class T, class D, class M>
 inline StdArrayDefaultAdapt<T, D, M> mkArrayAdaptMap(T *pArray, size_t iSize, const D &rDefault, M map) { return StdArrayDefaultAdapt<T, D, M>(pArray, iSize, rDefault, map); }
-#define mkArrayAdaptMapDM(A, D, M) mkArrayAdaptMap(A, sizeof(A) / sizeof(*(A)), D, M)
+template <class T, class D, class M, size_t size>
+inline StdArrayDefaultAdapt<T, D, M> mkArrayAdaptMapDM(T (&array)[size], const D &rDefault, M map) { return StdArrayDefaultAdapt<T, D, M>(array, size, rDefault, map); }
 
 // * Array Adaptor (defaulting to another array)
 // Stores a separated list, sets defaults if a value or separator is missing.
@@ -430,10 +442,12 @@ struct StdArrayDefaultArrayAdapt
 };
 template <class T, class D>
 inline StdArrayDefaultArrayAdapt<T, D> mkArrayAdaptDefArr(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultArrayAdapt<T, D>(pArray, iSize, rDefault); }
-#define mkArrayAdaptDMA(A, D) mkArrayAdaptDefArr(A, sizeof(A) / sizeof(*(A)), D)
+template <class T, class D, size_t size>
+inline StdArrayDefaultArrayAdapt<T, D> mkArrayAdaptDMA(T (&array)[size], const D &rDefault) { return StdArrayDefaultArrayAdapt<T, D>(array, size, rDefault); }
 template <class T, class D, class M>
 inline StdArrayDefaultArrayAdapt<T, D, M> mkArrayAdaptDefArrMap(T *pArray, size_t iSize, const D &rDefault, const M &map) { return StdArrayDefaultArrayAdapt<T, D, M>(pArray, iSize, rDefault, map); }
-#define mkArrayAdaptDMAM(A, D, M) mkArrayAdaptDefArrMap(A, sizeof(A) / sizeof(*(A)), D, M)
+template <class T, class D, class M, size_t size>
+inline StdArrayDefaultArrayAdapt<T, D, M> mkArrayAdaptDMAM(T (&array)[size], const D &rDefault, const M &map) { return StdArrayDefaultArrayAdapt<T, D, M>(array, size, rDefault, map); }
 
 // * Insertion Adaptor
 // Compile a value before / after another

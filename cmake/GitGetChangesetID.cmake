@@ -42,6 +42,19 @@ function(git_get_changeset_id VAR)
 				OUTPUT_VARIABLE GIT_TIMESTAMP
 				OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
+			if(DEFINED ENV{C4REVISION_BRANCH})
+				set(GIT_BRANCH "$ENV{C4REVISION_BRANCH}")
+			else()
+				execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+					COMMAND "${GIT_EXECUTABLE}" "symbolic-ref" "--short" "HEAD"
+					RESULT_VARIABLE GIT_RESULT
+					OUTPUT_VARIABLE GIT_BRANCH
+					OUTPUT_STRIP_TRAILING_WHITESPACE
+				)
+				if(NOT GIT_RESULT EQUAL 0)
+					set(GIT_BRANCH "unknown")
+				endif()
+			endif()
 		endif()
 	endif()
 	if (NOT C4REVISION)
@@ -64,6 +77,7 @@ function(git_get_changeset_id VAR)
 			REGEX "date: .+"
 		)
 		string(SUBSTRING "${C4REVISION_TS}" 6 -1 GIT_TIMESTAMP)
+		set(GIT_BRANCH "unknown")
 	endif()
 	if(WORKDIR_DIRTY)
 		set(WORKDIR_DIRTY 1)
@@ -71,4 +85,5 @@ function(git_get_changeset_id VAR)
 	set(${VAR} "${C4REVISION}" PARENT_SCOPE)
 	set(${VAR}_DIRTY ${WORKDIR_DIRTY} PARENT_SCOPE)
 	set(${VAR}_TS "${GIT_TIMESTAMP}" PARENT_SCOPE)
+	set(${VAR}_BRANCH "${GIT_BRANCH}" PARENT_SCOPE)
 endfunction()

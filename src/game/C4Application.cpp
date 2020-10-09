@@ -39,6 +39,7 @@
 #include "network/C4Network2.h"
 #include "network/C4Network2IRC.h"
 #include "platform/C4GamePadCon.h"
+#include "C4Licenses.h"
 
 #include <getopt.h>
 
@@ -250,6 +251,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 
 			{"debug-opengl", no_argument, &Config.Graphics.DebugOpenGL, 1},
 			{"config", required_argument, nullptr, 0},
+			{"show-licenses", no_argument, nullptr, 0},
 			{nullptr, 0, nullptr, 0}
 		};
 		int option_index = 0;
@@ -271,6 +273,14 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{
 				Game.NetworkActive = true;
 				Config.Network.MasterServerSignUp = true;
+			}
+			// Legal stuff
+			if (SEqualNoCase(long_options[option_index].name, "show-licenses"))
+			{
+				std::string sep{"\n=================================\n"};
+				for (const auto& license : OCLicenses)
+					Log((sep + license.path + ": " + license.name + sep + license.content + "\n").c_str());
+				Quit();
 			}
 			// Config: Already handled earlier.
 			break;
@@ -316,7 +326,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		case 'n': Game.NetworkActive = true; break;
 		case 'N': Game.NetworkActive = false; break;
 		// Language override by parameter
-		case 'L': SCopy(optarg, Config.General.LanguageEx, CFG_MaxString);
+		case 'L': SCopy(optarg, Config.General.LanguageEx, CFG_MaxString); break;
 		// port overrides
 		case 't': Config.Network.PortTCP = atoi(optarg); break;
 		case 'u': Config.Network.PortUDP = atoi(optarg); break;
@@ -428,15 +438,30 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			Game.RecordStream.Copy(szParameter);
 		}
 		// Direct join by URL
-		if (SEqual2NoCase(szParameter, "clonk:"))
+		if (SEqual2NoCase(szParameter, "clonk:") || SEqual2NoCase(szParameter, "openclonk:"))
 		{
 			// Store address
-			SCopy(szParameter + 6, Game.DirectJoinAddress, _MAX_PATH);
+			SCopy(SAdvancePast(szParameter, ':'), Game.DirectJoinAddress, _MAX_PATH);
 			SClearFrontBack(Game.DirectJoinAddress, '/');
 			// Special case: if the target address is "update" then this is used for update initiation by url
 			if (SEqualNoCase(Game.DirectJoinAddress, "update"))
 			{
 				Application.CheckForUpdates = true;
+				Game.DirectJoinAddress[0] = 0;
+				continue;
+			}
+			// Special case: start the mod dialog and initiate installation of a mod.
+			const char* install_mod_command = "installmod";
+			const auto install_mod_command_length = strlen(install_mod_command);
+			if (SEqualNoCase(Game.DirectJoinAddress, install_mod_command, install_mod_command_length))
+			{
+				// Advance the string to the parameter after the command.
+				const char *id = Game.DirectJoinAddress + install_mod_command_length;
+				if (SLen(id) > 1)
+				{
+					++id; // Remove slash.
+					C4Startup::SetStartScreen("mods", id);
+				}
 				Game.DirectJoinAddress[0] = 0;
 				continue;
 			}
@@ -617,7 +642,7 @@ void C4Application::Quit()
 	// Participants should not be cleared for usual startup dialog
 
 	// Save config if there was no loading error
-	if (Config.fConfigLoaded) Config.Save();
+	if (Config.ConfigLoaded) Config.Save();
 	// make sure startup data is unloaded
 	C4Startup::Unload();
 	// fonts are loaded at start and never unloaded

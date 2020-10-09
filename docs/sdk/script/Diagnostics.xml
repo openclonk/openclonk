@@ -171,6 +171,25 @@ func f() {
         </col>
       </row>
       <row>
+        <col>variable_out_of_scope</col>
+        <col>
+          <text>
+            A variable has been used outside of the block it has been
+            declared in. This is accepted only for backwards compatibility
+            and may be removed in a future release.
+          </text>
+          <part>
+            <code>func f(a) {
+&#9;i = 0;
+&#9;if (a) {
+&#9;&#9;var i = 1;
+&#9;}
+&#9;return i;
+}</code>
+          </part>
+        </col>
+      </row>
+      <row>
         <col>undeclared_varargs</col>
         <col>
           <text>
@@ -227,6 +246,24 @@ func g(a, ...) {
           <part>
             <code>if (true);</code>
           </part>
+        </col>
+      </row>
+      <row>
+        <col>suspicious_assignment</col>
+        <col>
+          <text>
+            An assignment was found where an expression was expected. While
+            an assignment returns its own value, usually a comparison was
+            intended instead.
+          </text>
+          <part>
+            <code>if (a = b + 1) { /* Do something */}</code>
+          </part>
+          <text>
+            If the assignment is intentional, make this more obvious by
+            extracting it to a separate statement, or explicitly handle the
+            boolean conversion by adding a comparison operator.
+          </text>
         </col>
       </row>
     </table>

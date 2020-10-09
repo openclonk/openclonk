@@ -140,7 +140,7 @@ public func SetIndexedCP(object cp, int index)
 	if (cp->GetCPMode() & PARKOUR_CP_Finish)
 	{
 		cp_count = index;
-		SetLength(cp_list, cp_count+1);
+		SetLength(cp_list, cp_count + 1);
 	}
 	UpdateScoreboardTitle();
 	return true;
@@ -517,10 +517,11 @@ static const SBRD_BestTime = 1;
 
 private func UpdateScoreboardTitle()
 {
+	var caption;
 	if (cp_count > 0)
-		var caption = Format("$MsgCaptionX$", cp_count);
+		caption = Format("$MsgCaptionX$", cp_count);
 	else
-		var caption = "$MsgCaptionNone$";
+		caption = "$MsgCaptionNone$";
 	return Scoreboard->SetTitle(caption);
 }
 
@@ -581,7 +582,7 @@ protected func FxIntDirNextCPTimer(object target, effect fx)
 	var green = BoundBy(510 - dist, 0, 255);
 	var blue = 0;
 	// Arrow is colored a little different for the finish.
-	if (cp->GetCPMode() & PARKOUR_CP_Finish)
+	if (nextcp->GetCPMode() & PARKOUR_CP_Finish)
 		blue = 128;
 	var color = RGBa(red, green, blue, 128);
 	// Draw arrow.
@@ -722,9 +723,9 @@ private func AddEvalData(int plr)
 
 local on_checkpoint_cleared, on_checkpoint_first_cleared, on_respawn;
 
-public func SetOnCheckpointCleared(v) { on_checkpoint_cleared=v; return true; }
-public func SetOnCheckpointFirstCleared(v) { on_checkpoint_first_cleared=v; return true; }
-public func SetOnRespawn(v) { on_respawn=v; return true; }
+public func SetOnCheckpointCleared(v) { on_checkpoint_cleared = v; return true; }
+public func SetOnCheckpointFirstCleared(v) { on_checkpoint_first_cleared = v; return true; }
+public func SetOnRespawn(v) { on_respawn = v; return true; }
 
 public func Definition(def)
 {

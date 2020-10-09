@@ -1,0 +1,2 @@
+Name=Chippy Flint
+Description=Spawns chippies.

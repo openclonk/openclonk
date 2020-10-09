@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetFunctionName</title>
+    <category>Script</category>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>func</type>
+          <name>call</name>
+          <desc>This is the function that provides its name.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Gets the plain name of a function, without the context information.</desc>
+    <examples>
+      <example>
+        <code>
+  <funclink>Format</funclink>("%v", Rock.Hit) // Returns "Rock.Hit"
+  <funclink>GetFunctionName(Rock.Hit)</funclink> // Returns "Hit"
+  
+  // Log all functions from an object or definition
+  for (var property in <funclink>GetProperties</funclink>())
+  {
+    if (<funclink>GetType</funclink>(property) == C4V_Function)
+    {
+       Log("%v defines the function: %s", this, GetFunctionName(property))
+    }
+  }
+        </code>
+      </example>
+    </examples>
+  </func>
+  <author>Marky</author><date>2019-04</date>
+</funcs>

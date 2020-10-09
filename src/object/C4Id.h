@@ -34,13 +34,10 @@ private:
 	static NamesList names;
 	void assign(const std::string &s);
 	template<size_t N>
-	explicit C4ID(const char (&s)[N]) { assign(s); }
+	explicit C4ID(const char (&s)[N]) { assign(s); } // @suppress("Class members should be properly initialized"): The call to assign() initializes 'v'
 public:
 	static const C4ID None; // Invalid ID
-		DEPRECATED static const C4ID Flag;
-	DEPRECATED static const C4ID Conkit; // Construction kit
 	static const C4ID Clonk;
-	static const C4ID Melee;
 	static const C4ID Bubble;
 	static const C4ID EditorBase;
 
@@ -76,8 +73,8 @@ public:
 	// Compare names instead of v directly so that a sequence of IDs is synchronous
 	inline bool operator ==(const C4ID &other) const { return names[v] == names[other.v]; }
 	inline bool operator !=(const C4ID &other) const { return names[v] != names[other.v]; }
-	inline bool operator <(const C4ID &other) const { return names[v] < names[other.v]; }
-	inline bool operator >(const C4ID &other) const { return names[v] > names[other.v]; }
+	inline bool operator <(const C4ID &other)  const { return names[v] < names[other.v];  }
+	inline bool operator >(const C4ID &other)  const { return names[v] > names[other.v];  }
 	inline bool operator <=(const C4ID &other) const { return names[v] <= names[other.v]; }
 	inline bool operator >=(const C4ID &other) const { return names[v] >= names[other.v]; }
 

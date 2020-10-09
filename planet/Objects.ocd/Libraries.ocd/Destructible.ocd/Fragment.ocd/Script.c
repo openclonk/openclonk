@@ -12,7 +12,7 @@ public func Initialize()
 {
 	// Set graphics to a random fragment.
 	var graphic = Random(4);
-	if(graphic)
+	if (graphic)
 		SetGraphics(Format("%d",graphic));
 	// Set initial alpha to zero.
 	alpha = 0;

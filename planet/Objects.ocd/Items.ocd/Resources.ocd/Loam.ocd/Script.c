@@ -64,7 +64,7 @@ func FxIntBridgeStart(object clonk, effect fx, int temp, int x, int y)
 		Size = PV_KeyFrames(0, 0, 1, 100, 3, 1000, 2),
 	};
 	// Let the player know the clonk is about to do stuff
-	clonk->PlayAnimation("Dig", CLONK_ANIM_SLOT_Movement, Anim_Linear(0,0, clonk->GetAnimationLength("Dig"), 35, ANIM_Loop), Anim_Const(1000));
+	clonk->PlayAnimation("Dig", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, clonk->GetAnimationLength("Dig"), 35, ANIM_Loop), Anim_Const(1000));
 	return FX_OK;
 }
 
@@ -99,7 +99,7 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 	var line_len = speed * dt / 100;
 	var last_x = fx.LastX;
 	var last_y = fx.LastY;
-	var dx = x-last_x, dy=y-last_y;
+	var dx = x-last_x, dy = y-last_y;
 	var d = Distance(dx, dy);
 	// Quantize angle as a multiple of 30 degrees.
 	var quant = 30;
@@ -111,7 +111,7 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 	// Don't use up loam if the mouse position is reached...
 	// wait for the mouse being moved and then continue bridging
 	// into that direction
-	if(d <= 1) return FX_OK;
+	if (d <= 1) return FX_OK;
 
 	// Calculate offset edges of rectangle (which are meant to be added to a side's midpoint).
 	var off_x = Sin(angle + 90, line_wdt);

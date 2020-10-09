@@ -54,7 +54,7 @@ public func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 		var search_dir = 1;
 		if (look_up) search_dir = -1;
 		var x = 0, y = 0;
-		while (!(!GBackSolid(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
+		while (!(!GBackSolid(x, y + half_y) && GBackSolid(x, y + half_y + 1)))
 		{
 			y += search_dir;
 			if (Abs(y) > half_y)
@@ -68,8 +68,8 @@ public func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 			return AdjustPreview(below_surface, !look_up, true);
 		if (blocked)
 		{
-			if (extra_overlay) SetClrModulation(RGBa(255,50,50, 100), GFX_PreviewerPictureOverlay);
-			return SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
+			if (extra_overlay) SetClrModulation(RGBa(255, 50, 50, 100), GFX_PreviewerPictureOverlay);
+			return SetClrModulation(RGBa(255, 50, 50, 100), GFX_StructureOverlay);
 		}
 		// Position depends on whether the object should below surface.
 		if (!below_surface)
@@ -87,23 +87,23 @@ public func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 			blocked = true;
 	}
 	
-	if(!blocked)
+	if (!blocked)
 	{
 		if (!stick_to)
 		{
-			if (extra_overlay) SetClrModulation(RGBa(50,255,50, 100), GFX_PreviewerPictureOverlay);
-			SetClrModulation(RGBa(50,255,50, 100), GFX_StructureOverlay);
+			if (extra_overlay) SetClrModulation(RGBa(50, 255, 50, 100), GFX_PreviewerPictureOverlay);
+			SetClrModulation(RGBa(50, 255, 50, 100), GFX_StructureOverlay);
 		}
 		else
 		{
-			if (extra_overlay) SetClrModulation(RGBa(255,255,50, 200), GFX_PreviewerPictureOverlay);
-			SetClrModulation(RGBa(255,255,50, 200), GFX_StructureOverlay);
+			if (extra_overlay) SetClrModulation(RGBa(255, 255, 50, 200), GFX_PreviewerPictureOverlay);
+			SetClrModulation(RGBa(255, 255, 50, 200), GFX_StructureOverlay);
 		}
 	}
 	else
 	{
-		if (extra_overlay) SetClrModulation(RGBa(255,50,50, 100), GFX_PreviewerPictureOverlay);
-		SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
+		if (extra_overlay) SetClrModulation(RGBa(255, 50, 50, 100), GFX_PreviewerPictureOverlay);
+		SetClrModulation(RGBa(255, 50, 50, 100), GFX_StructureOverlay);
 	}
 }
 
@@ -117,6 +117,9 @@ func Reposition(int x, int y)
 	y = BoundBy(y, -dimension_y - clonk_height/2, dimension_y + clonk_height/2);
 	// Try to combine the structure with other structures.
 	var found = false;
+	// Hopefully, in the end this contains a single sticking direction.
+	var single_stick_to = 0;
+
 	if (structure->~ConstructionCombineWith())
 	{
 		// There is no use in doing all the other checks if no sticking direction is defined at all
@@ -149,12 +152,9 @@ func Reposition(int x, int y)
 				//  __________________________
 				// |       |   Top   |       |
 				// | Left  |----*----| Right |
-				// |_______|_Bottom__|_______|
+				// |_______ | _Bottom__ | _______|
 				//
 				// Whichever part is howered on is checked first for stick direction
-
-				// Hopefully, in the end this contains a single sticking direction.
-				var single_stick_to = 0;
 
 				// Left
 				if (other_offset_x < other_width / -6)
@@ -302,10 +302,10 @@ func Flip()
 	if (direction == DIR_Left)
 	{
 		direction = DIR_Right;
-		SetObjDrawTransform(-1000,0,0, 0,1000,0, GFX_StructureOverlay);
+		SetObjDrawTransform(-1000, 0, 0, 0, 1000, 0, GFX_StructureOverlay);
 	} else {
 		direction = DIR_Left;
-		SetObjDrawTransform(1000,0,0, 0,1000,0, GFX_StructureOverlay);
+		SetObjDrawTransform(1000, 0, 0, 0, 1000, 0, GFX_StructureOverlay);
 	}
 	if (extra_overlay)
 			structure->~ConstructionPreview(this, GFX_PreviewerPictureOverlay, direction);

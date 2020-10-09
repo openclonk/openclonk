@@ -126,13 +126,13 @@ global func Loc_Liquid() { return [LOC_LIQUID]; }
 global func Loc_Wall(int direction, wall_condition1, ...)
 {
 	var x = 0, y = 0;
-	if(direction & CNAT_Left) x = -1;
+	if (direction & CNAT_Left) x = -1;
 	else
-	if(direction & CNAT_Right) x = 1;
+	if (direction & CNAT_Right) x = 1;
 	
-	if(direction & CNAT_Top) y = -1;
+	if (direction & CNAT_Top) y = -1;
 	else
-	if(direction & CNAT_Bottom) y = 1;
+	if (direction & CNAT_Bottom) y = 1;
 	
 	var both_left_right = !!((direction & CNAT_Left) && (direction & CNAT_Right));
 	var both_top_bottom = !!((direction & CNAT_Top) && (direction & CNAT_Bottom));
@@ -317,13 +317,13 @@ global func FindLocationConditionCheckIsValid(flag, x, y)
 	{
 		var dist = flag[1], dirs = flag[2];
 		// if only one direction is given in one dimension, the other dimension is tested from a center point halfway off in that dimension
-		var cy = y + dist * ((dirs&CNAT_Bottom)/CNAT_Bottom - (dirs&CNAT_Top)/CNAT_Top) / 2;
-		var cx = x + dist * ((dirs&CNAT_Right)/CNAT_Right - (dirs&CNAT_Left)/CNAT_Left) / 2;
+		var cy = y + dist * ((dirs & CNAT_Bottom)/CNAT_Bottom - (dirs & CNAT_Top)/CNAT_Top) / 2;
+		var cx = x + dist * ((dirs & CNAT_Right)/CNAT_Right - (dirs & CNAT_Left)/CNAT_Left) / 2;
 		// check all desired directions
-		if (dirs & CNAT_Top) if (!PathFree(cx,y,cx,y-dist)) return false;
-		if (dirs & CNAT_Bottom) if (!PathFree(cx,y,cx,y+dist)) return false;
-		if (dirs & CNAT_Left) if (!PathFree(x,cy,x-dist,cy)) return false;
-		if (dirs & CNAT_Right) if (!PathFree(x,cy,x+dist,cy)) return false;
+		if (dirs & CNAT_Top) if (!PathFree(cx, y, cx, y-dist)) return false;
+		if (dirs & CNAT_Bottom) if (!PathFree(cx, y, cx, y + dist)) return false;
+		if (dirs & CNAT_Left) if (!PathFree(x, cy, x-dist, cy)) return false;
+		if (dirs & CNAT_Right) if (!PathFree(x, cy, x + dist, cy)) return false;
 		return true;
 	}
 	

@@ -6,7 +6,7 @@
   <func>
     <title>Trans_Identity</title>
     <category>Arithmetics</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>array</rtype></syntax>
     <desc>Returns a 3x4 identity matrix. It can be used as a transformation for <funclink>AttachMesh</funclink> or for the "PictureTransformation" or "MeshTransformation" properties (see <emlink href="definition/meshes.html#Picture">Meshes</emlink>).</desc>
     <examples>

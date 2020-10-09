@@ -362,7 +362,7 @@ void C4ConsoleQtNewScenarioDlg::AddScenarioTemplate(C4Group &parent, const char 
 	auto c4s_defs = template_c4s.Definitions.GetModulesAsList();
 	for (const char *c4s_def : c4s_defs)
 	{
-		char c4s_def_component[_MAX_PATH + 1];
+		char c4s_def_component[_MAX_PATH_LEN];
 		int32_t i = 0;
 		bool is_extra_def = false;
 		while (SCopySegment(c4s_def, i++, c4s_def_component, '\\', _MAX_PATH))

@@ -54,17 +54,17 @@ public func IsInventorProduct() { return true; }
 
 public func Definition(def)
 {
-	var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
+	var spawn_editor_props = { Type="proplist", Name = def->GetName(), EditorProps= {
 		Rider = new EnemySpawn->GetAICreatureEditorProps(nil, "$NoRiderHelp$") { Name="$Rider$", EditorHelp="$RiderHelp$" },
 	} };
 	var spawn_default_values = {
 		Rider = nil,
 	};
 	EnemySpawn->AddEnemyDef("Balloon",
-			{ SpawnType=Balloon,
-				SpawnFunction=def.SpawnBalloon,
-				OffsetAttackPathByPos=true,
-				GetInfoString=def.GetSpawnInfoString },
+			{ SpawnType = Balloon,
+				SpawnFunction = def.SpawnBalloon,
+				OffsetAttackPathByPos = true,
+				GetInfoString = def.GetSpawnInfoString },
 		spawn_default_values,
 		spawn_editor_props);
 }

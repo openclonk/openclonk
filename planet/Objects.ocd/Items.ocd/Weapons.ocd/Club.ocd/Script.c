@@ -1,5 +1,6 @@
 /**
 	Club
+	
 	Simple striking weapon.
 */
 
@@ -24,18 +25,18 @@ func Hit()
 
 func ClubChangeHandAnims(string hand)
 {
-	if(hand == "R")
+	if (hand == "R")
 	{
 	//Changes which (R/L) animation is used
 		animation_set = {
 		AimMode         = AIM_Weight,
 		AnimationAim    = Format("BatAimArms.R",hand),
 		AnimationAim2   = Format("BatAim2Arms.R",hand),
-		AimTime         = 35*3,
+		AimTime         = 35 * 3,
 		AnimationShoot  = Format("BatStrikeArms.R",hand),
 		AnimationShoot2 = Format("BatStrike2Arms.R",hand),
-		ShootTime       = 35/2,
-		ShootTime2      = (35/2)*6/19, // At 6/19 of the shooting animation
+		ShootTime       = 35 / 2,
+		ShootTime2      = (35 / 2) * 6 / 19, // At 6/19 of the shooting animation
 	};
 	}
 	else
@@ -45,11 +46,11 @@ func ClubChangeHandAnims(string hand)
 		AimMode         = AIM_Weight,
 		AnimationAim    = "BatAimArms.L",
 		AnimationAim2   = "BatAim2Arms.L",
-		AimTime         = 35*3,
+		AimTime         = 35 * 3,
 		AnimationShoot  = "BatStrikeArms.L",
 		AnimationShoot2 = "BatStrike2Arms.L",
-		ShootTime       = 35/2,
-		ShootTime2      = (35/2)*6/19, // At 6/19 of the shooting animation
+		ShootTime       = 35 / 2,
+		ShootTime2      = (35 / 2)* 6 / 19, // At 6/19 of the shooting animation
 	};
 	}
 }
@@ -92,7 +93,7 @@ public func RejectUse(object clonk)
 
 public func ControlUseStart(object clonk, int x, int y)
 {
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
+	if (clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 		ClubChangeHandAnims("R");
 	else
 		ClubChangeHandAnims("L");
@@ -105,8 +106,8 @@ public func ControlUseStart(object clonk, int x, int y)
 
 public func ControlUseHolding(object clonk, ix, iy)
 {
-	var angle = Angle(0,0,ix,iy);
-	angle = Normalize(angle,-180);
+	var angle = Angle(0, 0, ix, iy);
+	angle = Normalize(angle, -180);
 
 	clonk->SetAimPosition(angle);
 
@@ -132,20 +133,20 @@ public func Reset(clonk)
 
 func FxDuringClubShootControlStart(target, effect, temp, p1)
 {
-	if(temp) return;
-	effect.angle=p1;
+	if (temp) return;
+	effect.angle = p1;
 }
 
 func FxDuringClubShootControlStop(target, effect, reason, temp)
 {
-	if(temp) return;
+	if (temp) return;
 	AddEffect("AfterClubShootControl", target, 1, 15, this);
 }
 
 func FxDuringClubShootControlTimer(target, effect, effect_time)
 {
-	if(effect_time > 16) return -1;
-	if(!this) return -1;
+	if (effect_time > 16) return -1;
+	if (!this) return -1;
 	this->DoStrike(target, effect.angle);
 }
 
@@ -153,8 +154,8 @@ func FxDuringClubShootControlTimer(target, effect, effect_time)
 func FxDuringClubShootControlQueryCatchBlow(object target, effect, object obj)
 {
 	this->DoStrike(target, effect.angle);
-	var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
-	if(GetEffect(en, obj)) return true;
+	var en = Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
+	if (GetEffect(en, obj)) return true;
 	return false;
 }
 
@@ -165,8 +166,8 @@ func FxAfterClubShootControlTimer()
 
 func FxAfterClubShootControlQueryCatchBlow(object target, effect, object obj)
 {
-	var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
-	if(GetEffect(en, obj)) return true;
+	var en = Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
+	if (GetEffect(en, obj)) return true;
 	return false;
 }
 
@@ -176,10 +177,9 @@ func DoStrike(clonk, angle)
 	var x = Sin(angle, 7);
 	var y = -Cos(angle, 7);
 	var found = false;
-	for (var obj in FindObjects(Find_Distance(15, 0, 0), Find_Or(Find_OCF(OCF_Alive), Find_Category(C4D_Object), Find_Category(C4D_Vehicle)), Find_Exclude(clonk), Find_NoContainer(), Find_Layer(GetObjectLayer()), Sort_Distance()))
+	var already_hit_effect_name = Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
+	for (var obj in FindObjects(Find_Distance(15, 0, 0), Find_Exclude(clonk), Find_NoContainer(), Find_Layer(GetObjectLayer()), Sort_Distance()))
 	{
-		if (obj->Stuck()) continue;
-		
 		// don't hit objects behind the Clonk
 		if (x < 0)
 		{
@@ -187,23 +187,19 @@ func DoStrike(clonk, angle)
 		}
 		else if (obj->GetX() < GetX()) continue;
 		
-		// vehicles are only hit if they are pseudo vehicles. Bad system - has to be changed in the future
-		if (obj->GetCategory() & C4D_Vehicle)
-			if (!GetEffect("HitCheck", obj)) continue;
+		if (GetEffect(already_hit_effect_name, obj)) continue;
 		
-		var en = Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
-		if (GetEffect(en, obj)) continue;
-		
-		if (obj->GetOCF() & OCF_Alive)
+		if (obj->~IsProjectileTarget(this, Contained()))
 		{
 			var damage = ClubDamage();
 			ApplyWeaponBash(obj, 400, angle, clonk);
-			obj->DoEnergy(-damage, true, FX_Call_EngGetPunched, clonk->GetOwner());
+			WeaponDamage(obj, damage, FX_Call_EngGetPunched, true);
 		}
-		else
+		else if (obj->GetCategory() & C4D_Object)
 		{
+			if (obj->Stuck()) continue;
 			var div = ClubVelocityPrecision();
-			if(obj->GetContact(-1)) div*=10;
+			if (obj->GetContact(-1)) div*=10;
 			
 			// the better you hit, the more power you have
 			var precision = BoundBy(Distance(obj->GetX(), obj->GetY(), GetX() + x, GetY() + y), 1, 15);
@@ -218,8 +214,13 @@ func DoStrike(clonk, angle)
 			obj->SetYDir((obj->GetYDir(100) - Cos(angle, speed)) / 2, div);
 			obj->SetController(clonk->GetController());
 		}
-		AddEffect(en, obj, 1, 15, nil);
-		found=true;
+		else
+		{
+			continue;
+		}
+		
+		AddEffect(already_hit_effect_name, obj, 1, 15, nil);
+		found = true;
 		break;
 	}
 	
@@ -232,7 +233,7 @@ func DoStrike(clonk, angle)
 
 func ClubDamage()
 {
-	return 5*1000;
+	return 5 * 1000;
 }
 
 func ClubVelocityPrecision()
@@ -257,9 +258,9 @@ public func GetCarryMode(object clonk, bool idle, bool nohand)
 
 public func GetCarrySpecial(clonk)
 {
-	if(fAiming)
+	if (fAiming)
 	{
-		if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+		if (clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 			return "pos_hand1";
 		else
 			return "pos_hand2";
@@ -276,7 +277,7 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand)
 
 func Definition(def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Translate(-4500, -2000, 2000), Trans_Rotate(45,0,0,1));
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-4500, -2000, 2000), Trans_Rotate(45, 0, 0, 1));
 }
 
 /*-- Properties --*/
