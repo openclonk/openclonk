@@ -64,7 +64,9 @@ bool C4HTTPClient::Execute(int iMaxTime, pollfd *readyfd)
 	// event, so we have to check manually.
 	if (WaitForSingleObject(Event, 0) == WAIT_OBJECT_0)
 	{
-		for (const auto& kv : sockets)
+		// sockets might be modified during the call to curl_multi_socket_action() below.
+		auto sockets_tmp = sockets;
+		for (const auto& kv : sockets_tmp)
 		{
 			auto socket = kv.first;
 			WSANETWORKEVENTS NetworkEvents;
