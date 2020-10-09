@@ -19,6 +19,9 @@
 
 #include <regex>
 
+// Enable to have curl print out all HTTP requests and responses to the console.
+//#define C4HTTP_DEBUG
+
 #define CURL_STRICTER
 #include <curl/curl.h>
 
@@ -168,7 +171,9 @@ bool C4HTTPClient::Query(const StdBuf &Data, bool fBinary)
 	// Create request
 	CURL *curl = curl_easy_init();
 	if (!curl) return false;
+#ifdef C4HTTP_DEBUG
 	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+#endif
 	curl_easy_setopt(curl, CURLOPT_URL, URL.getData());
 	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, C4ENGINENAME "/" C4VERSION );
