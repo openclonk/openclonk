@@ -909,14 +909,14 @@ static bool FnGetAlive(C4Object *Obj)
 	return Obj->GetAlive();
 }
 
-static long FnGetOwner(C4Object *Obj)
+static C4PropList *FnGetOwner(C4Object *Obj)
 {
-	return Obj->Owner;
+	return ::Players.Get(Obj->Owner);
 }
 
-static long FnGetController(C4Object *Obj)
+static C4PropList *FnGetController(C4Object *Obj)
 {
-	return Obj->Controller;
+	return ::Players.Get(Obj->Controller);
 }
 
 static bool FnSetController(C4Object *Obj, long iNewController)
@@ -931,9 +931,9 @@ static bool FnSetController(C4Object *Obj, long iNewController)
 	return true;
 }
 
-static long FnGetKiller(C4Object *Obj)
+static C4PropList *FnGetKiller(C4Object *Obj)
 {
-	return Obj->LastEnergyLossCausePlayer;
+	return ::Players.Get(Obj->LastEnergyLossCausePlayer);
 }
 
 static bool FnSetKiller(C4Object *Obj, long iNewKiller)
