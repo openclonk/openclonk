@@ -18,6 +18,8 @@
 #include "C4Include.h"
 #include "gui/C4StartupModsDlg.h"
 
+#include "C4Version.h"
+#include "lib/SHA1.h"
 #include "game/C4Application.h"
 #include "gui/C4UpdateDlg.h"
 #include "game/C4Game.h"
