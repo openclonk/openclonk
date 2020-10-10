@@ -181,12 +181,12 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *compiler)
 	compiler->Value(mkNamingAdapt(MasterReferencePeriod,   "MasterReferencePeriod",120           ));
 	compiler->Value(mkNamingAdapt(LeagueServerSignUp,      "LeagueServerSignUp",   0             ));
 	compiler->Value(mkNamingAdapt(UseAlternateServer,      "UseAlternateServer",   0             ));
-	compiler->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "league.openclonk.org:80/league.php"));
+	compiler->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "https://league.openclonk.org/league.php"));
 	compiler->Value(mkNamingAdapt(UseAlternateModDatabaseServer, "UseAlternateModDatabaseServer", 0));
-	compiler->Value(mkNamingAdapt(s(AlternateModDatabaseServerAddress), "AlternateModDatabaseServerAddress", "mods.openclonk.org/api/"));
+	compiler->Value(mkNamingAdapt(s(AlternateModDatabaseServerAddress), "AlternateModDatabaseServerAddress", "https://mods.openclonk.org/api/"));
 	compiler->Value(mkNamingAdapt(s(LastPassword),         "LastPassword",         "Wipf"        ));
 #ifdef WITH_AUTOMATIC_UPDATE
-	compiler->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "www.openclonk.org:80/update/"));
+	compiler->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "https://www.openclonk.org/update/"));
 	compiler->Value(mkNamingAdapt(AutomaticUpdate,         "AutomaticUpdate",      0             ,false, true));
 	compiler->Value(mkNamingAdapt(LastUpdateTime,          "LastUpdateTime",       0             ));
 #endif
@@ -668,7 +668,7 @@ const char* C4ConfigNetwork::GetLeagueServerAddress()
 	// Standard (hardcoded) official league server
 	else
 	{
-		return "league.openclonk.org:80/league.php";
+		return "https://league.openclonk.org/league.php";
 	}
 }
 
@@ -679,7 +679,7 @@ const char* C4ConfigNetwork::GetModDatabaseServerAddress()
 		return AlternateModDatabaseServerAddress;
 	// Standard (hardcoded) official mod database server
 	else
-		return "mods.openclonk.org/api/";
+		return "https://mods.openclonk.org/api/";
 }
 
 void C4ConfigNetwork::CheckPortsForCollisions()

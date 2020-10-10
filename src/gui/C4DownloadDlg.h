@@ -20,13 +20,13 @@
 #define INC_C4DownloadDlg
 
 #include "gui/C4Gui.h"
-#include "network/C4Network2Reference.h" // includes HTTP client
+#include "network/C4HTTP.h"
 
 // dialog to download a file
 class C4DownloadDlg : public C4GUI::Dialog
 {
 private:
-	C4Network2HTTPClient HTTPClient;
+	C4HTTPClient HTTPClient;
 
 	C4GUI::Icon *pIcon;
 	C4GUI::Label *pStatusLabel;

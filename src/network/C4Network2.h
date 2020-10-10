@@ -190,7 +190,7 @@ protected:
 	StdBuf StreamingBuf;
 	z_stream StreamCompressor;
 
-	class C4Network2HTTPClient *pStreamer;
+	class C4HTTPClient *pStreamer;
 	unsigned int iCurrentStreamAmount, iCurrentStreamPosition;
 
 	// puncher

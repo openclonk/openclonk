@@ -18,11 +18,14 @@
 #include "C4Include.h"
 #include "gui/C4StartupModsDlg.h"
 
+#include "C4Version.h"
+#include "lib/SHA1.h"
 #include "game/C4Application.h"
 #include "gui/C4UpdateDlg.h"
 #include "game/C4Game.h"
 #include "graphics/C4GraphicsResource.h"
 #include "graphics/C4Draw.h"
+#include "network/C4HTTP.h"
 
 #include <tinyxml.h>
 
@@ -654,14 +657,14 @@ void C4StartupModsDownloader::ModInfo::CheckProgress()
 
 	if (postClient.get() == nullptr) // Start new file?
 	{
-		postClient = std::make_unique<C4Network2HTTPClient>();
+		postClient = std::make_unique<C4HTTPClient>();
 
 		if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::GetBaseServerURL() + "files/" + files.back().handle).c_str()))
 		{
 			assert(false);
 			return;
 		}
-		postClient->SetExpectedResponseType(C4Network2HTTPClient::ResponseType::NoPreference);
+		postClient->SetExpectedResponseType(C4HTTPClient::ResponseType::NoPreference);
 
 		// Do the actual request.
 		postClient->SetNotify(&Application.InteractiveThread);
@@ -831,7 +834,7 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 			progressMessage.Format(LoadResStr("IDS_MODS_INSTALL_UPDATEMETADATA_FOR"), mod->name.c_str());
 			progressDialog->SetMessage(progressMessage.getData());
 
-			postMetadataClient = std::make_unique<C4Network2HTTPClient>();
+			postMetadataClient = std::make_unique<C4HTTPClient>();
 
 			if (!postMetadataClient->Init() || !postMetadataClient->SetServer((C4StartupModsDlg::GetBaseServerURL() + "uploads/" + mod->modID).c_str()))
 			{
@@ -839,7 +842,7 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 				postMetadataClient.reset();
 				continue;
 			}
-			postMetadataClient->SetExpectedResponseType(C4Network2HTTPClient::ResponseType::XML);
+			postMetadataClient->SetExpectedResponseType(C4HTTPClient::ResponseType::XML);
 			// Do the actual request.
 			Application.InteractiveThread.AddProc(postMetadataClient.get());
 			postMetadataClient->Query(nullptr, false); // Empty query.
@@ -1408,7 +1411,7 @@ void C4StartupModsDlg::QueryModList(bool loadNextPage)
 	// Abort possible running request.
 	CancelRequest();
 	queryWasSuccessful = false;
-	postClient = std::make_unique<C4Network2HTTPClient>();
+	postClient = std::make_unique<C4HTTPClient>();
 	
 	if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::GetBaseServerURL() + "uploads" + searchQueryPostfix).c_str()))
 	{
@@ -1418,7 +1421,7 @@ void C4StartupModsDlg::QueryModList(bool loadNextPage)
 		queryWasSuccessful = true;
 		return;
 	}
-	postClient->SetExpectedResponseType(C4Network2HTTPClient::ResponseType::XML);
+	postClient->SetExpectedResponseType(C4HTTPClient::ResponseType::XML);
 
 	// Do the actual request.
 	postClient->SetNotify(&Application.InteractiveThread);

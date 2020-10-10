@@ -20,7 +20,6 @@
 
 #include "gui/C4Startup.h"
 #include "network/C4InteractiveThread.h"
-#include "network/C4Network2Reference.h"
 #include "platform/StdSync.h"
 
 #include <functional>
@@ -30,6 +29,7 @@ class TiXmlElement;
 class TiXmlNode;
 class C4StartupModsDlg;
 class C4StartupModsListEntry;
+class C4HTTPClient;
 
 // The data that can be parsed from downloaded/cached XML files.
 struct ModXMLData
@@ -203,7 +203,7 @@ private:
 		size_t totalSuccesfullyDownloadedBytes{ 0 };
 		size_t downloadedBytes{ 0 };
 		size_t totalBytes{ 0 };
-		std::unique_ptr<C4Network2HTTPClient> postClient;
+		std::unique_ptr<C4HTTPClient> postClient;
 		std::string errorMessage;
 		TiXmlNode *originalXMLNode{ nullptr };
 	};
@@ -223,7 +223,7 @@ private:
 	void ExecuteRequestConfirmation();
 
 	void ExecuteMetadataUpdate();
-	std::unique_ptr<C4Network2HTTPClient> postMetadataClient;
+	std::unique_ptr<C4HTTPClient> postMetadataClient;
 	int metadataQueriedForModIdx{ -1 };
 
 	std::function<void(void)> progressCallback;
@@ -392,7 +392,7 @@ private:
 	//void AddReferenceQuery(const char *szAddress, C4StartupNetListEntry::QueryType eQueryType); // add a ref searcher entry and start searching
 
 	// Set during update information retrieval.
-	std::unique_ptr<C4Network2HTTPClient> postClient;
+	std::unique_ptr<C4HTTPClient> postClient;
 	// Set during downloading of a mod.
 	std::unique_ptr<C4StartupModsDownloader> downloader;
 
