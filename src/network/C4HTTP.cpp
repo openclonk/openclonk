@@ -22,9 +22,6 @@
 // Enable to have curl print out all HTTP requests and responses to the console.
 //#define C4HTTP_DEBUG
 
-#define CURL_STRICTER
-#include <curl/curl.h>
-
 // *** C4HTTPClient
 
 C4HTTPClient::C4HTTPClient()

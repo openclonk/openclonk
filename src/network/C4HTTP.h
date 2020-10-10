@@ -20,10 +20,14 @@
 
 #include <map>
 
-const int C4HTTPQueryTimeout = 10; // (s)
+#define CURL_STRICTER
+#include <curl/curl.h>
+// TODO: Replace the include with forward declaration once we stop supporting
+// ancient curl that typedefs these to void
+//typedef struct Curl_multi CURLM;
+//typedef struct Curl_easy CURL;
 
-typedef struct Curl_multi CURLM;
-typedef struct Curl_easy CURL;
+const int C4HTTPQueryTimeout = 10; // (s)
 
 // mini HTTP client
 class C4HTTPClient : public StdSchedulerProc
