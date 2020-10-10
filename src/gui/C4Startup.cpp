@@ -138,6 +138,9 @@ C4Startup::~C4Startup()
 
 C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *szSubDialog)
 {
+#ifdef USE_CONSOLE
+	return nullptr;
+#else
 	// can't go back twice, because dialog is not remembered: Always go back to main in this case
 	if (eToDlg == SDID_Back && (fLastDlgWasBack || !pLastDlg)) eToDlg = SDID_Main;
 	fLastDlgWasBack = false;
@@ -222,6 +225,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 		}
 	}
 	return pToDlg;
+#endif
 }
 
 void C4Startup::DoStartup()

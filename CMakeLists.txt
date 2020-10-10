@@ -611,24 +611,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4Scoreboard.h
 	src/gui/C4ScriptGuiWindow.cpp
 	src/gui/C4ScriptGuiWindow.h
-	src/gui/C4StartupAboutDlg.cpp
-	src/gui/C4StartupAboutDlg.h
-	src/gui/C4StartupLegalDlg.cpp
-	src/gui/C4StartupLegalDlg.h
 	src/gui/C4Startup.cpp
 	src/gui/C4Startup.h
-	src/gui/C4StartupMainDlg.cpp
-	src/gui/C4StartupMainDlg.h
-	src/gui/C4StartupNetDlg.cpp
-	src/gui/C4StartupNetDlg.h
-	src/gui/C4StartupModsDlg.cpp
-	src/gui/C4StartupModsDlg.h
-	src/gui/C4StartupOptionsDlg.cpp
-	src/gui/C4StartupOptionsDlg.h
-	src/gui/C4StartupPlrSelDlg.cpp
-	src/gui/C4StartupPlrSelDlg.h
-	src/gui/C4StartupScenSelDlg.cpp
-	src/gui/C4StartupScenSelDlg.h
 	src/gui/C4UpperBoard.cpp
 	src/gui/C4UpperBoard.h
 	src/landscape/fow/C4FoW.cpp
@@ -803,6 +787,25 @@ set(OC_CLONK_SOURCES
 	src/lib/C4LogBuf.h
 	src/lib/C4Log.cpp
 	src/lib/C4Log.h
+)
+
+set(OC_GUI_SOURCES
+	src/gui/C4StartupAboutDlg.cpp
+	src/gui/C4StartupAboutDlg.h
+	src/gui/C4StartupLegalDlg.cpp
+	src/gui/C4StartupLegalDlg.h
+	src/gui/C4StartupMainDlg.cpp
+	src/gui/C4StartupMainDlg.h
+	src/gui/C4StartupNetDlg.cpp
+	src/gui/C4StartupNetDlg.h
+	src/gui/C4StartupModsDlg.cpp
+	src/gui/C4StartupModsDlg.h
+	src/gui/C4StartupOptionsDlg.cpp
+	src/gui/C4StartupOptionsDlg.h
+	src/gui/C4StartupPlrSelDlg.cpp
+	src/gui/C4StartupPlrSelDlg.h
+	src/gui/C4StartupScenSelDlg.cpp
+	src/gui/C4StartupScenSelDlg.h
 )
 
 if(WITH_QT_EDITOR)
