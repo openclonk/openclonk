@@ -130,6 +130,7 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 	case C4V_Def:      return Type != C4V_Def && Type != C4V_Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Object:   return Type != C4V_Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Effect:   return Type != C4V_Effect && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_Player:   return Type != C4V_Player && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
 	default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
 	}
 }
