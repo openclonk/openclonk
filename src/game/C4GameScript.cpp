@@ -144,9 +144,9 @@ static Nillable<long> FnGetY(C4PropList * _this, long precision)
 	return fixtoi(Object(_this)->fix_y, precision);
 }
 
-long GetValidOwner(C4PropList * _this, Nillable<long> owner)
+long GetValidOwner(C4PropList * _this, C4Player *owner)
 {
-	if (owner.IsNil())
+	if (owner == nullptr)
 	{
 		if (Object(_this))
 		{
@@ -157,7 +157,7 @@ long GetValidOwner(C4PropList * _this, Nillable<long> owner)
 			return NO_OWNER;
 		}
 	}
-	return owner;
+	return owner->Number;
 }
 
 void AssignController(C4PropList * _this, C4Object * obj)
@@ -169,7 +169,7 @@ void AssignController(C4PropList * _this, C4Object * obj)
 	}
 }
 
-static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, long x, long y, Nillable<long> owner)
+static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, long x, long y, C4Player *owner)
 {
 	MakeAbsCoordinates(_this, x, y);
 	long set_owner = GetValidOwner(_this, owner);
@@ -182,7 +182,7 @@ static C4Object *FnCreateObjectAbove(C4PropList * _this, C4PropList * PropList, 
 	return obj;
 }
 
-static C4Object *FnCreateObject(C4PropList * _this, C4PropList * PropList, long x, long y, Nillable<long> owner)
+static C4Object *FnCreateObject(C4PropList * _this, C4PropList * PropList, long x, long y, C4Player *owner)
 {
 	MakeAbsCoordinates(_this, x, y);
 	long set_owner = GetValidOwner(_this, owner);
@@ -197,7 +197,7 @@ static C4Object *FnCreateObject(C4PropList * _this, C4PropList * PropList, long 
 
 
 static C4Object *FnCreateConstruction(C4PropList * _this,
-                                      C4PropList * PropList, long x, long y, Nillable<long> owner,
+                                      C4PropList * PropList, long x, long y, C4Player *owner,
                                       long completion, bool adjust_terrain, bool check_site)
 {
 	// Make sure parameters are valid
