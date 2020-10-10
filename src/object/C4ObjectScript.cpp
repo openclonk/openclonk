@@ -521,10 +521,10 @@ static void FnSetAlive(C4Object *Obj, bool nalv)
 	Obj->SetAlive(nalv);
 }
 
-static bool FnSetOwner(C4Object *Obj, long iOwner)
+static bool FnSetOwner(C4Object *Obj, C4Player *new_owner)
 {
 	// Set owner
-	return !!Obj->SetOwner(iOwner);
+	return !!Obj->SetOwner(new_owner == nullptr ? NO_OWNER : new_owner->Number);
 }
 
 static bool FnSetPhase(C4Object *Obj, long iVal)
@@ -919,15 +919,10 @@ static C4PropList *FnGetController(C4Object *Obj)
 	return ::Players.Get(Obj->Controller);
 }
 
-static bool FnSetController(C4Object *Obj, long iNewController)
+static bool FnSetController(C4Object *Obj, C4Player *new_controller)
 {
-	// validate player
-	if (iNewController != NO_OWNER && !ValidPlr(iNewController))
-	{
-		return false;
-	}
 	// Set controller
-	Obj->Controller = iNewController;
+	Obj->Controller = new_controller == nullptr ? NO_OWNER : new_controller->Number;
 	return true;
 }
 
@@ -936,15 +931,10 @@ static C4PropList *FnGetKiller(C4Object *Obj)
 	return ::Players.Get(Obj->LastEnergyLossCausePlayer);
 }
 
-static bool FnSetKiller(C4Object *Obj, long iNewKiller)
+static bool FnSetKiller(C4Object *Obj, C4Player* new_killer)
 {
-	// Validate player
-	if (iNewKiller != NO_OWNER && !ValidPlr(iNewKiller))
-	{
-		return false;
-	}
 	// Set killer as last energy loss cause
-	Obj->LastEnergyLossCausePlayer = iNewKiller;
+	Obj->LastEnergyLossCausePlayer = new_killer == nullptr ? NO_OWNER : new_killer->Number;
 	return true;
 }
 
