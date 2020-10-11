@@ -6,7 +6,7 @@
   <func>
     <title>GetPlayerVal</title>
     <category>Get*Val</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -22,9 +22,9 @@
           <optional />
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>player</name>
-          <desc>Number of the player of which you want to retrieve an entry.</desc>
+          <desc>Player of which you want to retrieve an entry, player number before 9.0 OC.</desc>
           <optional />
         </param>
         <param>
@@ -54,4 +54,5 @@
     </related>
   </func>
   <author>PeterW</author><date>2002-04</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

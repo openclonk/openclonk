@@ -1633,10 +1633,9 @@ static C4Value FnGetScenarioVal(C4PropList * _this, C4String * strEntry, C4Strin
 			iEntryNr, mkParAdapt(Game.C4S, false));
 }
 
-static C4Value FnGetPlayerVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int player_nr, int iEntryNr)
+static C4Value FnGetPlayerVal(C4PropList * _this, C4String * strEntry, C4String * strSection, C4Player *pPlayer, int iEntryNr)
 {
 	// get player
-	C4Player* pPlayer = ::Players.Get(player_nr);
 	if (!pPlayer) return C4Value();
 
 	// get value
@@ -1648,10 +1647,9 @@ static C4Value FnGetPlayerVal(C4PropList * _this, C4String * strEntry, C4String 
 	return retval;
 }
 
-static C4Value FnGetPlayerInfoCoreVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int player_nr, int iEntryNr)
+static C4Value FnGetPlayerInfoCoreVal(C4PropList * _this, C4String * strEntry, C4String * strSection, C4Player *pPlayer, int iEntryNr)
 {
 	// get player
-	C4Player* pPlayer = ::Players.Get(player_nr);
 	if (!pPlayer) return C4Value();
 
 	// get plr info core
