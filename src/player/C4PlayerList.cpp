@@ -81,13 +81,6 @@ bool C4PlayerList::Valid(int iPlayer) const
 	return false;
 }
 
-bool C4PlayerList::Hostile(int iPlayer1, int iPlayer2) const
-{
-	C4Player *pPlr1 = Get(iPlayer1);
-	C4Player *pPlr2 = Get(iPlayer2);
-	return Hostile(pPlr1, pPlr2);
-}
-
 bool C4PlayerList::Hostile(C4Player *pPlr1, C4Player *pPlr2) const
 {
 	if (!pPlr1 || !pPlr2) return false;
