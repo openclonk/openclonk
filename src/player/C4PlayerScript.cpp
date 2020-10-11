@@ -22,6 +22,7 @@
 #include "player/C4Player.h"
 #include "player/C4PlayerList.h"
 #include "player/C4PlayerScript.h"
+#include "platform/C4GamePadCon.h"
 
 
 static long FnEliminate(C4Player *player, bool remove_direct)
@@ -172,6 +173,22 @@ static C4Object *FnGetViewTarget(C4Player *player)
 	return player->ViewTarget;
 }
 
+// strength: 0-1000, length: milliseconds
+static bool FnPlayRumble(C4Player *player, long strength, long length)
+{
+	// Check parameters.
+	if (!player || strength <= 0 || strength > 1000 || length <= 0)
+	{
+		return false;
+	}
+	// We can't return whether the rumble was actually played.
+	if (player->pGamepad)
+	{
+		player->pGamepad->PlayRumble(strength / 1000.f, length);
+	}
+	return true;
+}
+
 static void FnResetCursorView(C4Player *player, bool immediate_position)
 {
 	player->ResetCursorView(immediate_position);
@@ -306,6 +323,16 @@ static bool FnSetViewTarget(C4Player *player, C4Object *target, bool immediate_p
 	return true;
 }
 
+static bool FnStopRumble(C4Player *player)
+{
+	if (!player) return false;
+	if (player->pGamepad)
+	{
+		player->pGamepad->StopRumble();
+	}
+	return true;
+}
+
 static bool FnSurrender(C4Player *player)
 {
 	if (player->Eliminated)
@@ -336,6 +363,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	F(GetViewCursor);
 	F(GetViewMode);
 	F(GetViewTarget);
+	F(PlayRumble);
 	F(ResetCursorView);
 	F(SetControlEnabled);
 	F(SetCursor);
@@ -345,6 +373,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	F(SetViewCursor);
 	F(SetViewLocked);
 	F(SetViewTarget);
+	F(StopRumble);
 	F(Surrender);
 #undef F
 	prototype->Freeze();

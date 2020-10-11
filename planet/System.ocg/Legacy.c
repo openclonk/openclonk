@@ -533,6 +533,54 @@ global func CreateObject(type, int x, int y, any owner)
 	return _inherited(type, x, y, owner, ...);
 }
 
+global func PlayRumble(any player, int strength, int length)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		// NO_OWNER: play rumble for all players (e.g. earthquakes)
+		if (player == NO_OWNER)
+		{
+			LogLegacyWarning("PlayRumble(-1)", "for-loop", VERSION_10_0_OC);
+			for (var player in GetPlayers())
+			{
+				player->PlayRumble(strength, length, ...);
+			}
+			return true;
+		}
+		else
+		{
+			LogLegacyWarning("PlayRumble() with player number", "player proplist version", VERSION_10_0_OC);
+			player = GetPlayer(player);
+		}
+	}
+	return player->PlayRumble(strength, length, ...);	
+}
+
+global func StopRumble(any player)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		// NO_OWNER: stop rumble for all players
+		// Not sure whether this makes sense to do - mainly provided for symmetry with PlayRumble().
+		if (player == NO_OWNER)
+		{
+			LogLegacyWarning("StopRumble(-1)", "for-loop", VERSION_10_0_OC);
+			for (var player in GetPlayers())
+			{
+				player->StopRumble();
+			}
+			return true;
+		}
+		else
+		{
+			LogLegacyWarning("StopRumble() with player number", "player proplist version", VERSION_10_0_OC);
+			player = GetPlayer(player);
+		}
+	}
+	return player->StopRumble();	
+}
+
+
 /* -- Other stuff -- */
 
 

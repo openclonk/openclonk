@@ -6,21 +6,23 @@
   <func>
     <title>StopRumble</title>
     <category>Player</category>
-    <version>8.0 OC</version>
+    <version>8.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>int</type>
+          <type>prop</type>
           <name>player</name>
           <desc>Number of the player whose controller should stop rumbling. Can be NO_OWNER to make all controllers stop.</desc>
         </param>
       </params>
     </syntax>
+    <remark>In 9.0 OC the global function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>StopRumble</code>.</remark>
     <desc>Stops a rumble effect that was started with <funclink>PlayRumble</funclink>. Returns true if the given player is valid; there is no way to know whether there was actually a playing rumble effect.</desc>
     <related>
       <funclink>PlayRumble</funclink>
     </related>
   </func>
   <author>Luchs</author><date>2016-02</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>
