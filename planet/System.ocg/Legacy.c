@@ -611,6 +611,17 @@ global func CreateObject(type, int x, int y, any owner)
 	return _inherited(type, x, y, owner, ...);
 }
 
+global func GetPlayerID(any player)
+{
+	LogLegacyWarning("GetPlayerID()", "GetPlayer(player).ID", VERSION_10_0_OC);
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("GetPlayerID() with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	return player.ID;
+}
+
 global func GetPlayerInfoCoreVal(string entry, string section, any player, int index)
 {
 	if (GetType(player) == C4V_Int)

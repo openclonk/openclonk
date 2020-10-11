@@ -2179,12 +2179,6 @@ static bool FnSetPreSend(C4PropList * _this, long iToVal, C4String *pNewName)
 	return true;
 }
 
-static long FnGetPlayerID(C4PropList * _this, long player_nr)
-{
-	C4Player *player = ::Players.Get(player_nr);
-	return player ? player->ID : 0;
-}
-
 // undocumented!
 static long FnGetTeamConfig(C4PropList * _this, long iConfigValue)
 {
@@ -2619,7 +2613,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(LoadScenarioSection);
 	F(SetViewOffset);
 	::AddFunc(p, "SetPreSend", FnSetPreSend, false);
-	F(GetPlayerID);
 	F(GetTeamConfig);
 	F(GetTeamName);
 	F(GetTeamColor);
