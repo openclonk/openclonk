@@ -487,7 +487,7 @@ global func SetPlayerViewLock(int player_nr, bool is_locked)
 	{
 		for (var index = 0; index < GetPlayerCount(); index++)
 		{
-			SetPlayerViewLock(GetPlayerByIndex(index), is_locked);
+			GetPlayerByIndex(index)->SetViewLocked(is_locked);
 		}
 		return true;
 	}
@@ -511,14 +511,14 @@ global func SetPlayerZoom(int player_nr, int zoom, int precision, int flags)
 	{
 		for (var index = 0; index < GetPlayerCount(); index++)
 		{
-			SetPlayerZoom(GetPlayerByIndex(index), zoom, precision, flags, ...);
+			GetPlayerByIndex(index)->SetZoom(zoom, precision, flags, ...);
 		}
 		return true;
 	}
 	var player = GetPlayer(player_nr);
 	if (player)
 	{
-		player->SetZoom(zoom, precision, ...);
+		player->SetZoom(zoom, precision, flags, ...);
 		return true;
 	}
 	else
@@ -535,7 +535,7 @@ global func SetPlayerZoomByViewRange(int player_nr, int range_wdt, int range_hgt
 	{
 		for (var index = 0; index < GetPlayerCount(); index++)
 		{
-			SetPlayerZoomByViewRange(GetPlayerByIndex(index), range_wdt, range_hgt, flags, ...);
+			GetPlayerByIndex(index)->SetZoomByViewRange(range_wdt, range_hgt, flags, ...);
 		}
 		return true;
 	}

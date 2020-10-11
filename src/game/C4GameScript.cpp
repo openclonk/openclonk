@@ -1087,7 +1087,7 @@ static long FnGetPlayerCount(C4PropList * _this, long type)
 	}
 }
 
-static long FnGetPlayerByIndex(C4PropList * _this, long index, long type)
+static C4PropList *FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 {
 	C4Player *player;
 	if (type)
@@ -1098,8 +1098,7 @@ static long FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 	{
 		player = ::Players.GetByIndex(index);
 	}
-	if (!player) return NO_OWNER;
-	return player->Number;
+	return player;
 }
 
 // undocumented!
