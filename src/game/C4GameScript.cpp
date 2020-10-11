@@ -1354,11 +1354,10 @@ static C4String *FnGetLeagueProgressData(C4PropList * _this, long player_id)
 }
 
 // undocumented!
-static bool FnTestMessageBoard(C4PropList * _this, long player_nr, bool test_if_in_use)
+static bool FnTestMessageBoard(C4PropList * _this, C4Player *player, bool test_if_in_use)
 {
 	// multi-query-MessageBoard is always available if the player is valid =)
 	// (but it won't do anything in developer mode...)
-	C4Player *player = ::Players.Get(player_nr);
 	if (!player) return false;
 	if (!test_if_in_use) return true;
 	// single query only if no query is scheduled
@@ -1366,7 +1365,7 @@ static bool FnTestMessageBoard(C4PropList * _this, long player_nr, bool test_if_
 }
 
 // undocumented!
-static bool FnCallMessageBoard(C4PropList * _this, C4Object *obj, bool upper_case, C4String *query_string, long player_nr)
+static bool FnCallMessageBoard(C4PropList * _this, C4Object *obj, bool upper_case, C4String *query_string, C4Player *player)
 {
 	if (!obj)
 	{
@@ -1377,7 +1376,6 @@ static bool FnCallMessageBoard(C4PropList * _this, C4Object *obj, bool upper_cas
 		return false;
 	}
 	// check player
-	C4Player *player = ::Players.Get(player_nr);
 	if (!player)
 	{
 		return false;
@@ -1388,20 +1386,19 @@ static bool FnCallMessageBoard(C4PropList * _this, C4Object *obj, bool upper_cas
 }
 
 // undocumented!
-static bool FnAbortMessageBoard(C4PropList * _this, C4Object *obj, long player_nr)
+static bool FnAbortMessageBoard(C4PropList * _this, C4Object *obj, C4Player *player)
 {
 	if (!obj)
 	{
 		obj = Object(_this);
 	}
 	// check player
-	C4Player *player = ::Players.Get(player_nr);
 	if (!player)
 	{
 		return false;
 	}
 	// close TypeIn if active
-	::MessageInput.AbortMsgBoardQuery(obj, player_nr);
+	::MessageInput.AbortMsgBoardQuery(obj, player->Number);
 	// abort for it
 	return player->RemoveMessageBoardQuery(obj);
 }
