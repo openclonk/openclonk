@@ -834,8 +834,18 @@ static C4Value FnPlayerMessage(C4PropList * _this, C4Value * parameters)
 	{
 		throw NeedObjectContext("PlayerMessage");
 	}
-	int player_nr = parameters[0].getInt();
-	C4String * message = parameters[1].getStr();
+	C4PropList *proplist = parameters[0].getPropList();
+	if (!proplist)
+	{
+		return C4VBool(false);
+	}
+	C4Player *player = proplist->GetPlayer();
+	if (!player)
+	{
+		return C4VBool(false);
+	}
+	int player_nr = player->Number;
+	C4String * message = parameters[0].getStr();
 	if (!message)
 	{
 		return C4VBool(false);
@@ -2855,7 +2865,7 @@ C4ScriptFnDef C4ScriptGameFnMap[]=
 	{ "FindObjects",   true, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFindObjects   },
 	{ "ObjectCount",   true, C4V_Int,    { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnObjectCount   },
 	{ "GameCallEx",    true, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnGameCallEx    },
-	{ "PlayerMessage", true, C4V_Int,    { C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPlayerMessage },
+	{ "PlayerMessage", true, C4V_Int,    { C4V_Player  ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPlayerMessage },
 	{ "Message",       true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnMessage       },
 	{ "AddMessage",    true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnAddMessage    },
 	{ "PV_KeyFrames",  true, C4V_Array,  { C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPV_KeyFrames  },

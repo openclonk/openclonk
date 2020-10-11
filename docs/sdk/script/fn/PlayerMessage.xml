@@ -6,14 +6,14 @@
   <func>
     <title>PlayerMessage</title>
     <category>Messages</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>player</name>
-          <desc>Number of the player for whom to display the message.</desc>
+          <desc>The player for whom to display the message. Was player number before 9.0 OC.</desc>
         </param>
         <param>
           <type>string</type>
@@ -32,7 +32,7 @@
     <examples>
       <example>
         <code>var cursor=<funclink>GetCursor</funclink>(0);
-cursor-&gt;PlayerMessage(0, &quot;Hello, I am %s!&quot;, <funclink>GetName</funclink>(cursor));</code>
+cursor-&gt;PlayerMessage(<funclink>GetPlayer</funclink>(0), &quot;Hello, I am %s!&quot;, cursor-&gt;<funclink>GetName</funclink>());</code>
         <text>Tells the name of the selected clonk to the owner of the clonk only.</text>
       </example>
     </examples>
@@ -42,4 +42,5 @@ cursor-&gt;PlayerMessage(0, &quot;Hello, I am %s!&quot;, <funclink>GetName</func
     </related>
   </func>
   <author>Sven2</author><date>2002-08</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

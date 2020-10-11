@@ -534,23 +534,7 @@ global func SurrenderPlayer(int player_nr, bool remove_direct)
 }
 
 /* -- Player number conversion -- */
-/*
-global func GetPlayer(any number)
-{
-	if (GetType(number) == C4V_Int)
-	{
-		return _inherited(number, ...);
-	}
-	else if (GetType(number) == C4V_PropList || number == nil)
-	{
-		return number;
-	}
-	else
-	{
-		FatalError("Cannot convert %v to player", number);
-	}
-}
-*/
+
 global func CreateConstruction(type, int x, int y, any owner, int completion, bool adjust_terrain, bool check_site)
 {
 	if (GetType(owner) == C4V_Int)
@@ -579,6 +563,16 @@ global func CreateObject(type, int x, int y, any owner)
 		owner = GetPlayer(owner);
 	}
 	return _inherited(type, x, y, owner, ...);
+}
+
+global func PlayerMessage(any player, string message)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("PlayerMessage() with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	return _inherited(player, message, ...);
 }
 
 global func PlayRumble(any player, int strength, int length)
