@@ -70,7 +70,8 @@ public:
 	bool CtrlRemoveAtClient(const char *szName, bool fDisonnected);
 	bool Valid(int iPlayer) const;
 	bool Hostile(int iPlayer1, int iPlayer2) const;
-	bool HostilityDeclared(int iPlayer1, int iPlayer2) const; // check whether iPlayer1 treats iPlayer2 as hostile, but not vice versa!
+	bool Hostile(C4Player *pPlayer1, C4Player *pPlayer2) const;
+	bool HostilityDeclared(C4Player *pPlayer1, C4Player *pPlayer2) const; // check whether iPlayer1 treats iPlayer2 as hostile, but not vice versa!
 	bool PositionTaken(int iPosition) const;
 	int CheckColorDw(DWORD dwColor, C4Player *pExclude); // return minimum difference to the other player's colors
 	bool SynchronizeLocalFiles(); // syncrhonize all local player files; resetting InGame times

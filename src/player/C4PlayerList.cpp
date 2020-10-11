@@ -83,26 +83,23 @@ bool C4PlayerList::Valid(int iPlayer) const
 
 bool C4PlayerList::Hostile(int iPlayer1, int iPlayer2) const
 {
-	C4Player *pPlr1=Get(iPlayer1);
-	C4Player *pPlr2=Get(iPlayer2);
-	if (!pPlr1 || !pPlr2) return false;
-	if (pPlr1->Number==pPlr2->Number) return false;
-	if ( pPlr1->IsHostileTowards(pPlr2)
-	     || pPlr2->IsHostileTowards(pPlr1) )
-		return true;
-	return false;
+	C4Player *pPlr1 = Get(iPlayer1);
+	C4Player *pPlr2 = Get(iPlayer2);
+	return Hostile(pPlr1, pPlr2);
 }
 
-bool C4PlayerList::HostilityDeclared(int iPlayer1, int iPlayer2) const
+bool C4PlayerList::Hostile(C4Player *pPlr1, C4Player *pPlr2) const
 {
-	// check one-way-hostility
-	C4Player *pPlr1=Get(iPlayer1);
-	C4Player *pPlr2=Get(iPlayer2);
 	if (!pPlr1 || !pPlr2) return false;
 	if (pPlr1->Number==pPlr2->Number) return false;
-	if ( pPlr1->IsHostileTowards(pPlr2))
-		return true;
-	return false;
+	return pPlr1->IsHostileTowards(pPlr2) || pPlr2->IsHostileTowards(pPlr1);
+}
+
+bool C4PlayerList::HostilityDeclared(C4Player *pPlr1, C4Player *pPlr2) const
+{
+	if (!pPlr1 || !pPlr2) return false;
+	if (pPlr1->Number==pPlr2->Number) return false;
+	return pPlr1->IsHostileTowards(pPlr2);
 }
 
 bool C4PlayerList::PositionTaken(int iPosition) const
@@ -669,7 +666,7 @@ int32_t ValidPlr(int32_t plr)
 
 int32_t Hostile(int32_t plr1, int32_t plr2)
 {
-	return ::Players.Hostile(plr1,plr2);
+	return ::Players.Hostile(::Players.Get(plr1), ::Players.Get(plr2));
 }
 
 C4PlayerList Players;

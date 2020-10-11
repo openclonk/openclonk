@@ -694,7 +694,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		int32_t iOpponent; sscanf(szCommand+13,"%i",&iOpponent);
 		C4Player *pOpponent = ::Players.Get(iOpponent);
 		if (!pOpponent || pOpponent->GetType() != C4PT_User) return false;
-		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::SetHostility(::Players.Get(Player), pOpponent, !::Players.HostilityDeclared(Player, pOpponent->Number)), CDT_Queue);
+		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::SetHostility(::Players.Get(Player), pOpponent, !::Players.HostilityDeclared(pPlr, pOpponent)), CDT_Queue);
 		return true;
 	}
 	// Abort

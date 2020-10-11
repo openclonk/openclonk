@@ -829,11 +829,9 @@ void C4Player::Surrender()
 	Log(FormatString(LoadResStr("IDS_PRC_PLRSURRENDERED"),GetName()).getData());
 }
 
-bool C4Player::SetHostility(int32_t iOpponent, int32_t hostile, bool fSilent)
+bool C4Player::SetHostility(C4Player *opponent, int32_t hostile, bool fSilent)
 {
 	assert(hostile == 0 || hostile == 1);
-	// Check opponent valid
-	C4Player *opponent = ::Players.Get(iOpponent);
 	if (!opponent || opponent == this)
 		return false;
 	// Set hostility
@@ -915,8 +913,8 @@ void C4Player::SetTeamHostility()
 		if (pPlr != this)
 		{
 			bool fHostile = (pPlr->Team != Team);
-			SetHostility(pPlr->Number, fHostile, true);
-			pPlr->SetHostility(Number, fHostile, true);
+			SetHostility(pPlr, fHostile, true);
+			pPlr->SetHostility(this, fHostile, true);
 		}
 }
 
@@ -1268,7 +1266,7 @@ void C4Player::RemoveCrewObjects()
 	while ((pCrew = Crew.GetObject())) pCrew->AssignRemoval(true);
 }
 
-int32_t C4Player::FindNewOwner() const
+int32_t C4Player::FindNewOwner()
 {
 	int32_t iNewOwner = NO_OWNER;
 	C4Team *pTeam;
@@ -1294,7 +1292,7 @@ int32_t C4Player::FindNewOwner() const
 	if (iNewOwner == NO_OWNER)
 		for (C4Player *pOtherPlr = ::Players.First; pOtherPlr; pOtherPlr = pOtherPlr->Next)
 			if (pOtherPlr != this) if (!pOtherPlr->Eliminated)
-					if (!::Players.Hostile(pOtherPlr->Number, Number))
+					if (!::Players.Hostile(pOtherPlr, this))
 						iNewOwner = pOtherPlr->Number;
 
 	return iNewOwner;

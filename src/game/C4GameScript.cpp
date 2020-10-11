@@ -949,41 +949,40 @@ C4Object* FnPlaceAnimal(C4PropList * _this, C4PropList * Def)
 	return Game.PlaceAnimal(Def? Def : _this);
 }
 
-static bool FnHostile(C4PropList * _this, long player_nr1, long player_nr2, bool check_one_way_only)
+static bool FnHostile(C4PropList * _this, C4Player *player1, C4Player *player2, bool check_one_way_only)
 {
 	if (check_one_way_only)
 	{
-		return ::Players.HostilityDeclared(player_nr1, player_nr2);
+		return ::Players.HostilityDeclared(player1, player2);
 	}
 	else
 	{
-		return !!Hostile(player_nr1, player_nr2);
+		return !!::Players.Hostile(player1, player2);
 	}
 }
 
-static bool FnSetHostility(C4PropList * _this, long player_nr1, long player_nr2, bool hostile, bool silent, bool no_calls)
+static bool FnSetHostility(C4PropList * _this, C4Player *player1, C4Player *player2, bool hostile, bool silent, bool no_calls)
 {
-	C4Player *player = ::Players.Get(player_nr1);
-	if (!player)
+	if (!player1 || !player2)
 	{
 		return false;
 	}
 	// do rejection test first
 	if (!no_calls)
 	{
-		if (!!::Game.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(player_nr1, player_nr2, hostile), true, true))
+		if (!!::Game.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(player1->Number, player2->Number, hostile), true, true))
 		{
 			return false;
 		}
 	}
 	// OK; set hostility
-	bool old_hostility = ::Players.HostilityDeclared(player_nr1, player_nr2);
-	if (!player->SetHostility(player_nr2, hostile, silent))
+	bool old_hostility = ::Players.HostilityDeclared(player1, player2);
+	if (!player1->SetHostility(player2, hostile, silent))
 	{
 		return false;
 	}
 	// calls afterwards
-	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(player_nr1), C4VInt(player_nr2), C4VBool(hostile), C4VBool(old_hostility)), true);
+	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(player1->Number), C4VInt(player2->Number), C4VBool(hostile), C4VBool(old_hostility)), true);
 	return true;
 }
 
