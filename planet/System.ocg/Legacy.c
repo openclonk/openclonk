@@ -339,6 +339,29 @@ global func GetViewCursor(int player_nr)
 	}
 }
 
+global func Hostile(any player, any opponent, bool check_one_way_only)
+{
+	LogLegacyWarning("Hostile", "GetPlayer(player)->Hostile(opponent, check_one_way_only)", VERSION_10_0_OC);
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("Hostile with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	if (GetType(opponent) == C4V_Int)
+	{
+		LogLegacyWarning("Hostile with player number", "player proplist version", VERSION_10_0_OC);
+		opponent = GetPlayer(opponent);
+	}
+	if (player)
+	{
+		return player->Hostile(opponent, check_one_way_only, ...);
+	}
+	else
+	{
+		return false;
+	}
+}
+
 global func ResetCursorView(int player_nr, bool immediate)
 {
 	LogLegacyWarning("ResetCursorView", "GetPlayer(player)->ResetCursorView(immediate)", VERSION_10_0_OC);
@@ -374,6 +397,29 @@ global func SetFoW(bool enabled, int player_nr)
 	else
 	{
 		return nil;
+	}
+}
+
+global func SetHostility(any player, any opponent, bool hostile, bool silent, bool no_calls)
+{
+	LogLegacyWarning("SetHostility", "GetPlayer(player)->SetHostility(opponent, hostile, silent, no_calls)", VERSION_10_0_OC);
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("SetHostility with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	if (GetType(opponent) == C4V_Int)
+	{
+		LogLegacyWarning("SetHostility with player number", "player proplist version", VERSION_10_0_OC);
+		opponent = GetPlayer(opponent);
+	}
+	if (player)
+	{
+		return player->SetHostility(opponent, hostile, silent, no_calls, ...);
+	}
+	else
+	{
+		return false;
 	}
 }
 

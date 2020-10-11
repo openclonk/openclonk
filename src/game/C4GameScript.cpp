@@ -949,43 +949,6 @@ C4Object* FnPlaceAnimal(C4PropList * _this, C4PropList * Def)
 	return Game.PlaceAnimal(Def? Def : _this);
 }
 
-static bool FnHostile(C4PropList * _this, C4Player *player1, C4Player *player2, bool check_one_way_only)
-{
-	if (check_one_way_only)
-	{
-		return ::Players.HostilityDeclared(player1, player2);
-	}
-	else
-	{
-		return !!::Players.Hostile(player1, player2);
-	}
-}
-
-static bool FnSetHostility(C4PropList * _this, C4Player *player1, C4Player *player2, bool hostile, bool silent, bool no_calls)
-{
-	if (!player1 || !player2)
-	{
-		return false;
-	}
-	// do rejection test first
-	if (!no_calls)
-	{
-		if (!!::Game.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(player1->Number, player2->Number, hostile), true, true))
-		{
-			return false;
-		}
-	}
-	// OK; set hostility
-	bool old_hostility = ::Players.HostilityDeclared(player1, player2);
-	if (!player1->SetHostility(player2, hostile, silent))
-	{
-		return false;
-	}
-	// calls afterwards
-	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(player1->Number), C4VInt(player2->Number), C4VBool(hostile), C4VBool(old_hostility)), true);
-	return true;
-}
-
 static bool FnDoBaseMaterial(C4PropList * _this, long player_nr, C4ID id, long change)
 {
 	// validity check
@@ -2586,8 +2549,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(DigFree);
 	F(DigFreeRect);
 	F(ClearFreeRect);
-	F(Hostile);
-	F(SetHostility);
 	F(PlaceVegetation);
 	F(PlaceAnimal);
 	F(GameOver);

@@ -165,6 +165,10 @@
           <col><funclink>GetPlrView</funclink></col>
         </row>
         <row>
+          <col><funclink>Hostile</funclink></col>
+          <col><funclink>Hostile</funclink></col>
+        </row>
+        <row>
           <col><funclink>PlayRumble</funclink></col>
           <col>-</col>
         </row>
@@ -187,6 +191,10 @@
         <row>
           <col><funclink>SetFoW</funclink></col>
           <col><funclink>SetFoW</funclink></col>
+        </row>
+        <row>
+          <col><funclink>SetHostility</funclink></col>
+          <col><funclink>SetHostility</funclink></col>
         </row>
         <row>
           <col><code>SetTeam</code></col>

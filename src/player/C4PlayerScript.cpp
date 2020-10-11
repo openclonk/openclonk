@@ -182,6 +182,18 @@ static C4Object *FnGetViewTarget(C4Player *player)
 	return player->ViewTarget;
 }
 
+static bool FnHostile(C4Player *player, C4Player *opponent, bool check_one_way_only)
+{
+	if (check_one_way_only)
+	{
+		return ::Players.HostilityDeclared(player, opponent);
+	}
+	else
+	{
+		return !!::Players.Hostile(player, opponent);
+	}
+}
+
 // strength: 0-1000, length: milliseconds
 static bool FnPlayRumble(C4Player *player, long strength, long length)
 {
@@ -263,6 +275,31 @@ static C4Value FnSetExtraData(C4Player *player, C4String *DataName, const C4Valu
 static void FnSetFoW(C4Player *player, bool enabled)
 {
 	player->SetFoW(!!enabled);
+}
+
+static bool FnSetHostility(C4Player *player, C4Player *opponent, bool hostile, bool silent, bool no_calls)
+{
+	if (!player || !opponent)
+	{
+		return false;
+	}
+	// do rejection test first
+	if (!no_calls)
+	{
+		if (!!::Game.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(player->Number, opponent->Number, hostile), true, true))
+		{
+			return false;
+		}
+	}
+	// OK; set hostility
+	bool old_hostility = ::Players.HostilityDeclared(player, opponent);
+	if (!player->SetHostility(opponent, hostile, silent))
+	{
+		return false;
+	}
+	// calls afterwards
+	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(player->Number), C4VInt(opponent->Number), C4VBool(hostile), C4VBool(old_hostility)), true);
+	return true;
 }
 
 static bool FnSetTeam(C4Player *player, long idNewTeam, bool no_calls)
@@ -431,12 +468,14 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	F(GetViewCursor);
 	F(GetViewMode);
 	F(GetViewTarget);
+	F(Hostile);
 	F(PlayRumble);
 	F(ResetCursorView);
 	F(SetControlEnabled);
 	F(SetCursor);
 	F(SetExtraData);
 	F(SetFoW);
+	F(SetHostility);
 	F(SetTeam);
 	F(SetViewCursor);
 	F(SetViewLocked);
