@@ -2223,9 +2223,8 @@ static long FnGetTeamCount(C4PropList * _this)
 }
 
 // undocumented!
-static bool FnInitScenarioPlayer(C4PropList * _this, long player_nr, long team_id)
+static bool FnInitScenarioPlayer(C4PropList * _this, C4Player *player, long team_id)
 {
-	C4Player *player = ::Players.Get(player_nr);
 	if (!player) return false;
 	return player->ScenarioAndTeamInit(team_id);
 }
