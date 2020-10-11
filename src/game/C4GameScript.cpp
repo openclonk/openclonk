@@ -976,98 +976,6 @@ static bool FnSetHostility(C4PropList * _this, long player_nr1, long player_nr2,
 	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(player_nr1), C4VInt(player_nr2), C4VBool(hostile), C4VBool(old_hostility)), true);
 	return true;
 }
-// flags for SetPlayerZoom* calls
-static const int PLRZOOM_Direct     = 0x01,
-                 PLRZOOM_NoIncrease = 0x04,
-                 PLRZOOM_NoDecrease = 0x08,
-                 PLRZOOM_LimitMin   = 0x10,
-                 PLRZOOM_LimitMax   = 0x20,
-                 PLRZOOM_Set        = 0x40;
-
-static bool FnSetPlayerZoomByViewRange(C4PropList * _this, long player_nr, long range_wdt, long range_hgt, long flags)
-{
-	// zoom size safety - both ranges 0 is fine, it causes a zoom reset to default
-	if (range_wdt < 0 || range_hgt < 0)
-	{
-		return false;
-	}
-	// special player NO_OWNER: apply to all viewports
-	if (player_nr == NO_OWNER)
-	{
-		for (C4Player *player = ::Players.First; player; player = player->Next)
-		{
-			if (player->Number != NO_OWNER) // can't happen, but would be a crash if it did...
-			{
-				FnSetPlayerZoomByViewRange(_this, player->Number, range_wdt, range_hgt, flags);
-			}
-		}
-		return true;
-	}
-	else
-	{
-		// safety check on player only, so function return result is always in sync
-		C4Player *player = ::Players.Get(player_nr);
-		if (!player)
-		{
-			return false;
-		}
-		// adjust values in player
-		if (flags & PLRZOOM_LimitMin) player->SetMinZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		if (flags & PLRZOOM_LimitMax) player->SetMaxZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		// set values after setting min/max to ensure old limits don't block new value
-		if ((flags & PLRZOOM_Set) || !(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
-		{
-			player->SetZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		}
-
-	}
-	return true;
-}
-
-static bool FnSetPlayerZoom(C4PropList * _this, long player_nr, long zoom, long precision, long flags)
-{
-	// parameter safety. 0/0 means "reset to default".
-	if (zoom < 0 || precision < 0)
-	{
-		return false;
-	}
-	// special player NO_OWNER: apply to all viewports
-	if (player_nr == NO_OWNER)
-	{
-		for (C4Player *player = ::Players.First; player; player = player->Next)
-		{
-			if (player->Number != NO_OWNER) // can't happen, but would be a crash if it did...
-			{
-				FnSetPlayerZoom(_this, player->Number, zoom, precision, flags);
-			}
-		}
-		return true;
-	}
-	else
-	{
-		// zoom factor calculation
-		if (!precision)
-		{
-			precision = 1;
-		}
-		C4Real fZoom = itofix(zoom, precision);
-		// safety check on player only, so function return result is always in sync
-		C4Player *player = ::Players.Get(player_nr);
-		if (!player)
-		{
-			return false;
-		}
-		// adjust values in player
-		if (flags & PLRZOOM_LimitMin) player->SetMinZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		if (flags & PLRZOOM_LimitMax) player->SetMaxZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		if ((flags & PLRZOOM_Set) || !(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
-		{
-			player->SetZoom(fZoom, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		}
-
-	}
-	return true;
-}
 
 static bool FnDoBaseMaterial(C4PropList * _this, long player_nr, C4ID id, long change)
 {
@@ -2704,8 +2612,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetSeason);
 	F(SetClimate);
 	F(GetClimate);
-	F(SetPlayerZoomByViewRange);
-	F(SetPlayerZoom);
 	F(DoBaseMaterial);
 	F(DoBaseProduction);
 	F(GainScenarioAccess);
@@ -2907,13 +2813,6 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "DMQ_Sky"                   ,C4V_Int,      DMQ_Sky },
 	{ "DMQ_Sub"                   ,C4V_Int,      DMQ_Sub },
 	{ "DMQ_Bridge"                ,C4V_Int,      DMQ_Bridge },
-
-	{ "PLRZOOM_Direct"            ,C4V_Int,      PLRZOOM_Direct },
-	{ "PLRZOOM_NoIncrease"        ,C4V_Int,      PLRZOOM_NoIncrease },
-	{ "PLRZOOM_NoDecrease"        ,C4V_Int,      PLRZOOM_NoDecrease },
-	{ "PLRZOOM_LimitMin"          ,C4V_Int,      PLRZOOM_LimitMin },
-	{ "PLRZOOM_LimitMax"          ,C4V_Int,      PLRZOOM_LimitMax },
-	{ "PLRZOOM_Set"               ,C4V_Int,      PLRZOOM_Set },
 
 	{ "ATTACH_Front"              ,C4V_Int,      C4ATTACH_Front },
 	{ "ATTACH_Back"               ,C4V_Int,      C4ATTACH_Back },

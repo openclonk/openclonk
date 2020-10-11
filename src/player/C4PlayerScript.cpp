@@ -25,6 +25,15 @@
 #include "platform/C4GamePadCon.h"
 
 
+// flags for SetPlayerZoom* calls
+static const int PLRZOOM_Direct     = 0x01,
+                 PLRZOOM_NoIncrease = 0x04,
+                 PLRZOOM_NoDecrease = 0x08,
+                 PLRZOOM_LimitMin   = 0x10,
+                 PLRZOOM_LimitMax   = 0x20,
+                 PLRZOOM_Set        = 0x40;
+
+
 static long FnEliminate(C4Player *player, bool remove_direct)
 {
 	// direct removal?
@@ -323,6 +332,47 @@ static bool FnSetViewTarget(C4Player *player, C4Object *target, bool immediate_p
 	return true;
 }
 
+static bool FnSetZoom(C4Player *player, long zoom, long precision, long flags)
+{
+	// Parameter safety. 0/0 means "reset to default".
+	if (zoom < 0 || precision < 0)
+	{
+		return false;
+	}
+	// Zoom factor calculation
+	if (!precision)
+	{
+		precision = 1;
+	}
+	C4Real fZoom = itofix(zoom, precision);
+	// Adjust values in player
+	if (flags & PLRZOOM_LimitMin) player->SetMinZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+	if (flags & PLRZOOM_LimitMax) player->SetMaxZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+	if ((flags & PLRZOOM_Set) || !(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
+	{
+		player->SetZoom(fZoom, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+	}
+	return true;
+}
+
+static bool FnSetZoomByViewRange(C4Player *player, long range_wdt, long range_hgt, long flags)
+{
+	// Zoom size safety - both ranges 0 is fine, it causes a zoom reset to default
+	if (range_wdt < 0 || range_hgt < 0)
+	{
+		return false;
+	}
+	// Adjust values in player
+	if (flags & PLRZOOM_LimitMin) player->SetMinZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+	if (flags & PLRZOOM_LimitMax) player->SetMaxZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+	// Set values after setting min/max to ensure old limits don't block new value
+	if ((flags & PLRZOOM_Set) || !(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
+	{
+		player->SetZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+	}
+	return true;
+}
+
 static bool FnStopRumble(C4Player *player)
 {
 	if (!player) return false;
@@ -343,10 +393,28 @@ static bool FnSurrender(C4Player *player)
 	return true;
 }
 
+C4ScriptConstDef C4ScriptPlayerConstMap[]=
+{
+	{ "PLRZOOM_Direct"            ,C4V_Int,      PLRZOOM_Direct },
+	{ "PLRZOOM_NoIncrease"        ,C4V_Int,      PLRZOOM_NoIncrease },
+	{ "PLRZOOM_NoDecrease"        ,C4V_Int,      PLRZOOM_NoDecrease },
+	{ "PLRZOOM_LimitMin"          ,C4V_Int,      PLRZOOM_LimitMin },
+	{ "PLRZOOM_LimitMax"          ,C4V_Int,      PLRZOOM_LimitMax },
+	{ "PLRZOOM_Set"               ,C4V_Int,      PLRZOOM_Set }
+};
+
 void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 {
     C4PropListStatic* prototype = new C4PropListStatic(nullptr, nullptr, ::Strings.RegString(PROTOTYPE_NAME_ENGINE));
 	engine->RegisterGlobalConstant(PROTOTYPE_NAME_ENGINE, C4VPropList(prototype));
+
+	// Add all def constants (all Int)
+	for (C4ScriptConstDef *constant = &C4ScriptPlayerConstMap[0]; constant->Identifier; constant++)
+	{
+		assert(constant->ValType == C4V_Int); // only int supported currently
+		engine->RegisterGlobalConstant(constant->Identifier, C4VInt(constant->Data));
+	}
+
 #define F(f) ::AddFunc(prototype, #f, Fn##f)
 	F(Eliminate);
 	F(GetColor);
@@ -373,6 +441,8 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	F(SetViewCursor);
 	F(SetViewLocked);
 	F(SetViewTarget);
+	F(SetZoom);
+	F(SetZoomByViewRange);
 	F(StopRumble);
 	F(Surrender);
 #undef F

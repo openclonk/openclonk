@@ -165,6 +165,10 @@
           <col><funclink>GetPlrView</funclink></col>
         </row>
         <row>
+          <col><funclink>PlayRumble</funclink></col>
+          <col>-</col>
+        </row>
+        <row>
           <col><funclink>ResetCursorView</funclink></col>
           <col>-</col>
         </row>
@@ -199,6 +203,18 @@
         <row>
           <col><code>SetViewTarget</code></col>
           <col><funclink>SetPlrView</funclink></col>
+        </row>
+        <row>
+          <col><code>SetZoom</code></col>
+          <col><funclink>SetPlayerZoom</funclink></col>
+        </row>
+        <row>
+          <col><code>SetZoomByViewRange</code></col>
+          <col><funclink>SetPlayerZoomByViewRange</funclink></col>
+        </row>
+        <row>
+          <col><funclink>StopRumble</funclink></col>
+          <col>-</col>
         </row>
         <row>
           <col><funclink>Surrender</funclink></col>

@@ -7,7 +7,7 @@
     <title>SetPlayerZoom</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>5.0 OC</version>
+    <version>5.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -67,12 +67,14 @@
     </syntax>
     <desc>Changes zoom or zoom limits vor all viewports of a player to direct values.</desc>
     <remark>Setting zoom to a direct value causes the game to look different depending on which screen resolution the player has configured. Use this function only if you want to achieve direct pixel correspondance between the game world and the screen, e.g. because your scenario provides low resolution graphics only or because your scenario should be played in certain screen resolutions only. Regular scenarios should use <funclink>SetPlayerZoomByViewRange</funclink> to achieve visuals whcih are independent of the player's monitor size.</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetZoom()</code>.</remark>
     <examples>
       <example>
         <code>func InitializePlayer(int plr)
 {
-  SetPlayerZoom(plr, 1,1, PLRZOOM_LimitMin | PLRZOOM_LimitMax);
-  <funclink>SetPlayerViewLock</funclink>(plr, true);
+  var player = GetPlayer(plr);
+  player-&gt;SetZoom(1,1, PLRZOOM_LimitMin | PLRZOOM_LimitMax);
+  player-&gt;<funclink>SetPlayerViewLock</funclink>(true);
   return true;
 }</code>
         <text>Code for a scenario script: The zoom is fixed to 1, i.e. one landscape pixel corresponds to one pixel on the screen. Zooming in or out is not possible.</text>
@@ -88,4 +90,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2014-03</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

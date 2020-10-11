@@ -7,7 +7,7 @@
     <title>SetPlayerZoomByViewRange</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -65,13 +65,15 @@
       </params>
     </syntax>
     <desc>Adjusts the zoom or zoom limit of all viewports of a player.</desc>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetZoomByViewRange()</code>.</remark>
     <examples>
       <example>
         <code>func InitializePlayer(int plr)
 {
-  SetPlayerZoomByViewRange(plr, 1000, 0, PLRZOOM_LimitMin);
-  SetPlayerZoomByViewRange(plr, 1000, 0, PLRZOOM_LimitMax);
-  <funclink>SetPlayerViewLock</funclink>(plr, true);
+  player = GetPlayer(plr);
+  player-&gt;SetZoomByViewRange(1000, 0, PLRZOOM_LimitMin);
+  player-&gt;SetZoomByViewRange(1000, 0, PLRZOOM_LimitMax);
+  player-&gt;<funclink>SetPlayerViewLock</funclink>(true);
   return true;
 }</code>
         <text>Code for a scenario script: Players can see exactly 1000 pixels wide around their Clonk and cannot scroll further.</text>
@@ -87,4 +89,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2010-09</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

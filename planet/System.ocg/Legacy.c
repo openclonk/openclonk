@@ -457,6 +457,54 @@ global func SetPlayerViewLock(int player_nr, bool is_locked)
 	}
 }
 
+global func SetPlayerZoom(int player_nr, int zoom, int precision, int flags)
+{
+	LogLegacyWarning("SetPlayerZoom", "GetPlayer(player)->SetZoom(zoom, precision, flags)", VERSION_10_0_OC);
+	// special player NO_OWNER: apply to all players
+	if (player_nr == NO_OWNER)
+	{
+		for (var index = 0; index < GetPlayerCount(); index++)
+		{
+			SetPlayerZoom(GetPlayerByIndex(index), zoom, precision, flags, ...);
+		}
+		return true;
+	}
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		player->SetZoom(zoom, precision, ...);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+global func SetPlayerZoomByViewRange(int player_nr, int range_wdt, int range_hgt, int flags)
+{
+	LogLegacyWarning("SetPlayerZoomByViewRange", "GetPlayer(player)->SetZoomByViewRange(range_wdt, range_hgt, flags)", VERSION_10_0_OC);
+	// special player NO_OWNER: apply to all players
+	if (player_nr == NO_OWNER)
+	{
+		for (var index = 0; index < GetPlayerCount(); index++)
+		{
+			SetPlayerZoomByViewRange(GetPlayerByIndex(index), range_wdt, range_hgt, flags, ...);
+		}
+		return true;
+	}
+	var player = GetPlayer(player_nr);
+	if (player)
+	{
+		player->SetZoomByViewRange(range_wdt, range_hgt, flags, ...);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 global func SetViewCursor(int player_nr, object target)
 {
 	LogLegacyWarning("SetViewCursor", "GetPlayer(player)->SetViewCursor(target)", VERSION_10_0_OC);
@@ -579,7 +627,6 @@ global func StopRumble(any player)
 	}
 	return player->StopRumble();	
 }
-
 
 /* -- Other stuff -- */
 
