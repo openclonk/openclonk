@@ -7,14 +7,14 @@
     <title>SetCrewStatus</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>player</name>
-          <desc>Player number of the player whose crew you want to change.</desc>
+          <desc>Player whose crew you want to change. Was player number before 9.0 OC.</desc>
         </param>
         <param>
           <type>bool</type>
@@ -41,4 +41,5 @@ nClonk-&gt;SetCrewStatus(<funclink>GetOwner</funclink>(), true);</code>
     </related>
   </func>
   <author>Clonkonaut</author><date>2008-05</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

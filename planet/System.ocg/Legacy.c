@@ -698,6 +698,16 @@ global func GetPlayerVal(string entry, string section, any player, int index)
 	return _inherited(entry, section, player, index, ...);
 }
 
+global func MakeCrewMember(any player)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("MakeCrewMember() with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	return _inherited(player, ...);
+}
+
 global func PlayerMessage(any player, string message)
 {
 	if (GetType(player) == C4V_Int)
@@ -729,6 +739,16 @@ global func PlayRumble(any player, int strength, int length)
 		}
 	}
 	return player->PlayRumble(strength, length, ...);	
+}
+
+global func SetCrewStatus(any player, bool in_crew)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("SetCrewStatus() with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	return _inherited(player, in_crew, ...);
 }
 
 global func StopRumble(any player)

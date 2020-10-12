@@ -1523,13 +1523,16 @@ static C4Object *FnCreateContents(C4Object *Obj, C4PropList * PropList, Nillable
 	return pNewObj;
 }
 
-static bool FnMakeCrewMember(C4Object *Obj, long iPlayer) // TODO: C4Player *player, move to other file
+static bool FnMakeCrewMember(C4Object *Obj, C4Player *player)
 {
-	if (!ValidPlr(iPlayer))
+	if (!player)
 	{
 		return false;
 	}
-	return !!::Players.Get(iPlayer)->MakeCrewMember(Obj);
+	// Is not added to C4PlayerScript because the syntax usually is
+	// crew->SetOwner(player); crew->MakeCrewMember(player);
+	// and the inversion does not add value
+	return !!player->MakeCrewMember(Obj);
 }
 
 static bool FnGrabObjectInfo(C4Object *Obj, C4Object *pFrom)
@@ -1543,16 +1546,18 @@ static bool FnGrabObjectInfo(C4Object *Obj, C4Object *pFrom)
 	return !!Obj->GrabInfo(pFrom);
 }
 
-static bool FnSetCrewStatus(C4Object *Obj, long iPlr, bool fInCrew) // TODO: C4Player *player, to other file
+static bool FnSetCrewStatus(C4Object *Obj, C4Player *player, bool fInCrew)
 {
 	// validate player
-	C4Player *pPlr = ::Players.Get(iPlr);
-	if (!pPlr)
+	if (!player)
 	{
 		return false;
 	}
 	// set crew status
-	return !!pPlr->SetObjectCrewStatus(Obj, fInCrew);
+	// Is not added to C4PlayerScript because the syntax usually is
+	// crew->SetOwner(player); crew->MakeCrewMember(player);
+	// and the inversion does not add value
+	return !!player->SetObjectCrewStatus(Obj, fInCrew);
 }
 
 static long FnSetTransferZone(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
