@@ -58,6 +58,16 @@ static long FnEliminate(C4Player *player, bool remove_direct)
 	return true;
 }
 
+static bool FnGainScenarioAchievement(C4Player *player, C4String *achievement_name, Nillable<long> avalue, C4String *for_scenario)
+{
+	// safety
+	if (!achievement_name || !achievement_name->GetData().getLength()) return false;
+	// default parameter
+	long value = avalue.IsNil() ? 1 : (long)avalue;
+	// gain achievement
+	return player->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : nullptr);
+}
+
 static long FnGetColor(C4Player *player)
 {
 	return player->ColorDw;
@@ -454,6 +464,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 
 #define F(f) ::AddFunc(prototype, #f, Fn##f)
 	F(Eliminate);
+	F(GainScenarioAchievement);
 	F(GetColor);
 	F(GetControlAssignment);
 	F(GetControlEnabled);

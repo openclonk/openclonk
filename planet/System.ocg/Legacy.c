@@ -51,6 +51,32 @@ global func EliminatePlayer(int player_nr, bool remove_direct)
 	}
 }
 
+global func GainScenarioAchievement(string achievement_name, any value, any player, string for_scenario)
+{
+	LogLegacyWarning("GainScenarioAchievement", "GetPlayer(player)->GainScenarioAchievement(achievement_name, value, for_scenario)", VERSION_10_0_OC);
+	if (GetType(player) == C4V_Int)
+	{
+		// NO_OWNER: stop rumble for all players
+		// Not sure whether this makes sense to do - mainly provided for symmetry with PlayRumble().
+		if (player == NO_OWNER)
+		{
+			LogLegacyWarning("GainScenarioAchievement(-1)", "for-loop", VERSION_10_0_OC);
+			var result = true;
+			for (var index = 0; index < GetPlayerCount(); index++)
+			{
+				result &= GetPlayerByIndex(index)->GainScenarioAchievement(achievement_name, value, for_scenario, ...);
+			}
+			return true;
+		}
+		else
+		{
+			LogLegacyWarning("GainScenarioAchievement() with player number", "player proplist version", VERSION_10_0_OC);
+			player = GetPlayer(player);
+		}
+	}
+	return player->GainScenarioAchievement(achievement_name, value, for_scenario, ...);
+}
+
 global func GetCrew(int player_nr, int index)
 {
 	LogLegacyWarning("GetCrew", "GetPlayer(player)->GetCrew(index)", VERSION_10_0_OC);
@@ -660,9 +686,9 @@ global func PlayRumble(any player, int strength, int length)
 		if (player == NO_OWNER)
 		{
 			LogLegacyWarning("PlayRumble(-1)", "for-loop", VERSION_10_0_OC);
-			for (var player in GetPlayers())
+			for (var index = 0; index < GetPlayerCount(); index++)
 			{
-				player->PlayRumble(strength, length, ...);
+				GetPlayerByIndex(index)->PlayRumble(strength, length, ...);
 			}
 			return true;
 		}
@@ -684,9 +710,9 @@ global func StopRumble(any player)
 		if (player == NO_OWNER)
 		{
 			LogLegacyWarning("StopRumble(-1)", "for-loop", VERSION_10_0_OC);
-			for (var player in GetPlayers())
+			for (var index = 0; index < GetPlayerCount(); index++)
 			{
-				player->StopRumble();
+				GetPlayerByIndex(index)->StopRumble();
 			}
 			return true;
 		}

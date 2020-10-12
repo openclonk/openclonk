@@ -2446,29 +2446,6 @@ static int32_t FnGetStartupTeamCount(C4PropList * _this)
 	return ::Game.StartupTeamCount;
 }
 
-static bool FnGainScenarioAchievement(C4PropList * _this, C4String *achievement_name, Nillable<long> avalue, Nillable<long> player, C4String *for_scenario)
-{
-	// safety
-	if (!achievement_name || !achievement_name->GetData().getLength()) return false;
-	// default parameter
-	long value = avalue.IsNil() ? 1 : (long)avalue;
-	// gain achievement
-	bool result = true;
-	if (!player.IsNil() && player != NO_OWNER)
-	{
-		C4Player *plr = ::Players.Get(player);
-		if (!plr) return false;
-		result = plr->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : nullptr);
-	}
-	else
-	{
-		for (C4Player *plr = ::Players.First; plr; plr = plr->Next)
-			if (!plr->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : nullptr))
-				result = false;
-	}
-	return result;
-}
-
 static long FnGetPXSCount(C4PropList * _this, Nillable<long> iMaterial, Nillable<long> iX0, Nillable<long> iY0, Nillable<long> iWdt, Nillable<long> iHgt)
 {
 	if (iX0.IsNil())
@@ -2638,7 +2615,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetStartupPlayerCount);
 	F(GetStartupTeamCount);
 	F(EditCursor);
-	F(GainScenarioAchievement);
 	F(GetPXSCount);
 	F(GetPlrKnowledge);
 	F(GetBaseMaterial);

@@ -109,6 +109,10 @@
           <col><funclink>EliminatePlayer</funclink></col>
         </row>
         <row>
+          <col><funclink>GainScenarioAchievement</funclink></col>
+          <col><funclink>GainScenarioAchievement</funclink></col>
+        </row>
+        <row>
           <col><funclink>GetColor</funclink></col>
           <col><funclink>GetPlayerColor</funclink></col>
         </row>
