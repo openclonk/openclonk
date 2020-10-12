@@ -7,14 +7,14 @@
     <title>CheckVisibility</title>
     <category>Objects</category>
     <subcat>Visibility</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>player</name>
-          <desc>Player whose visibility to determine.</desc>
+          <desc>Player whose visibility to determine. Was the player number before 9.0 OC</desc>
           <optional />
         </param>
       </params>
@@ -25,4 +25,5 @@
     </related>
   </func>
   <author>Newton</author><date>2009-07</date>
+  <author>Newton</author><date>2020-10</date>
 </funcs>

@@ -1658,9 +1658,9 @@ static C4String *FnGetProcedure(C4Object *Obj)
 	return pActionDef->GetPropertyStr(P_Procedure);
 }
 
-static bool FnCheckVisibility(C4Object *Obj, int plr) // TODO: C4Player *player
+static bool FnCheckVisibility(C4Object *Obj, C4Player *player)
 {
-	return Obj->IsVisible(plr, false);
+	return Obj->IsVisible(player == nullptr ? NO_OWNER : player->Number, false);
 }
 
 static bool FnSetClrModulation(C4Object *Obj, Nillable<long> dwClr, long iOverlayID)

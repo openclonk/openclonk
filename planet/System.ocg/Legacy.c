@@ -627,6 +627,16 @@ global func SurrenderPlayer(int player_nr, bool remove_direct)
 
 /* -- Player number conversion -- */
 
+global func CheckVisibility(any player)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("CheckVisibility() with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	return _inherited(player, ...);
+}
+
 global func CreateConstruction(type, int x, int y, any owner, int completion, bool adjust_terrain, bool check_site)
 {
 	if (GetType(owner) == C4V_Int)
