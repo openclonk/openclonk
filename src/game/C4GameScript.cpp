@@ -2078,18 +2078,6 @@ static bool FnDrawMaterialQuad(C4PropList * _this, C4String *szMaterial, long iX
 	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, szBackMat, fBridge);
 }
 
-static bool FnSetFilmView(C4PropList * _this, long iToPlr)
-{
-	// check player
-	if (!ValidPlr(iToPlr) && iToPlr != NO_OWNER) return false;
-	// real switch in replays only
-	if (!::Control.isReplay()) return true;
-	// set new target plr
-	if (C4Viewport *vp = ::Viewports.GetFirstViewport()) vp->Init(iToPlr, true);
-	// done, always success (sync)
-	return true;
-}
-
 static bool FnAddMsgBoardCmd(C4PropList * _this, C4String *pstrCommand, C4String *pstrScript)
 {
 	// safety
@@ -2578,7 +2566,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(RemoveShader);
 	F(FrameCounter);
 	F(DrawMaterialQuad);
-	F(SetFilmView);
 	F(AddMsgBoardCmd);
 	::AddFunc(p, "SetGameSpeed", FnSetGameSpeed, false);
 	::AddFunc(p, "DrawMatChunks", FnDrawMatChunks, false);

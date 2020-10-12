@@ -7,7 +7,7 @@
     <title>SetFilmView</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -19,15 +19,17 @@
       </params>
     </syntax>
     <desc>Sets film playback view to the specified player.</desc>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
     <examples>
       <example>
         <code>protected func InitializePlayer(int player)
 {
-	<funclink>if</funclink> (<funclink>GetPlayerName</funclink>(player) eq &quot;Camera&quot;) SetFilmView(player);
+	<funclink>if</funclink> (player.Name == &quot;Camera&quot;) player-&gt;SetFilmView();
 }</code>
         <text>This scenario script sets the playback view of the recorded round to the player with the name "Camera".</text>
       </example>
     </examples>
   </func>
   <author>Sven2</author><date>2002-05</date>
+  <author>Marky</author><date>2020-20</date>
 </funcs>

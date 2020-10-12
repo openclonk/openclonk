@@ -701,6 +701,16 @@ global func PlayRumble(any player, int strength, int length)
 	return player->PlayRumble(strength, length, ...);	
 }
 
+global func SetFilmView(any player)
+{
+	LogLegacyWarning("SetFilmView(player)", "GetPlayer(player)->SetFilmView", VERSION_10_0_OC);
+	if (GetType(player) == C4V_Int)
+	{
+		player = GetPlayer(player);
+	}
+	return player->SetFilmView();
+}
+
 global func StopRumble(any player)
 {
 	if (GetType(player) == C4V_Int)

@@ -193,6 +193,10 @@
           <col><funclink>SetPlrExtraData</funclink></col>
         </row>
         <row>
+          <col><funclink>SetFilmView</funclink></col>
+          <col><funclink>SetFilmView</funclink></col>
+        </row>
+        <row>
           <col><funclink>SetFoW</funclink></col>
           <col><funclink>SetFoW</funclink></col>
         </row>

@@ -16,6 +16,7 @@
 #include "C4Include.h"
 
 #include "control/C4GameControl.h"
+#include "game/C4Viewport.h"
 #include "object/C4Object.h"
 #include "script/C4Aul.h"
 #include "script/C4AulDefFunc.h"
@@ -251,6 +252,18 @@ static bool FnSetCursor(C4Player *player, C4Object *target, bool no_select_arrow
 	return true;
 }
 
+static bool FnSetFilmView(C4Player *player)
+{
+	// Real switch in replays only
+	if (!::Control.isReplay()) return true;
+	// Set new target plr
+	if (C4Viewport *vp = ::Viewports.GetFirstViewport())
+	{
+		vp->Init(player->Number, true); // NO_OWNER is not supported anymore
+	}
+	// Done, always success (sync)
+	return true;
+}
 static C4Value FnSetExtraData(C4Player *player, C4String *DataName, const C4Value & Data)
 {
 	const char * strDataName = FnStringPar(DataName);
@@ -485,6 +498,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	F(SetControlEnabled);
 	F(SetCursor);
 	F(SetExtraData);
+	F(SetFilmView);
 	F(SetFoW);
 	F(SetHostility);
 	F(SetTeam);
