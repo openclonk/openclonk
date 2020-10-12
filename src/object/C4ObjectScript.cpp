@@ -392,7 +392,7 @@ static C4Value FnGetCrewExtraData(C4Object *Obj, C4String * DataName)
 	return pInfo->ExtraData[ival];
 }
 
-static void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, Nillable<long> iCausedBy)
+static void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, Nillable<long> iCausedBy) // TODO: C4Player *player
 {
 	if (iEngType.IsNil())
 	{
@@ -410,7 +410,7 @@ static void FnDoBreath(C4Object *Obj, long iChange)
 	Obj->DoBreath(iChange);
 }
 
-static void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, Nillable<long> iCausedBy)
+static void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, Nillable<long> iCausedBy) // TODO: C4Player *player
 {
 	if (iDmgType.IsNil())
 	{
@@ -967,7 +967,7 @@ static long FnGetDamage(C4Object *Obj)
 	return Obj->Damage;
 }
 
-static long FnGetValue(C4PropList * _this, C4Object *pInBase, long iForPlayer)
+static long FnGetValue(C4PropList * _this, C4Object *pInBase, long iForPlayer) // TODO: C4Player *player
 {
 	if (!Object(_this))
 	{
@@ -1523,7 +1523,7 @@ static C4Object *FnCreateContents(C4Object *Obj, C4PropList * PropList, Nillable
 	return pNewObj;
 }
 
-static bool FnMakeCrewMember(C4Object *Obj, long iPlayer)
+static bool FnMakeCrewMember(C4Object *Obj, long iPlayer) // TODO: C4Player *player, move to other file
 {
 	if (!ValidPlr(iPlayer))
 	{
@@ -1543,7 +1543,7 @@ static bool FnGrabObjectInfo(C4Object *Obj, C4Object *pFrom)
 	return !!Obj->GrabInfo(pFrom);
 }
 
-static bool FnSetCrewStatus(C4Object *Obj, long iPlr, bool fInCrew)
+static bool FnSetCrewStatus(C4Object *Obj, long iPlr, bool fInCrew) // TODO: C4Player *player, to other file
 {
 	// validate player
 	C4Player *pPlr = ::Players.Get(iPlr);
@@ -1658,7 +1658,7 @@ static C4String *FnGetProcedure(C4Object *Obj)
 	return pActionDef->GetPropertyStr(P_Procedure);
 }
 
-static bool FnCheckVisibility(C4Object *Obj, int plr)
+static bool FnCheckVisibility(C4Object *Obj, int plr) // TODO: C4Player *player
 {
 	return Obj->IsVisible(plr, false);
 }

@@ -568,7 +568,7 @@ static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat
 	return extracted;
 }
 
-static void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> caused_by_player_nr, Nillable<long> max_density)
+static void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> caused_by_player_nr, Nillable<long> max_density) // TODO: C4Player *player
 {
 	if (caused_by_player_nr.IsNil() && Object(_this))
 	{
@@ -582,7 +582,7 @@ static void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nilla
 	::Landscape.BlastFree(iX, iY, iLevel, caused_by_player_nr, Object(_this), max_density);
 }
 
-static bool FnSoundAt(C4PropList * _this, C4String *szSound, long x, long y, Nillable<long> level, Nillable<long> at_player_nr, long custom_falloff_distance, long pitch, C4PropList *modifier_props)
+static bool FnSoundAt(C4PropList * _this, C4String *szSound, long x, long y, Nillable<long> level, Nillable<long> at_player_nr, long custom_falloff_distance, long pitch, C4PropList *modifier_props) // TODO: C4Player *player
 {
 	// play here?
 	if (!at_player_nr.IsNil())
@@ -628,7 +628,7 @@ static bool FnSoundAt(C4PropList * _this, C4String *szSound, long x, long y, Nil
 	return true;
 }
 
-static bool FnSound(C4PropList * _this, C4String *sound, bool global, Nillable<long> level, Nillable<long> at_player_nr, long loop_count, long custom_falloff_distance, long pitch, C4PropList *modifier_props)
+static bool FnSound(C4PropList * _this, C4String *sound, bool global, Nillable<long> level, Nillable<long> at_player_nr, long loop_count, long custom_falloff_distance, long pitch, C4PropList *modifier_props) // TODO: C4Player *player
 {
 	// play here?
 	if (!at_player_nr.IsNil())
@@ -716,7 +716,7 @@ static bool FnChangeSoundModifier(C4PropList * _this, C4PropList *modifier_props
 	return true;
 }
 
-static bool FnSetGlobalSoundModifier(C4PropList * _this, C4PropList *modifier_props, Nillable<long> at_player)
+static bool FnSetGlobalSoundModifier(C4PropList * _this, C4PropList *modifier_props, Nillable<long> at_player) // TODO: C4Player *player
 {
 	// set modifier to be applied to all future sounds
 	if (at_player.IsNil())
@@ -765,7 +765,7 @@ static long FnMusicLevel(C4PropList * _this, long iLevel)
 	return ::Application.MusicSystem.SetGameMusicLevel(iLevel);
 }
 
-static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, Nillable<long> at_player_nr, bool force_switch, long fade_time_ms, long max_resume_time_ms)
+static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, Nillable<long> at_player_nr, bool force_switch, long fade_time_ms, long max_resume_time_ms) // TODO: C4Player *player
 {
 	// Safety
 	if (max_resume_time_ms < 0)
@@ -1101,7 +1101,7 @@ static C4PropList *FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 }
 
 // undocumented!
-static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, long player_id)
+static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, long player_id) // TODO: C4Player *player
 {
 	if (!Game.Parameters.isLeague())
 	{
@@ -1306,7 +1306,7 @@ static C4String *FnGetLeague(C4PropList * _this, long idx)
 	return String(sIdxLeague.getData());
 }
 
-static int32_t FnGetLeagueScore(C4PropList * _this, long player_id)
+static int32_t FnGetLeagueScore(C4PropList * _this, long player_id) // TODO: C4Player *player
 {
 	// security
 	if (player_id < 1)
@@ -1323,7 +1323,7 @@ static int32_t FnGetLeagueScore(C4PropList * _this, long player_id)
 	return info->getLeagueScore();
 }
 
-static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long player_id)
+static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long player_id) // TODO: C4Player *player
 {
 	if (!Game.Parameters.League.getLength() || !player_id)
 	{
@@ -1338,7 +1338,7 @@ static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long
 	return true;
 }
 
-static C4String *FnGetLeagueProgressData(C4PropList * _this, long player_id)
+static C4String *FnGetLeagueProgressData(C4PropList * _this, long player_id) // TODO: C4Player *player
 {
 	if (!Game.Parameters.League.getLength())
 	{
@@ -2222,7 +2222,7 @@ static int32_t FnGetScoreboardData(C4PropList * _this, long iRowID, long iColID)
 	return Game.Scoreboard.GetCellData(iColID, iRowID);
 }
 
-static bool FnDoScoreboardShow(C4PropList * _this, long change, long iForPlr)
+static bool FnDoScoreboardShow(C4PropList * _this, long change, long iForPlr) // TODO: C4Player *player
 {
 	C4Player *player;
 	if (iForPlr)
@@ -2242,7 +2242,7 @@ static bool FnSortScoreboard(C4PropList * _this, long iByColID, bool fReverse)
 }
 
 // undocumented!
-static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, long player_id)
+static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, long player_id) // TODO: C4Player *player
 {
 	// safety
 	if (!pText) return false;
@@ -2259,7 +2259,7 @@ static void FnHideSettlementScoreInEvaluation(C4PropList * _this, bool fHide)
 	Game.RoundResults.HideSettlementScore(fHide);
 }
 
-static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize)
+static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize) // TODO: C4Player *player
 {
 	// safeties: for global messages pSrc needs to be object/definition. For object-local messages, any proplist is OK
 	if (pSrc)
