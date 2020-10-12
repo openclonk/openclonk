@@ -426,6 +426,16 @@ global func SetFoW(bool enabled, int player_nr)
 	}
 }
 
+global func SetFilmView(any player)
+{
+	LogLegacyWarning("SetFilmView(player)", "GetPlayer(player)->SetFilmView()", VERSION_10_0_OC);
+	if (GetType(player) == C4V_Int)
+	{
+		player = GetPlayer(player);
+	}
+	return player->SetFilmView();
+}
+
 global func SetHostility(any player, any opponent, bool hostile, bool silent, bool no_calls)
 {
 	LogLegacyWarning("SetHostility", "GetPlayer(player)->SetHostility(opponent, hostile, silent, no_calls)", VERSION_10_0_OC);
@@ -591,6 +601,16 @@ global func SetViewCursor(int player_nr, object target)
 	}
 }
 
+global func SetViewOffset(any player, int x, int y)
+{
+	LogLegacyWarning("SetViewOffset(player, x, y)", "GetPlayer(player)->SetViewOffset(x, y)", VERSION_10_0_OC);
+	if (GetType(player) == C4V_Int)
+	{
+		player = GetPlayer(player);
+	}
+	return player->SetViewOffset(x, y, ...);
+}
+
 global func SurrenderPlayer(int player_nr, bool remove_direct)
 {
 	LogLegacyWarning("SurrenderPlayer", "GetPlayer(player)->Surrender()", VERSION_10_0_OC);
@@ -699,16 +719,6 @@ global func PlayRumble(any player, int strength, int length)
 		}
 	}
 	return player->PlayRumble(strength, length, ...);	
-}
-
-global func SetFilmView(any player)
-{
-	LogLegacyWarning("SetFilmView(player)", "GetPlayer(player)->SetFilmView", VERSION_10_0_OC);
-	if (GetType(player) == C4V_Int)
-	{
-		player = GetPlayer(player);
-	}
-	return player->SetFilmView();
 }
 
 global func StopRumble(any player)

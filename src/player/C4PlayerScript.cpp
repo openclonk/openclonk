@@ -386,6 +386,15 @@ static bool FnSetViewLocked(C4Player *player, bool is_locked)
 	return true;
 }
 
+static bool FnSetViewOffset(C4Player *player, long iX, long iY)
+{
+	// get player viewport
+	C4Viewport *pView = ::Viewports.GetViewport(player->Number);
+	if (!pView) return true; // sync safety
+	pView->SetViewOffset(iX, iY);
+	return true;
+}
+
 static bool FnSetViewTarget(C4Player *player, C4Object *target, bool immediate_position)
 {
 	player->SetViewMode(C4PVM_Target, target, immediate_position);
@@ -504,6 +513,7 @@ void C4PlayerScript::RegisterWithEngine(C4AulScriptEngine *engine)
 	F(SetTeam);
 	F(SetViewCursor);
 	F(SetViewLocked);
+	F(SetViewOffset);
 	F(SetViewTarget);
 	F(SetZoom);
 	F(SetZoomByViewRange);

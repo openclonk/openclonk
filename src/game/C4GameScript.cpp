@@ -26,7 +26,6 @@
 #include "editor/C4Console.h"
 #include "game/C4Application.h"
 #include "game/C4GraphicsSystem.h"
-#include "game/C4Viewport.h"
 #include "graphics/C4GraphicsResource.h"
 #include "graphics/C4Shader.h"
 #include "gui/C4GameMessage.h"
@@ -2141,18 +2140,6 @@ static long FnLoadScenarioSection(C4PropList * _this, C4String *pstrSection, lon
 	return Game.LoadScenarioSection(szSection, dwFlags);
 }
 
-static bool FnSetViewOffset(C4PropList * _this, long player_nr, long iX, long iY)
-{
-	if (!ValidPlr(player_nr)) return false;
-	// get player viewport
-	C4Viewport *pView = ::Viewports.GetViewport(player_nr);
-	if (!pView) return true; // sync safety
-	// set
-	pView->SetViewOffset(iX, iY);
-	// ok
-	return true;
-}
-
 // undocumented!
 static bool FnSetPreSend(C4PropList * _this, long iToVal, C4String *pNewName)
 {
@@ -2574,7 +2561,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(RemoveUnusedTexMapEntries);
 	F(SimFlight);
 	F(LoadScenarioSection);
-	F(SetViewOffset);
 	::AddFunc(p, "SetPreSend", FnSetPreSend, false);
 	F(GetTeamConfig);
 	F(GetTeamName);

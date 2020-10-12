@@ -217,6 +217,10 @@
           <col><funclink>SetPlayerViewLock</funclink></col>
         </row>
         <row>
+          <col><funclink>SetViewOffset</funclink></col>
+          <col><funclink>SetViewOffset</funclink></col>
+        </row>
+        <row>
           <col><code>SetViewTarget</code></col>
           <col><funclink>SetPlrView</funclink></col>
         </row>
