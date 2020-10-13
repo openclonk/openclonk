@@ -2187,15 +2187,13 @@ static int32_t FnGetScoreboardData(C4PropList * _this, long iRowID, long iColID)
 	return Game.Scoreboard.GetCellData(iColID, iRowID);
 }
 
-static bool FnDoScoreboardShow(C4PropList * _this, long change, long iForPlr) // TODO: C4Player *player
+static bool FnDoScoreboardShow(C4PropList * _this, long change, C4Player *player)
 {
-	C4Player *player;
-	if (iForPlr)
+	if (player && !player->LocalControl)
 	{
 		// abort if the specified player is not local - but always return if the player exists,
 		// to ensure sync safety
-		if (!(player = ::Players.Get(iForPlr-1))) return false;
-		if (!player->LocalControl) return true;
+		return true;
 	}
 	Game.Scoreboard.DoDlgShow(change, false);
 	return true;

@@ -627,6 +627,16 @@ global func SurrenderPlayer(int player_nr, bool remove_direct)
 
 /* -- Player number conversion -- */
 
+global func GetPlayerLegacy(any player)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("player number", "player proplist version", VERSION_10_0_OC);
+		return GetPlayer(player);
+	}
+	return player;
+}
+
 global func CheckVisibility(any player)
 {
 	if (GetType(player) == C4V_Int)
@@ -665,6 +675,15 @@ global func CreateObject(type, int x, int y, any owner)
 		owner = GetPlayer(owner);
 	}
 	return _inherited(type, x, y, owner, ...);
+}
+
+global func DoScoreboardShow(int change,  any player)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		player -= 1;
+	}
+	return _inherited(change, GetPlayerLegacy(player), ...);
 }
 
 global func GetPlayerID(any player)
