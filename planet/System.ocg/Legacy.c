@@ -54,27 +54,17 @@ global func EliminatePlayer(int player_nr, bool remove_direct)
 global func GainScenarioAchievement(string achievement_name, any value, any player, string for_scenario)
 {
 	LogLegacyWarning("GainScenarioAchievement", "GetPlayer(player)->GainScenarioAchievement(achievement_name, value, for_scenario)", VERSION_10_0_OC);
-	if (GetType(player) == C4V_Int)
+	if (GetType(player) == C4V_Int && player == NO_OWNER)
 	{
-		// NO_OWNER: stop rumble for all players
-		// Not sure whether this makes sense to do - mainly provided for symmetry with PlayRumble().
-		if (player == NO_OWNER)
+		LogLegacyWarning("GainScenarioAchievement(-1)", "for-loop", VERSION_10_0_OC);
+		var result = true;
+		for (var index = 0; index < GetPlayerCount(); index++)
 		{
-			LogLegacyWarning("GainScenarioAchievement(-1)", "for-loop", VERSION_10_0_OC);
-			var result = true;
-			for (var index = 0; index < GetPlayerCount(); index++)
-			{
-				result &= GetPlayerByIndex(index)->GainScenarioAchievement(achievement_name, value, for_scenario, ...);
-			}
-			return true;
+			result &= GetPlayerByIndex(index)->GainScenarioAchievement(achievement_name, value, for_scenario, ...);
 		}
-		else
-		{
-			LogLegacyWarning("GainScenarioAchievement() with player number", "player proplist version", VERSION_10_0_OC);
-			player = GetPlayer(player);
-		}
+		return true;
 	}
-	return player->GainScenarioAchievement(achievement_name, value, for_scenario, ...);
+	return GetPlayerLegacy(player)->GainScenarioAchievement(achievement_name, value, for_scenario, ...);
 }
 
 global func GetCrew(int player_nr, int index)
@@ -368,19 +358,9 @@ global func GetViewCursor(int player_nr)
 global func Hostile(any player, any opponent, bool check_one_way_only)
 {
 	LogLegacyWarning("Hostile", "GetPlayer(player)->Hostile(opponent, check_one_way_only)", VERSION_10_0_OC);
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("Hostile with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	if (GetType(opponent) == C4V_Int)
-	{
-		LogLegacyWarning("Hostile with player number", "player proplist version", VERSION_10_0_OC);
-		opponent = GetPlayer(opponent);
-	}
 	if (player)
 	{
-		return player->Hostile(opponent, check_one_way_only, ...);
+		return GetPlayerLegacy(player)->Hostile(GetPlayerLegacy(opponent), check_one_way_only, ...);
 	}
 	else
 	{
@@ -429,29 +409,15 @@ global func SetFoW(bool enabled, int player_nr)
 global func SetFilmView(any player)
 {
 	LogLegacyWarning("SetFilmView(player)", "GetPlayer(player)->SetFilmView()", VERSION_10_0_OC);
-	if (GetType(player) == C4V_Int)
-	{
-		player = GetPlayer(player);
-	}
-	return player->SetFilmView();
+	return GetPlayerLegacy(player)->SetFilmView();
 }
 
 global func SetHostility(any player, any opponent, bool hostile, bool silent, bool no_calls)
 {
 	LogLegacyWarning("SetHostility", "GetPlayer(player)->SetHostility(opponent, hostile, silent, no_calls)", VERSION_10_0_OC);
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("SetHostility with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	if (GetType(opponent) == C4V_Int)
-	{
-		LogLegacyWarning("SetHostility with player number", "player proplist version", VERSION_10_0_OC);
-		opponent = GetPlayer(opponent);
-	}
 	if (player)
 	{
-		return player->SetHostility(opponent, hostile, silent, no_calls, ...);
+		return GetPlayerLegacy(player)->SetHostility(GetPlayerLegacy(opponent), hostile, silent, no_calls, ...);
 	}
 	else
 	{
@@ -604,11 +570,7 @@ global func SetViewCursor(int player_nr, object target)
 global func SetViewOffset(any player, int x, int y)
 {
 	LogLegacyWarning("SetViewOffset(player, x, y)", "GetPlayer(player)->SetViewOffset(x, y)", VERSION_10_0_OC);
-	if (GetType(player) == C4V_Int)
-	{
-		player = GetPlayer(player);
-	}
-	return player->SetViewOffset(x, y, ...);
+	return GetPlayerLegacy(player)->SetViewOffset(x, y, ...);
 }
 
 global func SurrenderPlayer(int player_nr, bool remove_direct)
@@ -639,47 +601,27 @@ global func GetPlayerLegacy(any player)
 
 global func CheckVisibility(any player)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("CheckVisibility() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(player, ...);
+	return inherited(GetPlayerLegacy(player), ...);
 }
 
 global func CreateConstruction(type, int x, int y, any owner, int completion, bool adjust_terrain, bool check_site)
 {
-	if (GetType(owner) == C4V_Int)
-	{
-		LogLegacyWarning("CreateConstruction() with player number", "player proplist version", VERSION_10_0_OC);
-		owner = GetPlayer(owner);
-	}
-	return _inherited(type, x, y, owner, completion, adjust_terrain, check_site, ...);
+	return inherited(type, x, y, GetPlayerLegacy(owner), completion, adjust_terrain, check_site, ...);
 }
 
 global func CreateObjectAbove(type, int x, int y, any owner)
 {
-	if (GetType(owner) == C4V_Int)
-	{
-		LogLegacyWarning("CreateObjectAbove() with player number", "player proplist version", VERSION_10_0_OC);
-		owner = GetPlayer(owner);
-	}
-	return _inherited(type, x, y, owner, ...);
+	return inherited(type, x, y, GetPlayerLegacy(owner), ...);
 }
 
 global func CreateObject(type, int x, int y, any owner)
 {
-	if (GetType(owner) == C4V_Int)
-	{
-		LogLegacyWarning("CreateObject() with player number", "player proplist version", VERSION_10_0_OC);
-		owner = GetPlayer(owner);
-	}
-	return _inherited(type, x, y, owner, ...);
+	return inherited(type, x, y, GetPlayerLegacy(owner), ...);
 }
 
 global func CustomMessage(string message, object obj, any player, int offset_x, int offset_y, int color, id deco, proplist portrait, int flags, int width)
 {
-	return _inherited(message, obj, GetPlayerLegacy(player), offset_x, offset_y, color, deco, portrait, flags, width, ...);
+	return inherited(message, obj, GetPlayerLegacy(player), offset_x, offset_y, color, deco, portrait, flags, width, ...);
 }
 
 global func DoScoreboardShow(int change,  any player)
@@ -688,156 +630,89 @@ global func DoScoreboardShow(int change,  any player)
 	{
 		player -= 1;
 	}
-	return _inherited(change, GetPlayerLegacy(player), ...);
+	return inherited(change, GetPlayerLegacy(player), ...);
 }
 
 global func GetPlayerID(any player)
 {
 	LogLegacyWarning("GetPlayerID()", "GetPlayer(player).ID", VERSION_10_0_OC);
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("GetPlayerID() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return player.ID;
+	return GetPlayerLegacy(player).ID;
 }
 
 global func GetPlayerInfoCoreVal(string entry, string section, any player, int index)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("GetPlayerInfoCoreVal() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(entry, section, player, index, ...);
+	return inherited(entry, section, GetPlayerLegacy(player), index, ...);
 }
 
 global func GetPlayerVal(string entry, string section, any player, int index)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("GetPlayerVal() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(entry, section, player, index, ...);
+	return inherited(entry, section, GetPlayerLegacy(player), index, ...);
 }
 
 global func MakeCrewMember(any player)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("MakeCrewMember() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(player, ...);
+	return inherited(GetPlayerLegacy(player), ...);
 }
 
 global func PlayerMessage(any player, string message)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("PlayerMessage() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(player, message, ...);
+	return inherited(GetPlayerLegacy(player), message, ...);
 }
 
 global func PlayRumble(any player, int strength, int length)
 {
-	if (GetType(player) == C4V_Int)
+	if (GetType(player) == C4V_Int && player == NO_OWNER)
 	{
 		// NO_OWNER: play rumble for all players (e.g. earthquakes)
-		if (player == NO_OWNER)
+		LogLegacyWarning("PlayRumble(-1)", "for-loop", VERSION_10_0_OC);
+		for (var index = 0; index < GetPlayerCount(); index++)
 		{
-			LogLegacyWarning("PlayRumble(-1)", "for-loop", VERSION_10_0_OC);
-			for (var index = 0; index < GetPlayerCount(); index++)
-			{
-				GetPlayerByIndex(index)->PlayRumble(strength, length, ...);
-			}
-			return true;
+			GetPlayerByIndex(index)->PlayRumble(strength, length, ...);
 		}
-		else
-		{
-			LogLegacyWarning("PlayRumble() with player number", "player proplist version", VERSION_10_0_OC);
-			player = GetPlayer(player);
-		}
+		return true;
 	}
-	return player->PlayRumble(strength, length, ...);	
+	return GetPlayerLegacy(player)->PlayRumble(strength, length, ...);	
 }
 
 global func SetCrewStatus(any player, bool in_crew)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("SetCrewStatus() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(player, in_crew, ...);
+	return inherited(GetPlayerLegacy(player), in_crew, ...);
 }
 
 global func SetGlobalSoundModifier(proplist modifier_props, any player)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("SetGlobalSoundModifier() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(modifier_props, player, ...);
+	return inherited(modifier_props, GetPlayerLegacy(player), ...);
 }
 
 global func SetPlayList(any playlist, any player, bool force_switch, int fade_time_ms, int max_resume_time_ms)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("SetPlayList() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(playlist, player, force_switch, fade_time_ms, max_resume_time_ms, ...);
-
+	return inherited(playlist, GetPlayerLegacy(player), force_switch, fade_time_ms, max_resume_time_ms, ...);
 }
 
 global func Sound(string sound, bool global, int level, any player, int loop_count, int custom_falloff_distance, int pitch, proplist modifier_props)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("Sound() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(sound, global, level, player, loop_count, custom_falloff_distance, pitch, modifier_props, ...);
+	return inherited(sound, global, level, GetPlayerLegacy(player), loop_count, custom_falloff_distance, pitch, modifier_props, ...);
 }
 
 global func SoundAt(string sound, int x, int y, int level, any player, int custom_falloff_distance, int pitch, proplist modifier_props)
 {
-	if (GetType(player) == C4V_Int)
-	{
-		LogLegacyWarning("SoundAt() with player number", "player proplist version", VERSION_10_0_OC);
-		player = GetPlayer(player);
-	}
-	return _inherited(sound, x, y, level, player, custom_falloff_distance, pitch, modifier_props, ...);
+	return inherited(sound, x, y, level, GetPlayerLegacy(player), custom_falloff_distance, pitch, modifier_props, ...);
 }
 
 global func StopRumble(any player)
 {
-	if (GetType(player) == C4V_Int)
+	if (GetType(player) == C4V_Int && player == NO_OWNER)
 	{
 		// NO_OWNER: stop rumble for all players
 		// Not sure whether this makes sense to do - mainly provided for symmetry with PlayRumble().
-		if (player == NO_OWNER)
+		LogLegacyWarning("StopRumble(-1)", "for-loop", VERSION_10_0_OC);
+		for (var index = 0; index < GetPlayerCount(); index++)
 		{
-			LogLegacyWarning("StopRumble(-1)", "for-loop", VERSION_10_0_OC);
-			for (var index = 0; index < GetPlayerCount(); index++)
-			{
-				GetPlayerByIndex(index)->StopRumble();
-			}
-			return true;
+			GetPlayerByIndex(index)->StopRumble();
 		}
-		else
-		{
-			LogLegacyWarning("StopRumble() with player number", "player proplist version", VERSION_10_0_OC);
-			player = GetPlayer(player);
-		}
+		return true;
 	}
-	return player->StopRumble();	
+	return GetPlayerLegacy(player)->StopRumble();	
 }
 
 /* -- Other stuff -- */
