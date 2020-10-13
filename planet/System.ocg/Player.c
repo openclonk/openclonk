@@ -132,6 +132,7 @@ global func GetPlayers(int player_type, int team)
 			PushBack(player_list, player);
 		}
 	}
+	return player_list;
 }
 
 // Returns the player number corresponding to the specified player ID.
