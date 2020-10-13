@@ -751,6 +751,47 @@ global func SetCrewStatus(any player, bool in_crew)
 	return _inherited(player, in_crew, ...);
 }
 
+global func SetGlobalSoundModifier(proplist modifier_props, any player)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("SetGlobalSoundModifier() with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	return _inherited(modifier_props, player, ...);
+}
+
+global func SetPlayList(any playlist, any player, bool force_switch, int fade_time_ms, int max_resume_time_ms)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("SetPlayList() with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	return _inherited(playlist, player, force_switch, fade_time_ms, max_resume_time_ms, ...);
+
+}
+
+global func Sound(string sound, bool global, int level, any player, int loop_count, int custom_falloff_distance, int pitch, proplist modifier_props)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("Sound() with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	return _inherited(sound, global, level, player, loop_count, custom_falloff_distance, pitch, modifier_props, ...);
+}
+
+global func SoundAt(string sound, int x, int y, int level, any player, int custom_falloff_distance, int pitch, proplist modifier_props)
+{
+	if (GetType(player) == C4V_Int)
+	{
+		LogLegacyWarning("SoundAt() with player number", "player proplist version", VERSION_10_0_OC);
+		player = GetPlayer(player);
+	}
+	return _inherited(sound, x, y, level, player, custom_falloff_distance, pitch, modifier_props, ...);
+}
+
 global func StopRumble(any player)
 {
 	if (GetType(player) == C4V_Int)

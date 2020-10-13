@@ -582,24 +582,13 @@ static void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nilla
 	::Landscape.BlastFree(iX, iY, iLevel, caused_by_player_nr, Object(_this), max_density);
 }
 
-static bool FnSoundAt(C4PropList * _this, C4String *szSound, long x, long y, Nillable<long> level, Nillable<long> at_player_nr, long custom_falloff_distance, long pitch, C4PropList *modifier_props) // TODO: C4Player *player
+static bool FnSoundAt(C4PropList * _this, C4String *szSound, long x, long y, Nillable<long> level, C4Player *player, long custom_falloff_distance, long pitch, C4PropList *modifier_props)
 {
-	// play here?
-	if (!at_player_nr.IsNil())
+	// network client: don't play here
+	// return true for network sync
+	if (player && !player->LocalControl)
 	{
-		// get player to play at
-		C4Player *player = ::Players.Get(at_player_nr);
-		// not existant? fail
-		if (!player)
-		{
-			return false;
-		}
-		// network client: don't play here
-		// return true for network sync
-		if (!player->LocalControl)
-		{
-			return true;
-		}
+		return true;
 	}
 	// even less than nothing?
 	if (level < 0)
@@ -628,24 +617,13 @@ static bool FnSoundAt(C4PropList * _this, C4String *szSound, long x, long y, Nil
 	return true;
 }
 
-static bool FnSound(C4PropList * _this, C4String *sound, bool global, Nillable<long> level, Nillable<long> at_player_nr, long loop_count, long custom_falloff_distance, long pitch, C4PropList *modifier_props) // TODO: C4Player *player
+static bool FnSound(C4PropList * _this, C4String *sound, bool global, Nillable<long> level, C4Player *player, long loop_count, long custom_falloff_distance, long pitch, C4PropList *modifier_props)
 {
-	// play here?
-	if (!at_player_nr.IsNil())
+	// network client: don't play here
+	// return true for network sync
+	if (player && !player->LocalControl)
 	{
-		// get player to play at
-		C4Player *player = ::Players.Get(at_player_nr);
-		// not existant? fail
-		if (!player)
-		{
-			return false;
-		}
-		// network client: don't play here
-		// return true for network sync
-		if (!player->LocalControl)
-		{
-			return true;
-		}
+		return true;
 	}
 	// even less than nothing?
 	if (level < 0) return true;
@@ -716,10 +694,10 @@ static bool FnChangeSoundModifier(C4PropList * _this, C4PropList *modifier_props
 	return true;
 }
 
-static bool FnSetGlobalSoundModifier(C4PropList * _this, C4PropList *modifier_props, Nillable<long> at_player) // TODO: C4Player *player
+static bool FnSetGlobalSoundModifier(C4PropList * _this, C4PropList *modifier_props, C4Player *player)
 {
 	// set modifier to be applied to all future sounds
-	if (at_player.IsNil())
+	if (!player)
 	{
 		// no player given: Global modifier for all players.
 		Game.SetGlobalSoundModifier(modifier_props);
@@ -727,11 +705,6 @@ static bool FnSetGlobalSoundModifier(C4PropList * _this, C4PropList *modifier_pr
 	else
 	{
 		// modifier for all viewports of a player
-		C4Player *player = ::Players.Get(at_player);
-		if (!player)
-		{
-			return false;
-		}
 		player->SetSoundModifier(modifier_props);
 	}
 	// always true on valid params for sync safety
@@ -765,7 +738,7 @@ static long FnMusicLevel(C4PropList * _this, long iLevel)
 	return ::Application.MusicSystem.SetGameMusicLevel(iLevel);
 }
 
-static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, Nillable<long> at_player_nr, bool force_switch, long fade_time_ms, long max_resume_time_ms) // TODO: C4Player *player
+static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, C4Player *player, bool force_switch, long fade_time_ms, long max_resume_time_ms)
 {
 	// Safety
 	if (max_resume_time_ms < 0)
@@ -773,17 +746,9 @@ static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, Nil
 		return 0;
 	}
 	// If a player number is provided, set play list for clients where given player is local only
-	if (!at_player_nr.IsNil() && at_player_nr != NO_OWNER)
+	if (player && !player->LocalControl)
 	{
-		C4Player *at_plr = ::Players.Get(at_player_nr);
-		if (!at_plr)
-		{
-			return 0;
-		}
-		if (!at_plr->LocalControl)
-		{
-			return 0;
-		}
+		return 0;
 	}
 	// Playlist might be a string for the new playlist, a proplist with more info, or nil to reset the playlist
 	C4String * playlist = playlist_data.getStr();
