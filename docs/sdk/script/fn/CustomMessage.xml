@@ -6,7 +6,7 @@
   <func>
     <title>CustomMessage</title>
     <category>Messages</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -22,9 +22,9 @@
           <optional />
         </param>
         <param>
-          <type>int</type>
-          <name>plr</name>
-          <desc>Player number for which the message should be displayed. Defaults to <code>NO_OWNER</code> which will display the message globally.</desc>
+          <type>proplist</type>
+          <name>player</name>
+          <desc>Player for which the message should be displayed. Defaults to <code>nil</code> which will display the message globally. Before 9.0 OC, this was the player number and the default was <code>NO_OWNER</code.</desc>
           <optional />
         </param>
         <param>
@@ -187,4 +187,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2008-07</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

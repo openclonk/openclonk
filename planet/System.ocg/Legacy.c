@@ -677,6 +677,11 @@ global func CreateObject(type, int x, int y, any owner)
 	return _inherited(type, x, y, owner, ...);
 }
 
+global func CustomMessage(string message, object obj, any player, int offset_x, int offset_y, int color, id deco, proplist portrait, int flags, int width)
+{
+	return _inherited(message, obj, GetPlayerLegacy(player), offset_x, offset_y, color, deco, portrait, flags, width, ...);
+}
+
 global func DoScoreboardShow(int change,  any player)
 {
 	if (GetType(player) == C4V_Int)

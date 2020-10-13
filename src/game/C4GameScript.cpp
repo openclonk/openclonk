@@ -2222,7 +2222,7 @@ static void FnHideSettlementScoreInEvaluation(C4PropList * _this, bool fHide)
 	Game.RoundResults.HideSettlementScore(fHide);
 }
 
-static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize) // TODO: C4Player *player
+static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, C4Player *player, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize)
 {
 	// safeties: for global messages pSrc needs to be object/definition. For object-local messages, any proplist is OK
 	if (pSrc)
@@ -2232,7 +2232,7 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 	const char *szMsg = pMsg->GetCStr();
 	if (!szMsg) return false;
 	if (idDeco && !C4Id2Def(idDeco)) return false;
-	if (iOwner.IsNil()) iOwner = NO_OWNER;
+	long iOwner = player == nullptr ? NO_OWNER : player->Number;
 	// only one positioning flag per direction allowed
 	uint32_t hpos = dwFlags & (C4GM_Left | C4GM_HCenter | C4GM_Right);
 	uint32_t vpos = dwFlags & (C4GM_Top | C4GM_VCenter | C4GM_Bottom);
