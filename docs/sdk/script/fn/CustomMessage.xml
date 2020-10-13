@@ -173,11 +173,11 @@
     <remark>Messages are displayed until a certain time which depends on the length of the message has passed, or the message is replaced by another message of the same class. A global message (i.e. obj=0) replaces all other global messages, and an object message (obj!=0) replaces all other object messages. To display multiple messages of the same class the flag MSG_Multiple can be used.</remark>
     <examples>
       <example>
-        <code>CustomMessage(&quot;This is &lt;i&gt;madness&lt;/i&gt;!&quot;,nil,0);</code>
+        <code>CustomMessage(&quot;This is &lt;i&gt;madness&lt;/i&gt;!&quot;,nil,<funclink>GetPlayer</funclink>(0));</code>
         <text>Shows the message "This is madness!" for player 0 only with the word "madness" being written in italic.</text>
       </example>
       <example>
-        <code>CustomMessage(&quot;&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world&quot;, nil, NO_OWNER, 100,100, 0, GUI_MenuDeco, Clonk);</code>
+        <code>CustomMessage(&quot;&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world&quot;, nil, nil, 100,100, 0, GUI_MenuDeco, Clonk);</code>
         <text>Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a clonk picture will be shown. The decoration definition GUI_MenuDeco needs to be loaded.</text>
       </example>
     </examples>
