@@ -608,12 +608,12 @@ global func CreateConstruction(type, int x, int y, any owner, int completion, bo
 {
 	return inherited(type, x, y, GetPlayerLegacy(owner), completion, adjust_terrain, check_site, ...);
 }
-
+/*
 global func CreateObjectAbove(type, int x, int y, any owner)
 {
 	return inherited(type, x, y, GetPlayerLegacy(owner), ...);
 }
-
+*/
 global func CreateObject(type, int x, int y, any owner)
 {
 	return inherited(type, x, y, GetPlayerLegacy(owner), ...);

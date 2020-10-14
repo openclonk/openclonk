@@ -209,7 +209,7 @@ public:
 
 	inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
 	int32_t GetPlane() { return GetPropertyInt(P_Plane); }
-	int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
+	int32_t GetValue(C4Object *pInBase, C4Player *player);         // get value of def; calling script functions if defined
 	void Synchronize();
 	C4Def const * GetDef() const override { return this; }	
 	C4Def * GetDef() override { return this; }

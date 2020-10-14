@@ -618,9 +618,9 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 	graphics->Draw(cgo, iColor, pObj, iPhaseX, iPhaseY, trans);
 }
 
-int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
+int32_t C4Def::GetValue(C4Object *pInBase, C4Player* buying_player)
 {
-	C4Value r = Call(PSF_CalcDefValue, &C4AulParSet(pInBase, iBuyPlayer));
+	C4Value r = Call(PSF_CalcDefValue, &C4AulParSet(pInBase, buying_player));
 	int32_t iValue = Value;
 	if (r != C4VNull)
 		iValue = r.getInt();

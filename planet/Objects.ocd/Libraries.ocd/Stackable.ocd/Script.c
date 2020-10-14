@@ -284,7 +284,7 @@ protected func RejectEntrance(object into)
  * It is assumed that the definition value defines the value for InitialStackCount()
  * objects in one stack.
  */
-public func CalcValue(object in_base, int for_plr)
+public func CalcValue(object in_base, proplist for_plr)
 {
 	return GetID()->GetValue() * Max(GetStackCount(), 1) / InitialStackCount();
 }

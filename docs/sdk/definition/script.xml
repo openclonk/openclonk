@@ -230,12 +230,12 @@
         </row>
         <row id="CalcValue">
           <literal_col>CalcValue</literal_col>
-          <col>object in_base, int for_player</col>
+          <col>object in_base, proplist for_player</col>
           <col>Calculates the value of an object. Also see <emlink href="script/fn/GetValue.html">GetValue</emlink>().</col>
         </row>
         <row id="CalcDefValue">
           <literal_col>CalcDefValue</literal_col>
-          <col>object in_base, int for_player</col>
+          <col>object in_base, proplist for_player</col>
           <col>Calculates the value of an object type available to buy. Also see <emlink href="script/fn/GetValue.html">GetValue</emlink>().</col>
         </row>
         <row id="CalcBuyValue">
@@ -569,4 +569,5 @@ local EditorProps = {
   <author>Clonkonaut</author><date>2008-04</date>
   <author>Sven2</author><date>2013-12</date>
   <author>Marky</author><date>2019-07</date>
+  <author>Marky</author><date>2020-10</date>
 </doc>

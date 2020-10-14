@@ -146,7 +146,7 @@ public func UpdateMass()
 
 // 1000 liquid items count as 1 wealth unit
 // this may have to be tuned or made object-specific?
-public func CalcValue(object in_base, int for_plr)
+public func CalcValue(object in_base, proplist for_plr)
 {
 	return GetID()->GetValue() * Max(1, GetLiquidAmount()) / 1000;
 }

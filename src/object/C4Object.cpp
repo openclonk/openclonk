@@ -788,9 +788,9 @@ void C4Object::SetName(const char * NewName)
 		C4PropList::SetName(NewName);
 }
 
-int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
+int32_t C4Object::GetValue(C4Object *pInBase, C4Player *player)
 {
-	C4Value r = Call(PSF_CalcValue, &C4AulParSet(pInBase, iForPlayer));
+	C4Value r = Call(PSF_CalcValue, &C4AulParSet(pInBase, player));
 	int32_t iValue;
 	if (r != C4VNull)
 		iValue = r.getInt();
@@ -799,7 +799,7 @@ int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 		// get value of def
 		// Caution: Do not pass pInBase here, because the def base value is to be queried
 		//  - and not the value if you had to buy the object in this particular base
-		iValue = Def->GetValue(nullptr, iForPlayer);
+		iValue = Def->GetValue(nullptr, player);
 	}
 	// Con percentage
 	iValue = iValue * Con / FullCon;

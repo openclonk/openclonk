@@ -60,6 +60,7 @@ const char* GetC4VName(const C4V_Type Type)
 	}
 }
 
+C4Value::C4Value(C4Player * p): C4Value((C4PropList *) p) {}
 C4Value::C4Value(C4PropListStatic * p): C4Value(static_cast<C4PropList *>(p)) {}
 C4Value::C4Value(C4Def * p): C4Value(static_cast<C4PropList *>(p)) {}
 C4Value::C4Value(C4Object * p): C4Value(static_cast<C4PropList *>(p)) {}

@@ -293,7 +293,7 @@ public:
 	C4Real GetSpeed() const;
 	StdStrBuf GetDataString();
 	void SetName (const char *NewName = nullptr) override;
-	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
+	int32_t GetValue(C4Object *pInBase, C4Player *player);
 	bool SetOwner(int32_t iOwner);
 	bool SetLightRange(int32_t iToRange, int32_t iToFadeoutRange);
 	uint32_t GetLightColor() const { return lightColor; }

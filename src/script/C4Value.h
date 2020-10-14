@@ -86,6 +86,7 @@ public:
 	{ Data.Int = data; }
 	explicit C4Value(long data): Type(C4V_Int)
 	{ Data.Int = int32_t(data); }
+	explicit C4Value(C4Player *p);
 	explicit C4Value(C4PropListStatic *p);
 	explicit C4Value(C4Def *p);
 	explicit C4Value(C4Object *pObj);

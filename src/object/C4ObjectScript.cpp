@@ -967,7 +967,7 @@ static long FnGetDamage(C4Object *Obj)
 	return Obj->Damage;
 }
 
-static long FnGetValue(C4PropList * _this, C4Object *pInBase, long iForPlayer) // TODO: C4Player *player
+static long FnGetValue(C4PropList * _this, C4Object *pInBase, C4Player *player)
 {
 	if (!Object(_this))
 	{
@@ -977,12 +977,12 @@ static long FnGetValue(C4PropList * _this, C4Object *pInBase, long iForPlayer) /
 		}
 		else
 		{
-			return _this->GetDef()->GetValue(pInBase, iForPlayer);
+			return _this->GetDef()->GetValue(pInBase, player);
 		}
 	}
 	else
 	{
-		return Object(_this)->GetValue(pInBase, iForPlayer);
+		return Object(_this)->GetValue(pInBase, player);
 	}
 }
 
