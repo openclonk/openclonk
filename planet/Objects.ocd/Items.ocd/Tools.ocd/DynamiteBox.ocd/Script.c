@@ -178,7 +178,7 @@ public func Incineration(int caused_by)
 	SetController(caused_by);
 }
 
-public func Damage(int change, int type, int by_player)
+public func Damage(int change, int type, proplist by_player)
 {
 	Incinerate(nil, by_player);
 }

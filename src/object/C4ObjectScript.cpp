@@ -410,17 +410,13 @@ static void FnDoBreath(C4Object *Obj, long iChange)
 	Obj->DoBreath(iChange);
 }
 
-static void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, Nillable<long> iCausedBy) // TODO: C4Player *player
+static void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, C4Player *caused_by)
 {
 	if (iDmgType.IsNil())
 	{
 		iDmgType = C4FxCall_DmgScript;
 	}
-	if (iCausedBy.IsNil())
-	{
-		iCausedBy = NO_OWNER;
-	}
-	Obj->DoDamage(iChange, iCausedBy, iDmgType);
+	Obj->DoDamage(iChange, caused_by, iDmgType);
 }
 
 static void FnSetEntrance(C4Object *Obj, bool e_status)

@@ -292,7 +292,7 @@ public func ContactRight() { return Hit(); }
 public func Hit() { return DoFireworks(NO_OWNER); }
 public func HitObject(object ) { return DoFireworks(NO_OWNER); }
 
-public func Damage(int change, int cause, int cause_plr)
+public func Damage(int change, int cause, proplist cause_plr)
 {
 	if (change > 0)
 		return DoFireworks(cause_plr);

@@ -145,7 +145,7 @@ public func IsProjectileTarget()
 	return true;
 }
 
-public func Damage(int change, int cause, int by_player)
+public func Damage(int change, int cause, proplist by_player)
 {
 	Incinerate(100, by_player);
 }

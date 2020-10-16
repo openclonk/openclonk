@@ -568,18 +568,18 @@ bool C4Object::ChangeDef(C4ID idNew)
 	return true;
 }
 
-void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
+void C4Object::DoDamage(int32_t iChange, C4Player *caused_by, int32_t iCause)
 {
 	// non-living: ask effects first
 	if (pEffects && !Alive)
 	{
-		pEffects->DoDamage(iChange, iCause, iCausedBy);
+		pEffects->DoDamage(iChange, iCause, caused_by);
 		if (!iChange) return;
 	}
 	// Change value
 	Damage = std::max<int32_t>( Damage+iChange, 0 );
 	// Engine script call
-	Call(PSF_Damage,&C4AulParSet(iChange, iCause, iCausedBy));
+	Call(PSF_Damage,&C4AulParSet(iChange, iCause, caused_by));
 }
 
 void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr)
@@ -592,13 +592,14 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 		int32_t scale = C4MaxPhysical / 100; // iChange 100% = Physical 100000
 		iChange = Clamp<int32_t>(iChange, std::numeric_limits<int32_t>::min()/scale, std::numeric_limits<int32_t>::max()/scale)*scale;
 	}
+	C4Player *caused_by = ::Players.Get(iCausedByPlr);
 	// Was zero?
 	bool fWasZero=(Energy==0);
 	// Mark last damage causing player to trace kills
 	if (iChange < 0) UpdatLastEnergyLossCause(iCausedByPlr);
 	// Living things: ask effects for change first
 	if (pEffects && Alive)
-		pEffects->DoDamage(iChange, iCause, iCausedByPlr);
+		pEffects->DoDamage(iChange, iCause, caused_by);
 	// Do change
 	iChange = Clamp<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
 	Energy += iChange;

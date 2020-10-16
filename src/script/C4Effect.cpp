@@ -391,14 +391,14 @@ void C4Effect::ClearAll(int32_t iClearFlag)
 		Call(P_Destruction, &C4AulParSet(iClearFlag));
 }
 
-void C4Effect::DoDamage(int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr)
+void C4Effect::DoDamage(int32_t &riDamage, int32_t iDamageType, C4Player *caused_by)
 {
 	// ask all effects for damage adjustments
 	C4Effect *pEff = this;
 	do
 	{
 		if (!pEff->IsDead())
-			pEff->CallDamage(riDamage, iDamageType, iCausePlr);
+			pEff->CallDamage(riDamage, iDamageType, caused_by);
 		if (Target && !Target->Status) return;
 	}
 	while ((pEff = pEff->pNext) && riDamage);
@@ -459,16 +459,16 @@ int C4Effect::CallTimer(int time)
 	}
 	return C4Fx_Execute_Kill;
 }
-void C4Effect::CallDamage(int32_t & damage, int damagetype, int plr)
+void C4Effect::CallDamage(int32_t & damage, int damagetype, C4Player *player)
 {
 	if (!GetCallbackScript())
 	{
 		C4AulFunc *pFn = GetFunc(P_Damage);
 		if (pFn)
-			damage = pFn->Exec(this, &C4AulParSet(damage, damagetype, plr)).getInt();
+			damage = pFn->Exec(this, &C4AulParSet(damage, damagetype, player)).getInt();
 	}
 	else if (pFnDamage)
-		damage = pFnDamage->Exec(GetCallbackScript(), &C4AulParSet(Obj(Target), this, damage, damagetype, plr)).getInt();
+		damage = pFnDamage->Exec(GetCallbackScript(), &C4AulParSet(Obj(Target), this, damage, damagetype, player)).getInt();
 }
 int C4Effect::CallEffect(const char * effect, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
 {

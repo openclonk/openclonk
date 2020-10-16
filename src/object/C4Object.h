@@ -263,7 +263,7 @@ public:
 	void MovePosition(C4Real dx, C4Real dy);
 	void DoMotion(int32_t mx, int32_t my);
 	bool ActivateEntrance(int32_t by_plr, C4Object *by_obj);
-	void DoDamage(int32_t iLevel, int32_t iCausedByPlr, int32_t iCause);
+	void DoDamage(int32_t iLevel, C4Player *caused_by, int32_t iCause);
 	void DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr);
 	void UpdatLastEnergyLossCause(int32_t iNewCausePlr);
 	void DoBreath(int32_t iChange);
