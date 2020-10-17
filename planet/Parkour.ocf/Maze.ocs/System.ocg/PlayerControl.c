@@ -2,7 +2,7 @@
 		Override screenshot functionality
 --*/
 
-global func PlayerControl(int plr, int ctrl, ...)
+global func PlayerControl(proplist plr, int ctrl, ...)
 {
 	if (ctrl == CON_TryScreenshot)
 	{

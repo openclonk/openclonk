@@ -14,7 +14,7 @@ static g_player_cursor_pos; // array of [x, y] pos arrays; indexed by player. la
 // Forwards control to special handler or cursor
 // Return whether handled
 // documented in /docs/sdk/script/fn
-global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, int status)
+global func PlayerControl(proplist plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, int status)
 {
 	var release = status == CONS_Up;
 	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x, y, strength, repeat, status);
@@ -534,7 +534,7 @@ global func MouseDragDrop(int plr, object source, object target)
 /* Debug */
 
 // uncomment this to get log messages for any player control issued
-/*global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, bool release)
+/*global func PlayerControl(proplist plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, bool release)
 {
 	var r = inherited(plr, ctrl, spec_id, x, y, strength, repeat, release, ...), rs;
 	if (r) rs = ""; else rs = "!";
