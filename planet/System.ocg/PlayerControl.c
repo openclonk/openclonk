@@ -14,22 +14,22 @@ static g_player_cursor_pos; // array of [x, y] pos arrays; indexed by player. la
 // Forwards control to special handler or cursor
 // Return whether handled
 // documented in /docs/sdk/script/fn
-global func PlayerControl(proplist plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, int status)
+global func PlayerControl(proplist player, int ctrl, id spec_id, int x, int y, int strength, bool repeat, int status)
 {
 	var release = status == CONS_Up;
-	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x, y, strength, repeat, status);
+	//Log("%d, %s, %i, %d, %d, %d, %v, %v", player, GetPlayerControlName(ctrl), spec_id, x, y, strength, repeat, status);
 	// Control handled by definition? Forward
-	if (spec_id) return spec_id->ForwardedPlayerControl(plr, ctrl, x, y, strength, repeat, status);
+	if (spec_id) return spec_id->ForwardedPlayerControl(player, ctrl, x, y, strength, repeat, status);
 
 	// Forward control to player
-	if (Control2Player(plr, ctrl, x, y, strength, repeat, status)) return true;
+	if (Control2Player(player, ctrl, x, y, strength, repeat, status)) return true;
 
 	// Forward control to cursor
-	var cursor = GetCursor(plr);
+	var cursor = player->GetCursor();
 	if (cursor && cursor->GetCrewEnabled())
 	{
-		// Object controlled by plr
-		cursor->SetController(plr);
+		// Object controlled by player
+		cursor->SetController(player);
 		
 		// menu controls:
 		
@@ -82,14 +82,14 @@ global func PlayerControl(proplist plr, int ctrl, id spec_id, int x, int y, int 
 		}
 		
 		// Overload by effect?
-		if (cursor->Control2Effect(plr, ctrl, cursorX, cursorY, strength, repeat, status)) return true;
+		if (cursor->Control2Effect(player, ctrl, cursorX, cursorY, strength, repeat, status)) return true;
 
-		if (cursor->ObjectControl(plr, ctrl, cursorX, cursorY, strength, repeat, status))
+		if (cursor->ObjectControl(player, ctrl, cursorX, cursorY, strength, repeat, status))
 		{
 			if (cursor && status == CONS_Down && !repeat)
 			{
 				// non-mouse controls reset view
-				if (!x && !y) ResetCursorView(plr);
+				if (!x && !y) ResetCursorView(player);
 			}
 			return true;
 		}
@@ -101,13 +101,13 @@ global func PlayerControl(proplist plr, int ctrl, id spec_id, int x, int y, int 
 	return false;
 }
 
-global func InitializePlayerControl(proplist plr, string controlset_name, bool keyboard, bool mouse, bool gamepad)
+global func InitializePlayerControl(proplist player, string controlset_name, bool keyboard, bool mouse, bool gamepad)
 {
 	// VC = VirtualCursor
 	if (!CON_VC_Players)
 		CON_VC_Players = CreateArray();
 
-	CON_VC_Players[plr.ID] = !mouse;
+	CON_VC_Players[player.ID] = !mouse;
 
 	// for all clonks...
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember)))
@@ -116,23 +116,23 @@ global func InitializePlayerControl(proplist plr, string controlset_name, bool k
 	}
 }
 
-global func PlayerHasVirtualCursor(int plr)
+global func PlayerHasVirtualCursor(proplist player)
 {
 	if (!CON_VC_Players)
 		return false;
 		
-	return CON_VC_Players[GetPlayer(plr).ID];
+	return CON_VC_Players[GetPlayer(player).ID];
 }
 
 // Control2Player
 // Player-wide controls
-global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
+global func Control2Player(proplist player, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	// select previous or next
 	if (ctrl == CON_PreviousCrew)
-		return ShiftCursor(plr, true);
+		return ShiftCursor(player, true);
 	if (ctrl == CON_NextCrew)
-		return ShiftCursor(plr, false);
+		return ShiftCursor(player, false);
 		
 	// all those hotkeys...
 	var hotkey = 0;
@@ -150,13 +150,13 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	if (hotkey > 0)
 	{
 		// valid crew number?
-		var crew = GetCrew(plr, hotkey-1);
+		var crew = player->GetCrew(hotkey-1);
 		if (!crew) return false;
 		// stop previously selected crew
 		StopSelected();
 		
 		// set cursor if not disabled etc.
-		return SetCursor(plr, crew);
+		return player->SetCursor(crew);
 	}
 	
 	// Modifier keys - do not handle the key. The GetPlayerControlState will still return the correct value when the key is held down.
@@ -165,14 +165,14 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	// cursor pos info - store in player values
 	if (ctrl == CON_CursorPos)
 	{
-		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(plr + 1);
-		g_player_cursor_pos[plr] = [x, y];
+		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(player + 1);
+		g_player_cursor_pos[player.ID] = [x, y];
 		return true;
 	}
 	/*
 	if (ctrl == CON_Test)
 	{
-		Message(Format("%d %d (%d %d) %d [%d %d]", plr, ctrl, x, y, strength, repeat, release));
+		Message(Format("%d %d (%d %d) %d [%d %d]", player, ctrl, x, y, strength, repeat, release));
 		return true;
 	}
 	*/
@@ -180,15 +180,15 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 }
 
 /* return info of last sent CON_CursorPos packet for that player as [x, y] */
-global func GetPlayerCursorPos(int plr)
+global func GetPlayerCursorPos(proplist player)
 {
 	if (!g_player_cursor_pos) return 0;
-	return g_player_cursor_pos[plr];
+	return g_player_cursor_pos[player.ID];
 }
 
-global func StopSelected(int plr)
+global func StopSelected(proplist player)
 {
-	var cursor = GetCursor(plr);
+	var cursor = GetCursor(player);
 	if (cursor)
 	{
 		cursor->SetCommand("None");
@@ -201,7 +201,7 @@ global func StopSelected(int plr)
 
 // Control2Effect
 // Call control function in all effects that have "Control" in their name
-global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
+global func Control2Effect(proplist player, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	// x and y are local coordinates
 	if (!this) return false;
@@ -223,7 +223,7 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 // Called from PlayerControl when a control is issued to the cursor
 // Return whether handled
 // To be overloaded by specific objects to enable additional controls
-global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
+global func ObjectControl(proplist player, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this) return false;
 	
@@ -232,7 +232,7 @@ global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// Movement controls
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
-		return ObjectControlMovement(plr, ctrl, strength, status, repeat);
+		return ObjectControlMovement(player, ctrl, strength, status, repeat);
 	
 	// Unhandled control
 	return false;
@@ -275,7 +275,7 @@ global func NameComDir(comdir)
 }
 // Called when CON_Left/Right/Up/Down controls are issued/released
 // Return whether handled
-global func ObjectControlMovement(int plr, int ctrl, int strength, int status, bool repeat)
+global func ObjectControlMovement(proplist player, int ctrl, int strength, int status, bool repeat)
 {
 	if (!this) return false;
 	
@@ -339,27 +339,27 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, int status, b
 				SetAction("Walk");
 		}
 	}
-	return ObjectControlUpdateComdir(plr);
+	return ObjectControlUpdateComdir(player);
 }
 
 // Updates ComDir of object based on current Con_*-directional controls
 // Return whether actual, effective direction of movement changed
-global func ObjectControlUpdateComdir(int plr)
+global func ObjectControlUpdateComdir(proplist player)
 {
 	if (!this) return false;
 
 	// Generic movement: Update ComDir based on current control state
-	var new_comdir = GetPlayerConDir(plr, CON_Left, CON_Up, CON_Right, CON_Down);
+	var new_comdir = GetPlayerConDir(player, CON_Left, CON_Up, CON_Right, CON_Down);
 	var old_comdir = GetComDir();
 	if (new_comdir != old_comdir)
 	{
 		// ComDir changed. Update.
 		SetComDir(new_comdir);
 		//var s = "";
-		//if (GetPlayerControlState(plr, CON_Left))	s = Format("%sL", s);
-		//if (GetPlayerControlState(plr, CON_Up))		s = Format("%sU", s);
-		//if (GetPlayerControlState(plr, CON_Right)) s = Format("%sR", s);
-		//if (GetPlayerControlState(plr, CON_Down))	s = Format("%sD", s);
+		//if (GetPlayerControlState(player, CON_Left))	s = Format("%sL", s);
+		//if (GetPlayerControlState(player, CON_Up))		s = Format("%sU", s);
+		//if (GetPlayerControlState(player, CON_Right)) s = Format("%sR", s);
+		//if (GetPlayerControlState(player, CON_Down))	s = Format("%sD", s);
 		//s = Format("%s %s", s, ["Stop", "Up", "UpRight", "Right", "DownRight", "Down", "DownLeft", "Left", "UpLeft"][new_comdir]);
 		//Message("@%s", this, s);
 		// The control is only handled if it had an actual effect on the current movement direction of the Clonk
@@ -392,20 +392,20 @@ global func ObjectControlUpdateComdir(int plr)
 }
 
 // selects the next/previous crew member (that is not disabled)
-global func ShiftCursor(int plr, bool back, bool force)
+global func ShiftCursor(proplist player, bool back, bool force)
 {
 	// Is the selected Clonk busy at the moment? E.g. uncloseable menu open..
 	if (!force)
 	{
-		var cursor = GetCursor(plr);
+		var cursor = GetCursor(player);
 		if (cursor && cursor->~RejectShiftCursor()) return false;
 	}
 	
 	// get index of currently selected crew
 	var index = 0;
-	while (index < GetCrewCount(plr))
+	while (index < GetCrewCount(player))
 	{
-		if (GetCursor(plr) == GetCrew(plr, index)) break;
+		if (GetCursor(player) == GetCrew(player, index)) break;
 		index++;
 	}
 	
@@ -416,34 +416,34 @@ global func ShiftCursor(int plr, bool back, bool force)
 	// after the next. Also, we need to stop this skipping after all crew
 	// members have been checked in the special case that all crew members
 	// are disabled
-	var maxcycle = GetCrewCount(plr);
+	var maxcycle = GetCrewCount(player);
 	var cycle = 0;
 
 	do {
 		if (back)
 		{
 			--index;
-			if (index < 0) index = GetCrewCount(plr)-1;
+			if (index < 0) index = GetCrewCount(player)-1;
 		}
 		else
 		{
 			++index;
-			if (index >= GetCrewCount(plr)) index = 0;
+			if (index >= GetCrewCount(player)) index = 0;
 		}
 		++cycle;
-	} while (cycle < maxcycle && !(GetCrew(plr, index)->GetCrewEnabled()));
+	} while (cycle < maxcycle && !(GetCrew(player, index)->GetCrewEnabled()));
 	
 	// Changing the cursor closes all menus that are associated with the old cursor.
 	// However, if a menu is not closable, then it requires the attention of the player and switching the cursor is disabled..
-	var current_cursor = GetCursor(plr);
-	var new_cursor = GetCrew(plr, index);
+	var current_cursor = GetCursor(player);
+	var new_cursor = GetCrew(player, index);
 	if (current_cursor == new_cursor) return false;
 	
-	StopSelected(plr);
+	StopSelected(player);
 	if (current_cursor)
 		current_cursor->~OnShiftCursor(new_cursor);
 		
-	return SetCursor(plr, new_cursor);
+	return SetCursor(player, new_cursor);
 }
 
 // Temporarily used for Debugging!
@@ -456,13 +456,13 @@ global func GetPlayerControlName(int ctrl)
 }
 
 // Return COMD_*-constant corresponding to current state of passed directional controls
-global func GetPlayerConDir(int plr, int con_left, int con_up, int con_right, int con_down)
+global func GetPlayerConDir(proplist player, int con_left, int con_up, int con_right, int con_down)
 {
 	var x, y;
-	if (GetPlayerControlState(plr, con_left))	--x;
-	if (GetPlayerControlState(plr, con_up))		--y;
-	if (GetPlayerControlState(plr, con_right)) ++x;
-	if (GetPlayerControlState(plr, con_down))	++y;
+	if (GetPlayerControlState(player, con_left))	--x;
+	if (GetPlayerControlState(player, con_up))		--y;
+	if (GetPlayerControlState(player, con_right)) ++x;
+	if (GetPlayerControlState(player, con_down))	++y;
 	// Creating an array here for every keypress/release
 	// Would be so cool to have this static const. Guenther?
 	var dir_coms = [COMD_UpLeft, COMD_Up, COMD_UpRight, COMD_Left, COMD_Stop, COMD_Right, COMD_DownLeft, COMD_Down, COMD_DownRight];
@@ -512,17 +512,17 @@ global func MouseHover(proplist player, object leaving, object entering, object 
 /* Drag & Drop */
 
 // Engine callback on drag & drop: gives the player, the dragged obect and the object which is being dropped(can be nil).
-global func MouseDragDrop(proplist plr, object source, object target)
+global func MouseDragDrop(proplist player, object source, object target)
 {
-	//Log("MouseDragDrop(%d, %s, %s)", plr, source->GetName(), target->GetName());
+	//Log("MouseDragDrop(%d, %s, %s)", player, source->GetName(), target->GetName());
 	if (!source) return false; // can happen if source got deleted after control was queued
-	var src_drag = source->~OnMouseDrag(plr);
+	var src_drag = source->~OnMouseDrag(player);
 	if (!src_drag) 
 		return false;
 	
 	// If there is drop target, check whether it accepts the drop.
 	if (target)
-		if (!target->~OnMouseDrop(plr, src_drag))
+		if (!target->~OnMouseDrop(player, src_drag))
 			return false;
 
 	// Notify the drop object it succeeded.
@@ -534,11 +534,11 @@ global func MouseDragDrop(proplist plr, object source, object target)
 /* Debug */
 
 // uncomment this to get log messages for any player control issued
-/*global func PlayerControl(proplist plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, bool release)
+/*global func PlayerControl(proplist player, int ctrl, id spec_id, int x, int y, int strength, bool repeat, bool release)
 {
-	var r = inherited(plr, ctrl, spec_id, x, y, strength, repeat, release, ...), rs;
+	var r = inherited(player, ctrl, spec_id, x, y, strength, repeat, release, ...), rs;
 	if (r) rs = ""; else rs = "!";
-	Log("%s%d, %s, %i, %d, %d, %d, %v, %v", rs, plr, GetPlayerControlName(ctrl), spec_id, x, y, strength, repeat, release);
+	Log("%s%d, %s, %i, %d, %d, %d, %v, %v", rs, player, GetPlayerControlName(ctrl), spec_id, x, y, strength, repeat, release);
 	return r;
 }*/
 

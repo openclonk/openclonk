@@ -124,7 +124,7 @@ global func Explode(int level, bool silent, int damage_level)
 	
 	// Explosion parameters.
 	var x = GetX(), y = GetY();
-	var cause_plr = GetController();
+	var cause_player = GetController();
 	var container = Contained();
 	var exploding_id = GetID();
 	var layer = GetObjectLayer();
@@ -135,10 +135,10 @@ global func Explode(int level, bool silent, int damage_level)
 	// Execute the explosion in global context.
 	// There is no possibility to interact with the global context, apart from GameCall.
 	// So at least remove the object context.
-	exploding_id->DoExplosion(x, y, level, container, cause_plr, layer, silent, damage_level);
+	exploding_id->DoExplosion(x, y, level, container, cause_player, layer, silent, damage_level);
 }
 
-global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, object layer, bool silent, int damage_level)
+global func DoExplosion(int x, int y, int level, object inobj, int cause_player, object layer, bool silent, int damage_level)
 {
 	// Zero-size explosion doesn't affect anything
 	if (level <= 0) return;
@@ -153,7 +153,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 		var contains_blast = container.ContainBlast;
 		var parent_container = container->Contained();
 		// Blast the current container, but not the previous container.
-		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, damage_level, layer, prev_container);
+		BlastObjects(x + GetX(), y + GetY(), level, container, cause_player, damage_level, layer, prev_container);
 		// Break the blasting if this container contains the blast.
 		if (contains_blast)
 			break;
@@ -166,16 +166,16 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	if (!container)
 	{
 		// Blast objects outside if there was no final container containing the blast.
-		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, damage_level, layer, prev_container);
+		BlastObjects(x + GetX(), y + GetY(), level, container, cause_player, damage_level, layer, prev_container);
 		// Incinerate oil.
-		if (!IncinerateLandscape(x, y, cause_plr))
-			if (!IncinerateLandscape(x, y - 10, cause_plr))
-				if (!IncinerateLandscape(x - 5, y - 5, cause_plr))
-					IncinerateLandscape(x + 5, y - 5, cause_plr);
+		if (!IncinerateLandscape(x, y, cause_player))
+			if (!IncinerateLandscape(x, y - 10, cause_player))
+				if (!IncinerateLandscape(x - 5, y - 5, cause_player))
+					IncinerateLandscape(x + 5, y - 5, cause_player);
 		// Graphic effects.
 		Call("ExplosionEffect", level, x, y, 0, silent, damage_level);
 		// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
-		BlastFree(x, y, level, cause_plr);
+		BlastFree(x, y, level, cause_player);
 	}
 
 	return true;
@@ -196,7 +196,7 @@ global func ExplosionEffect(...)
 
 // Damage and hurl objects away.
 // documented in /docs/sdk/script/fn
-global func BlastObjects(int x, int y, int level, object container, int cause_plr, int damage_level, object layer, object prev_container)
+global func BlastObjects(int x, int y, int level, object container, int cause_player, int damage_level, object layer, object prev_container)
 {
 	var obj;
 	
@@ -204,9 +204,9 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 	var l_x = x - GetX(), l_y = y - GetY();
 	
 	// caused by: if not specified, controller of calling object
-	if (cause_plr == nil)
+	if (cause_player == nil)
 		if (this)
-			cause_plr = GetController();
+			cause_player = GetController();
 	
 	// damage: if not specified this is the same as the explosion radius
 	if (damage_level == nil)
@@ -217,12 +217,12 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 	{
 		if (container->GetObjectLayer() == layer)
 		{
-			container->BlastObject(damage_level, cause_plr);
+			container->BlastObject(damage_level, cause_player);
 			if (!container)
 				return true; // Container could be removed in the meanwhile.
 			for (obj in FindObjects(Find_Container(container), Find_Layer(layer), Find_Exclude(prev_container)))
 				if (obj)
-					obj->BlastObject(damage_level, cause_plr);
+					obj->BlastObject(damage_level, cause_player);
 		}
 	}
 	else
@@ -231,11 +231,11 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 		var at_rect = Find_AtRect(l_x - 5, l_y - 5, 10, 10);
 		// Damage objects at point of explosion.
 		for (var obj in FindObjects(at_rect, Find_NoContainer(), Find_Layer(layer), Find_Exclude(prev_container)))
-			if (obj) obj->BlastObject(damage_level, cause_plr);
+			if (obj) obj->BlastObject(damage_level, cause_player);
 			
 		// Damage objects in radius.
 		for (var obj in FindObjects(Find_Distance(level, l_x, l_y), Find_Not(at_rect), Find_NoContainer(), Find_Layer(layer), Find_Exclude(prev_container)))
-			if (obj) obj->BlastObject(damage_level / 2, cause_plr);
+			if (obj) obj->BlastObject(damage_level / 2, cause_player);
 
 		
 		// Perform the shockwave at the location where the top level container previously was.
@@ -247,7 +247,7 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 			off_x = BoundBy(-prev_container->GetXDir(100), -max_offset, max_offset);
 			off_y = BoundBy(-prev_container->GetYDir(100), -max_offset, max_offset);			
 		}
-		DoShockwave(x, y, level, cause_plr, layer, off_x, off_y);
+		DoShockwave(x, y, level, cause_player, layer, off_x, off_y);
 	}
 	// Done.
 	return true;
@@ -272,7 +272,7 @@ global func BlastObject(int level, int caused_by)
 }
 
 // documented in /docs/sdk/script/fn
-global func DoShockwave(int x, int y, int level, int cause_plr, object layer, int off_x, int off_y)
+global func DoShockwave(int x, int y, int level, int cause_player, object layer, int off_x, int off_y)
 {
 	// Zero-size shockwave
 	if (level <= 0) return;
@@ -281,13 +281,13 @@ global func DoShockwave(int x, int y, int level, int cause_plr, object layer, in
 	var l_x = x - GetX(), l_y = y - GetY();
 	
 	// caused by: if not specified, controller of calling object
-	if (cause_plr == nil)
+	if (cause_player == nil)
 		if (this)
-			cause_plr = GetController();
+			cause_player = GetController();
 
 	// Hurl objects in explosion radius.
 	var shockwave_objs = FindObjects(Find_Distance(level, l_x, l_y), Find_NoContainer(), Find_Layer(layer),
-		Find_Or(Find_Category(C4D_Object | C4D_Living | C4D_Vehicle), Find_Func("CanBeHitByShockwaves", cause_plr)), Find_Func("DoShockwaveCheck", x, y, cause_plr));
+		Find_Or(Find_Category(C4D_Object | C4D_Living | C4D_Vehicle), Find_Func("CanBeHitByShockwaves", cause_player)), Find_Func("DoShockwaveCheck", x, y, cause_player));
 	var cnt = GetLength(shockwave_objs);
 	if (cnt)
 	{
@@ -299,11 +299,11 @@ global func DoShockwave(int x, int y, int level, int cause_plr, object layer, in
 			{
 				var cat = obj->GetCategory();
 				// Object has special reaction on shockwave?
-				if (obj->~OnShockwaveHit(level, x, y, cause_plr))
+				if (obj->~OnShockwaveHit(level, x, y, cause_player))
 					continue;
 				// Killtracing for projectiles.
 				if (cat & C4D_Object)
-					obj->SetController(cause_plr);
+					obj->SetController(cause_player);
 				// Shockwave.
 				var mass_fact = 20, mass_mul = 100;
 				if (cat & C4D_Living)
@@ -335,7 +335,7 @@ global func DoShockwave(int x, int y, int level, int cause_plr, object layer, in
 	return;
 }
 
-global func DoShockwaveCheck(int x, int y, int cause_plr)
+global func DoShockwaveCheck(int x, int y, int cause_player)
 {
 	var def = GetID();
 	// Some special cases, which won't go into FindObjects.
@@ -413,8 +413,8 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 	// shake for all players
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		var plr = GetPlayerByIndex(i);
-		var cursor = GetCursor(plr);
+		var player = GetPlayerByIndex(i);
+		var cursor = player->GetCursor();
 		if (!cursor)
 			continue;
 
@@ -439,7 +439,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 		}
 		// limit the strength, just to be sure
 		totalShakeStrength = Min(maxShakeStrength, totalShakeStrength);
-		SetViewOffset(plr, Sin(time * 100, totalShakeStrength), Cos(time * 100, totalShakeStrength));
+		player->SetViewOffset(Sin(time * 100, totalShakeStrength), Cos(time * 100, totalShakeStrength));
 	}
 
 	// remove shakers that are done shaking
@@ -463,7 +463,7 @@ global func FxShakeViewportStop()
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		SetViewOffset(GetPlayerByIndex(i), 0, 0);
+		GetPlayerByIndex(i)->SetViewOffset(, 0, 0);
 	}
 }
 
