@@ -316,7 +316,7 @@ bool C4MainMenu::ActivateGoals(int32_t iPlayer, bool fDoActivate)
 	}
 	// determine if the goals are fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 	C4IDList GoalList, FulfilledGoalList;
-	C4RoundResults::EvaluateGoals(GoalList, FulfilledGoalList, iPlayer);
+	C4RoundResults::EvaluateGoals(GoalList, FulfilledGoalList, ::Players.Get(iPlayer));
 	// Add Items
 	if (fDoActivate)
 	{

@@ -1081,13 +1081,13 @@ bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 	return true;
 }
 
-bool C4Landscape::Incinerate(int32_t x, int32_t y, int32_t cause_player)
+bool C4Landscape::Incinerate(int32_t x, int32_t y, C4Player *cause_player)
 {
 	int32_t mat = GetMat(x, y);
 	if (MatValid(mat))
 		if (::MaterialMap.Map[mat].Inflammable)
 		{
-			C4AulParSet pars(C4VInt(x), C4VInt(y), C4VInt(cause_player));
+			C4AulParSet pars(C4VInt(x), C4VInt(y), cause_player);
 			::ScriptEngine.GetPropList()->Call(P_InflameLandscape, &pars);
 		}
 	return false;

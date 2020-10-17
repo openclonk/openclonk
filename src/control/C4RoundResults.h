@@ -162,7 +162,7 @@ public:
 
 public:
 	// fill GoalList with current goal status - also called by goal menu!
-	static void EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalList, int32_t iPlayerNumber);
+	static void EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalList, C4Player *player);
 
 	// Evaluation called by C4Game::Evaluate
 	// Caution: This does script callbacks for goal fulfillment check and must be called in sync,

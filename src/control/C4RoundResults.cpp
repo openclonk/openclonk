@@ -279,7 +279,7 @@ void C4RoundResults::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eNetResult, NetResultEntries), "NetResult", NR_None));
 }
 
-void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalList, int32_t iPlayerNumber)
+void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalList, C4Player* player)
 {
 	// clear prev
 	GoalList.Clear(); FulfilledGoalList.Clear();
@@ -293,7 +293,7 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 		if (pObj)
 		{
 			// Check fulfilled per player, this enables the possibility of rivalry.
-			C4AulParSet pars(iPlayerNumber);
+			C4AulParSet pars(player);
 			fFulfilled = !!pObj->Call(PSF_IsFulfilled, &pars);
 		}
 		GoalList.SetIDCount(idGoal, cnt, true);
@@ -305,8 +305,7 @@ void C4RoundResults::EvaluateGame()
 {
 	// set game data
 	C4Player *pFirstLocalPlayer = ::Players.GetLocalByIndex(0);
-	int32_t iFirstLocalPlayer = pFirstLocalPlayer ? pFirstLocalPlayer->Number : NO_OWNER;
-	EvaluateGoals(Goals, FulfilledGoals, iFirstLocalPlayer);
+	EvaluateGoals(Goals, FulfilledGoals, pFirstLocalPlayer);
 	iPlayingTime = Game.Time;
 
 	// collect statistics

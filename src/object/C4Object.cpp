@@ -497,7 +497,8 @@ void C4Object::AssignDeath(bool fForced)
 	// Remove from light sources
 	SetLightRange(0,0);
 	// Engine script call
-	C4AulParSet pars(iDeathCausingPlayer);
+	C4Player *death_causing_player = ::Players.Get(iDeathCausingPlayer);
+	C4AulParSet pars(death_causing_player);
 	Call(PSF_Death, &pars);
 	// Lose contents
 	while ((thing=Contents.GetObject())) thing->Exit(thing->GetX(),thing->GetY());
@@ -510,7 +511,7 @@ void C4Object::AssignDeath(bool fForced)
 	if(pPlr)
 		if(!pPlr->Crew.ObjectCount())
 			::Game.GRBroadcast(PSF_RelaunchPlayer,
-			                   &C4AulParSet(Owner, iDeathCausingPlayer, Status ? this : nullptr));
+			                   &C4AulParSet(Owner, death_causing_player, Status ? this : nullptr));
 	if (pInfo)
 		pInfo->HasDied = false;
 }
@@ -1145,7 +1146,7 @@ bool C4Object::SetOwner(C4Player *player)
 	// this automatically updates controller
 	Controller = Owner;
 	// script callback
-	Call(PSF_OnOwnerChanged, &C4AulParSet(Owner, iOldOwner));
+	Call(PSF_OnOwnerChanged, &C4AulParSet(player, ::Players.Get(iOldOwner)));
 	// done
 	return true;
 }

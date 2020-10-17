@@ -91,7 +91,7 @@ C4Effect ** FnGetEffectsFor(C4PropList * target)
 }
 
 // undocumented!
-static bool FnIncinerateLandscape(C4PropList * _this, long x, long y, long caused_by_plr)
+static bool FnIncinerateLandscape(C4PropList * _this, long x, long y, C4Player *caused_by_plr)
 {
 	MakeAbsCoordinates(_this, x, y);
 	return !!::Landscape.Incinerate(x, y, caused_by_plr);

@@ -301,7 +301,7 @@ void C4ControlMsgBoardReply::Execute() const
 
 	// execute callback if answer present
 	if (!reply) return;
-	C4AulParSet pars(C4VString(reply), player);
+	C4AulParSet pars(C4VString(reply), target_player);
 	if (target_object)
 		target_object->Call(PSF_InputCallback, &pars);
 	else
@@ -382,9 +382,9 @@ void C4ControlPlayerSelect::Execute() const
 			if (pObj->Category & C4D_MouseSelect)
 			{
 				if (fIsAlt)
-					pObj->Call(PSF_MouseSelectionAlt, &C4AulParSet(iPlr));
+					pObj->Call(PSF_MouseSelectionAlt, &C4AulParSet(pPlr));
 				else
-					pObj->Call(PSF_MouseSelection, &C4AulParSet(iPlr));
+					pObj->Call(PSF_MouseSelection, &C4AulParSet(pPlr));
 			}
 		}
 	// count
@@ -472,7 +472,7 @@ C4ControlPlayerMouse *C4ControlPlayerMouse::DragDrop(const C4Player *player, con
 void C4ControlPlayerMouse::Execute() const
 {
 	const char *callback_name = nullptr;
-	C4AulParSet pars(player);
+	C4AulParSet pars(::Players.Get(player));
 
 	switch (action)
 	{
@@ -650,7 +650,7 @@ void C4ControlPlayerAction::Execute() const
 		C4Object *goal = ::Objects.SafeObjectPointer(target);
 		if (!goal) return;
 		// Call it
-		C4AulParSet pars(source_player->Number);
+		C4AulParSet pars(source_player);
 		goal->Call("Activate", &pars);
 		break;
 	}
@@ -667,7 +667,7 @@ void C4ControlPlayerAction::Execute() const
 		if (!target_player) return;
 		
 		// Proxy the hostility change through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(source_player->Number, target_player->Number, param_int != 0);
+		C4AulParSet pars(source_player, target_player, param_int != 0); // TODO: Check if it causes problems with the legacy functions
 		::ScriptEngine.Call("SetHostility", &pars);
 		break;
 	}
@@ -682,7 +682,7 @@ void C4ControlPlayerAction::Execute() const
 		if (!team && target != TEAMID_New) return;
 
 		// Proxy the team switch through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(source_player->Number, target);
+		C4AulParSet pars(source_player, target); // TODO: Check if it causes problems with the legacy functions
 		::ScriptEngine.Call("SetPlayerTeam", &pars);
 		break;
 	}
@@ -690,7 +690,7 @@ void C4ControlPlayerAction::Execute() const
 	case CPA_InitScenarioPlayer:
 	{
 		// Proxy the call through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(source_player->Number, target);
+		C4AulParSet pars(source_player, target);
 		::ScriptEngine.Call("InitScenarioPlayer", &pars);
 		break;
 	}
@@ -700,7 +700,7 @@ void C4ControlPlayerAction::Execute() const
 		// Notify scripts about player control selection
 		const char *callback_name = PSF_InitializePlayerControl;
 		
-		C4AulParSet pars(source_player->Number);
+		C4AulParSet pars(source_player);
 		// If the player is using a control set, its name is stored in param_str
 		if (param_str)
 		{
