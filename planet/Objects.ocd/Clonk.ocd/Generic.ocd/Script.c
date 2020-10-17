@@ -201,7 +201,7 @@ func SetMaxEnergy(int new_max_energy)
 	return true;
 }
 
-protected func OnEnergyChange(int change, int cause, int caused_by)
+protected func OnEnergyChange(int change, int cause, proplist caused_by)
 {
 	if (change < 0 && GetCursor(GetOwner()) == this)
 		PlayRumble(GetOwner(), Min(300 + 1000 * -change / this.MaxEnergy, 1000), 150);

@@ -101,7 +101,7 @@ private func OnPromotion()
 	return _inherited(...); 
 }
 
-private func OnEnergyChange(int change, int cause, int caused_by)
+private func OnEnergyChange(int change, int cause, proplist caused_by)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewHealthChange(this, change, cause, caused_by);

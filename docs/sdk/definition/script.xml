@@ -346,7 +346,12 @@
         <row id="OnCompletionChange">
           <literal_col>OnCompletionChange</literal_col>
           <col>int old_con, int new_con</col>
-          <col>Callback in when the completion of the object has changed (see <funclink>GetCon</funclink>, <funclink>DoCon</funclink> and <funclink>SetCon</funclink>).</col>
+          <col>Callback when the completion of the object has changed (see <funclink>GetCon</funclink>, <funclink>DoCon</funclink> and <funclink>SetCon</funclink>).</col>
+        </row>
+        <row id="OnEnergyChange">
+          <literal_col>OnEnergyChange</literal_col>
+          <col>int change, int damage_type, proplist caused_by_player</col>
+          <col>Callback when the energy of the object has changed (see <funclink>GetEnergy</funclink> and <funclink>DoEnergy</funclink>).</col>
         </row>
         <row id="EditCursorMoved">
           <literal_col>EditCursorMoved</literal_col>

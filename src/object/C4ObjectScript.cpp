@@ -392,17 +392,13 @@ static C4Value FnGetCrewExtraData(C4Object *Obj, C4String * DataName)
 	return pInfo->ExtraData[ival];
 }
 
-static void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, Nillable<long> iCausedBy) // TODO: C4Player *player
+static void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, C4Player *caused_by)
 {
 	if (iEngType.IsNil())
 	{
 		iEngType = C4FxCall_EngScript;
 	}
-	if (iCausedBy.IsNil())
-	{
-		iCausedBy = NO_OWNER;
-	}
-	Obj->DoEnergy(iChange, fExact, iEngType, iCausedBy);
+	Obj->DoEnergy(iChange, fExact, iEngType, caused_by);
 }
 
 static void FnDoBreath(C4Object *Obj, long iChange)

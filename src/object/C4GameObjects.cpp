@@ -156,7 +156,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 								// Apply damage to the goal - not sure why this is divided by 5 yet again,
 								// and this time we allow it being reduced to 0...
 								int32_t damage = -hit_energy / 5;
-								goal->DoEnergy(damage, false, C4FxCall_EngObjHit, ball->Controller);
+								goal->DoEnergy(damage, false, C4FxCall_EngObjHit, ::Players.Get(ball->Controller));
 								// Fling it around:
 								// light objects will be flung with full speed,
 								// heavier objects will be affected less

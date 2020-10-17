@@ -372,7 +372,7 @@ bool C4Object::ExecLife()
 			{
 				// Reduce breath, then energy, bubble
 				if (Breath > 0) DoBreath(-5);
-				else DoEnergy(-1,false,C4FxCall_EngAsphyxiation, NO_OWNER);
+				else DoEnergy(-1, false, C4FxCall_EngAsphyxiation, nullptr);
 			}
 			// Supply
 			else
@@ -389,7 +389,7 @@ bool C4Object::ExecLife()
 			if (InMat!=MNone)
 				if (::MaterialMap.Map[InMat].Corrosive)
 					if (!GetPropertyInt(P_CorrosionResist))
-						DoEnergy(-::MaterialMap.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
+						DoEnergy(-::MaterialMap.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, nullptr);
 
 	// InMat incineration
 	if (!::Game.iTick10)
@@ -582,7 +582,7 @@ void C4Object::DoDamage(int32_t iChange, C4Player *caused_by, int32_t iCause)
 	Call(PSF_Damage,&C4AulParSet(iChange, iCause, caused_by));
 }
 
-void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr)
+void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, C4Player *caused_by)
 {
 	if (!fExact)
 	{
@@ -592,11 +592,10 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 		int32_t scale = C4MaxPhysical / 100; // iChange 100% = Physical 100000
 		iChange = Clamp<int32_t>(iChange, std::numeric_limits<int32_t>::min()/scale, std::numeric_limits<int32_t>::max()/scale)*scale;
 	}
-	C4Player *caused_by = ::Players.Get(iCausedByPlr);
 	// Was zero?
 	bool fWasZero=(Energy==0);
 	// Mark last damage causing player to trace kills
-	if (iChange < 0) UpdatLastEnergyLossCause(iCausedByPlr);
+	if (iChange < 0) UpdatLastEnergyLossCause(caused_by == nullptr ? NO_OWNER : caused_by->Number);
 	// Living things: ask effects for change first
 	if (pEffects && Alive)
 		pEffects->DoDamage(iChange, iCause, caused_by);
@@ -604,7 +603,7 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 	iChange = Clamp<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
 	Energy += iChange;
 	// call to object
-	Call(PSF_EnergyChange,&C4AulParSet(iChange, iCause, iCausedByPlr));
+	Call(PSF_EnergyChange,&C4AulParSet(iChange, iCause, caused_by));
 	// Alive and energy reduced to zero: death
 	if (Alive) if (Energy==0) if (!fWasZero) AssignDeath(false);
 }
