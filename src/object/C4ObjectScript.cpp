@@ -516,7 +516,7 @@ static void FnSetAlive(C4Object *Obj, bool nalv)
 static bool FnSetOwner(C4Object *Obj, C4Player *new_owner)
 {
 	// Set owner
-	return !!Obj->SetOwner(new_owner == nullptr ? NO_OWNER : new_owner->Number);
+	return !!Obj->SetOwner(new_owner);
 }
 
 static bool FnSetPhase(C4Object *Obj, long iVal)

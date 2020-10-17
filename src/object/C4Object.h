@@ -294,7 +294,7 @@ public:
 	StdStrBuf GetDataString();
 	void SetName (const char *NewName = nullptr) override;
 	int32_t GetValue(C4Object *pInBase, C4Player *player);
-	bool SetOwner(int32_t iOwner);
+	bool SetOwner(C4Player* player);
 	bool SetLightRange(int32_t iToRange, int32_t iToFadeoutRange);
 	uint32_t GetLightColor() const { return lightColor; }
 	bool SetLightColor(uint32_t iValue);

@@ -1126,17 +1126,17 @@ void C4Object::Resort()
 	// Must not immediately resort - link change/removal would crash Game::ExecObjects
 }
 
-bool C4Object::SetOwner(int32_t iOwner)
+bool C4Object::SetOwner(C4Player *player)
 {
 	// Check valid owner
-	if (!(ValidPlr(iOwner) || iOwner == NO_OWNER)) return false;
+	if (!player) return false;
+	int32_t iOwner = player->Number;
 	// always set color, even if no owner-change is done
-	if (iOwner != NO_OWNER)
-		if (GetGraphics()->IsColorByOwner())
-		{
-			Color=::Players.Get(iOwner)->ColorDw;
-			UpdateFace(false);
-		}
+	if (GetGraphics()->IsColorByOwner())
+	{
+		Color=::Players.Get(iOwner)->ColorDw;
+		UpdateFace(false);
+	}
 	// no change?
 	if (Owner == iOwner) return true;
 	// set new owner
