@@ -128,7 +128,7 @@ private func FxSpawnTimer(object target, proplist effect, int time)
 public func InitializePlayer(proplist plr)
 {
 	// Update visibility and clear spawned item for new player (so we don't need to handle RemovePlayer)
-	spawn_list[plr] = nil;
+	spawn_list[plr.ID] = nil;
 	return UpdateVisibility(plr);
 }
 

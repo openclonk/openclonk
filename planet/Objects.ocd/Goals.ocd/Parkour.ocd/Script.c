@@ -486,7 +486,7 @@ private func FindRespawnPos(int plr)
 	return [cp->GetX(), cp->GetY()];
 }
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	respawn_list[plr] = nil;
 	if (!finished)

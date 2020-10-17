@@ -97,7 +97,7 @@ public func FindRelaunchPos(int plr)
 	return nil;
 }
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	return _inherited(plr, ...);
 }

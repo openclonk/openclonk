@@ -44,7 +44,7 @@ func InitializePlayer(proplist player)
 	}
 }
 
-func RemovePlayer(int player)
+func RemovePlayer(proplist player)
 {
 	// Remove script player.
 	if ((GetPlayerType(player) == C4PT_Script) && (player == script_player))

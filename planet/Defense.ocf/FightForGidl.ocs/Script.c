@@ -63,9 +63,9 @@ func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 	return;
 }
 
-func RemovePlayer(int plr)
+func RemovePlayer(proplist plr)
 {
-	if (g_homebases[plr]) g_homebases[plr]->RemoveObject();
+	if (g_homebases[plr.ID]) g_homebases[plr.ID]->RemoveObject();
 	Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
 	// Split player's wealth among the remaining players
 	ScheduleCall(nil, Scenario.DoSharedWealth, 50, 1, GetWealth(plr));

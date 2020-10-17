@@ -7,7 +7,7 @@
 			* Initialize();
 			* InitializePlayer(proplist plr);
 			* OnClonkDeath(object clonk, int killer);
-			* RemovePlayer(int plr);
+			* RemovePlayer(proplist plr);
 --*/
 
 
@@ -51,7 +51,7 @@ protected func OnClonkDeath(object clonk, int killer)
 	return _inherited(clonk, killer, ...);
 }
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	return _inherited(plr, ...);
 }

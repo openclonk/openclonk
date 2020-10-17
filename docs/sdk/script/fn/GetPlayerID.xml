@@ -30,9 +30,9 @@ protected func Initialize()
 	if(!player_scores) player_scores = CreateArray();
 }
 				
-protected func RemovePlayer(int player)
+protected func RemovePlayer(proplist player)
  {
-  var player_id = GetPlayerID(player);
+  var player_id = player.ID;
 	player_names[player_id] = <funclink>GetPlayerName</funclink>(player);
 	player_scores[player_id] = <funclink>GetScore</funclink>(player);
  }

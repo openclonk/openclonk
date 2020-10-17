@@ -7,7 +7,7 @@
 			* Initialize();
 			* InitializePlayer(proplist plr);
 			* OnClonkDeath(object clonk, int killer);
-			* RemovePlayer(int plr);
+			* RemovePlayer(proplist plr);
 --*/
 
 /*-- Callbacks --*/
@@ -49,7 +49,7 @@ protected func OnPlayerRelaunchCountChanged(int plr)
 }
 
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	return _inherited(plr, ...);
 }

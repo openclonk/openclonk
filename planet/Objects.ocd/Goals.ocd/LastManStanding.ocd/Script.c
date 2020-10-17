@@ -67,7 +67,7 @@ protected func OnClonkDeath(object clonk, int killer)
 	Schedule(this, Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
 	return;
 }
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	return _inherited(plr, ...);
 }

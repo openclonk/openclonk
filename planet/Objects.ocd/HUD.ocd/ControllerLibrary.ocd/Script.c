@@ -61,7 +61,7 @@ private func Construction()
 */
 
 
-public func RemovePlayer(int plr, int team)
+public func RemovePlayer(proplist plr, int team)
 {
 	// at this point, we can assume that all crewmembers have been
 	// removed already. Whats left to do is to remove this object,

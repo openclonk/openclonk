@@ -113,11 +113,11 @@ public func RelaunchPlayer(int plr)
 	return;
 }
 
-public func RemovePlayer(int plr)
+public func RemovePlayer(proplist plr)
 {
 	// Check completion if a player is removed, the player could have been the last active one.
-	if (GetPlayerType(plr) == C4PT_User)
-		if (RemoveArrayValue(plrs_active, GetPlayerID(plr)))
+	if (plr.Type == C4PT_User)
+		if (RemoveArrayValue(plrs_active, plr.ID))
 			if (GetLength(plrs_active) == 0)
 				return EndRound();
 	return;

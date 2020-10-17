@@ -39,7 +39,7 @@
         </row>
         <row id="RemovePlayer">
           <literal_col>RemovePlayer</literal_col>
-          <col>int player, int team</col>
+          <col>proplist player, int team</col>
           <col>Called when a player is removed from the game.</col>
         </row>
 		

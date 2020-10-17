@@ -68,7 +68,7 @@ protected func InitializePlayers()
 	return true;
 }
 
-public func RemovePlayer(int plr)
+public func RemovePlayer(proplist plr)
 {
 	if (seq_name)
 	{

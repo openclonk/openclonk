@@ -65,7 +65,7 @@ func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 	if (!g_wave) StartGame();
 }
 
-func RemovePlayer(int plr)
+func RemovePlayer(proplist plr)
 {
 	Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
 	// Split player's wealth among the remaining players

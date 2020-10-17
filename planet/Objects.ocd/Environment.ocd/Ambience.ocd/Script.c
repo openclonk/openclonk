@@ -246,10 +246,10 @@ func InitializePlayer(proplist plr)
 	return true;
 }
 
-func RemovePlayer(int plr)
+func RemovePlayer(proplist plr)
 {
 	// Ensure newly joining players don't check on another player's environment
-	player_environments[plr] = nil;
+	player_environments[plr.ID] = nil;
 	return true;
 }
 

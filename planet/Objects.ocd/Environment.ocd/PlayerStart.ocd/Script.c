@@ -243,7 +243,7 @@ public func DoPlayerStart(int plr)
 	return true;
 }
 
-public func RemovePlayer(int plr)
+public func RemovePlayer(proplist plr)
 {
 	// Remove number from players_started list
 	if (players_started)
