@@ -7,7 +7,7 @@
 */
 
 
-func InitializePlayer(int player)
+func InitializePlayer(proplist player)
 {
 	// Set zoom to full map size.
 	SetPlayerZoomByViewRange(player, LandscapeWidth(), nil, PLRZOOM_Direct);

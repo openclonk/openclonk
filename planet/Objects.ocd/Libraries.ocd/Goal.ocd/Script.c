@@ -109,7 +109,7 @@ public func NotifyHUD()
 	}
 }
 
-protected func InitializePlayer(int plr, ...)
+protected func InitializePlayer(proplist plr, ...)
 {
 	NotifyPlayerHUD(plr);
 	_inherited(plr, ...);

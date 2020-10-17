@@ -246,7 +246,7 @@ if (!this)
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// This scenario does not have shadows.
 	SetFoW(false, plr);

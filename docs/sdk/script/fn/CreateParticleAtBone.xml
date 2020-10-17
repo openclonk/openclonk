@@ -51,7 +51,7 @@
     <remark>This function returns <code>false</code> if the particle definition was not found, or the function is called for an object which does not have a mesh graphics, or the skeleton of the mesh does not have a bone called <code>szBoneName</code>. Otherwise, <code>true</code> is returned. There is no return value indicating whether the particle has actually been created. This must be so to prevent synchronization problems in network games, as particles may be handled differently on each computer in the network.</remark>
     <examples>
       <example>
-        <code>func InitializePlayer(int plr)
+        <code>func InitializePlayer(proplist plr)
 {
   AddEffect("IntColorize", 0, 1, 1);
 }

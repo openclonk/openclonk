@@ -43,7 +43,7 @@ public func Start(string name, int progress, ...)
 	return true;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	if (seq_name)
 	{

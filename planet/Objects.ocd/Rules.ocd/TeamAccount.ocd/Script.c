@@ -36,7 +36,7 @@ global func SetWealth(int plr, int wealth)
 	return _inherited(plr, wealth, ...);
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Find an ally and add this wealth.
 	for (var i = 0; i < GetPlayerCount(); i++)

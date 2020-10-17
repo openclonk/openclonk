@@ -191,7 +191,7 @@ private func InitAnimals(int amount)
 
 /*-- Player Control --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Make the player enemy to all other players.
 	Goal_Melee->MakeHostileToAll(plr, GetPlayerTeam(plr));

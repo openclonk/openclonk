@@ -10,7 +10,7 @@ func Initialize()
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	var i;
 	// Script player owns power crystals

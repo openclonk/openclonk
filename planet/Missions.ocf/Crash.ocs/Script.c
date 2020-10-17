@@ -78,7 +78,7 @@ global func FxIntWaterfallTimer(object obj, proplist eff)
 	ExtractLiquid(1314, 901);
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	var crew;
 	// Scenario init

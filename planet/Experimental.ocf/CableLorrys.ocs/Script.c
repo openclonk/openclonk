@@ -145,7 +145,7 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// No FOW here.
 	//SetFoW(false, plr);

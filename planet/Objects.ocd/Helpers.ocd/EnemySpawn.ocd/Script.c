@@ -114,7 +114,7 @@ public func InitializeScriptPlayer(int plr, int team)
 	}
 }
 
-public func InitializePlayer(int plr, int x, int y, object base, int team, extra_id)
+public func InitializePlayer(proplist plr, int x, int y, object base, int team, extra_id)
 {
 	if (GetPlayerType(plr) == C4PT_User && IsEnemySpawnPlayerJoined())
 	{

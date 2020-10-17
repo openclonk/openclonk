@@ -45,7 +45,7 @@ func DoInit(int plr)
 
 // Player positioning
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Move crew to starting location
 	var crew = GetCrew(plr, 0);

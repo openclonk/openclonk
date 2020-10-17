@@ -32,7 +32,7 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Initialize script player.
 	if (GetPlayerType(plr) == C4PT_Script)

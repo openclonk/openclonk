@@ -148,7 +148,7 @@ private func ExecutePlayer(int plr)
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Newly joining players should have set playlist immediately (so they don't start playing a random song just to switch it immediately)
 	ExecutePlayer(plr);

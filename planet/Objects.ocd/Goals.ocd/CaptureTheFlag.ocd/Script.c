@@ -78,7 +78,7 @@ private func EliminateOthers(int win_team)
 	return;
 }
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(proplist plr, int x, int y, object base, int team)
 {
 	// Join new clonk.
 	GetRelaunchRule()->DoRelaunch(plr, nil, FindRelaunchPos(plr), true);

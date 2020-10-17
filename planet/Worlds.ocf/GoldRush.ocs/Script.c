@@ -48,7 +48,7 @@ protected func OnGoalsFulfilled()
 
 /*-- Player Initialization --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 { 
 	// Move clonks to location and give them a shovel.
 	var index = 0, crew;

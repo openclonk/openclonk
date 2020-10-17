@@ -68,9 +68,8 @@
     <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetZoomByViewRange()</code>.</remark>
     <examples>
       <example>
-        <code>func InitializePlayer(int plr)
+        <code>func InitializePlayer(proplist plr)
 {
-  player = GetPlayer(plr);
   player-&gt;SetZoomByViewRange(1000, 0, PLRZOOM_LimitMin);
   player-&gt;SetZoomByViewRange(1000, 0, PLRZOOM_LimitMax);
   player-&gt;<funclink>SetPlayerViewLock</funclink>(true);

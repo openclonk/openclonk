@@ -73,7 +73,7 @@ func DoInit(int first_player)
 	return true;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// intro has its own initialization
 	if (g_is_in_intro) return true;

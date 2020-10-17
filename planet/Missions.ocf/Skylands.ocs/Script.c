@@ -36,7 +36,7 @@ func EnsureObject(id def, int x, int y, int owner)
 	return obj;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);

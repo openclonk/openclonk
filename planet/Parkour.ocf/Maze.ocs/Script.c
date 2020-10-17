@@ -7,7 +7,7 @@
 
 local goal_cave;
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Harsher zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])

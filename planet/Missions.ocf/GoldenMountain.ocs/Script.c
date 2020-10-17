@@ -16,7 +16,7 @@ func Initialize()
 
 static g_was_player_init;
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])

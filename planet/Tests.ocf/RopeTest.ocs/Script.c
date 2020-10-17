@@ -31,7 +31,7 @@ public func Initialize()
 	return;
 }
 
-public func InitializePlayer(int plr)
+public func InitializePlayer(proplist plr)
 {
 	GetCrew(plr)->CreateContents(GrappleBow, 2);
 	GetCrew(plr)->CreateContents(Ropeladder);

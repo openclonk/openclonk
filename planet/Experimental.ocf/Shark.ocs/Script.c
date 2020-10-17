@@ -11,7 +11,7 @@ func Initialize()
 	Butterfly->Place(1);
 }
 
-private func InitializePlayer(iPlr)
+private func InitializePlayer(proplist iPlr)
 {
 	SetFoW(0, iPlr);
 	SetWealth(10, iPlr);

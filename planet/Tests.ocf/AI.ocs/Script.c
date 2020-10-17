@@ -20,7 +20,7 @@ protected func Initialize()
 
 /*-- Player Initialization --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Make all players hostile to each other.
 	for (var plr1 in GetPlayers())

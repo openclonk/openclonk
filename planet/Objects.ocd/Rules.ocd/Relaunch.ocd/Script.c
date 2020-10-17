@@ -212,7 +212,7 @@ private func CheckDescription()
 	return true;
 }
 
-public func InitializePlayer(int plr)
+public func InitializePlayer(proplist plr)
 {
 	_inherited(plr, ...);
 	relaunches[plr] = default_relaunch_count;

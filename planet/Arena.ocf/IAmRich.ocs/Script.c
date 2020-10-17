@@ -58,9 +58,9 @@ func Initialize()
 	CreateEffect(updatescoreboardfx, 1, 35);
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
-	var crew = GetCrew(plr);
+	var crew = player->GetCrew(plr);
 	crew->CreateContents(Shovel);
 	crew->CreateContents(Hammer);
 	crew->CreateContents(Axe);

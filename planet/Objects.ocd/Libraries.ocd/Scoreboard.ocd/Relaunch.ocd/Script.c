@@ -5,7 +5,7 @@
 		This script can be included to create a relaunch count column in the scoreboard.
 		Make sure that the following functions return _inherited(...);
 			* Initialize();
-			* InitializePlayer(int plr);
+			* InitializePlayer(proplist plr);
 			* OnClonkDeath(object clonk, int killer);
 			* RemovePlayer(int plr);
 --*/
@@ -23,7 +23,7 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	if (GetRelaunchRule()->HasUnlimitedRelaunches())
 		return;

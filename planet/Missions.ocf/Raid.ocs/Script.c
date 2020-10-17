@@ -74,7 +74,7 @@ func Tree_Chopdown(...)
 	return Call(this.ChopDown_A564F3, ...);
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	var crew;
 	// Ensure flag has owner

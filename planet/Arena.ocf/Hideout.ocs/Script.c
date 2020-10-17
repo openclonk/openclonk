@@ -96,9 +96,9 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist player)
 {
-	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct);
+	player->SetZoomByViewRange(600, nil, PLRZOOM_Direct);
 	return;
 }
 

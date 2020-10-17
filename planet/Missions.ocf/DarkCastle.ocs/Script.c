@@ -67,7 +67,7 @@ private func SetSpecialDeathMessage(object clonk)
 	if (name == "Archibald") clonk.SpecialDeathMessage = "$DeathOfArchibald$";
 }
 
-private func InitializePlayer(int plr)
+private func InitializePlayer(proplist plr)
 {
 	// Players only
 	if (GetPlayerType(plr)!=C4PT_User) return;

@@ -28,7 +28,7 @@ func Initialize()
 
 static g_was_player_init;
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// First player init base
 	if (!g_was_player_init)

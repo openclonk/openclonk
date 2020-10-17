@@ -53,7 +53,7 @@ protected func OnGoalsFulfilled()
 
 /*-- Player Initialization --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Zoom range.
 	SetPlayerZoomByViewRange(plr, 1200, nil, PLRZOOM_LimitMax);

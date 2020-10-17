@@ -38,7 +38,7 @@
     <remark>The cell in the top left corner is never displayed. Instead, the value for row_id == SBRD_Caption and coloumn_id == SBRD_Caption is displayed in the header. If no value is specified here, the scoreboard will not have a header and can not be moved using the mouse.</remark>
     <examples>
       <example>
-        <code>protected func InitializePlayer(int player)
+        <code>protected func InitializePlayer(proplist player)
   {
   var player_id = <funclink>GetPlayerID</funclink>(player), coloumn_id = 1;
   SetScoreboardData(SBRD_Caption, coloumn_id,   &quot;{{RVLR}}&quot;,                coloumn_id);
@@ -74,4 +74,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2006-02</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

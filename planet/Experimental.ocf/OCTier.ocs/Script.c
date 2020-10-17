@@ -6,7 +6,7 @@ func Initialize()
 	CreateObjectAbove(OCTier, 168, 100, -1)->TestAnimation("Walk");
 }
 
-func InitializePlayer(plr)
+func InitializePlayer(proplist plr)
 {
 var oct = CreateObjectAbove(OCTier, 48, 52, -1);
 oct->MakeCrewMember(plr);

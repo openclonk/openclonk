@@ -88,7 +88,7 @@ func VolcanoTimer()
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Players only
 	if (GetPlayerType(plr)!=C4PT_User) return;

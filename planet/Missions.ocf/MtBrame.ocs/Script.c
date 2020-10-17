@@ -30,7 +30,7 @@ func DoInit(int first_player)
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	var crew;
 	// Scenario init

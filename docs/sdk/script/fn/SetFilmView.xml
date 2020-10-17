@@ -22,7 +22,7 @@
     <remark>In 9.0 OC this function was deprecated, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
     <examples>
       <example>
-        <code>protected func InitializePlayer(int player)
+        <code>protected func InitializePlayer(proplist player)
 {
 	<funclink>if</funclink> (player.Name == &quot;Camera&quot;) player-&gt;SetFilmView();
 }</code>

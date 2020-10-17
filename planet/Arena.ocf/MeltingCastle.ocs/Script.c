@@ -92,11 +92,11 @@ func OnFlagDestruction()
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Everything freely visible (to allow aiming with the cannon)
 	SetFoW(false, plr);
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeHeight(),PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeHeight(), PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, false);
 	// Acquire base
 	var team = GetPlayerTeam(plr);

@@ -23,7 +23,7 @@ public func InitRound()
 
 /*-- Player --*/
 
-public func InitializePlayer(int plr)
+public func InitializePlayer(proplist plr)
 {
 	InitPlayerSettings(plr);
 	GiveAllKnowledge(plr);

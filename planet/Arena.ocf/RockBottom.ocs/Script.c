@@ -71,7 +71,7 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Set player zoom to maximally the landscape height.
 	SetPlayerZoomByViewRange(plr, nil, LandscapeHeight(), PLRZOOM_LimitMax);

@@ -39,7 +39,7 @@ private func KillsToRelaunch()
 
 /*-- Player section --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	_inherited(plr, ...);
 }

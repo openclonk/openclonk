@@ -122,7 +122,7 @@ func DoPoint(int player, int count)
 	Scoreboard->SetPlayerData(player, "koth", player_points[player]);
 }
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(proplist plr, int x, int y, object base, int team)
 {
 	Scoreboard->NewPlayerEntry(plr);
 	player_suicides[plr]=0;

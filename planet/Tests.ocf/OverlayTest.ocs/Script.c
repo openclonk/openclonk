@@ -3,7 +3,7 @@ func Initialize()
 	var effect = AddEffect("IntOverlayTest", nil, 1, 10);
 }
 
-public func InitializePlayer(int player)
+public func InitializePlayer(proplist player)
 {
 	var crew = GetCrew(player);
 	crew->SetPosition(50, 200);

@@ -27,7 +27,7 @@
     <desc>Makes a broadcast call to the scenario script, all goals, rules and environment objects. This is what the engine does when it makes a scenario callback, see <emlink href="scenario/script.html#Callbacks">scenario script callbacks</emlink>.</desc>
     <examples>
       <example>
-        <code>GameCallEx(&quot;InitializePlayer&quot;,0);</code>
+        <code>GameCallEx(&quot;InitializePlayer&quot;,<funclink>GetPlayer</funclink>(0));</code>
         <text>Causes the scenario script and all goals, rules and environment objects to re-execute intialization for the first player. This is what is done on the normal initialization of a player.</text>
       </example>
     </examples>
@@ -37,4 +37,5 @@
     </related>
   </func>
   <author>Newton</author><date>2011-07</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

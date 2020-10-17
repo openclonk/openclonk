@@ -70,9 +70,8 @@
     <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetZoom()</code>.</remark>
     <examples>
       <example>
-        <code>func InitializePlayer(int plr)
+        <code>func InitializePlayer(proplist plr)
 {
-  var player = GetPlayer(plr);
   player-&gt;SetZoom(1,1, PLRZOOM_LimitMin | PLRZOOM_LimitMax);
   player-&gt;<funclink>SetPlayerViewLock</funclink>(true);
   return true;

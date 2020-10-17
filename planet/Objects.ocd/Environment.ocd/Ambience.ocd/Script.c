@@ -228,7 +228,7 @@ private func ExecutePlayer(int plr, array environments)
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	if (GetPlayerType(plr) == C4PT_User)
 	{

@@ -61,7 +61,7 @@ public func Construction()
 
 /*-- Player Control --*/
 
-public func InitializePlayer(int plr)
+public func InitializePlayer(proplist plr)
 {
 	// The enemy script player is initialized in the function below.
 	if (GetPlayerType(plr) == C4PT_Script)

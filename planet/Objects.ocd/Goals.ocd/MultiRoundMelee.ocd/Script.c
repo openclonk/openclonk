@@ -69,7 +69,7 @@ protected func Initialize()
 	return inherited(...);
 }
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(proplist plr, int x, int y, object base, int team)
 {
 	// Add the player and their team to the scoreboard.
 	Scoreboard->NewPlayerEntry(plr);

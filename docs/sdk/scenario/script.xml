@@ -93,13 +93,14 @@
   <funclink>CreateObject</funclink>(WindGenerator,250,200);
 }</code>
     <text>After joining a new player the engine calls the function InitializePlayer in the scenario script for that player. This function is called after the basic player objects as defined in Scenario.txt have been placed, so a preliminary starting position has been selected and the player's crew and starting material and buildings are present. In this function, you can now perform more special initial placement.</text>
-    <code>func InitializePlayer(int player)
+    <code>func InitializePlayer(proplist player)
 {
-  <funclink>Log</funclink>( &quot;Player nr. %d has joined the game&quot;, player );
+  <funclink>Log</funclink>( &quot;Player nr. %d has joined the game&quot;, player.ID );
   <funclink>Sound</funclink>(&quot;Ding&quot;);
   // The first clonk of the player starts at a random position in the landscape
   <funclink>GetCrew</funclink>(player,0)-&gt;<funclink>SetPosition</funclink>( <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>()));
 }</code>
   </part>
   <author>Sven2</author><date>2002-04</date>
+  <author>Marky</author><date>2020-10</date>
 </doc>

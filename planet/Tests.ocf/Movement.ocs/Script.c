@@ -16,7 +16,7 @@ func Initialize()
 	CreateScriptPlayer("Buddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
 }
 
-func InitializePlayer(int player)
+func InitializePlayer(proplist player)
 {
 	// Set zoom to full map size.
 	SetPlayerZoomByViewRange(player, LandscapeWidth(), nil, PLRZOOM_Direct);

@@ -47,7 +47,7 @@ protected func OnGoalsFulfilled()
 
 /*-- Player Initialization --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 { 
 	var amount = 4 - SCENPAR_Difficulty;
 	

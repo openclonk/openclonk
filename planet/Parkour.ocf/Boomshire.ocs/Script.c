@@ -50,7 +50,7 @@ private func Initialize()
 	AddEffect("DynamiteEruption",nil, 100, 130);
 }
 
-private func InitializePlayer(int plr)
+private func InitializePlayer(proplist plr)
 {
 	SetPlayerTeam(plr, 1);
 }

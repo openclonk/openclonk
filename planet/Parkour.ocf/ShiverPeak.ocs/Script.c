@@ -86,7 +86,7 @@ private func MapBottomFix()
 	return;
 }
 
-protected func InitializePlayer(int player)
+protected func InitializePlayer(proplist player)
 {
 	SetPlayerTeam(player, 1);
 	return;

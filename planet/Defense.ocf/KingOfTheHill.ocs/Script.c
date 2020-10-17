@@ -29,7 +29,7 @@ protected func Initialize()
 
 /*-- Player Control --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	if (GetPlayerType(plr) == C4PT_Script)
 		return;

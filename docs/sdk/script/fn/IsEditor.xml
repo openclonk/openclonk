@@ -11,14 +11,15 @@
     <desc>Returns whether the current game is an editor game.</desc>
     <examples>
       <example>
-        <code>public func InitializePlayer(int plr)
+        <code>public func InitializePlayer(proplist player)
         {
 			if (IsEditor())
-				<funclink>SetWealth</funclink>(plr, 10**4);
+				player-&gt;<funclink>SetWealth</funclink>(10**4);
         }</code>
         <text>Gives the player a lot of wealth for testing purposes in editor mode.</text>
       </example>
     </examples>
   </func>
   <author>Maikel</author><date>2018-02</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>
