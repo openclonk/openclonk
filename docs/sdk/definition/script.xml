@@ -125,7 +125,7 @@
         </row>
         <row id="Death">
           <literal_col>Death</literal_col>
-          <col></col>
+          <col>proplist caused_by_player</col>
           <col>When a living being dies.</col>
         </row>
         <row id="Activate">

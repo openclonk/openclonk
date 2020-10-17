@@ -6,7 +6,7 @@
 		Make sure that the following functions return _inherited(...);
 			* Initialize();
 			* InitializePlayer(proplist plr);
-			* OnClonkDeath(object clonk, int killer);
+			* OnClonkDeath(object clonk, proplist killer);
 			* RemovePlayer(proplist plr);
 --*/
 
@@ -32,7 +32,7 @@ protected func InitializePlayer(proplist plr)
 	return _inherited(plr, ...);
 }
 
-protected func OnClonkDeath(object clonk, int killer)
+protected func OnClonkDeath(object clonk, proplist killer)
 {
 	var plr = clonk->GetOwner();
 	if (GetRelaunchRule()->HasUnlimitedRelaunches())

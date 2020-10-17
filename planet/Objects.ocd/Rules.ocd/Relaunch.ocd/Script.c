@@ -226,7 +226,7 @@ public func InitializePlayer(proplist plr)
 	return DoRelaunch(plr, nil, nil, true);
 }
 
-public func OnClonkDeath(object clonk, int killer)
+public func OnClonkDeath(object clonk, proplist killer)
 {
 	if (!clonk || !perform_restart)
 		return;

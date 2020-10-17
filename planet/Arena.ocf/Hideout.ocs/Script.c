@@ -267,7 +267,7 @@ global func FxNotTooLongTimer(object target, effect)
 	else if (effect.inClonk_time > 35) target->Message("@<c ff%x%x>%d",(41-effect.inClonk_time)*50,(41-effect.inClonk_time)*50, 41-effect.inClonk_time);
 }
 
-func OnClonkDeath(object clonk, int killed_by)
+func OnClonkDeath(object clonk, proplist killed_by)
 {
 	// create a magic healing gem on Clonk death
 	if (Hostile(clonk->GetOwner(), killed_by))

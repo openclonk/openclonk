@@ -429,7 +429,7 @@ protected func InitializePlayer(proplist plr, int x, int y, object base, int tea
 	return;
 }
 
-protected func OnClonkDeath(object clonk, int killed_by)
+protected func OnClonkDeath(object clonk, proplist killed_by)
 {
 	var plr = clonk->GetOwner();
 	// Only respawn if required and if the player still exists.

@@ -139,7 +139,7 @@ public func OnTeamSwitch(int plr, int new_team, int old_team)
 }
 
 
-public func OnClonkDeath(object clonk, int killed_by)
+public func OnClonkDeath(object clonk, proplist killed_by)
 {
 	// Reset spawn on clonk death
 	// This is odd in multi-clonk rounds with spawn points, but the alternative

@@ -13,7 +13,7 @@ public func Activate(int by_plr)
 	return true;
 }
 
-func OnClonkDeath(object clonk, int killed_by)
+func OnClonkDeath(object clonk, proplist killed_by)
 {
 	var plr = clonk->GetOwner();
 	// Only log for existing players and clonks.

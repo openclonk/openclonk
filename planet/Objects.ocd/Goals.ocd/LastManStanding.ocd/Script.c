@@ -44,7 +44,7 @@ protected func InitializePlayer(proplist plr)
 	_inherited(plr, ...);
 }
 
-protected func OnClonkDeath(object clonk, int killer)
+protected func OnClonkDeath(object clonk, proplist killer)
 {
 	var plr = clonk->GetOwner();
 	_inherited(clonk, killer, ...);

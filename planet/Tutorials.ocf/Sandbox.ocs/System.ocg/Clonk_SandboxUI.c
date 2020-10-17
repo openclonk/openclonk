@@ -8,7 +8,7 @@ local idGuiHudOS_catselect = 100;
 local idGuiHudOS_objectselect = 101;
 local idGuiHudOS_switchspawndest = 102;
 
-public func Death(int killed_by)
+public func Death(proplist killed_by)
 {
 	HideSandboxUI();
 	return _inherited(killed_by, ...);

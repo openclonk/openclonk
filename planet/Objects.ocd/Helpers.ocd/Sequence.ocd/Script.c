@@ -664,7 +664,7 @@ private func OnActionFinished(context)
 	return true;
 }
 
-public func OnClonkDeath(object clonk, int killer)
+public func OnClonkDeath(object clonk, proplist killer)
 {
 	// Is this a clonk death trigger?
 	if (!trigger || !clonk) return false;

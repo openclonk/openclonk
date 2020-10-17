@@ -74,7 +74,7 @@ private func DeRecruitment(proplist player)
 	return _inherited(player, ...);
 }
 
-private func Death(int killed_by)
+private func Death(proplist killed_by)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewDeath(this, killed_by, ...);

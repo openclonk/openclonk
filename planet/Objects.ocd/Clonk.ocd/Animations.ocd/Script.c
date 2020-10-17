@@ -61,7 +61,7 @@ func Construction()
 }
 
 // Callback from Death() when the Clonk is really really dead
-protected func DeathEffects(int killed_by)
+protected func DeathEffects(proplist killed_by)
 {
 	_inherited(killed_by,...);
 

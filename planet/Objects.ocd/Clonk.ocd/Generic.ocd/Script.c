@@ -39,7 +39,7 @@ protected func DeRecruitment(proplist player) {
 
 /* --- Events --- */
 
-protected func Death(int killed_by)
+protected func Death(proplist killed_by)
 {
 	// this must be done first, before any goals do funny stuff with the clonk
 	_inherited(killed_by,...);

@@ -239,7 +239,7 @@ public func OnRocketDeath(object rocket, int killed_by)
 	return OnClonkDeath(rocket, killed_by);
 }
 
-public func OnClonkDeath(object clonk, int killed_by)
+public func OnClonkDeath(object clonk, proplist killed_by)
 {
 	if (clonk.EnemySpawn_source == this)
 	{

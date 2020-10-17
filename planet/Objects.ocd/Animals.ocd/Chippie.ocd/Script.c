@@ -65,7 +65,7 @@ public func Destruction()
 	return _inherited(...);
 }
 
-public func Death(int killed_by)
+public func Death(proplist killed_by)
 {
 	var particles = 
 	{

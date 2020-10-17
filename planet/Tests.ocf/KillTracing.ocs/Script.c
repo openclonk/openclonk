@@ -210,7 +210,7 @@ global func GetPlayerName(int plr)
 	return _inherited(plr, ...);
 }
 
-public func OnClonkDeath(object clonk, int killer)
+public func OnClonkDeath(object clonk, proplist killer)
 {
 	if (clonk->GetOwner() != plr_victim || clonk.no_kill_tracing)
 		return;

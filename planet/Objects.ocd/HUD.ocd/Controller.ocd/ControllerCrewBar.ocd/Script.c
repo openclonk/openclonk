@@ -382,7 +382,7 @@ public func OnCrewDeRecruitment(object clonk, proplist player)
 	return _inherited(clonk, player, ...);
 }
 
-public func OnCrewDeath(object clonk, int killer)
+public func OnCrewDeath(object clonk, proplist killer)
 {
 	UpdateCrewDisplay();
 

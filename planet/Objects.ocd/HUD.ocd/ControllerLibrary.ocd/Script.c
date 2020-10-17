@@ -41,7 +41,7 @@ private func Construction()
 
 	OnClonkRecruitment(object clonk, proplist player)
 	OnClonkDeRecruitment(object clonk, proplist player)
-	OnCrewDeath(object clonk, int killed_by)
+	OnCrewDeath(object clonk, proplist killed_by)
 	OnCrewDestruction(object clonk)
 	ControlHotKey(int hotkey)
 	OnCrewRankChange(object clonk)

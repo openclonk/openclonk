@@ -89,7 +89,7 @@ func UpdateScoreboard()
 	}	
 }
 
-func OnClonkDeath(object clonk, int killed_by)
+func OnClonkDeath(object clonk, proplist killed_by)
 {
 	var w1 = GetWealth(clonk->GetOwner()) / 10;
 	DoWealth(clonk->GetOwner(), w1 * -1);

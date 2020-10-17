@@ -601,7 +601,7 @@ public func IsDead()
 	return GetAction() == "Dead";
 }
 
-protected func Death(int killed_by)
+protected func Death(proplist killed_by)
 {
 	Sound("Animals::Wipf::Aroof");
 	return;

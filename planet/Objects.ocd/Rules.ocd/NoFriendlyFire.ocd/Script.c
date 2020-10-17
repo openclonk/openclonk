@@ -49,7 +49,7 @@ public func OnClonkDeRecruitment(object clonk, proplist player)
 	return;
 }
 
-public func OnClonkDeath(object clonk, int killed_by)
+public func OnClonkDeath(object clonk, proplist killed_by)
 {
 	EnableFriendlyFire(clonk);
 	return;

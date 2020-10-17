@@ -136,7 +136,7 @@ public func IsFulfilled()
 	return Goal_Melee->IsFulfilled(); // the same condition as a normal melee
 }
 
-func OnClonkDeath(object clonk, int killer)
+func OnClonkDeath(object clonk, proplist killer)
 {	
 	_inherited(clonk, killer, ...);
 	if (clonk->GetAlive()) return;
