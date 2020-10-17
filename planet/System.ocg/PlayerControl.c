@@ -498,7 +498,7 @@ global func ObjectComLetGo(int vx, int vy)
 // Engine callback when the mouse hovers over an object (entering) or stops hovering over an object (leaving).
 // Either leaving, entering or both are set. They can be nil, but never both at the same time.
 // dragged is an object being drag(&not dropped yet)
-global func MouseHover(int player, object leaving, object entering, object dragged)
+global func MouseHover(proplist player, object leaving, object entering, object dragged)
 {
 	// Leaving the hovering zone should be processed first.
 	if (leaving)
