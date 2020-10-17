@@ -49,7 +49,7 @@ protected func InitializePlayer(proplist plr)
 	return;
 }
 
-protected func InitializeScriptPlayer(int plr)
+protected func InitializeScriptPlayer(proplist plr)
 {
 	// Remove old crew.
 	var index = 0;

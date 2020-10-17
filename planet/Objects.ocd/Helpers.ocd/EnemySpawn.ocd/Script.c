@@ -92,7 +92,7 @@ private func IsEnemySpawnPlayerJoined()
 }
 
 
-public func InitializeScriptPlayer(int plr, int team)
+public func InitializeScriptPlayer(proplist plr, int team)
 {
 	// Init the enemy script player: Hostile to all players
 	if (g_enemyspawn_player == NO_OWNER)

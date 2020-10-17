@@ -79,7 +79,7 @@ public func InitializePlayer(proplist plr)
 	return;
 }
 
-public func InitializeScriptPlayer(int plr)
+public func InitializeScriptPlayer(proplist plr)
 {
 	// Forward to defense goal object.
 	if (this == Goal_Defense)

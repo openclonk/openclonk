@@ -76,14 +76,14 @@ func Activate(int player)
   <funclink>return</funclink> <funclink>CreateScriptPlayer</funclink>(&quot;Aliens&quot;, 0x00ff00, 0, CSPF_FixedAttributes | CSPF_NoScenarioInit, GetID());
 }
   
-func InitializeScriptPlayer(int player, int idTeam)
+func InitializeScriptPlayer(proplist player, int idTeam)
 {
   // An alien player has joined
   // since no scenario initialization has been executed, a crew for this player has to be created in this callback
   // create a green clonk. A real scenario should of course have it's own aliens :-)
   var alien = CreateObject(Clonk, LandscapeWidth()/2, -1, player);
-  MakeCrewMember(alien, player);
-  SetClrModulation(0x7fff7f, alien);
+  alien-&gt;MakeCrewMember(player);
+  alien-&gt;SetClrModulation(0x7fff7f);
   // and attack
   <funclink>AddEffect</funclink>(&quot;Int_EAI&quot;, alien, 1, 100, 0, GetID());
 }
