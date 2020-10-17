@@ -161,7 +161,7 @@ public func NoFF_IsProjectileTarget(object projectile, object shooter, ...)
 
 /*-- Description --*/
 
-public func Activate(int by_plr)
+public func Activate(proplist by_plr)
 {
 	MessageWindow(this.Description, by_plr);
 	return true;

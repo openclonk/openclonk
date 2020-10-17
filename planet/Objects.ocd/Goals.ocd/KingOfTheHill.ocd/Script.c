@@ -230,7 +230,7 @@ public func GetDescription(int plr)
 	return msg;
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	var teams = GetTeamPoints();
 	var lines=[];

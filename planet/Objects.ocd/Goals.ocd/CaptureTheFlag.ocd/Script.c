@@ -148,7 +148,7 @@ public func GetDescription(int plr)
 	}
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	var flags = GetScoreGoal() - score_list[GetPlayerTeam(byplr)];
 	if (IsFulfilled())

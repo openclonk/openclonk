@@ -78,7 +78,7 @@ public func GetDescription(int plr)
 	return message;
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	// Count enemy players.
 	var hostile_count;

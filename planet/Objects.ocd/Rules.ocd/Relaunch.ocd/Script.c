@@ -162,7 +162,7 @@ local clonk_type = Clonk;
 
 /*-- Rule Code --*/
 
-public func Activate(int plr)
+public func Activate(proplist plr)
 {
 	// Only restart player if enabled unless this is a definition call.
 	if (this != Rule_Relaunch && !allow_restart_player)

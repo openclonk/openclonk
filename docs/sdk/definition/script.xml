@@ -175,7 +175,7 @@
         </row>
         <row id="IsFulfilled">
           <literal_col>IsFulfilled</literal_col>
-          <col></col>
+          <col>proplist player</col>
           <col>Only in game goal objects. A return value <code>true</code> indicates that this goal is fulfilled.</col>
         </row>
         <row id="ControlContents">

@@ -41,7 +41,7 @@ public func GetDescription(int plr)
 	return message;
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	MessageWindow(GetDescription(byplr), byplr);
 }

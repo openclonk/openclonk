@@ -14,7 +14,7 @@
     <text>Example:</text>
     <code>/* Script of a game rule named &quot;Create AI&quot; */
 
-func Activate(int player)
+func Activate(proplist player)
 {
   // The player selected the rule. Create a AI enemy.
   <funclink>return</funclink> <funclink>CreateScriptPlayer</funclink>(&quot;Computer&quot;, 0x7f7f7f);
@@ -70,7 +70,7 @@ LastPlayerID=1
     <text>By passing a parameter to <funclink>CreateScriptPlayer</funclink>, scenario initialization can be prevented, i.e. no creation of start materials, no setting of player parameters such as homebase material by the according presets and no InitializePlayer-calls are done. Instead, a single CreateScriptPlayer-callback is done to the definition passed as idExtraData. Example:</text>
     <code>/* Script of a rule named &quot;Create aliens&quot; */
 
-func Activate(int player)
+func Activate(proplist player)
 {
   // The player selected the game rule. Create an alien enemy!
   <funclink>return</funclink> <funclink>CreateScriptPlayer</funclink>(&quot;Aliens&quot;, 0x00ff00, 0, CSPF_FixedAttributes | CSPF_NoScenarioInit, GetID());

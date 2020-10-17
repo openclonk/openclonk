@@ -48,7 +48,7 @@ public func SetPumpSpeed(int speed)
 
 public func GetPumpSpeed() { return pump_speed; }
 
-public func Activate(int by_plr)
+public func Activate(proplist by_plr)
 {
 	MessageWindow(this.Description, by_plr);
 	return true;

@@ -79,7 +79,7 @@ protected func OnHostilityChange(proplist plr, proplist plr2, bool hostility, bo
 	return;
 }
 
-public func Activate(int by_plr)
+public func Activate(proplist by_plr)
 {
 	MessageWindow(this.Description, by_plr);
 	return true;

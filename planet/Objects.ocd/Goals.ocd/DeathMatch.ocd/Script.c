@@ -80,7 +80,7 @@ public func GetDescription(int plr)
 	}
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	if (IsFulfilled()) 
 	{

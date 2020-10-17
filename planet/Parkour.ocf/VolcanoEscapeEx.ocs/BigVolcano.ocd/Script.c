@@ -21,7 +21,7 @@ local mat_behaviours; // array of BigVolcanoBehaviour_*, indexed by GetMaterial(
 local mat_advancespeeds; // array of ints from 0 to 100, indexed by GetMaterial(x, y)+1: How to behave in materials
 local speed_multiplier = 1; // number of pixels by which the volcano advances when it does advance
 
-func Activate(int start_y, int end_y)
+func Activate(proplist start_y, int end_y)
 {
 	if (lava_y) return; // already active
 	if (!start_y) start_y = LandscapeHeight();

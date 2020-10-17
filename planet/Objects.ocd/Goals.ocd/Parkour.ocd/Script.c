@@ -267,7 +267,7 @@ public func GetDescription(int plr)
 	return msg;
 }
 
-public func Activate(int plr)
+public func Activate(proplist plr)
 {
 	var team = GetPlayerTeam(plr);
 	var msg;

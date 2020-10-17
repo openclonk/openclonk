@@ -119,7 +119,7 @@ public func GetDescription(int plr)
 }
 
 // Shows or hides a message window with information.
-public func Activate(int plr)
+public func Activate(proplist plr)
 {
 	// If goal message open -> hide it.
 	if (GetEffect("GoalMessage", this))

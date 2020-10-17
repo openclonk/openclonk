@@ -253,7 +253,7 @@ func RemovePlayer(proplist plr)
 	return true;
 }
 
-protected func Activate(int byplr)
+protected func Activate(proplist byplr)
 {
 	MessageWindow(this.Description, byplr);
 	return true;
