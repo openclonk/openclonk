@@ -238,7 +238,7 @@ public func OnClonkDeath(object clonk, proplist killer)
 		relaunches[plr]--;
 		if (relaunches[plr] < 0)
 		{
-			EliminatePlayer(plr);
+			plr->Eliminate();
 			return;
 		}
 	}

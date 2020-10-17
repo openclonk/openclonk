@@ -57,7 +57,7 @@ public func OnlyRichSurvives()
 		var pwealth = GetWealth(GetPlayerByIndex(i));
 		if (pwealth < mostwealth)
 		{
-			EliminatePlayer(GetPlayerByIndex(i));
+			GetPlayerByIndex(i)->Eliminate();
 		}
 	}
 	

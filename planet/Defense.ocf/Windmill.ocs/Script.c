@@ -40,7 +40,7 @@ func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 {
 	if (GetPlayerType(plr) != C4PT_User) return;
 
-	if (g_lost) { EliminatePlayer(plr); return; } // no post-elimination join
+	if (g_lost) { plr->Eliminate(); return; } // no post-elimination join
 	SetWealth(plr, 50);
 	if (!g_relaunchs)
 	{
@@ -159,7 +159,7 @@ func OnClonkDeath(clonk, killed_by)
 		{
 			Log("$MsgOutOfRelaunchs$", GetTaggedPlayerName(plr));
 			Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
-			EliminatePlayer(plr);
+			plr->Eliminate();
 			return false;
 		}
 		// Relaunch count
@@ -236,7 +236,7 @@ public func WindmillDown(object windmill)
 	{
 		// Fail!
 		var i = GetPlayerCount(C4PT_User);
-		while (i--) EliminatePlayer(GetPlayerByIndex(i, C4PT_User));
+		while (i--) GetPlayerByIndex(i, C4PT_User)->Eliminate();
 		g_lost = true;
 		ScheduleCall(nil, Global.GameOver, 50, 1);
 	}
@@ -411,7 +411,7 @@ func OnAllWavesCleared()
 {
 	// Success!
 	if (g_goal) g_goal.is_fulfilled = true;
-	if (GetPlayerType(ENEMY) == C4PT_Script) EliminatePlayer(ENEMY);
+	if (GetPlayerType(ENEMY) == C4PT_Script) ENEMY->Eliminate();
 	GainScenarioAchievement("Done");
 	GameOver();
 	return true;

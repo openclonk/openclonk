@@ -64,6 +64,6 @@ public func Failure_Stop()
 {
 	// Eliminate all players.
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
-		EliminatePlayer(GetPlayerByIndex(i, C4PT_User));
+		GetPlayerByIndex(i, C4PT_User)->Eliminate();
 	return true;
 }

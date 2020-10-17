@@ -73,7 +73,7 @@ public func IsFulfilled()
 		if (is_cooperative) continue; // in coop mode, everyone wins
 		if (GetIndexOf(winners, plr) >= 0) continue;
 		if (winner_teams) if (GetIndexOf(winner_teams, GetPlayerTeam(plr)) >= 0) continue;
-		EliminatePlayer(plr);
+		plr->Eliminate();
 	}
 	return true;
 }

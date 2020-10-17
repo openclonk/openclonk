@@ -142,7 +142,7 @@ func LaunchPlayer(object clonk, int plr)
 public func OnPlayerRelaunch(int plr)
 {
 	if (!g_respawn_flags[GetPlayerTeam(plr)])
-		return EliminatePlayer(plr);
+		return plr->Eliminate();
 }
 
 public func RelaunchPosition(int iPlr, int iTeam)
@@ -155,7 +155,7 @@ public func OnClonkLeftRelaunch(object clonk, int plr)
 {
 	// Find flag for respawn
 	var flagpole = g_respawn_flags[GetPlayerTeam(plr)];
-	if (!flagpole) return EliminatePlayer(plr); // Flag lost and clonk died? Game over!
+	if (!flagpole) return plr->Eliminate(); // Flag lost and clonk died? Game over!
 	
 	// Reset available items in spawns
 	for (var item_spawn in FindObjects(Find_ID(ItemSpawn))) item_spawn->Reset(plr);

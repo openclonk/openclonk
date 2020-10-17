@@ -206,7 +206,7 @@ private func CheckForWinner()
 					continue;
 				if (GetPlayerTeam(check_plr) != 0 && GetPlayerTeam(check_plr) == GetPlayerTeam(plr))
 					continue;
-				EliminatePlayer(check_plr);
+				check_plr->Eliminate();
 			}
 			break;
 		}

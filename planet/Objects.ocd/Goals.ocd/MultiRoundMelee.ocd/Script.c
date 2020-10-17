@@ -359,7 +359,7 @@ private func EliminateLosers()
 	{
 		var plr = GetPlayerByIndex(i);
 		if (GetPlayerTeam(plr) != winning_team)
-			EliminatePlayer(plr);
+			plr->Eliminate();
 	}
 	// The included melee goal will end the scenario.
 }

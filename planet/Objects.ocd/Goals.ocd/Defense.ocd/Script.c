@@ -135,7 +135,7 @@ public func EndRound()
 		fx->Remove();
 	// Eliminate attacker.
 	for (var plr in GetPlayers(C4PT_Script))
-		EliminatePlayer(plr);	
+		plr->Eliminate();	
 	is_fulfilled = true;
 	return;
 }

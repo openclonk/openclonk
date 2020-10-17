@@ -73,7 +73,7 @@ private func EliminateOthers(int win_team)
 		var plr = GetPlayerByIndex(i);
 		var team = GetPlayerTeam(plr);
 		if (team != win_team)
-			EliminatePlayer(plr);	
+			plr->Eliminate();	
 	}
 	return;
 }

@@ -42,7 +42,7 @@ func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 	if (GetPlayerType(plr) != C4PT_User) return;
 	SetWealth(plr, 50);
 	//DoWealth(plr, 10000);
-	if (!g_statue) { EliminatePlayer(plr); return; } // no post-elimination join
+	if (!g_statue) { plr->Eliminate(); return; } // no post-elimination join
 	if (!g_relaunchs)
 	{
 		g_relaunchs = [];
@@ -291,7 +291,7 @@ func OnClonkDeath(clonk, killed_by)
 		{
 			Log("$MsgOutOfRelaunchs$", GetTaggedPlayerName(plr));
 			Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
-			EliminatePlayer(plr);
+			plr->Eliminate();
 			return false;
 		}
 		// Relaunch count
@@ -368,7 +368,7 @@ func OnAllWavesCleared()
 {
 	// Success!
 	if (g_goal) g_goal.is_fulfilled = true;
-	if (GetPlayerType(ENEMY) == C4PT_Script) EliminatePlayer(ENEMY);
+	if (GetPlayerType(ENEMY) == C4PT_Script) ENEMY->Eliminate();
 	GainScenarioAchievement("Done");
 	GameOver();
 	return true;
@@ -379,7 +379,7 @@ func Statue_Death()
 	// Fail :(
 	// Elminiate all players
 	var i = GetPlayerCount(C4PT_User);
-	while (i--) EliminatePlayer(GetPlayerByIndex(i, C4PT_User));
+	while (i--) GetPlayerByIndex(i, C4PT_User)->Eliminate();
 	// Statue down :(
 	CastObjects(Nugget, 5, 10);
 	ScheduleCall(nil, Global.GameOver, 50, 1);

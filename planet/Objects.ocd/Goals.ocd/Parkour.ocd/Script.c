@@ -230,7 +230,7 @@ private func EliminatePlayers(int winner)
 			continue;
 		if (team && team == winteam) // In the same team as the winner.
 			continue;
-		EliminatePlayer(plr);
+		plr->Eliminate();
 	}
 	return;
 }
@@ -405,7 +405,7 @@ protected func InitializePlayer(proplist plr, int x, int y, object base, int tea
 {
 	// If the parkour is already finished, then immediately eliminate player.
 	if (finished)
-		return EliminatePlayer(plr);
+		return plr->Eliminate();
 	// Remove all hostilities.
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{

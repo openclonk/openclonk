@@ -54,7 +54,7 @@ public func IsFulfilled()
 			continue;
 		if (!CheckTeamHostile(winner, plr))
 			continue;
-		EliminatePlayer(plr);
+		plr->Eliminate();
 	}
 	return true;
 }
