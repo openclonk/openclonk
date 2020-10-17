@@ -45,12 +45,12 @@
 		
         <row id="RejectHostilityChange">
           <literal_col>RejectHostilityChange</literal_col>
-          <col>int player1, int player2, bool hostile</col>
+          <col>proplist player1, proplist player2, bool hostile</col>
           <col>When the hostility of two players is about to be changed, this function is called first. If it returns true, the hostility is not changed. See <funclink>SetHostility</funclink>.</col>
         </row>
         <row id="OnHostilityChange">
           <literal_col>OnHostilityChange</literal_col>
-          <col>int player1, int player2, bool hostile, bool old_hostility</col>
+          <col>proplist player1, proplist player2, bool hostile, bool old_hostility</col>
           <col>Called after the hostility of two players has been changed. See <funclink>SetHostility</funclink>.</col>
         </row>
 		

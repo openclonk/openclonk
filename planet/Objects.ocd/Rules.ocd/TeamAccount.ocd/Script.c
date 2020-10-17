@@ -73,7 +73,7 @@ protected func OnTeamSwitch(int player, int new_team, int old_team)
 	return;
 }
 
-protected func OnHostilityChange(int plr, int plr2, bool hostility, bool old_hostility)
+protected func OnHostilityChange(proplist plr, proplist plr2, bool hostility, bool old_hostility)
 {
 	// TODO: Implement
 	return;

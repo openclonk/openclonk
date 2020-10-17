@@ -386,7 +386,7 @@ protected func OnOwnerChanged(int new_owner, int old_owner)
 }
 
 // Engine callback: a player has changed its hostility.
-protected func OnHostilityChange(int player1, int player2, bool hostile, bool old_hostility)
+protected func OnHostilityChange(proplist player1, proplist player2, bool hostile, bool old_hostility)
 {
 	// Debugging logs.
 	//Log("FLAG - OnHostilityChange(): flag = %v, player1 = %d, player2 = %d, hostile = %v, old_hostility = %v", this, player1, player2, hostile, old_hostility);
