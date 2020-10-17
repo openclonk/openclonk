@@ -59,11 +59,11 @@ private func InitBase(int owner)
 	return true;
 }
 
-public func RelaunchPlayer(int plr)
+public func RelaunchPlayer(proplist player)
 {
-	var clonk = CreateObjectAbove(Clonk, 50, 1000, plr);
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
+	var clonk = CreateObjectAbove(Clonk, 50, 1000, player);
+	clonk->MakeCrewMember(player);
+	player->SetCursor(clonk);
 	return true;
 }
 

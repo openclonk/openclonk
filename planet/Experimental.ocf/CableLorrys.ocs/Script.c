@@ -158,7 +158,7 @@ protected func InitializePlayer(proplist plr)
 	return;
 }
 
-protected func RelaunchPlayer(int plr)
+protected func RelaunchPlayer(proplist plr)
 {
 	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);

@@ -94,17 +94,17 @@ public func InitializeScriptPlayer(proplist plr)
 	return;
 }
 
-public func RelaunchPlayer(int plr)
+public func RelaunchPlayer(proplist player)
 {
 	// The player has not been relaunched by external scripts and is eliminated.
 	// Move the player into the observer container and let the player spectate.
-	if (GetPlayerType(plr) == C4PT_User)
+	if (GetPlayerType(player) == C4PT_User)
 	{
-		var crew = CreateObject(Clonk, 0, 0, plr);
-		crew->MakeCrewMember(plr);
-		SetCursor(plr, crew);
+		var crew = CreateObject(Clonk, 0, 0, player);
+		crew->MakeCrewMember(player);
+		player->SetCursor(crew);
 		crew->Enter(observer_container);
-		RemoveArrayValue(plrs_active, GetPlayerID(plr));
+		RemoveArrayValue(plrs_active, GetPlayerID(player));
 		if (GetLength(plrs_active) == 0)
 			return EndRound();
 		// Update the view of the observing players.

@@ -7,24 +7,23 @@
 
 local goal_cave;
 
-func InitializePlayer(proplist plr)
+func InitializePlayer(proplist player)
 {
 	// Harsher zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr, 240, 160, flag);
-		//SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeHeight(),flag);
-	SetPlayerViewLock(plr, true);
+		player->SetZoomByViewRange(240, 160, flag);
+	SetPlayerViewLock(player, true);
 	// Position and materials
-	LaunchPlayer(plr);
+	LaunchPlayer(player);
 	return true;
 }
 
-func LaunchPlayer(int plr)
+func LaunchPlayer(proplist player)
 {
 	// Position and materials
 	var starting_cave = g_caves[0];
 	var i, crew;
-	for (i = 0; crew = GetCrew(plr, i); ++i)
+	for (i = 0; crew = player->GetCrew(i); ++i)
 	{
 		crew->SetPosition(starting_cave.X/2, starting_cave.Y-18);
 		for (var tool in [Pickaxe, GrappleBow, SprayCan])
@@ -38,13 +37,13 @@ func LaunchPlayer(int plr)
 	return true;
 }
 
-func RelaunchPlayer(int plr)
+func RelaunchPlayer(proplist player)
 {
-	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, player);
 	if (!clonk) return false;
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
-	return LaunchPlayer(plr);
+	clonk->MakeCrewMember(player);
+	SetCursor(player, clonk);
+	return LaunchPlayer(player);
 }
 
 func CreateBonus(int x, int y, int value, bool is_cooperative)

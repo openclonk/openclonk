@@ -22,10 +22,10 @@ private func InitializePlayer(proplist iPlr)
 	crew->CreateContents(Rock, 3);
 }
 
-func RelaunchPlayer(int iPlr)
+func RelaunchPlayer(proplist player)
 {
-	var pclonk = CreateObject(Clonk, 10, 300, iPlr);
-	pclonk->MakeCrewMember(iPlr);
-	SetCursor(iPlr, pclonk);
+	var pclonk = CreateObject(Clonk, 10, 300, player);
+	pclonk->MakeCrewMember(player);
+	player->SetCursor(pclonk);
 	pclonk->CreateContents(Shovel);
 }

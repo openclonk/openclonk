@@ -34,8 +34,8 @@
         </row>
         <row id="RelaunchPlayer">
           <literal_col>RelaunchPlayer</literal_col>
-          <col>int player, int killed_by_player</col>
-          <col>Called when a player is about to be eliminated because his last crew member died.</col>
+          <col>proplist player, proplist killed_by_player</col>
+          <col>Called when a player is about to be eliminated because his last crew member died. Used player number before 9.0 OC.</col>
         </row>
         <row id="RemovePlayer">
           <literal_col>RemovePlayer</literal_col>
