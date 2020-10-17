@@ -258,10 +258,10 @@ public func RemovePlayer(int plr)
 	}
 }
 
-public func OnClonkRecruitment(clonk, plr)
+public func OnClonkRecruitment(object clonk, proplist player)
 {
 	// New clonk recruitment: Apply default clonk settings
-	if (players_started && GetIndexOf(players_started, plr) >= 0)
+	if (players_started && GetIndexOf(players_started, player.ID) >= 0)
 	{
 		ApplyCrewSettings(clonk);
 		if (!is_handling_player_spawn && respawn_material)

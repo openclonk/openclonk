@@ -39,8 +39,8 @@ private func Construction()
 
 /** The following callbacks are forwarded by the HUD adapter:
 
-	OnClonkRecruitment(object clonk, int plr)
-	OnClonkDeRecruitment(object clonk, int plr)
+	OnClonkRecruitment(object clonk, proplist player)
+	OnClonkDeRecruitment(object clonk, proplist player)
 	OnCrewDeath(object clonk, int killed_by)
 	OnCrewDestruction(object clonk)
 	ControlHotKey(int hotkey)

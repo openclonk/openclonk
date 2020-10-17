@@ -49,14 +49,14 @@ public func SetHUDController(object new_controller)
 /*-- Engine callbacks --*/
 
 // Bootstrap the HUD on the recruitement of a crew member.
-private func Recruitment(int plr)
+private func Recruitment(proplist plr)
 {
 	if (GetHUDController())
 	{
-		HUDcontroller->~OnCrewRecruitment(this, plr, ...);
+		HUDcontroller->~OnCrewRecruitment(this, player, ...);
 		HUDcontroller->~ScheduleUpdateInventory();
 	}
-	return _inherited(plr, ...);
+	return _inherited(player, ...);
 }
 
 // On savegame load or after section change, ensure that there's a HUD adapter
@@ -67,11 +67,11 @@ public func OnSynchronized(...)
 	return _inherited(...);
 }
 
-private func DeRecruitment(int plr)
+private func DeRecruitment(proplist player)
 {
 	if (HUDcontroller)
-		HUDcontroller->~OnCrewDeRecruitment(this, plr, ...);
-	return _inherited(plr, ...);
+		HUDcontroller->~OnCrewDeRecruitment(this, player, ...);
+	return _inherited(player, ...);
 }
 
 private func Death(int killed_by)

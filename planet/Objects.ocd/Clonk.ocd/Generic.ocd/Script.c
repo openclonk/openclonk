@@ -22,19 +22,19 @@ func Construction()
 
 /* --- When adding to the crew of a player --- */
 
-protected func Recruitment(int iPlr)
+protected func Recruitment(proplist player)
 {
 	// Broadcast for crew
-	GameCallEx("OnClonkRecruitment", this, iPlr);
+	GameCallEx("OnClonkRecruitment", this, player);
 	
-	return _inherited(iPlr,...);
+	return _inherited(player,...);
 }
 
-protected func DeRecruitment(int iPlr) {
+protected func DeRecruitment(proplist player) {
 	// Broadcast for crew
-	GameCallEx("OnClonkDeRecruitment", this, iPlr);
+	GameCallEx("OnClonkDeRecruitment", this, player);
 	
-	return _inherited(iPlr,...);
+	return _inherited(player,...);
 }
 
 /* --- Events --- */

@@ -367,19 +367,19 @@ private func Destruction()
 
 /* Callbacks */
 
-public func OnCrewRecruitment(object clonk, int plr)
+public func OnCrewRecruitment(object clonk, proplist player)
 {
 	UpdateCrewDisplay();
 	IssueWarning(clonk, Icon_Arrow, "Right");
 
-	return _inherited(clonk, plr, ...);
+	return _inherited(clonk, player, ...);
 }
 
-public func OnCrewDeRecruitment(object clonk, int plr)
+public func OnCrewDeRecruitment(object clonk, proplist player)
 {
 	UpdateCrewDisplay();
 
-	return _inherited(clonk, plr, ...);
+	return _inherited(clonk, player, ...);
 }
 
 public func OnCrewDeath(object clonk, int killer)

@@ -31,7 +31,7 @@ public func Destruction()
 	return;
 }
 
-public func OnClonkRecruitment(object clonk, int plr)
+public func OnClonkRecruitment(object clonk, proplist player)
 {
 	DisableFriendlyFire(clonk);
 	return;
@@ -43,7 +43,7 @@ public func OnCreationRuleNoFF(object obj)
 	return;
 }
 
-public func OnClonkDerecruitment(object clonk, int plr)
+public func OnClonkDeRecruitment(object clonk, proplist player)
 {
 	EnableFriendlyFire(clonk);
 	return;

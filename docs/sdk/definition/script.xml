@@ -330,8 +330,8 @@
         </row>
         <row id="Recruitment">
           <literal_col>Recruitment</literal_col>
-          <col>int player</col>
-          <col>When the objet is added to the crew of a player.</col>
+          <col>proplist player</col>
+          <col>When the object is added to the crew of a player. Used player number before 9.0 OC.</col>
         </row>
         <row id="RejectTeamSwitch">
           <literal_col>RejectTeamSwitch</literal_col>
