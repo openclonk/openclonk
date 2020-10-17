@@ -26,7 +26,7 @@ public func CanBeOwned()
 }
 
 // Callback from the engine: 
-public func OnOwnerChanged(int new_owner, int old_owner)
+public func OnOwnerChanged(proplist new_owner, proplist old_owner)
 {
 	// ...
 	return _inherited(new_owner, old_owner, ...);

@@ -364,7 +364,7 @@ public func CopyLinkedFlags(object from, array flaglist)
 }
 
 // Engine callback: owner of the flag has changed.
-protected func OnOwnerChanged(int new_owner, int old_owner)
+protected func OnOwnerChanged(proplist new_owner, proplist old_owner)
 {
 	// Debugging logs.
 	//Log("FLAG - OnOwnerChanged(): flag = %v, new_owner = %d, old_owner = %d", this, new_owner, old_owner);

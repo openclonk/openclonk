@@ -290,7 +290,7 @@ public func SetItemAvailable(int entry_idx)
 	return true;
 }
 
-public func OnOwnerChanged(new_owner)
+public func OnOwnerChanged(proplist new_owner)
 {
 	if (buy_menu) buy_menu->SetOwner(new_owner);
 	return true;
