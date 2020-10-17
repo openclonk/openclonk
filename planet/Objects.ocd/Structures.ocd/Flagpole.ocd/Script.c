@@ -66,7 +66,7 @@ public func Collection(object obj)
 	return _inherited(obj, ...);
 }
 
-func OnOwnerRemoved(int new_owner)
+func OnOwnerRemoved(proplist new_owner)
 {
 	// Our owner is dead :(
 	// Flag is passed on to the next best owner
