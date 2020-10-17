@@ -101,14 +101,14 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 	return false;
 }
 
-global func InitializePlayerControl(int plr, string controlset_name, bool keyboard, bool mouse, bool gamepad)
+global func InitializePlayerControl(proplist plr, string controlset_name, bool keyboard, bool mouse, bool gamepad)
 {
 	// VC = VirtualCursor
 	if (!CON_VC_Players)
 		CON_VC_Players = CreateArray();
-		
-	CON_VC_Players[plr] = !mouse;
-	
+
+	CON_VC_Players[plr.ID] = !mouse;
+
 	// for all clonks...
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember)))
 	{
@@ -121,7 +121,7 @@ global func PlayerHasVirtualCursor(int plr)
 	if (!CON_VC_Players)
 		return false;
 		
-	return CON_VC_Players[plr];
+	return CON_VC_Players[GetPlayer(plr).ID];
 }
 
 // Control2Player

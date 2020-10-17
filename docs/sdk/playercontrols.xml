@@ -266,7 +266,7 @@
     </part>
     <h id="Script">Script callbacks</h>
     <text>To initialize the player control the script function InitializePlayerControl is called for each player. This call might be delayed by a few frames with respect to InitializePlayer since the initialization of the control needs to be transmitted in the network. When continuing savegames InitalizePlayerControl will be called again. The chosen control might be different from the original one. The same can happen if a player chooses to change its controls during the game.</text>
-    <code>global func InitializePlayerControl(int player, string control_name, bool has_keyboard, bool has_mouse, bool has_gamepad)
+    <code>global func InitializePlayerControl(proplist player, string control_name, bool has_keyboard, bool has_mouse, bool has_gamepad)
 {
   // Here one has the possibility to create special control elements like a gamepad crosshair
   // or destroy it because the controls have changed from gamepad to another control
@@ -416,4 +416,5 @@ global func UpdateControlDir(int player)
     <text>...</text>
   </part>
   <author>Sven2</author><date>2009-06</date>
+  <author>Sven2</author><date>2020-10</date>
 </doc>
