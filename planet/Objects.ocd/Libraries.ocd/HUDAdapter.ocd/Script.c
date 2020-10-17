@@ -49,7 +49,7 @@ public func SetHUDController(object new_controller)
 /*-- Engine callbacks --*/
 
 // Bootstrap the HUD on the recruitement of a crew member.
-private func Recruitment(proplist plr)
+private func Recruitment(proplist player)
 {
 	if (GetHUDController())
 	{

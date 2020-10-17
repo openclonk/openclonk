@@ -269,7 +269,7 @@ public func OnClonkRecruitment(object clonk, proplist player)
 			if (respawn_material == "starting_material")
 			{
 				// Same as startign material
-				InitializeMaterial(plr);
+				InitializeMaterial(player);
 			}
 			else
 			{
@@ -350,19 +350,19 @@ private func InitializeBaseMaterial(int plr)
 	return true;
 }
 
-private func InitializeMaterial(int plr)
+private func InitializeMaterial(proplist player)
 {
 	// Spread material across clonks. Try to fill them evenly and avoid giving the same item twice to the same clonk
 	// So e.g. each clonk can get one shovel
 	for (var idlist_entry in starting_material)
 	{
 		var best_target = nil, target_score;
-		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(), GetY() + GetDefHeight() / 2, plr);
+		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(), GetY() + GetDefHeight() / 2, player);
 		if (!obj || !obj.Collectible) continue;
 		var id = idlist_entry.id;
-		for (var j = 0; j < GetCrewCount(plr); ++j)
+		for (var j = 0; j < GetCrewCount(player); ++j)
 		{
-			var clonk = GetCrew(plr, j);
+			var clonk = GetCrew(player, j);
 			if (clonk)
 			{
 				var clonk_score = 0;
