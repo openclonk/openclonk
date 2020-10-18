@@ -326,7 +326,7 @@ public func MessageBoxAll(string message, object talker, bool as_message)
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(message, GetCursor(plr), talker, plr, as_message);
+		MessageBox(message, plr->GetCursor(), talker, plr, as_message);
 	}
 }
 
@@ -337,8 +337,8 @@ public func MessageBoxBroadcast(string message, object clonk, object talker, arr
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		if (GetCursor(plr) != clonk)
-			MessageBox(message, GetCursor(plr), talker, plr, true);
+		if (plr->GetCursor() != clonk)
+			MessageBox(message, plr->GetCursor(), talker, plr, true);
 	}
 	// main message as dialog box
 	return MessageBox(message, clonk, talker, nil, false, options);
@@ -354,8 +354,8 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 		for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 		{
 			var other_plr = GetPlayerByIndex(i, C4PT_User);
-			if (GetCursor(other_plr) != clonk)
-				MessageBox(message, GetCursor(other_plr), talker, other_plr, true);
+			if (other_plr->GetCursor() != clonk)
+				MessageBox(message, other_plr->GetCursor(), talker, other_plr, true);
 		}
 	}
 	// Use current NPC as talker if unspecified.

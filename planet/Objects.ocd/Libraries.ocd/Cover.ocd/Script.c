@@ -23,7 +23,7 @@ private func CheckCoverage()
 	{
 		// Visible to all players
 		this.Visibility[GetPlayerByIndex(i) + 1] = true;
-		var cursor = GetCursor(GetPlayerByIndex(i));
+		var cursor = GetPlayerByIndex(i)->GetCursor();
 		if (cursor)
 			if (cover_area->IsPointContained(cursor->GetX()-GetX(), cursor->GetY()-GetY()))
 				// Except when the cursor is inside the cover area

@@ -147,7 +147,7 @@ public func UpdateOberserverContainer()
 	if (GetLength(plrs_active) > 0)
 	{
 		var active_plr = GetPlayerByID(plrs_active[0]);
-		view_cursor = GetCursor(active_plr);
+		view_cursor = active_plr->GetCursor();
 	}
 	if (view_cursor)
 	{

@@ -331,7 +331,7 @@ global func Test5_OnStart(int plr)
 	engine->CreateContents(Coal, 10);
 	
 	var pump = CreateObjectAbove(Pump, 84, 160, plr);
-	var helmet = GetHiRank(plr)->CreateContents(DivingHelmet);
+	var helmet = plr->GetHiRank()->CreateContents(DivingHelmet);
 	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
 	drain->ConnectPipeTo(helmet);
 	drain->ConnectPipeTo(pump, drain->GetPipeState());
@@ -339,7 +339,7 @@ global func Test5_OnStart(int plr)
 	// Move player character over the basin
 	GetHiRank()->SetPosition(175, 150);
 	GetHiRank()->SetComDir(COMD_Down);
-	helmet->ControlUse(GetHiRank(plr));
+	helmet->ControlUse(plr->GetHiRank());
 
 	// Log what the test is about.
 	Log("Test air supply to diving helmet - dive down towards the ground");

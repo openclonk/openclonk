@@ -387,7 +387,7 @@ public func OnCrewDeath(object clonk, proplist killer)
 	UpdateCrewDisplay();
 
 	var next_index = GetNextCrewIndex(GetCursorIndex());
-	if (GetCursor(GetOwner()) != clonk && GetOwner()->GetCrew(next_index) != clonk)
+	if (GetOwner()->GetCursor() != clonk && GetOwner()->GetCrew(next_index) != clonk)
 		IssueWarning(this, CrewDeathIcon(), "", clonk->GetName()); // this for target because Clonk might get deleted
 
 	return _inherited(clonk, killer, ...);
@@ -441,7 +441,7 @@ public func OnCrewHealthChange(object clonk, int change, int cause, int caused_b
 	if (health_phys && change != 0) // no false positives where change is zero
 	{
 		var health_val = clonk->GetEnergy();
-		if (GetCursor(GetOwner()) == clonk)
+		if (GetOwner()->GetCursor() == clonk)
 		{
 			// Show current health
 			SetCrewBarValue(crew_health_bar, 1000 * health_val / health_phys, clonk->GetEnergy());
@@ -488,7 +488,7 @@ public func OnCrewBreathChange(object clonk, int change)
 	if (breath_phys)
 	{
 		var breath_val = clonk->GetBreath();
-		if (GetCursor(GetOwner()) == clonk)
+		if (GetOwner()->GetCursor() == clonk)
 		{
 			// Hide bar if full breath
 			if (breath_val == breath_phys)
@@ -524,7 +524,7 @@ public func OnCrewMagicChange(object clonk, int change)
 	if (magic_phys)
 	{
 		var magic_val = clonk->GetMagicEnergy();
-		if (GetCursor(GetOwner()) == clonk) // Only displayed for cursor
+		if (GetOwner()->GetCursor() == clonk) // Only displayed for cursor
 		{
 			// Hide bar if no magic
 			if (magic_val == 0)
@@ -621,7 +621,7 @@ private func AddCrewDisplay(object clonk)
 // Update everything
 private func UpdateCrewDisplay()
 {
-	var cursor = GetCursor(GetOwner());
+	var cursor = GetOwner()->GetCursor();
 	var cursor_index = GetCursorIndex();
 
 	// No cursor: Don't display cursor information

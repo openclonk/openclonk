@@ -174,7 +174,7 @@ public func GetShortDescription(int plr)
 	if (!at_base)
 		return "$MsgShortCaptured$";
 	
-	var cursor = GetCursor(plr);
+	var cursor = plr->GetCursor();
 	flag = FindObject(Find_ID(Goal_Flag), Find_Not(Find_Func("FindTeam", team)), Find_Container(cursor));
 	if (flag)
 		return "$MsgShortReturn$";

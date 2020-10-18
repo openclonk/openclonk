@@ -8,7 +8,7 @@ global func PlayerControl(proplist plr, int ctrl, ...)
 	{
 		CustomMessage(Format("$MsgCheater$", GetTaggedPlayerName(plr)));
 		Sound("UI::Error", true);
-		//var crew = GetCursor(plr); - used for cheating
+		//var crew = plr->GetCursor(); - used for cheating
 		//if (crew) crew->Punch(crew, 50);
 		return true;
 	}

@@ -188,7 +188,7 @@ global func GetPlayerCursorPos(proplist player)
 
 global func StopSelected(proplist player)
 {
-	var cursor = GetCursor(player);
+	var cursor = player->GetCursor();
 	if (cursor)
 	{
 		cursor->SetCommand("None");
@@ -397,7 +397,7 @@ global func ShiftCursor(proplist player, bool back, bool force)
 	// Is the selected Clonk busy at the moment? E.g. uncloseable menu open..
 	if (!force)
 	{
-		var cursor = GetCursor(player);
+		var cursor = player->GetCursor();
 		if (cursor && cursor->~RejectShiftCursor()) return false;
 	}
 	
@@ -405,7 +405,7 @@ global func ShiftCursor(proplist player, bool back, bool force)
 	var index = 0;
 	while (index < player->GetCrewCount())
 	{
-		if (GetCursor(player) == player->GetCrew(index)) break;
+		if (player->GetCursor() == player->GetCrew(index)) break;
 		index++;
 	}
 	
@@ -435,7 +435,7 @@ global func ShiftCursor(proplist player, bool back, bool force)
 	
 	// Changing the cursor closes all menus that are associated with the old cursor.
 	// However, if a menu is not closable, then it requires the attention of the player and switching the cursor is disabled..
-	var current_cursor = GetCursor(player);
+	var current_cursor = player->GetCursor();
 	var new_cursor = player->GetCrew(index);
 	if (current_cursor == new_cursor) return false;
 	

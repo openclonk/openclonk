@@ -300,7 +300,7 @@ func OnClonkDeath(clonk, killed_by)
 		Log("$MsgRelaunch$", GetTaggedPlayerName(plr));
 		JoinPlayer(plr, clonk);
 		//var gui_arrow = FindObject(Find_ID(GUI_GoalArrow), Find_Owner(plr));
-		//gui_arrow->SetAction("Show", GetCursor(plr));
+		//gui_arrow->SetAction("Show", plr->GetCursor());
 	}
 	else
 	{

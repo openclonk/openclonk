@@ -102,7 +102,7 @@ private func Execute()
 
 private func ExecutePlayer(int plr)
 {
-	var cursor = GetCursor(plr);
+	var cursor = plr->GetCursor();
 	// Determine environment the player is currently in
 	var environment = nil;
 	if (cursor)

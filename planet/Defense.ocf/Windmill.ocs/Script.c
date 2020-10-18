@@ -316,7 +316,7 @@ func CreateArrowForPlayers(int x, int y)
 	for (var i = 0; i < GetPlayerCount(C4PT_User); i++)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		var cursor = GetCursor(plr);
+		var cursor = plr->GetCursor();
 		if (!cursor) continue;
 		var arrow = CreateObject(GUI_GoalArrow, cursor->GetX(), cursor->GetY(), plr);
 		if (!arrow) continue;

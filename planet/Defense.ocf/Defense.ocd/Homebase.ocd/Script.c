@@ -174,7 +174,7 @@ public func OnBuySelection(int callback_idx)
 {
 	// Buy directly into cursor
 	var plr = GetOwner();
-	var cursor = GetCursor(plr);
+	var cursor = plr->GetCursor();
 	if (!cursor) return false;
 	// Safety
 	var entry = base_material[callback_idx];

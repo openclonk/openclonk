@@ -172,10 +172,10 @@ func OnClonkDeath(object clonk, proplist killer)
 		else if (location->GetKing() == clonk)
 		{
 			DoPoint(killer);
-			location->SetKing(GetCursor(killer));
+			location->SetKing(killer->GetCursor());
 			
 			// for the kill logs
-			AddEffect("NewKing", GetCursor(killer), 1, 3, nil);
+			AddEffect("NewKing", killer->GetCursor(), 1, 3, nil);
 		}
 	}
 	CheckForWinner();
@@ -187,7 +187,7 @@ public func GetAdditionalPlayerRelaunchString(object clonk, int plr, int killed_
 	if (!Hostile(killed_by, plr)) return;
 	if (!location->GetKing()) return;
 	if (location->GetKing()->GetOwner() != killed_by) return;
-	if (!GetEffect("NewKing", GetCursor(killed_by))) return;
+	if (!GetEffect("NewKing", killed_by->GetCursor())) return;
 	var msg = Format("$IsNowKing$", GetTaggedPlayerName(killed_by));
 	return msg;
 }

@@ -101,7 +101,7 @@ public func DeactivatePlayerControls(int plr, bool make_invincible)
 	var j = 0, crew;
 	while (crew = plr->GetCrew(j++))
 	{
-		//if (crew == GetCursor(plr)) crew.Sequence_was_cursor = true; else crew.Sequence_was_cursor = nil;
+		//if (crew == plr->GetCursor()) crew.Sequence_was_cursor = true; else crew.Sequence_was_cursor = nil;
 		crew->SetCrewEnabled(false);
 		crew->CancelUse();
 		if (crew->GetMenu()) 
@@ -217,7 +217,7 @@ public func SetViewTarget(object view_target)
 		for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);
-			SetPlrView(plr, GetCursor(plr));
+			SetPlrView(plr, plr->GetCursor());
 		}
 	}
 	return true;

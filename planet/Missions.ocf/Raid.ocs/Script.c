@@ -109,7 +109,7 @@ func JoinPlayer(int plr, object crew, bool no_placement)
 
 func StartAttackSequence(object chopping_clonk)
 {
-	if (!chopping_clonk) chopping_clonk = GetCursor(GetPlayerByIndex());
+	if (!chopping_clonk) chopping_clonk = GetPlayerByIndex()->GetCursor();
 	return StartSequence("Attack", 0, chopping_clonk);
 }
 

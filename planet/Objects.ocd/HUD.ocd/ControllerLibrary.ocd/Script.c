@@ -85,8 +85,9 @@ public func Reset()
 		this->~Destruction();
 		Construction();
 		
-		if (GetCursor(GetOwner()))
-			this->~OnCrewSelection(GetCursor(GetOwner()));
+		var cursor = GetOwner()->GetCursor();
+		if (cursor)
+			this->~OnCrewSelection(cursor);
 	}
 	else
 	{
@@ -96,7 +97,7 @@ public func Reset()
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);
 			var controller = CreateObject(GetGUIControllerID(), 0, 0, plr);
-			var cursor = GetCursor(plr); 
+			var cursor = plr->GetCursor(); 
 			if (cursor)
 				controller->~OnCrewSelection(cursor);
 		}

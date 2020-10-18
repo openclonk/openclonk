@@ -542,7 +542,7 @@ public func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, obje
 
 public func ObjectSpawnSelectObject(data, int player, int ID, int subwindowID, object target)
 {
-	var clonk = GetCursor(player);
+	var clonk = player->GetCursor();
 	var obj = data[0];
 	
 	if (ObjectSpawnTarget == 1)

@@ -324,7 +324,7 @@ private func GetPlayerPosition(proplist plr)
 	if (cleared < cp_count)
 	{
 		var path_length = ObjectDistance(cp_list[cleared], cp_list[cleared + 1]);
-		add_length = Max(path_length - ObjectDistance(cp_list[cleared + 1], GetCursor(plr)), 0);
+		add_length = Max(path_length - ObjectDistance(cp_list[cleared + 1], plr->GetCursor()), 0);
 	}
 	return length + add_length;
 }
@@ -347,7 +347,7 @@ private func GetTeamPosition(int team)
 			if (GetPlayerTeam(plr) == team)
 			{
 				var path_length = ObjectDistance(cp_list[cleared], cp_list[cleared + 1]);
-				var test_length = Max(path_length - ObjectDistance(cp_list[cleared + 1], GetCursor(plr)), 0);
+				var test_length = Max(path_length - ObjectDistance(cp_list[cleared + 1], plr->GetCursor()), 0);
 				if (test_length > add_length)
 					add_length = test_length;
 			}			
