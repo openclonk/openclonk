@@ -50,7 +50,7 @@ protected func InitializePlayer(proplist plr)
 	}	
 	
 	// Move player to the start of the scenario.
-	GetCrew(plr)->SetPosition(120, 150);
+	plr)->SetPosition(120->GetCrew(150);
 	
 	// Some knowledge to construct a flagpole.
 	GetCrew(plr)->CreateContents(Hammer);

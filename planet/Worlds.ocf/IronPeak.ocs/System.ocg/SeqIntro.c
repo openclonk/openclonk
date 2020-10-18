@@ -30,7 +30,7 @@ public func Intro_Start()
 public func Intro_JoinPlayer(int plr)
 {
 	var j = 0, crew;
-	while (crew = GetCrew(plr, j++))
+	while (crew = plr->GetCrew(j++))
 	{
 		crew->Enter(this.airplane);
 		crew->SetAction("Walk");	
@@ -71,7 +71,7 @@ public func Intro_3()
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var j = 0, crew;
-		while (crew = GetCrew(plr, j++))
+		while (crew = plr->GetCrew(j++))
 		{
 			crew->Exit();
 			var balloon = crew->CreateContents(Balloon);
@@ -130,7 +130,7 @@ public func Intro_6()
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var j = 0, crew;
-		while (crew = GetCrew(plr, j++))
+		while (crew = plr->GetCrew(j++))
 			RemoveAll(Find_ID(Balloon), Find_Container(crew));		
 	}
 	

@@ -403,9 +403,9 @@ global func ShiftCursor(proplist player, bool back, bool force)
 	
 	// get index of currently selected crew
 	var index = 0;
-	while (index < GetCrewCount(player))
+	while (index < player->GetCrewCount())
 	{
-		if (GetCursor(player) == GetCrew(player, index)) break;
+		if (GetCursor(player) == player->GetCrew(index)) break;
 		index++;
 	}
 	
@@ -416,27 +416,27 @@ global func ShiftCursor(proplist player, bool back, bool force)
 	// after the next. Also, we need to stop this skipping after all crew
 	// members have been checked in the special case that all crew members
 	// are disabled
-	var maxcycle = GetCrewCount(player);
+	var maxcycle = player->GetCrewCount();
 	var cycle = 0;
 
 	do {
 		if (back)
 		{
 			--index;
-			if (index < 0) index = GetCrewCount(player)-1;
+			if (index < 0) index = player->GetCrewCount()-1;
 		}
 		else
 		{
 			++index;
-			if (index >= GetCrewCount(player)) index = 0;
+			if (index >= player->GetCrewCount()) index = 0;
 		}
 		++cycle;
-	} while (cycle < maxcycle && !(GetCrew(player, index)->GetCrewEnabled()));
+	} while (cycle < maxcycle && !(player->GetCrew(index)->GetCrewEnabled()));
 	
 	// Changing the cursor closes all menus that are associated with the old cursor.
 	// However, if a menu is not closable, then it requires the attention of the player and switching the cursor is disabled..
 	var current_cursor = GetCursor(player);
-	var new_cursor = GetCrew(player, index);
+	var new_cursor = player->GetCrew(index);
 	if (current_cursor == new_cursor) return false;
 	
 	StopSelected(player);

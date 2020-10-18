@@ -56,7 +56,7 @@ protected func InitializePlayer(proplist plr)
 
 	// Move clonks to location and give them a shovel.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	while (crew = plr->GetCrew(index))
 	{
 		crew->SetPosition(96 + RandomX(-12, 12), LandscapeHeight() - 92);
 		var u = 0;

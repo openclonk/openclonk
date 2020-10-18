@@ -252,7 +252,7 @@ private func InitAnimals()
 protected func InitializePlayer(proplist plr)
 {
 	// Position player's clonk.
-	var clonk = GetCrew(plr, 0);
+	var clonk = plr->GetCrew(0);
 	clonk->SetPosition(60, 606);
 	var fx = AddEffect("ClonkRestore", clonk, 100, 10);
 	fx.to_x = 60;
@@ -444,7 +444,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	// Show the player his clonk and the guide.
 	if (index == 0)
 	{
-		TutArrowShowTarget(GetCrew(GetPlayerByIndex()), 225, 24);
+		TutArrowShowTarget(GetPlayerByIndex()), 225->GetCrew(24);
 	}
 	// Show the player HUD.
 	if (index == 1)

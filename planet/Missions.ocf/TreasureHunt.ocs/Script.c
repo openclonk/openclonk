@@ -70,7 +70,7 @@ func JoinPlayer(int plr)
 {
 	// Place in village
 	var crew;
-	for (var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = plr->GetCrew(index); ++index)
 	{
 		var x = 190 + Random(20);
 		var y = 1175;

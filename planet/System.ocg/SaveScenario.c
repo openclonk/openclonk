@@ -55,7 +55,7 @@ global func SaveScenarioObjects(f, duplicate_objects)
 	{
 		for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
 		{
-			for (var icrew = 0, crew; crew = GetCrew(GetPlayerByIndex(iplr, C4PT_User), icrew); ++icrew)
+			for (var icrew = 0, crew; crew = GetPlayerByIndex(iplr, C4PT_User)->GetCrew(icrew); ++icrew)
 			{
 				ignore_objs[GetLength(ignore_objs)] = crew;
 			}

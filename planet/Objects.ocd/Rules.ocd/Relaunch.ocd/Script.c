@@ -171,7 +171,7 @@ public func Activate(proplist plr)
 	if (GameCall("OnPlayerActivatedRestart", plr))
 		return;
 	// Remove the player's clonk, including contents.
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	if (clonk && clonk->GetCrewEnabled())
 	{
 		clonk->Kill(clonk, true);
@@ -302,7 +302,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 {
 	if (!GetPlayerName(plr))
 		return;
-	if (respawn_last_clonk && GetCrewCount(plr) >= 1)
+	if (respawn_last_clonk && plr->GetCrewCount() >= 1)
 		return;
 	
 	if (respawn_at_base)
@@ -350,7 +350,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	}
 	else
 	{
-		new_clonk = GetCrew(plr);
+		new_clonk = plr->GetCrew();
 		if (!new_clonk)
 			return;
 	}

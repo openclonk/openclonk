@@ -48,7 +48,7 @@ func DoInit(int plr)
 protected func InitializePlayer(proplist plr)
 {
 	// Move crew to starting location
-	var crew = GetCrew(plr, 0);
+	var crew = plr->GetCrew(0);
 	var x = 80 + Random(10);
 	crew->SetPosition(x, FindHeight(x)-10);
 

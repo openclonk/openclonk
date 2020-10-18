@@ -53,9 +53,9 @@ protected func InitializeScriptPlayer(proplist plr)
 {
 	// Remove old crew.
 	var index = 0;
-	while (GetCrew(plr, index))
+	while (plr->GetCrew(index))
 	{
-		GetCrew(plr, index)->RemoveObject();
+		plr->GetCrew(index)->RemoveObject();
 		index++;
 	}
 	

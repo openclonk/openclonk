@@ -91,7 +91,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Position and materials
 	var i, crew;
-	for (i = 0; crew = GetCrew(plr, i); ++i)
+	for (i = 0; crew = plr->GetCrew(i); ++i)
 	{
 		var pos = FindMainIslandPosition();
 		crew->SetPosition(pos[0], pos[1] - 11);

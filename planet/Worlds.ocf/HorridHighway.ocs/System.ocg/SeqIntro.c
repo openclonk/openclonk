@@ -28,7 +28,7 @@ public func Intro_JoinPlayer(int plr)
 {
 	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Set | PLRZOOM_Direct);
 	var crew, index = 0;
-	while (crew = GetCrew(plr, index++))
+	while (crew = plr->GetCrew(index++))
 		crew->Enter(this.locomotive);
 	return;
 }
@@ -38,7 +38,7 @@ public func Intro_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgWelcomeHorridHighway$", GetCrew(plr, 0)->GetName()), GetCrew(plr, 0), this.npc, plr, true);
+		MessageBox(Format("$MsgWelcomeHorridHighway$", plr, 0)->GetName()), plr, 0), this.npc->GetCrew(plr->GetCrew(true);
 	}
 	return ScheduleNext(3 * 36);
 }
@@ -55,7 +55,7 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgHighwayBroken$", GetCrew(plr, 0), this.npc, plr, true);
+		MessageBox("$MsgHighwayBroken$", plr, 0), this.npc, plr->GetCrew(true);
 	}
 	return ScheduleNext(5 * 36);
 }
@@ -67,7 +67,7 @@ public func Intro_4()
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var crew, index = 0;
-		while (crew = GetCrew(plr, index++))
+		while (crew = plr->GetCrew(index++))
 			crew->Exit();
 	}
 	return ScheduleNext(1 * 36);
@@ -78,7 +78,7 @@ public func Intro_5()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgFixHighway$", GetCrew(plr, 0), this.npc, plr, true);
+		MessageBox("$MsgFixHighway$", plr, 0), this.npc, plr->GetCrew(true);
 	}
 	return ScheduleNext(6 * 36);
 }
@@ -88,7 +88,7 @@ public func Intro_6()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgRunLocomotives$", GetCrew(plr, 0), this.npc, plr, true);
+		MessageBox("$MsgRunLocomotives$", plr, 0), this.npc, plr->GetCrew(true);
 	}
 	return Stop();
 }

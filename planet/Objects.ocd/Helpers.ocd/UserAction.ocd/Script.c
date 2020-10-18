@@ -1585,8 +1585,8 @@ public func InitContext(object action_object, int triggering_player, object trig
 	// Triggering clonk is the selected clonk of the triggering player
 	if (GetType(triggering_player))
 	{
-		triggering_clonk = GetCursor(triggering_player);;
-		if (!triggering_clonk) triggering_clonk = GetCrew(triggering_player);
+		triggering_clonk = triggering_player->GetCursor();
+		if (!triggering_clonk) triggering_clonk = triggering_player->GetCrew();
 	}
 	// Triggering object / Triggering player clonk fallbacks
 	if (!triggering_object)

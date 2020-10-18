@@ -72,7 +72,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Give crew some equipment.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index++))
+	while (crew = plr->GetCrew(index++))
 	{
 		if (index == 1)
 			crew->CreateContents(Hammer);

@@ -44,7 +44,7 @@ func Intro_JoinPlayer(int plr)
 {
 	if (this.intro_closed) return false; // too late for join - just join in village
 	var crew;
-	for (var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = plr->GetCrew(index); ++index)
 	{
 		crew->Enter(this.dialogue);
 	}
@@ -173,7 +173,7 @@ func Intro_PlaneHit()
 	{
 		plr = GetPlayerByIndex(iplr, C4PT_User);
 		var icrew = 0, crew;
-		while (crew = GetCrew(plr, icrew++))
+		while (crew = plr->GetCrew(icrew++))
 		{
 			crew->Exit(0,-5, 0, Random(3)-1, Random(5)-6);
 			crew->SetAction("Tumble");

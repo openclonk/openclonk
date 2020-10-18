@@ -168,7 +168,7 @@ private func InitAnimals()
 protected func InitializePlayer(proplist plr)
 {
 	// Position player's clonk.
-	var clonk = GetCrew(plr, 0);
+	var clonk = plr->GetCrew(0);
 	clonk->SetPosition(40, 318);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
 	effect.to_x = 40;

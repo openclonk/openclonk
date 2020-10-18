@@ -300,9 +300,9 @@ private func InitializeCrew(int plr)
 		for (var i = 0; i < idlist_entry.count; ++i)
 			requested_crew[n++] = idlist_entry.id;
 	// Match them to existing crew
-	for (var i = GetCrewCount(plr)-1; i>=0; --i)
+	for (var i = plr->GetCrewCount()-1; i>=0; --i)
 	{
-		var obj = GetCrew(plr, i);
+		var obj = plr->GetCrew(i);
 		if (obj) {
 			var idx = GetIndexOf(requested_crew, obj->GetID());
 			if (idx >= 0)
@@ -323,9 +323,9 @@ private func InitializeCrew(int plr)
 				obj->MakeCrewMember(plr);
 		}
 	// Apply crew settings
-	for (var i = GetCrewCount(plr)-1; i>=0; --i)
+	for (var i = plr->GetCrewCount()-1; i>=0; --i)
 	{
-		var obj = GetCrew(plr, i);
+		var obj = plr->GetCrew(i);
 		if (obj)
 			ApplyCrewSettings(obj);
 	}
@@ -360,9 +360,9 @@ private func InitializeMaterial(proplist player)
 		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(), GetY() + GetDefHeight() / 2, player);
 		if (!obj || !obj.Collectible) continue;
 		var id = idlist_entry.id;
-		for (var j = 0; j < GetCrewCount(player); ++j)
+		for (var j = 0; j < player->GetCrewCount(); ++j)
 		{
-			var clonk = GetCrew(player, j);
+			var clonk = player->GetCrew(j);
 			if (clonk)
 			{
 				var clonk_score = 0;

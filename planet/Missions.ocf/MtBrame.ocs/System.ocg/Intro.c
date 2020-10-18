@@ -17,7 +17,7 @@ global func IntroAddPlayer(int plr)
 	if (effect.Time > 30) return false;
 
 	var crew;
-	for (var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = plr->GetCrew(index); ++index)
 	{
 	        var skin = crew->GetCrewExtraData("Skin");
         	if (skin == nil) skin = GetPlrClonkSkin(plr);
@@ -106,7 +106,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 	}
 
 	if (effect.Time == 200)
-		effect.Dialog->MessageBoxAll("$MsgIntro2$", GetCrew(GetPlayerByIndex(Random(GetPlayerCount())), 0));
+		effect.Dialog->MessageBoxAll("$MsgIntro2$", GetPlayerByIndex(Random(GetPlayerCount()))->GetCrew(0));
 
 	if (effect.Time == 270)
 	{
@@ -132,7 +132,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 		effect.Sister->SetCommand("MoveTo", effect.Sister, 214 - effect.Sister->GetX(), 540 - effect.Sister->GetY());
 		for (var crew in effect.Players)
 			crew->Contained()->SetDir(DIR_Left);
-		effect.Dialog->MessageBoxAll("$MsgIntro4$", GetCrew(GetPlayerByIndex(Random(GetPlayerCount())), 0));
+		effect.Dialog->MessageBoxAll("$MsgIntro4$", GetPlayerByIndex(Random(GetPlayerCount()))->GetCrew(0));
 	}
 
 	if (effect.Time == 520)
@@ -161,7 +161,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 
 	if (effect.Time == 620)
 	{
-		effect.Dialog->MessageBoxAll("$MsgIntro6$", GetCrew(GetPlayerByIndex(Random(GetPlayerCount())), 0));
+		effect.Dialog->MessageBoxAll("$MsgIntro6$", GetPlayerByIndex(Random(GetPlayerCount()))->GetCrew(0));
 	}
 
 	if (effect.Time == 700)

@@ -174,7 +174,7 @@ global func SetWealth(any player, int value)
 {
 	player = GetPlayerLegacy(player);
 	if (player)
-	{01111
+	{
 		player.Data.Wealth = BoundBy(value, 0, 1000000000);
 		GameCallEx("OnWealthChanged", player);
 		return true;

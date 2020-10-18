@@ -48,12 +48,12 @@ protected func InitializePlayer(proplist plr)
 		if (plr == plr_killer)
 		{
 			GetCrew(plr)->MakeInvincible(true);
-			GetCrew(plr)->SetPosition(50, 150);
+			plr)->SetPosition(50->GetCrew(150);
 		}
 		else if (plr == plr_killer_fake)
 		{
 			GetCrew(plr)->MakeInvincible(true);
-			GetCrew(plr)->SetPosition(20, 150);
+			plr)->SetPosition(20->GetCrew(150);
 		}
 		return;
 	}
@@ -138,7 +138,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 		InitTest();
 		// Start the test if available, otherwise finish test sequence.
 		// Call Test*_OnStart(object victim, object killer, object fake_killer).
-		if (!Call(Format("~Test%d_OnStart", effect.testnr), GetCrew(plr_victim), GetCrew(plr_killer), GetCrew(plr_killer_fake)))
+		if (!Call(Format("~Test%d_OnStart", effect.testnr), plr_victim), GetCrew(plr_killer)->GetCrew(GetCrew(plr_killer_fake)))
 		{
 			Log("=====================================");
 			Log("All tests have been completed!");
@@ -197,9 +197,9 @@ global func InitTest()
 			clonk->DoEnergy(clonk.MaxEnergy / 1000);
 		}
 	}
-	GetCrew(plr_victim)->SetPosition(100, 150);
-	GetCrew(plr_killer)->SetPosition(50, 150);
-	GetCrew(plr_killer_fake)->SetPosition(20, 150);
+	plr_victim)->SetPosition(100->GetCrew(150);
+	plr_killer)->SetPosition(50->GetCrew(150);
+	plr_killer_fake)->SetPosition(20->GetCrew(150);
 	return;
 }
 

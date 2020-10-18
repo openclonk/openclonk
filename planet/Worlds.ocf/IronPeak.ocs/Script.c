@@ -53,7 +53,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Give crew their items.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	while (crew = plr->GetCrew(index))
 	{
 		// First clonk can construct, others can mine.
 		if (index == 0)

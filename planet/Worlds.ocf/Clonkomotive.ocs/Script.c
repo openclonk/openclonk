@@ -53,7 +53,7 @@ public func InitializePlayer(plr)
 {
 	// Move clonks to location and give them a shovel.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	while (crew = plr->GetCrew(index))
 	{
 		var x = 60;
 		var y = FindHeight(x);

@@ -32,7 +32,7 @@ func InitializePlayer(proplist plr)
 	}
 	// Position and materials
 	var crew;
-	for (i = 0; crew = GetCrew(plr, i); ++i)
+	for (i = 0; crew = plr->GetCrew(i); ++i)
 	{
 		crew->SetPosition(2100 + Random(40), 233-10);
 		crew->CreateContents(Shovel);

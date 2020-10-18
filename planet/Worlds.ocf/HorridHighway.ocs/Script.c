@@ -62,7 +62,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Position and materials.
 	var i, crew;
-	for (i = 0; crew = GetCrew(plr, i); ++i)
+	for (i = 0; crew = plr->GetCrew(i); ++i)
 	{
 		crew->SetPosition(100, LandscapeHeight() / 2 - 10);
 		crew->CreateContents(Shovel);

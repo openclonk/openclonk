@@ -37,7 +37,7 @@ public func SetRounds(int rounds)
 // When playing with inbalanced teams, the goal randomly selects players to be
 // handicapped so that the number of non-handicapped players is tha same for
 // all teams.
-public func IsHandicapped(int plr)
+public func IsHandicapped(proplist plr)
 {
 	if (this == Goal_MultiRoundMelee) return FindObject(Find_ID(Goal_MultiRoundMelee))->IsHandicapped(plr);
 	return !!handicapped_players[plr];
@@ -80,7 +80,7 @@ protected func InitializePlayer(proplist plr, int x, int y, object base, int tea
 
 	// Players joining at runtime will participate in the following round.
 	// Should only happen if it's not game start, else Clonks would start stuck in a RelaunchContainer.
-	if (FrameCounter() > 1) PutInRelaunchContainer(GetCrew(plr));
+	if (FrameCounter() > 1) PutInRelaunchContainer(plr->GetCrew());
 
 	return inherited(plr, x, y, base, team, ...);
 }
@@ -96,14 +96,14 @@ protected func InitializePlayers()
 }
 
 // InitPlayerRound initializes the round for the given player.
-private func InitPlayerRound(int plr)
+private func InitPlayerRound(proplist plr)
 {
 	// Unmark death on scoreboard.
 	Scoreboard->SetPlayerData(plr, "death", "");
 	// Players can scroll freely while waiting for the next round. Disable this now.
 	SetPlayerViewLock(plr, true);
 	// Disable the Clonk during the countdown.
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	crew->SetCrewEnabled(false);
 	crew->SetComDir(COMD_Stop);
 
@@ -395,7 +395,7 @@ private func UpdateScoreboardWins(int team)
 
 /* Goal interface */
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	// Count active enemy clonks.
 	var hostile_count = ObjectCount(Find_OCF(OCF_CrewMember), Find_NoContainer(), Find_Hostile(plr));
@@ -411,7 +411,7 @@ public func GetDescription(int plr)
 	return message;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return CurrentRoundStr();
 }

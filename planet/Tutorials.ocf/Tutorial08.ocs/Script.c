@@ -179,7 +179,7 @@ private func InitAI()
 protected func InitializePlayer(proplist plr)
 {
 	// Position player's clonk.
-	var clonk = GetCrew(plr, 0);
+	var clonk = plr->GetCrew(0);
 	clonk->SetPosition(40, 182);
 	clonk->SetDir(DIR_Right);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);

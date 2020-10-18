@@ -150,13 +150,12 @@ public func SetIndexedCP(object cp, int index)
 /*-- Checkpoint interaction --*/
 
 // Called from a finish CP to indicate that plr has reached it.
-public func PlayerReachedFinishCP(int plr, object cp, bool is_first_clear)
+public func PlayerReachedFinishCP(proplist plr, object cp, bool is_first_clear)
 {
 	if (finished)
 		return;
-	var plrid = GetPlayerID(plr);
 	var team = GetPlayerTeam(plr);
-	plr_list[plrid]++;
+	plr_list[plr.ID]++;
 	if (team)
 		team_list[team]++;
 	UpdateScoreboard(plr);
@@ -170,22 +169,21 @@ public func PlayerReachedFinishCP(int plr, object cp, bool is_first_clear)
 }
 
 // Called from a respawn CP to indicate that plr has reached it.
-public func SetPlayerRespawnCP(int plr, object cp)
+public func SetPlayerRespawnCP(proplist plr, object cp)
 {
-	if (respawn_list[plr] == cp)
+	if (respawn_list[plr.ID] == cp)
 		return;
-	respawn_list[plr] = cp;
+	respawn_list[plr.ID] = cp;
 	cp->PlayerMessage(plr, "$MsgNewRespawn$");
 	return;
 }
 
 // Called from a check CP to indicate that plr has cleared it.
-public func AddPlayerClearedCP(int plr, object cp, bool is_first_clear, bool is_team_auto_clear)
+public func AddPlayerClearedCP(proplist plr, object cp, bool is_first_clear, bool is_team_auto_clear)
 {
 	if (finished)
 		return;
-	var plrid = GetPlayerID(plr);
-	plr_list[plrid]++;
+	plr_list[plr.ID]++;
 	UpdateScoreboard(plr);
 	if (!is_team_auto_clear) // No callback if only auto-cleared for other team members after another player cleared it
 	{
@@ -240,7 +238,7 @@ public func IsFulfilled()
 	return finished;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var team = GetPlayerTeam(plr);
 	var msg;
@@ -295,7 +293,7 @@ public func Activate(proplist plr)
 	return;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	var team = GetPlayerTeam(plr);
 	var parkour_length = GetParkourLength();
@@ -314,10 +312,9 @@ public func GetShortDescription(int plr)
 }
 
 // Returns the length the player has completed.
-private func GetPlayerPosition(int plr)
+private func GetPlayerPosition(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
-	var cleared = plr_list[plrid];
+	var cleared = plr_list[plr.ID];
 	var length = 0;
 	// Add length of cleared checkpoints.
 	for (var i = 0; i < cleared; i++)
@@ -369,10 +366,9 @@ private func GetParkourLength()
 }	
 
 // Returns the number of checkpoints cleared by the player.
-public func GetPlayerClearedCheckpoints(int plr)
+public func GetPlayerClearedCheckpoints(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
-	return plr_list[plrid];
+	return plr_list[plr.ID];
 }
 
 public func GetLeaderClearedCheckpoints()
@@ -380,7 +376,7 @@ public func GetLeaderClearedCheckpoints()
 	return Max(plr_list);
 }
 
-private func IsWinner(int plr)
+private func IsWinner(proplist plr)
 {
 	var team = GetPlayerTeam(plr);
 	var finish = cp_list[cp_count];
@@ -413,9 +409,8 @@ protected func InitializePlayer(proplist plr, int x, int y, object base, int tea
 		SetHostility(GetPlayerByIndex(i), plr, false, true);
 	}
 	// Init Respawn CP to start CP.
-	var plrid = GetPlayerID(plr);
-	respawn_list[plr] = cp_list[0];
-	plr_list[plrid] = 0;
+	respawn_list[plr.ID] = cp_list[0];
+	plr_list[plr.ID] = 0;
 	if (team)
 		if (!team_list[team])
 			team_list[team] = 0;
@@ -433,7 +428,7 @@ protected func OnClonkDeath(object clonk, proplist killed_by)
 {
 	var plr = clonk->GetOwner();
 	// Only respawn if required and if the player still exists.
-	if (no_respawn_handling || !GetPlayerName(plr) || GetCrewCount(plr)) 
+	if (no_respawn_handling || !GetPlayerName(plr) || plr->GetCrewCount()) 
 		return;
 	var new_clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	new_clonk->MakeCrewMember(plr);
@@ -459,9 +454,9 @@ private func RndRespawnMsg()
 	return Translate(Format("MsgRespawn%d", Random(4)));
 }
 
-protected func JoinPlayer(int plr)
+protected func JoinPlayer(proplist plr)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->DoEnergy(clonk.MaxEnergy / 1000);
 	var pos = FindRespawnPos(plr);
 	clonk->SetPosition(pos[0], pos[1]);
@@ -471,15 +466,15 @@ protected func JoinPlayer(int plr)
 
 // You always respawn at the last completed checkpoint you passed by.
 // More complicated behavior should be set by the scenario. 
-private func FindRespawnCP(int plr)
+private func FindRespawnCP(proplist plr)
 {
-	var respawn_cp = respawn_list[plr];
+	var respawn_cp = respawn_list[plr.ID];
 	if (!respawn_cp)
-		respawn_cp = respawn_list[plr] = cp_list[0];
+		respawn_cp = respawn_list[plr.ID] = cp_list[0];
 	return respawn_cp;
 }
 
-private func FindRespawnPos(int plr)
+private func FindRespawnPos(proplist plr)
 {
 	var cp = FindRespawnCP(plr);
 	if (!cp) cp = this; // Have to start somewhere
@@ -488,7 +483,7 @@ private func FindRespawnPos(int plr)
 
 protected func RemovePlayer(proplist plr)
 {
-	respawn_list[plr] = nil;
+	respawn_list[plr.ID] = nil;
 	if (!finished)
 		AddEvalData(plr);
 	return;
@@ -537,12 +532,11 @@ private func InitScoreboard()
 	return;
 }
 
-private func UpdateScoreboard(int plr)
+private func UpdateScoreboard(proplist plr)
 {
 	if (finished)
 		return;
-	var plrid = GetPlayerID(plr);
-	Scoreboard->SetPlayerData(plr, "checkpoints", plr_list[plrid]);
+	Scoreboard->SetPlayerData(plr, "checkpoints", plr_list[plr.ID]);
 	var bt = GetPlrExtraData(plr, time_store);
 	Scoreboard->SetPlayerData(plr, "besttime", TimeToString(bt), bt);
 	return;
@@ -577,7 +571,7 @@ protected func FxIntDirNextCPTimer(object target, effect fx)
 		return arrow->SetClrModulation(RGBa(0, 0, 0, 0));
 	// Calculate parameters.
 	var angle = Angle(target->GetX(), target->GetY(), nextcp->GetX(), nextcp->GetY());
-	var dist = Min(510 * ObjectDistance(GetCrew(plr), nextcp) / 400, 510);
+	var dist = Min(510 * ObjectDistance(plr), nextcp) / 400->GetCrew(510);
 	var red = BoundBy(dist, 0, 255);
 	var green = BoundBy(510 - dist, 0, 255);
 	var blue = 0;
@@ -619,7 +613,7 @@ protected func FxIntDirNextCPStop(object target, effect fx)
 /*-- Time tracker --*/
 
 // Store the best time in the player file, same for teammembers.
-private func DoBestTime(int plr)
+private func DoBestTime(proplist plr)
 {
 	var effect = GetEffect("IntBestTime", this);
 	var time = effect.besttime;
@@ -663,7 +657,7 @@ private func TimeToString(int time)
 }
 
 // Resets the personal best (call from message board).
-public func ResetPersonalBest(int plr)
+public func ResetPersonalBest(proplist plr)
 {
 	if (!GetPlayerName(plr))
 		return;
@@ -703,18 +697,17 @@ private func SetEvalData(int winner)
 	return;
 }
 
-private func AddEvalData(int plr)
+private func AddEvalData(proplist plr)
 {
 	if (finished)
 		return;
-	var plrid = GetPlayerID(plr);
-	var cps = plr_list[plrid];
+	var cps = plr_list[plr.ID];
 	var msg;
 	if (cps == cp_count)
 		msg = "$MsgEvalPlayerAll$";
 	else
 		msg = Format("$MsgEvalPlayerX$", cps, cp_count);
-	AddEvaluationData(msg, plrid);
+	AddEvaluationData(msg, plr.ID);
 	return;
 }
 

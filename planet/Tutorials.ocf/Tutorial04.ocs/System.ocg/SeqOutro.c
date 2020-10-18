@@ -98,13 +98,13 @@ public func Outro_Start()
 
 public func Outro_1()
 {
-	MessageBox("$MsgVillageHeadNoise$", GetCrew(this.plr, 0), this.village_head, this.plr, true);
+	MessageBox("$MsgVillageHeadNoise$", this.plr, 0), this.village_head, this.plr->GetCrew(true);
 	return ScheduleNext(72);
 }
 
 public func Outro_2()
 {
-	MessageBox("$MsgFarmerAirplanes$", GetCrew(this.plr, 0), this.farmer, this.plr, true);
+	MessageBox("$MsgFarmerAirplanes$", this.plr, 0), this.farmer, this.plr->GetCrew(true);
 	// Fireman and lumberjack flee into wooden cabin.
 	this.fireman->SetCommand("Enter", this.fireman->FindObject(Find_ID(WoodenCabin), Find_AnyLayer(), Sort_Distance()));
 	this.lumberjack->SetCommand("Enter", this.lumberjack->FindObject(Find_ID(WoodenCabin), Find_AnyLayer(), Sort_Distance()));
@@ -144,7 +144,7 @@ public func Outro_4()
 
 public func Outro_5()
 {
-	MessageBox("$MsgEvilLeaderItsUs$", GetCrew(this.plr, 0), this.leader, this.plr, true);
+	MessageBox("$MsgEvilLeaderItsUs$", this.plr, 0), this.leader, this.plr->GetCrew(true);
 	// Exit a third henchman from the airplane on a balloon.
 	this.henchman3->Exit();
 	var balloon = this.henchman3->CreateContents(Balloon);
@@ -167,7 +167,7 @@ public func Outro_7()
 
 public func Outro_8()
 {
-	MessageBox("$MsgVillageHeadWhy$", GetCrew(this.plr, 0), this.village_head, this.plr, true);
+	MessageBox("$MsgVillageHeadWhy$", this.plr, 0), this.village_head, this.plr->GetCrew(true);
 	return ScheduleNext(36);
 }
 
@@ -204,7 +204,7 @@ public func Outro_12()
 
 public func Outro_13()
 {
-	MessageBox("$MsgEvilLeaderWipfs$", GetCrew(this.plr, 0), this.leader, this.plr, true);
+	MessageBox("$MsgEvilLeaderWipfs$", this.plr, 0), this.leader, this.plr->GetCrew(true);
 	this.airship->ControlStop(this.kidnapper);
 	AddEffect("TieWipfToBalloon", this.henchman1, 100, 5, this);
 	AddEffect("TieWipfToBalloon", this.henchman2, 100, 5, this);
@@ -213,10 +213,10 @@ public func Outro_13()
 
 public func Outro_14()
 {
-	MessageBox("$MsgVillageHeadManiac$", GetCrew(this.plr, 0), this.village_head, this.plr, true);
-	ScheduleCall(this, "MessageBox", 108, 0, "$MsgEvilLeader$", GetCrew(this.plr, 0), this.leader, this.plr, true);
-	ScheduleCall(this, "MessageBox", 216, 0, "$MsgPlayerDontTakeWipf$", GetCrew(this.plr, 0), GetCrew(this.plr, 0), this.plr, true);
-	ScheduleCall(this, "MessageBox", 356, 0, "$MsgEvilLeaderBegging$", GetCrew(this.plr, 0), this.leader, this.plr, true);
+	MessageBox("$MsgVillageHeadManiac$", this.plr, 0), this.village_head, this.plr->GetCrew(true);
+	ScheduleCall(this, "MessageBox", 108, 0, "$MsgEvilLeader$", this.plr, 0), this.leader, this.plr->GetCrew(true);
+	ScheduleCall(this, "MessageBox", 216, 0, "$MsgPlayerDontTakeWipf$", this.plr, 0), this.plr, 0)->GetCrew(this.plr->GetCrew(true);
+	ScheduleCall(this, "MessageBox", 356, 0, "$MsgEvilLeaderBegging$", this.plr, 0), this.leader, this.plr->GetCrew(true);
 	return ScheduleNext(4);
 }
 
@@ -276,7 +276,7 @@ public func Outro_18()
 
 public func Outro_19()
 {
-	MessageBox("$MsgEvilLeaderBye$", GetCrew(this.plr, 0), this.leader, this.plr, true);
+	MessageBox("$MsgEvilLeaderBye$", this.plr, 0), this.leader, this.plr->GetCrew(true);
 		
 	var boompack = this.henchman1->CreateContents(Boompack);
 	boompack->SetFuel(10000);

@@ -512,7 +512,12 @@ public func CheckAchievement()
 	var achievement = ConvertWaveToAchievement(completed_waves);
 	// Give the players their achievement.
 	if (achievement > 0)
-		GainScenarioAchievement("Done", achievement);
+	{
+		for (var player in GetPlayers(C4PT_User))
+		{
+			player->GainScenarioAchievement("Done", achievement);
+		}
+	}
 	return;
 }
 

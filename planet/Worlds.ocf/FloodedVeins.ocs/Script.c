@@ -58,7 +58,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Position and materials for the crew.
 	var crew;
-	for (var i = 0; crew = GetCrew(plr, i); ++i)
+	for (var i = 0; crew = plr->GetCrew(i); ++i)
 	{
 		crew->SetPosition(20 + Random(32), 160 - 10);
 		crew->CreateContents(Shovel);

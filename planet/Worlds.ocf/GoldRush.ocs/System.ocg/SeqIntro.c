@@ -18,7 +18,7 @@ public func Intro_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgPeacefulPlace$", GetCrew(plr, 1)->GetName()), GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
+		MessageBox(Format("$MsgPeacefulPlace$", plr, 1)->GetName()), plr, 0), plr->GetCrew(0)->GetCrew(plr->GetCrew(true);
 	}
 	return ScheduleNext(6 * 36);
 }
@@ -28,7 +28,7 @@ public func Intro_2()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgSettlement$", GetCrew(plr, 0)->GetName()), GetCrew(plr, 0), GetCrew(plr, 1), plr, true);
+		MessageBox(Format("$MsgSettlement$", plr, 0)->GetName()), plr, 0), plr->GetCrew(1)->GetCrew(plr->GetCrew(true);
 	}
 	return ScheduleNext(6 * 36);
 }
@@ -38,7 +38,7 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgToBeRich$", GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
+		MessageBox("$MsgToBeRich$", plr, 0), plr, 0)->GetCrew(plr->GetCrew(true);
 	}
 	return Stop();
 }

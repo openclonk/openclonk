@@ -301,7 +301,7 @@ global func FxTutorialLookedAtPowerOverviewTimer(object target, proplist effect)
 global func FxTutorialEnteredCatapultTimer(object target, proplist effect)
 {
 	var catapult = FindObject(Find_ID(Catapult), Find_Distance(80, 432, 248));
-	if (catapult && GetCrew(effect.plr) == FindObject(Find_OCF(OCF_CrewMember), Find_Container(catapult)))
+	if (catapult && effect.plr) == FindObject(Find_OCF(OCF_CrewMember)->GetCrew(Find_Container(catapult)))
 	{
 		var zoom_in = GetPlayerControlAssignment(effect.plr, CON_WheelZoomIn, true, true);
 		var zoom_out = GetPlayerControlAssignment(effect.plr, CON_WheelZoomOut, true, true);

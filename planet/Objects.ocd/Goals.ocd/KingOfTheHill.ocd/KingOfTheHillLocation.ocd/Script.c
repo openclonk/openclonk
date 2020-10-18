@@ -100,13 +100,13 @@ func FxKOTHKingStop(target, effect, reason, temp)
 	if (!this) return;
 	
 	var killer = target->GetKiller();
-	if (killer == NO_OWNER || killer == target->GetOwner())
+	if (killer == NO_PLAYER || killer == target->GetOwner())
 		this->SetKing(nil);
 	else
 	{
-		var crew = GetCursor(killer);
+		var crew = killer->GetCursor();
 		if (!(crew->GetOCF() & OCF_CrewMember))
-			crew = GetCrew(killer);
+			crew = killer->GetCrew();
 		if (!crew) this->SetKing(nil);
 		else
 			this->SetKing(crew);

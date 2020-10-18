@@ -99,7 +99,7 @@ public func JoinPlayer(int plr)
 public func DeactivatePlayerControls(int plr, bool make_invincible)
 {
 	var j = 0, crew;
-	while (crew = GetCrew(plr, j++))
+	while (crew = plr->GetCrew(j++))
 	{
 		//if (crew == GetCursor(plr)) crew.Sequence_was_cursor = true; else crew.Sequence_was_cursor = nil;
 		crew->SetCrewEnabled(false);
@@ -122,7 +122,7 @@ public func DeactivatePlayerControls(int plr, bool make_invincible)
 public func ReactivatePlayerControls(int plr)
 {
 	var j = 0, crew;
-	while (crew = GetCrew(plr, j++))
+	while (crew = plr->GetCrew(j++))
 	{
 		crew->SetCrewEnabled(true);
 		if (crew.Sequence_made_invincible)
@@ -136,11 +136,11 @@ public func ReactivatePlayerControls(int plr)
 		}
 	}
 	// Ensure proper cursor.
-	if (!GetCursor(plr)) 
-		SetCursor(plr, GetCrew(plr));
-	crew = GetCursor(plr);
+	if (!plr->GetCursor()) 
+		plr->SetCursor(plr->GetCrew());
+	crew = plr->GetCursor();
 	if (crew)
-		SetPlrView(plr, crew);
+		plr->SetView(crew);
 	return true;
 }
 
@@ -281,9 +281,9 @@ public func LoadScenarioSection(name, ...)
 	for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
 	{
 		var plr = GetPlayerByIndex(iplr, C4PT_User);
-		for (var icrew = 0; icrew < GetCrewCount(iplr); ++icrew)
+		for (var icrew = 0; icrew < iplr->GetCrewCount(); ++icrew)
 		{
-			var crew = GetCrew(plr, icrew);
+			var crew = plr->GetCrew(icrew);
 			if (crew)
 				AddSectSaveObj(crew);
 		}

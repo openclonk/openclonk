@@ -45,7 +45,7 @@ protected func InitializePlayer(proplist plr)
 
 	// Position crew and give them materials.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	while (crew = plr->GetCrew(index))
 	{
 		var pos = FindTopSpot();
 		crew->SetPosition(pos.x, pos.y - 10);

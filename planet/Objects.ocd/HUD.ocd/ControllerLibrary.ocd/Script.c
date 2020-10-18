@@ -23,7 +23,7 @@ private func Construction()
 {
 	SetPosition(0, 0);
 	// Ensure existing clonks are registered into HUD
-	for (var i = 0, crew; crew = GetCrew(GetOwner(), i); ++i)
+	for (var i = 0, crew; crew = GetOwner()->GetCrew(i); ++i)
 		if (crew->~IsHUDAdapter())
 			crew->SetHUDController(this);
 	return _inherited(...);

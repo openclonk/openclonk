@@ -51,8 +51,8 @@ func InitializePlayer(proplist plr)
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Create start material: Hammer, shovel, axe
-	var clonk1 = GetCrew(plr, 0);
-	var clonk2 = GetCrew(plr, 1);
+	var clonk1 = plr->GetCrew(0);
+	var clonk2 = plr->GetCrew(1);
 	if (clonk1)
 	{
 		clonk1->CreateContents(Shovel);
