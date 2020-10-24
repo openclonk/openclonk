@@ -35,7 +35,7 @@ protected func InitializePlayer(proplist plr)
 	SetPlayerTeam(plr, 1);
 	
 	// Move player to the start of the scenario.
-	plr)->SetPosition(120->GetCrew(150);
+	plr->GetCrew()->SetPosition(120, 150);
 
 	// Some knowledge to construct a flagpole.
 	GetCrew(plr)->CreateContents(Hammer);

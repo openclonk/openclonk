@@ -39,7 +39,7 @@ func InitializePlayer(proplist player)
 	else
 	{
 		// Move player to the start of the scenario.
-		player)->SetPosition(265->GetCrew(180);
+		player->GetCrew()->SetPosition(265, 180);
 		LaunchTest(1);
 	}
 }

@@ -47,7 +47,7 @@ func Initialize()
 
 func DoInit(int first_player)
 {
-	StartSequence("Intro", 0, GetCrew(first_player));
+	StartSequence("Intro", 0, first_player->GetCrew());
 	//g_goal = CreateObject(Goal_Raid);
 	// Prepare trigger for attack sequence
 	for (var tree in FindObjects(Find_Func("IsTree")))
@@ -56,8 +56,8 @@ func DoInit(int first_player)
 		tree.ChopDown = Scenario.Tree_Chopdown;
 		//tree->ChopDown();
 	}
-	//g_attack_done = true; )->SetPosition(npc_pyrit->GetX()->GetCrew(npc_pyrit->GetY()); GetCrew()->CreateObjectAbove(Airplane); GetCrew()->CreateObjectAbove(MetalBarrel);
-	//GetCrew()->CreateContents(Shovel);
+	//g_attack_done = true; first_player->GetCrew()->SetPosition(npc_pyrit->GetX(), npc_pyrit->GetY()); first_player->GetCrew()->CreateObjectAbove(Airplane); first_player->GetCrew()->CreateObjectAbove(MetalBarrel);
++	//first_player->GetCrew()->CreateContents(Shovel);
 	return true;
 }
 

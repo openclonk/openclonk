@@ -48,12 +48,12 @@ protected func InitializePlayer(proplist plr)
 		if (plr == plr_killer)
 		{
 			GetCrew(plr)->MakeInvincible(true);
-			plr)->SetPosition(50->GetCrew(150);
+			plr->GetCrew()->SetPosition(50, 150);
 		}
 		else if (plr == plr_killer_fake)
 		{
 			GetCrew(plr)->MakeInvincible(true);
-			plr)->SetPosition(20->GetCrew(150);
+			plr->GetCrew()->SetPosition(20, 150);
 		}
 		return;
 	}
@@ -197,9 +197,9 @@ global func InitTest()
 			clonk->DoEnergy(clonk.MaxEnergy / 1000);
 		}
 	}
-	plr_victim)->SetPosition(100->GetCrew(150);
-	plr_killer)->SetPosition(50->GetCrew(150);
-	plr_killer_fake)->SetPosition(20->GetCrew(150);
+	plr_victim->GetCrew()->SetPosition(100, 150);
+	plr_killer->GetCrew()->SetPosition(50, 150);
+	plr_killer_fake->GetCrew()->SetPosition(20, 150);
 	return;
 }
 
