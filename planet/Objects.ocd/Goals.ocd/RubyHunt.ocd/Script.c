@@ -68,7 +68,7 @@ public func IsFulfilled()
 		for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
 			SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeWidth(),flag);
 		SetPlayerViewLock(plr, false);
-		SetFoW(false, plr);
+		plr->SetFoW(false);
 		// Eliminate non-winning players
 		if (is_cooperative) continue; // in coop mode, everyone wins
 		if (GetIndexOf(winners, plr) >= 0) continue;

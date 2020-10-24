@@ -443,7 +443,7 @@ global func ShiftCursor(proplist player, bool back, bool force)
 	if (current_cursor)
 		current_cursor->~OnShiftCursor(new_cursor);
 		
-	return SetCursor(player, new_cursor);
+	return player->SetCursor(new_cursor);
 }
 
 // Temporarily used for Debugging!

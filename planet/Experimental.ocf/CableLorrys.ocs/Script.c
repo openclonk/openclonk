@@ -148,7 +148,7 @@ protected func Initialize()
 protected func InitializePlayer(proplist plr)
 {
 	// No FOW here.
-	//SetFoW(false, plr);
+	//plr->SetFoW(false);
 	SetWealth(plr, 50);
 	JoinPlayer(plr);
 	// Give all knowledge.
@@ -162,7 +162,7 @@ protected func RelaunchPlayer(proplist plr)
 {
 	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
+	plr->SetCursor(clonk);
 	JoinPlayer(plr);
 	return;
 }

@@ -432,7 +432,7 @@ protected func OnClonkDeath(object clonk, proplist killed_by)
 		return;
 	var new_clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	new_clonk->MakeCrewMember(plr);
-	SetCursor(plr, new_clonk);
+	plr->SetCursor(new_clonk);
 	JoinPlayer(plr);
 	// Transfer contents if active.
 	if (transfer_contents)

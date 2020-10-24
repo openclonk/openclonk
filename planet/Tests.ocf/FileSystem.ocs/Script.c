@@ -13,7 +13,7 @@ func InitializePlayer(proplist player)
 	SetPlayerZoomByViewRange(player, LandscapeWidth(), nil, PLRZOOM_Direct);
 	
 	// No FoW to see everything happening.
-	SetFoW(false, player);
+	player->SetFoW(false);
 		
 	// Move player to the start of the scenario.
 	player)->SetPosition(265->GetCrew(180);

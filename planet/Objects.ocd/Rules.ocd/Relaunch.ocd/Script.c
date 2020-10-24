@@ -361,7 +361,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	new_clonk->SetPosition(spawn[0], spawn[1] - new_clonk->GetBottom(), plr);
 	
 	if (!plr->GetCursor() || plr->GetCursor() == clonk)
-		SetCursor(plr, new_clonk);
+		plr->SetCursor(new_clonk);
 	new_clonk->DoEnergy(new_clonk.MaxEnergy ?? 100000);
 	
 	if (relaunch_time)

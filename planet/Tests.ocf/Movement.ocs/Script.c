@@ -22,7 +22,7 @@ func InitializePlayer(proplist player)
 	SetPlayerZoomByViewRange(player, LandscapeWidth(), nil, PLRZOOM_Direct);
 	
 	// No FoW to see everything happening.
-	SetFoW(false, player);
+	player->SetFoW(false);
 		
 	// Initialize script player.
 	if (GetPlayerType(player) == C4PT_Script)

@@ -98,7 +98,7 @@ func JoinPlayer(plr, prev_clonk)
 		clonk = CreateObjectAbove(Clonk, x, y, plr);
 		clonk->MakeCrewMember(plr);
 	}
-	SetCursor(plr, clonk);
+	plr->SetCursor(clonk);
 	clonk->DoEnergy(1000);
 	// contents
 	clonk.MaxContentsCount = 1;

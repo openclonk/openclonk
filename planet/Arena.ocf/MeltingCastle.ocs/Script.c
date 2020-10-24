@@ -95,7 +95,7 @@ func OnFlagDestruction()
 func InitializePlayer(proplist plr)
 {
 	// Everything freely visible (to allow aiming with the cannon)
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeHeight(), PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, false);
 	// Acquire base

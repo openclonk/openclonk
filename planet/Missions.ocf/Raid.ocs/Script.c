@@ -99,7 +99,7 @@ func JoinPlayer(int plr, object crew, bool no_placement)
 	for (var tool in tools)
 		if (!crew->ContentsCount(tool)) crew->CreateContents(tool);
 	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
-	SetCursor(crew->GetOwner(), crew);
+	crew->GetOwner()->SetCursor(crew);
 	return true;
 }
 

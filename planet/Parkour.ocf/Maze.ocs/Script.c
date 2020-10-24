@@ -42,7 +42,7 @@ func RelaunchPlayer(proplist player)
 	var clonk = CreateObjectAbove(Clonk, 0, 0, player);
 	if (!clonk) return false;
 	clonk->MakeCrewMember(player);
-	SetCursor(player, clonk);
+	player->SetCursor(clonk);
 	return LaunchPlayer(player);
 }
 

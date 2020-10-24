@@ -36,7 +36,7 @@ protected func InitializePlayer(proplist plr)
 		return InitializeScriptPlayer(plr);
 	
 	// Everything visible to the observer.
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), LandscapeHeight(), PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
 	var container = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2);
 	GetCrew(plr)->Enter(container);

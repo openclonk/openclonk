@@ -65,7 +65,7 @@ static g_player_spawn_positions, g_map_width, g_player_spawn_index;
 func InitPlayerRound(int plr, object crew) // called by Goal_MultiRoundMelee
 {
 	// everything visible
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	// Player positioning. 
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var start_pos;

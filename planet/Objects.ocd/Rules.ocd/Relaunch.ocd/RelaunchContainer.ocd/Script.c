@@ -120,7 +120,7 @@ private func RelaunchClonk()
 	if (!clonk->GetCrewEnabled())
 	{
 		clonk->SetCrewEnabled(true);
-		SetCursor(clonk->GetOwner(), clonk);
+		clonk->GetOwner()->SetCursor(clonk);
 		clonk->GetOwner()->SetViewTarget(clonk);
 	}
 	clonk->Exit();

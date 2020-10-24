@@ -32,7 +32,7 @@ protected func InitializePlayer(proplist plr)
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
 	
 	// No FoW to see everything happening.
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	
 	// All players belong to the first team.
 	// The second team only exists for testing.

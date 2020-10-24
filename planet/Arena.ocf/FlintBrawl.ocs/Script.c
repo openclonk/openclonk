@@ -128,7 +128,7 @@ func InitializeRound()
 func InitPlayerRound(int plr, object crew)
 {
 	// everything visible
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	// Player positioning.
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var start_pos = nil;

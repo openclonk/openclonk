@@ -161,7 +161,7 @@ protected func Initialize()
 protected func InitializePlayer(proplist plr)
 {
 	// This scenario does not have shadows.
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	return;
 }
 

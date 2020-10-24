@@ -13,7 +13,7 @@ func Initialize()
 
 private func InitializePlayer(proplist iPlr)
 {
-	SetFoW(0, iPlr);
+	iPlr->SetFoW(0);
 	SetWealth(10, iPlr);
 	var crew = GetCrew(iPlr);
 	crew->SetPosition(10, 300);

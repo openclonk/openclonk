@@ -2011,7 +2011,7 @@ public func MakeNewMap()
 	for (var clonk in clonks)
 	{
 		clonk->SetObjectStatus(C4OS_NORMAL);
-		SetCursor(clonk->GetOwner(), clonk);
+		clonk->GetOwner()->SetCursor(clonk);
 		clonk->SetPosition(LandscapeWidth() / 2, LandscapeHeight() / 2);
 		clonk->Unstick(20);
 	}

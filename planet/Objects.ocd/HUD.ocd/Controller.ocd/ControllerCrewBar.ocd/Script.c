@@ -1238,7 +1238,7 @@ private func SelectClonk(int index)
 	var clonk = GetOwner()->GetCrew(index);
 	// Change allowed?
 	if (clonk && clonk->GetCrewEnabled())
-		SetCursor(GetOwner(), clonk);
+		GetOwner()->SetCursor(clonk);
 
 	CloseCrewInfo();
 }

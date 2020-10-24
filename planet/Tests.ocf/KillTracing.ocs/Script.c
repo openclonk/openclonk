@@ -62,7 +62,7 @@ protected func InitializePlayer(proplist plr)
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
 	
 	// No FoW to see everything happening.
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	
 	// Move normal players into a relaunch container.
 	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2);
@@ -193,7 +193,7 @@ global func InitTest()
 			var clonk = CreateObjectAbove(Clonk, 100, 150, plr);
 			clonk->MakeCrewMember(plr);
 			clonk->SetDir(DIR_Right);
-			SetCursor(plr, clonk);
+			plr->SetCursor(clonk);
 			clonk->DoEnergy(clonk.MaxEnergy / 1000);
 		}
 	}

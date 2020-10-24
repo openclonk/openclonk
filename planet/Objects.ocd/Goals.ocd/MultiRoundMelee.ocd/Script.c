@@ -147,7 +147,7 @@ private func ResetRound()
 	for (var clonk in clonks)
 	{
 		clonk->SetObjectStatus(C4OS_NORMAL);
-		SetCursor(clonk->GetOwner(), clonk);
+		clonk->GetOwner()->SetCursor(clonk);
 		// Select the first item. This fixes item ordering.
 		clonk->SetHandItemPos(0, 0);
 		InitPlayerRound(clonk->GetOwner());
@@ -262,7 +262,7 @@ protected func OnCountdownFinished() // called by the round start countdown
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember)))
 	{
 		clonk->SetCrewEnabled(true);
-		SetCursor(clonk->GetOwner(), clonk);
+		clonk->GetOwner()->SetCursor(clonk);
 	}
 	Scenario->~StartRound();
 }

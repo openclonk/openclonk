@@ -249,7 +249,7 @@ if (!this)
 protected func InitializePlayer(proplist plr)
 {
 	// This scenario does not have shadows.
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 }
 
 public func RelaunchPosition()

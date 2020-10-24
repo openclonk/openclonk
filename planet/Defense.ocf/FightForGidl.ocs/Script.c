@@ -56,7 +56,7 @@ func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 	Scoreboard->NewPlayerEntry(plr);
 	Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
 	Scoreboard->SetPlayerData(plr, "score", g_scores[plr]);
-	//SetFoW(false, plr); - need FoW for lights
+	//plr->SetFoW(false); - need FoW for lights
 	CreateObject(Homebase, 0, 0, plr);
 	JoinPlayer(plr);
 	if (!g_wave) StartGame();
@@ -100,7 +100,7 @@ func JoinPlayer(plr, prev_clonk)
 		clonk = CreateObjectAbove(Clonk, x, y, plr);
 		clonk->MakeCrewMember(plr);
 	}
-	SetCursor(plr, clonk);
+	plr->SetCursor(clonk);
 	clonk->DoEnergy(1000);
 	// contents
 	clonk.MaxContentsCount = 1;
