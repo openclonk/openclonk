@@ -34,7 +34,7 @@ global func IntroAddPlayer(int plr)
 		container.ActMap.Jump = { Prototype = Clonk.ActMap.Jump, Speed = 0, Accel = 0 };
 		container.JumpSpeed = 0;
 
-		SetPlrView(plr, crew);
+		plr->SetViewTarget(crew);
 		SetPlayerViewLock(plr, true);
 		SetPlayerZoomByViewRange(plr, 320, 240);
 
@@ -142,7 +142,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 	{
 		effect.Sister->ObjectCommand("Throw", effect.Rock, 500, 100);
 		for (var i = 0; i < GetPlayerCount(); ++i)
-			SetPlrView(GetPlayerByIndex(i), effect.Sister);
+			GetPlayerByIndex(i)->SetViewTarget(effect.Sister);
 	}
 	
 	if (effect.Time == 556)
@@ -189,7 +189,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 	{
 		for (var crew in effect.Players)
 		{
-			SetPlrView(crew->GetOwner(), crew);
+			crew->GetOwner()->SetViewTarget(crew);
 			SetPlayerViewLock(crew->GetOwner(), true);
 			var container = crew->Contained();
 			crew->Exit(0, 10);

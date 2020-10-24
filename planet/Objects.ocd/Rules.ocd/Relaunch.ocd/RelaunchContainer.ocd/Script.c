@@ -121,7 +121,7 @@ private func RelaunchClonk()
 	{
 		clonk->SetCrewEnabled(true);
 		SetCursor(clonk->GetOwner(), clonk);
-		SetPlrView(clonk->GetOwner(), clonk);
+		clonk->GetOwner()->SetViewTarget(clonk);
 	}
 	clonk->Exit();
 	GameCall("OnClonkLeftRelaunch", clonk, clonk->GetOwner());

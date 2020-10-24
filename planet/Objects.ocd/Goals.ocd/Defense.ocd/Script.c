@@ -156,7 +156,7 @@ public func UpdateOberserverContainer()
 		for (var observer in FindObjects(Find_OCF(OCF_CrewMember), Find_Container(observer_container)))
 		{
 			var observer_plr = observer->GetOwner();
-			SetPlrView(observer_plr, view_cursor);
+			observer_plr->SetViewTarget(view_cursor);
 		}
 	}
 	return;

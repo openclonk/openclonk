@@ -129,7 +129,7 @@ func Intro_10()
 			crew->Exit();
 			crew->SetPosition(this.plane->GetX()+10, this.plane->GetY());
 			crew->SetAction("Tumble");
-			if (!index) SetPlrView(plr, crew);
+			if (!index) plr->SetViewTarget(crew);
 		}
 	}
 	SetViewTarget();
@@ -152,7 +152,7 @@ func Intro_11()
 			crew->SetPosition(g_tuesday_pos[0],-100);
 			crew->SetXDir(-10); crew->SetYDir(-30);
 			crew->SetAction("Tumble");
-			if (!index) SetPlrView(plr, crew);
+			if (!index) plr->SetViewTarget(crew);
 		}
 	}
 	return ScheduleNext(200, 20);

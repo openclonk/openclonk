@@ -1208,7 +1208,7 @@ private func EvalAct_PlrView(proplist props, proplist context)
 	var target = EvaluateValue("Object", props.Target, context);
 	var immediate = props.Immediate;
 	if (!target) return;
-	for (var plr in players) SetPlrView(plr, target, immediate);
+	for (var plr in players) plr->SetViewTarget(target, immediate);
 }
 
 private func EvalAct_ObjectCallInt(proplist props, proplist context, func call_fn)

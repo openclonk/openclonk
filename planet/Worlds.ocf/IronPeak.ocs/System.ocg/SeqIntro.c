@@ -77,7 +77,7 @@ public func Intro_3()
 			var balloon = crew->CreateContents(Balloon);
 			balloon->ControlUseStart(crew, 10, 3);			
 		}
-		SetPlrView(plr, GetCrew(plr));
+		plr->SetViewTarget(plr->GetCrew());
 	}
 	return ScheduleNext(20);
 }

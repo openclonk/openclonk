@@ -47,7 +47,7 @@ public func Destruction()
 	if (dummy)
 		dummy->RemoveObject();
 	if (cursor)
-		SetPlrView(cursor->GetOwner(), cursor, true);
+		cursor->GetOwner()->SetViewTarget(cursor, true);
 }
 
 public func Init(object cursor, object car, object station)
@@ -150,7 +150,7 @@ public func PreviewDestination(object to_preview, int plr, int menu_id, int subm
 		dummy = CreateDummy(to_preview);
 
 	// Set view, light and draw the item's graphics in front of it again to achieve a highlighting effect.
-	SetPlrView(plr, to_preview, true);
+	plr->SetViewTarget(to_preview, true);
 	dummy.Plane = to_preview.Plane + 1;
 	dummy->SetPosition(to_preview->GetX(), to_preview->GetY());
 	dummy->SetVertexXY(0, to_preview->GetVertex(0, VTX_X), to_preview->GetVertex(0, VTX_Y));
