@@ -222,7 +222,7 @@ local CheckVictory = new Effect
 			{
 				var comma = "";
 				if (str != "") comma = ", ";
-				str = Format("%s%s<c %x>%s</c>", str, comma, GetPlayerColor(plr), GetPlayerName(plr));
+				str = Format("%s%s<c %x>%s</c>", str, comma, plr->GetColor(), GetPlayerName(plr));
 			}
 		}
 		return str;

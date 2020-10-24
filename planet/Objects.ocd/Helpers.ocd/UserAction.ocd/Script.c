@@ -1503,7 +1503,7 @@ private func EvalInt_Wealth(proplist props, proplist context) { return GetWealth
 
 private func EvalInt_PosCoord(proplist props, proplist context, int idx) { return EvaluatePosition(props.Position, context)[idx]; }
 
-private func EvalClr_PlayerColor(proplist props, proplist context) { return GetPlayerColor(EvaluatePlayer(props.Player, context)); }
+private func EvalClr_PlayerColor(proplist props, proplist context) { return EvaluatePlayer(props.Player, context)->GetColor(); }
 
 private func EvalClr_RGB(proplist props, proplist context)
 {

@@ -464,7 +464,7 @@ protected func GetColorByAngle(int angle)
 		if (ClearedByPlayer(plr) || (cp_mode & PARKOUR_CP_Start))
 		{
 			if (angle >= j * prt && angle < (j + 1) * prt)
-				return GetPlayerColor(plr);
+				return plr->GetColor();
 			j++;
 		}
 	}

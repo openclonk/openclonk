@@ -150,7 +150,7 @@ private func FxIntHighlightInteractionCreateSelectorParticle(object target, effe
 		Alpha = 200
 	};
 
-	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetPlayerColor(GetOwner())), 1);
+	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetOwner()->GetColor()), 1);
 }
 
 private func FxIntHighlightInteractionTimer(object target, proplist fx, int time)

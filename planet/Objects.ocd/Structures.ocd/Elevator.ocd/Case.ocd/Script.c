@@ -63,7 +63,7 @@ public func DrawCustomInteractionSelector(object dummy, object clonk, int intera
 			Prototype = Particles_Trajectory(),
 			Size = PV_Sin(PV_Step(5, PV_Random(90)), 2, 3),
 		};
-		particles = Particles_Colored(particles, GetPlayerColor(clonk->GetOwner()));
+		particles = Particles_Colored(particles, clonk->GetOwner()->GetColor());
 		
 		var dir = 1;
 		if (max_y < 0) dir = -1;

@@ -537,7 +537,7 @@ private func UpdateScoreboard(proplist plr)
 	if (finished)
 		return;
 	Scoreboard->SetPlayerData(plr, "checkpoints", plr_list[plr.ID]);
-	var bt = GetPlrExtraData(plr, time_store);
+	var bt = plr->GetExtraData(time_store);
 	Scoreboard->SetPlayerData(plr, "besttime", TimeToString(bt), bt);
 	return;
 }
@@ -626,10 +626,10 @@ private func DoBestTime(proplist plr)
 		if (winteam != GetPlayerTeam(check_plr))
 			continue;
 		// Store best time for all players in the winning team.
-		var rectime = GetPlrExtraData(check_plr, time_store);
+		var rectime = check_plr->GetExtraData(time_store);
 		if (time != 0 && (!rectime || time < rectime))
 		{
-			SetPlrExtraData(check_plr, time_store, time);
+			check_plr->SetExtraData(time_store, time);
 			Log(Format("$MsgBestTime$", GetPlayerName(check_plr), TimeToString(time)));
 		}
 	}
@@ -668,7 +668,7 @@ public func ResetPersonalBest(proplist plr)
 		if (goal)
 			goal->ResetPersonalBest(plr);
 	}
-	SetPlrExtraData(plr, time_store, nil);
+	plr->SetExtraData(time_store, nil);
 	// Also update the scoreboard.
 	UpdateScoreboard(plr);
 	return;

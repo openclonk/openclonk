@@ -179,7 +179,7 @@ func AcquireBase(int plr, int team)
 		if (GetIndexOf(base_ids, idobj))
 		{
 			obj->SetOwner(plr);
-			if (idobj == Goal_Flag) obj->SetClrModulation(0xff000000 | GetPlayerColor(plr));
+			if (idobj == Goal_Flag) obj->SetClrModulation(0xff000000 | plr)->GetColor();
 		}
 	}
 	return true;

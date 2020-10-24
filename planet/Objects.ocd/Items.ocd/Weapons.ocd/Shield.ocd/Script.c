@@ -22,7 +22,7 @@ func Hit()
 // Colour by owner
 func Entrance(object container)
 {
-	if (container->GetOwner() != NO_OWNER) SetColor(GetPlayerColor(container->GetOwner()));
+	if (container->GetOwner() != NO_OWNER) SetColor(container->GetOwner()->GetColor());
 }
 
 

@@ -27,7 +27,7 @@ protected func Initialize()
 public func ResetColor()
 {
 	// Set color and alpha.
-	SetClrModulation(GetPlayerColor(GetOwner()));
+	SetClrModulation(GetOwner()->GetColor());
 	SetObjAlpha(fade);
 	return;
 }

@@ -412,7 +412,7 @@ global func SaveScenarioObject(props)
 	                                                              props->AddCall("YDir",          this, "SetYDir", v); // consolidate small YDir for standing objects
 	v = GetRDir();          if (v && !is_static)                  props->AddCall("RDir",          this, "SetRDir", v);
 	var default_color = 0xffffffff;
-	if (GetDefColorByOwner()) if (GetOwner() == NO_OWNER) default_color = 0xff; else default_color = GetPlayerColor(GetOwner());
+	if (GetDefColorByOwner()) if (GetOwner() == NO_OWNER) default_color = 0xff; else default_color = GetOwner()->GetColor();
 	v = GetColor();         if (v && v != default_color)          props->AddCall("Color",         this, "SetColor", Format("0x%x", v));
 	v = GetClrModulation(); if (v && v != 0xffffffff)             props->AddCall("ClrModulation", this, "SetClrModulation", Format("0x%08x", v));
 	v = GetObjectBlitMode();if (v)                                props->AddCall("BlitMode",      this, "SetObjectBlitMode", GetBitmaskNameByValue(v & ~GFX_BLIT_Custom, "GFX_BLIT_"));

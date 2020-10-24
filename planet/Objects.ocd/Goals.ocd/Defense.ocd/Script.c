@@ -208,21 +208,21 @@ public func SetScore(int value)
 	return;
 }
 
-private func SetBestScore(int plr, int new_score)
+private func SetBestScore(proplist plr, int new_score)
 {
 	var plrid = GetPlayerID(plr);
 	// Only set if it increases the player's best score.
 	if (new_score > GetBestScore(plr))
-		SetPlrExtraData(plr, GetScoreString(), new_score);
+		plr->SetExtraData(GetScoreString(), new_score);
 	// Also set league score if an improvement is made.
 	//if (new_score > GetLeaguePerformance(plrid)) TODO uncomment once available.
 	SetLeaguePerformance(new_score, plrid);
 	return;
 }
 
-private func GetBestScore(int plr)
+private func GetBestScore(proplist plr)
 {
-	return GetPlrExtraData(plr, GetScoreString());
+	return plr->GetExtraData(GetScoreString());
 }
 
 private func GetScoreString() { return Format("Defense_%s_BestScore", GetScenTitle()); }
@@ -235,17 +235,17 @@ private func UpdateBestWave(int new_best_wave)
 	return;
 }
 
-private func SetBestWave(int plr, int new_best_wave)
+private func SetBestWave(proplist plr, int new_best_wave)
 {
 	// Only set if it increases the player's best wave.
 	if (new_best_wave > GetBestWave(plr))
-		SetPlrExtraData(plr, GetWaveString(), new_best_wave);
+		plr->SetExtraData(GetWaveString(), new_best_wave);
 	return;
 }
 
-private func GetBestWave(int plr)
+private func GetBestWave(proplist plr)
 {
-	return GetPlrExtraData(plr, GetWaveString());
+	return plr->GetExtraData(GetWaveString());
 }
 
 private func GetWaveString() { return Format("Defense_%s_BestWave", GetScenTitle()); }
