@@ -1,0 +1,2 @@
+Name=Moulin à vent
+Description=Le moulin à vent écrase les graines en farine.

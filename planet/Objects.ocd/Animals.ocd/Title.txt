@@ -1,2 +1,4 @@
 DE:Tiere
 US:Animals
+FR:Animaux
+

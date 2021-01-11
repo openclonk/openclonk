@@ -1,0 +1,3 @@
+Skin=Apparence
+SkinHelp=À quoi ressemble le clonk.
+

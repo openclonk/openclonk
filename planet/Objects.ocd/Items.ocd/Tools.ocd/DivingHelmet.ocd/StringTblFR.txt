@@ -1,0 +1,12 @@
+Name=Casque de plongée
+Description=En le portant, votre clonk peut respirer sous l'eau tant que le casque est connecté à une pompe. Appuyez sur [utiliser] pour le mettre.
+
+MsgConnectedPipe=Tuyau connecté.
+MsgPipeProhibited=Impossible de connecter les tuyaux source au casque de plongée.
+MsgHasPipe=Le casque de plongée a déjà un tuyau.
+
+MenuPipeControl=Contrôle du tuyau
+MsgCutPipe=Débrancher le tuyau
+MsgConnectPipe=Connecter le tuyau
+DescCutPipe=Enlève le tuyau connecté.
+DescConnectPipe=Connecte un tuyau.

@@ -1,0 +1,5 @@
+Name=Chasse au rubis
+
+#Goal window
+MsgGoalFulfilled=Un rubis a été livré.
+MsgGoalUnfulfilled=Miner un rubis et le livrer à la plateforme de départ.

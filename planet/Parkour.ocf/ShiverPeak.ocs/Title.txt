@@ -1,2 +1,4 @@
 DE:Schauderberg
 US:Shiver Peak
+FR:Pic du Frisson
+

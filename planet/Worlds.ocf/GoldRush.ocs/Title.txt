@@ -1,2 +1,4 @@
 DE:Goldrausch
 US:Gold Rush
+FR:Ruée vers l'or
+

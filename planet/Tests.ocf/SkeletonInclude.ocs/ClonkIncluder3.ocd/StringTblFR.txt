@@ -1,0 +1,10 @@
+CtxConstructionDesc=Construction
+CtxConstructionMaterial=Matériau de construction
+CtxHomeDesc=Retour à la base
+CtxRelease=Relacher
+CtxChop=Hacher
+CtrlMenuDesc=Menu
+TxtDescend=Descendre en sautant
+TxtEnergysupply=Source d'énergie
+
+

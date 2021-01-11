@@ -1,0 +1,22 @@
+# Goal description
+MsgGoalName=Sauvetage du chariot
+MsgGoalDescription=Localisez le chariot avec du métal et ramenez-le à la surface.
+
+# Dialogue options
+MsgNextTutorial=&Tutoriel suivant
+MsgNextTutorialDesc=Commencer le tutoriel suivant.
+MsgRepeatRound=&Recommencer cette étape
+MsgRepeatRoundDesc=Recommencer ce scénario.
+
+# Tutorial messages
+MsgTutorialFloodedMines=Vous êtes juste devant l'entrée de la mine. Parlez à l'exploitant de la mine devant la pompe pour savoir comment vous pouvez aider.
+MsgTutorialConnectPipe=Obtenez un tuyau dans le coffre. Les tuyaux peuvent être connectés à la pompe en les utilisant devant la pompe, le premier tuyau sera la source et le deuxième tuyau sera le drain. Connectez le tuyau à la pompe. Plus d'options pour la pompe se trouvent dans le menu d'interaction.
+MsgTutorialFindMetalLorry=Bon, de cette façon, la pompe prendra l'eau du tuyau et la déposera juste devant elle car aucun tuyau de vidange n'est connecté. Vous pouvez ensuite conserver le tuyau dans votre inventaire et l'utiliser pour pomper l'eau de la mine. Entrez maintenant dans la mine en suivant le chemin de l'ascenseur et localisez le chariot avec le métal. N'oubliez pas de reprendre votre souffle de temps en temps.
+MsgTutorialMoveLorry=D'accord, sortons le chariot de la mine vers la cage d'ascenseur inondée. Poussez-le dans l'eau, peut-être qu'il se rendra à l'endroit où la cage de l'ascenseur toucherait le sol du puits.
+MsgTutorialCallElevator=Hm, ça n'a pas marché. Nagez jusqu'à l'endroit où la cage de l'ascenseur atteindrait le sol et appelez-le en appuyant sur [%s]. Il lui faudra quelques secondes pour descendre. En attendant, parlez au PNJ debout devant le laboratoire de chimie, peut-être qu'il a une idée.
+MsgTutorialProduceWallKit=Ce n'était pas très utile. Le problème semble être de faire monter le chariot dans l'ascenseur. Si l'on pouvait en quelque sorte fermer une petite partie autour de la cage de l'ascenseur pour retirer l'eau avec la pompe. Attendez une seconde ... On pourrait utiliser un kit mural pour cela. Produisez-en un dans l'atelier.
+MsgTutorialCloseMineShaft=Prenez le kit mural et une boîte de dynamite dans le laboratoire de chimie. Assurez-vous ensuite que l'ascenseur se trouve au bas du puits inondé et fermez l'espace au-dessus de l'ascenseur avec des kits muraux. Pour placer un kit mural, sélectionnez-le dans l'inventaire et maintenez le bouton gauche de la souris. Positionnez ensuite le kit mural en déplaçant le curseur de la souris et placez-le en relâchant le bouton.
+MsgTutorialWaitAndMoveLorry=Parfait, placez maintenant le tuyau près du boîtier de l'ascenseur et attendez que la partie inférieure de la gaine soit vidangée, puis déplacez le chariot dans le boîtier.
+MsgTutorialBlastWall=Bon, maintenant que le chariot est dans la cage d'ascenseur, nous pouvons à nouveau faire sauter le mur pour permettre à l'ascenseur de remonter à la surface. Prenez une boîte de dynamite du laboratoire de chimie et placez les cinq bâtons de dynamite à l'emplacement indiqué, puis éloignez-vous et utilisez l'allumeur pour les faire exploser.
+MsgTutorialSwimUp=Vous pouvez maintenant remonter à la surface et appeler la cabine d'ascenseur lorsque vous êtes au sommet. Déplacez ensuite le chariot de métal vers le chef de la mine et parlez-lui.
+MsgTutorialCompleted=Bien joué, vous voyez que dans ce jeu, vous avez parfois besoin d'actions astucieuses pour résoudre des problèmes difficiles ! Maintenant, les villageois ont suffisamment de métal pour produire des armes et vous êtes sur le point de monter une attaque contre la faction maléfique.

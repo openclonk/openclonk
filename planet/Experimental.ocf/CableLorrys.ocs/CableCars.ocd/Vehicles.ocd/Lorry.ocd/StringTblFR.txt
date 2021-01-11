@@ -1,0 +1,5 @@
+TxtControl=Contrôle
+TxtLorryisfull=Le chariot est plein!
+TxtLoadUp=Chargement
+Name=Chariot
+Description=Utile pour transporter de grandes quantités de matériaux. Peut contenir jusqu'à 50 objets

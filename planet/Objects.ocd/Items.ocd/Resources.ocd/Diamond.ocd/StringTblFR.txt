@@ -1,0 +1,3 @@
+Name=Diamant
+Description=Très précieux et rare.
+

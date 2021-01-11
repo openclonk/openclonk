@@ -1,0 +1,12 @@
+  Forteresse Gelée
+
+Deux forteresses rivales se battent dans cet environnement défavorable.
+Objectif: Volez le drapeau de vos ennemis et apportez-le à votre base (votre drapeau doit être dans votre base) !
+
+- Trois sorts utiles, liés à des parchemins, peuvent vous aider.
+- Les coffres sont souvent réapprovisionnés en armes et autres objets utiles.
+- Le geyser au milieu de la carte éclate presque une fois par minute.
+- Parce qu'il fait si froid ici, vous ne pouvez pas creuser à travers la glace, mais vous pouvez la détruire avec des explosifs.
+- Les portes s'ouvrent automatiquement lorsqu'un clonk amical arrive à portée.
+
+

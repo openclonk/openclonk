@@ -1,0 +1,3 @@
+Name=Sac à vent
+Description=Contient du vent comprimé qui peut être libéré en une rafale. Visez et appuyez sur [Utiliser] pour libérer une rafale de vent dans la direction spécifiée.
+MsgReloading=Rechargement !

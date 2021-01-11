@@ -1,0 +1,18 @@
+# Goal description
+MsgGoalName=Miner des gemmes
+MsgGoalDescription=Trouvez et extrayez la gemme stalactite, puis vendez les gemmes au mât.
+
+# Dialogue options
+MsgNextTutorial=&Tutoriel suivant
+MsgNextTutorialDesc=Commencer le tutoriel suivant.
+MsgRepeatRound=&Recommencer cette étape
+MsgRepeatRoundDesc=Recommencer ce scénario.
+
+# Tutorial messages
+MsgTutorialTalkToPilot=Vous êtes haut dans le ciel dans une zone avec plusieurs îles célestes. Parlez au pilote pour quelques conseils sur la région. S'il y a plusieurs objets avec lesquels interagir (dans ce cas, le pilote, le dirigeable et le lorry), vous pouvez les parcourir avec [%s] et [%s]. Pour parcourir plusieurs interactions d'un même objet, utilisez [%s] et pour annuler la sélection d'interaction, utilisez [%s].
+MsgTutorialFindRubies=Maintenant, prenez le dirigeable et trouvez la stalactite de rubis suspendue à l'une des îles. Vous pouvez saisir le dirigeable avec [%s] et parcourir les interactions, et le diriger avec%s.
+MsgTutorialParkAirship=Ah vous avez trouvé la stalactite de rubis. Il est maintenant temps de la faire exploser en pierres précieuses ! Garez votre dirigeable devant les échelles de corde là-bas.
+MsgTutorialLadderJump=Bien, maintenant votre compagnon contrôlera le dirigeable et vous pourrez sauter vers la stalactite de rubis. Sautez vers une échelle de corde suspendue; vous la saisirez automatiquement. Vous pouvez changer de côté ou lâcher l'échelle en appuyant sur les touches de déplacement [%s]/[%s]. Au lieu de lâcher prise, vous pouvez également sauter de l'échelle si vous appuyez sur la touche de déplacement correspondant au côté où vous vous accrochez pendant la montée.
+MsgTutorialBlastGems=D'accord, vous pouvez maintenant planter des bâtons de dynamite sur la stalactite et remonter à bord du dirigeable. Allumez ensuite la dynamite pour faire sauter la stalactite.
+MsgTutorialCollectGems=Explosion parfaite! Collectez maintenant au moins cinq gemmes et revendez-les au mât. Vous pouvez les vendre en les transférant vers le mât en utilisant le menu d'interaction. Si vous êtes paresseux, vous pouvez utiliser le télégant pour ramasser les pierres précieuses de l'île du ciel ci-dessous.
+MsgTutorialCompleted=Bien joué, vous avez volé suffisamment de rubis à la maléfique faction wipf pour engager des clonks dans votre attaque contre le bastion de la faction.

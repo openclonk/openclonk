@@ -1,0 +1,2 @@
+Name=Charbon
+Description=Le carburant, il peut être utilisé pour produire du métal ou produire de l'électricité.

@@ -1,0 +1,2 @@
+Name=Pas besoin d'énergie
+Description=Les bâtiments consommateurs d'énergie fonctionnent sans électricité.

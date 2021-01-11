@@ -1,0 +1,2 @@
+Name=Pioche
+Description=Outil d'extraction de base pour l'extraction à travers la roche quand aucun explosif n'est disponible. Maintenez [Utiliser] pour extraire lentement dans les formations rocheuses.

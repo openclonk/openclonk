@@ -1,0 +1,2 @@
+Name=Anneau de progression
+Description=Montre les progrès.

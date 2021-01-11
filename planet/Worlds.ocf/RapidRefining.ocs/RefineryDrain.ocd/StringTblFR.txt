@@ -1,0 +1,9 @@
+Name=Drain de la raffinerie
+Description=Fixez le tuyau de vidange d'une pompe à cette structure pour pomper le pétrole dans la raffinerie. Plusieurs tuyaux peuvent être connectés au drain de la raffinerie.
+
+MsgOilOverview=Vue d'ensemble du pétrol
+MsgOilPumped=Quantité de pétrol : %d {{Oil}}.
+MsgOilDescription=%d {{Oil}} ont actuellement été transférés dans la raffinerie.
+
+MsgConnectedPipe=Tuyau connecté.
+MsgPipeProhibited=Les tuyaux source ne peuvent pas être connectés à la raffinerie.

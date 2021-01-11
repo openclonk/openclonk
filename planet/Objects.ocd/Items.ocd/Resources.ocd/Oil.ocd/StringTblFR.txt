@@ -1,0 +1,2 @@
+Name=Pétrole
+Description=Représente un seul pixel d'huile.

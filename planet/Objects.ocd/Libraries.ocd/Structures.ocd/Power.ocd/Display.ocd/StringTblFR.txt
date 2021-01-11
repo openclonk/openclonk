@@ -1,0 +1,15 @@
+MsgPowerOverview=Aperçu de l'alimentation
+MsgPowerProduction=Production d'énergie :
+MsgPowerProductionCapacity=capacité totale
+MsgPowerConsumption=Consommation d'énergie:
+MsgPowerConsumptionDemand=demande totale
+MsgPowerStored=Puissance stockée:
+MsgPowerStoredCapacity=capacité totale
+MsgPowerNoNeed=La règle d'absence d'alimentation est active.
+
+DescPowerProduction=Toutes les productions d'électricité (hors stockages) de ce réseau ont ensemble une capacité de production de %d {{Icon_Lightbulb}}, actuellement %d {{Icon_Lightbulb}} est en cours de production.
+DescPowerConsumption=Actuellement, les consommations (hors stockages) de ce réseau demandent au total %d {{Icon_Lightbulb}} pour fonctionner, %d {{Icon_Lightbulb}} est actuellement fourni.
+DescPowerStored=Les stocks électriques contiennent actuellement %s {{Icon_Lightbulb}} sur leur capacité totale de %s {{Icon_Lightbulb}}. Cela revient à alimenter une consommation utilisant un {{Icon_Lightbulb}} pendant %s minutes.
+DescPowerOverproduction=Il y a une surproduction de %d {{Icon_Lightbulb}}, vos réserves d'énergie sont en cours de remplissage.
+DescPowerUnderproduction=Il y a une sous-production de %d {{Icon_Lightbulb}}, vos stocks électriques sont vidés.
+DescPowerNoNeed=Si la règle d'absence d'alimentation est active, aucun des consommations d'énergie n'a besoin d'une alimentation électrique pour fonctionner.

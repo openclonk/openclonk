@@ -1,0 +1,3 @@
+Name=Bibliothèque de champs de force
+Description=Contient des fonctions pour définir des attracteurs et des répulseurs et calculer ensuite un vecteur de force pour une position spécifiée.
+

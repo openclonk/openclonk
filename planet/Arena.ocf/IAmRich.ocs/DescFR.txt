@@ -1,0 +1,10 @@
+Je suis riche !
+
+Rivalisez avec vos adversaires.
+Le joueur le plus riche gagnera.
+
+Presque tous les articles peuvent être vendus.
+
+Conseils:
+- Si vous tuez un adversaire, vous gagnerez 10% de sa richesse sous forme de prime.
+- Si votre dernier Clonk meurt, vous en obtiendrez un nouveau au mât, si vous avez assez d'argent (25 pièces d'or).

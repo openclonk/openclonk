@@ -1,0 +1,2 @@
+Name=Lichen
+Description=Se développe dans des tunnels sombres et humides. La mousse peut en être récoltée.

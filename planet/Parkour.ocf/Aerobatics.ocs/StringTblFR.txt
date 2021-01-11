@@ -1,0 +1,9 @@
+# Scenario option: number of checkpoints
+ScenParNrCheckPoint=Nombre de points de passage
+ScenParNrCheckPointDesc=Choisissez le nombre de point de passage pour cette manche, la taille de la carte et la durée de la partie augmenteront en conséquence.
+
+# Scenario option: mode
+ScenParGameMode=Mode
+ScenParGameModeDesc=Mode de jeu : soit les points de passage sont à prendre dans l'ordre (horizontal), soit ils sont à prendre en aller et retour (zig zag).
+ScenParGameModeZigZag=Zig Zag
+ScenParGameModeHorizontal=Horizontal

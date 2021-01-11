@@ -1,0 +1,5 @@
+MsgIntro1=Enfin, nous sommes arrivés au château de Harx. Maintenant, trouvons un bon endroit pour atterrir.
+MsgIntro2=Des intrus ! Tirez-leur dessus !
+MsgIntro3=Aaaaah ! Nous avons été touchés.
+MsgIntro4=Maudit Harx et son artillerie ! On dirait que nous devons trouver un autre moyen d'entrer dans son château.
+DeathOfBrutus=S'il te plait reviens.

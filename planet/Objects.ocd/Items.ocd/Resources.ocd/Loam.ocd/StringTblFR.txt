@@ -1,0 +1,2 @@
+Name=Terreau
+Description=Avec le terreau, on peut construire de petits ponts de terre. Maintenez la touche [Utiliser] enfoncée pour construire un pont, déplacez la souris pour contrôler où il est créé. Peut être fait de terre ou de sable, recueilli dans un seau.

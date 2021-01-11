@@ -1,0 +1,13 @@
+Name=Dirigeable
+Description=Véhicule de transport et de transport plus léger que l'air. Attention : le ballon contient du gaz volatile. Ne pas percer.
+None=Aucun
+NoPilotHelp=Le dirigeable restera en l'air sans pilote.
+ClonkPilotHelp=Un clonk contrôle le dirigeable.
+Pilot=Pilote
+PilotHelp=Type de clonk pour diriger le dirigeable.
+FlySpeed=Vitesse de vol
+FlySpeedHelp=À quelle vitesse le dirigeable peut voler.
+Crew=Équipage
+CrewHelp=Clonks supplémentaires à placer sur chaque dirigeable.
+HitPoints=Points de dégâts
+HitPointsHelp=Combien de dégâts le dirigeable doit subir pour brûler.

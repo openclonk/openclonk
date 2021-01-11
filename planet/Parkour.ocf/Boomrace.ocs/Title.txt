@@ -1,2 +1,4 @@
 DE:Kamikaze Cowboys
 US:Kamikaze Cowboys
+FR:Cowboys Kamikaze
+

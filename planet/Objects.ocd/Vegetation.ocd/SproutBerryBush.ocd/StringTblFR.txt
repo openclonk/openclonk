@@ -1,0 +1,2 @@
+Name=Buisson de baies germinative
+Description=Un arbuste à croissance très rapide et gourmand en eau qui produit des baies savoureuses qui doivent être mangées rapidement.

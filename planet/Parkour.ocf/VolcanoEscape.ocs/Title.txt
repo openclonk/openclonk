@@ -1,2 +1,4 @@
 DE:Flucht aus dem Vulkan
 US:Escape the volcano
+FR:Échapper au volcan
+

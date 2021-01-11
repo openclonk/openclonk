@@ -1,0 +1,4 @@
+   Expérimental 
+ 
+Ce répertoire de scénarios contient des scénarios expérimentals et des scénarios pour tests. Jouez avec si vous voulez, et postez vos retours dans nos forums. 
+

@@ -1,0 +1,8 @@
+Problèmes d'alimentation
+
+Avec Archibald, vous atteignez le calme et amical village céleste. C'est un peu trop calme cependant car leur alimentation est à l'arrêt en raison de l'absence de vent. Ils acceptent de vous aider si leur alimentation est rétablie et si vous leur construisez un avion.
+
+Goal: Rétablir l'alimentation électrique et fabriquer un avion.
+
+Tutorial explains: système d'alimentation, achat, catapulte.
+

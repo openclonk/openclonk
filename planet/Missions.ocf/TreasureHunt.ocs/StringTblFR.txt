@@ -1,0 +1,15 @@
+MsgEncounterCastle=Attention, un intrus ! Attrape-le !
+MsgEncounterFinal=Le trésor est à MOI SEUL !
+MsgTreasureCollected=Excellent ! Nous devons maintenant rapporter le trésor à Dagobert.
+MsgGoldBarCollected=J'ai trouvé un lingot d'or ! (%d/%d)
+MsgStoneDoorNoDamage=Cette porte en pierre est trop résistante. Je devrais chercher un interrupteur.
+Found5=5 lingots d'or trouvés
+Found10=10 lingots d'or trouvés
+Found20=20 lingots d'or trouvés
+Achieve5=Niveau bronze atteint !
+Achieve10=Niveau argent atteint !
+Achieve20=Niveau or atteint !
+
+Guard=Garde
+TreasureHunter=Chasseur de trésor
+

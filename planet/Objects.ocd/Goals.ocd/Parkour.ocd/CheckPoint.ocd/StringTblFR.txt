@@ -1,0 +1,36 @@
+Name=Point de contrôle
+Description=Point de contrôle pour l'objectif du jeu de parkour.
+NameStart=Début du point de contrôle
+NameFinish=Fin du point de contrôle
+
+#Log messages
+MsgClearedOrdered=%s a passé le point de contrôle %d, malheureusement %d joueurs étaient déjà là.
+MsgClearedCheck=%s a passé un point de contrôle, %d joueurs l'ont battu là-bas.
+MsgClearedOrderedFirst=%s est le premier à passer le point de contrôle %d.
+MsgClearedCheckFirst=%s était le premier à passer ce point de contrôle.
+
+NoGoalWarning=AVERTISSEMENT: aucun objectif de parkour placé. Les points de contrôle de parkour nécessitent un objectif.
+SelectPrev=Sélectionner <<
+SelectPrevHelp=Sélectionne le point de contrôle avant celui-ci.
+SelectNext=Sélectionner >>
+SelectNextHelp=Sélectionne le point de contrôle après celui-ci.
+ReorderPrev=Trier <<
+ReorderPrevHelp=Échange le point de contrôle avec celui avant celui-ci.
+ReorderNext=Trier >>
+ReorderNextHelp=Échange le point de contrôle avec celui après celui-ci.
+
+Respawn=Réapparaître ici
+RespawnHelp=Si les clonks réapparaissent ici à la mort.
+Check=Obligatoire
+CheckHelp=Si ce point de contrôle est nécessaire pour terminer l'objectif de parkour.
+Ordered=Trié
+OrderedHelp=Si ce point de contrôle doit être atteint dans l'ordre.
+Team=Équipe
+TeamHelp=Si tous les joueurs d'une équipe doivent atteindre ce point de contrôle.
+OnCleared=Action: PC atteint
+OnClearedHelp=Action à exécuter une fois pour chaque joueur qui franchit ce point de contrôle.
+OnFirstCleared=Action: PC atteint en premier
+OnFirstClearedHelp=Action à exécuter lorsque le premier joueur franchit ce point de contrôle.
+OnRespawn=Action: Réapparition
+OnRespawnHelp=Action à exécuter lorsqu'un joueur réapparaît à ce point de contrôle.
+

@@ -1,0 +1,5 @@
+NoPlrKnowledge=Aucun plan de construction
+Construction=Construction
+Production=Production
+Name=Laboratoire de l'inventeur
+Description=Le bon endroit pour rechercher des technologies de pointe.

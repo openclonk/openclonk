@@ -1,0 +1,2 @@
+Name=Gemme de vie
+Description=Activez-le pour soigner le Clonk. Prendre des dégâts annulera l'effet de guérison.

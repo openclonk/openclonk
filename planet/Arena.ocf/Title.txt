@@ -1,2 +1,4 @@
 DE:Arena
 US:Arena
+FR:Arène
+

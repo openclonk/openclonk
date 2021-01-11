@@ -1,0 +1,6 @@
+  Terres célestes
+
+La tempête qui s'est levée, a fracassé votre avion et dispersé des morceaux partout dans les terres célestes. Vous devez rassembler les pièces le plus rapidement possible avant que la tempête ne se renforce à nouveau et restaurer l'avion. Vous devrez construire un nouveau moteur car cette chose est remontée directement à la surface, à des kilomètres en dessous de vous.
+
+Objectif: Assembler l'avion à partir de toutes ses pièces (patins, châssis, ailes, hélice et moteur).
+

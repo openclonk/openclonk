@@ -1,0 +1,26 @@
+# Goal Description
+MsgGoalName=Production d'outils
+MsgGoalDescription=Aider les villageois à produire les outils essentiels au fonctionnement de leur village.
+
+# Dialogue options
+MsgNextTutorial=&Tutoriel suivant
+MsgNextTutorialDesc=Commencer le tutoriel suivant.
+MsgRepeatRound=&Recommencer cette étape
+MsgRepeatRoundDesc=Recommencer ce scénario.
+
+# Tutorial messages
+MsgTutorialVillageHead=Les bâtiments dans Wipfville ont été à nouveau réparés mais il semble que les villageois manquent d'outils pour continuer leur travail. Descendez dans les mines et parlez au chef du village pour lui faire savoir que vous voulez les aider. Prenez l'ascenseur pour descendre dans les mines, placer vous près de la cage de l'ascenseur et appuyer sur [%s] pour la saisir, ensuite appuyer sur [%s] et [%s] pour monter ou descendre.
+MsgTutorialLoamProduction=Pour déplacer le chariot vers la cage de l'ascenseur, vous avez besoin d'un morceau de loam pour traverser cet espace ici. Allez à la fonderie et prenez le seau. Pour produire le loam vous avez besoin de d'eau et de terre. La terre est collectée dans le seau tandis que vous creusez avec la pelle.
+MsgTutorialFillBucket=Maintenant que vous avez la pelle et le seau dans votre inventaire, vous pouvez creusez la terre. Creusez un peu de terre à droite de la fonderie et le seau se remplira de lui-même automatiquement.
+MsgTutorialGetBarrel=OK, le seau est rempli. Remettez le à la fonderie et sortez maintenant le baril.
+MsgTutorialFillBarrel=Le baril est un objet lourd qui a besoin d'être porté à deux mains. Vous ne pouvez pas utiliser les autres objets de votre inventaire tandis que vous portez le baril. Le baril se remplit de lui-même automatiquement une fois qu'il est immergé dans du liquide. Trouvez un plan d'eau et nagez avec le baril, puis remettez le baril dans la fonderie.
+MsgTutorialProduceLoam=Maintenant produisez un morceau de loam (dans le menu interaction ouvert avec [%s]) et replacez-le dans le chariot.
+MsgTutorialMakeLoamBridge=Maintenant tenez aussi proche que possible du bord et comblez le vide avec le loam. Choisissez le loam dans votre inventaire et appuyez sur [%s] dans la direction vers laquelle vous voulez construire le pont. Saisissez alors le chariot avec [%s] et déplacez-le vers l'atelier.
+MsgTutorialProducePickaxe=Transférez le contenu du chariot vers l'atelier en utilisant le menu d'interaction (à ouvrir avec [%s]). Sélectionnez le chariot et l'atelier et cliquez ensuite sur le bouton \"tout transférer\" au milieu du meneu. Produisez alors une pioche dans l'atelier. Le reste des matériaux seront utilisés par le chef du village pour produire d'autres outils.
+MsgTutorialMineOre=Prenez la pioche et dirigez-vous vers la mine de minerai sous la fonderie. Taillez trois morceaux de minerai. La pioche est une alternative aux explosifs qui peut être utilisée pour extraire des minerais plus dur comme le fer ou l'or. Pour utiliser la pioche, sélectionnez-la et pointez le curseur de la souris vers un matériau solide près du clonk, et appuyez ensuite sur [%s].
+MsgTutorialPutOre=Collectez les trois morceaux de minerai et mettez les dans la fonderie. Ensuite, parlez au chef du village.
+MsgTutorialCompleted=Bien, vous avez aidé le chef du village et accompli ce didacticiel. Mais les villageois semblent en difficulté et Roger a été enlevé... Il est temps de concevoir un plan contre la faction malfaisante dans le tutoriel suivant.
+
+# Wipf name
+WipfName=Roger
+WipfDescription=Votre petit ami poilu.

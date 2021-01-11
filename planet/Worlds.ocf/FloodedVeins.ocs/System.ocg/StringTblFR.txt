@@ -1,0 +1,6 @@
+# Intro sequence messages
+MsgAbandonedSettlement=%s voyez-vous également cette colonie abandonné?
+MsgLegendGems=Oui. Savez-vous que les légendes décrivent de grandes quantités de gemmes près de cet endroit?!
+MsgExplore=Oui %s, j'ai entendu ces histoires. Explorons les grottes ci-dessous!
+MsgAgree=Je meurs d'envie de savoir si cette légende est vraie, je me joins à vous.
+

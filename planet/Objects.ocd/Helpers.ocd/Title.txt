@@ -1,2 +1,4 @@
 DE:Hilfsobjekte
 US:Helper objects
+FR:Objets auxiliaires
+

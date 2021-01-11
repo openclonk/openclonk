@@ -1,2 +1,4 @@
 US:Bristle Ridge
 DE:Borstenkamm-Gebirge
+FR:Crête Soyeuse
+

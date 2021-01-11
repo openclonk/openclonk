@@ -1,2 +1,4 @@
 DE:Wasserwerk
 US:Waterworks
+FR:Station hydraulique
+

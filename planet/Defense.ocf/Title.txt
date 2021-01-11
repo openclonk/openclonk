@@ -1,2 +1,4 @@
 DE:Verteidigung
 US:Defense
+FR:Défense
+

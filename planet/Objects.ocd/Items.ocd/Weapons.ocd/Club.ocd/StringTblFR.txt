@@ -1,0 +1,2 @@
+Name=Gourdin
+Description=Grand frère de la batte de baseball. Visez et battez avec [Utiliser].

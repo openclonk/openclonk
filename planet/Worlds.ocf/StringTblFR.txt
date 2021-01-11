@@ -1,0 +1,6 @@
+
+# Scenario parameters: achievements
+AchievementNormal=Partie terminée avec une difficulté normale.
+AchievementHard=Partie terminée avec une difficulté élevée.
+AchievementInsane=Partie terminée avec une difficulté insensée.
+

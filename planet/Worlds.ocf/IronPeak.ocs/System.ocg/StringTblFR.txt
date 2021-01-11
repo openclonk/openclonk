@@ -1,0 +1,7 @@
+# Pilot Name
+PilotName=Capitaine Orville
+
+# Intro sequence messages
+MsgIronPeakAhead=Pic de fer droit devant, les gars... Préparez-vous au largage !
+MsgLandOnPeak=Les gars... on atterrit là-bas sur le sommet.
+MsgCrewLanded=Bien joué ! Je vous ai donné des outils pour survivre. Votre mission : construire une colonie et produire du métal.

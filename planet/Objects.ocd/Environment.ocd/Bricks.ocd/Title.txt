@@ -1,2 +1,4 @@
-DE:Klötze
+DE:KlÃ¶tze
 US:Bricks
+FR:Briques
+

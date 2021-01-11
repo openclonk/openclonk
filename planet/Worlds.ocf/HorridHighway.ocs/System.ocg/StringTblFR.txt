@@ -1,0 +1,6 @@
+# Intro sequence messages
+MsgWelcomeHorridHighway=Salut %s, bienvenue sur la dangereuse voie ferrée.
+MsgHighwayBroken=Oh non! L'autoroute est à nouveau cassée. Fichus météores !
+MsgFixHighway=Je vous laisse ici, réparez l'autoroute pour nos locomotives alors nous pourrons vous donner plein de ressources.
+MsgRunLocomotives=Vous pouvez me faire savoir avec le levier que vous êtes prêt. Puis je vous enverrai des locomotives.
+

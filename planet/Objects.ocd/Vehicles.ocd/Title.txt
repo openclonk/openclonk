@@ -1,2 +1,4 @@
 DE:Fahrzeuge
 US:Vehicles
+FR:Véhicules
+

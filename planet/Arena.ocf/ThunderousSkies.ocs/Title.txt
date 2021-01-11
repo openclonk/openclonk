@@ -1,2 +1,7 @@
 DE:Donnernde Himmel
 US:Thunderous skies
+FR:Ciel orageux
+
+ openclonk-master\planet\Arena.ocf\ThunderousSkies.ocs\Scrolls.ocd\FireballScroll.ocd\StringTblFR.txt
+Name=Parchemin de boule de feu
+Description=Lancez une boule de feu sur vos ennemis.

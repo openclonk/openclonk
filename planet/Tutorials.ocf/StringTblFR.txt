@@ -1,0 +1,4 @@
+
+# Achievements
+MsgTutorialCompleted=Didacticiel terminé.
+MsgTutorialEasterEgg=Easter egg trouvé.

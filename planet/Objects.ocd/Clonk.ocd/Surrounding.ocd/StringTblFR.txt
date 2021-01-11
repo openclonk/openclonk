@@ -1,0 +1,4 @@
+Name=Alentours
+Description=Vous permet de ramasser des objets de votre environnement.
+ObjectsAroundYou=Objets autour de vous
+

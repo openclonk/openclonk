@@ -1,0 +1,2 @@
+Name=Farine
+Description=Fabriqué à partir de grain. Ingrédient de base pour les pâtisseries.

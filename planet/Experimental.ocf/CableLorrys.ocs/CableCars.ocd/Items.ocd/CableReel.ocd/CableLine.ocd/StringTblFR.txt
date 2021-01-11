@@ -1,0 +1,2 @@
+MsgCableBroke=Câble cassé
+Name=Câble

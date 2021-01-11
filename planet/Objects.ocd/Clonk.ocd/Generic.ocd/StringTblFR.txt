@@ -1,0 +1,7 @@
+SetMaxContentsCount=Modifier la taille de l'inventaire
+SetMaxContentsCountHelp=Modifie le nombre maximal d'articles qu'un clonk peut transporter. Les valeurs valides vont de 0 à 10. Un objet lourd supplémentaire peut toujours être transporté.
+MaxContentsCount=Nombre d'emplacements d'inventaire
+Default=Défaut
+
+TurnAround=Tourner autour
+TurnAroundHelp=Modifie la direction d'affichage du clonk.

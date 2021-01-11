@@ -1,0 +1,4 @@
+EditorPropStoredPower=Puissance stockée
+EditorPropStoredPowerHelp=Définissez la quantité d'énergie stockée dans ce stockage.
+EditorPropStoredPowerEmpty=Vide
+EditorPropStoredPowerFull=Plein

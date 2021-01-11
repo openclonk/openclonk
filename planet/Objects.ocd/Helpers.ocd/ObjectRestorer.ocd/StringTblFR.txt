@@ -1,0 +1,3 @@
+Name=Restaurateur d'objets
+Description=Restaure un objet perdu à son emplacement ou conteneur d'origine.
+

@@ -1,0 +1,2 @@
+Name=Hache
+Description=Un outil de bûcheron. À utiliser pour couper un arbre.

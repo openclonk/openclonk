@@ -1,0 +1,101 @@
+SpecialGoldBarDesc=Trésor caché. Essayez de collecter tous les %d lingots d'or cachés!
+PlaneNoOil=L'avion a besoin de carburant. Je doit trouver du pétrole.
+
+Intro1=Ouch. Pyrit!
+Intro2=Comment pouvons-nous être à court de carburant ? Vous avez dit qu'un baril nous permettrait d'atteindre notre objectif et de revenir facilement !
+Intro3=Ouais, mais je n'avais pas prévu de devoir vous chercher pendant trois jours et de vous récupérer sur une île solitaire dans l'océan.
+Intro4=Tout est de ta faute. Juste pour dire.
+Intro5=Qu'allons-nous faire maintenant?
+Intro6=Je vous suggère d'aller chercher du pétrole. En attendant, je vais réparer l'avion.
+Intro7=Ça m'a l'air bien.
+
+Pyrit1=J'ai presque fini. Avez-vous déjà trouvé le pétrole ?
+Pyrit1B=L'avion est de nouveau prêt. Avez-vous déjà trouvé le pétrole ?
+PyritQBarrel=Que dois-je faire du baril ?
+PyritABarrel=Amenez-le simplement dans l'avion. Pardi !
+PyritQSearch=Où puis-je trouver du pétrole ?
+PyritASearch=Je ne sais pas. Comment l'avez-vous trouvé la dernière fois ? Il suffit de regarder et de demander autour, je suppose.
+PyritQGem=Avez-vous vu un joyau de puissance ?
+PyritAGem=Non, je n'ai jamais entendu parler d'une telle chose. Mais les grottes de ces montagnes sont bien connues pour leurs dangers et trésors cachés. Vous devriez peut-être regarder à l'intérieur.
+PyritQBye=Au revoir
+
+DagobertName=Scrooge
+Dagobert1=De l'or... de l'or... de l'or...
+Dagobert1B=Un si beau bijou...
+DagobertGoldQ=De l'or ?
+DagobertGold1=C'est frustrant ! Cette montagne regorge de trésors cachés, mais je ne peux pas entrer à l'intérieur.
+DagobertGold2=Quel est le problème ?
+DagobertGold3=L'entrée principale des grottes est inondée de lave. Il y a d'autres entrées, mais elles sont inondées d'eau.
+DagobertGold4=Tu ne pourrais pas y plonger.
+DagobertGold5=J'aimerais bien. Mais avec mon arthrite ...
+DagobertOilQ=J'ai besoin de pétrole
+DagobertOil1=Qui n'en a pas besoin ? Mais vous savez, le roi Harx ne le permettra pas.
+DagobertOil1B=Apportez-moi le joyau et je vous donnerai du pétrole.
+DagobertOil1C=Je vous ai déjà donné toute le pétrole que j'ai.
+DagobertOil2=Screw Harx. Je suis en mission pour le tuer..
+DagobertOil3=Tuer le roi. Très bien, c'est une mission que je peux approuver. Peut-être je peux vous aider. Mais pas gratuitement...
+DagobertOil4=Les gens parlent d'une chambre cachée au fond de cette montagne, qui contient des quantités d'or inimaginables.
+DagobertOil5=Dans cette chambre, il y a aussi la gemme de puissance {{GemOfPower}} - un petit bijou discret brillant de couleur verte et turquoise.
+DagobertOil6=Je m'intéresse à ce petit bijou pour des raisons personnelles. Si vous m'apportez ce petit bijou, je vous dirai où trouver du pétrole. Vous pouvez garder le reste du trésor.
+DagobertOil7=Ça me paraît juste. Je vais chercher ce petit bijou.
+DagobertCaveQ=Comment puis-je entrer dans la grotte ?
+DagobertCave1=L'entrée principale est bloquée par la lave. Cela pourrait être difficile à passer. Cependant, il existe des entrées latérales auxquelles vous pourrez accéder ci-dessous.
+DagobertCave2=Si vous pouvez réacheminer l'eau d'une manière ou d'une autre, vous pourrez peut-être entrer.
+DagobertCave3=Savez-vous ce que je trouverai à l'intérieur des grottes?
+DagobertCave4=Les grottes sont un terrain accidenté et de nombreux explorateurs ont déjà été perdus.
+DagobertCave5=Cependant, certains de ces explorateurs sont assez ingénieux. Ils pourraient avoir laissé des outils utiles que vous pourriez utiliser dans votre mission.
+DagobertGem0=Regardez Scrooge, j'ai trouvé votre joyau.
+DagobertGem1=Incroyable! Regardez sa pureté. Sa beauté immaculée. Il sera entre de bonnes mains.
+DagobertGem2=Voici, prenez donc ce baril de pétrole que j'avais secrètement caché dans mon caleçon.
+DagobertGem3=Oh, merci beaucoup.
+DagobertBye=Au revoir
+
+Outro1=Enfin, vous avez ce pétrole. Vous en avez mis du temps.
+Outro2=Ouais. Votre boulot avec l'avion a été un peu plus facile.
+Outro3=Ne perdons plus de temps. Prochain arrêt: le château de Harx !
+
+Riku1=Bonjour compagnon explorateur. Cherchez-vous de l'or ?
+Riku2=Presque. Je cherche la gemme de puissance.
+Riku3=Oh, ça. C'est probablement dans la chambre au trésor, qui est verrouillée derrière ces portes.
+Riku4=Savez-vous comment les ouvrir?
+Riku5=Je pense qu'elles sont contrôlées par des interrupteurs cachés quelque part dans ces grottes.
+Riku6=Pourquoi ne cherchez-vous pas ces commutateurs alors ?
+Riku7=Pourquoi le devrais-je ? J'entrerai simplement dans la chambre au trésor quand quelqu'un d'autre aura fait le travail pour moi !
+Riku8=Hmpf. Je suppose que je devrai chercher alors.
+RikuOil1=Presque. Je cherche du pétrole.
+RikuOil2=Hm, du pétrole. Avez-vous demandé à Scrooge à l'extérieur de cette montagne ? Il pourrait avoir une idée.
+RikuGem1=Hé Riku, j'ai trouvé la gemme.
+RikuGem2=C'est cool, mon frère ! Je vais rester ici et garder le reste du trésor alors.
+
+Sophie1=Teeheehe. Regardez comment ça lévite !
+Sophie2=Êtes-vous magicien ?
+Sophie3=Non, ce sont des télégants. Je les ai trouvés dans le coffre à côté de moi.
+Sophie4=Il y en a d'autres ! Essayez-les. Appuyez et maintenez près d'un objet perdu pour le déplacer.
+SophieSad=Pourquoi avez-vous retiré mes jouets ? Sophie est triste :(
+
+Jane1=Il est censé chercher des trésors. Mais il balance juste sa corde toute la journée.
+Jane1B=Il était censé chercher des trésors. Au lieu de cela, il ne faisait que balancer sa corde toute la journée. Et maintenant il est mort. Typique.
+Jane2=Cool ! Puis-je aussi avoir une corde ?
+Jane2B=Qu'il repose en paix. Mais, puis-je avoir une corde aussi ?
+Jane3=Il y a des arcs à grappins supplémentaires dans le coffre. Mettez-un dans votre main et cliquez dans la direction où vous souhaitez tirer. Cliquez à nouveau pour vous laisser balancer.
+Jane4=Vous pouvez même en porter deux et en avoir un dans chaque main. Alors, lorsque vous tirez avec le second, le premier reviendra automatiquement en position.
+Jane5=Prenez tous les arcs, s'il-vous-plaît. J'en ai marre de ma balancer.
+
+Tarzan1=Regardez, je suis Tarzan !
+
+Ann1=Mince, je suis coincée.
+Ann2=Je sais qu'il y a un interrupteur sous ce lac de lave sur la droite. Mais je ne peux pas l'atteindre.
+Ann3=N'y at-il aucun moyen de contourner cela ?
+Ann4=Tout est en granit solide. J'ai même construit une pompe pour me débarrasser de la lave, mais je n'ai pas de tuyau qui pourrait résister à la chaleur de la lave.
+Ann5=Hmm. Peut-être que je peux trouver un tuyay quelque part.
+
+Donald1=Oh, compagnon d'exploration, aidez-moi s'il vous plaît ! J'ai perdu toutes mes affaires dans ce lac acide.
+Donald2=Oh je suis désolé de l'entendre. Vous ne pouvez pas obtenir de nouveaux outils ?
+Donald3=Les tuyaux, je m'en fiche. Mais la pelle est celle en or que j'ai héritée de mon arrière-arrière-grand-père ! C'est irremplaçable.
+Donald4=Oh, un tuyau, vous dites ? Hmm, je peux peut-être essayer de sauver ces outils.
+DonaldShovel1=Voici votre pelle.
+DonaldShovel2=Merci beaucoup ! Je te serai redevable pour toujours.
+
+Otto1=J'adore cet endroit solitaire. C'est tellement paisible.
+Otto2=Regardez cette vue magnifique. Il y a une île céleste flottant au-dessus du lac à l'est. Je me demande ce qui s'y passe.
+

@@ -1,0 +1,6 @@
+Name=Flamme
+Description=Brûlant.
+EditorEternal=Éternel
+EditorEternalHelp=Lorsqu'elle est active, cette flamme brûle éternellement.
+EditorEternalOn=Éternel
+EditorEternalOff=Fini

@@ -1,0 +1,29 @@
+# Dialogue: homeless
+DlgHomelessFood=Hé, tu as de la nourriture pour un pauvre ?
+DlgHomelessNo=Non, je n'ai rien sur moi.
+DlgHomelessShame=C'est une honte.
+DlgHomelessYes=Oui, voici quelques %s.
+DlgHomelessReward=Ah merci. J'ai ce vieux club que vous pouvez avoir, ça pourrait aider contre ces voleurs.
+
+# Dialogue: village head
+DlgVillageHeadHowToAttack=Comment puis-je avoir une chance contre ces voleurs maléfiques ?
+DlgVillageHeadNoIdea=Je n'ai aucune idée de comment combattre. Je peux vous donner cette hache, mais ce n'est pas vraiment une arme.
+DlgVillageHeadThanks=Eh bien merci, je vais essayer.
+DlgVillageHeadGoodLuck=Bonne chance, faites-moi savoir quand il n'y a pas de risque à entrer dans la grotte.
+
+# Sequence: intro
+MsgVillageHeadAnnoyed=Je suis vraiment ennuyé par la faction maléfique, nous devons riposter.
+MsgClonkHowToStrike=Comment pouvons-nous riposter? Ils sont nombreux et armés jusqu'aux dents.
+MsgVillageHeadOrganize=Nous devons nous organiser avec un autre village, c'est là que nous nous dirigeons.
+MsgClonkPoorGuy=Regardez ce pauvre gars, sa cabane a brûlé. Que s'est-il passé ?
+MsgHomelessRobbers=Des voleurs ont volé mes biens et incendié ma cabane.
+MsgClonkWhere=C'est terrible. Savez-vous où ils sont ?
+MsgHomelessLocation=Eh bien, ils sont allés dans la grotte en face, d'où ils venaient également.
+MsgVillageHeadTeachThem=Eh bien, %s ici leur donnera une leçon.
+MsgHomelessHappy=Cela me ferait très plaisir.
+
+# Sequence: outro
+MsgClonkSafe=%s, c'est sûr ici !
+MsgVillageHeadComing=D'accord, je descends.
+MsgVillageHeadTakeElevator=Prenons cet ascenseur vers la surface.
+MsgVillageHeadPassedCave=Grâce à vous, nous avons réussi à passer cette grotte et nous pouvons nous rendre en toute sécurité dans l'autre village !

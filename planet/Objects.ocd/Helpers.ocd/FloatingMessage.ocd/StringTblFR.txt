@@ -1,0 +1,2 @@
+Name=Message flottant
+Description=Objet qui sert d'aide pour créer des messages flottants.

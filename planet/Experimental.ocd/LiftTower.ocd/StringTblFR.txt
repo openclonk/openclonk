@@ -1,0 +1,5 @@
+Name=Tour de levage
+Description=Pour soulever de lourdes charges
+TakeHook=Prendre le crochet.
+Grab=Attraper
+

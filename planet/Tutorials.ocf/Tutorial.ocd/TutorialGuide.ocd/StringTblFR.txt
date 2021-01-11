@@ -1,0 +1,6 @@
+Name=Guide du tutoriel
+
+MsgCurrent=Message courant
+MsgNext=Message suivant
+MsgPrevious=Message précédent
+MsgClose=Fermer le guide du tutoriem

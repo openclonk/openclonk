@@ -1,2 +1,4 @@
 DE:Der Kessel
 US:The Cauldron
+FR:Le Chaudron
+

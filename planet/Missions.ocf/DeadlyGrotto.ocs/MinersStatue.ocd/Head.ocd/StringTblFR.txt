@@ -1,0 +1,2 @@
+Name=Tête de la statue
+Description=Une partie importante de la statue.

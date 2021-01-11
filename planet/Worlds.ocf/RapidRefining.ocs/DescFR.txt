@@ -1,0 +1,10 @@
+Raffinage rapide
+
+Un puits de pétrole apparemment infini est caché au fond d'une grotte. Connectez le puits au drain de la raffinerie à l'extérieur de la grotte à l'aide de pompes et alimentez la raffinerie.
+
+Objectif: Pomper du pétrole.
+
+Astuces :
+- Ne mettez pas le feu au pétrol, il brûlera longtemps.
+- Vous pouvez connecter plusieurs tuyaux au drain de la raffinerie.
+

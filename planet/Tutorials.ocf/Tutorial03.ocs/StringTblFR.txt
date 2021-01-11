@@ -1,0 +1,32 @@
+# Goal Description
+MsgGoalName=Reconstruire le Village 
+MsgGoalDescription=Aider les villageois à reconstuire leurs batiments détruits.
+
+# Dialogue options
+MsgNextTutorial=&Tutoriel suivant
+MsgNextTutorialDesc=Commencer le tutoriel suivant.
+MsgRepeatRound=&Recommencer cette étape
+MsgRepeatRoundDesc=Recommencer ce scénario.
+
+# Tutorial messages
+MsgTutorialWipfville=Ce panneau indique Wipfville, c'est probablement la raison pour laquelle Roger s'est enfui. Ce petit village semble avoir été attaqué. Vous pouvez peut-être trouver des indices supplémentaires en parlant au bûcheron là-bas. Postez vous devant un PNJ et appuyer sur [%s] pour entamer la conversation.
+MsgTutorialFindRock=Ok, on doit trouver des rochers pour finir la construction de la scierie là-bas. Regardons dans le mines de ce village, peut-être pourrons-nous trouver quelque chose là-bas.
+MsgTutorialDynamiteLorry=Il y a un chariot de mine rempli de dynamite. Vous pouvez accéder au contenu de nombreux véhicules et bâtiments en appuyant sur la touche [%s], qui ouvre le menu d'interaction. Vous pouvez échanger des objets entre les différents conteneurs en cliquant sur ceux-ci. Attrapez un bâton de dynamite !
+MsgTutorialBlastRock=Parfait, avec de la dynamite, vous pouvez exploser la roche au plafond, la roche est utilisée comme matériau de construction. Suspendez-vous à la roche et choisissez un bâton de dynamite, appuyez sur [%s] une fois pour allumer la mèche et une seconde fois dans la direction de la roche pour la coller au mur. Sautez et courrez !
+MsgTutorialPickUpRock=Bien ! Prenez trois morceaux de roche. Vous pourrez ainsi terminer la construction de la scierie. Notez que l'explosion pourrait avoir projeté quelques morceaux de roche dans le chariot.
+MsgTutorialSawmill=Montez vers le site de construction de la scierie et placer les trois morceaux de roche dans le chantier via le menu d'interaction (appuyer sur [%s] pour l'ouvrir). Si tout les matériaux de construction sont placés dans le chantier, le bâtiment sera automatiquement construit.
+MsgTutorialTalkToFireman=Les villageois semblent avoir besoin d'un peu plus d'aide. Parlez au pompier qui se trouve à côté de la cabane en feu et au constructeur près de l'entrée de la mine.
+MsgTutorialConstructFlagpole=Prenez le marteau dans le coffre. Ensuite utilisez-le en appuyant sur [%s] pour ouvrir le menu de construction. Depuis ce menu, vous pouvez sélectionner le bâtiment que vous voudriez construire. Choisissez le mât et positionnez-le à l'endroit indiqué.
+MsgTutorialFlagpoleMaterials=Maintenant que le chantier est installé, nous avons besoin d'un peu de bois et de métal. Parlez au bûcheron à nouveau pour obtenir un peu de bois.
+MsgTutorialAxeChopping=Trouvez la hache dans la mine et abattez un arbre avec pour obtenir du bois. Ensuite, placez trois morceaux de bois sur le chantier du mât. Placez-vous près d'un arbre et utilisez la hache pour commencer l'abattage. Assurez-vous de ne pas vous trouver en face et maintenez le bouton de la souris enfoncé. L'arbre qui tombe peut soit être poussé vers la scierie ou être débité manuellement.
+MsgTutorialOreMining=Bien ! Maintenant, un seul morceau de métal est nécessaire pour terminer le mât. Il peut être produit à la fonderie avec du minerai et du charbon.  Descendez dans la mine à nouveau et prenez un morceau de minerai en faisant exploser un mur de minerai et un morceau de charbon en creusant le mur idoine.
+MsgTutorialProduceMetal=Avec le minerai et le charbon, vous pouvez fondre du metal qui sera utilisé comme matériau pour un grand nombre de structures ou d'objets. Allez à la fonderie et ouvrez le menu d'interaction en appuyant sur [%s] pour transférer le charbon et le minerai vers la fonderie. Pour des installations de production telles que la fonderie,  il existe une nouvelle section dans le menu d'interaction. Sélectionnez ici la production de métal et attendez que cela se termine.
+MsgTutorialMetalToSite=La production du métal est terminée. Reprenez-le et placez-le sur le chantier de construction du mât.
+MsgTutorialCompleted=Bien joué ! Vous avez maîtrisé les bases de la constructions en utilisant la roche, le bois et le métal. Les villageois de Wipfville vous sont reconnaissant. Attaquons-nous au prochain didacticiel.
+
+# Wipf name
+WipfName=Roger
+WipfDescription=Votre petit ami poilu.
+
+# Guide post
+MsgWelcomeWipfville=Bienvenue à Wipfville, une ville où tout peut arriver !

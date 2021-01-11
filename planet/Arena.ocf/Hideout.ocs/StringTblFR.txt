@@ -1,0 +1,2 @@
+NameLeft=Équipe Rubis
+NameRight=Équipe Améthyste

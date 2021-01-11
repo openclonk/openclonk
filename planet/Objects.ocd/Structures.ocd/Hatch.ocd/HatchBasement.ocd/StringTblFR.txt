@@ -1,0 +1,3 @@
+Name=Fondation
+Description=Une base stable pour tout bâtiment.
+Width=Largeur

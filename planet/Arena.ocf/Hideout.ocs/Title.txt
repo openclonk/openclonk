@@ -1,2 +1,4 @@
 DE:Versteck
 US:Hideout
+FR:Cachette
+

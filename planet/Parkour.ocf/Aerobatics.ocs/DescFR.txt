@@ -1,0 +1,10 @@
+Voltiges aériennes
+
+Là haut dans le ciel un challenge vous attend ! Passez d'île en île en sautant, vous auto-explosant, volant, catapultant, construisant des ponts, ou en vous servant de votre imagination. Le premier à atteindre l'île finale a gagné la manche.
+
+Objectif: Gagner la course
+
+Astuces:
+- Vous pouvez récupérer des objets au point de résurrection, l'objet apparaissant quand il a été utilisé.
+- Des outils plus puissants peuvent être fabriqués au labo de l'inventaire, si vous trouvez des ressources.
+- Le sac à vent est limité, le nombre de coup de vent restant est visible dans la jauge.

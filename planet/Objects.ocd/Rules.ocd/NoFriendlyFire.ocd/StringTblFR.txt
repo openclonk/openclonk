@@ -1,0 +1,2 @@
+Name=Pas de tir ami
+Description=Les membres d'équipage ne subissent de dégâts que par des tirs hostiles.

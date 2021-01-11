@@ -1,0 +1,3 @@
+Name=Magma
+Description=Représente un pixel matériel unique de magma particulièrement chaud.
+

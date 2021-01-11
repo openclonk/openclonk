@@ -1,0 +1,1 @@
+TxtNoEntryEnemy=%s hostile. Ne pas entrer !

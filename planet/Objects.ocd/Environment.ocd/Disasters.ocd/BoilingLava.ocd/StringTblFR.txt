@@ -1,0 +1,13 @@
+Name=Lave bouillonnante
+Description=Fait bouillonner la lave sur la carte.
+Intensity=Intensité
+IntensityHelp=Combien de bulles sont créées par image. 0 désactive l'ébullition.
+Area=Zone
+AreaHelp=Dans quelle zone des bulles sont créées.
+FullMap=Toute la carte
+Rect=Un rectangle
+SetBoilingIntensity=Définir l'intensité d'ébullition
+SetBoilingIntensityHelp=Définit l'intensité d'un objet d'acide/lave bouillonnant/e.
+Boiler=Objet bouillonnant
+BoilerTargetHelp=L'objet «Lave bouillonnante»/«Acide bouillonnant» modifié.
+

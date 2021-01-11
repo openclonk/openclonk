@@ -1,1 +1,3 @@
 US:#1263: Drawing Line=1 objects without vertices results in array OOB
+FR:#1263: Ligne dessinée=1 objets sans points provoquent un tableau OOB
+

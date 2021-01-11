@@ -1,0 +1,6 @@
+TeamLeft=Rouge (gauche)
+TeamRight=Vert (droite)
+FlagDownMsg=L'équipe %s a perdu son drapeau - elle ne réapparaîtra plus !
+IntroMsg=Faites exploser le drapeau ennemi dans la lave pour les empêcher de réapparaître, puis éliminez vos adversaires !
+IntroName=Château en fusion
+

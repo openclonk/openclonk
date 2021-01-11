@@ -1,0 +1,21 @@
+Name=Cascade
+Description=Fait apparaître des pixels liquides à intervalles réguliers, placez-les sur une falaise pour créer une cascade. Le son de la cascade est joué à la position de cet objet.
+
+EditorSourceStrength=Force de la source
+EditorSourceStrengthHelp=Nombre de pixels créés par les sources pour 2 images.
+EditorSourceMaterial=Matière de la source
+EditorSourceMaterialHelp=Le type de liquide à créer.
+EditorSourceMaterialWater=Eau
+EditorSourceMaterialAcid=Acide
+EditorSourceMaterialLava=Lave
+EditorSourceMaterialDuroLava=DuroLava
+EditorSourceMaterialOil=Pétrole
+EditorSourcePosition=Position de la source
+EditorSourcePositionHelp=Définir la position de la source.
+EditorSourceDirection=Direction de la source
+EditorSourceDirectionHelp=Définissez la direction d'insertion du liquide, par rapport à la position de la source.
+
+EditorDrainStrength=Force de drainage
+EditorDrainStrengthHelp=Nombre de pixels que le drain supprime par 2 images.
+EditorDrainPosition=Position du drain
+EditorDrainPositionHelp=Définir la position du drain.

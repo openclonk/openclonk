@@ -1,0 +1,2 @@
+Name=Coeur de lave
+Description=La source de vie de la lave. Possède une coque solide sur laquelle un clonk peut se tenir, mais est dangereux car rejette de la lave.

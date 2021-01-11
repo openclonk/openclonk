@@ -1,2 +1,4 @@
 DE:Himmelsinseln
 US:Skylands
+FR:Terres célestes
+

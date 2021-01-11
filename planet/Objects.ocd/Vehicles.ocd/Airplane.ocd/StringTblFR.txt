@@ -1,0 +1,32 @@
+Name=Avion
+Description=Appuyez sur [Haut] et [Bas] pour arrêter et démarrer le moteur. [Gauche] et [Droite] contrôlent l'orientation. Appuyez à nouveau sur [Bas] lorsque le moteur est arrêté pour inverser l'avion.
+
+NoShots=Pas de balles !
+NoRockets=Pas de fusées !
+NoBombs=Pas de bombes !
+NoBarrels=Plus de liquide !
+NoBalloons=Pas de ballons !
+NoSpaceInInventory=Inventaire plein! Pas de place pour le ballon!
+NoObjects=Vide !
+NoOil=Pas de pétrol !
+
+SelectedAction=Mode de tir:|%s ({{%i}})
+AirplaneSettings=Sélectionnez le mode de tir de l'avion:
+SwitchMainAction=Principal (sur %s):
+SwitchTo=Basculer l'action sur: %s
+
+Bullet=Canon principal
+Rocket=Lance-roquettes
+Bomb=Largage de bombes
+Spray=Pulvérisation de liquide
+Balloon=Ballon parachute
+Drop=Largage d'objets
+Afterburner=Post-combution
+
+BulletInfo=Tire avec le canon principal et tire des balles ({{LeadBullet}}). Tirs disponibles : %d.
+RocketInfo=Tire des paquets explosifs ({{Boompack}}) depuis l'avoin. Fusées disponibles : %d.
+BombInfo=Largue des bombes ({{IronBomb}} et {{Dynamite}}) depuis l'avion. Bombes disponibles : %d.
+SprayInfo=Pulvérise du liquide stocké dans un barril ({{Barrel}} et {{MetalBarrel}}) depuis l'avion. Barrils disponibles : %d.
+BalloonInfo=Parachute de l'avion avec un ballon ({{Balloon}}). Cette action sera également disponible pour les passagers. Ballons disponibles : %d.
+DropInfo=Larguer le contenu de l'avion.
+AfterburnerInfo=Utilisez du pétrole pour accélérer l'avion.

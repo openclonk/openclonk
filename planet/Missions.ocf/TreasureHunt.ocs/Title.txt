@@ -1,2 +1,4 @@
 DE:Schatzsuche
 US:Treasure hunt
+FR:Chasse au trésor
+

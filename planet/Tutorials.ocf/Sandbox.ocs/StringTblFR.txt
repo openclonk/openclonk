@@ -1,0 +1,36 @@
+# Scenario options
+MapSize=Taille de la carte
+DescMapSize=Sélectionnez la forme et la taille de la carte.
+MapSizeBasicSmall=Petite
+MapSizeBasicNormal=Moyenne
+MapSizeBasicLarge=Grande
+MapSizeWideSmall=Large et petite
+MapSizeWideNormal=Large et moyenne
+MapSizeWideLarge=Large et grande
+MapSizeNarrowSmall=Étroite et petite
+MapSizeNarrowNormal=Étroite et moyenne
+MapSizeNarrowLarge=Étroite et grande
+
+MapType=Type de carte
+DescMapType=Le type de la carte détermine le paysage et les matériaux.
+MapTypeEmpty=Vide (dessiner la carte vous-même en mode Dieu).
+MapTypeFlatland=Terrains plats.
+MapTypeHills=Terrains montagneux.
+MapTypeMountains=Hautes montagnes.
+
+MapClimate=Climat de la carte
+DescMapClimate=Le climat de la carte.
+MapClimateTemperate=Tempéré.
+MapClimateCold=Froid/Neigeux/Verglacé.
+
+Goal=Objectif
+DescGoal=Choisir un objectif.
+NoGoal=Aucun objectif.
+GoalMining=Collecter tous les objets de valeurs.
+GoalExpansion=Expansion de la base.
+
+GodMode=Mode Dieu
+DescGodMode=Active le mode Dieu pour l'hôte ou tous les joueurs.
+GodModeOff=Aucun mode Dieu.
+GodModeHost=L'hôte est en mode Dieu.
+GodModeAll=Tout le monde est en mode Dieu.

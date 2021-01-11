@@ -1,2 +1,4 @@
 DE:Objekte
 US:Objects
+FR:Objets
+

@@ -1,1 +1,3 @@
 US:#1502: Translate() does not fall back when a string has no translation in the current object
+FR:#1502: Translate() n'effectue pas de fallback quand une chaine n'a pas de traduction pour l'objet courant
+

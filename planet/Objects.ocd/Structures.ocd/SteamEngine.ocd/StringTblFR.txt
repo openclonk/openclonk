@@ -1,0 +1,8 @@
+Name=Machine à vapeur
+Description=La machine à vapeur génère de l'électricité à partir de carburant, comme le charbon, le bois ou le pétrole.
+
+MsgConnectedPipe=Tuyau connecté.
+MsgPipeProhibited=Ce tuyau ne peut pas être connecté à la machine à vapeur.
+MsgHasPipes=La machine à vapeur a déjà une source et un tuyau de vidange.
+MsgSourcePipeProhibited=Impossible de connecter le tuyau source à la machine à vapeur.
+MsgDrainPipeProhibited=Impossible de connecter le tuyau de vidange à la machine à vapeur.

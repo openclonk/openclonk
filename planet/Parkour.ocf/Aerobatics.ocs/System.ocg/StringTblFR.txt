@@ -1,0 +1,5 @@
+# Intro sequence messages
+MsgLetAerobaticsBegin=Chers concurrents, dans ce défi, vous devrez prendre des risques pour gagner. Creusez, grimpez, sautez ou explosez d'île en île et soyez le premier à me rencontrer à l'arrivée. Que la voltige commence !
+
+# Wind bag description
+MsgWindBagUsageCount=Dans ce tour, vous ne pouvez utiliser le sac à vent qu'un nombre limité de fois.

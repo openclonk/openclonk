@@ -1,1 +1,3 @@
 US:#973: Find_Distance should respect FindObject context
+FR:#973: Find_Distance devrait respecter le contexte FindObject
+

@@ -1,0 +1,3 @@
+Name=Gemme Bouclier
+Description=Crée un bouclier de courte durée lors de l'impact.
+

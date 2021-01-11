@@ -1,0 +1,4 @@
+Name=Panneau de bois
+Description=Contient des informations importantes.
+Inscription=Inscription
+InscriptionHelp=Textes qui peuvent être lus en interagissant avec le panneau de bois.

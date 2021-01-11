@@ -1,0 +1,2 @@
+Name=Pépite
+Description=Une trouvaille très prisée, en effet!

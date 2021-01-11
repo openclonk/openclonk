@@ -1,0 +1,13 @@
+Name=Liaison par câble
+
+StationSettings=Configuration de la liaison par câble
+TooltipToggleStation=Changer le statut de la station
+TooltipToggleDropOff=Changer le statut du relachement d'objet
+DescToggleStation=Enclenche ou désenclenche manuellement cette liaison pour être une station de câble. es stations de câble sont des cibles sélectionnables lorsque l'on positionne une voiture sur le câble.
+DescToggleDropOff=Tous les véhicules arrivant sont vidés lors de leur arrivée à cette station (supposant qu'il s'agisse du stop final). Sera aussi positionné comme station de câble.
+
+StationUpgrades=Mise à jour
+UpgradeChute=Ajouter une glissière de minage.
+DescUpgradeChute=Met à jour la liaison avec une glissière de minage, cela transforme aussi une liaison en conteneur. Vous avez besoin d'un marteau et d'un métal {{Metal}} pour le contruire. 
+YouNeedAHammer=Vous avez besoin d'un marteau pour mettre à jour.
+YouNeedMetal=Vouis avez besoin d'un métal {{Metal}} pour cette mise à jour.

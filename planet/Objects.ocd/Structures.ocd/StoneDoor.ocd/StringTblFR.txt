@@ -1,0 +1,8 @@
+Name=Porte en pierre
+DoorUp=Porte levée
+DoorDown=Porte baissée
+DoorUpDesc=Lève une porte.
+Door=Porte
+DoorTargetHelp=Porte à déplacer.
+DoorDownDesc=Abaisse une porte.
+

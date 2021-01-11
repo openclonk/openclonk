@@ -1,0 +1,5 @@
+Name=Sois Riche !
+
+#Goal window
+MsgGoalFulfilled=Vous êtes riche !
+MsgGoalUnfulfilled=Soyez riche avant un autre.\n\ nVous pouvez vendre presque tout au mât pour gagner de l'argent !

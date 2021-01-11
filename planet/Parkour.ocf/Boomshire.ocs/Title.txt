@@ -1,2 +1,4 @@
 DE:Boomshire
 US:Boomshire
+FR:Boomshire
+

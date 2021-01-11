@@ -1,0 +1,18 @@
+# Goal Description
+MsgGoalName=Atteindre le village
+MsgGoalDescription=Traversez la grotte et atteignez le village de l'autre côté avec le chef du village.
+
+# Dialogue options
+MsgNextTutorial=&Tutoriel suivant
+MsgNextTutorialDesc=Commencer le tutoriel suivant.
+MsgRepeatRound=&Recommencer cette étape
+MsgRepeatRoundDesc=Recommencer ce scénario.
+
+# Tutorial messages
+MsgTutorialTalkToHead=Vous devez entrer dans la grotte et éliminer les voleurs. Parlez d'abord au chef du village, il a peut-être une idée de la façon de procéder.
+MsgTutorialNotHelpful=Ce n'était pas très utile, mais au moins vous avez une arme. Vous pouvez tester la hache sur les hommes de paille dans le champ de céréales, appuyez sur [%s] pour utiliser la hache et détruire les hommes de paille.
+MsgTutorialFirstEnemy=Le premier voleur dans la grotte a un arc et vous tire des flèches, il y a peut-être une autre façon de l'approcher au lieu de l'attaquer de front. Tuez votre ennemi, si vous mourrez dans le processus, vous réapparaissez, vous pouvez donc essayer plusieurs fois.
+MsgTutorialOnRespawn=D'accord, cela n'a pas fonctionné, vous pouvez peut-être atteindre ce coffre là-bas en creusant à travers la terre. Ensuite, prenez tout ce qui est dans la poitrine et utilisez-le pour tuer le voleur. Certaines armes peuvent être lancées, pointez simplement le curseur de votre souris sur l'endroit où vous souhaitez lancer cette arme.
+MsgTutorialKilledFirst=Bien joué, ce type est éliminé. Vous pouvez prendre ses armes et explorer la grotte et trouver plus de voleurs. L'arc peut être utilisé pour tirer sur des ennemis sur une plus grande distance, visez avec le curseur de la souris dans la direction que vous souhaitez tirer.
+MsgTutorialKilledSecond=Et un autre ennemi à terre, vous prenez le coup de main ! Il a laissé tomber du pain, ramassez-le en appuyant [%s] pour le manger. Continuez ensuite le long du chemin de la grotte.
+MsgTutorialCompleted=Bien joué! Vous êtes maintenant un combattant entraîné. Il y a beaucoup plus d'armes dans ce jeu que vous pouvez essayer dans des tutoriels ultérieurs ou dans d'autres tours.

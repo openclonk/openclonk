@@ -1,0 +1,2 @@
+Name=Arc
+Description=Arme à distance classique. L'arc a besoin de flèches pour les munitions. Visez et tirez avec [Utiliser].

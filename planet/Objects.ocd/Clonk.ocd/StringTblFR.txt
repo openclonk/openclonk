@@ -1,0 +1,11 @@
+Description=Un membre de votre équipage. Plein d'esprit et agile si habilement contrôlé.
+
+CtxConstructionDesc=Construction
+CtxConstructionMaterial=Matériau de construction
+CtxHomeDesc=Retour à la base
+CtxRelease=Libération
+CtxChop=Hacher
+CtrlMenuDesc=Menu
+TxtDescend=Sauter
+TxtEnergysupply=Réserve d'énergie
+

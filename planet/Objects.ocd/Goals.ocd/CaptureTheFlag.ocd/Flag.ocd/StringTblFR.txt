@@ -1,0 +1,11 @@
+Name=Drapeau
+
+MsgBeamFlag=Envoyez le drapeau à votre base.
+MsgGrabFlag=Prenez le drapeau et portez-le à votre base.
+MsgDropFlag=Déposez le drapeau ici.
+
+MsgFlagStolen=%s a volé le drapeau de %s.
+MsgFlagDropped=%s a déposé le drapeau de %s.
+MsgFlagBeamed=%s a envoyé le drapeau vers leur base.
+MsgFlagCaptured=%s a réussi à capturer un drapeau et marque un point.
+MsgFlagRestored=Le drapeau de %s a été remis en place.

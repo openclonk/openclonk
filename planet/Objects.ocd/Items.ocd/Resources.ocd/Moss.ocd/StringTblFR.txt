@@ -1,0 +1,5 @@
+Name=Mousse
+Description=Carburant utile. Peut être cultivé près de l'eau. Appuyez sur [Utiliser] pour planter près de l'eau. Tenir à l'écart de l'eau pour sécher.
+NoSuitableGround=Terrain non adapté à la plantation!
+Dry=Sec
+

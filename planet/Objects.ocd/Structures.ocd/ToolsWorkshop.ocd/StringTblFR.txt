@@ -1,0 +1,5 @@
+NoPlrKnowledge=Aucun plan de construction
+Construction=Construction
+Production=Production
+Name=Atelier d'outillage
+Description=De nombreux outils importants pour l'extraction, l'abattage des arbres et l'exploration peuvent être produits ici.

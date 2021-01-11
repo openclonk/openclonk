@@ -1,2 +1,4 @@
 DE:Dekoration
 US:Decoration
+FR:Décoration
+

@@ -1,0 +1,2 @@
+Name=Lingot d'or
+Description=Or précieux! Utile pour échanger des marchandises chères.

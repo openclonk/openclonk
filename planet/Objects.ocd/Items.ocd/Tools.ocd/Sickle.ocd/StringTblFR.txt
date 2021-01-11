@@ -1,0 +1,2 @@
+Name=Faucille
+Description=Les clonks ont besoin de faucilles pour récolter des plantes particulièrement tenaces, comme le blé ou le coton. Maintenez la touche [Utiliser] enfoncée pour récolter les plantes.

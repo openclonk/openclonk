@@ -1,0 +1,8 @@
+Station hydraulique
+
+Vous avez été envoyé à la mine où les villageois de Wipfville s'approvisionnent en métal. Malheureusement, la mine a été inondée suite à la rupture d'une digue lors d'une récente catastrophe. Le chef de l'exploitation minière vous dit que la mine est toujours en activité, mais ils ont du mal à extraire le métal de la mine. C'est là que vous intervenez: aidez les mineurs à récupérer leurs chariots remplis de métal.
+
+Goal: Récupérez le chariot de la mine inondée.
+
+Tutorial explains: pompe et liquides, ascenseur, kits muraux.
+

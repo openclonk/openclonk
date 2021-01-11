@@ -1,2 +1,4 @@
-DE:Bäume
+DE:BÃ¤ume
 US:Trees
+FR:Arbres
+

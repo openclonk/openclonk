@@ -1,0 +1,8 @@
+Name=Chasse au pétrole
+Name2=Chasse au trésor
+MsgSideGoal=Objectif secondaire: %d de %d lingots d'or trouvés.
+MsgGoalFulfilled=Objectif atteint.
+MsgGoalUnFulfilled=Trouvez le trésor et livrez-le à Scrooge pour obtenir du pétrole pour votre avion.
+MsgGoalOil=Trouvez un nouveau baril de pétrole.
+MsgGotOil=Apportez le baril de pétrole à l'avion.
+

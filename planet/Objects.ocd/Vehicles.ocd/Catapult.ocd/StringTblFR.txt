@@ -1,0 +1,5 @@
+Name=Catapulte
+Description=Maintenez [UTiliser] et tirez la souris pour déterminer la force du lancer. Les clonks peuvent également être lancés; soit par eux-mêmes, soit avec l'aide d'un autre clonk.
+Gunner=Tireur
+GunnerHelp=Clonk pour gérer la catapulte.
+NoGunnerHelp=Aucun clonk ne gère la catapulte. Non recommandé.

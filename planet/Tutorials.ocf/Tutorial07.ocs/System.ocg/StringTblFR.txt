@@ -1,0 +1,15 @@
+# Dialogue: Pilot
+DlgPilotHello=Bonjour, je suis %s, avez-vous déjà vu des îles célestes auparavant ?
+DlgPilotReply=Non, mais on m'a dit qu'ils abritent des stalactites précieuses.
+DlgPilotBats=Oui en effet. Mais il faut faire attention, ils abritent également des chauves-souris qui deviennent actives la nuit.
+DlgPilotAgainstBats=Oh, que puis-je faire contre les chauves-souris?
+DlgPilotBowArrow=Eh bien, si elles vous attaquent ... Vous pouvez les repousser en utilisant l'arc et les flèches.
+DlgPilotHaveBow=Je vois. Eh bien, avez-vous un arc pour moi?
+DlgPilotArmory=Je pense que vous pouvez en produire un dans l'armurerie avec des flèches, j'ai construit un arsenal sur l'île en bas à droite d'ici.
+DlgPilotFallOff=Bon, que se passe-t-il si je tombe du dirigeable?
+DlgPilotRescue=Alors vous pouvez m'appeler avec [%s] et je descendrais avec le dirigeable.
+
+# Messages: Pilot
+DlgPilotGem0=Ouais une gemme !
+DlgPilotGem1=Je vais prendre cette gemme !
+DlgPilotGem2=Cette gemme est mienne !

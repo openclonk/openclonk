@@ -1,2 +1,4 @@
 DE:Finsterschloss
 US:Dark castle
+FR:Sombre château
+

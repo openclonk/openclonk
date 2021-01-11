@@ -1,0 +1,4 @@
+AttackPath=Chemin d'attaque
+AttackPathHelp=Chemin le long duquel l'IA du clonk se déplace. Si un sommet du chemin d'attaque est placé sur une structure (par exemple une porte), le clonk attaquera la structure.
+None=Aucun
+

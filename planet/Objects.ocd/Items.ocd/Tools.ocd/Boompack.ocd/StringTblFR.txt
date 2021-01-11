@@ -1,0 +1,2 @@
+Name=Paquet explosif
+Description=Transport à usage unique pour les clonks audacieux. Visez et allumez la fusée pour voler avec elle dans cette direction. Sautez avant l'explosion de la fusée!

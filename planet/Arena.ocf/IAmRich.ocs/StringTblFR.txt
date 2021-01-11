@@ -1,0 +1,21 @@
+RuleNoEnergy=Aucune consommation d'énergie
+DescRuleNoEnergy=Les bâtiments n'ont pas besoin d'énergie
+DescNoEnergyNo=Les bâtiments ont besoin d'énergie pour fonctionner
+DescNoEnergyYes=Les bâtiments n'ont pas besoin d'énergie pour fonctionner
+Yes=Oui
+No=Non
+GoalTime=Temps de jeu en minutes
+DescGoalTime=Temps de jeu en minutes
+StartGold=Or de départ par joueur
+DescStartGold=Or au début du tour
+BO_Clonks=Option d'achat Clonks
+DescBO_Clonks=Les clonks peuvent être achetés au mât
+BO_BuildingMaterial=Option d'achat: Matériaux de construction
+DescBO_BuildingMaterial=Les matériaux de construction peuvent être achetés au mât
+BO_Weapons=Option d'achat: armes
+DescBO_Weapons=Les armes peuvent être achetées au mât
+BO_Tools=Option d'achat: Outils
+DescBO_Tools=Les outils peuvent être achetés au mât
+BO_Food=Option d'achat: nourriture
+DescBO_Food=La nourriture peut être achetée au mât
+

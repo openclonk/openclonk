@@ -1,0 +1,12 @@
+NameSister=Ruth
+
+# Intro
+MsgIntro1=Hé l'endormi ! Regarde ce que j'ai trouvé !
+MsgIntro2=...Quoi ? Où ?
+MsgIntro3=Là-bas, au bas de la colline !
+MsgIntro4=Et qu'est-ce qui est censé être ici ... ?
+MsgIntro5=Hihi...!
+MsgIntro6=Waaaaaah!
+MsgIntro7=Hmm, c'était peut-être un peu trop profond ?
+MsgIntro8=Quoi qu'il en soit, ils retrouveront leur chemin ...
+

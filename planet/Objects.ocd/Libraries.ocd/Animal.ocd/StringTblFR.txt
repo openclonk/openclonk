@@ -1,0 +1,7 @@
+ReproductionAreaSize=Zone de reproduction
+ReproductionAreaSizeHelp=Taille de la zone carrée en pixels dans laquelle les animaux du même type sont comptés afin d'éviter une surpopulation.
+ReproductionRate=Taux de reproduction
+ReproductionRateHelp=Taux de reproduction de 0 à 10 000. 0 n'est pas une reproduction; 10000 est le taux maximum (environ toutes les deux secondes).
+MaxCount=Nombre maximum
+MaxCountHelp=Nombre maximal d'animaux dans l'aire de reproduction. Si ce nombre est dépassé, les animaux cessent de se reproduire.
+

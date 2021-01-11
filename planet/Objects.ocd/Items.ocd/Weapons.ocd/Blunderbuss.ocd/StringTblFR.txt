@@ -1,0 +1,2 @@
+Name=Tromblon
+Description=Arme à feu. Le tromblon a besoin de plomb pour les munitions. Visez et tirez avec [Utiliser].

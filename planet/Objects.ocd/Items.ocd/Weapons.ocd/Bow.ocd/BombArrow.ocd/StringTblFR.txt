@@ -1,0 +1,2 @@
+Name=Flèches explosive
+Description=Munitions explosives pour l'arc.

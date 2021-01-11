@@ -1,0 +1,3 @@
+Name=Pierre à feu
+Description=Pierre volcanique, explose à l'impact.
+

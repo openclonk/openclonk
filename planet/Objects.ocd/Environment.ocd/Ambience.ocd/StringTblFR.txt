@@ -1,0 +1,18 @@
+Name=Ambiance
+Description=Contrôle les sons et la musique de l'environnement.
+Ambience=Ambiance
+FixedEnv=Ambiance
+FixedEnvHelp=Définit une ambiance contrôlant l'environnement acoustique.
+Automatic=Automatique
+AutomaticEnvHelp=Modifie automatiquement l'ambiance par joueur en fonction de l'environnement du clonk contrôlé.
+SetShader=Définir le shader
+SetShaderHelp=Active ou désactive un shader global.
+Shader=Shader
+None=Aucun
+Grayscale=Niveaux de gris
+Psycho=Psycho
+Status=Statut
+SetEnvironment=Définir l'ambiance
+SetEnvironmentHelp=Définit une ambiance contrôlant l'environnement acoustique.
+Environment=Environnement
+

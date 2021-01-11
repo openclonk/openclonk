@@ -1,2 +1,4 @@
 DE:Barrieren Sprengen
 US:Bombing Barriers
+FR:Bombardement d'obstacles
+

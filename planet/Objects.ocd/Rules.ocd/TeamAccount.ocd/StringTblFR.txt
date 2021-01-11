@@ -1,0 +1,3 @@
+Name=Compte d'équipe
+Description=Les joueurs alliés partagent un compte commun.
+

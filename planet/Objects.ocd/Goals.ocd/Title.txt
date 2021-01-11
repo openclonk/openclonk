@@ -1,2 +1,4 @@
 DE:Spielziele
 US:Goals
+FR:Objectifs
+

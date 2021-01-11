@@ -1,0 +1,2 @@
+Name=Main du Diable
+Description=Supprime les éléments. Ce que vous voulez, ou vous voulez.

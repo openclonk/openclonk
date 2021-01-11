@@ -1,0 +1,2 @@
+MsgDeadClonk=%s est mort.|Aucune interaction n'est possible.
+

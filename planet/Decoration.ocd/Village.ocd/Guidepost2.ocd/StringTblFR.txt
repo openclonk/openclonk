@@ -1,0 +1,3 @@
+Name=Poteau indicateur
+Description=Peut indiquer le bon chemin.
+

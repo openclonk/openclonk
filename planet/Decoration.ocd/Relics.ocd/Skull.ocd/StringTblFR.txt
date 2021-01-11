@@ -1,0 +1,2 @@
+Name=Squelette
+Description=Reliques de la vie.

@@ -1,0 +1,2 @@
+Name=Kit mural
+Description=Vous pouvez créer des murs solides avec le kit mural. Maintenez la touche [Utiliser] enfoncée pour voir un aperçu dans la direction vers laquelle vous pointez. Lâchez de construire là-bas.

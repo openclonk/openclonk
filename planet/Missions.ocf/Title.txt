@@ -1,2 +1,4 @@
 DE:Missionen
 US:Missions
+FR:Missions
+

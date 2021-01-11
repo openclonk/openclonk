@@ -1,0 +1,1 @@
+MsgNoInteraction=%s ne permet pas l'interaction.

@@ -1,2 +1,4 @@
 DE:Vegetation
 US:Vegetation
+FR:Végétation
+

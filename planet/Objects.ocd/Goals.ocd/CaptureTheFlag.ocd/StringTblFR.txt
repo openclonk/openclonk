@@ -1,0 +1,13 @@
+Name=Capturer le drapeau
+
+MsgGoalCaptureTheFlag=Capturez des drapeaux ennemis et apportez-les à votre base. Ils ne peuvent être retournés que si votre propre drapeau est à sa base.
+MsgGoalFulfilled=Vous avez gagné ce tour !
+MsgGoalUnfulfilled1=Vous devez encore capturer un drapeau pour gagner.
+MsgGoalUnfulfilledX=Vous devez toujours capturer %d drapeaux pour gagner.
+
+MsgShortSteal=Capturez un drapeau !
+MsgShortCaptured=Votre drapeau a| été capturé !
+MsgShortReturn=Ramenez ce drapeau| à votre base.
+
+MsgScoreboard1=Capturez un drapeau.
+MsgScoreboardX=Capturez %d drapeaux.

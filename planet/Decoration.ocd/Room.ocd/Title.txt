@@ -1,2 +1,4 @@
 DE:Raum
 US:Room
+FR:Pièce
+

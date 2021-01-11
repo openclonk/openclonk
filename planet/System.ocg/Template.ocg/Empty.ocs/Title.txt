@@ -1,2 +1,5 @@
 DE:Leer
 US:Empty
+FR:Vide
+
+

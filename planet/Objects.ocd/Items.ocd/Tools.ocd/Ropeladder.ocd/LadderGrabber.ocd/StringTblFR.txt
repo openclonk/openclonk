@@ -1,0 +1,2 @@
+Name=Échelle de corde
+GrabLadder=Tirez sur l'échelle

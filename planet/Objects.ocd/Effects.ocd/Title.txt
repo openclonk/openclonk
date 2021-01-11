@@ -1,2 +1,4 @@
 DE:Effekte
 US:Effects
+FR:Effets
+

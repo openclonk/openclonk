@@ -1,0 +1,5 @@
+Name=Menu de choix de destination
+Description=
+SelectDestination=Choisir une destination:
+SendTo=Envoyer le câble de voiture à %s
+InfoETA=Temps estimé vers destination: %ds.

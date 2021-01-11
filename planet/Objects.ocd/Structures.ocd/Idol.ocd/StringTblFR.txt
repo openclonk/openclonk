@@ -1,0 +1,23 @@
+Name=Statue d'or
+Description=Une œuvre d'art précieuse.
+
+ChoosePose=Pose de la statue
+ChoosePoseHelp=Modifie l'action de la statue.
+
+PoseDefaultName=Par défault
+PoseDefaultHelp=Les bras sont à côté de la statue.
+PoseItemLeftLowName=Objet à la main gauche
+PoseItemLeftLowHelp=La statue tient un objet dans sa main gauche.
+PoseItemLeftHighName=Objet soulevé de la main gauche
+PoseItemLeftHighHelp=La statue soulève un objet dans sa main gauche.
+PoseItemRightLowName=Objet à la main droite
+PoseItemRightLowHelp=La statue tient un objet dans sa main droite.
+PoseItemRightHighName=Objet soulevé de la main droite
+PoseItemRightHighHelp=La statue soulève un objet dans sa main droite.
+PoseItemCentralName=Objet à deux main
+PoseItemCentralHelp=La statue porte un objet à deux mains, devant son torse.
+
+ChooseItemLeft=Main gauche
+ChooseItemRight=Main droite
+ChooseItemHelp=Met un objet décoratif dans la main de la statue.
+ChooseItemNone=Aucun objet

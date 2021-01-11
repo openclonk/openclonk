@@ -1,0 +1,2 @@
+Name=Boîte de dynamite
+Description=Une boîte avec cinq bâtons de dynamite qui sont placés et allumés ensemble. La boîte contient cinq bâtons de dynamite. Placez-les les uns après les autres avec [Utiliser], en visant dans la direction où vous souhaitez les placer.

@@ -1,0 +1,6 @@
+Name=Ballon
+Description=Agit comme un parachute, appuyez sur la touche d'utilisation pour activer en tombant. Tout en étant suspendu au ballon, utilisez [A] et [D] pour diriger à gauche et à droite et [W] pour arrêter. Le ballon peut être tiré à l'aide de [S].
+Rider=Unité aéroportée
+RiderHelp=Type d'ennemi suspendu au ballon.
+NoRiderHelp=Aucun ennemi. Le ballon n'apparaîtra pas.
+

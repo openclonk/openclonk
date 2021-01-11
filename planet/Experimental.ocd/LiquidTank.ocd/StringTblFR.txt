@@ -1,0 +1,8 @@
+Name=Réservoir à liquide
+Description=Les liquides peuvent être stocké ici, mais seulement un seul type de liquide à la fois.
+
+MsgConnectedPipe=Tuyau relié.
+
+MsgOpenTank=Ouvrir la vanne
+MsgCloseTank=Fermer la vanne
+

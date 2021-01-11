@@ -1,0 +1,4 @@
+Name=Ambience
+Description=Contrôle la musique et les sons d'ambiance.
+
+

@@ -1,2 +1,4 @@
 DE:Minenrettung
 US:Mine Rescue
+FR:Sauvetage minier
+

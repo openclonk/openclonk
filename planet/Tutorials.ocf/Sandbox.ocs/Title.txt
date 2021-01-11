@@ -1,2 +1,4 @@
 DE:Sandkasten
 US:Sandbox
+FR:Bac à sable
+

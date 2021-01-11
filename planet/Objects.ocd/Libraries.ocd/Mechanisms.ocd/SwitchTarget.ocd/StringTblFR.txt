@@ -1,0 +1,3 @@
+SetPlrView=Afficher l'action
+SetPlrViewDesc=Lorsque le mécanisme est actionné par un joueur, la vue du joueur se focalise sur cet objet.
+

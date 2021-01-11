@@ -1,0 +1,6 @@
+ Le Chaudron
+
+Quand un groupe de clonks sont enfermés dans le Chaudron, l'issue est incertaine. Seul le dernier clonk vivant se sortira de ces profondeurs.
+
+Objectif: Soyez le dernier en vie pour gagner
+

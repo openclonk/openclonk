@@ -1,0 +1,6 @@
+Name=Réparer la statue
+
+#Goal window
+MsgGoalFulfilled=Félicitations, la statue brille à nouveau dans toute sa splendeur !
+MsgGoalUnfulfilled=Trouvez la partie manquante de la statue et renvoyez-la à la statue.
+

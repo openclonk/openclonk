@@ -1,0 +1,3 @@
+Name=Graine de coton
+Description=Les graines de coton peuvent être semées ou transformées en tissu. Peut également être utilisé comme carburant. Appuyez sur [Utiliser] pour planter un cotonnier ici.
+NoSuitableGround=Terrain non adapté|à la plantation!

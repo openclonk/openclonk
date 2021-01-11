@@ -1,0 +1,2 @@
+Name=Casque
+Description=Fournit au clonk une certaine protection. Appuyez sur [Utiliser] pour mettre ou enlever le casque.
