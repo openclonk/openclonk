@@ -7,15 +7,10 @@
     <title>GetCrew</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>object</rtype>
       <params>
-        <param>
-          <type>int</type>
-          <name>player</name>
-          <desc>Player number of the player whose crew member will be returned.</desc>
-        </param>
         <param>
           <type>int</type>
           <name>index</name>
@@ -24,8 +19,11 @@
       </params>
     </syntax>
     <desc>Returns the indicated crew member of a player. For an invalid index <code>nil</code> is returned.</desc>
+    <remark>Prior to 9.0 OC this function existed as a global function with the player number as an additional first parameter.</remark>
     <examples>
       <example>
+        <code><funclink>GetPlayer</funclink>(0)-&gt;GetCrew()-&gt;<funclink>CreateContents</funclink>(Shovel)</code>
+        <text>Gives a shovel to the first clonk of the first player.</text>
         <code>var i=<funclink>GetCrewCount</funclink>(0); <funclink>while</funclink> (i--) <funclink>Kill</funclink>(GetCrew(0, i));</code>
         <text>Kills all crew members of the first player.</text>
       </example>
@@ -34,8 +32,8 @@
       <funclink>GetCrewCount</funclink>
       <funclink>GetHiRank</funclink>
       <funclink>GetCursor</funclink>
-      <funclink>GetCaptain</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2002-05</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

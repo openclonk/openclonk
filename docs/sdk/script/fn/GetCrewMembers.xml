@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetCrewMembers</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+    </syntax>
+    <desc>Returns all crew members of a player.</desc>
+    <examples>
+      <example>
+        <code>for (var clonk in <funclink>GetPlayer</funclink>(0)-&gt;GetCrewMembers()) crew-&gt;<funclink>Kill</funclink>();</code>
+        <text>Kills all crew members of the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCrewCount</funclink>
+      <funclink>GetCrew</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2020-06</date>
+</funcs>

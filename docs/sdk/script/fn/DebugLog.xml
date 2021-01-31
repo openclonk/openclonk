@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DebugLog</title>
+    <category>Messages</category>
+    <version>1.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>message</name>
+          <desc>Text to be displayed.</desc>
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Additional parameters for text formatting.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Logs information as <funclink>Log</funclink> would, but the messages appear in the game log only in editor mode.</desc>
+    <related>
+      <funclink>IsEditor</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2020-08</date>
+</funcs>

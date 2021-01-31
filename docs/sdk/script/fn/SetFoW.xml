@@ -7,7 +7,7 @@
     <title>SetFoW</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -16,21 +16,17 @@
           <name>enabled</name>
           <desc>If <code>true</code>, the fog of war is activated, if <code>false</code>, deactivated.</desc>
         </param>
-        <param>
-          <type>int</type>
-          <name>player</name>
-          <desc>Player number.</desc>
-        </param>
       </params>
     </syntax>
     <desc>Switches the fog of war for one player on or off.</desc>
+    <remark>Prior to 9.0 OC the player was defined with the player number as an additional last parameter.</remark>
     <examples>
       <example>
-        <code>var i = 0;
-<funclink>for</funclink> (var plrnum = <funclink>GetPlayerCount</funclink> (); plrnum; i++)
-  if (<funclink>GetPlayerName</funclink> (i)) {
-    plrnum--;
-    SetFoW (false, i);
+        <code>var plrnum = <funclink>GetPlayerCount</funclink> ()
+<funclink>for</funclink> (var i = 0; i < plrnum; i++)
+{
+  var player = <funclink>GetPlayer</funclink>(<funclink>GetPlayerByIndex</funclink>(i))
+  if (player) player-&gt;SetFoW(false);
   }</code>
         <text>Deactivates fog of war for all players.</text>
       </example>
@@ -41,4 +37,5 @@
     </related>
   </func>
   <author>Günther</author><date>2002-11</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>
