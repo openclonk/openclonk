@@ -1186,40 +1186,6 @@ static bool FnSetPlayerViewLock(C4PropList * _this, long player_nr, bool is_lock
 	return true;
 }
 
-static bool FnDoBaseMaterial(C4PropList * _this, long player_nr, C4ID id, long change)
-{
-	// validity check
-	if (!ValidPlr(player_nr))
-	{
-		return false;
-	}
-	C4Def *def = C4Id2Def(id);
-	if (!def)
-	{
-		return false;
-	}
-	// add to material
-	long last_count = ::Players.Get(player_nr)->BaseMaterial.GetIDCount(id);
-	return ::Players.Get(player_nr)->BaseMaterial.SetIDCount(id, last_count + change, true);
-}
-
-static bool FnDoBaseProduction(C4PropList * _this, long player_nr, C4ID id, long change)
-{
-	// validity check
-	if (!ValidPlr(player_nr))
-	{
-		return false;
-	}
-	C4Def *def = C4Id2Def(id);
-	if (!def)
-	{
-		return false;
-	}
-	// add to material
-	long last_count = ::Players.Get(player_nr)->BaseProduction.GetIDCount(id);
-	return ::Players.Get(player_nr)->BaseProduction.SetIDCount(id, last_count + change, true);
-}
-
 static bool FnSetPlrKnowledge(C4PropList * _this, Nillable<long> player_nr, C4ID id, bool remove)
 {
 	bool success = false;
@@ -1280,36 +1246,6 @@ static C4String * FnGetDefinitionGroupPath(C4PropList * _this)
 		return nullptr;
 	}
 	return ::Strings.RegString(def->ConsoleGroupPath.getData());
-}
-
-static C4Value FnGetBaseMaterial(C4PropList * _this, int player_nr, C4ID id, int index, int category)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return C4VBool(false);
-	}
-	// Search by id, return available count
-	if (id)
-	{
-		return C4VInt(::Players.Get(player_nr)->BaseMaterial.GetIDCount(id));
-	}
-	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->BaseMaterial.GetID( ::Definitions, category, index )));
-}
-
-static C4Value FnGetBaseProduction(C4PropList * _this, int player_nr, C4ID id, int index, int category)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return C4VBool(false);
-	}
-	// Search by id, return available count
-	if (id)
-	{
-		return C4VInt(::Players.Get(player_nr)->BaseProduction.GetIDCount(id));
-	}
-	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->BaseProduction.GetID( ::Definitions, category, index )));
 }
 
 static long FnGetWealth(C4PropList * _this, long player_nr)
@@ -3231,8 +3167,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetPlayerZoomLimits);
 	F(SetPlayerZoom);
 	F(SetPlayerViewLock);
-	F(DoBaseMaterial);
-	F(DoBaseProduction);
 	F(GainScenarioAccess);
 	F(IsNetwork);
 	F(IsEditor);
@@ -3314,8 +3248,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GainScenarioAchievement);
 	F(GetPXSCount);
 	F(GetPlrKnowledge);
-	F(GetBaseMaterial);
-	F(GetBaseProduction);
 	F(GetDefCoreVal);
 	F(GetObjectVal);
 	F(GetObjectInfoCoreVal);

@@ -63,6 +63,13 @@ func InitializePlayer(int plr)
 		clonk2->CreateContents(Shovel);
 		clonk2->CreateContents(Axe);
 	}
+	// Base material
+	var materials = [
+		[Clonk, 2, 2],
+		[Bread, 2, 2]
+	];
+	GivePlayerBaseMaterial(plr, materials);
+	
 }
 
 func OnGoalsFulfilled()

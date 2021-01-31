@@ -90,7 +90,7 @@ protected func InitializePlayer(int plr)
 	GivePlayerElementaryBaseMaterial(plr);
 	GivePlayerToolsBaseMaterial(plr);
 	// Additional explosives: dynamite boxes.
-	GivePlayerSpecificBaseMaterial(plr, [[DynamiteBox, 4, 2]]);
+	GivePlayerBaseMaterial(plr, [[DynamiteBox, 4, 2]]);
 	
 	// Ensure mimimum player wealth.
 	var add_wealth = Max(0, 75 - 25 * SCENPAR_Difficulty - GetWealth(plr));

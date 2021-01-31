@@ -74,6 +74,19 @@ global func DoBaseProduction(int player, id material, int change)
 		return base->DoBaseProd(material, change);
 }
 
+// Gives the player specific base materials as given in the materials array.
+global func GivePlayerBaseMaterial(int player, array base_mats)
+{
+	if (base_mats)
+	{
+		for (var mat in base_mats)
+		{
+			DoBaseMaterial(player, mat[0], mat[1]);
+			DoBaseProduction(player, mat[0], mat[2]);
+		}
+	}
+}
+
 
 /*-- Definition Interface --*/
 

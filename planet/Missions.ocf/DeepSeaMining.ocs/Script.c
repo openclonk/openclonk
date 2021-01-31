@@ -104,6 +104,12 @@ protected func InitializePlayer(int plr)
 	// Claim ownership of unowned structures
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole")), Find_Owner(NO_OWNER)))
 		structure->SetOwner(plr);
+		
+	// Base material
+	var materials = [
+		[Bread, 25, 25]
+	];
+	GivePlayerBaseMaterial(plr, materials);
 
 	return;
 }
