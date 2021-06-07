@@ -27,7 +27,7 @@
 #endif
 
 #ifndef USE_CONSOLE
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 #endif
 
 #include <stack>

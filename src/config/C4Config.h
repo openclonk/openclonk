@@ -43,6 +43,7 @@ public:
 	int32_t  RXFontSize;
 	char ConfigUserPath[CFG_MaxString + 1];
 	StdStrBuf ScreenshotFolder;
+	StdStrBuf ModsFolder;
 	char MissionAccess[CFG_MaxString+1];
 	int32_t FPS;
 	int32_t DefRec;
@@ -53,6 +54,7 @@ public:
 	StdCopyStrBuf ExePath;
 	StdCopyStrBuf TempPath;
 	char UserDataPath[CFG_MaxString + 1];
+	char ModsDataPath[CFG_MaxString + 1];
 	char SystemDataPath[CFG_MaxString + 1];
 	char ScreenshotPath[CFG_MaxString + 1];
 	char TempUpdatePath[CFG_MaxString + 1];
@@ -157,6 +159,9 @@ public:
 	char AlternateServerAddress[CFG_MaxString+1];
 	char PuncherAddress[CFG_MaxString+1];
 	StdCopyStrBuf LastLeagueServer, LastLeaguePlayerName, LastLeagueAccount, LastLeagueLoginToken;
+	// For the mod database.
+	int32_t UseAlternateModDatabaseServer;
+	char AlternateModDatabaseServerAddress[CFG_MaxString + 1];
 #ifdef WITH_AUTOMATIC_UPDATE
 	char UpdateServerAddress[CFG_MaxString+1];
 	int32_t AutomaticUpdate;
@@ -167,6 +172,7 @@ public:
 public:
 	void CompileFunc(StdCompiler *compiler);
 	const char *GetLeagueServerAddress();
+	const char *GetModDatabaseServerAddress();
 	void CheckPortsForCollisions();
 	void SetLeagueLoginData(const char *server_name, const char *player_name, const char *account, const char *login_token);
 	bool GetLeagueLoginData(const char *server_name, const char *player_name, StdStrBuf *account, StdStrBuf *login_token) const;

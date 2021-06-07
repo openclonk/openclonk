@@ -557,6 +557,11 @@ C4ScenarioListLoader::Entry *C4ScenarioListLoader::Entry::CreateEntryForFile(con
 	const char *szExt = GetExtension(szFilename);
 	if ((!szExt || !*szExt) && DirectoryExists(sFilename.getData()))
 	{
+		// do not open folders in the mod directory (and the dir itself - thus match minus the separator),
+		// as contained files will be discovered anyway
+		const char * modsDirectoryPrefix = Config.General.ModsDataPath;
+		if (std::strncmp(szFilename, modsDirectoryPrefix, std::strlen(modsDirectoryPrefix) - 1) == 0)
+			return nullptr;
 		// open folders only if they contain a scenario or folder
 		if (DirContainsScenarios(szFilename))
 			return new RegularFolder(pLoader, pParent);

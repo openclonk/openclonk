@@ -18,7 +18,7 @@
 
 #include "C4ForbidLibraryCompilation.h"
 #define GL_SILENCE_DEPRECATION
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 
 #include "C4Include.h"
 #include "platform/C4Window.h"

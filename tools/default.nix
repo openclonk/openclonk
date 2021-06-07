@@ -21,8 +21,8 @@ pkgs.stdenv.mkDerivation rec {
   dontStrip = true;
 
   buildInputs = with pkgs; [
-    SDL2 libvorbis libogg libjpeg libpng freetype glew tinyxml
-    openal freealut readline
+    SDL2 libvorbis libogg libjpeg libpng freetype epoxy tinyxml
+    openal freealut readline curl
   ] ++ stdenv.lib.optional withEditor qt5.full;
 
   cmakeFlags = [ "-DCMAKE_AR=${pkgs.gcc-unwrapped}/bin/gcc-ar" "-DCMAKE_RANLIB=${pkgs.gcc-unwrapped}/bin/gcc-ranlib" ];

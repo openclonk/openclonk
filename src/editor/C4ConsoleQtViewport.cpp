@@ -26,7 +26,7 @@
 #include "object/C4GameObjects.h"
 #include "player/C4PlayerList.h"
 #ifndef USE_CONSOLE
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 #endif
 // See C4ConsoleQt.cpp on the include order
 #include "editor/C4ConsoleQtViewport.h"
@@ -420,14 +420,7 @@ void C4ConsoleQtViewportView::leaveEvent(QEvent *)
 
 void C4ConsoleQtViewportView::initializeGL()
 {
-	// init extensions
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		LogF("glewInit: %s", reinterpret_cast<const char*>(glewGetErrorString(err)));
-	}
+	// nothing to do with epoxy
 }
 
 void C4ConsoleQtViewportView::resizeGL(int w, int h)

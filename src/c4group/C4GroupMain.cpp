@@ -22,6 +22,7 @@
 #include "C4Version.h"
 #include "c4group/C4Update.h"
 #include "platform/StdRegistry.h"
+#include "C4Licenses.h"
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"
 #endif
@@ -469,6 +470,16 @@ int main(int argc, char *argv[])
 				break;
 				// Execute at end
 			case 'x': SCopy(argv[i] + 3, strExecuteAtEnd, _MAX_PATH); break;
+				// Show licenses
+			case 'L':
+			{
+				fQuiet = false;
+				std::string sep{"\n=================================\n"};
+				for (const auto& license : OCLicenses)
+					if (license.path.substr(0, 7) != "planet/")
+						Log((sep + license.path + ": " + license.name + sep + license.content + "\n").c_str());
+				return 0;
+			}
 				// Unknown
 			default:
 				fprintf(stderr, "Unknown option %s\n", argv[i]);
@@ -544,6 +555,7 @@ int main(int argc, char *argv[])
 		printf("Options:  -v Verbose -r Recursive\n");
 		printf("          -i Register shell -u Unregister shell\n");
 		printf("          -x:<command> Execute shell command when done\n");
+		printf("          -L Show licenses and exit\n");
 		printf("\n");
 		printf("Examples: c4group pack.ocg -x\n");
 		printf("          c4group update.ocu -g ver1.ocf ver2.ocf New_Version\n");

@@ -55,6 +55,7 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *compiler)
 
 	// deliberately not grandfathering UserPath setting, since it was written to config by default
 	compiler->Value(mkNamingAdapt(s(ConfigUserPath),   "UserDataPath",       "", false, true));
+	compiler->Value(mkNamingAdapt(s(ModsDataPath),     "ModsDataPath",       "", false, true));
 	// assimilate old data
 	compiler->Value(mkNamingAdapt(s(Adopt.PlayerPath), "PlayerPath",       ""));
 
@@ -65,6 +66,7 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *compiler)
 	compiler->Value(mkNamingAdapt(FPS,                 "FPS",                0              ));
 	compiler->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));
 	compiler->Value(mkNamingAdapt(ScreenshotFolder,    "ScreenshotFolder",   "Screenshots",  false, true));
+	compiler->Value(mkNamingAdapt(ModsFolder,          "ModsFolder",         "mods",  false, true));
 	compiler->Value(mkNamingAdapt(ScrollSmooth,        "ScrollSmooth",       4              ));
 	compiler->Value(mkNamingAdapt(AlwaysDebug,         "DebugMode",          0              ));
 	compiler->Value(mkNamingAdapt(OpenScenarioInGameMode, "OpenScenarioInGameMode", 0   )); 
@@ -179,10 +181,12 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *compiler)
 	compiler->Value(mkNamingAdapt(MasterReferencePeriod,   "MasterReferencePeriod",120           ));
 	compiler->Value(mkNamingAdapt(LeagueServerSignUp,      "LeagueServerSignUp",   0             ));
 	compiler->Value(mkNamingAdapt(UseAlternateServer,      "UseAlternateServer",   0             ));
-	compiler->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "league.openclonk.org:80/league.php"));
+	compiler->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "https://league.openclonk.org/league.php"));
+	compiler->Value(mkNamingAdapt(UseAlternateModDatabaseServer, "UseAlternateModDatabaseServer", 0));
+	compiler->Value(mkNamingAdapt(s(AlternateModDatabaseServerAddress), "AlternateModDatabaseServerAddress", "https://mods.openclonk.org/api/"));
 	compiler->Value(mkNamingAdapt(s(LastPassword),         "LastPassword",         "Wipf"        ));
 #ifdef WITH_AUTOMATIC_UPDATE
-	compiler->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "www.openclonk.org:80/update/"));
+	compiler->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "https://www.openclonk.org/update/"));
 	compiler->Value(mkNamingAdapt(AutomaticUpdate,         "AutomaticUpdate",      0             ,false, true));
 	compiler->Value(mkNamingAdapt(LastUpdateTime,          "LastUpdateTime",       0             ));
 #endif
@@ -559,6 +563,13 @@ void C4ConfigGeneral::DeterminePaths()
 		SAppend(ScreenshotFolder.getData(), ScreenshotPath);
 		AppendBackslash(ScreenshotPath);
 	}
+	// Mods path
+	SCopy(UserDataPath, ModsDataPath, CFG_MaxString - 1);
+	if (ModsFolder.getLength() + std::strlen(ModsDataPath) + 1 <= CFG_MaxString)
+	{
+		SAppend(ModsFolder.getData(), ModsDataPath);
+		AppendBackslash(ModsDataPath);
+	}
 	// Create user path if it doesn't already exist
 	CreatePath(UserDataPath);
 }
@@ -657,8 +668,18 @@ const char* C4ConfigNetwork::GetLeagueServerAddress()
 	// Standard (hardcoded) official league server
 	else
 	{
-		return "league.openclonk.org:80/league.php";
+		return "https://league.openclonk.org/league.php";
 	}
+}
+
+const char* C4ConfigNetwork::GetModDatabaseServerAddress()
+{
+	// Alternate (configurable) mod database server
+	if (UseAlternateModDatabaseServer)
+		return AlternateModDatabaseServerAddress;
+	// Standard (hardcoded) official mod database server
+	else
+		return "https://mods.openclonk.org/api/";
 }
 
 void C4ConfigNetwork::CheckPortsForCollisions()

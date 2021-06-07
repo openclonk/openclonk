@@ -643,7 +643,17 @@ bool C4StartupOptionsDlg::NetworkServerAddressConfig::GetControlSize(int *piWdt,
 	return true;
 }
 
+C4StartupOptionsDlg::NetworkModDatabaseServerAddressConfig::NetworkModDatabaseServerAddressConfig(const C4Rect &rcBounds, const char *szName, int32_t *piConfigEnableValue, char *szConfigAddressValue, int iTabWidth)
+	: NetworkServerAddressConfig(rcBounds, szName, piConfigEnableValue, szConfigAddressValue, iTabWidth)
+{
 
+}
+
+void C4StartupOptionsDlg::NetworkModDatabaseServerAddressConfig::OnEnabledCheckChange(C4GUI::Element *pCheckBox)
+{
+	// callback when checkbox is ticked
+	pAddressEdit->SetVisibility(pEnableCheck->GetChecked());
+}
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::BoolConfig
@@ -974,7 +984,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	int iServerCfgWdt = 120, iServerCfgHgt = 20, iServerCfgWdtMid = 0;
 	StdStrBuf sServerText; sServerText.Copy(LoadResStr("IDS_CTL_USEOTHERSERVER"));
 	NetworkServerAddressConfig::GetControlSize(&iServerCfgWdt, &iServerCfgHgt, &iServerCfgWdtMid, sServerText.getData());
-	int32_t net_component_hgt = iPortCfgHgt * 4 + iServerCfgHgt + 3 * pUseFont->GetLineHeight();
+	int32_t net_component_hgt = iPortCfgHgt * 4 + 2 * iServerCfgHgt + 3 * pUseFont->GetLineHeight();
 	C4GUI::ComponentAligner caSheetNetwork(pSheetNetwork->GetClientRect(), caMain.GetWidth() / 20, std::max<int32_t>(0, (caMain.GetHeight() - net_component_hgt)/20), true);
 	pPortCfgTCP = new NetworkPortConfig(caSheetNetwork.GetGridCell(0,2,0,2, iPortCfgWdt, iPortCfgHgt), LoadResStr("IDS_NET_PORT_TCP"), &(Config.Network.PortTCP), C4NetStdPortTCP);
 	pPortCfgUDP = new NetworkPortConfig(caSheetNetwork.GetGridCell(1,2,0,2, iPortCfgWdt, iPortCfgHgt), LoadResStr("IDS_NET_PORT_UDP"), &(Config.Network.PortUDP), C4NetStdPortUDP);
@@ -993,6 +1003,9 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pLeagueServerCfg = new NetworkServerAddressConfig(caSheetNetwork.GetFromTop(iServerCfgHgt), sServerText.getData(), &(Config.Network.UseAlternateServer), Config.Network.AlternateServerAddress, iServerCfgWdtMid);
 	pLeagueServerCfg->SetToolTip(LoadResStr("IDS_NET_MASTERSRV_DESC"));
 	pSheetNetwork->AddElement(pLeagueServerCfg);
+	pModDatabaseServerCfg = new NetworkModDatabaseServerAddressConfig(caSheetNetwork.GetFromTop(iServerCfgHgt), LoadResStr("IDS_CTL_USEOTHERMODSDATABASESERVER"), &(Config.Network.UseAlternateModDatabaseServer), Config.Network.AlternateModDatabaseServerAddress, iServerCfgWdtMid);
+	pModDatabaseServerCfg->SetToolTip(LoadResStr("IDS_NET_USEOTHERMODSDATABASESERVER_DESC"));
+	pSheetNetwork->AddElement(pModDatabaseServerCfg);
 #ifdef WITH_AUTOMATIC_UPDATE
 	pCheck = new BoolConfig(caSheetNetwork.GetFromTop(pUseFont->GetLineHeight()), LoadResStr("IDS_CTL_AUTOMATICUPDATES"), nullptr, &Config.Network.AutomaticUpdate, false);
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_AUTOMATICUPDATES"));
@@ -1253,6 +1266,7 @@ bool C4StartupOptionsDlg::SaveConfig(bool fForce, bool fKeepOpen)
 	pPortCfgRef->SavePort();
 	pPortCfgDsc->SavePort();
 	pLeagueServerCfg->Save2Config();
+	pModDatabaseServerCfg->Save2Config();
 	pNetworkNickEdit->Save2Config();
 	// if nick is same as default by registry, don't save in config
 	// so regkey updates will change the nick as well

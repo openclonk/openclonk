@@ -147,7 +147,7 @@ if ($env:DEPLOYMENT_URL -and $env:DEPLOYMENT_SECRET) {
     # Copy other DLLs openclonk depends on
     function Get-Imports {
         param([string]$file)
-        (dumpbin /imports $file | ?{ $_ -match ' {4}\w+\.dll'}).Trim()
+        (dumpbin /imports $file | ?{ $_ -match ' {4}[\w-]+\.dll'}).Trim()
     }
     $unresolved = [System.Collections.Queue]::new()
     Get-Imports $openclonk.GetPropertyValue('TargetPath') | %{ $unresolved.Enqueue($_) }

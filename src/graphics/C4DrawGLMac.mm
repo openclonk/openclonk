@@ -14,7 +14,7 @@
  */
 
 #define GL_SILENCE_DEPRECATION
-#include <GL/glew.h> // Somehow, C4Include manages to include gltypes.h on the autobuild hosts, which makes glew.h choke if not included first. I don't understand it, and I don't want to.
+#include <epoxy/gl.h>
 #include "C4Include.h"
 #include "game/C4GraphicsSystem.h"
 #include "gui/C4MouseControl.h"
@@ -573,7 +573,7 @@ void CStdGLCtx::Clear(bool multisample_change)
 	}
 }
 
-void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples, int) const
 {
 	[C4OpenGLView enumerateMultiSamples:samples];
 }
@@ -590,14 +590,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	setObjectiveCObject(ctx);
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
-	// init extensions
-	glewExperimental = GL_TRUE; // Init GL 3.0+ function pointers
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-	}
 	// set the openglview's context
 	auto controller = pWindow->objectiveCObject<C4WindowController>();
 	if (controller && controller.openGLView)
