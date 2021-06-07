@@ -23,7 +23,7 @@
       </params>
     </syntax>
     <desc>Changes the player score of a player.</desc>
-    <remark>In 9.0 OC this function was discontinued, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
     <examples>
       <example>
         <code>DoPlayerScore(0, -100);</code>

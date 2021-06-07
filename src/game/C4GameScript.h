@@ -148,7 +148,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_CrewEnabled              "~OnCrewEnabled"
 #define PSF_CrewDisabled             "~OnCrewDisabled"
 #define PSF_NameChange               "~OnNameChanged" // bool inInfoSection
-#define PSF_OnWealthChanged          "~OnWealthChanged" // int iPlr
 #define PSF_OnActionChanged          "~OnActionChanged" // string oldaction
 #define PSF_OnMaterialChanged        "~OnMaterialChanged" // int newmat, int oldmat
 

@@ -51,7 +51,7 @@
       </table>
     </desc>
     <remark>It is currently not possible to query the current zoom because these values are not synchronized.</remark>
-    <remark>In 9.0 this function was discontinued, because the properties can be retrieved from <funclink>GetPlayer</funclink> directly.</remark>
+    <remark>In 9.0 this function was deprecated, because the properties can be retrieved from <funclink>GetPlayer</funclink> directly.</remark>
     <examples>
       <example>
         <code>func ReduceSight(int player)

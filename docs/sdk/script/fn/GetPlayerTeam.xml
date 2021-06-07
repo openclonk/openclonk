@@ -18,7 +18,7 @@
       </params>
     </syntax>
     <desc>Returns the team number of a player. If the player is not in a team, 0 is returned.</desc>
-    <remark>This function was discontinued in 9.0 OC, because it can be retrieved from <funclink>GetPlayer</funclink> by calling <code>GetTeam</code>.</funclink>
+    <remark>This function was deprecated in 9.0 OC, because it can be retrieved from <funclink>GetPlayer</funclink> by calling <code>GetTeam</code>.</funclink>
     <related>
       <emlink href="scenario/Teams.html">Teams</emlink>
       <funclink>SetPlayerTeam</funclink>

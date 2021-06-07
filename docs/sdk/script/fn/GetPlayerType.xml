@@ -39,7 +39,7 @@
 
     </desc>
     <remark>If the specified player number is invalid, the return value is 0.</remark>
-    <remark>In 9.0 OC this function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> by accessing the proplist property "Type".</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> by accessing the proplist property "Type".</remark>
     <examples>
       <example>
         <code>protected func InitializePlayer(int player)

@@ -18,7 +18,7 @@
       </params>
     </syntax>
     <desc>Returns a player's score.</desc>
-    <remark>In 9.0 OC this function was discontinued, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
     <related>
       <funclink>GetWealth</funclink>
       <funclink>DoPlayerScore</funclink>

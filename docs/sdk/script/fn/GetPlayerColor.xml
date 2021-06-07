@@ -18,7 +18,7 @@
       </params>
     </syntax>
     <desc>Determines the player color. The player color is used to identify various owned objects such as flags or clonks as well as his text messages.</desc>
-    <remark>In 9.0 OC this function was discontinued, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <funclink>GetColor</funclink>.</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <funclink>GetColor</funclink>.</remark>
     <examples>
       <example>
         <code><funclink>Log</funclink>(&quot;&lt;c %x&gt;%s&lt;/c&gt; has a score of %d.&quot;, GetPlayerColor(0), <funclink>GetPlayerName</funclink>(0), <funclink>GetScore</funclink>(0));</code>

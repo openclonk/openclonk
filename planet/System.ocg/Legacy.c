@@ -65,7 +65,7 @@ global func GetCrew(int player_nr, int index)
 	}
 }
 
-global func GetCrewCount(int player_nr, int index)
+global func GetCrewCount(int player_nr)
 {
 	LogLegacyWarning("GetCrewCount", "GetPlayer(player)->GetCrewCount()", VERSION_10_0_OC);
 	var player = GetPlayer(player_nr);
@@ -131,7 +131,7 @@ global func GetPlayerControlAssignment(int player_nr, int ctrl, bool human_reada
 	}
 	else
 	{
-		return "";
+		return nil;
 	}
 }
 
@@ -409,7 +409,7 @@ global func SetPlrView(int player_nr, object target, bool immediate)
 	var player = GetPlayer(player_nr);
 	if (player)
 	{
-		return player->SetCursor(target, immediate);
+		return player->SetViewTarget(target, immediate);
 	}
 	else
 	{
@@ -534,16 +534,16 @@ global func SetBridgeActionData()
 
 global func LogLegacyWarning(string function_name, string replacement_name, string version)
 {
-	Log("WARNING: Do not use the legacy function \"%s\" anymore; you can use \"%s\" instead (complete removal is planned for \"%s\").", function_name, replacement_name, version);
+	DebugLog("WARNING: Do not use the legacy function \"%s\" anymore; you can use \"%s\" instead (complete removal is planned for \"%s\").", function_name, replacement_name, version);
 }
 
 global func LogLegacyWarningRemoved(string function_name)
 {
-	Log("WARNING: Do not use the legacy function \"%s\" anymore; it was removed and has no effect.", function_name);
+	DebugLog("WARNING: Do not use the legacy function \"%s\" anymore; it was removed and has no effect.", function_name);
 }
 
 global func LogLegacyWarningCustom(string function_name, string custom, string version)
 {
-	Log("WARNING: Do not use the legacy function \"%s\" anymore; %s (complete removal is planned for \"%s\").", function_name, custom, version);
+	DebugLog("WARNING: Do not use the legacy function \"%s\" anymore; %s (complete removal is planned for \"%s\").", function_name, custom, version);
 }
 

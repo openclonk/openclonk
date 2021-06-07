@@ -1061,9 +1061,6 @@ static bool FnSetPlayerZoom(C4PropList * _this, long player_nr, long zoom, long 
 		}
 
 	}
-	return true;
-}
-
 static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 {
 	return ::Definitions.GetDef(iIndex);
@@ -1083,8 +1080,6 @@ static C4String * FnGetDefinitionGroupPath(C4PropList * _this)
 		return nullptr;
 	}
 	return ::Strings.RegString(def->ConsoleGroupPath.getData());
-}
-
 static long FnGetPlayerCount(C4PropList * _this, long type)
 {
 	if (!type)
