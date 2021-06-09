@@ -7,14 +7,14 @@
     <title>GetLeagueProgressData</title>
     <category>Network</category>
     <subcat>League</subcat>
-    <version>5.0 OC</version>
+    <version>5.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>string</rtype>
       <params>
         <param>
-          <type>int</type>
-          <name>player_id</name>
-          <desc>ID of player whose progress data shall be returned. Use <funclink>GetPlayerID</funclink>() to get the ID of a joined player.</desc>
+          <type>proplist</type>
+          <name>player</name>
+          <desc>Player whose progress data shall be returned. Before 9.0 OC this used the player ID.</desc>
         </param>
       </params>
     </syntax>
@@ -22,4 +22,5 @@
     <related><funclink>SetLeagueProgressData</funclink><funclink>GetLeagueScore</funclink></related>
   </func>
   <author>Sven2</author><date>2014-04</date>
+  <author>Marky</author><date>2021-06</date>
 </funcs>

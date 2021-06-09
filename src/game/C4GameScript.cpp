@@ -155,6 +155,11 @@ long GetValidOwner(C4PropList * _this, C4Player *owner)
 	return owner->Number;
 }
 
+long GetValidPlayerID(C4PropList * _this, C4Player *player)
+{
+	return player ? player->ID : 0;
+}
+
 void AssignController(C4PropList * _this, C4Object * obj)
 {
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
@@ -1057,9 +1062,10 @@ static C4PropList *FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 	return player;
 }
 
-// undocumented!
-static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, long player_id) // TODO: C4Player *player
+
+static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, C4Player *player)
 {
+	long player_id = GetValidPlayerID(player);
 	if (!Game.Parameters.isLeague())
 	{
 		return false;
@@ -1263,14 +1269,9 @@ static C4String *FnGetLeague(C4PropList * _this, long idx)
 	return String(sIdxLeague.getData());
 }
 
-static int32_t FnGetLeagueScore(C4PropList * _this, long player_id) // TODO: C4Player *player
+static int32_t FnGetLeagueScore(C4PropList * _this, C4Player *player)
 {
-	// security
-	if (player_id < 1)
-	{
-		return 0;
-	}
-	// get info
+	long player_id = GetValidPlayerID(player);
 	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(player_id);
 	if (!info)
 	{
@@ -1280,8 +1281,9 @@ static int32_t FnGetLeagueScore(C4PropList * _this, long player_id) // TODO: C4P
 	return info->getLeagueScore();
 }
 
-static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long player_id) // TODO: C4Player *player
+static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, C4Player *player)
 {
+	long player_id = GetValidPlayerID(player);
 	if (!Game.Parameters.League.getLength() || !player_id)
 	{
 		return false;
@@ -1295,8 +1297,9 @@ static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long
 	return true;
 }
 
-static C4String *FnGetLeagueProgressData(C4PropList * _this, long player_id) // TODO: C4Player *player
+static C4String *FnGetLeagueProgressData(C4PropList * _this, C4Player *player)
 {
+	long player_id = GetValidPlayerID(player);
 	if (!Game.Parameters.League.getLength())
 	{
 		return nullptr;
@@ -2197,11 +2200,12 @@ static bool FnSortScoreboard(C4PropList * _this, long iByColID, bool fReverse)
 }
 
 // undocumented!
-static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, long player_id) // TODO: C4Player *player
+static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, C4Player *player)
 {
 	// safety
 	if (!pText) return false;
 	if (!pText->GetCStr()) return false;
+	long player_id = GetValidPlayerID(player);
 	if (player_id && !Game.PlayerInfos.GetPlayerInfoByID(player_id)) return false;
 	// add data
 	Game.RoundResults.AddCustomEvaluationString(pText->GetCStr(), player_id);
