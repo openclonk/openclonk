@@ -6,7 +6,7 @@
   <func>
     <title>BlastFree</title>
     <category>Landscape</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -26,9 +26,9 @@
           <desc>Radius</desc>
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>caused_by</name>
-          <desc>The controller of objects that are created by the blast. See Blast2Objects in <emlink href="material/ocm.html">material definitions</emlink>. If not set, the controller is the owner of the calling object.</desc>
+          <desc>The controller of objects that are created by the blast. See Blast2Objects in <emlink href="material/ocm.html">material definitions</emlink>. If not set, the controller is the owner of the calling object. Prior to 9.0 OC this used the player number.</desc>
 		  <optional />
         </param>
         <param>
@@ -51,4 +51,5 @@
     </related>
   </func>
   <date>2014-01</date>
+  <author>Marky</author><date>2021-06</date>
 </funcs>

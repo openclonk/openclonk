@@ -110,10 +110,6 @@ static long FnGetGravity(C4PropList * _this)
 
 static C4PropList *FnGetPlayer(C4PropList * _this, long player_nr)
 {
-	if (!ValidPlr(player_nr))
-	{
-		return nullptr;
-	}
 	return ::Players.Get(player_nr);
 }
 
@@ -568,17 +564,13 @@ static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat
 	return extracted;
 }
 
-static void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> caused_by_player_nr, Nillable<long> max_density) // TODO: C4Player *player
+static void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, C4Player *caused_by_player, Nillable<long> max_density)
 {
-	if (caused_by_player_nr.IsNil() && Object(_this))
-	{
-		caused_by_player_nr = Object(_this)->Controller;
-	}
+	int32_t caused_by_player_nr = GetValidOwner(_this, caused_by_player);
 	if (max_density.IsNil())
 	{
 		max_density = C4M_Vehicle;
 	}
-
 	::Landscape.BlastFree(iX, iY, iLevel, caused_by_player_nr, Object(_this), max_density);
 }
 
