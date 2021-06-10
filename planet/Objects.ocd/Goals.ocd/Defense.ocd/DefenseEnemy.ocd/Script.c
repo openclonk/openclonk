@@ -75,7 +75,7 @@ public func LaunchEnemy(proplist prop_enemy, int wave_nr, int enemy_plr)
 	return;	
 }
 
-private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, proplist rect)
+private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, proplist enemy_plr, proplist rect)
 {
 	// Create enemy (per default a Clonk) at the given location.
 	var x = rect.x + Random(rect.wdt);

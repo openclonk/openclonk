@@ -51,7 +51,7 @@ global func Extinguish(strength /* strength between 0 and 100 */)
 // documented in /docs/sdk/script/fn
 global func Incinerate(
 	strength /* strength between 0 and 100 */
-	, int caused_by /* the player that caused the incineration */
+	, proplist caused_by /* the player that caused the incineration */
 	, blasted /* whether the object was incinerated by an explosion */
 	, incinerating_object /* the object that caused the incineration */)
 {
@@ -80,10 +80,10 @@ global func OnInIncendiaryMaterial()
 {
 	if (this->IsInFireproofContainer())
 		return;
-	this->DoEnergy(-7, false, FX_Call_EngFire, NO_OWNER);
+	this->DoEnergy(-7, false, FX_Call_EngFire, nil);
 	// The object might have removed itself.
 	if (!this) return true;
-	return this->Incinerate(15, NO_OWNER);
+	return this->Incinerate(15, nil);
 }
 
 global func IsInFireproofContainer()
@@ -118,7 +118,7 @@ global func FxIntNonFlammableEffect(string new_name)
 }
 
 
-global func FxFireStart(object target, proplist effect, int temp, int caused_by, bool blasted, object incinerating_object, strength)
+global func FxFireStart(object target, proplist effect, int temp, proplist caused_by, bool blasted, object incinerating_object, strength)
 {
 	// safety
 	if (!target) return -1;

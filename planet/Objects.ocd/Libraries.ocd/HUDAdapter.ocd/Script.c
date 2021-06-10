@@ -31,7 +31,7 @@ private func GetHUDController()
 	// checked player validity before returning a cached HUD object which would
 	// cause a desync.
 	if (HUDcontroller) return HUDcontroller;
-	if (GetPlayerType(plr) != C4PT_User) return nil;
+	if (plr.Type != C4PT_User) return nil;
 	var controllerDef = Library_HUDController->GetGUIControllerID();
 	HUDcontroller = FindObject(Find_ID(controllerDef), Find_Owner(plr));
 	if (!HUDcontroller)

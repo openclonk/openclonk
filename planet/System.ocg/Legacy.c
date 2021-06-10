@@ -9,133 +9,7 @@ static const VERSION_10_0_OC = "10.0";
 
 /* -- Scenario stuff -- */
 
-global func GainMissionAccess(string password)
-{
-	LogLegacyWarning("GainMissionAccess", "GainScenarioAccess", VERSION_10_0_OC);
-	return GainScenarioAccess(password);
-}
-
-global func GetMissionAccess(string password)
-{
-	LogLegacyWarning("GetMissionAccess", "GetScenarioAccess", VERSION_10_0_OC);
-	return GetScenarioAccess(password);
-}
-
 /* -- Player stuff -- */
-
-global func DoPlayerScore(int player_nr, int change)
-{
-	LogLegacyWarning("DoPlayerScore", "GetPlayer(player).Score += change", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player.Score += change;
-	}
-	else
-	{
-		return nil;
-	}
-}
-
-global func EliminatePlayer(int player_nr, bool remove_direct)
-{
-	LogLegacyWarning("EliminatePlayer", "GetPlayer(player)->Eliminate(remove_direct)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->Eliminate(remove_direct);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-global func GainScenarioAchievement(string achievement_name, any value, any player, string for_scenario)
-{
-	LogLegacyWarning("GainScenarioAchievement", "GetPlayer(player)->GainScenarioAchievement(achievement_name, value, for_scenario)", VERSION_10_0_OC);
-	if (GetType(player) == C4V_Int && player == NO_OWNER)
-	{
-		LogLegacyWarning("GainScenarioAchievement(-1)", "for-loop", VERSION_10_0_OC);
-		var result = true;
-		for (var index = 0; index < GetPlayerCount(); index++)
-		{
-			result &= GetPlayerByIndex(index)->GainScenarioAchievement(achievement_name, value, for_scenario, ...);
-		}
-		return true;
-	}
-	return GetPlayerLegacy(player)->GainScenarioAchievement(achievement_name, value, for_scenario, ...);
-}
-
-global func GetCrew(int player_nr, int index)
-{
-	LogLegacyWarning("GetCrew", "GetPlayer(player)->GetCrew(index)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->GetCrew(index);
-	}
-	else
-	{
-		return nil;
-	}
-}
-
-global func GetCrewCount(int player_nr)
-{
-	LogLegacyWarning("GetCrewCount", "GetPlayer(player)->GetCrewCount()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->GetCrewCount();
-	}
-	else
-	{
-		return nil;
-	}
-}
-
-global func GetCursor(int player_nr)
-{
-	LogLegacyWarning("GetCursor", "GetPlayer(player)->GetCursor()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->GetCursor();
-	}
-	else
-	{
-		return nil;
-	}
-}
-
-global func GetHiRank(int player_nr)
-{
-	LogLegacyWarning("GetHiRank", "GetPlayer(player)->GetHiRank()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->GetHiRank();
-	}
-	else
-	{
-		return nil;
-	}
-}
-
-global func GetPlayerColor(int player_nr)
-{
-	LogLegacyWarning("GetPlayerColor", "GetPlayer(player)->GetColor()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->GetColor();
-	}
-	else
-	{
-		return 0;
-	}
-}
 
 global func GetPlayerControlAssignment(int player_nr, int ctrl, bool human_readable, bool short_name)
 {
@@ -257,48 +131,6 @@ global func GetPlrClonkSkin(int player_nr)
 	}
 }
 
-global func GetPlrExtraData(int player_nr, string data_name)
-{
-	LogLegacyWarning("GetPlrExtraData", "GetPlayer(player)->GetExtraData(data_name)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->GetExtraData(data_name);
-	}
-	else
-	{
-		return nil;
-	}
-}
-
-global func GetPlrView(int player_nr)
-{
-	LogLegacyWarning("GetPlrView", "GetPlayer(player)->GetViewTarget()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->GetViewTarget();
-	}
-	else
-	{
-		return -1;
-	}
-}
-
-global func GetPlrViewMode(int player_nr)
-{
-	LogLegacyWarning("GetPlrViewMode", "GetPlayer(player)->GetViewMode()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->GetViewMode();
-	}
-	else
-	{
-		return -1;
-	}
-}
-
 global func GetPlayerScore(int player_nr)
 {
 	LogLegacyWarning("GetPlayerScore", "GetPlayer(player).Score", VERSION_10_0_OC);
@@ -341,20 +173,6 @@ global func GetScriptPlayerExtraID(player_nr)
 	}
 }
 
-global func GetViewCursor(int player_nr)
-{
-	LogLegacyWarning("GetViewCursor", "GetPlayer(player)->GetViewCursor()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->GetViewCursor();
-	}
-	else
-	{
-		return nil;
-	}
-}
-
 global func Hostile(any player, any opponent, bool check_one_way_only)
 {
 	LogLegacyWarning("Hostile", "GetPlayer(player)->Hostile(opponent, check_one_way_only)", VERSION_10_0_OC);
@@ -378,20 +196,6 @@ global func ResetCursorView(int player_nr, bool immediate)
 	}
 }
 
-global func SetCursor(int player_nr, object target, bool no_select_arrow)
-{
-	LogLegacyWarning("SetCursor", "GetPlayer(player)->SetCursor(target, no_select_arrow)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->SetCursor(target, no_select_arrow);
-	}
-	else
-	{
-		return false;
-	}
-}
-
 global func SetFoW(bool enabled, int player_nr)
 {
 	LogLegacyWarning("SetFoW", "GetPlayer(player)->SetFoW(enabled)", VERSION_10_0_OC);
@@ -406,46 +210,12 @@ global func SetFoW(bool enabled, int player_nr)
 	}
 }
 
-global func SetFilmView(any player)
-{
-	LogLegacyWarning("SetFilmView(player)", "GetPlayer(player)->SetFilmView()", VERSION_10_0_OC);
-	return GetPlayerLegacy(player)->SetFilmView();
-}
-
 global func SetHostility(any player, any opponent, bool hostile, bool silent, bool no_calls)
 {
 	LogLegacyWarning("SetHostility", "GetPlayer(player)->SetHostility(opponent, hostile, silent, no_calls)", VERSION_10_0_OC);
 	if (player)
 	{
 		return GetPlayerLegacy(player)->SetHostility(GetPlayerLegacy(opponent), hostile, silent, no_calls, ...);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-global func SetPlrExtraData(int player_nr, string data_name, any data)
-{
-	LogLegacyWarning("SetPlrExtraData", "GetPlayer(player)->SetExtraData(data_name, data)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->SetExtraData(data_name, data);
-	}
-	else
-	{
-		return nil;
-	}
-}
-
-global func SetPlrView(int player_nr, object target, bool immediate)
-{
-	LogLegacyWarning("SetPlrView", "GetPlayer(player)->SetViewTarget(target, immediate)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
-	if (player)
-	{
-		return player->SetViewTarget(target, immediate);
 	}
 	else
 	{

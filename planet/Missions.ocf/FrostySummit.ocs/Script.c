@@ -37,7 +37,7 @@ func InitializePlayer(proplist plr)
 		g_was_player_init = true;
 	}
 	// Position.
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	var pos = RelaunchPosition();
 	clonk->SetPosition(pos[0], pos[1]);
 	return true;
@@ -71,7 +71,7 @@ public func OnPlayerRelaunch(int plr, bool is_relaunch)
 {
 	if (!is_relaunch)
 	{
-		var clonk = GetCrew(plr);
+		var clonk = plr->GetCrew();
 		clonk->CreateContents(GrappleBow, 2);
 		clonk->CreateContents(WindBag);
 		clonk->CreateContents(TeleGlove);

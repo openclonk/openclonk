@@ -53,7 +53,7 @@ protected func Initialize()
 // Callback from parkour goal: give the player its tools on respawn.
 protected func OnPlayerRespawn(int plr, object cp)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->CreateContents(GrappleBow);
 	clonk->CreateContents(WindBag)->DoFullLoad();
 	clonk->CreateContents(Shovel);

@@ -43,7 +43,7 @@ public func GiveAllKnowledge(int plr)
 
 public func GiveSettlementTools(int plr)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	// Give all tools needed to build up a settlement.
 	crew->CreateContents(Shovel);
 	crew->CreateContents(Hammer);
@@ -69,7 +69,7 @@ public func MovePlayerCrew(int plr)
 	var pos = FindLocation(Loc_Sky(), Loc_Space(20, CNAT_Top), Loc_Wall(CNAT_Bottom));
 	if (pos)
 	{
-		var crew = GetCrew(plr);
+		var crew = plr->GetCrew();
 		crew->SetPosition(pos.x, pos.y - 11);
 	}
 	return;

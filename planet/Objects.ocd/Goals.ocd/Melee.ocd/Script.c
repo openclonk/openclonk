@@ -2,7 +2,7 @@
 
 #include Library_Goal
 
-func MakeHostileToAll(int newplr, int team)
+func MakeHostileToAll(proplist newplr, int team)
 {
 	// If the player is in a team, don't change hostility.
 	if (team) return;

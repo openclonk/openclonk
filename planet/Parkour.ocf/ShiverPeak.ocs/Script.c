@@ -95,7 +95,7 @@ protected func InitializePlayer(proplist player)
 // Callback from parkour goal: give the player useful tools on respawn.
 protected func OnPlayerRespawn(int plr, object cp)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->CreateContents(Shovel);
 	clonk->CreateContents(Loam);
 	clonk->CreateContents(Dynamite);

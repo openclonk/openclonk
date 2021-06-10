@@ -266,7 +266,7 @@ public func OnBuyMenuSelection(id def, extra_data, object clonk)
 	var wealth_player = GetOwner();
 	var for_player = clonk->GetController();
 	// TODO: uncomment the next line for buy all on Shift + MouseClick. Needs testing so after release.
-	var buy_all_available = false; //GetPlayerControlState(for_player, CON_ModifierMenu1) != 0;
+	var buy_all_available = false; //for_player->GetControlState(CON_ModifierMenu1) != 0;
 	// Buy.
 	DoBuy(def, for_player, wealth_player, clonk, buy_all_available, true);
 	// Excess objects exit flag (can't get them out...).

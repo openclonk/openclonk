@@ -535,7 +535,7 @@ func ModifyProduction(proplist info, int player)
 	if (Hostile(GetOwner(), player)) return;
 
 	var product = info.Product;
-	var infinite = GetPlayerControlState(player, CON_ModifierMenu1) != 0;
+	var infinite = player->GetControlState(CON_ModifierMenu1) != 0;
 	var amount = info.Amount;
 	var index = GetQueueIndex(product);
 

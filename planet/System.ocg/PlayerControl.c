@@ -89,7 +89,7 @@ global func PlayerControl(proplist player, int ctrl, id spec_id, int x, int y, i
 			if (cursor && status == CONS_Down && !repeat)
 			{
 				// non-mouse controls reset view
-				if (!x && !y) ResetCursorView(player);
+				if (!x && !y) player->ResetCursorView();
 			}
 			return true;
 		}
@@ -121,7 +121,7 @@ global func PlayerHasVirtualCursor(proplist player)
 	if (!CON_VC_Players)
 		return false;
 		
-	return CON_VC_Players[GetPlayer(player).ID];
+	return CON_VC_Players[player.ID];
 }
 
 // Control2Player
@@ -159,7 +159,7 @@ global func Control2Player(proplist player, int ctrl, int x, int y, int strength
 		return player->SetCursor(crew);
 	}
 	
-	// Modifier keys - do not handle the key. The GetPlayerControlState will still return the correct value when the key is held down.
+	// Modifier keys - do not handle the key. The GetControlState will still return the correct value when the key is held down.
 	if (ctrl == CON_ModifierMenu1) return false;
 		
 	// cursor pos info - store in player values
@@ -356,10 +356,10 @@ global func ObjectControlUpdateComdir(proplist player)
 		// ComDir changed. Update.
 		SetComDir(new_comdir);
 		//var s = "";
-		//if (GetPlayerControlState(player, CON_Left))	s = Format("%sL", s);
-		//if (GetPlayerControlState(player, CON_Up))		s = Format("%sU", s);
-		//if (GetPlayerControlState(player, CON_Right)) s = Format("%sR", s);
-		//if (GetPlayerControlState(player, CON_Down))	s = Format("%sD", s);
+		//if (player->GetControlState(CON_Left))	s = Format("%sL", s);
+		//if (player->GetControlState(CON_Up))		s = Format("%sU", s);
+		//if (player->GetControlState(CON_Right)) s = Format("%sR", s);
+		//if (player->GetControlState(CON_Down))	s = Format("%sD", s);
 		//s = Format("%s %s", s, ["Stop", "Up", "UpRight", "Right", "DownRight", "Down", "DownLeft", "Left", "UpLeft"][new_comdir]);
 		//Message("@%s", this, s);
 		// The control is only handled if it had an actual effect on the current movement direction of the Clonk
@@ -459,10 +459,10 @@ global func GetPlayerControlName(int ctrl)
 global func GetPlayerConDir(proplist player, int con_left, int con_up, int con_right, int con_down)
 {
 	var x, y;
-	if (GetPlayerControlState(player, con_left))	--x;
-	if (GetPlayerControlState(player, con_up))		--y;
-	if (GetPlayerControlState(player, con_right)) ++x;
-	if (GetPlayerControlState(player, con_down))	++y;
+	if (player->GetControlState(con_left))	--x;
+	if (player->GetControlState(con_up))		--y;
+	if (player->GetControlState(con_right)) ++x;
+	if (player->GetControlState(con_down))	++y;
 	// Creating an array here for every keypress/release
 	// Would be so cool to have this static const. Guenther?
 	var dir_coms = [COMD_UpLeft, COMD_Up, COMD_UpRight, COMD_Left, COMD_Stop, COMD_Right, COMD_DownLeft, COMD_Down, COMD_DownRight];

@@ -168,7 +168,7 @@ private func Execute()
 	return true;
 }
 
-private func ExecutePlayer(int plr, array environments)
+private func ExecutePlayer(proplist plr, array environments)
 {
 	var cursor = plr->GetCursor();
 	if (!cursor) cursor = plr->GetViewTarget();
@@ -230,7 +230,7 @@ private func ExecutePlayer(int plr, array environments)
 
 func InitializePlayer(proplist plr)
 {
-	if (GetPlayerType(plr) == C4PT_User)
+	if (plr.Type == C4PT_User)
 	{
 		// Every player keeps a copy of the environment list to maintain delays
 		// Start with a large change delay to ensure first execution does set a proper environment

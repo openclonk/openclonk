@@ -38,7 +38,7 @@ func Initialize()
 
 func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 {
-	if (GetPlayerType(plr) != C4PT_User) return;
+	if (plr.Type != C4PT_User) return;
 
 	if (g_lost) { plr->Eliminate(); return; } // no post-elimination join
 	SetWealth(plr, 50);
@@ -88,7 +88,7 @@ private func TransferInventory(object from, object to)
 func JoinPlayer(plr, prev_clonk)
 {
 	var x = 991, y = 970;
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	if (clonk)
 	{
 		clonk->SetPosition(x, y-10);
@@ -152,7 +152,7 @@ func OnClonkDeath(clonk, killed_by)
 	// Player died?
 	if (!clonk) return;
 	var plr = clonk->GetOwner();
-	if (GetPlayerType(plr) == C4PT_User)
+	if (plr.Type == C4PT_User)
 	{
 		// Relaunch count
 		if (!g_relaunchs[plr])
@@ -411,7 +411,7 @@ func OnAllWavesCleared()
 {
 	// Success!
 	if (g_goal) g_goal.is_fulfilled = true;
-	if (GetPlayerType(ENEMY) == C4PT_Script) ENEMY->Eliminate();
+	if (ENEMY.Type == C4PT_Script) ENEMY->Eliminate();
 	GainScenarioAchievement("Done");
 	GameOver();
 	return true;

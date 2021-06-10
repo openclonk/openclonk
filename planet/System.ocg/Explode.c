@@ -138,7 +138,7 @@ global func Explode(int level, bool silent, int damage_level)
 	exploding_id->DoExplosion(x, y, level, container, cause_player, layer, silent, damage_level);
 }
 
-global func DoExplosion(int x, int y, int level, object inobj, int cause_player, object layer, bool silent, int damage_level)
+global func DoExplosion(int x, int y, int level, object inobj, proplist cause_player, object layer, bool silent, int damage_level)
 {
 	// Zero-size explosion doesn't affect anything
 	if (level <= 0) return;
@@ -175,7 +175,9 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_player,
 		// Graphic effects.
 		Call("ExplosionEffect", level, x, y, 0, silent, damage_level);
 		// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
-		BlastFree(x, y, level, cause_player);
+		var cause_player_nr = nil;
+		if (cause_player) cause_player_nr = cause_player.ID;
+		BlastFree(x, y, level, cause_player_nr);
 	}
 
 	return true;
@@ -196,7 +198,7 @@ global func ExplosionEffect(...)
 
 // Damage and hurl objects away.
 // documented in /docs/sdk/script/fn
-global func BlastObjects(int x, int y, int level, object container, int cause_player, int damage_level, object layer, object prev_container)
+global func BlastObjects(int x, int y, int level, object container, proplist cause_player, int damage_level, object layer, object prev_container)
 {
 	var obj;
 	
@@ -253,7 +255,7 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 	return true;
 }
 
-global func BlastObject(int level, int caused_by)
+global func BlastObject(int level, proplist caused_by)
 {
 	var self = this;
 	if (caused_by == nil)
@@ -272,7 +274,7 @@ global func BlastObject(int level, int caused_by)
 }
 
 // documented in /docs/sdk/script/fn
-global func DoShockwave(int x, int y, int level, int cause_player, object layer, int off_x, int off_y)
+global func DoShockwave(int x, int y, int level, proplist cause_player, object layer, int off_x, int off_y)
 {
 	// Zero-size shockwave
 	if (level <= 0) return;
@@ -335,7 +337,7 @@ global func DoShockwave(int x, int y, int level, int cause_player, object layer,
 	return;
 }
 
-global func DoShockwaveCheck(int x, int y, int cause_player)
+global func DoShockwaveCheck(int x, int y, proplist cause_player)
 {
 	var def = GetID();
 	// Some special cases, which won't go into FindObjects.

@@ -5,7 +5,7 @@ func Initialize()
 
 public func InitializePlayer(proplist player)
 {
-	var crew = GetCrew(player);
+	var crew = player->GetCrew();
 	crew->SetPosition(50, 200);
 }
 

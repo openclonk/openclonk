@@ -83,7 +83,7 @@ protected func FindPosInMat(string mat, int rx, int ry, int wdt, int hgt, int si
 // Gamecall from parkour goal, on respawning.
 protected func OnPlayerRespawn(int plr, object cp)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->CreateContents(Shovel);
 	clonk->CreateContents(GrappleBow);
 	clonk->CreateContents(Loam);

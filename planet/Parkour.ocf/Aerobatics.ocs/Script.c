@@ -206,7 +206,7 @@ protected func InitializePlayer(proplist plr)
 
 public func OnPlayerRespawn(int plr, object cp)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	if (!crew)
 		return;
 	// Ensure at least a shovel, loam and dynamite on respawn when items not present and there is space in inventory.
@@ -225,7 +225,7 @@ public func OnPlayerRespawn(int plr, object cp)
 // Give the player a bonus when he reaches a new checkpoint for the first time and is behind the leader.
 public func GivePlrBonus(int plr, object cp)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	if (!crew)
 		return;
 	var goal = cp->GetCPController();

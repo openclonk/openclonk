@@ -15,12 +15,12 @@ static const Scoreboard_Y_title = SBRD_Caption;
 static const Scoreboard_X_title = SBRD_Caption;
 
 // wrapper for Scoreboard->NewEntry, adds a new entry for a player with the tagged player name as the title
-public func NewPlayerEntry(int plr)
+public func NewPlayerEntry(proplist plr)
 {
 	return Scoreboard->NewEntry(GetPlayerID(plr), GetTaggedPlayerName(plr));
 }
 
-public func RemovePlayerEntry(int plr)
+public func RemovePlayerEntry(proplist plr)
 {
 	return Scoreboard->RemoveEntry(GetPlayerID(plr));
 }
@@ -76,7 +76,7 @@ public func RemoveEntry(
 // sets a value for a specific key of a scoreboard entry for a player and updates it
 // that entry must have been created earlier with ScoreboarNewPlayerEntry or manually with Scoreboard->NewEntry
 public func SetPlayerData(
-	int plr /* player number for the player entry to manipulate */
+	proplist plr /* player number for the player entry to manipulate */
 	, string key /* name of the key assign value to */
 	, to /* value to assign, might be ID, string, int or bool */
 	, int sort_parameter /* parameter used for sorting. if nil, 'to' is used if possible*/

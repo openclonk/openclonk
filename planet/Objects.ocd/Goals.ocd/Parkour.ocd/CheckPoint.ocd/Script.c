@@ -193,7 +193,7 @@ protected func Initialize()
 /*-- Checkpoint status --*/
 
 // Returns whether this checkpoint has been cleared by player.
-public func ClearedByPlayer(int plr)
+public func ClearedByPlayer(proplist plr)
 {
 	var plrid = GetPlayerID(plr);
 	return cleared_by_plr[plrid];
@@ -225,7 +225,7 @@ public func ClearedByTeam(int team)
 }
 
 // Whether this checkpoint is active for a player.
-public func IsActiveForPlayer(int plr)
+public func IsActiveForPlayer(proplist plr)
 {
 	// PARKOUR_CP_Finish: Check all PARKOUR_CP_Check checkpoints.
 	if (cp_mode & PARKOUR_CP_Finish)
@@ -349,13 +349,13 @@ protected func CheckForClonks()
 }
 
 // Checkpoint callback if someone respawns here
-private func OnPlayerRespawn(object clonk, int plr)
+private func OnPlayerRespawn(object clonk, proplist plr)
 {
 	return UserAction->EvaluateAction(on_respawn, this, clonk, plr);
 }
 
 // Clear this checkpoint for the player, and possibly its team members.
-private func ClearCPForPlr(int plr, bool is_first_clear)
+private func ClearCPForPlr(proplist plr, bool is_first_clear)
 {
 	if (!(cp_mode & PARKOUR_CP_Check))	
 		return;

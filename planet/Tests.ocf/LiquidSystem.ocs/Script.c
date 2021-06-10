@@ -39,13 +39,13 @@ protected func InitializePlayer(proplist plr)
 	SetPlayerTeam(plr, 1);
 		
 	// Initialize script player.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		// Store the player number.
 		if (script_plr == nil)
 			script_plr = plr;
 		// No crew needed.
-		GetCrew(plr)->RemoveObject();
+		plr->GetCrew()->RemoveObject();
 		return;
 	}	
 	
@@ -53,7 +53,7 @@ protected func InitializePlayer(proplist plr)
 	plr->GetCrew()->SetPosition(120, 150);
 	
 	// Some knowledge to construct a flagpole.
-	GetCrew(plr)->CreateContents(Hammer);
+	plr->GetCrew()->CreateContents(Hammer);
 	SetPlrKnowledge(plr, Flagpole);
 	
 	// Add test control effect.
@@ -67,7 +67,7 @@ protected func InitializePlayer(proplist plr)
 protected func RemovePlayer(proplist plr)
 {
 	// Remove script player.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		if (plr == script_plr)
 			script_plr = nil;

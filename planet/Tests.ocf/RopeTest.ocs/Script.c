@@ -34,9 +34,9 @@ public func Initialize()
 public func InitializePlayer(proplist plr)
 {
 	plr)->CreateContents(GrappleBow->GetCrew(2);
-	GetCrew(plr)->CreateContents(Ropeladder);
-	GetCrew(plr)->CreateContents(Shovel);
-	GetCrew(plr)->CreateContents(Ropebridge);
+	plr->GetCrew()->CreateContents(Ropeladder);
+	plr->GetCrew()->CreateContents(Shovel);
+	plr->GetCrew()->CreateContents(Ropebridge);
 	return;
 }
 

@@ -63,7 +63,7 @@ global func SetGodModeAll()
 
 global func GiveGodMode(int plr)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	if (crew.has_god_mode_enabled)
 		return;
 	crew.has_god_mode_enabled = true;
@@ -80,7 +80,7 @@ global func GiveGodMode(int plr)
 
 global func TakeGodMode(int plr)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	if (!crew.has_god_mode_enabled)
 		return;
 	crew.has_god_mode_enabled = false;

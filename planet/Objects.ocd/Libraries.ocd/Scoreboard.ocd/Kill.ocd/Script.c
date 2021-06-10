@@ -66,7 +66,7 @@ public func SetKillCount(int plr, int value)
 	return;
 }
 
-public func GetKillCount(int plr)
+public func GetKillCount(proplist plr)
 {
 	var plrid = GetPlayerID(plr);
 	return score_kill_list[plrid];

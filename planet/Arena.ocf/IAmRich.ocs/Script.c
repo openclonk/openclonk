@@ -60,7 +60,7 @@ func Initialize()
 
 func InitializePlayer(proplist plr)
 {
-	var crew = player->GetCrew(plr);
+	var crew = plr->GetCrew();
 	crew->CreateContents(Shovel);
 	crew->CreateContents(Hammer);
 	crew->CreateContents(Axe);

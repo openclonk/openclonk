@@ -31,7 +31,7 @@ protected func Initialize()
 
 protected func InitializePlayer(proplist plr)
 {
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 		return;
 	
 	// Move players to defenders team.
@@ -39,7 +39,7 @@ protected func InitializePlayer(proplist plr)
 		SetPlayerTeam(plr, 1);
 	
 	// Move crew to the initial position.
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	crew->SetPosition(120 + Random(16), 440);
 	
 	// Set zoom ranges.

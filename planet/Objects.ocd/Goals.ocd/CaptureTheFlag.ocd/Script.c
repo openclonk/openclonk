@@ -88,7 +88,7 @@ protected func InitializePlayer(proplist plr, int x, int y, object base, int tea
 	return _inherited(plr, x, y, base, team, ...);
 }
 
-public func FindRelaunchPos(int plr)
+public func FindRelaunchPos(proplist plr)
 {
 	var team = GetPlayerTeam(plr);
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));

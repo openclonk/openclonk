@@ -22,7 +22,7 @@ protected func InitializePlayer(proplist plr)
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
 	plr->SetFoW(false);
 	plr->GetCrew()->SetPosition(120, 190);
-	GetCrew(plr)->MakeInvincible();
+	plr->GetCrew()->MakeInvincible();
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);

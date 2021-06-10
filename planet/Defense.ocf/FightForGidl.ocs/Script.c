@@ -39,7 +39,7 @@ func Initialize()
 
 func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 {
-	if (GetPlayerType(plr) != C4PT_User) return;
+	if (plr.Type != C4PT_User) return;
 	SetWealth(plr, 50);
 	//DoWealth(plr, 10000);
 	if (!g_statue) { plr->Eliminate(); return; } // no post-elimination join
@@ -90,7 +90,7 @@ func JoinPlayer(plr, prev_clonk)
 	var spawn_idx = Random(2);
 	if (prev_clonk && g_statue) spawn_idx = (prev_clonk->GetX() > g_statue->GetX());
 	var x=[494, 763][spawn_idx],y = 360;
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	if (clonk)
 	{
 		clonk->SetPosition(x, y-10);
@@ -284,7 +284,7 @@ func OnClonkDeath(clonk, killed_by)
 	// Player died?
 	if (!clonk) return;
 	var plr = clonk->GetOwner();
-	if (GetPlayerType(plr) == C4PT_User)
+	if (plr.Type == C4PT_User)
 	{
 		// Relaunch count
 		if (!g_relaunchs[plr])
@@ -368,7 +368,7 @@ func OnAllWavesCleared()
 {
 	// Success!
 	if (g_goal) g_goal.is_fulfilled = true;
-	if (GetPlayerType(ENEMY) == C4PT_Script) ENEMY->Eliminate();
+	if (ENEMY\.Type == C4PT_Script) ENEMY->Eliminate();
 	GainScenarioAchievement("Done");
 	GameOver();
 	return true;

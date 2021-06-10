@@ -116,7 +116,7 @@ public func InitializeScriptPlayer(proplist plr, int team)
 
 public func InitializePlayer(proplist plr, int x, int y, object base, int team, extra_id)
 {
-	if (GetPlayerType(plr) == C4PT_User && IsEnemySpawnPlayerJoined())
+	if (plr.Type == C4PT_User && IsEnemySpawnPlayerJoined())
 	{
 		// Make sure new enemy players are hostile
 		SetHostility(g_enemyspawn_player, plr, true, true, true);

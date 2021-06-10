@@ -91,7 +91,7 @@ func VolcanoTimer()
 func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
 		SetPlayerZoomByViewRange(plr, 400, 250, flag);
@@ -102,7 +102,7 @@ func InitializePlayer(proplist plr)
 // Gamecall from parkour goal, on respawning.
 protected func OnPlayerRespawn(int plr, object cp)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	RecoverItem(clonk, Shovel);
 	RecoverItem(clonk, Pickaxe);
 	RecoverItem(clonk, Loam);

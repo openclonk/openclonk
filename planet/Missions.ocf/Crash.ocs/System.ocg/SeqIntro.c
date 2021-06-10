@@ -176,7 +176,7 @@ func Intro_17()
 	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		var crew = GetCrew(plr);
+		var crew = plr->GetCrew();
 		if (crew)
 		{
 			crew->SetCommand("MoveTo", nil, 135 + Random(25), 860);
@@ -249,7 +249,7 @@ func Intro_Stop()
 	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		var crew = GetCrew(plr);
+		var crew = plr->GetCrew();
 		if (crew && !Inside(crew->GetX(),125, 170))
 		{
 			crew->SetPosition(135 + Random(25), 860);

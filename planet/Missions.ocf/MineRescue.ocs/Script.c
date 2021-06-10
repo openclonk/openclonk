@@ -47,7 +47,7 @@ func DoInit(int first_player)
 func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Create start material: Hammer, shovel, axe

@@ -602,7 +602,7 @@ public func EvaluateValue(string eval_type, proplist props, proplist context)
 	return cb[0]->Call(cb[1], props, context, cb[2]);
 }
 
-public func EvaluateAction(proplist props, object action_object, object triggering_object, int triggering_player, string progress_mode, bool allow_parallel, finish_callback, array position)
+public func EvaluateAction(proplist props, object action_object, object triggering_object, proplist triggering_player, string progress_mode, bool allow_parallel, finish_callback, array position)
 {
 	// No action
 	if (!props) if (finish_callback) return action_object->Call(finish_callback); else return;
@@ -1573,7 +1573,7 @@ public func Initialize()
 	return true;
 }
 
-public func InitContext(object action_object, int triggering_player, object triggering_object, proplist props, finish_callback, position)
+public func InitContext(object action_object, proplist triggering_player, object triggering_object, proplist props, finish_callback, position)
 {
 	// Determine triggering player + objects
 	var triggering_clonk;

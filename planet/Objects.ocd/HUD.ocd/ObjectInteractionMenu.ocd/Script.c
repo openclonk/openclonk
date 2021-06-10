@@ -718,7 +718,7 @@ private func OnContentsSelection(symbol, extra_data)
 		return;
 	}
 
-	var transfer_only_one = GetPlayerControlState(GetOwner(), CON_ModifierMenu1) == 0; // Transfer ONE object of the stack?
+	var transfer_only_one = GetOwner()->GetControlState(CON_ModifierMenu1) == 0; // Transfer ONE object of the stack?
 	var to_transfer = nil;
 
 	if (transfer_only_one)

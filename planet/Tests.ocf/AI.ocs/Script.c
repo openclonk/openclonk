@@ -32,14 +32,14 @@ protected func InitializePlayer(proplist plr)
 			}
 			
 	// Initialize script players differently.	
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 		return InitializeScriptPlayer(plr);
 	
 	// Everything visible to the observer.
 	plr->SetFoW(false);
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), LandscapeHeight(), PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
 	var container = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2);
-	GetCrew(plr)->Enter(container);
+	plr->GetCrew()->Enter(container);
 	
 	// Add test control effect.
 	var fx = AddEffect("IntTestControl", nil, 100, 2);

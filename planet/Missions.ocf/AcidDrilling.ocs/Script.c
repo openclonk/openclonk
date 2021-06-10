@@ -14,11 +14,11 @@ func InitializePlayer(proplist plr)
 {
 	var i;
 	// Script player owns power crystals
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		g_crystal_player = plr;
 		for (i = 0; i<GetPlayerCount(C4PT_User); ++i) SetHostility(plr, GetPlayerByIndex(i, C4PT_User), true, true, true);
-		while (GetCrew(plr)) GetCrew(plr)->RemoveObject();
+		while (plr->GetCrew()) plr->GetCrew()->RemoveObject();
 		InitPowerCrystals(plr);
 		return true;
 	}

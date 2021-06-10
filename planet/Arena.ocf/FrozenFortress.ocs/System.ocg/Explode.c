@@ -26,7 +26,7 @@ global func BlueExplode(int level)
 	return;
 }
 
-global func DoBlueExplosion(int x, int y, int level, object inobj, int cause_plr, object layer)
+global func DoBlueExplosion(int x, int y, int level, object inobj, proplist cause_plr, object layer)
 {
 	// Container to ContainBlast
 	var container = inobj;
@@ -95,7 +95,7 @@ global func BlueExplosionEffect(int level, int x, int y)
 	return;
 }
 
-global func BlastObjectsBlue(int x, int y, int level, object container, int cause_plr, object layer)
+global func BlastObjectsBlue(int x, int y, int level, object container, proplist cause_plr, object layer)
 {
 	var obj;
 	

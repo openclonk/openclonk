@@ -231,7 +231,7 @@ public func OnClonkDeath(object clonk, proplist killer)
 	if (!clonk || !perform_restart)
 		return;
 	var plr = clonk->GetOwner();
-	if (plr == NO_OWNER || (!respawn_script_players && GetPlayerType(plr) == C4PT_Script)) return;
+	if (plr == nil || (!respawn_script_players && plr.Type == C4PT_Script)) return;
 	
 	if (default_relaunch_count != nil)
 	{
@@ -298,7 +298,7 @@ private func GetRelaunchBase(int plr, object clonk)
 	return base;
 }
 
-public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
+public func DoRelaunch(proplist plr, object clonk, array position, bool no_creation)
 {
 	if (!GetPlayerName(plr))
 		return;

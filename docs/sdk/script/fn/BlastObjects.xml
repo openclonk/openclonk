@@ -6,7 +6,7 @@
   <func>
     <title>BlastObjects</title>
     <category>Objects</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -32,10 +32,10 @@
           <desc>Container of the objects to be blasted.</desc>
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>caused_by</name>
 					<optional />
-          <desc>Number of the player who has caused the damage. If not specified, the the controller of the calling object is considered to have caused the damage in local calls.</desc>
+          <desc>Player who has caused the damage. If not specified, the the controller of the calling object is considered to have caused the damage in local calls. Before 9.0 OC this function used the player number.</desc>
         </param>
         <param>
           <type>int</type>

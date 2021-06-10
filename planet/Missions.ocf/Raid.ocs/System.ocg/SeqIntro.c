@@ -14,7 +14,7 @@ func Intro_JoinPlayer(int plr)
 	// early joiners drop from the sky
 	if (this.seq_progress < 4)
 	{
-		var crew = GetCrew(plr);
+		var crew = plr->GetCrew();
 		if (!this.hero) this.hero = crew;
 		var x = 300, y = 20; // 328
 		if (crew != this.hero) x += plr*15 + Random(10);

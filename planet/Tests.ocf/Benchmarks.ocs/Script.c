@@ -31,7 +31,7 @@ func InitializePlayer(proplist player)
 	player->SetFoW(false);
 		
 	// Initialize script player.
-	if (GetPlayerType(player) == C4PT_Script)
+	if (player.Type == C4PT_Script)
 	{
 		// Store the player number.
 		if (script_player == nil)
@@ -39,7 +39,7 @@ func InitializePlayer(proplist player)
 			script_player = player;
 		}
 		// No crew needed.
-		GetCrew(player)->RemoveObject();
+		player->GetCrew()->RemoveObject();
 		return;
 	}
 	else
@@ -53,7 +53,7 @@ func InitializePlayer(proplist player)
 func RemovePlayer(proplist player)
 {
 	// Remove script player.
-	if ((GetPlayerType(player) == C4PT_Script) && (player == script_player))
+	if ((player.Type == C4PT_Script) && (player == script_player))
 	{
 		script_player = nil;
 	}

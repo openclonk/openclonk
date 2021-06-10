@@ -15,7 +15,7 @@ private func InitializePlayer(proplist iPlr)
 {
 	iPlr->SetFoW(0);
 	SetWealth(10, iPlr);
-	var crew = GetCrew(iPlr);
+	var crew = iPlr->GetCrew();
 	crew->SetPosition(10, 300);
 	crew->CreateContents(Shovel);
 	crew->CreateContents(Hammer);

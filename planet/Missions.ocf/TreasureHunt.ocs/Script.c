@@ -45,7 +45,7 @@ func DoInit(int first_player)
 func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Harsh zoom range
@@ -62,7 +62,7 @@ func InitializePlayer(proplist plr)
 	}
 	// Initial join
 	JoinPlayer(plr);
-	GetCrew(plr)->CreateContents(Shovel);
+	plr->GetCrew()->CreateContents(Shovel);
 	return true;
 }
 

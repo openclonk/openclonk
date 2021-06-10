@@ -169,7 +169,7 @@ protected func RelaunchPlayer(proplist plr)
 
 private func JoinPlayer(int plr)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(510, 370);
 	clonk->CreateContents(Hammer);

@@ -14,7 +14,7 @@ func Initialize()
 
 func InitializePlayer(plr)
 {
-	GetCrew(plr)->CreateContents(Shovel);
+	plr->GetCrew()->CreateContents(Shovel);
 }
 
 func GotNugget()

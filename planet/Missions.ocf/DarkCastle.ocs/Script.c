@@ -70,7 +70,7 @@ private func SetSpecialDeathMessage(object clonk)
 private func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Harsh zoom range
@@ -78,7 +78,7 @@ private func InitializePlayer(proplist plr)
 		SetPlayerZoomByViewRange(plr, 400, 250, flag);
 	SetPlayerViewLock(plr, true);
 	// Initial join
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	crew->SetPosition(35 + Random(10) , 1140);
 	crew->SetDir(DIR_Right);
 	crew->CreateContents(Shovel);

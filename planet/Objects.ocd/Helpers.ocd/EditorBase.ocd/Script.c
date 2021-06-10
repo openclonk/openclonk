@@ -164,7 +164,7 @@ public func GetConditionalIDList(string condition, string name, proplist default
 }
 
 // Create item specieid in ItemsPlusParameters delegate
-public func CreateItemPlusParameter(proplist param, int x, int y, int owner)
+public func CreateItemPlusParameter(proplist param, int x, int y, proplist owner)
 {
 	if (!param) return nil;
 	var id;

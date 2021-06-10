@@ -91,7 +91,7 @@ func InitializePlayer(proplist plr)
 
 func JoinPlayer(int plr, object crew, bool no_placement)
 {
-	if (!crew) crew = GetCrew(plr);
+	if (!crew) crew = plr->GetCrew();
 	if (!crew) return false;
 	if (!no_placement) crew->SetPosition(471, 338);
 	var tools;

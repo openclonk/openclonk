@@ -145,7 +145,7 @@ global func Find_AnyContainer()
 }
 
 // documented in /docs/sdk/script/fn
-global func Find_Owner(int owner)
+global func Find_Owner(proplist owner)
 {
 	return [C4FO_Owner, owner];
 }

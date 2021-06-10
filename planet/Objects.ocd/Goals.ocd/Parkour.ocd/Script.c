@@ -217,7 +217,7 @@ private func ResetAllClearedCP()
 /*-- Goal interface --*/
 
 // Eliminates all players apart from the winner and his team.
-private func EliminatePlayers(int winner)
+private func EliminatePlayers(proplist winner)
 {
 	var winteam = GetPlayerTeam(winner);
 	for (var i = 0; i < GetPlayerCount(); i++)
@@ -677,7 +677,7 @@ public func ResetPersonalBest(proplist plr)
 
 /*-- Evaluation data --*/
 
-private func SetEvalData(int winner)
+private func SetEvalData(proplist winner)
 {
 	var winteam = GetPlayerTeam(winner);
 	var effect = GetEffect("IntBestTime", this);

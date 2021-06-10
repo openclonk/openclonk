@@ -221,7 +221,7 @@ public func IsStartFor(int plr)
 
 local is_handling_player_spawn; // temp var set to nonzero during initial player spawn (to differentiate from respawn)
 
-public func DoPlayerStart(int plr)
+public func DoPlayerStart(proplist plr)
 {
 	// Player launch controlled by this object!
 	if (!players_started) players_started = [];
@@ -292,7 +292,7 @@ private func ApplyCrewSettings(object crew)
 	return true;
 }
 
-private func InitializeCrew(int plr)
+private func InitializeCrew(proplist plr)
 {
 	// Collect IDs of crew to create
 	var requested_crew = [], n = 0;
@@ -333,7 +333,7 @@ private func InitializeCrew(int plr)
 	return true;
 }
 
-private func InitializeBaseMaterial(int plr)
+private func InitializeBaseMaterial(proplist plr)
 {
 	// Set base material to minimum of current material and material given by this object
 	if (starting_base_material)
@@ -382,7 +382,7 @@ private func InitializeMaterial(proplist player)
 	return true;
 }
 
-private func InitializeKnowledge(int plr)
+private func InitializeKnowledge(proplist plr)
 {
 	var def;
 	if (!starting_knowledge) return true; // No knowledge
@@ -408,7 +408,7 @@ private func InitializeKnowledge(int plr)
 	return true;
 }
 
-private func InitializeView(int plr)
+private func InitializeView(proplist plr)
 {
 	SetPlayerViewLock(plr, view_lock);
 	// Zoom limit "nil" means default limits.

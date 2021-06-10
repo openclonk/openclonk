@@ -35,7 +35,7 @@ protected func Initialize()
 protected func InitializePlayer(proplist plr)
 {
 	// Initialize script player.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		// Store the player numbers.
 		if (GetPlayerName(plr) == "Victim")
@@ -47,12 +47,12 @@ protected func InitializePlayer(proplist plr)
 		// Make crew of killers invincible and set position.	
 		if (plr == plr_killer)
 		{
-			GetCrew(plr)->MakeInvincible(true);
+			plr->GetCrew()->MakeInvincible(true);
 			plr->GetCrew()->SetPosition(50, 150);
 		}
 		else if (plr == plr_killer_fake)
 		{
-			GetCrew(plr)->MakeInvincible(true);
+			plr->GetCrew()->MakeInvincible(true);
 			plr->GetCrew()->SetPosition(20, 150);
 		}
 		return;
@@ -66,7 +66,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Move normal players into a relaunch container.
 	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2);
-	GetCrew(plr)->Enter(relaunch);
+	plr->GetCrew()->Enter(relaunch);
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
@@ -172,7 +172,7 @@ global func InitTest()
 {
 	// Remove all objects except the player crew members and relaunch container they are in.
 	for (var obj in FindObjects(Find_Not(Find_Or(Find_ID(RelaunchContainer), Find_Category(C4D_Rule)))))
-		if (!((obj->GetOCF() & OCF_CrewMember) && (GetPlayerType(obj->GetOwner()) == C4PT_User || obj->GetOwner() == plr_victim)))
+		if (!((obj->GetOCF() & OCF_CrewMember) && ((obj->GetOwner() && obj->GetOwner().Type == C4PT_User) || obj->GetOwner() == plr_victim)))
 			obj->RemoveObject();
 
 	// Remove all landscape changes.
@@ -188,7 +188,7 @@ global func InitTest()
 	}
 	for (var plr in [plr_victim, plr_killer, plr_killer_fake])
 	{	
-		if (!GetCrew(plr))
+		if (!plr->GetCrew())
 		{
 			var clonk = CreateObjectAbove(Clonk, 100, 150, plr);
 			clonk->MakeCrewMember(plr);

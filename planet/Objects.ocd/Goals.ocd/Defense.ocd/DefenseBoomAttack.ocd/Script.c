@@ -306,7 +306,7 @@ public func Incineration(int caused_by)
 	return;
 }
 
-private func DoFireworks(int killed_by)
+private func DoFireworks(proplist killed_by)
 {
 	if (rider)
 	{

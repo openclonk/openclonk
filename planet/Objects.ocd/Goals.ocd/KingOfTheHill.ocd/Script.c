@@ -114,12 +114,12 @@ public func SetRadius(int to)
 	radius = to;
 }
 
-func DoPoint(int player, int count)
+func DoPoint(proplist player, int count)
 {
 	if (count == nil) 
 		count = 1;
-	player_points[player] = Max(player_points[player] + count, 0);
-	Scoreboard->SetPlayerData(player, "koth", player_points[player]);
+	player_points[player.ID] = Max(player_points[player.ID] + count, 0);
+	Scoreboard->SetPlayerData(player, "koth", player_points[player.ID]);
 }
 
 protected func InitializePlayer(proplist plr, int x, int y, object base, int team)
@@ -197,7 +197,7 @@ private func CheckForWinner()
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (player_points[plr] >= GetPointLimit())
+		if (player_points[plr.ID] >= GetPointLimit())
 		{
 			for (var j = 0; j < GetPlayerCount(); j++)
 			{
@@ -277,14 +277,14 @@ private func GetTeamPoints()
 		var names = "";
 		for (var d = 0;d<GetPlayerCount();++d)
 		{
-			var p = GetPlayerByIndex(d);
-			if (GetPlayerTeam(p) != t) continue;
+			var plr = GetPlayerByIndex(d);
+			if (GetPlayerTeam(plr) != t) continue;
 			
-			p += player_points[p];
+			p += player_points[plr.ID];
 
 			var comma = ", ";
 			if (GetLength(names) == 0) comma = "";
-			names = Format("%s%s%s", names, comma, GetTaggedPlayerName(p));
+			names = Format("%s%s%s", names, comma, GetTaggedPlayerName(plr));
 		}
 		
 

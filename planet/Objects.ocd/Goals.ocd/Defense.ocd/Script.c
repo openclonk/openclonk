@@ -64,7 +64,7 @@ public func Construction()
 public func InitializePlayer(proplist plr)
 {
 	// The enemy script player is initialized in the function below.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 		return;
 	// Init the normal players
 	var plrid = GetPlayerID(plr);
@@ -98,7 +98,7 @@ public func RelaunchPlayer(proplist player)
 {
 	// The player has not been relaunched by external scripts and is eliminated.
 	// Move the player into the observer container and let the player spectate.
-	if (GetPlayerType(player) == C4PT_User)
+	if (player.Type == C4PT_User)
 	{
 		var crew = CreateObject(Clonk, 0, 0, player);
 		crew->MakeCrewMember(player);
@@ -449,7 +449,7 @@ public func OnWaveCompleted(int wave_nr)
 
 /*-- Reward --*/
 
-public func OnRocketDeath(object rocket, int killed_by)
+public func OnRocketDeath(object rocket, proplist killed_by)
 {
 	return OnClonkDeath(rocket, killed_by);
 }

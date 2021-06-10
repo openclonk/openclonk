@@ -96,7 +96,7 @@ public func Activate(proplist byplr)
 	}
 }
 
-private func GetRelativeScore(int player)
+private func GetRelativeScore(proplist player)
 {
 	var bestplayer = -1, bestscore = -1;
 	for (var i = 0; i < GetPlayerCount(); ++i)
@@ -118,7 +118,7 @@ private func GetRelativeScore(int player)
 	return {best: bestplayer, kills: GetKillCount(player)-bestscore};
 }
 
-private func GetPlayerTeamScore(int player)
+private func GetPlayerTeamScore(proplist player)
 {
 	if (GetPlayerTeam(player) < 1) return GetKillCount(player);
 	return GetTeamScore(GetPlayerTeam(player));
