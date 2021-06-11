@@ -6,9 +6,9 @@
   <const>
     <title>NO_OWNER</title>
     <category>Player</category>
-    <version>1.0 OC</version>
-    <syntax><rtype>int</rtype></syntax>
-    <desc>Player number: no player. This constant can be used to indicate 'no ownership' in cases such as <funclink>CreateObject</funclink>.</desc>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
+    <syntax><rtype>nil</rtype></syntax>
+    <desc>Player: no player. This constant can be used to indicate 'no ownership' in cases such as <funclink>CreateObject</funclink>. Before 9.0 OC this was a number -1, now it is a proplist.</desc>
     <examples>
       <example>
         <code><funclink>CreateObject</funclink>(Firestone, 100,100, NO_OWNER);</code>
@@ -21,4 +21,5 @@
     </related>
   </const>
   <author>Sven2</author><date>2005-01</date>
+  <author>Marky</author><date>2021-06</date>
 </funcs>

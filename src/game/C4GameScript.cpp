@@ -1065,7 +1065,7 @@ static C4PropList *FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 
 static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, C4Player *player)
 {
-	long player_id = GetValidPlayerID(player);
+	long player_id = GetValidPlayerID(_this, player);
 	if (!Game.Parameters.isLeague())
 	{
 		return false;
@@ -1271,7 +1271,7 @@ static C4String *FnGetLeague(C4PropList * _this, long idx)
 
 static int32_t FnGetLeagueScore(C4PropList * _this, C4Player *player)
 {
-	long player_id = GetValidPlayerID(player);
+	long player_id = GetValidPlayerID(_this, player);
 	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(player_id);
 	if (!info)
 	{
@@ -1283,7 +1283,7 @@ static int32_t FnGetLeagueScore(C4PropList * _this, C4Player *player)
 
 static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, C4Player *player)
 {
-	long player_id = GetValidPlayerID(player);
+	long player_id = GetValidPlayerID(_this, player);
 	if (!Game.Parameters.League.getLength() || !player_id)
 	{
 		return false;
@@ -1299,7 +1299,7 @@ static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, C4Pl
 
 static C4String *FnGetLeagueProgressData(C4PropList * _this, C4Player *player)
 {
-	long player_id = GetValidPlayerID(player);
+	long player_id = GetValidPlayerID(_this, player);
 	if (!Game.Parameters.League.getLength())
 	{
 		return nullptr;
@@ -2205,7 +2205,7 @@ static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, C4Player *p
 	// safety
 	if (!pText) return false;
 	if (!pText->GetCStr()) return false;
-	long player_id = GetValidPlayerID(player);
+	long player_id = GetValidPlayerID(_this, player);
 	if (player_id && !Game.PlayerInfos.GetPlayerInfoByID(player_id)) return false;
 	// add data
 	Game.RoundResults.AddCustomEvaluationString(pText->GetCStr(), player_id);
@@ -2416,6 +2416,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 		assert(pCDef->ValType == C4V_Int); // only int supported currently
 		pEngine->RegisterGlobalConstant(pCDef->Identifier, C4VInt(pCDef->Data));
 	}
+	// add custom def constant
+	pEngine->RegisterGlobalConstant("NO_OWNER", C4VNull); // invalid player number
 	C4PropListStatic * p = pEngine->GetPropList();
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptGameFnMap[0]; pDef->Identifier; pDef++)
@@ -2580,8 +2582,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 
 C4ScriptConstDef C4ScriptGameConstMap[]=
 {
-	{ "NO_OWNER"                  ,C4V_Int,      NO_OWNER                   }, // invalid player number
-
 	// material density
 	{ "C4M_Vehicle"               ,C4V_Int,      C4M_Vehicle                },
 	{ "C4M_Solid"                 ,C4V_Int,      C4M_Solid                  },
