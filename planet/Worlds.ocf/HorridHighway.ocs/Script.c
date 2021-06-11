@@ -56,8 +56,8 @@ protected func OnGoalsFulfilled()
 protected func InitializePlayer(proplist plr)
 {
 	// Zoom range.
-	SetPlayerZoomByViewRange(plr, 1200, nil, PLRZOOM_LimitMax);
-	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_Set);
+	plr->SetZoomByViewRange(1200, nil, PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	SetPlayerViewLock(plr, true);
 	
 	// Position and materials.

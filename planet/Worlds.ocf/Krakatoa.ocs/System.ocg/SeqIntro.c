@@ -62,7 +62,7 @@ public func Intro_JoinPlayer(int plr)
 		crew->SetAction("Walk");	
 	}
 	// Increase zoom.
-	SetPlayerZoomByViewRange(plr, 700, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(700, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(this.pilot);
 	return;
 }

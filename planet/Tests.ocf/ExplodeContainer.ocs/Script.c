@@ -19,7 +19,7 @@ protected func Initialize()
 protected func InitializePlayer(proplist plr)
 {
 	// Set zoom and move player to the middle of the scenario.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
 	plr->SetFoW(false);
 	plr->GetCrew()->SetPosition(120, 190);
 	plr->GetCrew()->MakeInvincible();

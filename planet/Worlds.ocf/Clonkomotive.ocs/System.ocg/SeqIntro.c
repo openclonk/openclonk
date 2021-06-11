@@ -13,7 +13,7 @@ public func Intro_Start()
 
 public func Intro_JoinPlayer(int plr)
 {
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	var train = FindObject(Find_ID(Locomotive));
 	var index = 0, crew;
 	while (crew = plr->GetCrew(index))

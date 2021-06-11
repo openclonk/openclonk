@@ -57,7 +57,7 @@ func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 
 	CreateObject(Homebase, 0, 0, plr);
 
-	SetPlayerZoomByViewRange(plr, 1200, 0, PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(1200, 0, PLRZOOM_LimitMax);
 
 	//DoWealth(plr, 10000000);
 

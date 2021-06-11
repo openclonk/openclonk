@@ -176,8 +176,8 @@ protected func InitializePlayer(proplist plr)
 
 	// Standard player zoom for tutorials.
 	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_LimitMax);
 	
 	// Claim ownership of structures.
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"))))

@@ -36,7 +36,7 @@ global func IntroAddPlayer(int plr)
 
 		plr->SetViewTarget(crew);
 		SetPlayerViewLock(plr, true);
-		SetPlayerZoomByViewRange(plr, 320, 240);
+		plr->SetZoomByViewRange(320, 240);
 
 		container->SetCommand("None", container);
 		crew->SetCommand("None", crew);

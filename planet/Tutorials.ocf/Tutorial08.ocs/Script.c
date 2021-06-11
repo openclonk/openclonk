@@ -199,7 +199,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Standard player zoom for tutorials, player is not allowed to zoom in/out.
 	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);

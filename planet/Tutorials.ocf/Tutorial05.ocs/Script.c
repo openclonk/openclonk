@@ -199,7 +199,7 @@ protected func InitializePlayer(proplist plr)
 
 	// Standard player zoom for tutorials.
 	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
 	
 	// Start the intro sequence.
 	StartSequence("Intro", 0, plr);

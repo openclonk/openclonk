@@ -412,12 +412,12 @@ private func InitializeView(proplist plr)
 {
 	SetPlayerViewLock(plr, view_lock);
 	// Zoom limit "nil" means default limits.
-	SetPlayerZoomByViewRange(plr, zoom_min, zoom_min, PLRZOOM_Direct | PLRZOOM_LimitMin);
-	SetPlayerZoomByViewRange(plr, zoom_max, zoom_max, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(zoom_min, zoom_min, PLRZOOM_Direct | PLRZOOM_LimitMin);
+	plr->SetZoomByViewRange(zoom_max, zoom_max, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	// If no zoom value is specified: Assume what the player has set currently is the default.
 	if (zoom_set != nil)
 	{
-		SetPlayerZoomByViewRange(plr, zoom_set, zoom_set, PLRZOOM_Direct | PLRZOOM_Set);
+		plr->SetZoomByViewRange(zoom_set, zoom_set, PLRZOOM_Direct | PLRZOOM_Set);
 	}
 	return true;
 }

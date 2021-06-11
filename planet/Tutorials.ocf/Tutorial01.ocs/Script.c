@@ -270,7 +270,7 @@ protected func InitializePlayer(proplist plr)
 
 	// Standard player zoom for tutorials, player is not allowed to zoom in/out.
 	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
 	
 	// Determine player movement keys.
 	var left = GetPlayerControlAssignment(plr, CON_Left, true, true);

@@ -9,7 +9,7 @@ public func Intro_Start()
 
 public func Intro_JoinPlayer(int plr)
 {
-	SetPlayerZoomByViewRange(plr, 200, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(200, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return;
 }
 

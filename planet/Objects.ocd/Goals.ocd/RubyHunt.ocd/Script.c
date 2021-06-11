@@ -66,7 +66,7 @@ public func IsFulfilled()
 		var plr = GetPlayerByIndex(iplr);
 		// Free view when game is over
 		for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-			SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeWidth(),flag);
+			plr->SetZoomByViewRange(LandscapeWidth(),LandscapeWidth(),flag);
 		SetPlayerViewLock(plr, false);
 		plr->SetFoW(false);
 		// Eliminate non-winning players

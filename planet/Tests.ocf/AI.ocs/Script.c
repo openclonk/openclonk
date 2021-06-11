@@ -37,7 +37,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Everything visible to the observer.
 	plr->SetFoW(false);
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), LandscapeHeight(), PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(LandscapeWidth(), LandscapeHeight(), PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
 	var container = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2);
 	plr->GetCrew()->Enter(container);
 	

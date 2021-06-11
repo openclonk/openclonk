@@ -43,8 +43,8 @@ protected func InitializePlayer(proplist plr)
 	crew->SetPosition(120 + Random(16), 440);
 	
 	// Set zoom ranges.
-	SetPlayerZoomByViewRange(plr, 1200, nil, PLRZOOM_LimitMax);
-	SetPlayerZoomByViewRange(plr, 450, nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(1200, nil, PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(450, nil, PLRZOOM_Direct);
 	
 	// Base material and knowledge.
 	GivePlayerBaseMaterial(plr);

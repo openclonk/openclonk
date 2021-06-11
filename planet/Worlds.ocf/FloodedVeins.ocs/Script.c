@@ -46,7 +46,7 @@ protected func OnGoalsFulfilled()
 protected func InitializePlayer(proplist plr)
 {
 	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
 	
 	// First player inits the base.

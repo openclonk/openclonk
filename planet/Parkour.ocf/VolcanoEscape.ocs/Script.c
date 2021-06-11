@@ -73,7 +73,7 @@ func InitializePlayer(proplist plr)
 	if (plr.Type!=C4PT_User) return;
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr, 400, 250, flag);
+		plr->SetZoomByViewRange(400, 250, flag);
 	SetPlayerViewLock(plr, true);
 	return true;
 }

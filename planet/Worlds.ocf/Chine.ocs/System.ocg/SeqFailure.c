@@ -9,7 +9,7 @@ public func Failure_Start()
 
 public func Failure_JoinPlayer(int plr)
 {
-	SetPlayerZoomByViewRange(plr, 200, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(200, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return;
 }
 

@@ -23,7 +23,7 @@ public func Intro_Start(array start, array finish)
 
 public func Intro_JoinPlayer(int plr)
 {
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Set);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Set);
 	var crew = plr->GetCrew();
 	crew->SetPosition(crew->GetX() + RandomX(-10, 10), crew->GetY());
 	return;

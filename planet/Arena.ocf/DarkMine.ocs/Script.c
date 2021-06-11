@@ -105,8 +105,8 @@ public func OnClonkLeftRelaunch(object clonk, int plr)
 	
 	// Set the zoom range to be standard low, but allow for zooming out
 	// such that light sources a bit further away can be spotted.
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Direct);
-	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(600, nil, PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
 	return;
 }

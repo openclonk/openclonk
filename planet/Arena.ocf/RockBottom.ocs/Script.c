@@ -74,11 +74,11 @@ protected func Initialize()
 protected func InitializePlayer(proplist plr)
 {
 	// Set player zoom to maximally the landscape height.
-	SetPlayerZoomByViewRange(plr, nil, LandscapeHeight(), PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(nil, LandscapeHeight(), PLRZOOM_LimitMax);
 	// Set player zoom to minimally the half the landscape width.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth() / 2, nil, PLRZOOM_LimitMin);
+	plr->SetZoomByViewRange(LandscapeWidth() / 2, nil, PLRZOOM_LimitMin);
 	// Set player zoom to be standard the landscape width.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
 	SetPlayerViewLock(plr, true);
 	return;
 }

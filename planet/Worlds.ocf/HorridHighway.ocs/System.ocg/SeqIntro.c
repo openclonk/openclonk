@@ -26,7 +26,7 @@ public func Intro_Start()
 
 public func Intro_JoinPlayer(int plr)
 {
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Set | PLRZOOM_Direct);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Set | PLRZOOM_Direct);
 	var crew, index = 0;
 	while (crew = plr->GetCrew(index++))
 		crew->Enter(this.locomotive);

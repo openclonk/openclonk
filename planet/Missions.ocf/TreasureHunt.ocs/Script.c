@@ -50,7 +50,7 @@ func InitializePlayer(proplist plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr, 400, 250, flag);
+		plr->SetZoomByViewRange(400, 250, flag);
 	SetPlayerViewLock(plr, true);
 	// Create per-player-counted tools
 	if (g_max_player_num < GetPlayerCount(C4PT_User))

@@ -50,7 +50,7 @@ protected func OnGoalsFulfilled()
 protected func InitializePlayer(proplist plr)
 {
 	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
 	plr->SetFoW(false);
 	

@@ -51,7 +51,7 @@ protected func OnGoalsFulfilled()
 protected func InitializePlayer(proplist plr)
 { 
 	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
 
 	// Move clonks to location and give them a shovel.

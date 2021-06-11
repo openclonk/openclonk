@@ -180,7 +180,7 @@ protected func InitializePlayer(proplist plr)
 
 	// Standard player zoom for tutorials.
 	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_Set);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set);
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
