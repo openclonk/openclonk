@@ -234,7 +234,7 @@ public func TrackSpawnedEnemy(object enemy)
 	}
 }
 
-public func OnRocketDeath(object rocket, int killed_by)
+public func OnRocketDeath(object rocket, proplist killed_by)
 {
 	return OnClonkDeath(rocket, killed_by);
 }

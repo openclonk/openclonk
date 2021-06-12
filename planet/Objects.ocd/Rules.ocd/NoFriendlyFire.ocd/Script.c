@@ -127,7 +127,7 @@ public func NoFF_QueryCatchBlow(object projectile, ...)
 	return false;
 }
 
-public func NoFF_BlastObject(int level, int caused_by, ...)
+public func NoFF_BlastObject(int level, proplist caused_by, ...)
 {
 	var w_controller = caused_by;
 	var t_controller = this->GetController();
@@ -136,7 +136,7 @@ public func NoFF_BlastObject(int level, int caused_by, ...)
 	return this->Backup_BlastObject(level, caused_by, ...);
 }
 
-public func NoFF_DoShockwaveCheck(int x, int y, int caused_by, ...)
+public func NoFF_DoShockwaveCheck(int x, int y, proplist caused_by, ...)
 {
 	var w_controller = caused_by;
 	var t_controller = this->GetController();

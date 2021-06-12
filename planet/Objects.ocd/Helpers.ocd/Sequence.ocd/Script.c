@@ -86,7 +86,7 @@ public func RemovePlayer(proplist plr)
 	return true;
 }
 
-public func JoinPlayer(int plr)
+public func JoinPlayer(proplist plr)
 {
 	DeactivatePlayerControls(plr, true);
 	// Per-player sequence callback.
@@ -96,7 +96,7 @@ public func JoinPlayer(int plr)
 	return true;
 }
 
-public func DeactivatePlayerControls(int plr, bool make_invincible)
+public func DeactivatePlayerControls(proplist plr, bool make_invincible)
 {
 	var j = 0, crew;
 	while (crew = plr->GetCrew(j++))
@@ -119,7 +119,7 @@ public func DeactivatePlayerControls(int plr, bool make_invincible)
 	return true;
 }
 
-public func ReactivatePlayerControls(int plr)
+public func ReactivatePlayerControls(proplist plr)
 {
 	var j = 0, crew;
 	while (crew = plr->GetCrew(j++))
@@ -687,7 +687,7 @@ public func OnClonkDeath(object clonk, proplist killer)
 	return OnTrigger(clonk, killer);
 }
 
-public func OnConstructionFinished(object structure, int constructing_player)
+public func OnConstructionFinished(object structure, proplist constructing_player)
 {
 	// Is this a structure finished trigger?
 	if (!trigger || !structure) return false;
@@ -697,7 +697,7 @@ public func OnConstructionFinished(object structure, int constructing_player)
 	return OnTrigger(structure, constructing_player);
 }
 
-public func OnProductionFinished(object product, int producing_player)
+public func OnProductionFinished(object product, proplist producing_player)
 {
 	// Is this a structure finished trigger?
 	if (!trigger || !product) return false;

@@ -38,7 +38,7 @@ public func Extinguishing()
 }
 
 local LibraryFlammable = new Effect {
-	Construction = func (int caused_by)
+	Construction = func (proplist caused_by)
 	{
 		this.caused_by = caused_by;
 	},
@@ -54,7 +54,7 @@ local LibraryFlammable = new Effect {
 	}
 };
 
-public func BurnDown(int caused_by)
+public func BurnDown(proplist caused_by)
 {
 	if (this->~OnBurnDown())
 		return;

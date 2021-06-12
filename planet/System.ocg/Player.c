@@ -30,7 +30,7 @@ static const Player = new _Player
 
 };
 
-static const NO_PLAYER = nil;
+static const NO_PLAYER = NO_OWNER;
 
 // Returns the player number of player_name, or none if there is no such player. (written by timi for CR/CE/CP)
 // documented in /docs/sdk/script/fn
@@ -185,7 +185,7 @@ global func SetWealth(any player, int value)
 }
 
 // checks whether two players are allied - that means they are not hostile and neither of them is NO_PLAYER
-global func IsAllied(int player1, int player2, bool check_one_way_only /* whether to check the hostility only in one direction */)
+global func IsAllied(proplist player1, proplist player2, bool check_one_way_only /* whether to check the hostility only in one direction */)
 {
 	if (player1 == NO_PLAYER || player2 == NO_PLAYER)
 	{

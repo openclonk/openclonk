@@ -315,7 +315,7 @@ public func IsProjectileTarget(object projectile, object shooter)
 public func IsDestroyedByExplosions() { return false; }
 
 // Custom explosion on callback from destructible library.
-public func OnDestruction(int change, int cause, int by_player)
+public func OnDestruction(int change, int cause, proplist by_player)
 {
 	SetController(by_player);
 	AirshipDeath();

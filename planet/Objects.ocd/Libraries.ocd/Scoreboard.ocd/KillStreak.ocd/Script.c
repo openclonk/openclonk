@@ -62,7 +62,7 @@ protected func RemovePlayer(proplist plr)
 
 /*-- Misc --*/
 
-public func SetKillStreakCount(int plr, int value)
+public func SetKillStreakCount(proplist plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_killstreak_list[plrid] = value;
@@ -70,13 +70,13 @@ public func SetKillStreakCount(int plr, int value)
 	return;
 }
 
-public func GetKillStreakCount(int plr)
+public func GetKillStreakCount(proplist plr)
 {
 	var plrid = GetPlayerID(plr);
 	return score_killstreak_list[plrid];
 }
 
-public func DoKillStreakCount(int plr, int value)
+public func DoKillStreakCount(proplist plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_killstreak_list[plrid] += value;

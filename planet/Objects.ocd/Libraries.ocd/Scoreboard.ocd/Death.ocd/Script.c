@@ -62,7 +62,7 @@ protected func RemovePlayer(proplist plr)
 
 /*-- Misc --*/
 
-public func SetDeathCount(int plr)
+public func SetDeathCount(proplist plr)
 {
 	var plrid = GetPlayerID(plr);
 	score_death_list[plrid] = 0;
@@ -70,7 +70,7 @@ public func SetDeathCount(int plr)
 	return;
 }
 
-public func GetDeathCount(int plr)
+public func GetDeathCount(proplist plr)
 {
 	var plrid = GetPlayerID(plr);
 	return score_death_list[plrid];

@@ -249,7 +249,7 @@ public func OnClonkDeath(object clonk, proplist killer)
 	return DoRelaunch(plr, clonk, nil);
 }
 
-private func RespawnAtBase(int plr, object clonk)
+private func RespawnAtBase(proplist plr, object clonk)
 {
 	var base = GetRelaunchBase(plr, clonk);
 	if (base)

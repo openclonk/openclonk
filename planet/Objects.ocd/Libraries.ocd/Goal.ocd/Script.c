@@ -115,7 +115,7 @@ protected func InitializePlayer(proplist plr, ...)
 	_inherited(plr, ...);
 }
 
-private func NotifyPlayerHUD(int plr)
+private func NotifyPlayerHUD(proplist plr)
 {
 	var HUD = FindObject(Find_ID(Library_HUDController->GetGUIControllerID()), Find_Owner(plr));
 	if (HUD)
@@ -166,7 +166,7 @@ func SetGraphics(string new_gfx, ...)
 	return inherited(new_gfx, ...);
 }
 
-func GetGraphics(int plr) { return goal_custom_graphics; }
+func GetGraphics(proplist plr) { return goal_custom_graphics; }
 
 public func IsGoal() { return true; }
 

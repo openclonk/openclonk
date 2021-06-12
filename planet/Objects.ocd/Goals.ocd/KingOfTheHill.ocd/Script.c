@@ -182,7 +182,7 @@ func OnClonkDeath(object clonk, proplist killer)
 	return;
 }
 
-public func GetAdditionalPlayerRelaunchString(object clonk, int plr, int killed_by)
+public func GetAdditionalPlayerRelaunchString(object clonk, int plr, proplist killed_by)
 {
 	if (!Hostile(killed_by, plr)) return;
 	if (!location->GetKing()) return;

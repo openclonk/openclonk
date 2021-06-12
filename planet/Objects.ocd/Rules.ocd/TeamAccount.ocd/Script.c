@@ -15,7 +15,7 @@ protected func Initialize()
 }
 
 // Only SetWealth needs to be overloaded, DoWealth just uses that.
-global func SetWealth(int plr, int wealth)
+global func SetWealth(proplist plr, int wealth)
 {
 	// Only if team account rule is activated.
 	if (!FindObject(Find_ID(Rule_TeamAccount)))

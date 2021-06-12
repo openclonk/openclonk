@@ -266,7 +266,7 @@ protected func FxIntFlagMovementCheckTimer(object target, proplist effect)
 }
 
 // Returns all flags allied to owner of which the radius intersects the given circle.
-public func FindFlagsInRadius(object center_object, int radius, int owner)
+public func FindFlagsInRadius(object center_object, int radius, proplist owner)
 {
 	var flag_list = [];
 	if (LIB_FLAG_FlagList)

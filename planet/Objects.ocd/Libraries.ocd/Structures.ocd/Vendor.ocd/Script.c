@@ -24,7 +24,7 @@ public func GetBuyValue(id item)
 	return item->GetValue();
 }
 
-public func GetBuyableItems(int for_player)
+public func GetBuyableItems(proplist for_player)
 {
 	// By default get the base material.
 	var i, item;
@@ -36,13 +36,13 @@ public func GetBuyableItems(int for_player)
 	return items;
 }
 
-public func GetBuyableAmount(int for_player, id item)
+public func GetBuyableAmount(proplist for_player, id item)
 {
 	// by default use the base material.
 	return GetBaseMaterial(for_player, item);
 }
 
-public func ChangeBuyableAmount(int for_player, id item, int amount)
+public func ChangeBuyableAmount(proplist for_player, id item, int amount)
 {
 	// By default use base engine function.
 	DoBaseMaterial(for_player, item, amount);
@@ -60,7 +60,7 @@ public func GetSellValue(object item)
 
 // Tries to buy an object or all available objects for buy_all_available == true.
 // Returns the last bought object.
-public func DoBuy(id item, int for_player, int wealth_player, object buyer, bool buy_all_available, bool error_sound)
+public func DoBuy(id item, proplist for_player, proplist wealth_player, object buyer, bool buy_all_available, bool error_sound)
 {
 	var num_available = this->GetBuyableAmount(wealth_player, item);
 	if (!num_available)
@@ -96,7 +96,7 @@ public func DoBuy(id item, int for_player, int wealth_player, object buyer, bool
 }
 
 // Sells the object and transfers the wealth to the selling player.
-public func DoSell(object obj, int wealth_player)
+public func DoSell(object obj, proplist wealth_player)
 {
 	if (obj->~QueryRejectSell(wealth_player, this))
 	{

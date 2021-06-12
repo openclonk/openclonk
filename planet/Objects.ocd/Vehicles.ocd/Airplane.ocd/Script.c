@@ -1216,7 +1216,7 @@ private func SetPropellerSound(int speed)
 public func IsDestroyedByExplosions() { return false; }
 
 // Custom explosion on callback from destructible library.
-public func OnDestruction(int change, int cause, int by_player)
+public func OnDestruction(int change, int cause, proplist by_player)
 {
 	if (pilot)
 		PlaneDismount(pilot);

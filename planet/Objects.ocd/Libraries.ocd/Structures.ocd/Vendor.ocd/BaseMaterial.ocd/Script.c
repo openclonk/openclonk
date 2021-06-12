@@ -32,42 +32,42 @@ static const BASEMATERIAL_ProductionRate = 2160;
 
 /*-- Global interface --*/
 
-global func GetBaseMaterial(int player, id material, int index, int category)
+global func GetBaseMaterial(proplist player, id material, int index, int category)
 {
 	var base = Library_BaseMaterial->GetBaseMaterialManager(player);
 	if (base) 
 		return base->GetBaseMat(material, index, category);
 }
 
-global func SetBaseMaterial(int player, id material, int amount)
+global func SetBaseMaterial(proplist player, id material, int amount)
 {
 	var base = Library_BaseMaterial->GetBaseMaterialManager(player);
 	if (base)
 		return base->SetBaseMat(material, amount);
 }
 
-global func DoBaseMaterial(int player, id material, int change)
+global func DoBaseMaterial(proplist player, id material, int change)
 {
 	var base = Library_BaseMaterial->GetBaseMaterialManager(player);
 	if (base)
 		return base->DoBaseMat(material, change);
 }
 
-global func GetBaseProduction(int player, id material, int index, int category)
+global func GetBaseProduction(proplist player, id material, int index, int category)
 {
 	var base = Library_BaseMaterial->GetBaseMaterialManager(player);
 	if (base) 
 		return base->GetBaseProd(material, index, category);
 }
 
-global func SetBaseProduction(int player, id material, int amount)
+global func SetBaseProduction(proplist player, id material, int amount)
 {
 	var base = Library_BaseMaterial->GetBaseMaterialManager(player);
 	if (base)
 		return base->SetBaseProd(material, amount);
 }
 
-global func DoBaseProduction(int player, id material, int change)
+global func DoBaseProduction(proplist player, id material, int change)
 {
 	var base = Library_BaseMaterial->GetBaseMaterialManager(player);
 	if (base) 
@@ -77,7 +77,7 @@ global func DoBaseProduction(int player, id material, int change)
 
 /*-- Definition Interface --*/
 
-protected func GetBaseMaterialManager(int player)
+protected func GetBaseMaterialManager(proplist player)
 {
 	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(),  Find_Owner(player));
 	if (!base)

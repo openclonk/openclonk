@@ -435,7 +435,7 @@ public func OnCrewRankChange(object clonk)
 	return _inherited(clonk, ...);
 }
 
-public func OnCrewHealthChange(object clonk, int change, int cause, int caused_by)
+public func OnCrewHealthChange(object clonk, int change, int cause, proplist caused_by)
 {
 	var health_phys = clonk->~GetMaxEnergy();
 	if (health_phys && change != 0) // no false positives where change is zero

@@ -408,7 +408,7 @@ global func RootSurface(int max_movement)
 
 // Buys an object. Returns the object if it could be bought.
 // documented in /docs/sdk/script/fn
-global func Buy(id buy_def, int for_plr, int pay_plr, object from_vendor, bool show_errors)
+global func Buy(id buy_def, proplist for_plr, proplist pay_plr, object from_vendor, bool show_errors)
 {
 	// if no vendor is given try this
 	if (!from_vendor) 
@@ -421,7 +421,7 @@ global func Buy(id buy_def, int for_plr, int pay_plr, object from_vendor, bool s
 
 // Sells an object. Returns true if it could be sold.
 // documented in /docs/sdk/script/fn
-global func Sell(int plr, object obj, object to_vendor)
+global func Sell(proplist plr, object obj, object to_vendor)
 {
 	// if no vendor is given try this
 	if (!to_vendor)

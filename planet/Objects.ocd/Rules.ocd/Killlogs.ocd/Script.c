@@ -26,7 +26,7 @@ func OnClonkDeath(object clonk, proplist killed_by)
 // parameters: clonk, owner, killed_by
 global func GetAdditionalPlayerRelaunchString(){return _inherited(...);} // dummy
 
-public func OnClonkDeathEx(object clonk, int plr, int killed_by)
+public func OnClonkDeathEx(object clonk, proplist plr, proplist killed_by)
 {
 	if (!plr->GetName())
 		return;

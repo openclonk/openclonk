@@ -7,7 +7,7 @@
     <title>Buy</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -17,14 +17,14 @@
           <desc>Type of object to be bought.</desc>
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>for_player</name>
-          <desc>Owner (player number) of the new object.</desc>
+          <desc>Owner (player number before 9.0 OC) of the new object.</desc>
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>pay_player</name>
-          <desc>Number of the player who pays for the object.</desc>
+          <desc>Player (number before 9.0 OC) who pays for the object.</desc>
         </param>
         <param>
           <type>object</type>
@@ -54,4 +54,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2001-11</date>
+  <author>Marky</author><date>2021-06</date>
 </funcs>

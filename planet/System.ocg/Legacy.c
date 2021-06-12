@@ -11,10 +11,10 @@ static const VERSION_10_0_OC = "10.0";
 
 /* -- Player stuff -- */
 
-global func GetPlayerControlAssignment(int player_nr, int ctrl, bool human_readable, bool short_name)
+global func GetPlayerControlAssignment(any player, int ctrl, bool human_readable, bool short_name)
 {
 	LogLegacyWarning("GetPlayerControlAssignment", "GetPlayer(player)->GetControlAssignment(ctrl, human_readable, short_name)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	player = GetPlayerLegacy(player);
 	if (player)
 	{
 		return player->GetControlAssignment(ctrl, human_readable, short_name);
@@ -263,11 +263,11 @@ global func SetPlayerTeam(int player_nr, int new_team, bool no_calls)
 	}
 }
 
-global func SetPlayerViewLock(int player_nr, bool is_locked)
+global func SetPlayerViewLock(any player, bool is_locked)
 {
 	LogLegacyWarning("SetPlayerViewLock", "GetPlayer(player)->SetViewLocked(is_locked)", VERSION_10_0_OC);
 	// special player NO_OWNER: apply to all players
-	if (player_nr == NO_OWNER)
+	if (player == NO_OWNER)
 	{
 		for (var index = 0; index < GetPlayerCount(); index++)
 		{
@@ -275,7 +275,7 @@ global func SetPlayerViewLock(int player_nr, bool is_locked)
 		}
 		return true;
 	}
-	var player = GetPlayer(player_nr);
+	player = GetPlayerLegacy(player);
 	if (player)
 	{
 		player->SetViewLocked(is_locked);

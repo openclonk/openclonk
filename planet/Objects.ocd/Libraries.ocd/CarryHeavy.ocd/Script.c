@@ -22,7 +22,7 @@ public func GetCarrySpecial(clonk)
 /* Pickup */
 
 // Draws a hand symbol in addition to the regular selection highlight
-public func PickupHighlight(object dummy, int width, int height, int player)
+public func PickupHighlight(object dummy, int width, int height, proplist player)
 {
 	var selector =
 	{

@@ -239,7 +239,7 @@ public func TurnWheels()
 }
 
 // Custom fragments on callback from destructible library.
-public func OnDestruction(int change, int cause, int by_player)
+public func OnDestruction(int change, int cause, proplist by_player)
 {
 	// Only exit objects and parts if this lorry is not contained.
 	if (!Contained())

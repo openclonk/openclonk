@@ -58,7 +58,7 @@ protected func RemovePlayer(proplist plr)
 
 /*-- Misc --*/
 
-public func SetKillCount(int plr, int value)
+public func SetKillCount(proplist plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_kill_list[plrid] = value;
@@ -72,7 +72,7 @@ public func GetKillCount(proplist plr)
 	return score_kill_list[plrid];
 }
 
-public func DoKillCount(int plr, int value)
+public func DoKillCount(proplist plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_kill_list[plrid] += value;

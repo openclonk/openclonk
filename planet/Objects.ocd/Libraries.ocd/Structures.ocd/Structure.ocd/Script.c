@@ -69,7 +69,7 @@ public func Damage(int change, int cause, proplist cause_plr)
 	return _inherited(change, cause, cause_plr, ...);
 }
 
-private func EjectContentsOnDestruction(int cause, int by_player)
+private func EjectContentsOnDestruction(int cause, proplist by_player)
 {
 	// Exit all objects in this structure.
 	for (var obj in FindObjects(Find_Container(this)))
