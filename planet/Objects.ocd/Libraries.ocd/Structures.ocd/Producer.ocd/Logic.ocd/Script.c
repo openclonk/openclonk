@@ -532,7 +532,7 @@ public func ClearQueue(bool abort) // TODO: parameter is never used
 */
 func ModifyProduction(proplist info, int player)
 {
-	if (Hostile(GetOwner(), player)) return;
+	if (GetOwner()->Hostile(player)) return;
 
 	var product = info.Product;
 	var infinite = player->GetControlState(CON_ModifierMenu1) != 0;

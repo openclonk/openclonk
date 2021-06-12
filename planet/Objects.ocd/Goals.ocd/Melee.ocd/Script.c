@@ -24,14 +24,14 @@ protected func InitializePlayer(proplist newplr, int x, int y, object base, int 
 	return inherited(newplr, x, y, base, team, ...);
 }
 
-private func CheckTeamHostile(int plr1, int plr2)
+private func CheckTeamHostile(proplist plr1, proplist plr2)
 {
 	var team1 = plr1->GetTeam();
 	if (team1 != plr2->GetTeam())
 		return true;
 	if (team1)
 		return false;
-	return Hostile(plr1, plr2);
+	return plr1->Hostile(plr2);
 }
 
 public func IsFulfilled()
@@ -55,7 +55,7 @@ public func IsFulfilled()
 	return true;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	// Count enemy players.
 	var hostile_count;
@@ -64,7 +64,7 @@ public func GetDescription(int plr)
 		var byplr = GetPlayerByIndex(i);
 		if (byplr == plr)
 			continue;
-		if (Hostile(byplr, plr) )
+		if (byplr->Hostile(plr) )
 			hostile_count++;
 	}
 	
@@ -87,7 +87,7 @@ public func Activate(proplist byplr)
 		var plr = GetPlayerByIndex(i);
 		if (plr == byplr)
 			continue;
-		if (Hostile(plr, byplr) )
+		if (plr->Hostile(byplr) )
 			hostile_count++;
 	}
 	

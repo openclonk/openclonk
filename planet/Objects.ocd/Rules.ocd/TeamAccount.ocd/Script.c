@@ -29,7 +29,7 @@ global func SetWealth(proplist plr, int wealth)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var to_plr = GetPlayerByIndex(i);
-		if (to_plr != plr && !Hostile(to_plr, plr))
+		if (to_plr != plr && !to_plr->Hostile(plr))
 			_inherited(to_plr, wealth, ...);
 	}
 
@@ -42,7 +42,7 @@ protected func InitializePlayer(proplist plr)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var to_plr = GetPlayerByIndex(i);
-		if (to_plr != plr && !Hostile(to_plr, plr))
+		if (to_plr != plr && !to_plr->Hostile(plr))
 		{
 			DoWealth(to_plr, GetWealth(plr));
 			break;
@@ -63,7 +63,7 @@ protected func OnTeamSwitch(int player, int new_team, int old_team)
 	var count = 0;
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		if (!Hostile(player, GetPlayerByIndex(i)))
+		if (!player->Hostile(GetPlayerByIndex(i)))
 			count++;		
 	}
 	//var share = GetWealth(player) / count;

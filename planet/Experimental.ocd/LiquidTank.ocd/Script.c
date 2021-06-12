@@ -71,7 +71,7 @@ public func IsInteractable(object clonk)
 {
 	if (GetCon() < 100)
 		return false;
-	return !Hostile(GetOwner(), clonk->GetOwner());
+	return !GetOwner()->Hostile(clonk->GetOwner());
 }
 
 public func GetInteractionMetaInfo(object clonk)

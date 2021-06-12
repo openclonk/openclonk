@@ -200,7 +200,7 @@ public func InitializePlayer(proplist plr, x, y, base, team, script_id)
 	{
 		var other_clonks = startpoint->FindObjects(Find_Distance(50), Find_OCF(OCF_CrewMember));
 		var hostile = 0;
-		for (var c in other_clonks) if (Hostile(c->GetOwner(), plr)) ++hostile;
+		for (var c in other_clonks) if (c->GetOwner()->Hostile(plr)) ++hostile;
 		startpoint.penalty = GetLength(other_clonks) + hostile*1000;
 	}
 	SortArrayByProperty(possible_startpoints, "penalty");

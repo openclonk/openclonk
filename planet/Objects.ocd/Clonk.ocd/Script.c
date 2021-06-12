@@ -58,7 +58,7 @@ protected func DeathEffects(proplist killed_by)
 		DeathAnnounce();
 		
 		// When killed by a team member, the other Clonk randomly plays a sound.
-		if (!Random(5) && killed_by != NO_OWNER && killed_by != GetOwner() && !Hostile(killed_by, GetOwner()))
+		if (!Random(5) && killed_by != NO_OWNER && killed_by != GetOwner() && !killed_by->Hostile(GetOwner()))
 		{
 			var other_cursor = killed_by->GetCursor();
 			if (other_cursor)

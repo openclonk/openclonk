@@ -9,7 +9,7 @@ global func Punch(object obj, int strength)
 		w_controller = this->GetController();
 	var t_controller = obj->GetController();
 	if (FindObject(Find_ID(Rule_NoFriendlyFire)))
-		if (w_controller != NO_OWNER && t_controller != NO_OWNER && !Hostile(w_controller, t_controller))
+		if (w_controller != NO_OWNER && t_controller != NO_OWNER && !w_controller->Hostile(t_controller))
 			return false;
 	return _inherited(obj, strength, ...);
 }

@@ -160,7 +160,7 @@ global func Find_Hostile(proplist player)
 {
 	var p = [C4FO_Or];
 	for (var i = -1; i < GetPlayerCount(); i++)
-		if (Hostile(player, GetPlayerByIndex(i)))
+		if (player->Hostile(GetPlayerByIndex(i)))
 			p[GetLength(p)] = Find_Owner(GetPlayerByIndex(i));
 	return p;
 }
@@ -180,7 +180,7 @@ global func Find_Allied(proplist player)
 {
 	var p = [C4FO_Or];
 	for (var i = -1; i < GetPlayerCount(); i++)
-		if (!Hostile(player, GetPlayerByIndex(i)))
+		if (!player->Hostile(GetPlayerByIndex(i)))
 			p[GetLength(p)] = Find_Owner(GetPlayerByIndex(i));
 	return p;
 }

@@ -92,10 +92,10 @@ private func CheckChallenge(object pClonk)
     if (!pEnemy->GetAlive())
     {
       OnExit(pEnemy);
-      if (!Hostile(pClonk->GetOwner(), pEnemy->GetOwner()))
+      if (!pClonk->GetOwner()->Hostile(pEnemy->GetOwner()))
         pClonk->AI_LookForFriend(pEnemy);
     }
-    else if (Hostile(pClonk->GetOwner(), pEnemy->GetOwner()))
+    else if (pClonk->GetOwner()->Hostile(pEnemy->GetOwner()))
 		{
       OnExit(pEnemy);
 			pEnemy->~DoShow(200);

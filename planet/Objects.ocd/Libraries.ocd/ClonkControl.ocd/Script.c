@@ -682,7 +682,7 @@ func GetInteractionPriority(object target)
 	// Prefer own clonks for item transfer
 	if (owner == GetOwner()) return -100;
 	// If no own clonk, prefer friendly
-	if (!Hostile(owner, GetOwner())) return -120;
+	if (!owner->Hostile(GetOwner())) return -120;
 	// Hostile clonks? Lowest priority.
 	return -200;
 }

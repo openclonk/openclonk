@@ -184,7 +184,7 @@ func OnClonkDeath(object clonk, proplist killer)
 
 public func GetAdditionalPlayerRelaunchString(object clonk, int plr, proplist killed_by)
 {
-	if (!Hostile(killed_by, plr)) return;
+	if (!killed_by->Hostile(plr)) return;
 	if (!location->GetKing()) return;
 	if (location->GetKing()->GetOwner() != killed_by) return;
 	if (!GetEffect("NewKing", killed_by->GetCursor())) return;

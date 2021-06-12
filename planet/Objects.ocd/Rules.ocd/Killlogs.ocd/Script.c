@@ -40,7 +40,7 @@ public func OnClonkDeathEx(object clonk, proplist plr, proplist killed_by)
  		 log = Format(Translate(Format("KilledByGaia%d", which_one)), plr->GetTaggedName(), name);
  	else if (plr == killed_by)
 		log = Format(Translate(Format("Selfkill%d", which_one)), plr->GetTaggedName(), name);
- 	else if (!Hostile(plr, killed_by))
+ 	else if (!plr->Hostile(killed_by))
   		log = Format(Translate(Format("Teamkill%d", which_one)), plr->GetTaggedName(), name, killed_by->GetTaggedName());
 	else
 		log = Format(Translate(Format("KilledByPlayer%d", which_one)), plr->GetTaggedName(), name, killed_by->GetTaggedName());
