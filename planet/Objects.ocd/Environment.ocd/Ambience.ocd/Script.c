@@ -26,7 +26,7 @@ protected func Initialize()
 	return true;
 }
 
-public func SetEnvironment(string new_env, int plr)
+public func SetEnvironment(string new_env, proplist plr)
 {
 	// Switch to a fixed environment
 	if (new_env && !GetLength(new_env)) new_env = nil;
@@ -35,8 +35,8 @@ public func SetEnvironment(string new_env, int plr)
 	if (GetType(plr))
 	{
 		// Update for one player
-		fixed_player_environments[plr] = new_env;
-		set_envs = [player_environments[plr]];
+		fixed_player_environments[plr.ID] = new_env;
+		set_envs = [player_environments[plr.ID]];
 	}
 	else
 	{
@@ -163,7 +163,7 @@ private func Execute()
 	while (i--) if (!(++exec_counter % 3))
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
-		ExecutePlayer(plr, player_environments[plr]);
+		ExecutePlayer(plr, player_environments[plr.ID]);
 	}
 	return true;
 }
@@ -175,7 +175,7 @@ private func ExecutePlayer(proplist plr, array environments)
 	// Update active state of all player environments
 	if (cursor)
 	{
-		if (!(fixed_player_environments[plr] ?? fixed_environment))
+		if (!(fixed_player_environments[plr.ID] ?? fixed_environment))
 		{
 			var x = cursor->GetX(), y = cursor->GetY();
 			for (var env in environments)
@@ -238,7 +238,7 @@ func InitializePlayer(proplist plr)
 		var envs = CreateArray(n);
 		for (var i = 0; i < n; ++i)
 			envs[i] = new all_environments[i] { change_delay = 999, is_active = (all_environments[i].Name == fixed_environment) };
-		player_environments[plr] = envs;
+		player_environments[plr.ID] = envs;
 		// Newly joining players should have set playlist immediately (so they don't start playing a random song just to switch it immediately)
 		// However, this only works with a cursor
 		ExecutePlayer(plr, envs);
