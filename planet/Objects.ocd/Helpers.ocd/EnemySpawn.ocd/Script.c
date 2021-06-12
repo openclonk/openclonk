@@ -71,7 +71,7 @@ public func Initialize()
 		for (var iplr = 0; iplr < GetPlayerCount(C4PT_Script); ++iplr)
 		{
 			var plr = GetPlayerByIndex(iplr, C4PT_Script);
-			if (GetScriptPlayerExtraID(plr) == GetID())
+			if (plr.ExtraID == GetID())
 			{
 				g_enemyspawn_player = plr;
 				break;
