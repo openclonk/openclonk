@@ -644,7 +644,7 @@ private func CountContainedObjectsTimer()
 	}
 }
 
-public func OnTrigger(object triggering_clonk, int triggering_player, bool is_editor_test)
+public func OnTrigger(object triggering_clonk, proplist triggering_player, bool is_editor_test)
 {
 	// Check condition
 	if (condition && !UserAction->EvaluateCondition(condition, this, triggering_clonk, triggering_player)) return false;

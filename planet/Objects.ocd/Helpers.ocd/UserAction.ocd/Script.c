@@ -636,7 +636,7 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 	return true;
 }
 
-public func EvaluateCondition(proplist props, object action_object, object triggering_object, int triggering_player)
+public func EvaluateCondition(proplist props, object action_object, object triggering_object, proplist triggering_player)
 {
 	// Build temp context
 	var context = CreateObject(UserAction);

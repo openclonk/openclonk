@@ -89,7 +89,7 @@ public func GetInventoryIconOverlay()
 	return overlay;
 }
 
-public func Incineration(int caused_by)
+public func Incineration(proplist caused_by)
 {
 	SetController(caused_by);
 	AddEffect("Fuse", this, 1, 1, this);

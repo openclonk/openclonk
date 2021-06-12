@@ -17,7 +17,7 @@ local NoBurnDecay = true;
 // Feel free to change this time in your object (in frames)
 local BurnDownTime = 70;
 
-public func Incineration(int caused_by)
+public func Incineration(proplist caused_by)
 {
 	_inherited(caused_by);
 	// You shouldn't remove the object in Incineration but let's check anyway
