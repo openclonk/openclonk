@@ -53,10 +53,10 @@ global func GetPlayerControlState(int player_nr, int ctrl, bool analog_strength)
 	}
 }
 
-global func GetPlayerName(int player_nr)
+global func GetPlayerName(any player)
 {
 	LogLegacyWarning("GetPlayerName", "GetPlayer(player)->GetName()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	player = GetPlayerLegacy(player);
 	if (player)
 	{
 		return player->GetName();

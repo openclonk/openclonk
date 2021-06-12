@@ -141,10 +141,10 @@ func OnClonkDeath(object clonk, proplist killer)
 	_inherited(clonk, killer, ...);
 	if (clonk->GetAlive()) return;
 		
-	if (GetPlayerName(clonk->GetOwner()))
+	if (clonk->GetOwner()->GetName())
 		++player_deaths[clonk->GetOwner()];
 	 
-	if (GetPlayerName(clonk->GetOwner()))
+	if (clonk->GetOwner()->GetName())
 	if (killer == clonk->GetOwner() || killer == NO_OWNER)
 	{
 		// shame on the king who kills himself

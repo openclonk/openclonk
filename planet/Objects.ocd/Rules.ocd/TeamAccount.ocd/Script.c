@@ -22,7 +22,7 @@ global func SetWealth(int plr, int wealth)
 		return _inherited(plr, wealth, ...);
 		
 	// Only for valid players.
-	if (plr == NO_OWNER || !GetPlayerName(plr))
+	if (plr == NO_OWNER || !plr->GetName())
 		return _inherited(plr, wealth, ...);
 		
 	// Also set wealth of all allies.

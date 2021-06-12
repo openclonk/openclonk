@@ -333,7 +333,7 @@ global func FxFireTimer(object target, proplist effect, int time)
 	if (!target) return FX_Execute_Kill;
 	
 	// get cause
-	//if (!GetPlayerName(effect.caused_by)) effect.caused_by = NO_OWNER;;
+	//if (!effect.caused_by->GetName()) effect.caused_by = NO_OWNER;;
 		
 	// strength changes over time
 	if ((effect.strength < 100) && (time % 8 == 0))

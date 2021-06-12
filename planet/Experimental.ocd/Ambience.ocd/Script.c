@@ -126,7 +126,7 @@ private func ExecutePlayer(int plr)
 					}
 					// New environment and change delay has passed.
 					environment.no_change_delay = environment.min_initial_change_delay;
-					Log("%s environment: %s", GetPlayerName(plr), environment.music);
+					Log("%s environment: %s", plr->GetName(), environment.music);
 				}
 				else
 				{

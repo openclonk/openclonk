@@ -222,7 +222,7 @@ local CheckVictory = new Effect
 			{
 				var comma = "";
 				if (str != "") comma = ", ";
-				str = Format("%s%s<c %x>%s</c>", str, comma, plr->GetColor(), GetPlayerName(plr));
+				str = Format("%s%s<c %x>%s</c>", str, comma, plr->GetColor(), plr->GetName());
 			}
 		}
 		return str;
@@ -283,7 +283,7 @@ protected func OnClonkDeath(object clonk)
 	// Mark death on scoreboard.
 	Scoreboard->SetPlayerData(plr, "death", "{{Scoreboard_Death}}");
 	// Skip eliminated players, NO_OWNER, etc.
-	if (GetPlayerName(plr)) 
+	if (plr->GetName()) 
 	{
 		var crew = CreateObject(Clonk, 0, 0, plr);
 		crew->MakeCrewMember(plr);

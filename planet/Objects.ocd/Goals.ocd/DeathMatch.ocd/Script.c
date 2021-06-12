@@ -70,13 +70,13 @@ public func GetDescription(proplist plr)
 	{
 		var score = GetRelativeScore(plr);
 		if (score.kills > 0)
-			return Format("$MsgAhead$",	 score.kills,  GetPlayerName(score.best));
+			return Format("$MsgAhead$",	 score.kills,  score.best->GetName());
 		else if (score.kills < 0)
-			return Format("$MsgBehind$", -score.kills, GetPlayerName(score.best));
+			return Format("$MsgBehind$", -score.kills, score.best->GetName());
 		else if (score.best == plr) 
 			return Format("$MsgYouAreBest$", score.kills);
 		else 
-			return Format("$MsgEqual$", GetPlayerName(score.best));
+			return Format("$MsgEqual$", score.best->GetName());
 	}
 }
 
@@ -89,10 +89,10 @@ public func Activate(proplist byplr)
 	else 
 	{
 		var score = GetRelativeScore(byplr);
-		if (score.kills > 0)		 MessageWindow(Format("$MsgAhead$",	 score.kills,  GetPlayerName(score.best)), byplr);
-		else if (score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills, GetPlayerName(score.best)), byplr);
+		if (score.kills > 0)		 MessageWindow(Format("$MsgAhead$",	 score.kills,  score.best->GetName()), byplr);
+		else if (score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills, score.best->GetName()), byplr);
 		else if (score.best == byplr) MessageWindow(Format("$MsgYouAreBest$", score.kills), byplr);
-		else MessageWindow(Format("$MsgEqual$", GetPlayerName(score.best)), byplr);
+		else MessageWindow(Format("$MsgEqual$", score.best->GetName()), byplr);
 	}
 }
 

@@ -44,7 +44,7 @@ protected func OnClonkDeath(object clonk, proplist killer)
 	score_killstreak_list[plrid] = 0;
 	Scoreboard->SetPlayerData(plr, "killstreaks", nil);
 	// Only if killer exists and has not committed suicide.
-	if (plr == killer || !GetPlayerName(killer))
+	if (plr == killer || !killer->GetName())
 		return _inherited(clonk, killer, ...);
 	// Only if killer and victim are on different teams.
 	if (killer->GetTeam() && killer->GetTeam() == plr->GetTeam())

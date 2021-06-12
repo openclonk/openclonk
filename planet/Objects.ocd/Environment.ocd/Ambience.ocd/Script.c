@@ -194,7 +194,7 @@ private func ExecutePlayer(proplist plr, array environments)
 					{
 						// Waited long enough. Activate or deactivate this environment.
 						env.is_active = is_active;
-						//Log("%s environment: %s set to %v", GetPlayerName(plr), env.Name, is_active);
+						//Log("%s environment: %s set to %v", plr->GetName(), env.Name, is_active);
 					}
 				}
 			}

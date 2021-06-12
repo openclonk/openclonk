@@ -300,7 +300,7 @@ private func GetRelaunchBase(proplist plr, object clonk)
 
 public func DoRelaunch(proplist plr, object clonk, array position, bool no_creation)
 {
-	if (!GetPlayerName(plr))
+	if (!plr->GetName())
 		return;
 	if (respawn_last_clonk && plr->GetCrewCount() >= 1)
 		return;

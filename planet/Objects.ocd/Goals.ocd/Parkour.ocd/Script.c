@@ -428,7 +428,7 @@ protected func OnClonkDeath(object clonk, proplist killed_by)
 {
 	var plr = clonk->GetOwner();
 	// Only respawn if required and if the player still exists.
-	if (no_respawn_handling || !GetPlayerName(plr) || plr->GetCrewCount()) 
+	if (no_respawn_handling || !plr->GetName() || plr->GetCrewCount()) 
 		return;
 	var new_clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	new_clonk->MakeCrewMember(plr);
@@ -440,7 +440,7 @@ protected func OnClonkDeath(object clonk, proplist killed_by)
 	// Scenario script callback.
 	GameCall("OnPlayerRespawn", plr, FindRespawnCP(plr));
 	// Log message.
-	Log(RndRespawnMsg(), GetPlayerName(plr));
+	Log(RndRespawnMsg(), plr->GetName());
 	// Respawn actions
 	var cp = FindRespawnCP(plr);
 	UserAction->EvaluateAction(on_respawn, this, clonk, plr);
@@ -630,7 +630,7 @@ private func DoBestTime(proplist plr)
 		if (time != 0 && (!rectime || time < rectime))
 		{
 			check_plr->SetExtraData(time_store, time);
-			Log(Format("$MsgBestTime$", GetPlayerName(check_plr), TimeToString(time)));
+			Log(Format("$MsgBestTime$", check_plr->GetName(), TimeToString(time)));
 		}
 	}
 	return;
@@ -659,7 +659,7 @@ private func TimeToString(int time)
 // Resets the personal best (call from message board).
 public func ResetPersonalBest(proplist plr)
 {
-	if (!GetPlayerName(plr))
+	if (!plr->GetName())
 		return;
 	// Forward call to actual goal.
 	if (this == Goal_Parkour)
@@ -687,7 +687,7 @@ private func SetEvalData(proplist winner)
 	if (winteam)
 		msg = Format("$MsgEvalTeamWon$", GetTeamName(winteam), TimeToString(time));
 	else
-		msg = Format("$MsgEvalPlrWon$", GetPlayerName(winner), TimeToString(time));
+		msg = Format("$MsgEvalPlrWon$", winner->GetName(), TimeToString(time));
 	AddEvaluationData(msg, winner);
 	// Individual data.
 	for (var i = 0; i < GetPlayerCount(); i++)

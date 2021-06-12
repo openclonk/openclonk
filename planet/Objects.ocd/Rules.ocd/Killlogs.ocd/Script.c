@@ -17,7 +17,7 @@ func OnClonkDeath(object clonk, proplist killed_by)
 {
 	var plr = clonk->GetOwner();
 	// Only log for existing players and clonks.
-	if (plr == NO_OWNER || !GetPlayerName(plr) || !clonk) 
+	if (plr == NO_OWNER || !plr->GetName() || !clonk) 
 		return;
 	ScheduleCall(this, "OnClonkDeathEx", 1, 0, clonk, plr, killed_by);
 	return _inherited(clonk, killed_by, ...);
@@ -28,7 +28,7 @@ global func GetAdditionalPlayerRelaunchString(){return _inherited(...);} // dumm
 
 public func OnClonkDeathEx(object clonk, int plr, int killed_by)
 {
-	if (!GetPlayerName(plr))
+	if (!plr->GetName())
 		return;
 	var name = "Clonk";
 	if (clonk)
@@ -36,7 +36,7 @@ public func OnClonkDeathEx(object clonk, int plr, int killed_by)
 	// Assert there are three StringTbl entries for each.
 	var which_one = Random(3) + 1;
 	var log = "";
-	if (!GetPlayerName(killed_by))
+	if (!killed_by->GetName())
  		 log = Format(Translate(Format("KilledByGaia%d", which_one)), plr->GetTaggedName(), name);
  	else if (plr == killed_by)
 		log = Format(Translate(Format("Selfkill%d", which_one)), plr->GetTaggedName(), name);

@@ -38,11 +38,11 @@ protected func InitializePlayer(proplist plr)
 	if (plr.Type == C4PT_Script)
 	{
 		// Store the player numbers.
-		if (GetPlayerName(plr) == "Victim")
+		if (plr->GetName() == "Victim")
 			plr_victim = plr;
-		else if (GetPlayerName(plr) == "Killer")
+		else if (plr->GetName() == "Killer")
 			plr_killer = plr;
-	 	else if (GetPlayerName(plr) == "KillerFake")
+	 	else if (plr->GetName() == "KillerFake")
 			plr_killer_fake = plr;
 		// Make crew of killers invincible and set position.	
 		if (plr == plr_killer)
@@ -160,7 +160,7 @@ global func FxIntTestControlStop(object target, proplist effect, int reason, boo
 global func FxIntTestControlOnDeath(object target, proplist effect, int killer, object clonk)
 {
 	// Log the result.
-	Log("Test %d [%s]: %v, killer = %s", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer, GetPlayerName(killer));
+	Log("Test %d [%s]: %v, killer = %s", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer, killer->GetName());
 	// Store the result.
 	effect.results[effect.testnr - 1] = (plr_killer == killer);
 	effect.launched = false;

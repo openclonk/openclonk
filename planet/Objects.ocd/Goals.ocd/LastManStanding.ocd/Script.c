@@ -53,13 +53,13 @@ protected func OnClonkDeath(object clonk, proplist killer)
 	
 	// Kill bonus: 1 extra relaunch per KillsToRelaunch kills.
 	// Only if killer exists and has not committed suicide.
-	if (plr != killer && GetPlayerName(killer))
+	if (plr != killer && killer->GetName())
 		// Only if killer and victim are on different teams.
 		if (!(killer->GetTeam() && killer->GetTeam() == plr->GetTeam()))
 			if (KillsToRelaunch() && !(GetKillCount(killer) % KillsToRelaunch()) && GetKillCount(killer))
 			{
 				GetRelaunchRule()->DoPlayerRelaunchCount(killer, 1);
-				Log("$MsgRelaunchGained$", GetPlayerName(killer));
+				Log("$MsgRelaunchGained$", killer->GetName());
 			}
 				
 	// Show scoreboard for a while.
