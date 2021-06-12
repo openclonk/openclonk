@@ -14,6 +14,20 @@ static const Player = new _Player
 	// Functions
 	GetName = Global.GetName,  // No need to redefine this in the engine
 
+	// Returns the name of a player, including color markup using the player color.
+	// documented in /docs/sdk/script/fn
+	GetTaggedName = func ()
+	{
+		var player_name = this->GetName();
+		if (!player_name)
+		{
+			return;
+		}
+		var player_color = MakeColorReadable(this->GetColor());
+		var tagged_player_name = Format("<c %x>%s</c>", player_color, player_name);
+		return tagged_player_name;
+	},
+
 };
 
 static const NO_PLAYER = nil;
@@ -55,21 +69,6 @@ global func GetTeamByName(string team_name)
 	}
 	// There is no team with that name.
 	return NO_OWNER;
-}
-
-// Returns the name of a player, including color markup using the player color.
-// documented in /docs/sdk/script/fn
-global func GetTaggedPlayerName(proplist player)
-{
-	if (!player) return;
-	var player_name = player->GetName();
-	if (!player_name)
-	{
-		return;
-	}
-	var player_color = MakeColorReadable(player->GetColor());
-	var tagged_player_name = Format("<c %x>%s</c>", player_color, player_name);
-	return tagged_player_name;
 }
 
 // Returns the name of a team, including color markup using the team color.

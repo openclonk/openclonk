@@ -153,6 +153,10 @@
           <col><funclink>GetHiRank</funclink></col>
         </row>
         <row>
+          <col><code>GetTaggedName</code></col>
+          <col><funclink>GetTaggedPlayerName</funclink></col>
+        </row>
+        <row>
           <col><code>GetTeam</code></col>
           <col><funclink>GetPlayerTeam</funclink></col>
         </row>

@@ -173,6 +173,18 @@ global func GetScriptPlayerExtraID(player_nr)
 	}
 }
 
+// Returns the name of a player, including color markup using the player color.
+// documented in /docs/sdk/script/fn
+global func GetTaggedPlayerName(any player)
+{
+	LogLegacyWarning("GetTaggedPlayerName", "GetPlayer(player)->GetTaggedName()", VERSION_10_0_OC);
+	player = GetPlayerLegacy(player);
+	if (player)
+	{
+		return player->GetTaggedName();
+	}
+}
+
 global func Hostile(any player, any opponent, bool check_one_way_only)
 {
 	LogLegacyWarning("Hostile", "GetPlayer(player)->Hostile(opponent, check_one_way_only)", VERSION_10_0_OC);
