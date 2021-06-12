@@ -12,7 +12,7 @@ func InitializePlayer(proplist player)
 	// Harsher zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
 		player->SetZoomByViewRange(240, 160, flag);
-	SetPlayerViewLock(player, true);
+	player->SetViewLocked(true);
 	// Position and materials
 	LaunchPlayer(player);
 	return true;

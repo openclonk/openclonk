@@ -75,7 +75,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Harsh zoom range.
 	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	
 	// Give the player basic knowledge.
 	GivePlayerBasicKnowledge(plr);

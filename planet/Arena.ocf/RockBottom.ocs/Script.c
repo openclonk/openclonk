@@ -79,7 +79,7 @@ protected func InitializePlayer(proplist plr)
 	plr->SetZoomByViewRange(LandscapeWidth() / 2, nil, PLRZOOM_LimitMin);
 	// Set player zoom to be standard the landscape width.
 	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	return;
 }
 

@@ -101,7 +101,7 @@ private func InitPlayerRound(proplist plr)
 	// Unmark death on scoreboard.
 	Scoreboard->SetPlayerData(plr, "death", "");
 	// Players can scroll freely while waiting for the next round. Disable this now.
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	// Disable the Clonk during the countdown.
 	var crew = plr->GetCrew();
 	crew->SetCrewEnabled(false);
@@ -274,7 +274,7 @@ private func PutInRelaunchContainer(object clonk)
 	// We just use the relaunch object as a dumb container.
 	clonk->Enter(relaunch);
 	// Allow scrolling around the landscape.
-	SetPlayerViewLock(plr, false);
+	plr->SetViewLocked(false);
 }
 
 protected func OnClonkDeath(object clonk)

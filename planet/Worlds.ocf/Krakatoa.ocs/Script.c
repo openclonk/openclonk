@@ -54,7 +54,7 @@ protected func InitializePlayer(proplist plr)
 {
 	// Set zoom range.
 	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	
 	// Give the player its knowledge and base materials.
 	GivePlayerBasicKnowledge(plr);

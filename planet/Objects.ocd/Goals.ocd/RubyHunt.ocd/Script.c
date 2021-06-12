@@ -67,7 +67,7 @@ public func IsFulfilled()
 		// Free view when game is over
 		for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
 			plr->SetZoomByViewRange(LandscapeWidth(),LandscapeWidth(),flag);
-		SetPlayerViewLock(plr, false);
+		plr->SetViewLocked(false);
 		plr->SetFoW(false);
 		// Eliminate non-winning players
 		if (is_cooperative) continue; // in coop mode, everyone wins

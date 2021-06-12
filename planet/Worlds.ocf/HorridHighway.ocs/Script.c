@@ -58,7 +58,7 @@ protected func InitializePlayer(proplist plr)
 	// Zoom range.
 	plr->SetZoomByViewRange(1200, nil, PLRZOOM_LimitMax);
 	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_Set);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	
 	// Position and materials.
 	var i, crew;

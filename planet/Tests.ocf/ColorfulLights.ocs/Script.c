@@ -45,7 +45,7 @@ func InitializePlayer(proplist plr)
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
 		plr->SetZoomByViewRange(400, 250, flag);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	// Initial join
 	var crew = plr->GetCrew();
 	crew->SetPosition(35 + Random(10) , 1140);

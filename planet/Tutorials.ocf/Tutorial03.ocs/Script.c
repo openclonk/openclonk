@@ -265,7 +265,7 @@ protected func InitializePlayer(proplist plr)
 	AddEffect("TrackGoal", nil, 100, 2);
 
 	// Standard player zoom for tutorials.
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	
 	// Take ownership of the sawmill construction site.

@@ -53,7 +53,7 @@ protected func InitializePlayer(proplist plr)
 { 
 	// Harsh zoom range.
 	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 
 	// Move clonks to location and give them a shovel.
 	var index = 0, crew;

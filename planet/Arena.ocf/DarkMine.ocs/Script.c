@@ -107,7 +107,7 @@ public func OnClonkLeftRelaunch(object clonk, int plr)
 	// such that light sources a bit further away can be spotted.
 	plr->SetZoomByViewRange(300, nil, PLRZOOM_Direct);
 	plr->SetZoomByViewRange(600, nil, PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	return;
 }
 

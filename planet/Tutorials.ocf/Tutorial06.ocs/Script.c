@@ -175,7 +175,7 @@ protected func InitializePlayer(proplist plr)
 	effect.to_y = 558;
 
 	// Standard player zoom for tutorials.
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	plr->SetZoomByViewRange(300, nil, PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
 	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_LimitMax);
 	

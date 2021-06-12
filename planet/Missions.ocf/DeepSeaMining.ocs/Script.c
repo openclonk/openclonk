@@ -81,7 +81,7 @@ protected func InitializePlayer(proplist plr)
 	// Harsh zoom range
 	plr->SetZoomByViewRange(500, 350, PLRZOOM_LimitMax);
 	plr->SetZoomByViewRange(500, 350, PLRZOOM_Direct);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 
 	// Intro
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);

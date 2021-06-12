@@ -235,7 +235,7 @@ protected func InitializePlayer(proplist plr)
 	goal_effect.plr = plr;
 
 	// Standard player zoom for tutorials.
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	
 	// Knowledge for the pickaxe construction.

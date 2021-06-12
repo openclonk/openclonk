@@ -89,7 +89,7 @@ public func InitializePlayer(plr)
 
 	// Set zoom range.
 	plr->SetZoomByViewRange(600, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)

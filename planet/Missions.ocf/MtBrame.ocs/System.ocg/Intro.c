@@ -35,7 +35,7 @@ global func IntroAddPlayer(int plr)
 		container.JumpSpeed = 0;
 
 		plr->SetViewTarget(crew);
-		SetPlayerViewLock(plr, true);
+		plr->SetViewLocked(true);
 		plr->SetZoomByViewRange(320, 240);
 
 		container->SetCommand("None", container);
@@ -190,7 +190,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 		for (var crew in effect.Players)
 		{
 			crew->GetOwner()->SetViewTarget(crew);
-			SetPlayerViewLock(crew->GetOwner(), true);
+			crew->GetOwner()->SetViewLocked(true);
 			var container = crew->Contained();
 			crew->Exit(0, 10);
 			container->RemoveObject();

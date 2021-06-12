@@ -97,7 +97,7 @@ func InitializePlayer(proplist plr)
 	// Everything freely visible (to allow aiming with the cannon)
 	plr->SetFoW(false);
 	plr->SetZoomByViewRange(LandscapeWidth(),LandscapeHeight(), PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, false);
+	plr->SetViewLocked(false);
 	// Acquire base
 	var team = plr->GetTeam();
 	var flag = g_respawn_flags[team];

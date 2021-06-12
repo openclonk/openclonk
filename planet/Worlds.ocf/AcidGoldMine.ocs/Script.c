@@ -41,7 +41,7 @@ protected func InitializePlayer(proplist plr)
 {
 	// Harsh zoom range.
 	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 
 	// Position crew and give them materials.
 	var index = 0, crew;
