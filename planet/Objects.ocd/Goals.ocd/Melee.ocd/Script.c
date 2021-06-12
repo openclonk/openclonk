@@ -26,8 +26,8 @@ protected func InitializePlayer(proplist newplr, int x, int y, object base, int 
 
 private func CheckTeamHostile(int plr1, int plr2)
 {
-	var team1 = GetPlayerTeam(plr1);
-	if (team1 != GetPlayerTeam(plr2))
+	var team1 = plr1->GetTeam();
+	if (team1 != plr2->GetTeam())
 		return true;
 	if (team1)
 		return false;
@@ -37,7 +37,7 @@ private func CheckTeamHostile(int plr1, int plr2)
 public func IsFulfilled()
 {
 	// If Teams.txt-Teams still need to be chosen, the goal cannot be fulfilled.
-	if (GetPlayerTeam(GetPlayerByIndex()) == -1) return;
+	if (GetPlayerByIndex()->GetTeam() == -1) return;
 
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{

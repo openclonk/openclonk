@@ -181,7 +181,7 @@ local CheckVictory = new Effect
 		else if (!FindObject(find_living, Find_Hostile(clonk->GetOwner())))
 		{
 			// We have a winner!
-			var team = GetPlayerTeam(clonk->GetOwner());
+			var team = clonk->GetOwner()->GetTeam();
 			PushBack(goal.winners, team);
 			// Announce the winning team.
 			msg = Format("$WinningTeam$", GetTeamPlayerNames(team));
@@ -218,7 +218,7 @@ local CheckVictory = new Effect
 		for (var i = 0; i < GetPlayerCount(); i++)
 		{
 			var plr = GetPlayerByIndex(i);
-			if (GetPlayerTeam(plr) == team)
+			if (plr->GetTeam() == team)
 			{
 				var comma = "";
 				if (str != "") comma = ", ";
@@ -301,7 +301,7 @@ private func GetTeamPlayers()
 	var result = CreateArray(GetTeamCount() + 1);
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		var plr = GetPlayerByIndex(i), team = GetPlayerTeam(plr);
+		var plr = GetPlayerByIndex(i), team = plr->GetTeam();
 		SetLength(result, Max(team + 1, GetLength(result)));
 		result[team] = result[team] ?? [];
 		PushBack(result[team], plr);
@@ -358,7 +358,7 @@ private func EliminateLosers()
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (GetPlayerTeam(plr) != winning_team)
+		if (plr->GetTeam() != winning_team)
 			plr->Eliminate();
 	}
 	// The included melee goal will end the scenario.
@@ -386,7 +386,7 @@ private func UpdateScoreboardWins(int team)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (GetPlayerTeam(plr) == team)
+		if (plr->GetTeam() == team)
 		{
 			Scoreboard->SetPlayerData(plr, "wins", "", wins);
 		}

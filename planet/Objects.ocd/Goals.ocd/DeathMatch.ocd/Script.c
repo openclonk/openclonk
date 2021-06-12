@@ -59,7 +59,7 @@ public func IsFulfilled()
 	return true;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	if (IsFulfilled()) 
 	{
@@ -120,8 +120,8 @@ private func GetRelativeScore(proplist player)
 
 private func GetPlayerTeamScore(proplist player)
 {
-	if (GetPlayerTeam(player) < 1) return GetKillCount(player);
-	return GetTeamScore(GetPlayerTeam(player));
+	if (player->GetTeam() < 1) return GetKillCount(player);
+	return GetTeamScore(player->GetTeam());
 }
 
 private func GetTeamScore(int team) 
@@ -131,14 +131,14 @@ private func GetTeamScore(int team)
 	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i);
-		var team2 = GetPlayerTeam(plr);
+		var team2 = plr->GetTeam();
 		if (team == team2)
 			score += GetKillCount(plr);
 	}
 	return score;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return Format("Deathmatch: %d", GetRelativeScore(plr).kills);
 }

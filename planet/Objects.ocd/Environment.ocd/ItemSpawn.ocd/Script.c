@@ -87,7 +87,7 @@ private func UpdateVisibility(int plr)
 {
 	// Spawn is visible if the item is currently not collected by the player
 	// In case a team is set, it also needs to match
-	Visibility[plr + 1] = !spawn_list[plr] && (!team || team == GetPlayerTeam(plr));
+	Visibility[plr + 1] = !spawn_list[plr] && (!team || team == plr->GetTeam());
 	return true;
 }
 

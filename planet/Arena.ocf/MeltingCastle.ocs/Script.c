@@ -99,7 +99,7 @@ func InitializePlayer(proplist plr)
 	plr->SetZoomByViewRange(LandscapeWidth(),LandscapeHeight(), PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, false);
 	// Acquire base
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	var flag = g_respawn_flags[team];
 	if (flag && flag->GetOwner() == NO_OWNER) AcquireBase(plr, team);
 	// Intro message. Delayed to be visible to all players.
@@ -141,7 +141,7 @@ func LaunchPlayer(object clonk, int plr)
 
 public func OnPlayerRelaunch(int plr)
 {
-	if (!g_respawn_flags[GetPlayerTeam(plr)])
+	if (!g_respawn_flags[plr->GetTeam()])
 		return plr->Eliminate();
 }
 
@@ -154,7 +154,7 @@ public func RelaunchPosition(int iPlr, int iTeam)
 public func OnClonkLeftRelaunch(object clonk, int plr)
 {
 	// Find flag for respawn
-	var flagpole = g_respawn_flags[GetPlayerTeam(plr)];
+	var flagpole = g_respawn_flags[plr->GetTeam()];
 	if (!flagpole) return plr->Eliminate(); // Flag lost and clonk died? Game over!
 	
 	// Reset available items in spawns

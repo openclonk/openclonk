@@ -134,7 +134,7 @@ func InitPlayerRound(int plr, object crew)
 	var start_pos = nil;
 	if (SCENPAR_TeamsTogether == 1)
 	{
-		start_pos = GetTeamSpawnPosition(GetPlayerTeam(plr));
+		start_pos = GetTeamSpawnPosition(plr->GetTeam());
 	}
 	if (start_pos == nil)
 	{

@@ -136,7 +136,7 @@ public func EvaluatePlayerMask(proplist mask, int player)
 	var option = mask.Option;
 	if (option == "all") return true;
 	if (option == "number") return player == mask.Data;
-	if (option == "team") return GetPlayerTeam(player) == mask.Data;
+	if (option == "team") return player->GetTeam() == mask.Data;
 	// Unknown player mask option
 	return false;
 }

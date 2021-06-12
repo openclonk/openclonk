@@ -204,7 +204,7 @@ private func CheckForWinner()
 				var check_plr = GetPlayerByIndex(j);
 				if (check_plr == plr)
 					continue;
-				if (GetPlayerTeam(check_plr) != 0 && GetPlayerTeam(check_plr) == GetPlayerTeam(plr))
+				if (check_plr->GetTeam() != 0 && check_plr->GetTeam() == plr->GetTeam())
 					continue;
 				check_plr->Eliminate();
 			}
@@ -253,7 +253,7 @@ private func GetTeamList()
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var p = GetPlayerByIndex(i);
-		var t = GetPlayerTeam(p);
+		var t = p->GetTeam();
 		
 		var found = false;
 		for (var x = 0;x<GetLength(teams);++x)
@@ -278,7 +278,7 @@ private func GetTeamPoints()
 		for (var d = 0;d<GetPlayerCount();++d)
 		{
 			var plr = GetPlayerByIndex(d);
-			if (GetPlayerTeam(plr) != t) continue;
+			if (plr->GetTeam() != t) continue;
 			
 			p += player_points[plr.ID];
 

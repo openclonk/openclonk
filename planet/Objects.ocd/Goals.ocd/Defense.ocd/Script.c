@@ -549,14 +549,14 @@ public func SetRoundEvaluationData()
 	// Obviously get rid of settlement score.
 	HideSettlementScoreInEvaluation(true);
 	// Display the number of completed waves.
-	AddEvaluationData(Format("$MsgEvaluationData$", completed_waves, GetScore()), 0);
+	AddEvaluationData(Format("$MsgEvaluationData$", completed_waves, GetScore()), GetPlayerByIndex(0));
 	return;
 }
 
 
 /*-- Description --*/
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var wave_msg = "";
 	if (fx_wave_control)

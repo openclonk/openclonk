@@ -194,7 +194,7 @@ private func InitAnimals(int amount)
 protected func InitializePlayer(proplist plr)
 {
 	// Make the player enemy to all other players.
-	Goal_Melee->MakeHostileToAll(plr, GetPlayerTeam(plr));
+	Goal_Melee->MakeHostileToAll(plr, plr->GetTeam());
 	// Set large zoom ranges for the player.
 	plr->SetZoomByViewRange(1200, nil, PLRZOOM_LimitMax);
 	// Give the player knowledge for items in the inventor's lab.

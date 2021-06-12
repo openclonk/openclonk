@@ -29,7 +29,7 @@ public func OnlyRichSurvives()
 		if (pwealth > mostwealth)
 		{
 			mostwealth = pwealth;
-			teamwithmostwealth = GetPlayerTeam(GetPlayerByIndex(i));
+			teamwithmostwealth = GetPlayerByIndex(i)->GetTeam();
 		}
 	}
 	
@@ -41,7 +41,7 @@ public func OnlyRichSurvives()
 		var pwealth = GetWealth(GetPlayerByIndex(i));
 		if (pwealth == mostwealth)
 		{
-			if (GetPlayerTeam(GetPlayerByIndex(i)) != teamwithmostwealth)
+			if (GetPlayerByIndex(i)->GetTeam() != teamwithmostwealth)
 			{
 				// Stalemate detected
 				stalematecheck_ok = false;

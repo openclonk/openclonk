@@ -47,7 +47,7 @@ protected func OnClonkDeath(object clonk, proplist killer)
 	if (plr == killer || !GetPlayerName(killer))
 		return _inherited(clonk, killer, ...);
 	// Only if killer and victim are on different teams.
-	if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(plr))
+	if (killer->GetTeam() && killer->GetTeam() == plr->GetTeam())
 		return _inherited(clonk, killer, ...);
 	// Modify scoreboard kill streak count entry for killer.
 	score_killstreak_list[killerid]++;

@@ -208,7 +208,7 @@ public func ClearedByTeam(int team)
 	{
 		// PARKOUR_CP_Team: Cleared if all players of the team have cleared the checkpoint.
 		for (var i = 0; i < GetPlayerCount(); i++)
-			if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
+			if (GetPlayerByIndex(i)->GetTeam() == team)
 				if (!ClearedByPlayer(GetPlayerByIndex(i)))
 					return false;
 		return true;					
@@ -217,7 +217,7 @@ public func ClearedByTeam(int team)
 	{
 		// Not PARKOUR_CP_Team: Cleared if one player has cleared the checkpoint.
 		for (var i = 0; i < GetPlayerCount(); i++)
-			if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
+			if (GetPlayerByIndex(i)->GetTeam() == team)
 				if (ClearedByPlayer(GetPlayerByIndex(i)))
 					return true;
 	}
@@ -245,7 +245,7 @@ public func IsActiveForPlayer(proplist plr)
 		for (var cp in FindObjects(Find_ID(GetID()), Find_Func("GetCPNumber")))
 			if (cp->GetCPNumber() + 1 == GetCPNumber())
 			{	
-				var team = GetPlayerTeam(plr);		
+				var team = plr->GetTeam();		
 				if (cp->GetCPMode() & PARKOUR_CP_Team && team)
 				{
 					if (cp->ClearedByTeam(team))
@@ -267,7 +267,7 @@ public func IsActiveForTeam(int team)
 		return false;
 	// Checkpoint is active for a team if it is active for one of its members.
 	for (var i = 0; i < GetPlayerCount(); i++)
-		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
+		if (GetPlayerByIndex(i)->GetTeam() == team)
 			if (IsActiveForPlayer(GetPlayerByIndex(i)))
 				return true;
 	return false;
@@ -301,7 +301,7 @@ protected func CheckForClonks()
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(cp_size)))
 	{
 		var plr = clonk->GetOwner();
-		var team = GetPlayerTeam(plr);
+		var team = plr->GetTeam();
 		var plrid = GetPlayerID(plr);
 		// Check whether this CP is already activated for player or its team.
 		if (!IsActiveForPlayer(plr) && !IsActiveForTeam(team))
@@ -364,12 +364,12 @@ private func ClearCPForPlr(proplist plr, bool is_first_clear)
 	Sound("UI::Cleared", false, 100, plr);
 	cp_con->AddPlayerClearedCP(plr, this, is_first_clear); // Notify parkour goal.
 	// Also clear for team members if the checkpoint is not PARKOUR_CP_Team.
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	if (team && !(cp_mode & PARKOUR_CP_Team))
 	{
 		for (var test_plr in GetPlayers())
 		{
-			if (test_plr != plr && GetPlayerTeam(test_plr) == team)
+			if (test_plr != plr && test_plr->GetTeam() == team)
 			{
 				var test_plr_id = GetPlayerID(test_plr);
 				cleared_by_plr[test_plr_id] = true;

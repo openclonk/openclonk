@@ -625,7 +625,7 @@ global func Test11_OnStart(int plr)
 	ScheduleCall(nil, "SetHostility", 9 * 36, 0, script_plr, plr, false);
 	
 	// Switch the team of the script player.
-	var team = GetPlayerTeam(script_plr);
+	var team = script_plr->GetTeam();
 	ScheduleCall(nil, "SetPlayerTeam", 12 * 36, 0, script_plr, team + 1);
 
 	// And switch the team of the script player back again.

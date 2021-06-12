@@ -299,7 +299,7 @@ public func Damage(int change, int cause, proplist cause_plr)
 	return;	
 }
 
-public func Incineration(int caused_by)
+public func Incineration(proplist caused_by)
 {
 	if (OnFire())
 		return DoFireworks(caused_by);

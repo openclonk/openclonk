@@ -154,7 +154,7 @@ public func PlayerReachedFinishCP(proplist plr, object cp, bool is_first_clear)
 {
 	if (finished)
 		return;
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	plr_list[plr.ID]++;
 	if (team)
 		team_list[team]++;
@@ -219,11 +219,11 @@ private func ResetAllClearedCP()
 // Eliminates all players apart from the winner and his team.
 private func EliminatePlayers(proplist winner)
 {
-	var winteam = GetPlayerTeam(winner);
+	var winteam = winner->GetTeam();
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		var team = GetPlayerTeam(plr);
+		var team = plr->GetTeam();
 		if (plr == winner) // The winner self.
 			continue;
 		if (team && team == winteam) // In the same team as the winner.
@@ -240,7 +240,7 @@ public func IsFulfilled()
 
 public func GetDescription(proplist plr)
 {
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	var msg;
 	if (finished)
 	{
@@ -267,7 +267,7 @@ public func GetDescription(proplist plr)
 
 public func Activate(proplist plr)
 {
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	var msg;
 	if (finished)
 	{
@@ -295,7 +295,7 @@ public func Activate(proplist plr)
 
 public func GetShortDescription(proplist plr)
 {
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	var parkour_length = GetParkourLength();
 	if (parkour_length == 0)
 		return "";
@@ -344,7 +344,7 @@ private func GetTeamPosition(int team)
 		for (var i = 0; i < GetPlayerCount(); i++)
 		{
 			var plr = GetPlayerByIndex(i);
-			if (GetPlayerTeam(plr) == team)
+			if (plr->GetTeam() == team)
 			{
 				var path_length = ObjectDistance(cp_list[cleared], cp_list[cleared + 1]);
 				var test_length = Max(path_length - ObjectDistance(cp_list[cleared + 1], plr->GetCursor()), 0);
@@ -378,7 +378,7 @@ public func GetLeaderClearedCheckpoints()
 
 private func IsWinner(proplist plr)
 {
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	var finish = cp_list[cp_count];
 	if (!finish)
 		return false;
@@ -557,7 +557,7 @@ protected func FxIntDirNextCPStart(object target, effect fx)
 protected func FxIntDirNextCPTimer(object target, effect fx)
 {
 	var plr = target->GetOwner();
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	var arrow = fx.arrow;
 	// Find nearest CP.
 	var nextcp;
@@ -617,13 +617,13 @@ private func DoBestTime(proplist plr)
 {
 	var effect = GetEffect("IntBestTime", this);
 	var time = effect.besttime;
-	var winteam = GetPlayerTeam(plr);
+	var winteam = plr->GetTeam();
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var check_plr = GetPlayerByIndex(i);
 		if (winteam == 0 && check_plr != plr)
 			continue;
-		if (winteam != GetPlayerTeam(check_plr))
+		if (winteam != check_plr->GetTeam())
 			continue;
 		// Store best time for all players in the winning team.
 		var rectime = check_plr->GetExtraData(time_store);
@@ -679,7 +679,7 @@ public func ResetPersonalBest(proplist plr)
 
 private func SetEvalData(proplist winner)
 {
-	var winteam = GetPlayerTeam(winner);
+	var winteam = winner->GetTeam();
 	var effect = GetEffect("IntBestTime", this);
 	var time = effect.besttime;
 	var msg;
@@ -688,7 +688,7 @@ private func SetEvalData(proplist winner)
 		msg = Format("$MsgEvalTeamWon$", GetTeamName(winteam), TimeToString(time));
 	else
 		msg = Format("$MsgEvalPlrWon$", GetPlayerName(winner), TimeToString(time));
-	AddEvaluationData(msg, 0);
+	AddEvaluationData(msg, winner);
 	// Individual data.
 	for (var i = 0; i < GetPlayerCount(); i++)
 		AddEvalData(GetPlayerByIndex(i));
@@ -707,7 +707,7 @@ private func AddEvalData(proplist plr)
 		msg = "$MsgEvalPlayerAll$";
 	else
 		msg = Format("$MsgEvalPlayerX$", cps, cp_count);
-	AddEvaluationData(msg, plr.ID);
+	AddEvaluationData(msg, plr);
 	return;
 }
 

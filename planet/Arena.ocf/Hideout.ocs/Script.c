@@ -122,7 +122,7 @@ public func OnClonkLeftRelaunch(object clonk)
 		Attach = ATTACH_Front
 	};
 	
-	if (GetPlayerTeam(clonk->GetOwner()) == 1)
+	if (clonk->GetOwner()->GetTeam() == 1)
 	{
 		sparks.R = 255;
 		sparks.B = 0;
@@ -273,7 +273,7 @@ func OnClonkDeath(object clonk, proplist killed_by)
 	if (Hostile(clonk->GetOwner(), killed_by))
 	{
 		var gem = clonk->CreateObjectAbove(LifeGem, 0, 0, killed_by);
-		if (GetPlayerTeam(killed_by) == 1)
+		if (killed_by->GetTeam() == 1)
 			gem->SetGraphics("E");
 	}
 	return _inherited(clonk, killed_by);

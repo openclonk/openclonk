@@ -100,7 +100,7 @@ protected func FxAutoControlTimer(object target, effect, int time)
 		for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_InRect(-50, d - 30, 100, 60)))
 		{
 			var plr = clonk->GetOwner();
-			var plr_team = GetPlayerTeam(plr);
+			var plr_team = plr->GetTeam();
 			if (team == 0 || plr_team == team)
 				open_door = true;			
 		}

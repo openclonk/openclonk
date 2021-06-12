@@ -55,7 +55,7 @@ public func IsFulfilled()
 		if (winner == NO_OWNER) winner = ruby->GetController();
 		if (winner == NO_OWNER) continue;
 		if (!winners) winners = [winner]; else winners[GetLength(winners)] = winner;
-		var team = GetPlayerTeam(winner);
+		var team = winner->GetTeam();
 		if (team) if (!winner_teams) winner_teams = [team]; else winner_teams[GetLength(winner_teams)] = team;
 	}
 	if (!winners) return false;
@@ -72,7 +72,7 @@ public func IsFulfilled()
 		// Eliminate non-winning players
 		if (is_cooperative) continue; // in coop mode, everyone wins
 		if (GetIndexOf(winners, plr) >= 0) continue;
-		if (winner_teams) if (GetIndexOf(winner_teams, GetPlayerTeam(plr)) >= 0) continue;
+		if (winner_teams) if (GetIndexOf(winner_teams, plr->GetTeam()) >= 0) continue;
 		plr->Eliminate();
 	}
 	return true;

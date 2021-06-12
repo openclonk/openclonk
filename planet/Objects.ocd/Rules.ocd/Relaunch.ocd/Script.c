@@ -281,7 +281,7 @@ private func TransferInventory(object from, object to)
 	return to->GrabContents(from);
 }
 
-private func GetRelaunchBase(int plr, object clonk)
+private func GetRelaunchBase(proplist plr, object clonk)
 {
 	plr = plr ?? clonk->GetOwner();
 	// Neutral flagpoles are preferred respawn points, because they are used as the only respawn points in missions.
@@ -307,7 +307,7 @@ public func DoRelaunch(proplist plr, object clonk, array position, bool no_creat
 	
 	if (respawn_at_base)
 		position = RespawnAtBase(plr, clonk);
-	position = position ?? GameCall("RelaunchPosition", plr, GetPlayerTeam(plr));
+	position = position ?? GameCall("RelaunchPosition", plr, plr->GetTeam());
 	position = position ?? this->FindRelaunchPos(plr);
 	
 	var spawn;
@@ -373,7 +373,7 @@ public func DoRelaunch(proplist plr, object clonk, array position, bool no_creat
 	return true;
 }
 
-protected func FindRelaunchPos(int plr)
+protected func FindRelaunchPos(proplist plr)
 {
 	var loc = FindLocation(Loc_Or(Loc_Sky(), Loc_Tunnel()), Loc_Space(20, CNAT_Top), Loc_Wall(CNAT_Bottom));
 	if (loc == nil)
@@ -419,26 +419,26 @@ global func IsActiveRelaunchRule()
 
 /*-- Player Relaunches --*/
 
-public func SetPlayerRelaunchCount(int plr, int value)
+public func SetPlayerRelaunchCount(proplist plr, int value)
 {
 	if (HasUnlimitedRelaunches())
 		return;
-	relaunches[plr] = value;
-	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr]);
+	relaunches[plr.ID] = value;
+	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr.ID]);
 	return;
 }
 
-public func GetPlayerRelaunchCount(int plr)
+public func GetPlayerRelaunchCount(proplist plr)
 {
-	return relaunches[plr];
+	return relaunches[plr.ID];
 }
 
-public func DoPlayerRelaunchCount(int plr, int value)
+public func DoPlayerRelaunchCount(proplist plr, int value)
 {
 	if (HasUnlimitedRelaunches())
 		return;
-	relaunches[plr] += value;
-	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr]);
+	relaunches[plr.ID] += value;
+	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr.ID]);
 	return;
 }
 
