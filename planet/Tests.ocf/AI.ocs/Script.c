@@ -27,8 +27,8 @@ protected func InitializePlayer(proplist plr)
 		for (var plr2 in GetPlayers())
 			if (plr1 != plr2)
 			{
-				SetHostility(plr1, plr2, true, true);			
-				SetHostility(plr2, plr2, true, true);
+				plr1->SetHostility(plr2, true, true);			
+				plr2->SetHostility(plr2, true, true);
 			}
 			
 	// Initialize script players differently.	

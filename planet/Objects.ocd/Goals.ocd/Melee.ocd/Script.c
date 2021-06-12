@@ -13,8 +13,8 @@ func MakeHostileToAll(proplist newplr, int team)
 		var plr = GetPlayerByIndex(i);
 		if (plr == newplr) continue;
 		
-		SetHostility(newplr, plr, true, true);
-		SetHostility(plr, newplr, true, true);
+		newplr->SetHostility(plr, true, true);
+		plr->SetHostility(newplr, true, true);
 	}
 }
 

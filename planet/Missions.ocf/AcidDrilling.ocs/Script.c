@@ -17,12 +17,12 @@ func InitializePlayer(proplist plr)
 	if (plr.Type == C4PT_Script)
 	{
 		g_crystal_player = plr;
-		for (i = 0; i<GetPlayerCount(C4PT_User); ++i) SetHostility(plr, GetPlayerByIndex(i, C4PT_User), true, true, true);
+		for (i = 0; i<GetPlayerCount(C4PT_User); ++i) plr->SetHostility(GetPlayerByIndex(i, C4PT_User), true, true, true);
 		while (plr->GetCrew()) plr->GetCrew()->RemoveObject();
 		InitPowerCrystals(plr);
 		return true;
 	}
-	if (g_crystal_player != NO_OWNER) SetHostility(g_crystal_player, plr, true, true, true);
+	if (g_crystal_player != NO_OWNER) g_crystal_player->SetHostility(plr, true, true, true);
 	// First player init base
 	if (!g_was_player_init)
 	{

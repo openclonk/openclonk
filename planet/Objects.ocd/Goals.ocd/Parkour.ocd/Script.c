@@ -405,8 +405,8 @@ protected func InitializePlayer(proplist plr, int x, int y, object base, int tea
 	// Remove all hostilities.
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		SetHostility(plr, GetPlayerByIndex(i), false, true);
-		SetHostility(GetPlayerByIndex(i), plr, false, true);
+		plr->SetHostility(GetPlayerByIndex(i), false, true);
+		GetPlayerByIndex(i)->SetHostility(plr, false, true);
 	}
 	// Init Respawn CP to start CP.
 	respawn_list[plr.ID] = cp_list[0];

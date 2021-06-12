@@ -100,7 +100,7 @@ public func InitializeScriptPlayer(proplist plr, int team)
 		// Handle hostility if not done through teams
 		for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
 		{
-			SetHostility(GetPlayerByIndex(iplr, C4PT_User), plr, true, true, true); // triple true hostility!
+			GetPlayerByIndex(iplr, C4PT_User)->SetHostility(plr, true, true, true); // triple true hostility!
 		}
 		g_enemyspawn_player = plr;
 	}
@@ -119,7 +119,7 @@ public func InitializePlayer(proplist plr, int x, int y, object base, int team, 
 	if (plr.Type == C4PT_User && IsEnemySpawnPlayerJoined())
 	{
 		// Make sure new enemy players are hostile
-		SetHostility(g_enemyspawn_player, plr, true, true, true);
+		g_enemyspawn_player->SetHostility(plr, true, true, true);
 	}
 }
 
