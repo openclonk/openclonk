@@ -20,7 +20,7 @@ global func IntroAddPlayer(int plr)
 	for (var index = 0; crew = plr->GetCrew(index); ++index)
 	{
 	        var skin = crew->GetCrewExtraData("Skin");
-        	if (skin == nil) skin = GetPlrClonkSkin(plr);
+        	if (skin == nil) skin = plr.CrewSkin;
 
 		var container = effect.Cabin->CreateContents(Clonk);
 		container->SetOwner(plr);
