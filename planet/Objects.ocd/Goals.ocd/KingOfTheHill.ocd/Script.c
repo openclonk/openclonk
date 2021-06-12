@@ -188,7 +188,7 @@ public func GetAdditionalPlayerRelaunchString(object clonk, int plr, int killed_
 	if (!location->GetKing()) return;
 	if (location->GetKing()->GetOwner() != killed_by) return;
 	if (!GetEffect("NewKing", killed_by->GetCursor())) return;
-	var msg = Format("$IsNowKing$", GetTaggedPlayerName(killed_by));
+	var msg = Format("$IsNowKing$", killed_by->GetTaggedName());
 	return msg;
 }
 
@@ -284,7 +284,7 @@ private func GetTeamPoints()
 
 			var comma = ", ";
 			if (GetLength(names) == 0) comma = "";
-			names = Format("%s%s%s", names, comma, GetTaggedPlayerName(plr));
+			names = Format("%s%s%s", names, comma, plr->GetTaggedName());
 		}
 		
 

@@ -289,7 +289,7 @@ func OnClonkDeath(clonk, killed_by)
 		// Relaunch count
 		if (!g_relaunchs[plr])
 		{
-			Log("$MsgOutOfRelaunchs$", GetTaggedPlayerName(plr));
+			Log("$MsgOutOfRelaunchs$", plr->GetTaggedName());
 			Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
 			plr->Eliminate();
 			return false;
@@ -297,7 +297,7 @@ func OnClonkDeath(clonk, killed_by)
 		// Relaunch count
 		--g_relaunchs[plr];
 		Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
-		Log("$MsgRelaunch$", GetTaggedPlayerName(plr));
+		Log("$MsgRelaunch$", plr->GetTaggedName());
 		JoinPlayer(plr, clonk);
 		//var gui_arrow = FindObject(Find_ID(GUI_GoalArrow), Find_Owner(plr));
 		//gui_arrow->SetAction("Show", plr->GetCursor());

@@ -73,7 +73,7 @@ func InitializePlayer(proplist plr)
 	SetScoreboardData(SBRD_Caption, SBRD_Caption,  "Player", SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, COL_Score,     "{{Nugget}}");
 	
-	SetScoreboardData(plr,     SBRD_Caption,  GetTaggedPlayerName(plr));
+	SetScoreboardData(plr,     SBRD_Caption,  plr->GetTaggedName());
 	SetScoreboardData(plr,     COL_Score,     "0", 0);
 	
 	UpdateScoreboard();

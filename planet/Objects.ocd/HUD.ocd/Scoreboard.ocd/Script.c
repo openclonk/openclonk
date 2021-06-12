@@ -17,7 +17,7 @@ static const Scoreboard_X_title = SBRD_Caption;
 // wrapper for Scoreboard->NewEntry, adds a new entry for a player with the tagged player name as the title
 public func NewPlayerEntry(proplist plr)
 {
-	return Scoreboard->NewEntry(GetPlayerID(plr), GetTaggedPlayerName(plr));
+	return Scoreboard->NewEntry(GetPlayerID(plr), plr->GetTaggedName());
 }
 
 public func RemovePlayerEntry(proplist plr)

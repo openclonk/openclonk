@@ -225,7 +225,7 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 				
 				ID = 1,
 				Target = scenoptions_dummies[1],
-				Text = Format("%s can set the options now! Please wait!", GetTaggedPlayerName(player))
+				Text = Format("%s can set the options now! Please wait!", player->GetTaggedName())
 			}
 		}
 	};
@@ -326,7 +326,7 @@ func StartPlayerListTest(parameter, int ID, int player)
 		var p = GetPlayerByIndex(i);
 		var name;
 		if (p == NO_OWNER) name = Format("Player %d", i + 1);
-		else name = GetTaggedPlayerName(p);
+		else name = p->GetTaggedName();
 		var subm =
 		{
 			Priority = i,

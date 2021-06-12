@@ -44,7 +44,7 @@ public func IsInteractable(object clonk)
 public func RejectInteractionMenu(object clonk)
 {
 	if (Hostile(GetOwner(), clonk->GetOwner())) 
-		return Format("$MsgHostile$", GetName(), GetTaggedPlayerName(GetOwner()));
+		return Format("$MsgHostile$", GetName(), GetOwner()->GetTaggedName());
 	return _inherited(clonk, ...);
 }
 
