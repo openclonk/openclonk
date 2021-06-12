@@ -36,7 +36,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Move players to defenders team.
 	if (plr->GetTeam() != 1)
-		SetPlayerTeam(plr, 1);
+		plr->SetTeam(1);
 	
 	// Move crew to the initial position.
 	var crew = plr->GetCrew();

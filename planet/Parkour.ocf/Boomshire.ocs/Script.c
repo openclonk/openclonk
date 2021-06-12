@@ -52,7 +52,7 @@ private func Initialize()
 
 private func InitializePlayer(proplist plr)
 {
-	SetPlayerTeam(plr, 1);
+	plr->SetTeam(1);
 }
 
 // Gamecall from Race-goal, on respawning.

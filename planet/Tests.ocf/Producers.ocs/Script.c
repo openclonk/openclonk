@@ -32,7 +32,7 @@ protected func InitializePlayer(proplist plr)
 
 	// All players belong to the first team.
 	// The second team only exists for testing.
-	SetPlayerTeam(plr, 1);
+	plr->SetTeam(1);
 	
 	// Move player to the start of the scenario.
 	plr->GetCrew()->SetPosition(120, 150);

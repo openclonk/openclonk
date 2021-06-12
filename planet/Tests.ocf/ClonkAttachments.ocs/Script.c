@@ -43,7 +43,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// All players belong to the first team.
 	// The second team only exists for testing.
-	SetPlayerTeam(plr, 1);
+	plr->SetTeam(1);
 		
 	// Initialize script player.
 	if (plr.Type == C4PT_Script)
