@@ -50,7 +50,7 @@ func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, int status)
 	return true;
 }
 
-public func ObjectControlMovement(int plr, int ctrl, int strength, int status)
+public func ObjectControlMovement(proplist plr, int ctrl, int strength, int status)
 {
 	// from PlayerControl.c
 	var result = inherited(plr, ctrl, strength, status, ...);

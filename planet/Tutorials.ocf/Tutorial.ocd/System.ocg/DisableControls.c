@@ -37,7 +37,7 @@ global func EnablePlrControls(int plr, bool enable_crew)
 	return;
 }
 
-global func ObjectControl(int plr)
+global func ObjectControl(proplist plr)
 {
 	// Check whether controls are enable for this player.
 	if (g_controls_disabled && g_controls_disabled[plr])

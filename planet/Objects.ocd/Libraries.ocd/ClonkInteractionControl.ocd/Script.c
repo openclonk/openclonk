@@ -26,7 +26,7 @@ public func OnShiftCursor(object new_cursor)
 	return _inherited(new_cursor, ...);
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
+public func ObjectControl(proplist plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this) 
 		return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
