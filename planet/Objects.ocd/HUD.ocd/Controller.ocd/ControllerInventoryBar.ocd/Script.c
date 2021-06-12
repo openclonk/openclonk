@@ -49,7 +49,7 @@ func AssembleInventoryButton(int max_slots, int slot_number, proplist slot_info)
 			Right = "150%",
 			Top = Format(" %s%s", "20%", ToEmString(-2)),
 			Bottom = "20%",
-			Text = { Std = "", Quick = Format("<c dddd00>[%s]</c>", GetPlayerControlAssignment(GetOwner(), CON_QuickSwitch, true)), Selected = "" }
+			Text = { Std = "", Quick = Format("<c dddd00>[%s]</c>", GetOwner()->GetControlAssignment(CON_QuickSwitch, true)), Selected = "" }
 		},
 		Style = GUI_NoCrop,
 		ID = slot_info.ID,

@@ -178,10 +178,10 @@ protected func InitializePlayer(proplist plr)
 	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	
 	// Determine player movement keys.
-	var interact_prev = GetPlayerControlAssignment(plr, CON_InteractNext_Right, true, true);
-	var interact_next = GetPlayerControlAssignment(plr, CON_InteractNext_Left, true, true);
-	var interact_cycle = GetPlayerControlAssignment(plr, CON_InteractNext_CycleObject, true, true);
-	var interact_cancel = GetPlayerControlAssignment(plr, CON_InteractNext_Stop, true, true);
+	var interact_prev = plr->GetControlAssignment(CON_InteractNext_Right, true, true);
+	var interact_next = plr->GetControlAssignment(CON_InteractNext_Left, true, true);
+	var interact_cycle = plr->GetControlAssignment(CON_InteractNext_CycleObject, true, true);
+	var interact_cancel = plr->GetControlAssignment(CON_InteractNext_Stop, true, true);
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObjectAbove(TutorialGuide, 0, 0, plr);
@@ -254,11 +254,11 @@ global func FxTutorialTalkedToPilotStop(object target, proplist effect, int reas
 		return FX_OK;
 
 	// Determine player movement keys.
-	var left = GetPlayerControlAssignment(effect.plr, CON_Left, true, true);
-	var right = GetPlayerControlAssignment(effect.plr, CON_Right, true, true);
-	var up = GetPlayerControlAssignment(effect.plr, CON_Up, true, true);
-	var down = GetPlayerControlAssignment(effect.plr, CON_Down, true, true);
-	var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
+	var left = effect.plr->GetControlAssignment(CON_Left, true, true);
+	var right = effect.plr->GetControlAssignment(CON_Right, true, true);
+	var up = effect.plr->GetControlAssignment(CON_Up, true, true);
+	var down = effect.plr->GetControlAssignment(CON_Down, true, true);
+	var interact = effect.plr->GetControlAssignment(CON_Interact, true, true);
 	var control_keys = Format("[%s] [%s] [%s] [%s]", up, left, down, right);
 	
 	guide->AddGuideMessage(Format("$MsgTutorialFindRubies$", interact, control_keys));
@@ -288,8 +288,8 @@ global func FxTutorialAirshipParkedTimer(object target, proplist effect, int tim
 	if (clonk && airship)
 	{
 		var plr = clonk->GetOwner();
-		var left = GetPlayerControlAssignment(plr, CON_Left, true, true);
-		var right = GetPlayerControlAssignment(plr, CON_Right, true, true);
+		var left = plr->GetControlAssignment(CON_Left, true, true);
+		var right = plr->GetControlAssignment(CON_Right, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialLadderJump$", left, right));
 		guide->ShowGuideMessage();
 		AddEffect("TutorialOnStalactite", nil, 100, 2);

@@ -311,7 +311,7 @@ global func FxTutorialShovedMetalLorryTimer(object target, proplist effect)
 {
 	if (FindObject(Find_ID(Lorry), Find_AtRect(360, 840, 20, 20)))
 	{
-		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
+		var interact = effect.plr->GetControlAssignment(CON_Interact, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialCallElevator$", interact));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialTalkedToExplosiveExpert", nil, 100, 5);

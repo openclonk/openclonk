@@ -41,7 +41,7 @@ global func GetPlayerControlEnabled(int player_nr, int ctrl)
 
 global func GetPlayerControlState(int player_nr, int ctrl, bool analog_strength)
 {
-	LogLegacyWarning("GetPlayerControlAssignment", "GetPlayer(player)->GetControlState(ctrl, analog_strength)", VERSION_10_0_OC);
+	LogLegacyWarning("GetPlayerControlState", "GetPlayer(player)->GetControlState(ctrl, analog_strength)", VERSION_10_0_OC);
 	var player = GetPlayer(player_nr);
 	if (player)
 	{

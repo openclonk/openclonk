@@ -91,7 +91,7 @@ public func AddHomebaseItem(proplist entry)
 	var idx = GetLength(base_material);
 	base_material[idx] = entry;
 	var quickbuy_idx = GetIndexOf(g_quickbuy_items, entry.item);
-	if (quickbuy_idx >= 0) entry.hotkey = GetPlayerControlAssignment(GetOwner(), CON_QuickBuy0 + quickbuy_idx, true);
+	if (quickbuy_idx >= 0) entry.hotkey = GetOwner()->GetControlAssignment(CON_QuickBuy0 + quickbuy_idx, true);
 	UpdateIndexedItem(idx);
 	return entry;
 }

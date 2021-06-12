@@ -104,10 +104,10 @@ private func FxIntHighlightInteractionStart(object target, proplist fx, temp, pr
 	}
 	var multiple_interactions_hint = "";
 	if (fx.interaction.has_multiple_interactions)
-		multiple_interactions_hint = Format("|<c 999999>[%s] $More$..</c>", GetPlayerControlAssignment(GetOwner(), CON_Up, true, false));
+		multiple_interactions_hint = Format("|<c 999999>[%s] $More$..</c>", GetOwner()->GetControlAssignment(CON_Up, true, false));
 	var cycle_interactions_hint = "";
 	if (nr_interactions > 1)
-		cycle_interactions_hint = Format("|<c 999999>[%s/%s] $Cycle$..</c>", GetPlayerControlAssignment(GetOwner(), CON_Left, true, false), GetPlayerControlAssignment(GetOwner(), CON_Right, true, false));
+		cycle_interactions_hint = Format("|<c 999999>[%s/%s] $Cycle$..</c>", GetOwner()->GetControlAssignment(CON_Left, true, false), GetOwner()->GetControlAssignment(CON_Right, true, false));
 	fx.dummy->Message("@<c eeffee>%s</c>%s%s|", fx.interaction_help.help_text, multiple_interactions_hint, cycle_interactions_hint);
 
 	// Center dummy!

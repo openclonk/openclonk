@@ -226,7 +226,7 @@ private func CreateToggleVisibilityButton()
 {
 	var plr = GetOwner();
 	
-	var hotkey_string = GetPlayerControlAssignment(GetOwner(), CON_ToggleShop, true);
+	var hotkey_string = GetOwner()->GetControlAssignment(CON_ToggleShop, true);
 	if (hotkey_string && GetLength(hotkey_string) > 0)
 		hotkey_string = Format("|<c ffff00>[%s]</c>", hotkey_string);
 	else

@@ -53,7 +53,7 @@ func AssembleActionBar()
 			Right = "150%",
 			Top = ToEmString(-6),
 			Bottom = ToEmString(4),
-			Text = Format("<c dddd00>[%s]</c>", GetPlayerControlAssignment(GetOwner(), CON_Interact, true)),
+			Text = Format("<c dddd00>[%s]</c>", GetOwner()->GetControlAssignment(CON_Interact, true)),
 			Priority = 2
 		},
 		symbol =// the object to interact with

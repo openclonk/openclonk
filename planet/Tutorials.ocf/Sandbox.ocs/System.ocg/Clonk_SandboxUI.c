@@ -16,7 +16,7 @@ public func Death(proplist killed_by)
 
 public func ShowSandboxUI()
 {
-	var object_spawn_key = GetPlayerControlAssignment(GetOwner(), CON_TutorialGuide, true, true);
+	var object_spawn_key = GetOwner()->GetControlAssignment(CON_TutorialGuide, true, true);
 
 	var SandboxUI = 
 	{

@@ -277,7 +277,7 @@ protected func InitializePlayer(proplist plr)
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
-	var interact = GetPlayerControlAssignment(plr, CON_Interact, true, true);
+	var interact = plr->GetControlAssignment(CON_Interact, true, true);
 	guide->AddGuideMessage(Format("$MsgTutorialWipfville$", interact));
 	guide->ShowGuideMessage();
 	var effect = AddEffect("TutorialTalkedToLumberjack", nil, 100, 5);
@@ -354,7 +354,7 @@ global func FxTutorialFoundLorryTimer(object target, proplist effect)
 {
 	if (FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr), Find_InRect(168, 576, 104, 72)))
 	{
-		var interaction_menu = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		var interaction_menu = effect.plr->GetControlAssignment(CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialDynamiteLorry$", interaction_menu));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialObtainedDynamite", nil, 100, 5);
@@ -369,7 +369,7 @@ global func FxTutorialObtainedDynamiteTimer(object target, proplist effect)
 	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr));
 	if (clonk && FindObject(Find_ID(Dynamite), Find_Container(clonk)))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		var use = effect.plr->GetControlAssignment(CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialBlastRock$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialBlastedRock", nil, 100, 5);
@@ -400,7 +400,7 @@ global func FxTutorialObtainedRockTimer(object target, proplist effect)
 	// Also progress if the sawmill has been finished without the three rocks at the same time.
 	if (has_three_rocks || finished_sawmill)
 	{
-		var interaction_menu = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		var interaction_menu = effect.plr->GetControlAssignment(CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialSawmill$", interaction_menu));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialSawmillFinished", nil, 100, 5);
@@ -455,7 +455,7 @@ global func FxTutorialTalkedForFlagpoleTimer(object target, proplist effect)
 {
 	if (effect.talked_to_fireman && effect.talked_to_builder)
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		var use = effect.plr->GetControlAssignment(CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialConstructFlagpole$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialPlacedFlagpole", nil, 100, 5);
@@ -517,7 +517,7 @@ global func FxTutorialHasOreCoalTimer(object target, proplist effect)
 	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr));
 	if (FindObject(Find_ID(Ore), Find_Container(clonk)) && FindObject(Find_ID(Coal), Find_Container(clonk)))
 	{
-		var interaction_menu = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		var interaction_menu = effect.plr->GetControlAssignment(CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialProduceMetal$", interaction_menu));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialMetalFinished", nil, 100, 5);

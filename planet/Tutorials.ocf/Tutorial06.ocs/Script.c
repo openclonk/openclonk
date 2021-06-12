@@ -232,7 +232,7 @@ public func ShowLastGuideMessage()
 
 public func OnIntroSequenceFinished()
 {
-	var interact = GetPlayerControlAssignment(guide->GetOwner(), CON_Interact, true, true);
+	var interact = guide->GetOwner()->GetControlAssignment(CON_Interact, true, true);
 	guide->AddGuideMessage(Format("$MsgTutorialTakeElevator$", interact));
 	guide->ShowGuide();
 	guide->ShowGuideMessage();
@@ -259,7 +259,7 @@ global func FxTutorialPlacedCompensatorSiteTimer(object target, proplist effect)
 	var compensator = FindObject(Find_ID(Compensator), Find_AtRect(160, 260, 80, 40));
 	if ((site && site.definition == Compensator) || compensator)
 	{
-		var interaction_menu = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		var interaction_menu = effect.plr->GetControlAssignment(CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialBuyMetal$", interaction_menu));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialFinishedCompensator", nil, 100, 5);
@@ -287,8 +287,8 @@ global func FxTutorialLookedAtPowerOverviewTimer(object target, proplist effect)
 	// TODO: fix me (should be triggered when the E menu is opened).
 	if (effect.looked_at || true)
 	{
-		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
-		var interact_cycle = GetPlayerControlAssignment(effect.plr, CON_InteractNext_CycleObject, true, true);
+		var interact = effect.plr->GetControlAssignment(CON_Interact, true, true);
+		var interact_cycle = effect.plr->GetControlAssignment(CON_InteractNext_CycleObject, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialEnterCatapult$", interact, interact_cycle, interact));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialEnteredCatapult", nil, 100, 5);
@@ -303,9 +303,9 @@ global func FxTutorialEnteredCatapultTimer(object target, proplist effect)
 	var catapult = FindObject(Find_ID(Catapult), Find_Distance(80, 432, 248));
 	if (catapult && effect.plr) == FindObject(Find_OCF(OCF_CrewMember)->GetCrew(Find_Container(catapult)))
 	{
-		var zoom_in = GetPlayerControlAssignment(effect.plr, CON_WheelZoomIn, true, true);
-		var zoom_out = GetPlayerControlAssignment(effect.plr, CON_WheelZoomOut, true, true);
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		var zoom_in = effect.plr->GetControlAssignment(CON_WheelZoomIn, true, true);
+		var zoom_out = effect.plr->GetControlAssignment(CON_WheelZoomOut, true, true);
+		var use = effect.plr->GetControlAssignment(CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialLaunchCatapult$", zoom_in, zoom_out, use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialReachedMiddleIsland", nil, 100, 5);
@@ -346,7 +346,7 @@ global func FxTutorialReachedTopIslandTimer(object target, proplist effect)
 {
 	if (FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr), Find_InRect(200, 200, 200, 40)))
 	{
-		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
+		var interact = effect.plr->GetControlAssignment(CON_Interact, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialShootCoalAndMetal$", interact));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialReachedMiddleIslandSecond", nil, 100, 5);

@@ -142,7 +142,7 @@ public func GetProductionMenuEntries(object clonk)
 		Style = GUI_TextBottom | GUI_FitChildren,
 		Bottom = "1em", BackgroundColor = RGBa(0, 0, 0, 100),
 		Priority = 999999,
-		Text = Format("<c 666666>%s + $Click$: $InfiniteProduction$</c>", GetPlayerControlAssignment(clonk->GetOwner(), CON_ModifierMenu1, true))
+		Text = Format("<c 666666>%s + $Click$: $InfiniteProduction$</c>", clonk->GetOwner()->GetControlAssignment(CON_ModifierMenu1, true))
 	};
 
 	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry});

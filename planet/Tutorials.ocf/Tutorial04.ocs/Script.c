@@ -243,9 +243,9 @@ protected func InitializePlayer(proplist plr)
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
-	var interact = GetPlayerControlAssignment(plr, CON_Interact, true, true);
-	var up = GetPlayerControlAssignment(plr, CON_Up, true, true);
-	var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
+	var interact = plr->GetControlAssignment(CON_Interact, true, true);
+	var up = plr->GetControlAssignment(CON_Up, true, true);
+	var down = plr->GetControlAssignment(CON_Down, true, true);
 	guide->AddGuideMessage(Format("$MsgTutorialVillageHead$", interact, up, down));
 	guide->ShowGuideMessage();
 	var effect = AddEffect("TutorialTalkedToVillageHead", nil, 100, 5);
@@ -355,7 +355,7 @@ global func FxTutorialFilledBarrelTimer(object target, proplist effect)
 		return FX_OK;
 	if (foundry->GetLiquidAmount("Water") >= 100)
 	{
-		var contents = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		var contents = effect.plr->GetControlAssignment(CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialProduceLoam$", contents));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialGotLoam", nil, 100, 5);
@@ -372,8 +372,8 @@ global func FxTutorialGotLoamTimer(object target, proplist effect)
 		return FX_OK;
 	if (FindObject(Find_ID(Loam), Find_Container(clonk)))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
-		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
+		var use = effect.plr->GetControlAssignment(CON_Use, true, true);
+		var interact = effect.plr->GetControlAssignment(CON_Interact, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialMakeLoamBridge$", use, interact));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialMovedLorryToWorkshop", nil, 100, 5);
@@ -387,7 +387,7 @@ global func FxTutorialMovedLorryToWorkshopTimer(object target, proplist effect)
 {
 	if (FindObject(Find_ID(Lorry), Find_InRect(674, 474, 44, 30)))
 	{
-		var contents = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		var contents = effect.plr->GetControlAssignment(CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialProducePickaxe$", contents));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialProducedPickaxe", nil, 100, 5);
@@ -404,7 +404,7 @@ global func FxTutorialProducedPickaxeTimer(object target, proplist effect)
 		return FX_OK;
 	if (FindObject(Find_ID(Pickaxe), Find_Container(workshop)))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		var use = effect.plr->GetControlAssignment(CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialMineOre$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialMinedOre", nil, 100, 5);
