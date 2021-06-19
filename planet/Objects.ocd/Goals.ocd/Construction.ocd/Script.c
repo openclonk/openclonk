@@ -50,7 +50,7 @@ public func IsFulfilled()
 }
 
 // Return the description of this goal.
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -98,7 +98,7 @@ public func Activate(proplist plr)
 
 protected func FxGoalMessageStart() {}
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	var msg = "";
 	return msg;

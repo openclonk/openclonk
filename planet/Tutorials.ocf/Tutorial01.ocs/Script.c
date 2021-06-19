@@ -292,7 +292,7 @@ protected func InitializePlayer(proplist plr)
 
 /*-- Intro, Tutorial Goal & Outro --*/
 
-private func OnFinishedTutorialIntro(int plr)
+private func OnFinishedTutorialIntro(proplist plr)
 {
 	// enable crew
 	EnablePlrControls(plr);
@@ -439,7 +439,7 @@ global func FxTutorialDivingTimer(object target, proplist effect, int timer)
 	return FX_OK;
 }
 
-protected func OnGuideMessageShown(int plr, int index)
+protected func OnGuideMessageShown(proplist plr, int index)
 {
 	// Show the player his clonk and the guide.
 	if (index == 0)
@@ -480,7 +480,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	return;
 }
 
-protected func OnGuideMessageRemoved(int plr, int index)
+protected func OnGuideMessageRemoved(proplist plr, int index)
 {
 	TutArrowClear();
 	return;

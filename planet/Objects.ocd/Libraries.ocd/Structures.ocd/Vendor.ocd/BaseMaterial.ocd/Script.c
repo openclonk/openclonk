@@ -2,12 +2,12 @@
 	Base Material & Production
 	Library to control the players base material and production. The initial values are read
 	from the Scenario.txt entries and per script one can modify these by:
-     * GetBaseMaterial(int player, id material, int index, int category)
-     * SetBaseMaterial(int player, id material, int amount)
-     * DoBaseMaterial(int player, id material, int change)
-     * GetBaseProduction(int player, id material, int index, int category)
-     * SetBaseProduction(int player, id material, int amount)
-     * DoBaseProduction(int player, id material, int change)
+     * GetBaseMaterial(proplist player, id material, int index, int category)
+     * SetBaseMaterial(proplist player, id material, int amount)
+     * DoBaseMaterial(proplist player, id material, int change)
+     * GetBaseProduction(proplist player, id material, int index, int category)
+     * SetBaseProduction(proplist player, id material, int amount)
+     * DoBaseProduction(proplist player, id material, int change)
     Performs also two callbacks to a base of the player:
      * OnBaseMaterialChange(id material, int change);
      * OnBaseProductionChange(id material, int change);

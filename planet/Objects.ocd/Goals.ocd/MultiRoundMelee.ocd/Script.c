@@ -7,7 +7,7 @@
 		InitializeRound():
 			InitializeRound should create scenario objects for each round.
 
-		InitPlayerRound(int plr, object crew):
+		InitPlayerRound(proplist plr, object crew):
 			InitPlayerRound is called every round for each player and should equip
 			and position their Clonks. Note that the players won't be able to
 			control their Clonks until the round start countdown finishes.

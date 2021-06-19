@@ -1,7 +1,7 @@
 /**
 	Kill Tracing
 	Unit tests for kill tracing. Invokes tests by calling the 
-	global function Test*_OnStart(int plr) and iterate through all 
+	global function Test*_OnStart(proplist plr) and iterate through all 
 	tests. The test is completed once Test*_Completed() returns
 	true. Then Test*_OnFinished() is called, to be able to reset 
 	the scenario for the next test.
@@ -203,7 +203,7 @@ global func InitTest()
 	return;
 }
 
-global func GetPlayerName(int plr)
+global func GetPlayerName(proplist plr)
 {
 	if (plr == NO_OWNER)
 		return "NO_OWNER";

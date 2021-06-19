@@ -6,7 +6,7 @@
 	because the test logic is a lot different - namely you cannot
 	do everything in one function call for most tests.
 	
-	Invokes tests by calling the global function Test*_OnStart(int plr)
+	Invokes tests by calling the global function Test*_OnStart(proplist plr)
 	and iterate through all  tests.
 	The test is completed once Test*_Completed() returns true.
 	Then Test*_OnFinished() is called, to be able to reset 
@@ -180,7 +180,7 @@ global func Wait(int amount)
 
 /*-- Liquid Tests --*/
 
-global func Test1_OnStart(int plr)
+global func Test1_OnStart(proplist plr)
 {
 	Log("Tools carried visibly on the Clonk when dying should be visible when picked up again");
 	

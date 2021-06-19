@@ -37,7 +37,7 @@ private func ShowConstructionMaterial(object clonk, object structure)
 }
 
 // Gives a list of ids of the players knowledge.
-public func GetConstructionPlans(int plr)
+public func GetConstructionPlans(proplist plr)
 {
 	var construction_plans = [];
 	var construct_id, index = 0;

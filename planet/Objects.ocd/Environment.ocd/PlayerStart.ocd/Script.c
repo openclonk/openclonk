@@ -211,7 +211,7 @@ public func InitializePlayer(proplist plr, x, y, base, team, script_id)
 	return true;
 }
 
-public func IsStartFor(int plr)
+public func IsStartFor(proplist plr)
 {
 	return EditorBase->EvaluatePlayerMask(starting_players , plr);
 }

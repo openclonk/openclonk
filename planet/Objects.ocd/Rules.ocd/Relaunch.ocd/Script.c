@@ -12,9 +12,9 @@
 	 * SetInitialRelaunch(bool on): whether a relaunch on round start is done [default true].
 	The active relaunch rule can be obtained by the global function GetRelaunchRule(). The rule also
 	keeps track of player's actual number of relaunches which can be modified and accessed by:
-	 * SetPlayerRelaunchCount(int plr, int value): set player relaunch count.
-	 * GetPlayerRelaunchCount(int plr): get player relaunch count.
-	 * DoPlayerRelaunchCount(int plr, int value): add to player relaunch count.
+	 * SetPlayerRelaunchCount(proplist plr, int value): set player relaunch count.
+	 * GetPlayerRelaunchCount(proplist plr): get player relaunch count.
+	 * DoPlayerRelaunchCount(proplist plr, int value): add to player relaunch count.
 	 * HasUnlimitedRelaunches(): whether the players have infinite relaunches.
 	 
 	@author Maikel, Sven2, Fulgen

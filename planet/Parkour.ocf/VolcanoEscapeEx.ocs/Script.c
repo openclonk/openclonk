@@ -100,7 +100,7 @@ func InitializePlayer(proplist plr)
 }
 
 // Gamecall from parkour goal, on respawning.
-protected func OnPlayerRespawn(int plr, object cp)
+protected func OnPlayerRespawn(proplist plr, object cp)
 {
 	var clonk = plr->GetCrew();
 	RecoverItem(clonk, Shovel);

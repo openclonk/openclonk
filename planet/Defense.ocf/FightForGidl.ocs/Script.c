@@ -85,7 +85,7 @@ private func TransferInventory(object from, object to)
 	return to->GrabContents(from);
 }
 
-func JoinPlayer(plr, prev_clonk)
+func JoinPlayer(proplist plr, prev_clonk)
 {
 	var spawn_idx = Random(2);
 	if (prev_clonk && g_statue) spawn_idx = (prev_clonk->GetX() > g_statue->GetX());

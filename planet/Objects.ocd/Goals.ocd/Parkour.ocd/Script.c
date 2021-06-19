@@ -417,7 +417,7 @@ protected func InitializePlayer(proplist plr, int x, int y, object base, int tea
 	// Scoreboard.
 	Scoreboard->NewPlayerEntry(plr);
 	UpdateScoreboard(plr);
-	DoScoreboardShow(1, plr + 1);
+	DoScoreboardShow(1, plr);
 	JoinPlayer(plr);
 	// Scenario script callback.
 	GameCall("OnPlayerRespawn", plr, FindRespawnCP(plr));

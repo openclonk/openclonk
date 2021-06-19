@@ -130,7 +130,7 @@ func Definition(def)
 }
 
 // Check if given player is in mask
-public func EvaluatePlayerMask(proplist mask, int player)
+public func EvaluatePlayerMask(proplist mask, proplist player)
 {
 	if (!mask) return false;
 	var option = mask.Option;

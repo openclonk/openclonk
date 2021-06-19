@@ -85,7 +85,7 @@ public func Outro_Init(int for_plr)
 	return true;
 }
 
-public func Outro_JoinPlayer(int plr)
+public func Outro_JoinPlayer(proplist plr)
 {
 	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return;

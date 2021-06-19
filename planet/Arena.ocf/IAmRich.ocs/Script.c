@@ -102,7 +102,7 @@ func OnCountdownFinished()
 	g_timeover = true;
 }
 
-func BaseMats(int plr)
+func BaseMats(proplist plr)
 {
 	var materials;
 	

@@ -38,7 +38,7 @@ public func IsFulfilled()
 	return !victim->GetAlive();
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -58,7 +58,7 @@ public func Activate(proplist byplr)
 }
 
 // Shows or hides a message window with information.
-private func ToggleGoalMessage(string msg, int plr)
+private func ToggleGoalMessage(string msg, proplist plr)
 {
 	// If goal message open -> hide it.
 	if (GetEffect("GoalMessage", this))
@@ -76,7 +76,7 @@ private func ToggleGoalMessage(string msg, int plr)
 protected func FxGoalMessageStart() {}
 
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return Name;
 }

@@ -7,7 +7,7 @@ public func Failure_Start()
 	return ScheduleNext(4);
 }
 
-public func Failure_JoinPlayer(int plr)
+public func Failure_JoinPlayer(proplist plr)
 {
 	plr->SetZoomByViewRange(200, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return;

@@ -25,7 +25,7 @@ func Initialize()
 
 // Player related supplies and structures
 
-func DoInit(int plr)
+func DoInit(proplist plr)
 {
 	if (is_initialized) return;
 

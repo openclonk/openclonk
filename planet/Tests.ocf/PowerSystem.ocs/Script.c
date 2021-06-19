@@ -1,7 +1,7 @@
 /**
 	Power System
 	Unit tests for the power system. Invokes tests by calling the 
-	global function Test*_OnStart(int plr) and iterate through all 
+	global function Test*_OnStart(proplist plr) and iterate through all 
 	tests. The test is completed once Test*_Completed() returns
 	true. Then Test*_OnFinished() is called, to be able to reset 
 	the scenario for the next test.
@@ -164,7 +164,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 /*-- Power Tests --*/
 
 // Simple test for one steady source and one steady consumer.
-global func Test1_OnStart(int plr)
+global func Test1_OnStart(proplist plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(50);
@@ -196,7 +196,7 @@ global func Test1_OnFinished()
 }
 
 // Test for one on-demand source and a few consumers.
-global func Test2_OnStart(int plr)
+global func Test2_OnStart(proplist plr)
 {
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 100, 160, plr);
@@ -234,7 +234,7 @@ global func Test2_OnFinished()
 }
 
 // Test for one on-demand source and one steady consumer.
-global func Test3_OnStart(int plr)
+global func Test3_OnStart(proplist plr)
 {
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
@@ -277,7 +277,7 @@ global func Test3_OnFinished()
 }
 
 // Test one steady source with one steady consumer and a prioritized on-demand consumer.
-global func Test4_OnStart(int plr)
+global func Test4_OnStart(proplist plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(25);
@@ -326,7 +326,7 @@ global func Test4_OnFinished()
 }
 
 // Test one steady source with one steady consumer and a prioritized on-demand consumer (double elevators).
-global func Test5_OnStart(int plr)
+global func Test5_OnStart(proplist plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(50);
@@ -378,7 +378,7 @@ global func Test5_OnFinished()
 }
 
 // Basic test for power storage: one steady supplier, one storage and one consumer which needs energy from both sources.
-global func Test6_OnStart(int plr)
+global func Test6_OnStart(proplist plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(25);
@@ -413,7 +413,7 @@ global func Test6_OnFinished()
 }
 
 // Test one overproducing on-demand producer with power storage and one steady consumer.
-global func Test7_OnStart(int plr)
+global func Test7_OnStart(proplist plr)
 {
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
@@ -452,7 +452,7 @@ global func Test7_OnFinished()
 }
 
 // Test an on-demand producer as back-up for a steady producer with for steady consumers.
-global func Test8_OnStart(int plr)
+global func Test8_OnStart(proplist plr)
 {
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
@@ -500,7 +500,7 @@ global func Test8_OnFinished()
 }
 
 // Test the reduced on-demand consumer (wind mill) with an on-demand producer to always have power.
-global func Test9_OnStart(int plr)
+global func Test9_OnStart(proplist plr)
 {
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
@@ -538,7 +538,7 @@ global func Test9_OnFinished()
 }
 
 // Test a double separated network and power producing pumps.
-global func Test10_OnStart(int plr)
+global func Test10_OnStart(proplist plr)
 {
 	// Power source (network 1): one wind generator.
 	SetWindFixed(100);
@@ -598,7 +598,7 @@ global func Test10_OnFinished()
 }
 
 // Test connecting two networks by different allied players and then hostility change, team switch and elimination of one players.
-global func Test11_OnStart(int plr)
+global func Test11_OnStart(proplist plr)
 {
 	// First network is owned by the player.
 	var steam_engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
@@ -664,7 +664,7 @@ global func Test11_OnFinished()
 }
 
 // Test for the no power need rule and functionality.
-global func Test12_OnStart(int plr)
+global func Test12_OnStart(proplist plr)
 {
 	// Power source: one steam engine.
 	var steam_engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
@@ -718,7 +718,7 @@ global func Test12_OnFinished()
 
 // A network which is split up in the middle by removing a flagpol.
 // TODO: this test should actually reproduce the network error.
-global func Test13_OnStart(int plr)
+global func Test13_OnStart(proplist plr)
 {	
 	// Power source: one steam engine.
 	var steam_engine = CreateObjectAbove(SteamEngine, 36, 160, plr);
@@ -757,7 +757,7 @@ global func Test13_OnFinished()
 static POWER_SYSTEM_Test14_Time;
 
 // Massive test which tests a lot of power structures and the performance of the system.
-global func Test14_OnStart(int plr)
+global func Test14_OnStart(proplist plr)
 {
 	// Start the script profiler for this test.
 	StartScriptProfiler();
@@ -877,7 +877,7 @@ global func Test14_OnFinished()
 }
 
 // Test for a pump which is continuously powered but does not always have liquid to pump.
-global func Test15_OnStart(int plr)
+global func Test15_OnStart(proplist plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(100);
@@ -927,7 +927,7 @@ global func Test15_OnFinished()
 static POWER_SYSTEM_Test16_Start;
 
 // Test for underproduction of power not meeting a single demand, which should not lead to producing any power at all.
-global func Test16_OnStart(int plr)
+global func Test16_OnStart(proplist plr)
 {
 	// Store the current frame.
 	POWER_SYSTEM_Test16_Start = FrameCounter();
@@ -976,7 +976,7 @@ global func Test16_OnFinished()
 }
 
 // Test a bug where an elevator is connected with a flagpole to an existing settlement with two players.
-global func Test17_OnStart(int plr)
+global func Test17_OnStart(proplist plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(50);
@@ -1016,7 +1016,7 @@ global func Test17_OnFinished()
 }
 
 // Test for one steady source and one steady consumer, where the consumer moves out of the energy range.
-global func Test18_OnStart(int plr)
+global func Test18_OnStart(proplist plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(50);
@@ -1054,7 +1054,7 @@ global func Test18_OnFinished()
 }
 
 // Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
-global func Test19_OnStart(int plr)
+global func Test19_OnStart(proplist plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(10);
@@ -1096,7 +1096,7 @@ global func Test19_OnFinished()
 }
 
 // Test for steam engine fueled by oil barrels.
-global func Test20_OnStart(int plr)
+global func Test20_OnStart(proplist plr)
 {
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 100, 160, plr);
@@ -1135,7 +1135,7 @@ global func Test20_OnFinished()
 }
 
 // Test for steam engine fueled by oil field and pump.
-global func Test21_OnStart(int plr)
+global func Test21_OnStart(proplist plr)
 {
 	// Oil field
 	DrawMaterialQuad("Oil", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
@@ -1183,7 +1183,7 @@ global func Test21_OnFinished()
 static POWER_SYSTEM_Test22_Time;
 
 // Test of pumping and power system with massive amounts of pumps.
-global func Test22_OnStart(int plr)
+global func Test22_OnStart(proplist plr)
 {
 	// Start the script profiler for this test.
 	StartScriptProfiler();

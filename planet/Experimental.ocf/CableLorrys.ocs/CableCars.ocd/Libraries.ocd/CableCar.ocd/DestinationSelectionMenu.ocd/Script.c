@@ -141,7 +141,7 @@ public func FillDestinationButtons(proplist menu, array dest_list)
 	return;
 }
 
-public func PreviewDestination(object to_preview, int plr, int menu_id, int submenu_id, object target)
+public func PreviewDestination(object to_preview, proplist plr, int menu_id, int submenu_id, object target)
 {
 	if (!to_preview)
 		return;
@@ -163,7 +163,7 @@ public func PreviewDestination(object to_preview, int plr, int menu_id, int subm
 	GuiUpdate(update, menu_id);
 }
 
-public func SelectDestination(object target, int plr, int menu_id, int submenu_id, object target)
+public func SelectDestination(object target, proplist plr, int menu_id, int submenu_id, object target)
 {
 	if (target == nil || !cable_car)
 		return;

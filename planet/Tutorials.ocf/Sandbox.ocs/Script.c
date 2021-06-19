@@ -33,7 +33,7 @@ public func InitializePlayer(proplist plr)
 	return;
 }
 
-public func GiveAllKnowledge(int plr)
+public func GiveAllKnowledge(proplist plr)
 {
 	var index, def;
 	while (def = GetDefinition(index++))
@@ -41,7 +41,7 @@ public func GiveAllKnowledge(int plr)
 	return;
 }
 
-public func GiveSettlementTools(int plr)
+public func GiveSettlementTools(proplist plr)
 {
 	var crew = plr->GetCrew();
 	// Give all tools needed to build up a settlement.
@@ -53,7 +53,7 @@ public func GiveSettlementTools(int plr)
 	return;
 }
 
-public func GiveBaseMaterials(int plr)
+public func GiveBaseMaterials(proplist plr)
 {
 	SetWealth(plr, 250);
 	SetBaseMaterial(plr, Clonk, 10);
@@ -63,7 +63,7 @@ public func GiveBaseMaterials(int plr)
 	return;
 }
 
-public func MovePlayerCrew(int plr)
+public func MovePlayerCrew(proplist plr)
 {
 	// Move the crew of the player to a nice position on the map.
 	var pos = FindLocation(Loc_Sky(), Loc_Space(20, CNAT_Top), Loc_Wall(CNAT_Bottom));

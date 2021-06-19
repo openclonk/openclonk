@@ -32,7 +32,7 @@ public func OnOilDelivered()
 	return true;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var desc;
 	if (is_fulfilled)
@@ -47,7 +47,7 @@ public func GetDescription(int plr)
 	return desc;
 }
 
-public func GetShortDescription(int plr) {}
+public func GetShortDescription(proplist plr) {}
 
 /*-- Proplist --*/
 local Name = "$Name$";

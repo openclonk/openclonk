@@ -35,7 +35,7 @@ public func IsFulfilled()
 	return GetPumpedAmount() >= goal_amount;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	if (IsFulfilled())
 		return "$DescriptionCompleted$";

@@ -1,5 +1,5 @@
 // SetPlrKnowledge(-1, ...) sets knowledge for all players
-global func SetPlrKnowledge(int plr, ...)
+global func SetPlrKnowledge(proplist plr, ...)
 {
 	if (!GetType(plr) || (plr == NO_OWNER))
 	{

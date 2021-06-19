@@ -213,7 +213,7 @@ protected func InitializePlayer(proplist plr)
 
 /*-- Intro, Tutorial Goal & Outro --*/
 
-public func OnGoalCompleted(int plr)
+public func OnGoalCompleted(proplist plr)
 {
 	var outro = AddEffect("GoalOutro", nil, 100, 5);
 	outro.plr = plr;
@@ -407,7 +407,7 @@ global func FxTutorialHasBlastedWallTimer(object target, proplist effect)
 	return FX_OK;
 }
 
-protected func OnGuideMessageShown(int plr, int index)
+protected func OnGuideMessageShown(proplist plr, int index)
 {
 	if (index == 0)
 	{
@@ -444,7 +444,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	return;
 }
 
-protected func OnGuideMessageRemoved(int plr, int index)
+protected func OnGuideMessageRemoved(proplist plr, int index)
 {
 	TutArrowClear();
 	return;

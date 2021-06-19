@@ -10,7 +10,7 @@ global func IntroStart()
 	}
 }
 
-global func IntroAddPlayer(int plr)
+global func IntroAddPlayer(proplist plr)
 {
 	var effect = GetEffect("IntIntro");
 	if (!effect) return false;

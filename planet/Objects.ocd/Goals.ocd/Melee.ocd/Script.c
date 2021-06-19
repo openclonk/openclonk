@@ -99,7 +99,7 @@ public func Activate(proplist byplr)
 	return;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return ""; // TODO
 }

@@ -128,7 +128,7 @@ func IntroMsg()
 	return true;
 }
 
-func LaunchPlayer(object clonk, int plr)
+func LaunchPlayer(object clonk, proplist plr)
 {
 	// Make sure clonk can move
 	DigFreeRect(clonk->GetX()-6, clonk->GetY()-10, 13, 18, true);
@@ -139,19 +139,19 @@ func LaunchPlayer(object clonk, int plr)
 	return true;
 }
 
-public func OnPlayerRelaunch(int plr)
+public func OnPlayerRelaunch(proplist plr)
 {
 	if (!g_respawn_flags[plr->GetTeam()])
 		return plr->Eliminate();
 }
 
-public func RelaunchPosition(int iPlr, int iTeam)
+public func RelaunchPosition(proplist iPlr, int iTeam)
 {
 	if (!g_respawn_flags[iTeam]) return;
 	return [g_respawn_flags[iTeam]->GetX(), g_respawn_flags[iTeam]->GetY()];
 }
 
-public func OnClonkLeftRelaunch(object clonk, int plr)
+public func OnClonkLeftRelaunch(object clonk, proplist plr)
 {
 	// Find flag for respawn
 	var flagpole = g_respawn_flags[plr->GetTeam()];
@@ -166,7 +166,7 @@ public func OnClonkLeftRelaunch(object clonk, int plr)
 func RelaunchWeaponList() { return [Bow, Sword, Club, Javelin, Blunderbuss, Firestone, IceWallKit]; }
 
 
-func AcquireBase(int plr, int team)
+func AcquireBase(proplist plr, int team)
 {
 	// Change ownership of some stuff in the base to the first player of a team joining
 	// Note that this may be called late into the game in case all players of one team join late into the game

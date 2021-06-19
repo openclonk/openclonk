@@ -57,7 +57,7 @@ public func IsFulfilled()
 	return true;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -92,7 +92,7 @@ public func Activate(proplist plr)
 
 protected func FxGoalMessageStart() {}
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	// Show acquired wealth compared to goal.
 	var wealth = GetWealth(plr);

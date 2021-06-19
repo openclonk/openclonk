@@ -514,7 +514,7 @@ func RefreshSidebar(int slot)
 	GuiUpdate({sidebar = sidebar}, current_main_menu_id, 1, current_menus[slot].menu_object);
 }
 
-func OnSidebarEntrySelected(data, int player, int ID, int subwindowID, object target)
+func OnSidebarEntrySelected(data, proplist player, int ID, int subwindowID, object target)
 {
 	if (!data.obj) return;
 	
@@ -624,7 +624,7 @@ func GetEntryInformation(proplist menu_info, int entry_index)
 	return {menu = menu, entry = entry};
 }
 
-func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
+func OnMenuEntryHover(proplist menu_info, int entry_index, proplist player)
 {
 	var info = GetEntryInformation(menu_info, entry_index);
 	if (!info.entry) return;
@@ -685,7 +685,7 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 	}
 }
 
-func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
+func OnMenuEntrySelected(proplist menu_info, int entry_index, proplist player)
 {
 	var info = GetEntryInformation(menu_info, entry_index);
 	if (!info.entry) return;
@@ -1205,7 +1205,7 @@ func CreateDummy()
 	return dummy;
 }
 
-func RemoveDummy(object dummy, int player, int ID, int subwindowID, object target)
+func RemoveDummy(object dummy, proplist player, int ID, int subwindowID, object target)
 {
 	if (dummy)
 		dummy->RemoveObject();

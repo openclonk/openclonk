@@ -57,7 +57,7 @@ protected func RemovePlayer(proplist plr)
 	return;
 }
 
-protected func OnTeamSwitch(int player, int new_team, int old_team)
+protected func OnTeamSwitch(proplist player, int new_team, int old_team)
 {
 	// Remove player from old team, i.e. substract his fair share.
 	var count = 0;

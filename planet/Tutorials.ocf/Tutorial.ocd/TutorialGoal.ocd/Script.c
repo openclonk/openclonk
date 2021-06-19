@@ -27,7 +27,7 @@ public func Fulfill()
 	return;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	return this.Description;
 }

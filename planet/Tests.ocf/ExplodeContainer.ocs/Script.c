@@ -1,7 +1,7 @@
 /**
 	Explode Container
 	Unit tests for the explosions and containers. Invokes tests by
-	calling the global function Test*_OnStart(int plr) and iterate 
+	calling the global function Test*_OnStart(proplist plr) and iterate 
 	through all tests. The test is completed once Test*_Completed()
 	returns	true. Then Test*_OnFinished() is called, to be able to 
 	reset the scenario for the next test.
@@ -118,7 +118,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 	return FX_OK;
 }
 
-global func Test1_OnStart(int plr)
+global func Test1_OnStart(proplist plr)
 {
 	var lorry1 = CreateObject(Lorry, 200, 200);
 	CreateObject(Wood, 200, 206);
@@ -147,7 +147,7 @@ global func Test1_OnFinished()
 	return;
 }
 
-global func Test2_OnStart(int plr)
+global func Test2_OnStart(proplist plr)
 {
 	var lorry1 = CreateObject(Lorry, 200, 200);
 	var lorry2 = CreateObject(Lorry, 200, 200);
@@ -173,7 +173,7 @@ global func Test2_OnFinished()
 	return;
 }
 
-global func Test3_OnStart(int plr)
+global func Test3_OnStart(proplist plr)
 {
 	var lorry1 = CreateObject(Lorry, 200, 200);
 	var lorry2 = CreateObject(Lorry, 200, 200);
@@ -199,7 +199,7 @@ global func Test3_OnFinished()
 	return;
 }
 
-global func Test4_OnStart(int plr)
+global func Test4_OnStart(proplist plr)
 {
 	var lorry1 = CreateObject(Lorry, 200, 200);
 	var lorry2 = CreateObject(Lorry, 200, 200);
@@ -235,7 +235,7 @@ global func Test4_OnFinished()
 	return;
 }
 
-global func Test5_OnStart(int plr)
+global func Test5_OnStart(proplist plr)
 {
 	var lorry1 = CreateObject(Lorry, 200, 200);
 	lorry1.ContainBlast = true;
@@ -261,7 +261,7 @@ global func Test5_OnFinished()
 	return;
 }
 
-global func Test6_OnStart(int plr)
+global func Test6_OnStart(proplist plr)
 {
 	var lorry1 = CreateObject(Lorry, 200, 200);
 	var lorry2 = CreateObject(Lorry, 200, 200);

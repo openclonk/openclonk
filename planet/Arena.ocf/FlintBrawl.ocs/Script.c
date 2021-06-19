@@ -125,7 +125,7 @@ func InitializeRound()
 	return true;
 }
 
-func InitPlayerRound(int plr, object crew)
+func InitPlayerRound(proplist plr, object crew)
 {
 	// everything visible
 	plr->SetFoW(false);

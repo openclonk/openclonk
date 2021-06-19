@@ -21,7 +21,7 @@ public func Intro_Start(array start, array finish)
 	return ScheduleNext(4);
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
 	plr->SetZoomByViewRange(300, nil, PLRZOOM_Set);
 	var crew = plr->GetCrew();

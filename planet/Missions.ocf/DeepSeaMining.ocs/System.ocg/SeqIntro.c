@@ -52,7 +52,7 @@ local FxFloatPlane = new Effect
 	}
 };
 
-func Intro_JoinPlayer(int plr)
+func Intro_JoinPlayer(proplist plr)
 {
 	if (g_intro_done) return false; // too late for join - just join on island
 	for (var index = 0, crew; crew = plr->GetCrew(index); ++index) crew->Enter(this);

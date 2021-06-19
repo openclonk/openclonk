@@ -485,7 +485,7 @@ public func SwitchObjectSpawnDest()
 	GuiUpdate(update, idHudOS);
 }
 
-public func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, object target)
+public func ObjectSpawnSelectCat(data, proplist player, int ID, int subwindowID, object target)
 {
 	GuiClose(idHudOS, idGuiHudOS_objectselect);
 	var objectselect = 
@@ -540,7 +540,7 @@ public func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, obje
 	GuiUpdate(objectselect, idHudOS, idGuiHudOS_objectselect);
 }
 
-public func ObjectSpawnSelectObject(data, int player, int ID, int subwindowID, object target)
+public func ObjectSpawnSelectObject(data, proplist player, int ID, int subwindowID, object target)
 {
 	var clonk = player->GetCursor();
 	var obj = data[0];

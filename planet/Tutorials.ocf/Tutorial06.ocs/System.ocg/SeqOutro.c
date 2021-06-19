@@ -7,7 +7,7 @@ public func Outro_Init(int for_plr)
 	return true;
 }
 
-public func Outro_JoinPlayer(int plr)
+public func Outro_JoinPlayer(proplist plr)
 {
 	plr->SetZoomByViewRange(300, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	return;

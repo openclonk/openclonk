@@ -1,7 +1,7 @@
 /**
 	Cable Cars
 	Unit tests for the cable cars. Invokes tests by calling the 
-	global function Test*_OnStart(int plr) and iterate through all 
+	global function Test*_OnStart(proplist plr) and iterate through all 
 	tests. The test is completed once Test*_Completed() returns
 	true. Then Test*_OnFinished() is called, to be able to reset 
 	the scenario for the next test.
@@ -165,7 +165,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 
 /*-- Cable Cars Tests --*/
 
-global func Test1_OnStart(int plr)
+global func Test1_OnStart(proplist plr)
 {
 	SetWindFixed(50);
 	CreateObjectAbove(WindGenerator, 90, 160, plr);
@@ -210,7 +210,7 @@ global func Test1_OnFinished()
 }
 
 
-global func Test2_OnStart(int plr)
+global func Test2_OnStart(proplist plr)
 {
 	SetWindFixed(50);
 	CreateObjectAbove(WindGenerator, 90, 160, plr);
@@ -267,7 +267,7 @@ global func Test2_OnFinished()
 }
 
 
-global func Test3_OnStart(int plr)
+global func Test3_OnStart(proplist plr)
 {
 	SetWindFixed(50);
 	CreateObjectAbove(WindGenerator, 90, 160, plr);
@@ -317,7 +317,7 @@ global func Test3_OnFinished()
 }
 
 
-global func Test4_OnStart(int plr)
+global func Test4_OnStart(proplist plr)
 {
 	SetWindFixed(50);
 	CreateObjectAbove(WindGenerator, 90, 160, plr);
@@ -368,7 +368,7 @@ global func Test4_OnFinished()
 }
 
 
-global func Test5_OnStart(int plr)
+global func Test5_OnStart(proplist plr)
 {
 	SetWindFixed(50);
 	CreateObjectAbove(WindGenerator, 90, 160, plr);
@@ -419,7 +419,7 @@ global func Test5_OnFinished()
 }
 
 
-global func Test6_OnStart(int plr)
+global func Test6_OnStart(proplist plr)
 {
 	SetWindFixed(80);
 	CreateObjectAbove(WindGenerator, 30, 160, plr);
@@ -507,7 +507,7 @@ global func Test6_OnFinished()
 }
 
 
-global func Test7_OnStart(int plr)
+global func Test7_OnStart(proplist plr)
 {
 	SetWindFixed(50);
 	CreateObjectAbove(WindGenerator, 90, 160, plr);
@@ -562,7 +562,7 @@ global func Test7_OnFinished()
 }
 
 
-global func Test8_OnStart(int plr)
+global func Test8_OnStart(proplist plr)
 {
 	var crossing1 = CreateObjectAbove(CableCrossing, 20, 160, plr);
 	var crossing2 = CreateObjectAbove(CableCrossing, 40, 160, plr);
@@ -598,7 +598,7 @@ global func Test8_OnFinished()
 }
 
 
-global func Test9_OnStart(int plr)
+global func Test9_OnStart(proplist plr)
 {
 	CreateObjectAbove(Flagpole, 216, 160, plr);
 	CreateObjectAbove(Flagpole, 20, 312, plr);
@@ -712,7 +712,7 @@ global func Test9_OnFinished()
 }
 
 
-global func Test10_OnStart(int plr)
+global func Test10_OnStart(proplist plr)
 {
 	SetWindFixed(0);
 	CreateObjectAbove(WindGenerator, 90, 160, plr);
@@ -756,7 +756,7 @@ global func Test10_OnFinished()
 	return;
 }
 
-global func Test100_OnStart(int plr)
+global func Test100_OnStart(proplist plr)
 {
 	var wdt = LandscapeWidth();
 	var hgt = LandscapeHeight();

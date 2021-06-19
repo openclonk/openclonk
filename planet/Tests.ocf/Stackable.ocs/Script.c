@@ -2,7 +2,7 @@
 	Stackable objects
 	Unit tests for the stackable library.
 	
-	Invokes tests by calling the global function Test*_OnStart(int plr)
+	Invokes tests by calling the global function Test*_OnStart(proplist plr)
 	and iterate through all tests.
 	The test is completed once Test*_Completed() returns true.
 	Then Test*_OnFinished() is called, to be able to reset the scenario
@@ -127,7 +127,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 	return FX_OK;
 }
 
-global func Test1_OnStart(int plr){ return true;}
+global func Test1_OnStart(proplist plr){ return true;}
 global func Test1_OnFinished(){ return; }
 global func Test1_Execute()
 {
@@ -175,7 +175,7 @@ global func Test1_Execute()
 }
 
 
-global func Test2_OnStart(int plr){ return true;}
+global func Test2_OnStart(proplist plr){ return true;}
 global func Test2_OnFinished(){ return; }
 global func Test2_Execute()
 {
@@ -221,7 +221,7 @@ global func Test2_Execute()
 }
 
 
-global func Test3_OnStart(int plr){ return true;}
+global func Test3_OnStart(proplist plr){ return true;}
 global func Test3_OnFinished(){ return; }
 global func Test3_Execute()
 {
@@ -245,7 +245,7 @@ global func Test3_Execute()
 	return passed;
 }
 
-global func Test4_OnStart(int plr){ return true;}
+global func Test4_OnStart(proplist plr){ return true;}
 global func Test4_OnFinished(){ return; }
 global func Test4_Execute()
 {
@@ -298,7 +298,7 @@ global func Test4_Execute()
 }
 
 
-global func Test5_OnStart(int plr){ return true;}
+global func Test5_OnStart(proplist plr){ return true;}
 global func Test5_OnFinished(){ return; }
 global func Test5_Execute()
 {
@@ -366,7 +366,7 @@ global func Test5_Execute()
 	return passed;
 }
 
-global func Test6_OnStart(int plr){ return true;}
+global func Test6_OnStart(proplist plr){ return true;}
 global func Test6_OnFinished(){ return; }
 global func Test6_Execute()
 {
@@ -433,7 +433,7 @@ global func Test6_Execute()
 	return passed;
 }
 
-global func Test7_OnStart(int plr){ return true;}
+global func Test7_OnStart(proplist plr){ return true;}
 global func Test7_OnFinished(){ return; }
 global func Test7_Execute()
 {
@@ -497,7 +497,7 @@ global func Test7_Execute()
 	return passed;
 }
 
-global func Test8_OnStart(int plr){ return true;}
+global func Test8_OnStart(proplist plr){ return true;}
 global func Test8_OnFinished(){ return; }
 global func Test8_Execute()
 {
@@ -666,7 +666,7 @@ global func Test8_Execute()
 
 
 
-global func Test9_OnStart(int plr){ return true;}
+global func Test9_OnStart(proplist plr){ return true;}
 global func Test9_OnFinished(){ return; }
 global func Test9_Execute()
 {
@@ -834,7 +834,7 @@ global func Test9_Execute()
 }
 
 
-global func Test10_OnStart(int plr){ return true;}
+global func Test10_OnStart(proplist plr){ return true;}
 global func Test10_OnFinished(){ return; }
 global func Test10_Execute()
 {
@@ -938,7 +938,7 @@ global func Test10_Execute()
 }
 
 
-global func Test11_OnStart(int plr){ return true;}
+global func Test11_OnStart(proplist plr){ return true;}
 global func Test11_OnFinished(){ return; }
 global func Test11_Execute()
 {
@@ -962,7 +962,7 @@ global func Test11_Execute()
 }
 
 
-global func Test12_OnStart(int plr){ return true;}
+global func Test12_OnStart(proplist plr){ return true;}
 global func Test12_OnFinished(){ return; }
 global func Test12_Execute()
 {
@@ -1004,7 +1004,7 @@ global func Test12_Execute()
 }
 
 
-global func Test13_OnStart(int plr){ return true;}
+global func Test13_OnStart(proplist plr){ return true;}
 global func Test13_OnFinished(){ return; }
 global func Test13_Execute()
 {
@@ -1049,7 +1049,7 @@ global func Test13_Execute()
 }
 
 
-global func Test14_OnStart(int plr){ return true;}
+global func Test14_OnStart(proplist plr){ return true;}
 global func Test14_OnFinished(){ return; }
 global func Test14_Execute()
 {
@@ -1119,7 +1119,7 @@ global func Test14_Execute()
 }
 	
 
-global func Test15_OnStart(int plr){ return true;}
+global func Test15_OnStart(proplist plr){ return true;}
 global func Test15_OnFinished(){ return; }
 global func Test15_Execute()
 {
@@ -1180,7 +1180,7 @@ global func Test15_Execute()
 	return passed;
 }
 
-global func Test16_OnStart(int plr){ return true;}
+global func Test16_OnStart(proplist plr){ return true;}
 global func Test16_OnFinished(){ return; }
 global func Test16_Execute()
 {		
@@ -1243,7 +1243,7 @@ global func Test16_Execute()
 }
 
 
-global func Test17_OnStart(int plr){ return true;}
+global func Test17_OnStart(proplist plr){ return true;}
 global func Test17_OnFinished(){ return; }
 global func Test17_Execute()
 {		
@@ -1329,7 +1329,7 @@ global func Test17_Execute()
 }
 
 
-global func Test18_OnStart(int plr){ return true;}
+global func Test18_OnStart(proplist plr){ return true;}
 global func Test18_OnFinished(){ return; }
 global func Test18_Execute()
 {
@@ -1379,7 +1379,7 @@ global func Test18_Execute()
 }
 
 
-global func Test19_OnStart(int plr){ return true;}
+global func Test19_OnStart(proplist plr){ return true;}
 global func Test19_OnFinished(){ return; }
 global func Test19_Execute()
 {
@@ -1434,7 +1434,7 @@ global func Test19_Execute()
 }
 
 
-global func Test20_OnStart(int plr){ return true;}
+global func Test20_OnStart(proplist plr){ return true;}
 global func Test20_OnFinished(){ return; }
 global func Test20_Execute()
 {
@@ -1455,7 +1455,7 @@ global func Test20_Execute()
 }
 
 
-global func Test21_OnStart(int plr){ return true;}
+global func Test21_OnStart(proplist plr){ return true;}
 global func Test21_OnFinished(){ return; }
 global func Test21_Execute()
 {
@@ -1498,7 +1498,7 @@ global func Test21_Execute()
 	return passed;
 }
 
-global func Test22_OnStart(int plr){ return true;}
+global func Test22_OnStart(proplist plr){ return true;}
 global func Test22_OnFinished(){ return; }
 global func Test22_Execute()
 {

@@ -170,7 +170,7 @@ func SelectInventory(info)
 
 /* ------------------------ scenario options test ----------------------------- */
 static scenoptions_dummies;
-func StartScenarioOptionsTest(parameter, int ID, int player)
+func StartScenarioOptionsTest(parameter, int ID, proplist player)
 {
 	GuiClose(active_menu);
 	scenoptions_dummies = [];
@@ -275,20 +275,20 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 	active_menu = GuiOpen(menu);
 }
 
-func ScenOptsActivate(data, int player, int ID, int subwindowID, object target)
+func ScenOptsActivate(data, proplist player, int ID, int subwindowID, object target)
 {
 	if (!ObjectCount(Find_ID(data[0])))
 		CreateObject(data[0]);
 	GuiUpdateTag("Ticked", active_menu, data[1], nil);
 }
 
-func ScenOptsDeactivate(data, int player, int ID, int subwindowID, object target)
+func ScenOptsDeactivate(data, proplist player, int ID, int subwindowID, object target)
 {
 	RemoveAll(Find_ID(data[0]));
 	GuiUpdateTag("Unticked", active_menu, data[1], nil);
 }
 
-func ScenOptsUpdateDesc(data, int player, int ID, int subwindowID, object target)
+func ScenOptsUpdateDesc(data, proplist player, int ID, int subwindowID, object target)
 {
 	var text = "<c ff0000>Do you really want to remove the rule???</c>";
 	if (!data[2])
@@ -303,7 +303,7 @@ func ScenOptsUpdateDesc(data, int player, int ID, int subwindowID, object target
 
 /* ------------------------ player list test ----------------------------- */
 static player_list_menu;
-func StartPlayerListTest(parameter, int ID, int player)
+func StartPlayerListTest(parameter, int ID, proplist player)
 {
 	if (player_list_menu)
 	{
@@ -393,7 +393,7 @@ func StartTransferTest()
 	active_menu = GuiOpen(menu);
 }
 
-func SelectTransferGood(data, int user_id, int player)
+func SelectTransferGood(data, int user_id, proplist player)
 {
 	var obj = data[0];
 	var fromLeft = 0 == data[1];
@@ -424,7 +424,7 @@ func SelectTransferGood(data, int user_id, int player)
 
 /* ------------------------ HP bar test ----------------------------- */
 static HP_bar_menu;
-func StartHPBarTest(parameter, int ID, int player)
+func StartHPBarTest(parameter, int ID, proplist player)
 {	
 	if (HP_bar_menu)
 	{

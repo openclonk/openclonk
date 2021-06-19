@@ -52,7 +52,7 @@ public func IsFulfilled()
 	return gems_to_sell <= 0;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -97,7 +97,7 @@ public func Activate(proplist plr)
 
 protected func FxGoalMessageStart() {}
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	// Show acquired wealth compared to goal.
 	var clr = RGB(255, 0, 0);

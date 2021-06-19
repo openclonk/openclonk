@@ -49,7 +49,7 @@ func Intro_Start(object flagpole)
 	return ScheduleNext(80);
 }
 
-func Intro_JoinPlayer(int plr)
+func Intro_JoinPlayer(proplist plr)
 {
 	// Players joining initially start out in plane
 	// Late joiners are placed at flagpole

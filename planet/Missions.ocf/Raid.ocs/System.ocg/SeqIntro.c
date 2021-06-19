@@ -9,7 +9,7 @@ func Intro_Start(object hero)
 	return ScheduleNext(5);
 }
 
-func Intro_JoinPlayer(int plr)
+func Intro_JoinPlayer(proplist plr)
 {
 	// early joiners drop from the sky
 	if (this.seq_progress < 4)

@@ -204,7 +204,7 @@ protected func InitializePlayer(proplist plr)
 	return;
 }
 
-public func OnPlayerRespawn(int plr, object cp)
+public func OnPlayerRespawn(proplist plr, object cp)
 {
 	var crew = plr->GetCrew();
 	if (!crew)
@@ -223,7 +223,7 @@ public func OnPlayerRespawn(int plr, object cp)
 }
 
 // Give the player a bonus when he reaches a new checkpoint for the first time and is behind the leader.
-public func GivePlrBonus(int plr, object cp)
+public func GivePlrBonus(proplist plr, object cp)
 {
 	var crew = plr->GetCrew();
 	if (!crew)

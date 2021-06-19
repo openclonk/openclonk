@@ -27,7 +27,7 @@ public func Intro_Start()
 	return ScheduleNext(4);
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
 	var j = 0, crew;
 	while (crew = plr->GetCrew(j++))

@@ -25,10 +25,10 @@ global func GetPlayerControlAssignment(any player, int ctrl, bool human_readable
 	}
 }
 
-global func GetPlayerControlEnabled(int player_nr, int ctrl)
+global func GetPlayerControlEnabled(proplist player_nr, int ctrl)
 {
 	LogLegacyWarning("GetPlayerControlEnabled", "GetPlayer(player)->GetControlEnabled(ctrl)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player->GetControlEnabled(ctrl);
@@ -39,10 +39,10 @@ global func GetPlayerControlEnabled(int player_nr, int ctrl)
 	}
 }
 
-global func GetPlayerControlState(int player_nr, int ctrl, bool analog_strength)
+global func GetPlayerControlState(proplist player_nr, int ctrl, bool analog_strength)
 {
 	LogLegacyWarning("GetPlayerControlState", "GetPlayer(player)->GetControlState(ctrl, analog_strength)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player->GetControlState(ctrl, analog_strength);
@@ -67,10 +67,10 @@ global func GetPlayerName(any player)
 	}
 }
 
-global func GetPlayerTeam(int player_nr)
+global func GetPlayerTeam(proplist player_nr)
 {
 	LogLegacyWarning("GetPlayerTeam", "GetPlayer(player)->GetTeam()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player->GetTeam();
@@ -81,10 +81,10 @@ global func GetPlayerTeam(int player_nr)
 	}
 }
 
-global func GetPlayerType(int player_nr)
+global func GetPlayerType(proplist player_nr)
 {
 	LogLegacyWarning("GetPlayerType", "GetPlayer(player).Type", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player.Type;
@@ -95,10 +95,10 @@ global func GetPlayerType(int player_nr)
 	}
 }
 
-global func GetPlayerZoomLimits(int player_nr)
+global func GetPlayerZoomLimits(proplist player_nr)
 {
 	LogLegacyWarning("GetPlayerZoomLimits", "GetPlayer(player) and the respective zoom limit", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return
@@ -117,10 +117,10 @@ global func GetPlayerZoomLimits(int player_nr)
 	}
 }
 
-global func GetPlrClonkSkin(int player_nr)
+global func GetPlrClonkSkin(proplist player_nr)
 {
 	LogLegacyWarning("GetPlrClonkSkin", "GetPlayer(player).CrewSkin", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player.CrewSkin;
@@ -131,10 +131,10 @@ global func GetPlrClonkSkin(int player_nr)
 	}
 }
 
-global func GetPlayerScore(int player_nr)
+global func GetPlayerScore(proplist player_nr)
 {
 	LogLegacyWarning("GetPlayerScore", "GetPlayer(player).Score", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player.Score;
@@ -148,7 +148,7 @@ global func GetPlayerScore(int player_nr)
 global func GetPlayerScoreGain(player_nr)
 {
 	LogLegacyWarning("GetPlayerScoreGain", "GetPlayer(player).Score - GetPlayer(player).InitialScore", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player.Score - player.InitialScore;
@@ -162,7 +162,7 @@ global func GetPlayerScoreGain(player_nr)
 global func GetScriptPlayerExtraID(player_nr)
 {
 	LogLegacyWarning("GetScriptPlayerExtraID", "GetPlayer(player).ExtraID", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player.ExtraID;
@@ -198,20 +198,20 @@ global func Hostile(any player, any opponent, bool check_one_way_only)
 	}
 }
 
-global func ResetCursorView(int player_nr, bool immediate)
+global func ResetCursorView(proplist player_nr, bool immediate)
 {
 	LogLegacyWarning("ResetCursorView", "GetPlayer(player)->ResetCursorView(immediate)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		player->ResetCursorView(immediate);
 	}
 }
 
-global func SetFoW(bool enabled, int player_nr)
+global func SetFoW(bool enabled, proplist player_nr)
 {
 	LogLegacyWarning("SetFoW", "GetPlayer(player)->SetFoW(enabled)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player->SetFoW(enabled);
@@ -235,10 +235,10 @@ global func SetHostility(any player, any opponent, bool hostile, bool silent, bo
 	}
 }
 
-global func SetPlayerControlEnabled(int player_nr, int ctrl, bool is_enabled)
+global func SetPlayerControlEnabled(proplist player_nr, int ctrl, bool is_enabled)
 {
 	LogLegacyWarning("SetPlayerControlEnabled", "GetPlayer(player)->SetControlEnabled(ctrl, is_enabled)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player->SetControlEnabled(ctrl, is_enabled);
@@ -249,10 +249,10 @@ global func SetPlayerControlEnabled(int player_nr, int ctrl, bool is_enabled)
 	}
 }
 
-global func SetPlayerTeam(int player_nr, int new_team, bool no_calls)
+global func SetPlayerTeam(proplist player_nr, int new_team, bool no_calls)
 {
 	LogLegacyWarning("SetPlayerTeam", "GetPlayer(player)->SetTeam(new_team, no_calls)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player->SetTeam(new_team, no_calls);
@@ -287,7 +287,7 @@ global func SetPlayerViewLock(any player, bool is_locked)
 	}
 }
 
-global func SetPlayerZoom(int player_nr, int zoom, int precision, int flags)
+global func SetPlayerZoom(proplist player_nr, int zoom, int precision, int flags)
 {
 	LogLegacyWarning("SetPlayerZoom", "GetPlayer(player)->SetZoom(zoom, precision, flags)", VERSION_10_0_OC);
 	// special player NO_OWNER: apply to all players
@@ -299,7 +299,7 @@ global func SetPlayerZoom(int player_nr, int zoom, int precision, int flags)
 		}
 		return true;
 	}
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		player->SetZoom(zoom, precision, flags, ...);
@@ -311,7 +311,7 @@ global func SetPlayerZoom(int player_nr, int zoom, int precision, int flags)
 	}
 }
 
-global func SetPlayerZoomByViewRange(int player_nr, int range_wdt, int range_hgt, int flags)
+global func SetPlayerZoomByViewRange(proplist player_nr, int range_wdt, int range_hgt, int flags)
 {
 	LogLegacyWarning("SetPlayerZoomByViewRange", "GetPlayer(player)->SetZoomByViewRange(range_wdt, range_hgt, flags)", VERSION_10_0_OC);
 	// special player NO_OWNER: apply to all players
@@ -323,7 +323,7 @@ global func SetPlayerZoomByViewRange(int player_nr, int range_wdt, int range_hgt
 		}
 		return true;
 	}
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		player->SetZoomByViewRange(range_wdt, range_hgt, flags, ...);
@@ -335,10 +335,10 @@ global func SetPlayerZoomByViewRange(int player_nr, int range_wdt, int range_hgt
 	}
 }
 
-global func SetViewCursor(int player_nr, object target)
+global func SetViewCursor(proplist player_nr, object target)
 {
 	LogLegacyWarning("SetViewCursor", "GetPlayer(player)->SetViewCursor(target)", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player->SetViewCursor(target);
@@ -355,10 +355,10 @@ global func SetViewOffset(any player, int x, int y)
 	return GetPlayerLegacy(player)->SetViewOffset(x, y, ...);
 }
 
-global func SurrenderPlayer(int player_nr, bool remove_direct)
+global func SurrenderPlayer(proplist player_nr, bool remove_direct)
 {
 	LogLegacyWarning("SurrenderPlayer", "GetPlayer(player)->Surrender()", VERSION_10_0_OC);
-	var player = GetPlayer(player_nr);
+	var player = GetPlayerLegacy(player_nr);
 	if (player)
 	{
 		return player->Surrender();
@@ -390,12 +390,12 @@ global func CreateConstruction(type, int x, int y, any owner, int completion, bo
 {
 	return inherited(type, x, y, GetPlayerLegacy(owner), completion, adjust_terrain, check_site, ...);
 }
-/*
+
 global func CreateObjectAbove(type, int x, int y, any owner)
 {
 	return inherited(type, x, y, GetPlayerLegacy(owner), ...);
 }
-*/
+
 global func CreateObject(type, int x, int y, any owner)
 {
 	return inherited(type, x, y, GetPlayerLegacy(owner), ...);

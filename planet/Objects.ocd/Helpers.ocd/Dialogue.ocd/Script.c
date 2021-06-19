@@ -346,7 +346,7 @@ public func MessageBoxBroadcast(string message, object clonk, object talker, arr
 
 static MessageBox_last_talker, MessageBox_last_pos;
 
-private func MessageBox(string message, object clonk, object talker, int for_player, bool as_message, array options, proplist menu_target)
+private func MessageBox(string message, object clonk, object talker, proplist for_player, bool as_message, array options, proplist menu_target)
 {
 	// broadcast enabled: message copy to other players
 	if (dlg_broadcast && !as_message)
@@ -461,7 +461,7 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 	else
 	{
 		// No target is given: Global (player) message
-		if (!GetType(for_player)) for_player = NO_OWNER;
+		// if (!GetType(for_player)) for_player = NO_OWNER;
 		// altenate left/right position as speakers change
 		if (talker != MessageBox_last_talker) MessageBox_last_pos = !MessageBox_last_pos;
 		MessageBox_last_talker = talker;

@@ -1,7 +1,7 @@
 /**
 	Liquid System
 	Unit tests for the liquid system. Invokes tests by calling the 
-	global function Test*_OnStart(int plr) and iterate through all 
+	global function Test*_OnStart(proplist plr) and iterate through all 
 	tests. The test is completed once Test*_Completed() returns
 	true. Then Test*_OnFinished() is called, to be able to reset 
 	the scenario for the next test.
@@ -165,7 +165,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 
 /*-- Liquid Tests --*/
 
-global func Test1_OnStart(int plr)
+global func Test1_OnStart(proplist plr)
 {
 	var foundry = CreateObjectAbove(Foundry, 110, 160, plr);
 	foundry->CreateContents(Earth, 10);
@@ -198,7 +198,7 @@ global func Test1_OnFinished()
 }
 
 
-global func Test2_OnStart(int plr)
+global func Test2_OnStart(proplist plr)
 {
 	var foundry = CreateObjectAbove(Foundry, 110, 160, plr);
 	foundry->CreateContents(Rock, 60);
@@ -239,7 +239,7 @@ global func Test2_OnFinished()
 }
 
 
-global func Test3_OnStart(int plr)
+global func Test3_OnStart(proplist plr)
 {
 	DrawMaterialQuad("Oil", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
 	
@@ -281,7 +281,7 @@ global func Test3_OnFinished()
 	return;
 }
 
-global func Test4_OnStart(int plr)
+global func Test4_OnStart(proplist plr)
 {	
 	DrawMatBasin("DuroLava", 20, 120);
 
@@ -323,7 +323,7 @@ global func Test4_OnFinished()
 }
 
 
-global func Test5_OnStart(int plr)
+global func Test5_OnStart(proplist plr)
 {	
 	RemoveAll(Find_ID(Rule_NoPowerNeed));	
 	
@@ -378,7 +378,7 @@ global func Test5_OnFinished()
 	return;
 }
 
-global func Test6_OnStart(int plr)
+global func Test6_OnStart(proplist plr)
 {
 	var tank = CreateObjectAbove(LiquidTank, 70, 160, plr);
 	var pump1 = CreateObjectAbove(Pump, 16, 160, plr);

@@ -9,7 +9,7 @@ public func IsFulfilled()
 
 local is_fulfilled = false;
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	return this.Description;
 }

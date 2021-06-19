@@ -167,7 +167,7 @@ protected func RelaunchPlayer(proplist plr)
 	return;
 }
 
-private func JoinPlayer(int plr)
+private func JoinPlayer(proplist plr)
 {
 	var clonk = plr->GetCrew();
 	clonk->DoEnergy(100000);

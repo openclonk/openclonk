@@ -67,7 +67,7 @@ protected func InitializeScriptPlayer(proplist plr)
 	return;
 }
 
-global func CreateEnemy(id clonktype, int x, int y, int plr, array contents, int life)
+global func CreateEnemy(id clonktype, int x, int y, proplist plr, array contents, int life)
 {
 	var enemy = CreateObjectAbove(clonktype, x, y, plr);
 	if (!enemy) return nil;
@@ -87,7 +87,7 @@ global func CreateEnemy(id clonktype, int x, int y, int plr, array contents, int
 
 /*-- AI Tests --*/
 
-global func Test1_OnStart(int plr)
+global func Test1_OnStart(proplist plr)
 {
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [GrenadeLauncher, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb], 50);
 	CreateEnemy(Clonk, 392, 258, script_enemy2, [Sword], 50);
@@ -96,7 +96,7 @@ global func Test1_OnStart(int plr)
 	return true;
 }
 
-global func Test2_OnStart(int plr)
+global func Test2_OnStart(proplist plr)
 {
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Firestone, Firestone, Firestone, Firestone, Firestone, Firestone, Firestone, Firestone, Firestone], 50);
 	CreateEnemy(Clonk, 392, 258, script_enemy2, [Lantern, Lantern, Lantern, Lantern, Lantern, Lantern, Lantern, Lantern, Lantern], 50);
@@ -105,7 +105,7 @@ global func Test2_OnStart(int plr)
 	return true;
 }
 
-global func Test3_OnStart(int plr)
+global func Test3_OnStart(proplist plr)
 {
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Blunderbuss, LeadBullet, Sword], 50);
 	CreateEnemy(Clonk, 392, 258, script_enemy2, [Sword, Bow, Arrow, Shield], 50);
@@ -114,7 +114,7 @@ global func Test3_OnStart(int plr)
 	return true;
 }
 
-global func Test4_OnStart(int plr)
+global func Test4_OnStart(proplist plr)
 {
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Axe], 50);
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Axe], 50);	
@@ -124,7 +124,7 @@ global func Test4_OnStart(int plr)
 	return true;
 }
 
-global func Test5_OnStart(int plr)
+global func Test5_OnStart(proplist plr)
 {
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Bow, FireArrow], 50);
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Bow, BombArrow], 50);	
@@ -135,7 +135,7 @@ global func Test5_OnStart(int plr)
 	return true;
 }
 
-global func Test6_OnStart(int plr)
+global func Test6_OnStart(proplist plr)
 {
 	CreateEnemy(Clonk, 32, 208, script_enemy1, [Bow, FireArrow], 50);
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Bow, BombArrow], 50);
@@ -149,7 +149,7 @@ global func Test6_OnStart(int plr)
 	return true;
 }
 
-global func Test7_OnStart(int plr)
+global func Test7_OnStart(proplist plr)
 {
 	CreateObject(Rule_NoFriendlyFire, LandscapeWidth() / 2, LandscapeHeight() / 2);
 	CreateEnemy(Clonk, 32, 208, script_enemy1, [Bow, FireArrow], 50);
@@ -168,7 +168,7 @@ global func Test7_OnStart(int plr)
 	return true;
 }
 
-global func Test8_OnStart(int plr)
+global func Test8_OnStart(proplist plr)
 {
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Club], 50);
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Club], 50);	
@@ -178,7 +178,7 @@ global func Test8_OnStart(int plr)
 	return true;
 }
 
-global func Test9_OnStart(int plr)
+global func Test9_OnStart(proplist plr)
 {
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Blunderbuss, LeadBullet, LeadBullet], 50);
 	CreateEnemy(Clonk, 392, 258, script_enemy2, [Bread, Sproutberry, Mushroom], 50);
@@ -187,7 +187,7 @@ global func Test9_OnStart(int plr)
 	return true;
 }
 
-global func Test10_OnStart(int plr)
+global func Test10_OnStart(proplist plr)
 {
 	var catapulteer = CreateEnemy(Clonk, 32, 208, script_enemy1, nil, 50);
 	var catapult = CreateObjectAbove(Catapult, 32, 208, script_enemy1);
@@ -202,7 +202,7 @@ global func Test10_OnStart(int plr)
 	return true;
 }
 
-global func Test11_OnStart(int plr)
+global func Test11_OnStart(proplist plr)
 {
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Bow, Arrow, Arrow, Arrow], 50);
 	CreateEnemy(Clonk, 392, 258, script_enemy2, [Bow, Arrow, Arrow, Arrow], 50);

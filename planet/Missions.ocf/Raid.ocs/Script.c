@@ -89,7 +89,7 @@ func InitializePlayer(proplist plr)
 	return;
 }
 
-func JoinPlayer(int plr, object crew, bool no_placement)
+func JoinPlayer(proplist plr, object crew, bool no_placement)
 {
 	if (!crew) crew = plr->GetCrew();
 	if (!crew) return false;

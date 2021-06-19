@@ -2,7 +2,7 @@
 
 static g_controls_disabled;
 
-global func DisablePlrControls(int plr, bool disable_crew)
+global func DisablePlrControls(proplist plr, bool disable_crew)
 {
 	// Set controls to disables for this player.
 	if (g_controls_disabled == nil)
@@ -20,7 +20,7 @@ global func DisablePlrControls(int plr, bool disable_crew)
 }
 
 
-global func EnablePlrControls(int plr, bool enable_crew)
+global func EnablePlrControls(proplist plr, bool enable_crew)
 {
 	// Set controls to enabled for this player.
 	if (g_controls_disabled == nil)

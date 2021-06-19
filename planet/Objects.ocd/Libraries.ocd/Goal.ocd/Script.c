@@ -2,7 +2,7 @@
 	Goal control
 	Include this to all C4D_Goal objects. Functions to be overloaded:
 	 * bool IsFullfilled(); - is the goal fulfilled?
-	 * string GetDescription(int plr); - description of the goal
+	 * string GetDescription(proplist plr); - description of the goal
 		
 	@author Sven2
 */
@@ -134,9 +134,9 @@ public func SetMissionAccess(string str_password)
 public func IsFulfilled() { return true; }
 
 // Overload: return the current description for this goal.
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
-	return this.Description ?? "WARNING: GetDescription(int plr) not overloaded by goal";
+	return this.Description ?? "WARNING: GetDescription(proplist plr) not overloaded by goal";
 }
 
 protected func Activate(plr)

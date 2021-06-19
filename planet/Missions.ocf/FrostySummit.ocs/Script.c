@@ -67,7 +67,7 @@ public func RelaunchPlayer(proplist player)
 	return true;
 }
 
-public func OnPlayerRelaunch(int plr, bool is_relaunch)
+public func OnPlayerRelaunch(proplist plr, bool is_relaunch)
 {
 	if (!is_relaunch)
 	{

@@ -83,7 +83,7 @@ public func Construction()
 	return true;
 }
 
-private func UpdateVisibility(int plr)
+private func UpdateVisibility(proplist plr)
 {
 	// Spawn is visible if the item is currently not collected by the player
 	// In case a team is set, it also needs to match
@@ -132,7 +132,7 @@ public func InitializePlayer(proplist plr)
 	return UpdateVisibility(plr);
 }
 
-public func OnTeamSwitch(int plr, int new_team, int old_team)
+public func OnTeamSwitch(proplist plr, int new_team, int old_team)
 {
 	// Broadcast on player team switch: Update visibility
 	return UpdateVisibility(plr);

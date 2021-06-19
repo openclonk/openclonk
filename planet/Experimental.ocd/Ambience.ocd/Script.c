@@ -100,7 +100,7 @@ private func Execute()
 	return true;
 }
 
-private func ExecutePlayer(int plr)
+private func ExecutePlayer(proplist plr)
 {
 	var cursor = plr->GetCursor();
 	// Determine environment the player is currently in

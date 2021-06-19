@@ -182,7 +182,7 @@ func OnClonkDeath(object clonk, proplist killer)
 	return;
 }
 
-public func GetAdditionalPlayerRelaunchString(object clonk, int plr, proplist killed_by)
+public func GetAdditionalPlayerRelaunchString(object clonk, proplist plr, proplist killed_by)
 {
 	if (!killed_by->Hostile(plr)) return;
 	if (!location->GetKing()) return;
@@ -214,7 +214,7 @@ private func CheckForWinner()
 	return;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var teams = GetTeamPoints();
 	var lines=[];
@@ -294,7 +294,7 @@ private func GetTeamPoints()
 }
 
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return ""; // TODO
 }

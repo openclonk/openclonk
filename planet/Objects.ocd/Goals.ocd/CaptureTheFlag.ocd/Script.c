@@ -102,7 +102,7 @@ protected func RemovePlayer(proplist plr)
 	return _inherited(plr, ...);
 }
 
-protected func RejectTeamSwitch(int player, int new_team)
+protected func RejectTeamSwitch(proplist player, int new_team)
 {
 	// Prevent team switching in any case.
 	return true;
@@ -133,7 +133,7 @@ public func IsFulfilled()
 	return false;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var flags = GetScoreGoal() - score_list[plr->GetTeam()];
 	if (IsFulfilled())
@@ -166,7 +166,7 @@ public func Activate(proplist byplr)
 	return;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	var team = plr->GetTeam();
 	var flag = FindObject(Find_ID(Goal_Flag), Find_Func("FindTeam", team));

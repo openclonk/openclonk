@@ -118,7 +118,7 @@ public func IsFulfilled()
 	return nr_passed >= this.LocomotiveGoal;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())

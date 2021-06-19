@@ -120,7 +120,7 @@ func OnGoalsFulfilled()
 	return false;
 }
 
-func GiveExtraPlans(int plr)
+func GiveExtraPlans(proplist plr)
 {
 	SetPlrKnowledge(plr, Pump);
 	SetPlrKnowledge(plr, Pipe);

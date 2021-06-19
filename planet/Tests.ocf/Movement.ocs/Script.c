@@ -291,7 +291,7 @@ global func SetPositionAndSpeed(int x, int y, int xdir, int ydir)
 
 //-----------------------------------
 
-global func Test1_OnStart(int player)
+global func Test1_OnStart(proplist player)
 {
 	Log("Launch a Clonk diagonally with low speed, should move diagonally");
 	var clonk = CreateObject(Clonk, 320, 60, script_player);
@@ -324,7 +324,7 @@ global func Test1_OnFinished()
 
 //-----------------------------------
 
-global func Test2_OnStart(int player)
+global func Test2_OnStart(proplist player)
 {
 	Log("Launch a Clonk diagonally with high speed, should move diagonally");
 	// With the current implementation (object moves in X direction first)
@@ -360,7 +360,7 @@ global func Test2_OnFinished()
 
 //-----------------------------------
 
-global func Test3_OnStart(int player)
+global func Test3_OnStart(proplist player)
 {
 	Log("Launch a rock diagonally with high speed, should move diagonally");
 	// Objects with smaller vertices do not hit the wall, even at high velocity

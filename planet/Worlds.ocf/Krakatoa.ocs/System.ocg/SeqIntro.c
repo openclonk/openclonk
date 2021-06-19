@@ -52,7 +52,7 @@ public func Intro_Start()
 	return ScheduleNext(4);
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
 	// Move player's crew into the plane.
 	var j = 0, crew;

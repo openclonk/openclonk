@@ -1,6 +1,6 @@
 // Base material for the player.
 
-global func GivePlayerBaseMaterial(int plr)
+global func GivePlayerBaseMaterial(proplist plr)
 {
 	var base_mats = [
 		// Clonks & health.

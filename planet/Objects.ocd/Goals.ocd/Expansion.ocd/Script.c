@@ -108,7 +108,7 @@ private func FxIntAreaMonteCarloTimer(object target, proplist effect, int time)
 }
 
 // Return the description of this goal.
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (GetExpansionArea() >= GetExpansionGoal() || GetExpansionGoal() == 0)
@@ -142,7 +142,7 @@ public func Activate(proplist plr)
 
 protected func FxGoalMessageStart() {}
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	// Show expansion percentage.
 	var perc = 0;

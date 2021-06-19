@@ -14,7 +14,7 @@ public func Intro_Init(int for_plr)
 	return true;
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
 	plr->SetZoomByViewRange(240, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	return;

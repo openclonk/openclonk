@@ -367,7 +367,7 @@ public func SetRecoveryTime(int to_time)
 
 public func GetRecoveryTime() { return recovery_time; }
 
-public func GetEnemyPlayer(int plr)
+public func GetEnemyPlayer(proplist plr)
 {
 	// Forward to defense goal object.
 	if (this == Goal_Defense)

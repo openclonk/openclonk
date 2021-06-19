@@ -400,7 +400,7 @@ protected func OnHostilityChange(proplist player1, proplist player2, bool hostil
 }
 
 // Engine callback: a player has switched its team.
-protected func OnTeamSwitch(int player, int new_team, int old_team)
+protected func OnTeamSwitch(proplist player, int new_team, int old_team)
 {
 	// Debugging logs.
 	//Log("FLAG - OnTeamSwitch(): flag = %v, player = %d, new_team = %d, old_team = %d", this, player, new_team, old_team);

@@ -24,7 +24,7 @@ public func IsFulfilled()
 	return FindObject(Find_ID(Locomotive), Find_InRect(AbsX(goal_rect.x), AbsY(goal_rect.y), goal_rect.wdt, goal_rect.hgt));
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())

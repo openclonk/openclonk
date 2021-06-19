@@ -85,7 +85,7 @@ private func TransferInventory(object from, object to)
 	return to->GrabContents(from);
 }
 
-func JoinPlayer(plr, prev_clonk)
+func JoinPlayer(proplist plr, prev_clonk)
 {
 	var x = 991, y = 970;
 	var clonk = plr->GetCrew();

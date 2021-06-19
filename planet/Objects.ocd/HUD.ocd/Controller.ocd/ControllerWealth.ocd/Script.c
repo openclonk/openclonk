@@ -105,7 +105,7 @@ private func Destruction()
 
 /* Callbacks */
 
-public func OnWealthChanged(int plr)
+public func OnWealthChanged(proplist plr)
 {
 	// Only update wealth when it is the right player.
 	if (plr == GetOwner())

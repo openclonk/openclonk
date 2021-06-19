@@ -66,7 +66,7 @@ func InitializePlayer(proplist plr)
 	return true;
 }
 
-func JoinPlayer(int plr)
+func JoinPlayer(proplist plr)
 {
 	// Place in village
 	var crew;

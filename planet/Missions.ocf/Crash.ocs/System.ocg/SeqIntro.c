@@ -42,7 +42,7 @@ func Intro_Start(object hero)
 	return ScheduleNext(80);
 }
 
-func Intro_JoinPlayer(int plr)
+func Intro_JoinPlayer(proplist plr)
 {
 	if (this.intro_closed) return false; // too late for join - just join in village
 	var crew;

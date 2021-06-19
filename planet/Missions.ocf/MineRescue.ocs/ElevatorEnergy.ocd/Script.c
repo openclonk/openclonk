@@ -31,7 +31,7 @@ public func IsFulfilled()
 	return network->GetBarePowerAvailable() > 0;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -66,7 +66,7 @@ public func Activate(proplist plr)
 
 protected func FxGoalMessageStart() {}
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return "";
 }

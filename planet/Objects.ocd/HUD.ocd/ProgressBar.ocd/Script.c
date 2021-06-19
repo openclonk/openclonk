@@ -12,7 +12,7 @@ global func CreateProgressBar(
 	, int max /* maximum value of the progress bar */
 	, int current /* starting value of the progress bar */
 	, int time_out /* time in frames after which the progress bar closes itself when not receiving updates, might be nil */
-	, int owner /* owner of the progress bar */
+	, proplist owner /* owner of the progress bar */
 	, proplist offset /* proplist {x = ?, y = ?} that specifies the offset of the progress bar relative to the calling object */
 	, int visibility /* visibility mask for the progress bar, f.e.: VIS_Owner | VIS_Allies */
 	, proplist data /* proplist with extra data that is passed to the progress bar */
