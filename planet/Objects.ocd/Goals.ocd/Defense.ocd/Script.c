@@ -67,14 +67,15 @@ public func InitializePlayer(proplist plr)
 	if (plr.Type == C4PT_Script)
 		return;
 	// Init the normal players
+	var plrid = plr.ID;
 	// Store active players.
-	PushBack(plrs_active, plr);
+	PushBack(plrs_active, GetPlayerID(plr));
 	// Initialize scoreboard.
 	Scoreboard->NewPlayerEntry(plr);
-	plrs_bonus[plr] = 0;
-	plrs_kills[plr] = 0;
-	Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plr]);
-	Scoreboard->SetPlayerData(plr, "kills", plrs_kills[plr]);
+	plrs_bonus[plrid] = 0;
+	plrs_kills[plrid] = 0;
+	Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plrid]);
+	Scoreboard->SetPlayerData(plr, "kills", plrs_kills[plrid]);
 	return;
 }
 

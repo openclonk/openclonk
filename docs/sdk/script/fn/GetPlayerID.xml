@@ -11,7 +11,7 @@
       <rtype>int</rtype>
       <params>
         <param>
-          <type>int/proplist</type>
+          <type>proplist</type>
           <name>player</name>
           <desc>Player of which to retrieve the ID.</desc>
         </param>

@@ -146,7 +146,7 @@ global func GetPlayerByID(int player_id)
 		if (player_id == player.ID)
 			return player;
 	}
-	return NO_PLAYER;
+	return NO_OWNER;
 }
 
 // Adds value to the account of iPlayer.
