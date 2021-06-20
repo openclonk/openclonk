@@ -84,6 +84,7 @@ public:
 	int32_t Eliminated;
 	int32_t Surrendered;
 	bool Evaluated;
+	int32_t Number;
 	int32_t ID; // unique player ID
 	int32_t Team; // team ID - may be 0 for no teams
 	uint32_t ColorDw;
