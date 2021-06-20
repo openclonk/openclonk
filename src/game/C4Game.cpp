@@ -1913,13 +1913,13 @@ void C4Game::DrawCrewOverheadText(C4TargetFacet &cgo, int32_t player_nr)
 	for (C4Player *player = Players.First; player; player = player->Next)
 	{
 		// Draw a small selector & name above the cursor? F.e. after switching crew.
-		const bool drawCursorInfo = (player->ID == player_nr || player_nr == NO_OWNER) // only for the viewport's player..
+		const bool drawCursorInfo = (player->Number == player_nr || player_nr == NO_OWNER) // only for the viewport's player..
 			                     && (player->CursorFlash && player->Cursor); // ..and if the player wants to show their cursor.
 		// Otherwise, for allied players we might want to draw player & crew names.
 		// Note that these two conditions are generally mutually-exclusive.
-		const bool drawPlayerAndCursorNames = (player->ID != player_nr) // Never for own player..
+		const bool drawPlayerAndCursorNames = (player->Number != player_nr) // Never for own player..
 			                               && (Config.Graphics.ShowCrewNames || Config.Graphics.ShowCrewCNames) // ..and if the settings allow it..
-			                               && !Hostile(player_nr, player->ID) && !player->IsInvisible(); // ..and of course only if applicable.
+			                               && !Hostile(player_nr, player->Number) && !player->IsInvisible(); // ..and of course only if applicable.
 		
 		if (!drawPlayerAndCursorNames && !drawCursorInfo)
 		{
@@ -2953,7 +2953,7 @@ bool C4Game::InitGameFinal(InitMode init_mode)
 		{
 			if (player->LocalControl)
 			{
-				::Viewports.CreateViewport(player->ID);
+				::Viewports.CreateViewport(player->Number);
 			}
 		}
 		// Check fullscreen viewports
@@ -3656,7 +3656,7 @@ C4Player *C4Game::JoinPlayer(const char *filename, int32_t at_client, const char
 	// Create player viewport
 	if (player->LocalControl)
 	{
-		::Viewports.CreateViewport(player->ID);
+		::Viewports.CreateViewport(player->Number);
 	}
 	// Check fullscreen viewports
 	FullScreen.ViewportCheck();
@@ -4406,7 +4406,7 @@ bool C4Game::ActivateMenu(const char *command)
 	{
 		return false;
 	}
-	player->Menu.ActivateCommand(player->ID, command);
+	player->Menu.ActivateCommand(player->Number, command);
 	return true;
 }
 

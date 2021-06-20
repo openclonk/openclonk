@@ -6,7 +6,8 @@ global func SetLeagueProgressScore(int new_progress, int new_score)
 	new_progress = BoundBy(new_progress, 0, 25);
 	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 	{
-		var plrid = GetPlayerByIndex(i);
+		var plr = GetPlayerByIndex(i);
+		var plrid = GetPlayerID(plr);
 		if (!plrid) return;
 		// Get old progress from previous round
 		var progress_string = GetLeagueProgressData(plrid);
