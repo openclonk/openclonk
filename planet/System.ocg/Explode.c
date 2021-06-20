@@ -205,7 +205,7 @@ global func BlastObjects(int x, int y, int level, object container, proplist cau
 	
 	// caused by: if not specified, controller of calling object
 	if (cause_player == nil)
-		if (this)
+		if (GetType(this) == C4V_C4Object)
 			cause_player = GetController();
 	
 	// damage: if not specified this is the same as the explosion radius
