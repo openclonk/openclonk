@@ -33,7 +33,7 @@ func Intro_Start(object hero)
 	this.plane->StartInstantFlight(90, 15);
 
 	SetViewTarget(this.pilot);
-	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set); // zoom out from plane
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(200, 100, PLRZOOM_Set); // zoom out from plane
 	
 	// Lava goes crazy during the intro
 	var lava = FindObject(Find_ID(BoilingLava));
@@ -64,7 +64,7 @@ func Intro_CreateBoompack(int x, int y, int fuel)
 
 func Intro_1()
 {
-	SetPlayerZoomByViewRange(NO_OWNER, 800, 600, PLRZOOM_Set);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(800, 600, PLRZOOM_Set);
 	MessageBoxAll("$MsgIntro1$", this.pilot, true);
 	this.plane->ContainedLeft(this.pilot);
 	return ScheduleNext(10);
@@ -259,7 +259,7 @@ func Intro_Stop()
 	}
 	this.dialogue->SetInteraction(true);
 	this.dialogue->AddAttention();
-	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(400, 300, PLRZOOM_Set);
 	
 	// Turn and relocate the airplane to make starting it easier.
 	var plane = FindObject(Find_ID(Airplane));

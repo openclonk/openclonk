@@ -91,6 +91,6 @@ public func Intro_Stop()
 	GameCall("OnIntroSequenceFinished", this.plr);
 	this.plr_clonk->PopActionSpeed("Walk", "Intro");
 	this.head->PopActionSpeed("Walk", "Intro");
-	SetPlayerZoomByViewRange(this.for_plr, 400, nil, PLRZOOM_Direct | PLRZOOM_Set);
+	this.for_plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	return true;
 }

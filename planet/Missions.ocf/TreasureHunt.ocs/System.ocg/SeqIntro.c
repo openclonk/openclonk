@@ -44,7 +44,7 @@ func Intro_Start(object flagpole)
 	this.flagpole = flagpole;
 	SetViewTarget(this.flagpole);
 	
-	SetPlayerZoomByViewRange(NO_OWNER, 800, 600, PLRZOOM_Set); // zoom out from plane
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(800, 600, PLRZOOM_Set); // zoom out from plane
 	
 	return ScheduleNext(80);
 }
@@ -173,7 +173,7 @@ func Intro_Stop()
 	this.dialogue->SetInteraction(true);
 	this.dialogue->AddAttention();
 	this.dialogue->Dlg_Pyrit_StartHammering(npc_pyrit);
-	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(400, 300, PLRZOOM_Set);
 	g_goal = CreateObject(Goal_TreasureHunt, 0, 0);
 	return true;
 }

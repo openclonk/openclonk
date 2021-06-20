@@ -136,7 +136,7 @@ public func Intro_6()
 	
 	// Tell players about tools and the mission goal.
 	MessageBoxAll("$MsgCrewLanded$", this.pilot, true);
-	SetPlayerZoomByViewRange(NO_OWNER, 500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return ScheduleNext(80);
 }
 
@@ -152,6 +152,6 @@ public func Intro_Stop()
 	this.airplane->RemoveObject();
 	
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

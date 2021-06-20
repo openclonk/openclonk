@@ -96,7 +96,7 @@ public func Intro_6()
 public func Intro_Stop()
 {
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 500, nil, PLRZOOM_Set | PLRZOOM_Direct);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(500, nil, PLRZOOM_Set | PLRZOOM_Direct);
 	// Remove objects.
 	this.npc->RemoveObject();
 	this.locomotive->RemoveObject();

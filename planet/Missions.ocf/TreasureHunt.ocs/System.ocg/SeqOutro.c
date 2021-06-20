@@ -7,7 +7,7 @@ func Outro_Start(object plane)
 	// Player closest to plane becomes outro protagonist
 	this.plane = plane;
 	GetHero(npc_pyrit);
-	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(GetHero());
 	npc_pyrit.has_sequence = true; // Pyrit stops hammering
 	this.plane->SetR(90); // in case Pyrit isn't done yet

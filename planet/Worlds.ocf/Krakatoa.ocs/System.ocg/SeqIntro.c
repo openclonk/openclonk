@@ -188,6 +188,6 @@ public func Intro_8()
 public func Intro_Stop()
 { 
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

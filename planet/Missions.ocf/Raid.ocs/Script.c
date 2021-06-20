@@ -100,7 +100,7 @@ func JoinPlayer(proplist plr, object crew, bool no_placement)
 	if (g_attack_done) tools = [Shovel, Axe]; else tools = [];
 	for (var tool in tools)
 		if (!crew->ContentsCount(tool)) crew->CreateContents(tool);
-	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
 	crew->GetOwner()->SetCursor(crew);
 	return true;
 }

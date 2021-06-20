@@ -214,11 +214,8 @@ public func SetViewTarget(object view_target)
 	}
 	else
 	{
-		for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
-		{
-			var plr = GetPlayerByIndex(i, C4PT_User);
-			plr->SetViewTarget(plr->GetCursor());
-		}
+		for (var player in GetPlayers(C4PT_User))
+			player->SetViewTarget(player->GetCursor());
 	}
 	return true;
 }

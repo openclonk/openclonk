@@ -6,7 +6,7 @@ func Attack_Start(chopping_clonk)
 {
 	this.hero = chopping_clonk;
 	g_attack_started = true;
-	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(chopping_clonk);
 	MessageBox_last_pos = true; // force first message right side of screen
 	MessageBoxAll("$Attack1$", this.hero, true); // tree down
@@ -35,7 +35,7 @@ func Attack_1()
 		plane->MakeInvincible();
 		this.planes[i] = plane;
 	}
-	//SetPlayerZoomByViewRange(NO_OWNER, 600, 500, PLRZOOM_Set | PLRZOOM_LimitMax);
+	//for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(600, 500, PLRZOOM_Set | PLRZOOM_LimitMax);
 	//SetViewTarget(this.planes[0]);
 	return ScheduleNext(35);
 }
@@ -55,7 +55,7 @@ func Attack_3()
 func Attack_4()
 {
 	SetViewTarget(this.planes[0]);
-	SetPlayerZoomByViewRange(NO_OWNER, 600, 500, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(600, 500, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return ScheduleNext(50);
 }
 
@@ -177,7 +177,7 @@ func Attack_8()
 func Attack_9()
 {
 	Attack_ClonkDirs();
-	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(200, 100, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(npc_newton);
 	return ScheduleNext(40);
 }
@@ -231,6 +231,6 @@ func Attack_Stop()
 	Dialogue->FindByTarget(npc_newton)->AddAttention();
 	g_goal->SetStageNewton();
 	// revert to regular zoom
-	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }
