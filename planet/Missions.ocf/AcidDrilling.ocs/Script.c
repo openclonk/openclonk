@@ -55,14 +55,14 @@ func InitializePlayer(proplist plr)
 	return true;
 }
 
-private func InitPowerCrystals(int owner)
+private func InitPowerCrystals(proplist owner)
 {
 	var positions = [[1013, 59], [1030, 320], [1050, 500], [1000, 660]];
 	for (var pos in positions) CreateObjectAbove(PowerCrystals, pos[0], pos[1]+16, owner);
 	return true;
 }
 
-private func InitBase(int owner)
+private func InitBase(proplist owner)
 {
 	// Create standard base owned by player
 	var y = 232;
@@ -94,6 +94,6 @@ private func InitBase(int owner)
 
 func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return false;
 }
