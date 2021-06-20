@@ -75,7 +75,7 @@ global func DoBaseProduction(proplist player, id material, int change)
 }
 
 // Gives the player specific base materials as given in the materials array.
-global func GivePlayerBaseMaterial(int player, array base_mats)
+global func GivePlayerBaseMaterial(proplist player, array base_mats)
 {
 	if (base_mats)
 	{

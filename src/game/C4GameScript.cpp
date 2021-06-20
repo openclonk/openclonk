@@ -949,7 +949,7 @@ static C4PropList *FnGetPlayerByIndex(C4PropList * _this, long index, long type)
 	{
 		player = ::Players.GetByIndex(index);
 	}
-	return player->Number;
+	return player;
 }
 
 
@@ -2002,6 +2002,8 @@ static bool FnSetPreSend(C4PropList * _this, long iToVal, C4String *pNewName)
 		::GraphicsSystem.FlashMessage(FormatString("TargetFPS: %ld", iToVal).getData());
 	}
 	return true;
+}
+
 // undocumented!
 static long FnGetTeamConfig(C4PropList * _this, long iConfigValue)
 {

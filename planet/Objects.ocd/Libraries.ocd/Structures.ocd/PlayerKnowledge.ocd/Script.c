@@ -2,11 +2,11 @@
 	Player Knowledge
 
 	Library to control the players knowledge/plans:
-     * GetPlrKnowledge(int player, id plan, int index, int category)
-     * HasPlrKnowledge(int player, id plan)
-     * SetPlrKnowledge(int player, id plan, bool remove)
-     * GivePlrKnowledge(int player, id plan)
-     * RemovePlrKnowledge(int player, id plan)
+     * GetPlrKnowledge(proplist player, id plan, int index, int category)
+     * HasPlrKnowledge(proplist player, id plan)
+     * SetPlrKnowledge(proplist player, id plan, bool remove)
+     * GivePlrKnowledge(proplist player, id plan)
+     * RemovePlrKnowledge(proplist player, id plan)
 
     Should be incorporated into a player management system later
 
@@ -22,7 +22,7 @@ local knowledge = [];
 
 /* --- Global interface --- */
 
-global func GetPlrKnowledge(int player, id plan, int index, int category)
+global func GetPlrKnowledge(proplist player, id plan, int index, int category)
 {
 	var manager = Library_PlayerKnowledge->GetKnowledgeManager(player);
 	if (manager)
@@ -39,7 +39,7 @@ global func GetPlrKnowledge(int player, id plan, int index, int category)
 	}
 }
 
-global func HasPlrKnowledge(int player, id plan)
+global func HasPlrKnowledge(proplist player, id plan)
 {
 	var manager = Library_PlayerKnowledge->GetKnowledgeManager(player);
 	if (manager)
@@ -48,7 +48,7 @@ global func HasPlrKnowledge(int player, id plan)
 	}
 }
 
-global func SetPlrKnowledge(int player, any plan, bool remove)
+global func SetPlrKnowledge(proplist player, any plan, bool remove)
 {
 	if (remove)
 	{
@@ -63,7 +63,7 @@ global func SetPlrKnowledge(int player, any plan, bool remove)
 }
 
 
-global func GivePlrKnowledge(int player, any plan)
+global func GivePlrKnowledge(proplist player, any plan)
 {
 	// Do it for all players?
 	if (player == nil)
@@ -100,7 +100,7 @@ global func GivePlrKnowledge(int player, any plan)
 	return false;
 }
 
-global func RemovePlrKnowledge(int player, id plan)
+global func RemovePlrKnowledge(proplist player, id plan)
 {
 	// Do it for all players?
 	if (player == nil)
@@ -140,7 +140,7 @@ global func RemovePlrKnowledge(int player, id plan)
 
 /* --- Definition Interface --- */
 
-func GetKnowledgeManager(int player)
+func GetKnowledgeManager(proplist player)
 {
 	var manager = FindObject(Find_ID(Library_PlayerKnowledge), Find_AnyLayer(),  Find_Owner(player));
 	if (!manager)
