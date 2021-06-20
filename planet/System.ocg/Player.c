@@ -135,6 +135,18 @@ global func GetPlayers(int player_type, int team)
 	return player_list;
 }
 
+// Returns the player number corresponding to the specified player ID.
+global func GetPlayerByID(int plr_id)
+{
+	for (var index = 0; index < GetPlayerCount(); index++)
+	{
+		var plr = GetPlayerByIndex(index);
+		if (plr_id == GetPlayerID(plr))
+			return plr;
+	}
+	return NO_OWNER;
+}
+
 // Adds value to the account of iPlayer.
 // documented in /docs/sdk/script/fn
 global func DoWealth(int player, int value)
