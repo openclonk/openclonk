@@ -49,7 +49,6 @@
 C4Player::C4Player() : C4PlayerInfoCore(), C4PropList(GetPropListPrototype(C4PlayerScript::PROTOTYPE_NAME_SCRIPT))
 {
 	Filename[0] = 0;
-	Number = C4P_Number_None;
 	ID = 0;
 	Team = 0;
 	DefaultRuntimeData();
@@ -209,16 +208,7 @@ void C4Player::Execute()
 					if ((pSelectedTeam = Game.Teams.GetTeamByID(idSelectedTeam)))
 					{
 						int32_t iPlrStartIndex = pSelectedTeam->GetPlrStartIndex();
-						if (iPlrStartIndex && Inside<int32_t>(iPlrStartIndex, 1, C4S_MaxPlayer))
-						{
-							if (Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] > -1)
-							{
-								// player has selected a team that has a valid start position assigned
-								// set view to this position!
-								ViewX = Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] * ::Landscape.GetMapZoom();
-								ViewY = Game.C4S.PlrStart[iPlrStartIndex-1].Position[1] * ::Landscape.GetMapZoom();
-							}
-						}
+						// TODO: Maybe do this as a callback? There are no player start positions anymore
 					}
 				}
 			}
@@ -261,7 +251,6 @@ void C4Player::Execute()
 	// ::Game.iTick35
 	if (!::Game.iTick35 && Status==PS_Normal)
 	{
-		ExecBaseProduction();
 		CheckElimination();
 		if (pMsgBoardQuery && LocalControl) ExecMsgBoardQueries();
 	}
@@ -284,7 +273,6 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	}
 	// Status init
 	Status=PS_Normal;
-	Number = iNumber;
 	ID = pInfo->GetID();
 	Team = pInfo->GetTeam();
 	NoEliminationCheck = pInfo->IsNoEliminationCheck();
@@ -388,7 +376,6 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 			// was joined
 			if (!Game.C4S.Head.SaveGame && pInfo->GetType() == C4PT_Script)
 			{
-				Number = pInfo->GetInGameNumber();
 				ColorDw = pInfo->GetColor();
 				ID = pInfo->GetID();
 				Team = pInfo->GetTeam();
@@ -397,7 +384,6 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 				return false;
 		}
 		// Reset values default-overriden by old runtime data load (safety?)
-		if (Number==C4P_Number_None) Number=iNumber;
 		if (szFilename) SCopy(Config.AtUserDataPath(szFilename),Filename); else *Filename='\0';
 		// NET2: Direct joins always send accurate client IDs and names in params
 		// do not overwrite them with savegame data, because players might as well
@@ -494,7 +480,7 @@ bool C4Player::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny)
 	return true;
 }
 
-void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
+void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty)
 {
 	int32_t cnt,ctx,cty;
 	C4Object *nobj;
@@ -502,12 +488,8 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 	C4Def *pDef;
 
 	// Place crew
-	int32_t iCount;
-	C4ID id;
-	for (cnt=0; (id=Game.C4S.PlrStart[PlrStartIndex].ReadyCrew.GetID(cnt,&iCount)); cnt++)
-	{
-		// Minimum one clonk if empty id
-		iCount = std::max<int32_t>(iCount,1);
+	int32_t iCount = 1;
+	C4ID id = C4ID::Clonk;
 
 		for (int32_t cnt2=0; cnt2<iCount; cnt2++)
 		{
@@ -519,17 +501,15 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 			if (!pInfo || !(pDef=C4Id2Def(pInfo->id))) continue;
 			// Crew placement location
 			ctx=tx1+Random(tx2-tx1); cty=ty;
-			if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
-				FindSolidGround(ctx,cty,pDef->Shape.Wdt*3);
+			FindSolidGround(ctx,cty,pDef->Shape.Wdt*3);
 			// Create object
-			if ((nobj=Game.CreateInfoObject(pInfo,Number,ctx,cty)))
+			if ((nobj=Game.CreateInfoObject(pInfo,ID,ctx,cty)))
 			{
 				// Add object to crew
 				Crew.Add(nobj, C4ObjectList::stNone);
 				// add visibility range
 				nobj->SetLightRange(C4FOW_DefLightRangeX, C4FOW_DefLightFadeoutRangeX);
-				// If base is present, enter base
-				if (FirstBase) { nobj->Enter(FirstBase); nobj->SetCommand(C4CMD_Exit); }
+
 				// OnJoinCrew callback
 				{
 					C4DebugRecOff DbgRecOff{ !DEBUGREC_RECRUITMENT };
@@ -538,90 +518,12 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 				}
 			}
 		}
-	}
-
-}
-
-void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
-{
-	int32_t cnt,cnt2,ctx,cty;
-	C4Def *def;
-	C4ID cid;
-	C4Object *cbase;
-	// Create ready base structures
-	for (cnt=0; (cid=Game.C4S.PlrStart[PlrStartIndex].ReadyBase.GetID(cnt)); cnt++)
-	{
-		if ((def=C4Id2Def(cid)))
-			for (cnt2=0; cnt2<Game.C4S.PlrStart[PlrStartIndex].ReadyBase.GetCount(cnt); cnt2++)
-			{
-				ctx=tx; cty=ty;
-				if (Game.C4S.PlrStart[PlrStartIndex].EnforcePosition
-				    || FindConSiteSpot(ctx,cty,def->Shape.Wdt,def->Shape.Hgt,20))
-					if ((cbase=Game.CreateObjectConstruction(C4Id2Def(cid),nullptr,Number,ctx,cty,FullCon,true)))
-					{
-						// FirstBase
-						if (!(*pFirstBase)) if ((cbase->Def->Entrance.Wdt>0) && (cbase->Def->Entrance.Hgt>0))
-								{ *pFirstBase=cbase; tx=(*pFirstBase)->GetX(); ty=(*pFirstBase)->GetY(); }
-					}
-			}
-	}
-}
-
-void C4Player::PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
-{
-	int32_t cnt,cnt2,ctx,cty;
-	C4Def *def; C4ID cid; C4Object *cobj;
-	for (cnt=0; (cid=Game.C4S.PlrStart[PlrStartIndex].ReadyVehic.GetID(cnt)); cnt++)
-	{
-		if ((def=C4Id2Def(cid)))
-			for (cnt2=0; cnt2<Game.C4S.PlrStart[PlrStartIndex].ReadyVehic.GetCount(cnt); cnt2++)
-			{
-				ctx=tx1+Random(tx2-tx1); cty=ty;
-				if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
-					FindLevelGround(ctx,cty,def->Shape.Wdt,6);
-				if ((cobj=Game.CreateObject(cid,nullptr,Number,ctx,cty)))
-				{
-					if (FirstBase) // First base overrides target location
-						{ cobj->Enter(FirstBase); cobj->SetCommand(C4CMD_Exit); }
-				}
-			}
-	}
-}
-
-void C4Player::PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
-{
-	int32_t cnt,cnt2,ctx,cty;
-	C4Def *def; C4ID cid;
-
-	// In base
-	if (FirstBase)
-	{
-		FirstBase->CreateContentsByList(Game.C4S.PlrStart[PlrStartIndex].ReadyMaterial);
-	}
-
-	// Outside
-	else
-	{
-		for (cnt=0; (cid=Game.C4S.PlrStart[PlrStartIndex].ReadyMaterial.GetID(cnt)); cnt++)
-		{
-			if ((def=C4Id2Def(cid)))
-				for (cnt2=0; cnt2<Game.C4S.PlrStart[PlrStartIndex].ReadyMaterial.GetCount(cnt); cnt2++)
-				{
-					ctx=tx1+Random(tx2-tx1); cty=ty;
-					if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
-						FindSolidGround(ctx,cty,def->Shape.Wdt);
-					Game.CreateObject(cid,nullptr,Number,ctx,cty);
-				}
-		}
-	}
 }
 
 bool C4Player::ScenarioInit()
 {
-	int32_t ptx,pty;
-
 	// player start index by team, if specified. Otherwise by player number
-	PlrStartIndex = Number % C4S_MaxPlayer;
+	PlrStartIndex = ID % C4S_MaxPlayer; // FIXME: That is a workaround, but the player start index does not exist anymore because we removed it from the scenario
 	C4Team *pTeam; int32_t i;
 	if (Team && (pTeam = Game.Teams.GetTeamByID(Team))) if ((i=pTeam->GetPlrStartIndex())) PlrStartIndex=i-1;
 
@@ -635,70 +537,51 @@ bool C4Player::ScenarioInit()
 	// any team selection is over now
 	Status = PS_Normal;
 
-	// Wealth, home base materials, abilities
-	BaseMaterial=Game.C4S.PlrStart[PlrStartIndex].BaseMaterial;
-	BaseMaterial.ConsolidateValids(::Definitions);
-	BaseProduction=Game.C4S.PlrStart[PlrStartIndex].BaseProduction;
-	BaseProduction.ConsolidateValids(::Definitions);
-	Knowledge=Game.C4S.PlrStart[PlrStartIndex].BuildKnowledge;
-	Knowledge.ConsolidateValids(::Definitions);
-
 	// Starting position
-	ptx = Game.C4S.PlrStart[PlrStartIndex].Position[0];
-	pty = Game.C4S.PlrStart[PlrStartIndex].Position[1];
-
-	// Zoomed position
-	if (ptx>-1) ptx = Clamp<int32_t>( ptx * Game.C4S.Landscape.MapZoom.Evaluate(), 0, ::Landscape.GetWidth()-1 );
-	if (pty>-1) pty = Clamp<int32_t>( pty * Game.C4S.Landscape.MapZoom.Evaluate(), 0, ::Landscape.GetHeight()-1 );
+	int32_t ptx = -1;
+	int32_t pty = -1;
 
 	// Standard position (PrefPosition)
-	if (ptx<0)
-		if (Game.StartupPlayerCount>=2)
+	if (Game.StartupPlayerCount>=2)
+	{
+		int32_t iMaxPos=Game.StartupPlayerCount;
+		// Try to initialize PrefPosition using teams. This should put players of a team next to each other.
+		int PrefPosition = 0;
+		C4PlayerInfo *plr;
+		for (int i = 0; (plr = Game.PlayerInfos.GetPlayerInfoByIndex(i)) != nullptr; i++)
 		{
-			int32_t iMaxPos=Game.StartupPlayerCount;
-			// Try to initialize PrefPosition using teams. This should put players of a team next to each other.
-			int PrefPosition = 0;
-			C4PlayerInfo *plr;
-			for (int i = 0; (plr = Game.PlayerInfos.GetPlayerInfoByIndex(i)) != nullptr; i++)
-			{
-				if (plr->GetTeam() < Team)
-					PrefPosition++;
-			}
-			// Map preferred position to available positions
-			int32_t iStartPos=Clamp(PrefPosition*iMaxPos/C4P_MaxPosition,0,iMaxPos-1);
-			int32_t iPosition=iStartPos;
-			// Distribute according to availability
-			while (::Players.PositionTaken(iPosition))
-			{
-				++iPosition;
-				iPosition %= iMaxPos;
-				if (iPosition == iStartPos)
-					break;
-			}
-			Position=iPosition;
-			// Set x position
-			ptx=Clamp(16+Position*(::Landscape.GetWidth()-32)/(iMaxPos-1),0,::Landscape.GetWidth()-16);
+			if (plr->GetTeam() < Team)
+				PrefPosition++;
 		}
+		// Map preferred position to available positions
+		int32_t iStartPos=Clamp(PrefPosition*iMaxPos/C4P_MaxPosition,0,iMaxPos-1);
+		int32_t iPosition=iStartPos;
+		// Distribute according to availability
+		while (::Players.PositionTaken(iPosition))
+		{
+			++iPosition;
+			iPosition %= iMaxPos;
+			if (iPosition == iStartPos)
+				break;
+		}
+		Position=iPosition;
+		// Set x position
+		ptx=Clamp(16+Position*(::Landscape.GetWidth()-32)/(iMaxPos-1),0,::Landscape.GetWidth()-16);
+	}
 
 	// All-random position
 	if (ptx<0) ptx=16+Random(::Landscape.GetWidth()-32);
 	if (pty<0) pty=16+Random(::Landscape.GetHeight()-32);
 
 	// Place to solid ground
-	if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
-	{
-		// Use nearest above-ground...
-		FindSolidGround(ptx,pty,30);
-		// Might have hit a small lake, or similar: Seach a real site spot from here
-		FindConSiteSpot(ptx, pty, 30, 50, 400);
-	}
+	// Use nearest above-ground...
+	FindSolidGround(ptx,pty,30);
+	// Might have hit a small lake, or similar: Search a real site spot from here
+	FindConSiteSpot(ptx, pty, 30, 50, 400);
 
 	// Place Readies
 	C4Object *FirstBase = nullptr;
-	PlaceReadyBase(ptx,pty,&FirstBase);
-	PlaceReadyMaterial(ptx-10,ptx+10,pty,FirstBase);
-	PlaceReadyVehic(ptx-30,ptx+30,pty,FirstBase);
-	PlaceReadyCrew(ptx-30,ptx+30,pty,FirstBase);
+	PlaceReadyCrew(ptx-30,ptx+30,pty);
 
 	// set initial hostility by team info
 	if (Team) SetTeamHostility();
@@ -720,7 +603,7 @@ bool C4Player::FinalInit(bool fInitialScore)
 	// Init player's mouse control
 	if (LocalControl)
 		if (MouseControl)
-			::MouseControl.Init(Number);
+			::MouseControl.Init(ID);
 
 	// Set initial score
 	if (fInitialScore)
@@ -743,21 +626,6 @@ void C4Player::SetFoW(bool fEnable)
 	fFogOfWar = fEnable;
 }
 
-bool C4Player::SetKnowledge(C4ID id, bool fRemove)
-{
-	if (fRemove)
-	{
-		long iIndex = Knowledge.GetIndex(id);
-		if (iIndex<0) return false;
-		return Knowledge.DeleteItem(iIndex);
-	}
-	else
-	{
-		if (!C4Id2Def(id)) return false;
-		return Knowledge.SetIDCount(id, 1, true);
-	}
-}
-
 void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget, bool immediate_position)
 {
 	// safe back
@@ -766,7 +634,7 @@ void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget, bool immediate_posi
 	if (immediate_position)
 	{
 		UpdateView();
-		C4Viewport *vp = ::Viewports.GetViewport(this->Number);
+		C4Viewport *vp = ::Viewports.GetViewport(this->ID);
 		if (vp) vp->AdjustPosition(true);
 	}
 }
@@ -1031,7 +899,7 @@ bool C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 		pObj->UpdateLight();
 
 	// controlled by the player
-	pObj->Controller = Number;
+	pObj->Controller = ID;
 
 	// OnJoinCrew callback
 	if (fDoCalls)
@@ -1070,7 +938,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(Status,              "Status",               0));
 	pComp->Value(mkNamingAdapt(AtClient,            "AtClient",             C4ClientIDUnknown));
 	pComp->Value(mkNamingAdapt(toC4CStr(AtClientName),"AtClientName",        "Local"));
-	pComp->Value(mkNamingAdapt(Number,              "Index",                C4P_Number_None));
 	pComp->Value(mkNamingAdapt(ID,                  "ID",                   0));
 	pComp->Value(mkNamingAdapt(Eliminated,          "Eliminated",           0));
 	pComp->Value(mkNamingAdapt(Surrendered,         "Surrendered",          0));
@@ -1096,16 +963,11 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(InitialScore,        "InitialScore",         0));
 	pComp->Value(mkNamingAdapt(ObjectsOwned,        "ObjectsOwned",         0));
 	pComp->Value(mkNamingAdapt(Hostility,           "Hostile"               ));
-	pComp->Value(mkNamingAdapt(ProductionDelay,     "ProductionDelay",      0));
-	pComp->Value(mkNamingAdapt(ProductionUnit,      "ProductionUnit",       0));
 	pComp->Value(mkNamingAdapt(CursorFlash,         "CursorFlash",          0));
 	pComp->Value(mkNamingAdapt(Cursor,              "Cursor",               C4ObjectPtr::Null));
 	pComp->Value(mkNamingAdapt(ViewCursor,          "ViewCursor",           C4ObjectPtr::Null));
 	pComp->Value(mkNamingAdapt(MessageStatus,       "MessageStatus",        0));
 	pComp->Value(mkNamingAdapt(toC4CStr(MessageBuf),"MessageBuf",           ""));
-	pComp->Value(mkNamingAdapt(BaseMaterial,        "BaseMaterial"          ));
-	pComp->Value(mkNamingAdapt(BaseProduction,      "BaseProduction"        ));
-	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(Crew, numbers), "Crew"            ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
@@ -1139,21 +1001,6 @@ bool C4Player::LoadRuntimeData(C4Group &hGroup, C4ValueNumbers * numbers)
 	DenumeratePointers();
 	// Success
 	return true;
-}
-
-void C4Player::ExecBaseProduction()
-{
-	const int32_t MaxBaseProduction = 25;
-	ProductionDelay++;
-	if (ProductionDelay>=60) // Minute Production Unit
-	{
-		ProductionDelay=0; ProductionUnit++;
-		for (int32_t cnt=0; BaseProduction.GetID(cnt); cnt++)
-			if (BaseProduction.GetCount(cnt)>0)
-				if (ProductionUnit % Clamp<int32_t>(11-BaseProduction.GetCount(cnt),1,10) ==0)
-					if (BaseMaterial.GetIDCount(BaseProduction.GetID(cnt)) < MaxBaseProduction)
-						BaseMaterial.IncreaseIDCount(BaseProduction.GetID(cnt));
-	}
 }
 
 void C4Player::CheckElimination()
@@ -1213,15 +1060,11 @@ void C4Player::DefaultRuntimeData()
 	ShowStartup=true;
 	CurrentScore=InitialScore=0;
 	ObjectsOwned=0;
-	ProductionDelay=ProductionUnit=0;
 	Cursor=ViewCursor=nullptr;
 	CursorFlash=30;
 	MessageStatus=0;
 	MessageBuf[0]=0;
 	Hostility.clear();
-	BaseMaterial.Default();
-	BaseProduction.Default();
-	Knowledge.Default();
 	FlashCom=0;
 }
 
@@ -1229,7 +1072,7 @@ bool C4Player::ActivateMenuTeamSelection(bool fFromMain)
 {
 	// Menu symbol/init
 	bool fSwitch = !(Status==PS_TeamSelection);
-	Menu.InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_Team),LoadResStr("IDS_MSG_SELTEAM"),Number, C4MN_Extra_None, 0, fSwitch ? C4MN_TeamSwitch : C4MN_TeamSelection);
+	Menu.InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_Team),LoadResStr("IDS_MSG_SELTEAM"),ID, C4MN_Extra_None, 0, fSwitch ? C4MN_TeamSwitch : C4MN_TeamSelection);
 	Menu.SetAlignment(fSwitch ? C4MN_Align_Left | C4MN_Align_Bottom : 0);
 	Menu.Refill();
 	// Go back to options menu on close
@@ -1281,7 +1124,7 @@ int32_t C4Player::FindNewOwner()
 				if (pPlrInfo) if (pPlrInfo->IsJoined())
 				{
 					// this looks like a good new owner
-					iNewOwner = pPlrInfo->GetInGameNumber();
+					iNewOwner = pPlrInfo->GetID();
 					break;
 				}
 			}
@@ -1307,7 +1150,7 @@ void C4Player::NotifyOwnedObjects()
 	{
 		for (C4Object *cobj : *pList)
 		{
-			if (cobj->Status && cobj->Owner == Number)
+			if (cobj->Status && cobj->Owner == ID)
 			{
 				C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
 				if (pFn)
@@ -1421,7 +1264,7 @@ void C4Player::InitControl()
 		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::InitPlayerControl(this, ControlSet), CDT_Queue);
 	}
 	// clear old control method and register new
-	Control.RegisterKeyset(Number, ControlSet);
+	Control.RegisterKeyset(ID, ControlSet);
 }
 
 bool C4Player::FindGamepad()
@@ -1649,7 +1492,7 @@ void C4Player::ExecMsgBoardQueries()
 		while (pCheck) if (!pCheck->fAnswered) break; else pCheck = pCheck->pNext;
 	if (!pCheck) return;
 	// open it
-	::MessageInput.StartTypeIn(true, pCheck->CallbackObj, pCheck->fIsUppercase, false, Number, pCheck->sInputQuery);
+	::MessageInput.StartTypeIn(true, pCheck->CallbackObj, pCheck->fIsUppercase, false, ID, pCheck->sInputQuery);
 }
 
 void C4Player::CallMessageBoard(C4Object *pForObj, const StdStrBuf &sQueryString, bool fIsUppercase)
@@ -1708,7 +1551,7 @@ void C4Player::SetPlayerColor(uint32_t dwNewClr)
 	uint32_t dwOldClr = ColorDw;
 	ColorDw = dwNewClr;
 	for (C4Object *pObj : Objects)
-		if (pObj && pObj->Status && pObj->Owner == Number)
+		if (pObj && pObj->Status && pObj->Owner == ID)
 		{
 			if ((pObj->Color & 0xffffff) == (dwOldClr & 0xffffff))
 				pObj->Color = (pObj->Color & 0xff000000u) | (dwNewClr & 0xffffff);
@@ -1734,7 +1577,7 @@ void C4Player::ToggleMouseControl()
 	// Activate mouse control if it's available
 	if (!MouseControl && !::Players.MouseControlTaken())
 	{
-		::MouseControl.Init(Number);
+		::MouseControl.Init(ID);
 		MouseControl=true;
 	}
 	// Deactivate mouse control
@@ -1754,7 +1597,7 @@ bool C4Player::ActivateMenuMain()
 	// Not during game over dialog
 	if (C4GameOverDlg::IsShown()) return false;
 	// Open menu
-	return !!Menu.ActivateMain(Number);
+	return !!Menu.ActivateMain(ID);
 }
 
 void C4Player::HostilitySet::CompileFunc(StdCompiler *pComp)
@@ -1779,7 +1622,7 @@ void C4Player::HostilitySet::CompileFunc(StdCompiler *pComp)
 		pComp->Value(entries);
 		for (auto it : *this)
 		{
-			int32_t num = it->Number;
+			int32_t num = it->ID;
 			pComp->Value(num); // Can't use (*it)->Number directly because StdCompiler is dumb about constness
 		}
 	}
@@ -1827,7 +1670,7 @@ void C4Player::SetMaxZoom(C4Real zoom, bool no_increase, bool no_decrease)
 void C4Player::ZoomToViewports(bool direct, bool no_increase, bool no_decrease)
 {
 	C4Viewport *vp = nullptr;
-	while((vp = ::Viewports.GetViewport(Number, vp)) != nullptr)
+	while((vp = ::Viewports.GetViewport(ID, vp)) != nullptr)
 		ZoomToViewport(vp, direct, no_increase, no_decrease);
 }
 
@@ -1843,7 +1686,7 @@ void C4Player::ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase, boo
 void C4Player::ZoomLimitsToViewports()
 {
 	C4Viewport *vp = nullptr;
-	while((vp = ::Viewports.GetViewport(Number, vp)) != nullptr)
+	while((vp = ::Viewports.GetViewport(ID, vp)) != nullptr)
 		ZoomLimitsToViewport(vp);
 }
 
@@ -1927,7 +1770,7 @@ void C4Player::SetSoundModifier(C4PropList *new_modifier)
 		mod = nullptr;
 	}
 	// update in sound system
-	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, Number);
+	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, ID);
 }
 
 static void ProtectReadonlyProperty(C4String *k)
@@ -1991,14 +1834,14 @@ bool C4Player::GetPropertyByS(const C4String *k, C4Value *pResult) const
 			case P_InitialScore: *pResult = C4VInt(InitialScore);     return true;
 			case P_Score:        *pResult = C4VInt(CurrentScore);     return true;
 			case P_ZoomLimit_MaxWidth:  *pResult = C4VInt((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX); return true;
-			case P_ZoomLimit_MaxHeight: *pResult = C4VInt(ZoomLimitMaxHgt); return true;
-			case P_ZoomLimit_MaxValue:  *pResult = C4VInt(fixtoi(ZoomLimitMaxVal, 100)); return true;
-			case P_ZoomLimit_MinWidth:  *pResult = C4VInt((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX); return true;
-			case P_ZoomLimit_MinHeight: *pResult = C4VInt(ZoomLimitMinHgt); return true;
-			case P_ZoomLimit_MinValue:  *pResult = C4VInt(fixtoi(ZoomLimitMinVal, 100)); return true;
-			case P_ExtraID:
+	        case P_ZoomLimit_MaxHeight: *pResult = C4VInt(ZoomLimitMaxHgt); return true;
+	        case P_ZoomLimit_MaxValue:  *pResult = C4VInt(fixtoi(ZoomLimitMaxVal, 100)); return true;
+	        case P_ZoomLimit_MinWidth:  *pResult = C4VInt((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX); return true;
+	        case P_ZoomLimit_MinHeight: *pResult = C4VInt(ZoomLimitMinHgt); return true;
+	        case P_ZoomLimit_MinValue:  *pResult = C4VInt(fixtoi(ZoomLimitMinVal, 100)); return true;
+			case P_ExtraID: // Gives me a error: jump to case label [-fpermissive] caused by the line *info if I use this at any of the earlier cases..
 			{
-				C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(ID);
+				C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(ID); // see GetInfo(), but I got a compile error using it
 				*pResult = info ? C4VPropList(C4Id2Def(info->GetScriptPlayerExtraID())) : C4VNull;
 				return true;
 			}

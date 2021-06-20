@@ -365,7 +365,7 @@ bool C4FoWLight::IsVisibleForPlayer(C4Player *player) const
 {
 	// check if attached to an object that is not hostile to the given player
 	if (!pObj || !player) return true;
-	return !::Hostile(pObj->Owner,player->Number);
+	return !::Hostile(pObj->Owner,player->ID);
 }
 
 #endif

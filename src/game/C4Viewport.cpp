@@ -979,7 +979,7 @@ void C4Viewport::NextPlayer()
 	}
 	if (player)
 	{
-		player_nr = player->Number;
+		player_nr = player->ID;
 	}
 	else
 	{

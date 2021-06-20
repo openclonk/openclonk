@@ -843,7 +843,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	{
 	case C4MN_Extra_Value:
 	{
-		if (pDef) ::GraphicsResource.fctWealth.DrawValue(cgoExtra,iValue,0,0,C4FCT_Right);
+		//if (pDef) ::GraphicsResource.fctWealth.DrawValue(cgoExtra,iValue,0,0,C4FCT_Right);
 	}
 	break;
 	}

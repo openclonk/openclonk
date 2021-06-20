@@ -500,6 +500,25 @@ global func StopRumble(any player)
 /* -- Other stuff -- */
 
 
+global func PlaceAnimal(id animal_id)
+{
+	LogLegacyWarning("PlaceAnimal", "id->Place()", VERSION_10_0_OC);
+	if (animal_id)
+	{
+		if (animal_id.Place)
+		{
+			var animals = animal_id->Place(1);
+			return animals[0];
+		}
+		else
+		{
+			Log("WARNING: Place(int amount, proplist area, proplist settings) not supported by ID: %i", animal_id);
+			return nil;
+		}
+	}
+	return nil;
+}
+
 global func SetNextMission(string filename, string title, string description)
 {
 	LogLegacyWarning("SetNextMission", "SetNextScenario", VERSION_10_0_OC);

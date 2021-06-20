@@ -1,0 +1,4 @@
+[DefCore]
+id=Compatibility_Scenario
+Version=8,1
+HideInCreator=true

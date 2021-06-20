@@ -7,26 +7,7 @@ Difficulty=10
 [Game]
 Mode=Parkour
 
-[Definitions]
-Definition1=Objects.ocd
-
-[Player1]
-Crew=Clonk=1
-
-[Player2]
-Crew=Clonk=1
-
-[Player3]
-Crew=Clonk=1
-
-[Player4]
-Crew=Clonk=1
-
 [Landscape]
-Vegetation=Tree_Coniferous;
-VegetationLevel=100,0,0,100
-InEarth=Rock=1;Nugget=1;Dynamite=2;Loam=2;Firestone=1
-InEarthLevel=40,0,0,100
 Sky=WinterMountains
 BottomOpen=2
 MapWidth=250

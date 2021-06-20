@@ -18,8 +18,8 @@
 
 // Local variables to store the player's material and production.
 // Is an array filled with [id, count] arrays.
-local base_material;
-local base_production;
+local base_material = [];
+local base_production = [];
 local production_unit = 0;
 
 // Maximum number of material. 
@@ -74,6 +74,19 @@ global func DoBaseProduction(proplist player, id material, int change)
 		return base->DoBaseProd(material, change);
 }
 
+// Gives the player specific base materials as given in the materials array.
+global func GivePlayerBaseMaterial(int player, array base_mats)
+{
+	if (base_mats)
+	{
+		for (var mat in base_mats)
+		{
+			DoBaseMaterial(player, mat[0], mat[1]);
+			DoBaseProduction(player, mat[0], mat[2]);
+		}
+	}
+}
+
 
 /*-- Definition Interface --*/
 
@@ -91,44 +104,6 @@ protected func GetBaseMaterialManager(proplist player)
 
 protected func Initialize()
 {
-	// Gather base materials based on Scenario.txt player entries.
-	// TODO: Check teams and get the fitting player section
-	var player = GetOwner() % 4 + 1;
-	var section = Format("Player%d", player); 
-	
-	// Initialize arrays for material and production.
-	base_material = [];
-	base_production = [];
-	
-	// Load materials from Scenario.txt
-	var index;
-	var material, count;	
-	while (true)
-	{
-		material = GetScenarioVal("BaseMaterial", section, index * 2);
-		count = GetScenarioVal("BaseMaterial", section, index * 2 + 1);
-		if (!material && !count) break;
-		if (material)
-		{
-			PushBack(base_material, [material, count]);
-		}
-		index++;
-	}
-	
-	// Load production from Scenario.txt
-	index = 0;
-	while (true)
-	{
-		material = GetScenarioVal("BaseProduction", section, index * 2);
-		count = GetScenarioVal("BaseProduction", section, index * 2 + 1);
-		if (!material && !count) break;
-		if (material)
-		{
-			PushBack(base_production, [material, count]);
-		}
-		index++;
-	}
-	
 	// Add a timer for executing base production.
 	AddTimer("ExecBaseProduction", BASEMATERIAL_ProductionRate);
 	return;

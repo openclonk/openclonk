@@ -57,6 +57,19 @@ func InitializePlayer(proplist plr)
 			crew->CreateContents(Axe);
 		index++;
 	}
+	// Base material
+	var materials = [
+		[Loam,     99, 10],
+		[Wood,      5, 5],
+		[Metal,     3, 3],
+		[Shovel,    2, 2],
+		[Axe,       2, 2],
+		[Hammer,    2, 2],
+		[Clonk,     5, 5],
+		[Bread,     5, 5],
+		[Firestone, 5, 5]
+	];
+	GivePlayerBaseMaterial(plr, materials);
 	return;
 }
 

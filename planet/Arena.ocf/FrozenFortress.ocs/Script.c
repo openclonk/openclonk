@@ -8,6 +8,13 @@
 
 protected func Initialize()
 {
+	// Earth objects
+	var in_earth = [Rock, Loam, Firestone];
+	for (var amount = CalcInEarthAmount(40); amount > 0; --amount)
+	{
+		PlaceObjects(RandomElement(in_earth), 1);
+	}
+	
 	// Environment 
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
 	

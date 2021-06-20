@@ -33,6 +33,7 @@
 
 #include "network/C4Network2Dialogs.h"
 #include "network/C4League.h"
+#include "network/C4HTTP.h"
 
 #ifdef _WIN32
 #include <direct.h>
@@ -2897,7 +2898,7 @@ bool C4Network2::StartStreaming(C4Record *pRecord)
 	StreamCompressor.avail_out = C4NetStreamingMaxBlockSize;
 
 	// Initialize HTTP client
-	pStreamer = new C4Network2HTTPClient();
+	pStreamer = new C4HTTPClient();
 	if (!pStreamer->Init())
 		return false;
 	Application.Add(pStreamer);

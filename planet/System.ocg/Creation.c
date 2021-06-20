@@ -15,7 +15,7 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 	var mat;
 	var objhgt = id->GetDefCoreVal("Height", "DefCore");
 	
-	mat = Material(mat_str);
+	mat = Material(mat_str ?? "Earth");
 	// Some failsavety.
 	if (mat == -1)
 		if (mat_str != "GBackSolid" && mat_str != "GBackSemiSolid" && mat_str != "GBackLiquid" && mat_str != "GBackSky")
@@ -219,4 +219,22 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 			if (foreground && !Random(3)) plant.Plane = 510;
 		}
 	}
+}
+
+// Calculates the vegetation amount as previously done in the game engine.
+// level: preferably a value between 0 and 100, preferably specified by RandomRange
+// undocumented
+global func CalcVegetationAmount(int level)
+{
+	level = level ?? 100;
+	return (LandscapeWidth() / 50) * level / 100;
+}
+
+// Calculates the amount of objects in earth, as previously done in the game engine.
+// level: preferably a value between 0 and 100, preferably specified by RandomRange
+// undocumented
+global func CalcInEarthAmount(int level)
+{
+	level = level ?? 100;
+	return (LandscapeWidth() * LandscapeHeight() / 5000) * level / 100;
 }

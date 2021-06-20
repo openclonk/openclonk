@@ -67,15 +67,14 @@ public func InitializePlayer(proplist plr)
 	if (plr.Type == C4PT_Script)
 		return;
 	// Init the normal players
-	var plrid = GetPlayerID(plr);
 	// Store active players.
-	PushBack(plrs_active, GetPlayerID(plr));
+	PushBack(plrs_active, plr);
 	// Initialize scoreboard.
 	Scoreboard->NewPlayerEntry(plr);
-	plrs_bonus[plrid] = 0;
-	plrs_kills[plrid] = 0;
-	Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plrid]);
-	Scoreboard->SetPlayerData(plr, "kills", plrs_kills[plrid]);
+	plrs_bonus[plr] = 0;
+	plrs_kills[plr] = 0;
+	Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plr]);
+	Scoreboard->SetPlayerData(plr, "kills", plrs_kills[plr]);
 	return;
 }
 
@@ -104,7 +103,7 @@ public func RelaunchPlayer(proplist player)
 		crew->MakeCrewMember(player);
 		player->SetCursor(crew);
 		crew->Enter(observer_container);
-		RemoveArrayValue(plrs_active, GetPlayerID(player));
+		RemoveArrayValue(plrs_active, player.ID);
 		if (GetLength(plrs_active) == 0)
 			return EndRound();
 		// Update the view of the observing players.

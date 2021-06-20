@@ -1276,7 +1276,7 @@ void C4ConsoleGUIState::UpdateActionObject(C4Object *new_action_object)
 				// Action execution. Replace %player% by first local player.
 				StdStrBuf script_command_cpy(script_command->GetData(), true);
 				C4Player *local_player = ::Players.GetLocalByIndex(0);
-				int32_t local_player_number = local_player ? local_player->Number : NO_OWNER;
+				int32_t local_player_number = local_player ? local_player->ID : NO_OWNER;
 				script_command_cpy.Replace("%player%", FormatString("%d", (int)local_player_number).getData());
 				::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script_command_cpy.getData(), object_number, false, select_returned_object));
 			});

@@ -142,13 +142,13 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 						sMsg.Format(LoadResStr("IDS_MENU_NOATTACK"),pPlr->GetName());
 					// Command
 					char szCommand[1000];
-					sprintf(szCommand,"SetHostility:%i",pPlr->Number);
+					sprintf(szCommand,"SetHostility:%i",pPlr->ID);
 					// Info caption
 					char szInfoCaption[C4MaxTitle+1],szFriendly[50],szNot[30]="";
 					SCopy(LoadResStr(isFriendly ? "IDS_MENU_ATTACKHOSTILE" : "IDS_MENU_ATTACKFRIENDLY"),szFriendly);
 					if (!isFriendly) SCopy(LoadResStr("IDS_MENU_ATTACKNOT"),szNot);
 					sprintf(szInfoCaption,LoadResStr("IDS_MENU_ATTACKINFO"),pPlr->GetName(),szFriendly,szNot);
-					if (iIndex==pPlayer->Number) SCopy(LoadResStr("IDS_MENU_ATTACKSELF"),szInfoCaption);
+					if (pPlr->ID==pPlayer->ID) SCopy(LoadResStr("IDS_MENU_ATTACKSELF"),szInfoCaption);
 					// Add item
 					Add(sMsg.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,nullptr,szInfoCaption);
 					fctSymbol.Default();
@@ -240,7 +240,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 				sMsg.Format("<c %x>%s</c>", (unsigned int)C4GUI::MakeColorReadableOnBlack(dwClr), pPlr->GetName());
 				// Command
 				StdStrBuf sCommand;
-				sCommand.Format("Observe:%d", (int)pPlr->Number);
+				sCommand.Format("Observe:%d", (int)pPlr->ID);
 				// Info caption
 				StdStrBuf sInfo;
 				sInfo.Format(LoadResStr("IDS_TEXT_FOLLOWVIEWOFPLAYER"), pPlr->GetName());
@@ -248,7 +248,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 				Add(sMsg.getData(),fctSymbol,sCommand.getData(),C4MN_Item_NoCount,nullptr,sInfo.getData());
 				fctSymbol.Default();
 				// check if this is the currently selected player
-				if (pVP->GetPlayer() == pPlr->Number) iInitialSelection = GetItemCount()-1;
+				if (pVP->GetPlayer() == pPlr->ID) iInitialSelection = GetItemCount()-1;
 			}
 			// Initial selection on followed player
 			if (fWasEmpty) SetSelection(iInitialSelection, false, true);

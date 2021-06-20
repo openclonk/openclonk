@@ -102,7 +102,7 @@ func Dlg_Pyrit_15(object clonk)
 	SetBroadcast(false);
 	StopDialogue();
 	SetDialogueProgress(16);
-	SetPlrKnowledge(NO_OWNER, Airplane);
+	GivePlrKnowledge(nil, Airplane);
 	// many NPCs get new texts now
 	Dialogue->FindByTarget(npc_newton)->SetDialogueProgress(200, nil, true);
 	Dialogue->FindByTarget(npc_mave)->SetDialogueProgress(100, nil, true);

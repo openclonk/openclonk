@@ -325,6 +325,9 @@ if(NOT C4GROUP_TOOL_ONLY)
 
 	find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
 
+	find_package(CURL REQUIRED)
+	include_directories(SYSTEM ${CURL_INCLUDE_DIR})
+
 	# Select an audio library
 	find_package("Audio")
 	if(Audio_FOUND)
@@ -608,22 +611,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4Scoreboard.h
 	src/gui/C4ScriptGuiWindow.cpp
 	src/gui/C4ScriptGuiWindow.h
-	src/gui/C4StartupAboutDlg.cpp
-	src/gui/C4StartupAboutDlg.h
-	src/gui/C4StartupLegalDlg.cpp
-	src/gui/C4StartupLegalDlg.h
 	src/gui/C4Startup.cpp
 	src/gui/C4Startup.h
-	src/gui/C4StartupMainDlg.cpp
-	src/gui/C4StartupMainDlg.h
-	src/gui/C4StartupNetDlg.cpp
-	src/gui/C4StartupNetDlg.h
-	src/gui/C4StartupOptionsDlg.cpp
-	src/gui/C4StartupOptionsDlg.h
-	src/gui/C4StartupPlrSelDlg.cpp
-	src/gui/C4StartupPlrSelDlg.h
-	src/gui/C4StartupScenSelDlg.cpp
-	src/gui/C4StartupScenSelDlg.h
 	src/gui/C4UpperBoard.cpp
 	src/gui/C4UpperBoard.h
 	src/landscape/fow/C4FoW.cpp
@@ -690,6 +679,8 @@ set(OC_CLONK_SOURCES
 	src/network/C4Client.h
 	src/network/C4GameControlNetwork.cpp
 	src/network/C4GameControlNetwork.h
+	src/network/C4HTTP.cpp
+	src/network/C4HTTP.h
 	src/network/C4InteractiveThread.cpp
 	src/network/C4InteractiveThread.h
 	src/network/C4League.cpp
@@ -798,6 +789,25 @@ set(OC_CLONK_SOURCES
 	src/lib/C4LogBuf.h
 	src/lib/C4Log.cpp
 	src/lib/C4Log.h
+)
+
+set(OC_GUI_SOURCES
+	src/gui/C4StartupAboutDlg.cpp
+	src/gui/C4StartupAboutDlg.h
+	src/gui/C4StartupLegalDlg.cpp
+	src/gui/C4StartupLegalDlg.h
+	src/gui/C4StartupMainDlg.cpp
+	src/gui/C4StartupMainDlg.h
+	src/gui/C4StartupNetDlg.cpp
+	src/gui/C4StartupNetDlg.h
+	src/gui/C4StartupModsDlg.cpp
+	src/gui/C4StartupModsDlg.h
+	src/gui/C4StartupOptionsDlg.cpp
+	src/gui/C4StartupOptionsDlg.h
+	src/gui/C4StartupPlrSelDlg.cpp
+	src/gui/C4StartupPlrSelDlg.h
+	src/gui/C4StartupScenSelDlg.cpp
+	src/gui/C4StartupScenSelDlg.h
 )
 
 if(WITH_QT_EDITOR)
@@ -1241,6 +1251,7 @@ if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 		${XRANDR_LIBRARIES}
 		${DBGHELP_LIBRARIES}
 		${UPNP_LIBRARIES}
+		${CURL_LIBRARIES}
 		libmisc
 		libc4script
 		libopenclonk
@@ -1288,6 +1299,7 @@ if(NOT C4GROUP_TOOL_ONLY)
 		${GETOPT_LIBRARIES}
 		${TinyXML_LIBRARIES}
 		${DBGHELP_LIBRARIES}
+		${CURL_LIBRARIES}
 		libmisc
 		libc4script
 		libopenclonk

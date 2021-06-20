@@ -7,21 +7,6 @@ Difficulty=60
 [Game]
 Mode=Melee
 
-[Definitions]
-Definition1=Objects.ocd
-
-[Player1]
-Crew=Clonk=1
-
-[Player2]
-Crew=Clonk=1
-
-[Player3]
-Crew=Clonk=1
-
-[Player4]
-Crew=Clonk=1
-
 [Landscape]
 Sky=Clouds1
 BottomOpen=1

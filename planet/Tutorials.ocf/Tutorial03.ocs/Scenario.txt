@@ -6,11 +6,7 @@ MaxPlayer=1
 Difficulty=3
 
 [Definitions]
-Definition1=Objects.ocd
 Definition2=Decoration.ocd
-
-[Player1]
-Crew=Clonk=1
 
 [Landscape]
 Sky=Clouds1

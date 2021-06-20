@@ -36,6 +36,11 @@ protected func Initialize()
 	InitResources(SCENPAR_Difficulty);
 	InitMainIsland(4 - SCENPAR_Difficulty);
 	InitIslands(4 - SCENPAR_Difficulty);
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                     ->SetStartingBaseMaterial([])
+                     ->SetStartingMaterial([])
+                     ->SetStartingKnowledge();
 	return;
 }
 

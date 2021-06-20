@@ -109,6 +109,9 @@ func InitializePlayer(proplist plr)
 			crew->CreateContents(Axe);
 		}
 	}
+	
+	GivePlrKnowledge(plr, [Chest, Idol, Foundry, SteamEngine, ToolsWorkshop, WindGenerator, Flagpole, Sawmill, Elevator, Armory, ChemicalLab, Basement, Lorry, Pickaxe, Axe, Hammer, Shovel, Barrel, Dynamite, DynamiteBox, Loam, Bucket]);
+	
 	return true;
 }
 
@@ -122,9 +125,9 @@ func OnGoalsFulfilled()
 
 func GiveExtraPlans(proplist plr)
 {
-	SetPlrKnowledge(plr, Pump);
-	SetPlrKnowledge(plr, Pipe);
-	SetPlrKnowledge(plr, Catapult);
-	SetPlrKnowledge(plr, Cannon);
+	GivePlrKnowledge(plr, Pump);
+	GivePlrKnowledge(plr, Pipe);
+	GivePlrKnowledge(plr, Catapult);
+	GivePlrKnowledge(plr, Cannon);
 	return true;
 }

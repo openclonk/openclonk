@@ -37,8 +37,8 @@
     </examples>
     <related>
       <funclink>GetPlrKnowledge</funclink>
-      <funclink>SetPlrMagic</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2003-06</date>
+  <author>Marky</author><date>2020-01</date>
 </funcs>

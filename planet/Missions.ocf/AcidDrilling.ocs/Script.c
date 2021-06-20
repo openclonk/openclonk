@@ -7,6 +7,11 @@ func Initialize()
 	g_crystal_player = NO_OWNER;
 	// Environment
 	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
+
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                         ->SetStartingBaseMaterial([])
+                         ->SetStartingMaterial([])
+                         ->SetStartingKnowledge();
 	return true;
 }
 
@@ -37,6 +42,16 @@ func InitializePlayer(proplist plr)
 		crew->SetPosition(2100 + Random(40), 233-10);
 		crew->CreateContents(Shovel);
 	}
+	// Base material
+	var materials = [
+		[Clonk, 50, 50],
+		[Bread, 50, 50],
+		[Wood , 50, 50],
+		[Metal, 50, 50]
+	];
+	GivePlayerBaseMaterial(plr, materials);
+	// Knowledge
+	GivePlrKnowledge(plr, [Flagpole, Foundry, WindGenerator, Compensator, Sawmill, ChemicalLab, Elevator, Pump, ToolsWorkshop, Basement, WallKit, GoldBar, Loam, Metal, Axe, Barrel, Bucket, Dynamite, Hammer, WindBag, Pickaxe, Pipe, Shovel, TeleGlove, DynamiteBox, GrappleBow, InventorsLab, Lorry, Ropeladder, WoodenBridge, Chest]);
 	return true;
 }
 

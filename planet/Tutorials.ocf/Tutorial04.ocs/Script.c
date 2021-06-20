@@ -239,7 +239,7 @@ protected func InitializePlayer(proplist plr)
 	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	
 	// Knowledge for the pickaxe construction.
-	SetPlrKnowledge(plr, Pickaxe);
+	GivePlrKnowledge(plr, Pickaxe);
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);

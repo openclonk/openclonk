@@ -616,9 +616,8 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 	else if (progress_mode == "player")
 	{
 		if (!props._contexts) props._contexts = [];
-		var plr_id = GetPlayerID(triggering_player);
-		if (!(context = props._contexts[plr_id]))
-			props._contexts[plr_id] = context = CreateObject(UserAction);
+		if (!(context = props._contexts[triggering_player]))
+			props._contexts[triggering_player] = context = CreateObject(UserAction);
 	}
 	else // if (progress_mode == "session")
 	{
@@ -1199,7 +1198,7 @@ private func EvalAct_PlrKnowledge(proplist props, proplist context)
 	var players = EvaluateValue("PlayerList", props.Players, context) ?? [];
 	var def = EvaluateValue("Definition", props.ID, context);
 	if (!def) return;
-	for (var plr in players) SetPlrKnowledge(plr, def);
+	for (var plr in players) GivePlrKnowledge(plr, def);
 }
 
 private func EvalAct_PlrView(proplist props, proplist context)

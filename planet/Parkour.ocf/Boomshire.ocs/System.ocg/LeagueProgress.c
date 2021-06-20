@@ -7,10 +7,9 @@ global func SetLeagueProgressScore(int new_progress, int new_score)
 	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i);
-		var plrid = GetPlayerID(plr);
-		if (!plrid) return;
+		if (!plr) return;
 		// Get old progress from previous round
-		var progress_string = GetLeagueProgressData(plrid);
+		var progress_string = GetLeagueProgressData(plr);
 		if (progress_string && GetLength(progress_string)>=2)
 		{
 			var old_progress = GetChar(progress_string, 1)-GetChar("A");
@@ -18,8 +17,8 @@ global func SetLeagueProgressScore(int new_progress, int new_score)
 			new_progress = Max(old_progress, new_progress);
 		}
 		// Set new progress
-		SetLeagueProgressData(Format("A%c", GetChar("A") + new_progress), plrid);
-		SetLeaguePerformance(new_score, plrid);
+		SetLeagueProgressData(Format("A%c", GetChar("A") + new_progress), plr);
+		SetLeaguePerformance(new_score, plr);
 	}
 	return true;
 }

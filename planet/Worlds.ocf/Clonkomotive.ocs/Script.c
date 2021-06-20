@@ -36,6 +36,11 @@ public func Initialize()
 	InitAnimals(SCENPAR_MapSize, SCENPAR_Difficulty);
 	InitMaterial(4 - SCENPAR_Difficulty);
 	InitCity();
+	
+	CreateObject(PlayerStart)->SetStartingCrew([{id = Clonk, count = 2}])
+                     ->SetStartingBaseMaterial([])
+                     ->SetStartingMaterial([])
+                     ->SetStartingKnowledge();
 	return;
 }
 

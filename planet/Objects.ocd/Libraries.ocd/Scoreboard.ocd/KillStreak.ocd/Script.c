@@ -11,7 +11,7 @@
 --*/
 
 
-local score_killstreak_list; // Here the kill streak count of all players is stored, access through plrid.
+local score_killstreak_list; // Here the kill streak count of all players is stored, access through plr.
 
 /*-- Callbacks --*/
 
@@ -28,9 +28,8 @@ protected func Initialize()
 
 protected func InitializePlayer(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
 	// make scoreboard entry for player
-	score_killstreak_list[plrid] = 0;
+	score_killstreak_list[plr] = 0;
 	Scoreboard->NewPlayerEntry(plr);
 	return _inherited(plr, ...);
 }
@@ -38,10 +37,8 @@ protected func InitializePlayer(proplist plr)
 protected func OnClonkDeath(object clonk, proplist killer)
 {
 	var plr = clonk->GetOwner();
-	var plrid = GetPlayerID(plr);
-	var killerid = GetPlayerID(killer);
 	// reset scoreboard kill streak count entry for killed player.
-	score_killstreak_list[plrid] = 0;
+	score_killstreak_list[plr] = 0;
 	Scoreboard->SetPlayerData(plr, "killstreaks", nil);
 	// Only if killer exists and has not committed suicide.
 	if (plr == killer || !killer->GetName())
@@ -50,8 +47,8 @@ protected func OnClonkDeath(object clonk, proplist killer)
 	if (killer->GetTeam() && killer->GetTeam() == plr->GetTeam())
 		return _inherited(clonk, killer, ...);
 	// Modify scoreboard kill streak count entry for killer.
-	score_killstreak_list[killerid]++;
-	Scoreboard->SetPlayerData(killer, "killstreaks", score_killstreak_list[killerid]);
+	score_killstreak_list[killer]++;
+	Scoreboard->SetPlayerData(killer, "killstreaks", score_killstreak_list[killer]);
 	return _inherited(clonk, killer, ...);
 }
 
@@ -64,23 +61,20 @@ protected func RemovePlayer(proplist plr)
 
 public func SetKillStreakCount(proplist plr, int value)
 {
-	var plrid = GetPlayerID(plr);
-	score_killstreak_list[plrid] = value;
-	Scoreboard->SetPlayerData(plr, "killstreaks", score_killstreak_list[plrid]);
+	score_killstreak_list[plr] = value;
+	Scoreboard->SetPlayerData(plr, "killstreaks", score_killstreak_list[plr]);
 	return;
 }
 
 public func GetKillStreakCount(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
-	return score_killstreak_list[plrid];
+	return score_killstreak_list[plr];
 }
 
 public func DoKillStreakCount(proplist plr, int value)
 {
-	var plrid = GetPlayerID(plr);
-	score_killstreak_list[plrid] += value;
-	Scoreboard->SetPlayerData(plr, "killstreaks", score_killstreak_list[plrid]);
+	score_killstreak_list[plr] += value;
+	Scoreboard->SetPlayerData(plr, "killstreaks", score_killstreak_list[plr]);
 	return;
 }
 

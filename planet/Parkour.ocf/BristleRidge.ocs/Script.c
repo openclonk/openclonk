@@ -47,6 +47,13 @@ protected func Initialize()
 	Sound("Environment::BirdsLoop", true, 100, nil, 1);
 	Cloud->Place(30);
 	PlaceGrass(200);
+	
+	// Earth objects
+	var in_earth = [Rock, Dynamite, Firestone, Loam];
+	for (var amount = CalcInEarthAmount(60); amount > 0; --amount)
+	{
+		PlaceObjects(RandomElement(in_earth), 1);
+	}
 	return;
 }
 

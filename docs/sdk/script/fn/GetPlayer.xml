@@ -13,7 +13,7 @@
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>Number of the player to get.</desc>
+          <desc>ID of the player to get.</desc>
         </param>
       </params>
     </syntax>

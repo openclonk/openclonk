@@ -233,7 +233,7 @@
 	NSString* formatString;
 	
 	// Already installed?
-	for (C4Reloc::iterator it = Reloc.begin(); it != Reloc.end(); it++)
+	for (C4Reloc::iterator it = Reloc.begin(); it != Reloc.end(); ++it)
 	{
 		if ([addonSupplied hasPrefix:[NSString stringWithCString:(*it).strBuf.getData() encoding:NSUTF8StringEncoding]])
 		{

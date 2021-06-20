@@ -4,21 +4,6 @@ Title=Clonkomotive
 Version=8,0
 Difficulty=40
 
-[Definitions]
-Definition1=Objects.ocd
-
-[Player1]
-Crew=Clonk=2
-
-[Player2]
-Crew=Clonk=2
-
-[Player3]
-Crew=Clonk=2
-
-[Player4]
-Crew=Clonk=2
-
 [Landscape]
 MapWidth=400
 MapHeight=120

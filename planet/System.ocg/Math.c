@@ -35,6 +35,15 @@ global func RandomX(int start, int end)
 	return Random(end - start + 1) + start;
 }
 
+// Ranged and bounded random value, by default between 0 and 100
+// undocumented
+global func RandomRange(int start, int range, int min, int max)
+{
+	start = start ?? 0;
+	range = range ?? 0;
+	return BoundBy(RandomX(start - range, start + range), min ?? 0, max ?? 100);
+}
+
 // Returns the sign of x.
 global func Sign(int x)
 {

@@ -7,6 +7,16 @@
 
 protected func Initialize()
 {
+	// Earth objects
+	PlaceObjects(Loam, 50);
+	PlaceObjects(Firestone, 20);
+
+	var in_earth = [Rock, Firestone, Firestone, Firestone, Loam, Loam, Loam];
+	for (var amount = CalcInEarthAmount(80); amount > 0; --amount)
+	{
+		PlaceObjects(RandomElement(in_earth), 1);
+	}
+
 	// Create the parkour goal.
 	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	// Set start point.

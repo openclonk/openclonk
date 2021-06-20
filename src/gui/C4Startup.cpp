@@ -30,6 +30,7 @@
 #include "gui/C4StartupOptionsDlg.h"
 #include "gui/C4StartupPlrSelDlg.h"
 #include "gui/C4StartupScenSelDlg.h"
+#include "gui/C4StartupModsDlg.h"
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 {
@@ -137,6 +138,9 @@ C4Startup::~C4Startup()
 
 C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *szSubDialog)
 {
+#ifdef USE_CONSOLE
+	return nullptr;
+#else
 	// can't go back twice, because dialog is not remembered: Always go back to main in this case
 	if (eToDlg == SDID_Back && (fLastDlgWasBack || !pLastDlg)) eToDlg = SDID_Main;
 	fLastDlgWasBack = false;
@@ -167,6 +171,9 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 		break;
 	case SDID_PlrSel:
 		pToDlg = new C4StartupPlrSelDlg();
+		break;
+	case SDID_Mods:
+		pToDlg = new C4StartupModsDlg();
 		break;
 	case SDID_Back:
 		pToDlg = pLastDlg;
@@ -218,6 +225,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 		}
 	}
 	return pToDlg;
+#endif
 }
 
 void C4Startup::DoStartup()
@@ -321,9 +329,12 @@ void C4Startup::InitStartup()
 	pStartup->DoStartup();
 }
 
-bool C4Startup::SetStartScreen(const char *szScreen)
+bool C4Startup::SetStartScreen(const char *szScreen, const char *szSubDialog)
 {
 	sSubDialog.Clear();
+	if (szSubDialog != nullptr)
+		sSubDialog = szSubDialog;
+
 	// set dialog ID to be shown to specified value
 	if (SEqualNoCase(szScreen, "main"))
 		eLastDlgID = SDID_Main;
@@ -333,6 +344,8 @@ bool C4Startup::SetStartScreen(const char *szScreen)
 		eLastDlgID = SDID_ScenSelNetwork;
 	else if (SEqualNoCase(szScreen, "net"))
 		eLastDlgID = SDID_NetJoin;
+	else if (SEqualNoCase(szScreen, "mods"))
+		eLastDlgID = SDID_Mods;
 	else if (SEqualNoCase(szScreen, "options"))
 		eLastDlgID = SDID_Options;
 	else if (SEqual2NoCase(szScreen, "options-"))

@@ -5,18 +5,6 @@ Version=8,0
 Difficulty=10
 NoInitialize=true
 
-[Player1]
-Knowledge=Elevator=1
-
-[Player2]
-Crew=Clonk=2
-
-[Player3]
-Crew=Clonk=2
-
-[Player4]
-Crew=Clonk=2
-
 [Landscape]
 Sky=Clouds2
 MapWidth=100,0,64,10000

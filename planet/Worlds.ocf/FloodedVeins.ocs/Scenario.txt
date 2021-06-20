@@ -4,21 +4,6 @@ Icon=24
 Version=8,0
 Difficulty=30
 
-[Definitions]
-Definition1=Objects.ocd
-
-[Player1]
-Crew=Clonk=2
-
-[Player2]
-Crew=Clonk=2
-
-[Player3]
-Crew=Clonk=2
-
-[Player4]
-Crew=Clonk=2
-
 [Landscape]
 Sky=Clouds1
 TopOpen=0

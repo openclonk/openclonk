@@ -111,7 +111,7 @@ public:
 public:
 	C4StartupGraphics Graphics;
 
-	enum DialogID { SDID_Main=0, SDID_ScenSel, SDID_ScenSelNetwork, SDID_NetJoin, SDID_Options, SDID_About, SDID_Legal, SDID_PlrSel, SDID_Back };
+	enum DialogID { SDID_Main=0, SDID_ScenSel, SDID_ScenSelNetwork, SDID_NetJoin, SDID_Options, SDID_About, SDID_Legal, SDID_PlrSel, SDID_Mods, SDID_Back };
 
 private:
 	bool fInStartup{false}, fLastDlgWasBack;
@@ -130,6 +130,7 @@ protected:
 	friend class C4StartupNetDlg;
 	friend class C4StartupScenSelDlg;
 	friend class C4StartupOptionsDlg;
+	friend class C4StartupModsDlg;
 	friend class C4StartupAboutDlg;
 	friend class C4StartupLegalDlg;
 	friend class C4StartupPlrSelDlg;
@@ -139,7 +140,7 @@ public:
 	static void Unload(); // make sure startup data is destroyed
 	static void InitStartup();
 	static void CloseStartup();
-	static bool SetStartScreen(const char *szScreen); // set screen that is shown first by case insensitive identifier
+	static bool SetStartScreen(const char *szScreen, const char *szSubDialog=nullptr); // set screen that is shown first by case insensitive identifier
 	void OnKeyboardLayoutChanged();
 	void OnLeagueOptionChanged(); // callback from network options dialogue: Updates settings in scenario selction
 

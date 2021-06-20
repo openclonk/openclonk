@@ -61,7 +61,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Some knowledge to construct a flagpole.
 	plr->GetCrew()->CreateContents(Hammer);
-	SetPlrKnowledge(plr, Flagpole);
+	GivePlrKnowledge(plr, Flagpole);
 	
 	// Add test control effect.
 	test = CreateEffect(IntTestControl, 100, 2);

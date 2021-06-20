@@ -56,10 +56,20 @@ protected func Initialize()
 	AddEffect("Snowfall", nil, 1, 2);
 	//Wind
 	Sound("Environment::WindLoop", true, 40, nil, +1);
+	// Vegetation
+	Tree_Coniferous->Place(CalcVegetationAmount());
+	// Earth objects
+	var in_earth = [Rock, Nugget, Dynamite, Dynamite, Loam, Loam, Firestone];
+	for (var amount = CalcInEarthAmount(40); amount > 0; --amount)
+	{
+		PlaceObjects(RandomElement(in_earth), 1);
+	}
 
 	// Spawn some chests with items around the map.
 	for (var i = 0; i < 10; i++)
+	{
 		PlaceChest();
+	}
 
 	return;
 }

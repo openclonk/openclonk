@@ -17,10 +17,9 @@
 
 #include "C4Include.h"
 #include "gui/C4DownloadDlg.h"
+#include "network/C4HTTP.h"
 
 #include "graphics/C4GraphicsResource.h"
-
-C4Network2HTTPClient HTTPClient;
 
 C4DownloadDlg::C4DownloadDlg(const char *szDLType) : C4GUI::Dialog(C4GUI_ProgressDlgWdt, 100, FormatString(LoadResStr("IDS_CTL_DL_TITLE"), szDLType).getData(), false), szError(nullptr)
 {
@@ -126,7 +125,7 @@ void C4DownloadDlg::OnIdle()
 		}
 	}
 	const char *szStatusString = LoadResStr("IDS_PRC_DOWNLOADINGFILE");
-	SetStatus(FormatString(szStatusString, GetFilename(HTTPClient.getRequest())).getData(), iProgress );
+	SetStatus(FormatString(szStatusString, GetFilename(HTTPClient.getURL())).getData(), iProgress );
 }
 
 void C4DownloadDlg::UserClose(bool fOK)

@@ -52,7 +52,6 @@ void C4GraphicsResource::Default()
 	fctFlag.Default();
 	fctClonkSkin.Default();
 	fctCrew.Default();
-	fctWealth.Default();
 	fctRank.Default();
 	fctFire.Default();
 	fctBackground.Default();
@@ -103,7 +102,6 @@ void C4GraphicsResource::Clear()
 	fctPlayer.Clear();
 	fctFlag.Clear();
 	fctCrew.Clear();
-	fctWealth.Clear();
 	fctRank.Clear();
 	fctFire.Clear();
 	fctBackground.Clear();
@@ -248,7 +246,6 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(fctBackground,  "Background",   Files, C4FCT_Full,   C4FCT_Full, false, C4SF_Tileable)) return false; // tileable
 	if (!LoadFile(fctFlag,        "Flag",         Files, C4FCT_Full,   C4FCT_Full, false, 0))             return false; // (new format)
 	if (!LoadFile(fctCrew,        "Crew",         Files, C4FCT_Full,   C4FCT_Full, false, 0))             return false; // (new format)
-	if (!LoadFile(fctWealth,      "Wealth",       Files, C4FCT_Full,   C4FCT_Full, false, 0))             return false; // (new)
 	if (!LoadFile(fctPlayer,      "Player",       Files, C4FCT_Full,   C4FCT_Full, false, 0))             return false; // (new format)
 	if (!LoadFile(fctRank,        "Rank",         Files, C4FCT_Height, C4FCT_Full, false, 0))             return false;
 	if (!LoadFile(fctCaptain,     "Captain",      Files, C4FCT_Full,   C4FCT_Full, false, 0))             return false;

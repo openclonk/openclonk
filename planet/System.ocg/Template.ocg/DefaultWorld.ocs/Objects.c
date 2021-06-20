@@ -6,10 +6,14 @@
 public func InitializeObjects()
 {
 	// Place player start centered above ground
-	var start_x = LandscapeWidth()/2;
+	var start_x = LandscapeWidth() / 2;
 	var start_y = 0;
-	while (!GBackSolid(start_x, start_y) && start_y < LandscapeHeight()) ++start_y;
+	while (!GBackSolid(start_x, start_y) && start_y < LandscapeHeight())
+	{
+		++start_y;
+	}
 	CreateObjectAbove(PlayerStart, start_x, start_y);
+
 	// Place regular objects
 	InitEnvironment();
 	InitVegetation();
@@ -47,6 +51,5 @@ private func InitVegetation()
 private func InitAnimals(int map_size)
 {
 	// Some butterflies
-	for (var i = 0; i < 10 + 5 * Max(1, LandscapeWidth() / 500); i++)
-		PlaceAnimal(Butterfly);
+	Butterfly->Place(10 + 5 * Max(1, LandscapeWidth() / 500));
 }

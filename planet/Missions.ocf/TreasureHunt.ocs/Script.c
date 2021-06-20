@@ -63,6 +63,8 @@ func InitializePlayer(proplist plr)
 	// Initial join
 	JoinPlayer(plr);
 	plr->GetCrew()->CreateContents(Shovel);
+	// Knowledge
+	GivePlrKnowledge(plr, [ToolsWorkshop, Foundry, Flagpole, Elevator, Armory, ChemicalLab, Lorry, Pickaxe, Shovel, Firestone, Barrel, Dynamite, DynamiteBox, Loam, Bucket, Sword, Metal, Balloon, Boompack, GrappleBow, WindBag, Pipe, Pump, PowderKeg, Ropeladder, Bow, Arrow, Club, IronBomb, Javelin, Shield, Catapult, WallKit, WoodenBridge, Basement]);
 	return true;
 }
 

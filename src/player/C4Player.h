@@ -84,7 +84,6 @@ public:
 	int32_t Eliminated;
 	int32_t Surrendered;
 	bool Evaluated;
-	int32_t Number;
 	int32_t ID; // unique player ID
 	int32_t Team; // team ID - may be 0 for no teams
 	uint32_t ColorDw;
@@ -116,15 +115,9 @@ public:
 	int32_t CurrentScore,InitialScore;
 	int32_t ObjectsOwned;
 	HostilitySet Hostility;
-	// Home Base
-	C4IDList BaseMaterial;
-	C4IDList BaseProduction;
-	int32_t ProductionDelay,ProductionUnit;
 	// Crew
 	C4ObjectInfoList CrewInfoList; // No Save //
 	C4ObjectList Crew; // Save new in 4.95.2 (for sync reasons)
-	// Knowledge
-	C4IDList Knowledge;
 	// Control
 	C4PlayerControl Control;
 	C4ObjectPtr Cursor, ViewCursor;
@@ -181,7 +174,6 @@ public:
 	static bool Strip(const char *szFilename, bool fAggressive);
 	bool Message(const char *szMsg);
 	bool ObjectInCrew(C4Object *tobj);
-	bool SetKnowledge(C4ID id, bool fRemove);
 	bool SetHostility(C4Player *opponent, int32_t iHostility, bool fSilent=false);
 	bool IsHostileTowards(const C4Player *opponent) const;
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
@@ -208,11 +200,7 @@ protected:
 	void InitControl();
 	void UpdateView();
 	void CheckElimination();
-	void ExecBaseProduction();
-	void PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase);
-	void PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
-	void PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
-	void PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
+	void PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty);
 	void CheckCrewExPromotion();
 
 public:

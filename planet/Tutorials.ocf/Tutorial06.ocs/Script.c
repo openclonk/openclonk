@@ -184,8 +184,8 @@ protected func InitializePlayer(proplist plr)
 		structure->SetOwner(plr);
 		
 	// Knowledge and base material for this round.
-	SetPlrKnowledge(plr, Compensator);
-	SetPlrKnowledge(plr, SteamEngine);
+	GivePlrKnowledge(plr, Compensator);
+	GivePlrKnowledge(plr, SteamEngine);
 	SetBaseMaterial(plr, Metal, 20);
 	
 	// Set wealth to buy items.
@@ -373,7 +373,7 @@ global func FxTutorialFinishSteamEngineTimer(object target, proplist effect)
 {
 	if (FindObject(Find_OCF(OCF_Fullcon), Find_ID(SteamEngine), Find_Owner(effect.plr)))
 	{
-		SetPlrKnowledge(effect.plr, Airplane);
+		GivePlrKnowledge(effect.plr, Airplane);
 		return FX_Execute_Kill;
 	}
 	return FX_OK;
