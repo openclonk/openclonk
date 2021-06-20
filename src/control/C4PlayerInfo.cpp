@@ -718,7 +718,7 @@ void C4PlayerInfoList::Clear()
 	delete [] ppClients; ppClients = nullptr;
 	iClientCount = iClientCapacity = 0;
 	// reset player ID counter
-	iLastPlayerID = NO_OWNER;
+	iLastPlayerID = 0;
 }
 
 void C4PlayerInfoList::GrowList(size_t iByVal)
