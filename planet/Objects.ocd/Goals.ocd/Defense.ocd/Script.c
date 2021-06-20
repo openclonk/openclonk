@@ -67,14 +67,15 @@ public func InitializePlayer(int plr)
 	if (GetPlayerType(plr) == C4PT_Script)
 		return;
 	// Init the normal players
+	var plrid = GetPlayerID(plr);
 	// Store active players.
-	PushBack(plrs_active, plr);
+	PushBack(plrs_active, GetPlayerID(plr));
 	// Initialize scoreboard.
 	Scoreboard->NewPlayerEntry(plr);
-	plrs_bonus[plr] = 0;
-	plrs_kills[plr] = 0;
-	Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plr]);
-	Scoreboard->SetPlayerData(plr, "kills", plrs_kills[plr]);
+	plrs_bonus[plrid] = 0;
+	plrs_kills[plrid] = 0;
+	Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plrid]);
+	Scoreboard->SetPlayerData(plr, "kills", plrs_kills[plrid]);
 	return;
 }
 
@@ -103,7 +104,7 @@ public func RelaunchPlayer(int plr)
 		crew->MakeCrewMember(plr);
 		SetCursor(plr, crew);
 		crew->Enter(observer_container);
-		RemoveArrayValue(plrs_active, plr);
+		RemoveArrayValue(plrs_active, GetPlayerID(plr));
 		if (GetLength(plrs_active) == 0)
 			return EndRound();
 		// Update the view of the observing players.
@@ -116,7 +117,7 @@ public func RemovePlayer(int plr)
 {
 	// Check completion if a player is removed, the player could have been the last active one.
 	if (GetPlayerType(plr) == C4PT_User)
-		if (RemoveArrayValue(plrs_active, plr))
+		if (RemoveArrayValue(plrs_active, GetPlayerID(plr)))
 			if (GetLength(plrs_active) == 0)
 				return EndRound();
 	return;
@@ -209,12 +210,13 @@ public func SetScore(int value)
 
 private func SetBestScore(int plr, int new_score)
 {
+	var plrid = GetPlayerID(plr);
 	// Only set if it increases the player's best score.
 	if (new_score > GetBestScore(plr))
 		SetPlrExtraData(plr, GetScoreString(), new_score);
 	// Also set league score if an improvement is made.
 	//if (new_score > GetLeaguePerformance(plrid)) TODO uncomment once available.
-	SetLeaguePerformance(new_score, plr);
+	SetLeaguePerformance(new_score, plrid);
 	return;
 }
 
@@ -454,15 +456,16 @@ public func OnRocketDeath(object rocket, int killed_by)
 
 public func OnClonkDeath(object clonk, int killed_by)
 {
+	var plrid = GetPlayerID(killed_by);
 	if (clonk.Bounty)
 	{
 		if (killed_by != NO_OWNER)
 		{
 			DoWealth(killed_by, clonk.Bounty);
-			plrs_bonus[killed_by] += clonk.Bounty;
-			plrs_kills[killed_by] += 1;
-			Scoreboard->SetPlayerData(killed_by, "bonus", plrs_bonus[killed_by]);
-			Scoreboard->SetPlayerData(killed_by, "kills", plrs_kills[killed_by]);			
+			plrs_bonus[plrid] += clonk.Bounty;
+			plrs_kills[plrid] += 1;
+			Scoreboard->SetPlayerData(killed_by, "bonus", plrs_bonus[plrid]);
+			Scoreboard->SetPlayerData(killed_by, "kills", plrs_kills[plrid]);			
 		}
 		else
 		{		
