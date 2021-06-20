@@ -175,9 +175,7 @@ global func DoExplosion(int x, int y, int level, object inobj, proplist cause_pl
 		// Graphic effects.
 		Call("ExplosionEffect", level, x, y, 0, silent, damage_level);
 		// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
-		var cause_player_nr = nil;
-		if (cause_player) cause_player_nr = cause_player.ID;
-		BlastFree(x, y, level, cause_player_nr);
+		BlastFree(x, y, level, cause_player);
 	}
 
 	return true;

@@ -140,7 +140,7 @@ public func ReactivatePlayerControls(proplist plr)
 		plr->SetCursor(plr->GetCrew());
 	crew = plr->GetCursor();
 	if (crew)
-		plr->SetView(crew);
+		plr->SetViewTarget(crew);
 	return true;
 }
 

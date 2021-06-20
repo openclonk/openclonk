@@ -369,7 +369,7 @@ func OnAllWavesCleared()
 	// Success!
 	if (g_goal) g_goal.is_fulfilled = true;
 	if (ENEMY\.Type == C4PT_Script) ENEMY->Eliminate();
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	GameOver();
 	return true;
 }

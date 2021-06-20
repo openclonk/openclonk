@@ -308,7 +308,7 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 public func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/TreasureHunt.ocs");
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	GainScenarioAccess("S2Sea");
 	StartSequence("Outro", 0);
 	// Return true to force goal rule to not call GameOver() yet

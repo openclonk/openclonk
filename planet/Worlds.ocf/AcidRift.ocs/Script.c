@@ -47,7 +47,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Give the remaining players their achievement.
-	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	for (var player in GetPlayers(C4PT_User)) player->vement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
 	return false;
 }
 

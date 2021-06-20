@@ -13,7 +13,7 @@ static const InteractionMenu_Custom = 4;
 
 /*
 	This contains an array with a proplist for every player number.
-	The attributes are also always attached to every interaction menu on creation (menu.minimized = InteractionMenu_Attributes[plr].minimized;).
+	The attributes are also always attached to every interaction menu on creation (menu.minimized = InteractionMenu_Attributes[plr.ID].minimized;).
 	The following properties are either used or nil:
 		minimized (bool): whether the player minimized the menu.
 			A minimized menu does not show some elements (like the description box).
@@ -118,9 +118,9 @@ func CreateFor(object cursor, id style_def, array settings)
 		InteractionMenu_Attributes = [];
 	
 	// Transfer some attributes from the player configuration.
-	if (GetLength(InteractionMenu_Attributes) > cursor->GetOwner())
+	if (GetLength(InteractionMenu_Attributes) > cursor->GetOwner().ID)
 	{
-		var config = InteractionMenu_Attributes[cursor->GetOwner()];
+		var config = InteractionMenu_Attributes[cursor->GetOwner().ID];
 		obj.minimized = GetProperty("minimized", config) ?? false; 
 	}
 	else
@@ -423,14 +423,14 @@ private func DoInteractionMenuClosedCallback(object obj)
 public func OnToggleMinimizeClicked()
 {
 	var config = nil;
-	if (GetLength(InteractionMenu_Attributes) <= GetOwner())
+	if (GetLength(InteractionMenu_Attributes) <= GetOwner().ID)
 	{
 		config = {minimized = false};
-		InteractionMenu_Attributes[GetOwner()] = config;
+		InteractionMenu_Attributes[GetOwner().ID] = config;
 	}
 	else
 	{
-		config = InteractionMenu_Attributes[GetOwner()];
+		config = InteractionMenu_Attributes[GetOwner().ID];
 	}
 	config.minimized = !(GetProperty("minimized", config) ?? false);
 	

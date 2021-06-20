@@ -241,17 +241,17 @@ public func OnChestOpened(object collector)
 	if (g_num_chests == 4)
 	{
 		sAchievement = "|$Achieve4$";
-		GainScenarioAchievement("Chests", 1);
+		for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Chests", 1);
 	}
 	else if (g_num_chests == MAX_CHESTS/2)
 	{
 		sAchievement = "|$Achieve7$";
-		GainScenarioAchievement("Chests", 2);
+		for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Chests", 2);
 	}
 	else if (g_num_chests == MAX_CHESTS)
 	{
 		sAchievement = "|$Achieve14$";
-		GainScenarioAchievement("Chests", 3);
+		for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Chests", 3);
 	}
 	UpdateLeagueScores();
 	Dialogue->MessageBoxAll(Format("$MsgChestOpened$%s", g_num_chests, MAX_CHESTS, sAchievement), collector, true);
@@ -260,7 +260,7 @@ public func OnChestOpened(object collector)
 
 public func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	UpdateLeagueScores();
 }
 

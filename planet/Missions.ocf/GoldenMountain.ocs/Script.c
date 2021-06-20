@@ -87,6 +87,6 @@ private func InitBase(int owner)
 
 func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return false;
 }

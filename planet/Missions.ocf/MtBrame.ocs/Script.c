@@ -55,6 +55,6 @@ func InitializePlayer(proplist plr)
 
 func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return false;
 }

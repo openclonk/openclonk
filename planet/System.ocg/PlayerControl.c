@@ -118,7 +118,7 @@ global func InitializePlayerControl(proplist player, string controlset_name, boo
 
 global func PlayerHasVirtualCursor(proplist player)
 {
-	if (!CON_VC_Players)
+	if (!CON_VC_Players || !player)
 		return false;
 		
 	return CON_VC_Players[player.ID];
@@ -165,7 +165,7 @@ global func Control2Player(proplist player, int ctrl, int x, int y, int strength
 	// cursor pos info - store in player values
 	if (ctrl == CON_CursorPos)
 	{
-		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(player + 1);
+		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(player.ID + 1);
 		g_player_cursor_pos[player.ID] = [x, y];
 		return true;
 	}

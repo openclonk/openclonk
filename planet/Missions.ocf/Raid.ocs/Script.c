@@ -132,6 +132,6 @@ func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/Crash.ocs");
 	GainScenarioAccess("S2Raid");
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return true; // GameOver done by outro
 }

@@ -34,7 +34,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Achievement: Tutorial completed.
-	GainScenarioAchievement("TutorialCompleted", 3);	
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("TutorialCompleted", 3);	
 	// Dialogue options -> next round.
 	SetNextScenario("Tutorials.ocf\\Tutorial06.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.

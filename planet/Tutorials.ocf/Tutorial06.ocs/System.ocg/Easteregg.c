@@ -14,7 +14,7 @@ public func Entrance(object container)
 		// Add some stars effect to the clonk indicating the easteregg.
 		container->CreateParticle("StarSpark", PV_Random(-3, 3), PV_Random(-14, -10), PV_Random(-5, 5), PV_Random(-8, 0), 25, Particles_Magic(), 20);		
 		// Achievement: easter egg found.
-		GainScenarioAchievement("TutorialEasterEgg");
+		for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("TutorialEasterEgg");
 	}
 	return _inherited(container, ...);
 }

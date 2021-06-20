@@ -14,7 +14,7 @@ public func Initialize()
 	return true;
 }
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 
 	CreateObjectAbove(Windmill, 152, 825 + 48, 0);
@@ -51,7 +51,7 @@ func DoInit(int first_player)
 	ScheduleCall(nil, Scenario.EnsureTrees, 100, 99999999, tree_area);
 	
 	// Start intro if not yet started
-	StartSequence("Intro", 0, GetCrew(first_player));
+	StartSequence("Intro", 0, first_player->GetCrew());
 	
 	GetRelaunchRule()
 		->SetInventoryTransfer(true)
@@ -118,7 +118,7 @@ func InitializePlayer(proplist plr)
 func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/DeepSeaMining.ocs");
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	GainScenarioAccess("S2Crash");
 	return false;
 }
