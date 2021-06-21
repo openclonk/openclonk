@@ -85,7 +85,7 @@ func AssembleCrewBar()
 	crew_plus_menu =
 	{
 		Target = this,
-		Player = GetOwner().ID,
+		Player = GetOwner(),
 		Style = GUI_NoCrop | GUI_Multiple,
 		Left = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize / 2),
 		Right = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize * 3 / 2),
@@ -638,7 +638,7 @@ private func UpdateCrewDisplay()
 		// Update cursor information
 		var update =
 		{
-			Player = GetOwner().ID,
+			Player = GetOwner(),
 			portrait =
 			{
 				picture =
@@ -722,7 +722,7 @@ private func UpdateCrewDisplay()
 
 		var update =
 		{
-			Player = GetOwner().ID,
+			Player = GetOwner(),
 			portrait =
 			{
 				picture =
@@ -1042,7 +1042,7 @@ private func Heartbeat(string graphics, int id)
 
 	var update =
 	{
-		Player = GetOwner().ID,
+		Player = GetOwner(),
 		GraphicsName = graphics
 	};
 
