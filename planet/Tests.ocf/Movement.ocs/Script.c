@@ -291,92 +291,22 @@ global func SetPositionAndSpeed(int x, int y, int xdir, int ydir)
 
 //-----------------------------------
 
-global func Test1_OnStart(proplist player)
+global func LaunchTest_Start(def type, int x, int y, int x_dir, int y_dir)
 {
-	Log("Launch a Clonk diagonally with low speed, should move diagonally");
-	var clonk = CreateObject(Clonk, 320, 60, script_player);
-	clonk->ScheduleCall(clonk, Global.SetPositionAndSpeed, 9, 0, 320, 60, 0, 0); // Reset velocity
-	clonk->ScheduleCall(clonk, Global.SetPositionAndSpeed, 10, 0, 320, 60, 50, 50); // Delayed velocity is better, somehow
-	CurrentTest().target = clonk;
-	return true;
-}
-
-global func Test1_Execute()
-{
-	var clonk = CurrentTest().target;
-	if (clonk.was_launched && clonk->GetSpeed() <= 1)
-	{
-		Log("Clonk position is %v", clonk->GetPosition());
-		doTest("Check X coordinate inside [380, 400], got %v, expected %v", Inside(clonk->GetX(), 380, 400), true);
-		doTest("Check Y coordinate inside [140, 160], got %v, expected %v", Inside(clonk->GetY(), 140, 160), true);
-		return Evaluate();
-	}
-	return Wait(100);
-}
-
-global func Test1_OnFinished()
-{
-	if (CurrentTest().target)
-	{
-		CurrentTest().target->RemoveObject();
-	}
-}
-
-//-----------------------------------
-
-global func Test2_OnStart(proplist player)
-{
-	Log("Launch a Clonk diagonally with high speed, should move diagonally");
-	// With the current implementation (object moves in X direction first)
-	// the object will hit the wall with its top vertex and move not diagonally,
-	// but rather nearly downward
-	var clonk = CreateObject(Clonk, 320, 60, script_player);
-	clonk->ScheduleCall(clonk, Global.SetPositionAndSpeed, 9, 0, 320, 60, 0, 0); // Reset velocity
-	clonk->ScheduleCall(clonk, Global.SetPositionAndSpeed, 10, 0, 320, 60, 1000, 1000); // Delayed velocity is better, somehow
-	CurrentTest().target = clonk;
-	return true;
-}
-
-global func Test2_Execute()
-{
-	var clonk = CurrentTest().target;
-	if (clonk.was_launched && clonk->GetSpeed() <= 1)
-	{
-		Log("Clonk position is %v", clonk->GetPosition());
-		doTest("Check X coordinate inside [380, 400], got %v, expected %v", Inside(clonk->GetX(), 380, 400), true);
-		doTest("Check Y coordinate inside [140, 160], got %v, expected %v", Inside(clonk->GetY(), 140, 160), true);
-		return Evaluate();
-	}
-	return Wait(100);
-}
-
-global func Test2_OnFinished()
-{
-	if (CurrentTest().target)
-	{
-		CurrentTest().target->RemoveObject();
-	}
-}
-
-//-----------------------------------
-
-global func TestRock_Start(int x, int y, int x_dir, int y_dir)
-{
-	Log("Launch a rock diagonally with high speed, should move diagonally");
 	// Objects with smaller vertices do not hit the wall, even at high velocity
-	var rock = CreateObject(Rock, x, y, script_player);
+	var rock = CreateObject(type, x, y, script_player);
 	rock->ScheduleCall(rock, Global.SetPositionAndSpeed, 9, 0, x, y, 0, 0); // Reset velocity
 	rock->ScheduleCall(rock, Global.SetPositionAndSpeed, 10, 0, x, y, x_dir, y_dir); // Delayed velocity is better, somehow
 	CurrentTest().target = rock;
 	return true;
 }
 
-global func TestRock_Execute(int min_x, int max_x, int min_y, int max_y)
+global func LaunchTest_Execute(int min_x, int max_x, int min_y, int max_y)
 {
 	var rock = CurrentTest().target;
 	if (rock.was_launched && rock->GetSpeed() <= 1)
 	{
-		Log("Rock position is %v", rock->GetPosition());
+		Log("%i position is %v", rock->GetID(), rock->GetPosition());
 		TestBounds("X coordinate", rock->GetX(), min_x, max_x);
 		TestBounds("Y coordinate", rock->GetY(), min_y, max_y);
 		return Evaluate();
@@ -384,7 +314,7 @@ global func TestRock_Execute(int min_x, int max_x, int min_y, int max_y)
 	return Wait(100);
 }
 
-global func TestRock_Finish()
+global func LaunchTest_Finish()
 {
 	if (CurrentTest().target)
 	{
@@ -408,68 +338,109 @@ global func TestBounds(string description, int value, int min, int max)
 	}
 }
 
+//-----------------------------------
+
+global func Test1_OnStart(proplist player)
+{
+	Log("Launch a Clonk diagonally with low speed, should move diagonally");
+	return LaunchTest_Start(Clonk, 320, 60, 50, 50);
+}
+
+global func Test1_Execute()
+{
+	return LaunchTest_Execute(380, 400, 140, 160);
+}
+
+global func Test1_OnFinished()
+{
+	LaunchTest_Finish();
+}
+
+//-----------------------------------
+
+global func Test2_OnStart(proplist player)
+{
+	Log("Launch a Clonk diagonally with high speed, should move diagonally");
+	// With the current implementation (object moves in X direction first)
+	// the object will hit the wall with its top vertex and move not diagonally,
+	// but rather nearly downward
+	return LaunchTest_Start(Clonk, 320, 60, 1000, 1000);
+}
+
+global func Test2_Execute()
+{
+	return LaunchTest_Execute(380, 400, 140, 160);
+}
+
+global func Test2_OnFinished()
+{
+	LaunchTest_Finish();
+}
+
+//-----------------------------------
+
 global func Test3_OnStart(proplist player)
 {
-	return TestRock_Start(320, 60, 1000, 1000);
+	return LaunchTest_Start(Rock, 320, 60, 1000, 1000);
 }
 
 global func Test3_Execute()
 {
-	return TestRock_Execute(380, nil, 140, 160);
+	return LaunchTest_Execute(380, nil, 140, 160);
 }
 
 global func Test3_OnFinished()
 {
-	TestRock_Finish();
+	LaunchTest_Finish();
 }
 
 //-----------------------------------
 
 global func Test4_OnStart(proplist player)
 {
-	return TestRock_Start(444, 233, 100, 100);
+	return LaunchTest_Start(Rock, 444, 233, 100, 100);
 }
 
 global func Test4_Execute()
 {
-	return TestRock_Execute(484, 495, 280, 290);
+	return LaunchTest_Execute(484, 495, 280, 290);
 }
 
 global func Test4_OnFinished()
 {
-	TestRock_Finish();
+	LaunchTest_Finish();
 }
 
 //-----------------------------------
 
 global func Test5_OnStart(proplist player)
 {
-	return TestRock_Start(444, 233, 1000, 1000);
+	return LaunchTest_Start(Rock, 444, 233, 1000, 1000);
 }
 
 global func Test5_Execute()
 {
-	return TestRock_Execute(484, 495, 280, 290);
+	return LaunchTest_Execute(484, 495, 280, 290);
 }
 
 global func Test5_OnFinished()
 {
-	TestRock_Finish();
+	LaunchTest_Finish();
 }
 
 //-----------------------------------
 
 global func Test6_OnStart(proplist player)
 {
-	return TestRock_Start(444, 233, 10000, 10000);
+	return LaunchTest_Start(Rock, 444, 233, 10000, 10000);
 }
 
 global func Test6_Execute()
 {
-	return TestRock_Execute(484, 495, 280, 290);
+	return LaunchTest_Execute(484, 495, 280, 290);
 }
 
 global func Test6_OnFinished()
 {
-	TestRock_Finish();
+	LaunchTest_Finish();
 }
