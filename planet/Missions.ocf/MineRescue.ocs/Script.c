@@ -6,7 +6,7 @@
 
 static g_is_initialized;
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	var goal = CreateObject(Goal_ElevatorEnergy);
 	var elevator = FindObject(Find_ID(Elevator));

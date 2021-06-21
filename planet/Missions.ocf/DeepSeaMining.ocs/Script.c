@@ -61,7 +61,7 @@ protected func PostIntroInitialize()
 	return true;
 }
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	if (!SCEN_TEST)
 		StartSequence("Intro", 0, GetCrew(first_player));

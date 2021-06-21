@@ -8,7 +8,7 @@
 static g_is_initialized;
 static g_intro_initialized;
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	// Test
 	//CreateObjectAbove(LiftTower, 178, 405, first_player);

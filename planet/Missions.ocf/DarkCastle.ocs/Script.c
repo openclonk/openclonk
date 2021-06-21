@@ -9,7 +9,7 @@ static g_is_initialized;
 
 static npc_pyrit;
 
-private func DoInit(int first_player)
+private func DoInit(proplist first_player)
 {
 	var relaunch_rule = GetRelaunchRule();
 	relaunch_rule->SetInventoryTransfer(true);

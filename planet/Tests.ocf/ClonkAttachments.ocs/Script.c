@@ -220,7 +220,7 @@ global func Test1_OnStart(proplist plr)
 
 global func Test1_Completed()
 {
-	GetCursor(test.plr)->Message("Test %d / %d", test.test1_index + 1, test.test1_length);
+	test.plr->GetCursor()->Message("Test %d / %d", test.test1_index + 1, test.test1_length);
 
 	if (IsWaiting()) return false;
 
@@ -245,7 +245,7 @@ global func Test1_OnFinished()
 
 global func Test1_Run()
 {
-	var cursor = GetCursor(test.plr);
+	var cursor = test.plr->GetCursor();
 	var index = test.test1_index;
 	var corpse = test.test1_corpse[index];
 	var item = test.test1_item[index];

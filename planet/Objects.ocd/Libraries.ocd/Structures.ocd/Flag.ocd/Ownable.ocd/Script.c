@@ -35,7 +35,7 @@ public func OnOwnerChanged(proplist new_owner, proplist old_owner)
 // Restrict interactions to allies of the structure's owner.
 public func IsInteractable(object clonk)
 {
-	if (GetOwner()->Hostile(clonk->GetOwner())) 
+	if (GetOwner() && GetOwner()->Hostile(clonk->GetOwner())) 
 		return false;
 	return _inherited(clonk, ...);
 }

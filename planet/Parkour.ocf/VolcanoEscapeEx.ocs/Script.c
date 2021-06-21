@@ -66,9 +66,9 @@ func VolcanoTimer()
 	var y_volcano = g_volcano->GetLavaPeak();
 	// Get player progress
 	var y_plr, n_crew;
-	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
+	for (var player in GetPlayers(C4PT_User))
 	{
-		var crew = GetCursor(GetPlayerByIndex(i, C4PT_User));
+		var crew = player->GetCursor();
 		if (crew)
 		{
 			y_plr += crew->GetY();

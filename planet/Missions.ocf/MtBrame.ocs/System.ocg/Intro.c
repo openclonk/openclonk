@@ -181,8 +181,8 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 
 	if (effect.Time == 920)
 	{
-		for (var i = 0; i < GetPlayerCount(); ++i)
-			GetCursor(GetPlayerByIndex(i))->CloseMenu();
+		for (var player in GetPlayers())
+			player->GetCursor()->CloseMenu();
 	}
 
 	if (effect.Time == 950)
@@ -196,8 +196,8 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 			container->RemoveObject();
 		}
 
-		for (var i = 0; i < GetPlayerCount(); ++i)
-			GetCursor(GetPlayerByIndex(i))->CloseMenu();
+		for (var player in GetPlayers())
+			player->GetCursor()->CloseMenu();
 	}
 
 	if (effect.Time >= 1000)

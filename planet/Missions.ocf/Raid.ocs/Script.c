@@ -45,7 +45,7 @@ func Initialize()
 	return true;
 }
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	StartSequence("Intro", 0, first_player->GetCrew());
 	//g_goal = CreateObject(Goal_Raid);

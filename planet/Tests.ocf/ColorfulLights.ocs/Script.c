@@ -10,7 +10,7 @@ static g_is_initialized;
 static g_ruin1, g_ruin2, g_ruin3, g_elev1, g_elev2, g_farmer, g_king;
 static npc_pyrit, g_cannon, g_cannoneer;
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	// Message when first player enters shroom area
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);

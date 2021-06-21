@@ -13,7 +13,7 @@ static g_max_player_num; // max number of players that were ever joined
 static g_got_gem_task, g_got_oil, g_goal, g_treasure_collected;
 static npc_pyrit;
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	var relaunch_rule = GetRelaunchRule();
 	relaunch_rule->SetInventoryTransfer(true);

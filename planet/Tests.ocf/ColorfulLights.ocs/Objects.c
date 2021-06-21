@@ -291,10 +291,16 @@ func InitializeObjects()
 		mushroom->SetLightRange(50, 30);
 	}
 
-	Object(463)->SetLightRange(50, 10);
-	Object(463)->SetLightColor(RGB(100, 0, 200));
-	Object(13)->SetLightRange(50, 10);
-    Object(13)->SetLightColor(RGB(100, 200, 0));
+	if (Object(463))
+	{
+		Object(463)->SetLightRange(50, 10);
+		Object(463)->SetLightColor(RGB(100, 0, 200));
+	}
+	if (Object(13))
+	{
+		Object(13)->SetLightRange(50, 10);
+    	Object(13)->SetLightColor(RGB(100, 200, 0));
+	}
 
 	return true;
 }
