@@ -67,21 +67,21 @@ protected func Initialize()
 	return;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr, 400, 250, flag);
-	SetPlayerViewLock(plr, true);
+		plr->SetZoomByViewRange(400, 250, flag);
+	plr->SetViewLocked(true);
 	return true;
 }
 
 // Gamecall from parkour goal, on respawning.
-protected func OnPlayerRespawn(int plr, object cp)
+protected func OnPlayerRespawn(proplist plr, object cp)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	RecoverItem(clonk, Shovel);
 	RecoverItem(clonk, Pickaxe);
 	RecoverItem(clonk, Loam);
@@ -101,7 +101,7 @@ private func RecoverItem(object clonk, id item_id)
 }
 
 // Gamecall from parkour goal, on reaching a bonus cp.
-protected func GivePlrBonus(int plr, object cp)
+protected func GivePlrBonus(proplist plr, object cp)
 {
 	// No bonus.
 	return;

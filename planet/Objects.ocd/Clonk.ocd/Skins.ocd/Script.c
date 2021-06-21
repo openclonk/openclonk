@@ -13,12 +13,12 @@ func Construction()
 
 /* When adding to the crew of a player */
 
-protected func Recruitment(int player)
+protected func Recruitment(proplist player)
 {
 	//The clonk's appearance
 	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData = 1;Skin = iX" (X = chosen skin)
 	var skin_setting = GetCrewExtraData("Skin");
-	if (skin_setting == nil) skin_setting = GetPlrClonkSkin(player);
+	if (skin_setting == nil) skin_setting = player.CrewSkin;
 	if (skin_setting != nil) SetSkin(skin_setting);
 	else SetSkin(Random(GetSkinCount()));
 

@@ -1065,7 +1065,7 @@ int32_t C4SortObjectMass::CompareGetValue(C4Object *pFor)
 
 int32_t C4SortObjectValue::CompareGetValue(C4Object *pFor)
 {
-	return pFor->GetValue(nullptr, NO_OWNER);
+	return pFor->GetValue(nullptr, nullptr);
 }
 
 void C4SortObjectFunc::SetPar(int i, const C4Value &Par)

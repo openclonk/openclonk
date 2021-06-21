@@ -7,14 +7,14 @@
     <title>GetLeagueScore</title>
     <category>Network</category>
     <subcat>League</subcat>
-    <version>5.0 OC</version>
+    <version>5.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
         <param>
-          <type>int</type>
-          <name>player_id</name>
-          <desc>ID of player whose score shall shall be returned.</desc>
+          <type>proplist</type>
+          <name>player</name>
+          <desc>Player whose score shall shall be returned. Before 9.0 OC this used the player ID.</desc>
           <optional />
         </param>
       </params>
@@ -24,4 +24,5 @@
     <related><funclink>GetLeagueProgressData</funclink><funclink>SetLeaguePerformance</funclink></related>
   </func>
   <author>Sven2</author><date>2014-04</date>
+  <author>Marky</author><date>2021-06</date>
 </funcs>

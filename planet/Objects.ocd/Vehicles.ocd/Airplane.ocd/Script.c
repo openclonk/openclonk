@@ -147,7 +147,7 @@ public func GetAirplaneMenuEntries(object clonk)
 			text =
 				{ Prototype = control_prototype.text,
 				  Style = GUI_TextVCenter,
-				  Text = Format("$SwitchMainAction$\n%s", GetPlayerControlAssignment(clonk->GetOwner(), CON_Use, true, true), GetActionTypeName(main_action))
+				  Text = Format("$SwitchMainAction$\n%s", clonk->GetOwner()->GetControlAssignment(CON_Use, true, true), GetActionTypeName(main_action))
 				},
 			icon =
 				{ Prototype = control_prototype.icon,
@@ -1216,7 +1216,7 @@ private func SetPropellerSound(int speed)
 public func IsDestroyedByExplosions() { return false; }
 
 // Custom explosion on callback from destructible library.
-public func OnDestruction(int change, int cause, int by_player)
+public func OnDestruction(int change, int cause, proplist by_player)
 {
 	if (pilot)
 		PlaneDismount(pilot);

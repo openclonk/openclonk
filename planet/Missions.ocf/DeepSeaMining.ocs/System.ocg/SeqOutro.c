@@ -57,7 +57,7 @@ func Outro_5()
 	// Wait for plane to arrive
 	if (this.plane->GetX() < this.communicator->GetX() - 200) return ScheduleSame(5);
 	// Plane in range! Ensure players see it.
-	SetPlayerZoomByViewRange(NO_OWNER, 500, 350, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(500, 350, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	MessageBoxAll("$Outro4$", this.pilot, true); // hey, our friends!
 	return ScheduleNext(100);
 }

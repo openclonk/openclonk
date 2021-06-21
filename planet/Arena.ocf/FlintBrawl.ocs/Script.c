@@ -125,16 +125,16 @@ func InitializeRound()
 	return true;
 }
 
-func InitPlayerRound(int plr, object crew)
+func InitPlayerRound(proplist plr, object crew)
 {
 	// everything visible
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	// Player positioning.
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var start_pos = nil;
 	if (SCENPAR_TeamsTogether == 1)
 	{
-		start_pos = GetTeamSpawnPosition(GetPlayerTeam(plr));
+		start_pos = GetTeamSpawnPosition(plr->GetTeam());
 	}
 	if (start_pos == nil)
 	{

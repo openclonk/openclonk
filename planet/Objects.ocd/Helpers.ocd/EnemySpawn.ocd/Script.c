@@ -71,7 +71,7 @@ public func Initialize()
 		for (var iplr = 0; iplr < GetPlayerCount(C4PT_Script); ++iplr)
 		{
 			var plr = GetPlayerByIndex(iplr, C4PT_Script);
-			if (GetScriptPlayerExtraID(plr) == GetID())
+			if (plr.ExtraID == GetID())
 			{
 				g_enemyspawn_player = plr;
 				break;
@@ -92,7 +92,7 @@ private func IsEnemySpawnPlayerJoined()
 }
 
 
-public func InitializeScriptPlayer(int plr, int team)
+public func InitializeScriptPlayer(proplist plr, int team)
 {
 	// Init the enemy script player: Hostile to all players
 	if (g_enemyspawn_player == NO_OWNER)
@@ -100,7 +100,7 @@ public func InitializeScriptPlayer(int plr, int team)
 		// Handle hostility if not done through teams
 		for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
 		{
-			SetHostility(GetPlayerByIndex(iplr, C4PT_User), plr, true, true, true); // triple true hostility!
+			GetPlayerByIndex(iplr, C4PT_User)->SetHostility(plr, true, true, true); // triple true hostility!
 		}
 		g_enemyspawn_player = plr;
 	}
@@ -114,12 +114,12 @@ public func InitializeScriptPlayer(int plr, int team)
 	}
 }
 
-public func InitializePlayer(int plr, int x, int y, object base, int team, extra_id)
+public func InitializePlayer(proplist plr, int x, int y, object base, int team, extra_id)
 {
-	if (GetPlayerType(plr) == C4PT_User && IsEnemySpawnPlayerJoined())
+	if (plr.Type == C4PT_User && IsEnemySpawnPlayerJoined())
 	{
 		// Make sure new enemy players are hostile
-		SetHostility(g_enemyspawn_player, plr, true, true, true);
+		g_enemyspawn_player->SetHostility(plr, true, true, true);
 	}
 }
 
@@ -234,12 +234,12 @@ public func TrackSpawnedEnemy(object enemy)
 	}
 }
 
-public func OnRocketDeath(object rocket, int killed_by)
+public func OnRocketDeath(object rocket, proplist killed_by)
 {
 	return OnClonkDeath(rocket, killed_by);
 }
 
-public func OnClonkDeath(object clonk, int killed_by)
+public func OnClonkDeath(object clonk, proplist killed_by)
 {
 	if (clonk.EnemySpawn_source == this)
 	{

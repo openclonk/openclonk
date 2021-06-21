@@ -12,7 +12,7 @@ func Initialize()
 	if (!ObjectCount(Find_ID(Rule_NoPowerNeed))) CreateObject(Rule_NoPowerNeed, 0, 0, NO_OWNER);
 }
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	// Set time of day to morning and create some clouds and celestials.
 	Cloud->Place(20);
@@ -30,7 +30,7 @@ func DoInit(int first_player)
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	var crew;
 	// Scenario init
@@ -42,7 +42,7 @@ func InitializePlayer(int plr)
 	{
 		// Too late for entry? Just start in the valley
 		var index = 0;
-		for (var index = 0; crew = GetCrew(plr, index); ++index)
+		for (var index = 0; crew = plr->GetCrew(index); ++index)
 		{
 			var x = 260*8/10 + Random(50);
 			var y = 1350*8/10;
@@ -55,6 +55,6 @@ func InitializePlayer(int plr)
 
 func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return false;
 }

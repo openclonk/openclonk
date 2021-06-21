@@ -203,7 +203,7 @@ public func SetZoomSet(int zoom)
 
 /* Player initialization checks */
 
-public func InitializePlayer(int plr, x, y, base, team, script_id)
+public func InitializePlayer(proplist plr, x, y, base, team, script_id)
 {
 	// Find which one to evaluate
 	var possible_startpoints = FindObjects(Find_ID(PlayerStart), Find_Func("IsStartFor", plr));
@@ -225,7 +225,7 @@ public func InitializePlayer(int plr, x, y, base, team, script_id)
 	{
 		var other_clonks = startpoint->FindObjects(Find_Distance(50), Find_OCF(OCF_CrewMember));
 		var hostile = 0;
-		for (var c in other_clonks) if (Hostile(c->GetOwner(), plr))
+		for (var c in other_clonks) if (c->GetOwner()->Hostile(plr))
 		{
 			++hostile;
 		}
@@ -248,7 +248,7 @@ public func InitializePlayer(int plr, x, y, base, team, script_id)
 	return true;
 }
 
-public func IsStartFor(int plr)
+public func IsStartFor(proplist plr)
 {
 	return EditorBase->EvaluatePlayerMask(starting_players , plr);
 }
@@ -258,7 +258,7 @@ public func IsStartFor(int plr)
 
 local is_handling_player_spawn; // temp var set to nonzero during initial player spawn (to differentiate from respawn)
 
-public func DoPlayerStart(int plr)
+public func DoPlayerStart(proplist plr)
 {
 	// Player launch controlled by this object!
 	if (!players_started)
@@ -289,7 +289,7 @@ public func DoPlayerStart(int plr)
 	return true;
 }
 
-public func RemovePlayer(int plr)
+public func RemovePlayer(proplist plr)
 {
 	// Remove number from players_started list
 	if (players_started)
@@ -304,10 +304,10 @@ public func RemovePlayer(int plr)
 	}
 }
 
-public func OnClonkRecruitment(clonk, plr)
+public func OnClonkRecruitment(object clonk, proplist player)
 {
 	// New clonk recruitment: Apply default clonk settings
-	if (players_started && GetIndexOf(players_started, plr) >= 0)
+	if (players_started && GetIndexOf(players_started, player.ID) >= 0)
 	{
 		ApplyCrewSettings(clonk);
 		if (!is_handling_player_spawn && respawn_material)
@@ -315,7 +315,7 @@ public func OnClonkRecruitment(clonk, plr)
 			if (respawn_material == "starting_material")
 			{
 				// Same as startign material
-				InitializeMaterial(plr);
+				InitializeMaterial(player);
 			}
 			else
 			{
@@ -343,7 +343,7 @@ private func ApplyCrewSettings(object crew)
 	return true;
 }
 
-private func InitializeCrew(int plr)
+private func InitializeCrew(proplist plr)
 {
 	// Collect IDs of crew to create
 	var requested_crew = [], n = 0;
@@ -355,9 +355,9 @@ private func InitializeCrew(int plr)
 		}
 	}
 	// Match them to existing crew
-	for (var i = GetCrewCount(plr)-1; i>=0; --i)
+	for (var i = plr->GetCrewCount()-1; i>=0; --i)
 	{
-		var obj = GetCrew(plr, i);
+		var obj = plr->GetCrew(i);
 		if (obj)
 		{
 			var idx = GetIndexOf(requested_crew, obj->GetID());
@@ -383,9 +383,9 @@ private func InitializeCrew(int plr)
 		}
 	}
 	// Apply crew settings
-	for (var i = GetCrewCount(plr)-1; i>=0; --i)
+	for (var i = plr->GetCrewCount()-1; i>=0; --i)
 	{
-		var obj = GetCrew(plr, i);
+		var obj = plr->GetCrew(i);
 		if (obj)
 		{
 			ApplyCrewSettings(obj);
@@ -395,7 +395,7 @@ private func InitializeCrew(int plr)
 	return true;
 }
 
-private func InitializeBaseMaterial(int plr)
+private func InitializeBaseMaterial(proplist plr)
 {
 	// Set base material to minimum of current material and material given by this object
 	if (starting_base_material)
@@ -412,22 +412,22 @@ private func InitializeBaseMaterial(int plr)
 	return true;
 }
 
-private func InitializeMaterial(int plr)
+private func InitializeMaterial(proplist player)
 {
 	// Spread material across clonks. Try to fill them evenly and avoid giving the same item twice to the same clonk
 	// So e.g. each clonk can get one shovel
 	for (var idlist_entry in starting_material)
 	{
 		var best_target = nil, target_score;
-		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(), GetY() + GetDefHeight() / 2, plr);
+		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(), GetY() + GetDefHeight() / 2, player);
 		if (!obj || !obj.Collectible)
 		{
 			continue;
 		}
 		var id = idlist_entry.id;
-		for (var j = 0; j < GetCrewCount(plr); ++j)
+		for (var j = 0; j < player->GetCrewCount(); ++j)
 		{
-			var clonk = GetCrew(plr, j);
+			var clonk = player->GetCrew(j);
 			if (clonk)
 			{
 				var clonk_score = 0;
@@ -450,7 +450,7 @@ private func InitializeMaterial(int plr)
 	return true;
 }
 
-private func InitializeKnowledge(int plr)
+private func InitializeKnowledge(proplist plr)
 {
 	var def;
 	if (!starting_knowledge)
@@ -490,16 +490,16 @@ private func InitializeKnowledge(int plr)
 	return true;
 }
 
-private func InitializeView(int plr)
+private func InitializeView(proplist plr)
 {
-	SetPlayerViewLock(plr, view_lock);
+	plr->SetViewLocked(view_lock);
 	// Zoom limit "nil" means default limits.
-	SetPlayerZoomByViewRange(plr, zoom_min, zoom_min, PLRZOOM_Direct | PLRZOOM_LimitMin);
-	SetPlayerZoomByViewRange(plr, zoom_max, zoom_max, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(zoom_min, zoom_min, PLRZOOM_Direct | PLRZOOM_LimitMin);
+	plr->SetZoomByViewRange(zoom_max, zoom_max, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	// If no zoom value is specified: Assume what the player has set currently is the default.
 	if (zoom_set != nil)
 	{
-		SetPlayerZoomByViewRange(plr, zoom_set, zoom_set, PLRZOOM_Direct | PLRZOOM_Set);
+		plr->SetZoomByViewRange(zoom_set, zoom_set, PLRZOOM_Direct | PLRZOOM_Set);
 	}
 	return true;
 }

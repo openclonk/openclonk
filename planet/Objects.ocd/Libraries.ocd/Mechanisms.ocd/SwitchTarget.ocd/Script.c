@@ -51,7 +51,7 @@ public func SetInputSignal(object operator, object sender, bool value)
 	// Show the object being operated
 	if (operator && lib_mechanism.set_plr_view)
 	{
-		SetPlrView(operator->GetController(), this);
+		operator->GetController()->SetViewTarget(this);
 		if (lib_mechanism.temp_light)
 		{
 			lib_mechanism.temp_light->RemoveObject();

@@ -35,16 +35,16 @@ func Intro_Start(object hero)
 	this.plane->StartInstantFlight(90, 40);
 
 	SetViewTarget(this.pilot);
-	SetPlayerZoomByViewRange(NO_OWNER, 200, 100, PLRZOOM_Set); // zoom out from plane
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(200, 100, PLRZOOM_Set); // zoom out from plane
 	
 	return ScheduleNext(50);
 }
 
-func Intro_JoinPlayer(int plr)
+func Intro_JoinPlayer(proplist plr)
 {
 	if (this.intro_closed) return false; // too late for join - just join in village
 	var crew;
-	for (var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = plr->GetCrew(index); ++index)
 	{
 		crew->Enter(this.dialogue);
 	}
@@ -53,7 +53,7 @@ func Intro_JoinPlayer(int plr)
 
 func Intro_1()
 {
-	SetPlayerZoomByViewRange(NO_OWNER, 800, 600, PLRZOOM_Set); // zoom out from plane
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(800, 600, PLRZOOM_Set); // zoom out from plane
 	MessageBoxAll("$MsgIntro1$", this.pilot, true); // we've reached the castle
 	return ScheduleNext(10);
 }
@@ -156,7 +156,7 @@ func Intro_Stop()
 	g_cannoneer->DoEnergy(10000);
 	g_cannoneer->AddEnergyBar();
 	g_cannoneer.SpecialDeathMessage = "$DeathOfBrutus$";
-	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(400, 300, PLRZOOM_Set);
 	return true;
 }
 
@@ -173,7 +173,7 @@ func Intro_PlaneHit()
 	{
 		plr = GetPlayerByIndex(iplr, C4PT_User);
 		var icrew = 0, crew;
-		while (crew = GetCrew(plr, icrew++))
+		while (crew = plr->GetCrew(icrew++))
 		{
 			crew->Exit(0,-5, 0, Random(3)-1, Random(5)-6);
 			crew->SetAction("Tumble");

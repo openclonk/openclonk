@@ -36,12 +36,12 @@ public func IsIndex(index)
 
 public func IsRespawnMarker() { return respawnmarker; }
 
-global func GetMarkerForIndex(int index, int plr)
+global func GetMarkerForIndex(int index, proplist plr)
 {
 	return FindObject(Find_ID(Marker), Find_Owner(plr), Find_Func("IsIndex", index));
 }
 
-global func GetNextFreeMarkerIndex(int plr)
+global func GetNextFreeMarkerIndex(proplist plr)
 {
 	for (var i = 0; i <= 9; i++)
 	{

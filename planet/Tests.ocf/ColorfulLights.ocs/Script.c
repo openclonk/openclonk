@@ -10,7 +10,7 @@ static g_is_initialized;
 static g_ruin1, g_ruin2, g_ruin3, g_elev1, g_elev2, g_farmer, g_king;
 static npc_pyrit, g_cannon, g_cannoneer;
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	// Message when first player enters shroom area
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
@@ -36,18 +36,18 @@ func DoInit(int first_player)
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr, 400, 250, flag);
-	SetPlayerViewLock(plr, true);
+		plr->SetZoomByViewRange(400, 250, flag);
+	plr->SetViewLocked(true);
 	// Initial join
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	crew->SetPosition(35 + Random(10) , 1140);
 	crew->SetDir(DIR_Right);
 	crew->CreateContents(Shovel);

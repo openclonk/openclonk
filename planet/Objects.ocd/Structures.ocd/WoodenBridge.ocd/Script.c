@@ -114,7 +114,7 @@ public func Destruction()
 	return _inherited(...);
 }
 
-public func Damage(int change, int cause, int cause_plr)
+public func Damage(int change, int cause, proplist cause_plr)
 {
 	// Damaged and burnt bridges appear darker.
 	var darkness = 255 - 180 * GetDamage() / this.HitPoints;

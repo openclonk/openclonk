@@ -31,12 +31,12 @@ public func Initialize()
 	return;
 }
 
-public func InitializePlayer(int plr)
+public func InitializePlayer(proplist plr)
 {
-	GetCrew(plr)->CreateContents(GrappleBow, 2);
-	GetCrew(plr)->CreateContents(Ropeladder);
-	GetCrew(plr)->CreateContents(Shovel);
-	GetCrew(plr)->CreateContents(Ropebridge);
+	plr)->CreateContents(GrappleBow->GetCrew(2);
+	plr->GetCrew()->CreateContents(Ropeladder);
+	plr->GetCrew()->CreateContents(Shovel);
+	plr->GetCrew()->CreateContents(Ropebridge);
 	return;
 }
 

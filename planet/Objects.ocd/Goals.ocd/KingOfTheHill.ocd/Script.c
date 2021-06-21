@@ -114,15 +114,15 @@ public func SetRadius(int to)
 	radius = to;
 }
 
-func DoPoint(int player, int count)
+func DoPoint(proplist player, int count)
 {
 	if (count == nil) 
 		count = 1;
-	player_points[player] = Max(player_points[player] + count, 0);
-	Scoreboard->SetPlayerData(player, "koth", player_points[player]);
+	player_points[player.ID] = Max(player_points[player.ID] + count, 0);
+	Scoreboard->SetPlayerData(player, "koth", player_points[player.ID]);
 }
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(proplist plr, int x, int y, object base, int team)
 {
 	Scoreboard->NewPlayerEntry(plr);
 	player_suicides[plr]=0;
@@ -136,15 +136,15 @@ public func IsFulfilled()
 	return Goal_Melee->IsFulfilled(); // the same condition as a normal melee
 }
 
-func OnClonkDeath(object clonk, int killer)
+func OnClonkDeath(object clonk, proplist killer)
 {	
 	_inherited(clonk, killer, ...);
 	if (clonk->GetAlive()) return;
 		
-	if (GetPlayerName(clonk->GetOwner()))
+	if (clonk->GetOwner()->GetName())
 		++player_deaths[clonk->GetOwner()];
 	 
-	if (GetPlayerName(clonk->GetOwner()))
+	if (clonk->GetOwner()->GetName())
 	if (killer == clonk->GetOwner() || killer == NO_OWNER)
 	{
 		// shame on the king who kills himself
@@ -172,23 +172,23 @@ func OnClonkDeath(object clonk, int killer)
 		else if (location->GetKing() == clonk)
 		{
 			DoPoint(killer);
-			location->SetKing(GetCursor(killer));
+			location->SetKing(killer->GetCursor());
 			
 			// for the kill logs
-			AddEffect("NewKing", GetCursor(killer), 1, 3, nil);
+			AddEffect("NewKing", killer->GetCursor(), 1, 3, nil);
 		}
 	}
 	CheckForWinner();
 	return;
 }
 
-public func GetAdditionalPlayerRelaunchString(object clonk, int plr, int killed_by)
+public func GetAdditionalPlayerRelaunchString(object clonk, proplist plr, proplist killed_by)
 {
-	if (!Hostile(killed_by, plr)) return;
+	if (!killed_by->Hostile(plr)) return;
 	if (!location->GetKing()) return;
 	if (location->GetKing()->GetOwner() != killed_by) return;
-	if (!GetEffect("NewKing", GetCursor(killed_by))) return;
-	var msg = Format("$IsNowKing$", GetTaggedPlayerName(killed_by));
+	if (!GetEffect("NewKing", killed_by->GetCursor())) return;
+	var msg = Format("$IsNowKing$", killed_by->GetTaggedName());
 	return msg;
 }
 
@@ -197,16 +197,16 @@ private func CheckForWinner()
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (player_points[plr] >= GetPointLimit())
+		if (player_points[plr.ID] >= GetPointLimit())
 		{
 			for (var j = 0; j < GetPlayerCount(); j++)
 			{
 				var check_plr = GetPlayerByIndex(j);
 				if (check_plr == plr)
 					continue;
-				if (GetPlayerTeam(check_plr) != 0 && GetPlayerTeam(check_plr) == GetPlayerTeam(plr))
+				if (check_plr->GetTeam() != 0 && check_plr->GetTeam() == plr->GetTeam())
 					continue;
-				EliminatePlayer(check_plr);
+				check_plr->Eliminate();
 			}
 			break;
 		}
@@ -214,7 +214,7 @@ private func CheckForWinner()
 	return;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var teams = GetTeamPoints();
 	var lines=[];
@@ -230,7 +230,7 @@ public func GetDescription(int plr)
 	return msg;
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	var teams = GetTeamPoints();
 	var lines=[];
@@ -253,7 +253,7 @@ private func GetTeamList()
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var p = GetPlayerByIndex(i);
-		var t = GetPlayerTeam(p);
+		var t = p->GetTeam();
 		
 		var found = false;
 		for (var x = 0;x<GetLength(teams);++x)
@@ -277,14 +277,14 @@ private func GetTeamPoints()
 		var names = "";
 		for (var d = 0;d<GetPlayerCount();++d)
 		{
-			var p = GetPlayerByIndex(d);
-			if (GetPlayerTeam(p) != t) continue;
+			var plr = GetPlayerByIndex(d);
+			if (plr->GetTeam() != t) continue;
 			
-			p += player_points[p];
+			p += player_points[plr.ID];
 
 			var comma = ", ";
 			if (GetLength(names) == 0) comma = "";
-			names = Format("%s%s%s", names, comma, GetTaggedPlayerName(p));
+			names = Format("%s%s%s", names, comma, plr->GetTaggedName());
 		}
 		
 
@@ -294,7 +294,7 @@ private func GetTeamPoints()
 }
 
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return ""; // TODO
 }

@@ -519,7 +519,7 @@ bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 	{
 		punch = punch / 2; // Half damage for caught blow, so shield+armor help in fistfight and vs monsters
 	}
-	pTarget->DoEnergy(-punch, false, C4FxCall_EngGetPunched, cObj->Controller);
+	pTarget->DoEnergy(-punch, false, C4FxCall_EngGetPunched, ::Players.Get(cObj->Controller));
 	int32_t tdir = +1;
 	if (cObj->Action.Dir == DIR_Left)
 	{

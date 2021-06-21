@@ -11,12 +11,12 @@ public func Intro_Start()
 	return ScheduleNext(4);
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	var train = FindObject(Find_ID(Locomotive));
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	while (crew = plr->GetCrew(index))
 	{
 		crew->Enter(train);
 		index++;
@@ -29,7 +29,7 @@ public func Intro_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgDriveTrain$", GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
+		MessageBox("$MsgDriveTrain$", plr->GetCrew(0), plr->GetCrew(0), plr, true);
 	}
 	return ScheduleNext(6 * 36);
 }
@@ -46,14 +46,14 @@ public func Intro_2()
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var index = 0, crew;
-		while (crew = GetCrew(plr, index++))
+		while (crew = plr->GetCrew(index++))
 			crew->SetCommand("Exit");
 	}	
 
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgOutOfFuel$", GetCrew(plr, 0), GetCrew(plr, 1), plr, true);
+		MessageBox("$MsgOutOfFuel$", plr->GetCrew(0), plr->GetCrew(1), plr, true);
 	}
 	return ScheduleNext(3 * 36);
 }
@@ -63,7 +63,7 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgBridgesGone$", GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
+		MessageBox("$MsgBridgesGone$", plr->GetCrew(0), plr->GetCrew(0), plr, true);
 	}
 	return Stop();
 }
@@ -71,6 +71,6 @@ public func Intro_3()
 public func Intro_Stop()
 {
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 600, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(600, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

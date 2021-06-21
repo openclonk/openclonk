@@ -75,12 +75,12 @@ public func WinKillCount()
 	return Max(SCENPAR_NrRelaunchesKills, 1); 
 }
 
-public func RelaunchPosition(int plr)
+public func RelaunchPosition(proplist plr)
 {
 	return FindStartCave(plr, GetRelaunchRule()->GetPlayerRelaunchCount(plr) != SCENPAR_NrRelaunchesKills);
 }
 
-public func OnClonkLeftRelaunch(object clonk, int plr)
+public func OnClonkLeftRelaunch(object clonk, proplist plr)
 {
 	// Players start in a random small cave, the cave depends on whether it is a relaunch.
 	var cave = [clonk->GetX(), clonk->GetY()];
@@ -105,14 +105,14 @@ public func OnClonkLeftRelaunch(object clonk, int plr)
 	
 	// Set the zoom range to be standard low, but allow for zooming out
 	// such that light sources a bit further away can be spotted.
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Direct);
-	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(600, nil, PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
 	return;
 }
 
 // Finds a start cave which is furthest away from the center and from other already used start caves.
-private func FindStartCave(int plr, bool is_relaunch)
+private func FindStartCave(proplist plr, bool is_relaunch)
 {
 	var wdt = LandscapeWidth() / 2;
 	var hgt = LandscapeHeight() / 2;

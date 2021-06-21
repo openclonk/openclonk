@@ -14,6 +14,6 @@ func Initialize()
 
 func InitializePlayer(plr)
 {
-	var c = GetCrew(plr);
+	var c = plr->GetCrew();
 	c->SetPosition(LandscapeWidth()/2, 20);
 }

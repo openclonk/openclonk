@@ -36,11 +36,11 @@ func Initialize()
 	InitWaveData();
 }
 
-func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
+func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 {
-	if (GetPlayerType(plr) != C4PT_User) return;
+	if (plr.Type != C4PT_User) return;
 
-	if (g_lost) { EliminatePlayer(plr); return; } // no post-elimination join
+	if (g_lost) { plr->Eliminate(); return; } // no post-elimination join
 	SetWealth(plr, 50);
 	if (!g_relaunchs)
 	{
@@ -57,7 +57,7 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 
 	CreateObject(Homebase, 0, 0, plr);
 
-	SetPlayerZoomByViewRange(plr, 1200, 0, PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(1200, 0, PLRZOOM_LimitMax);
 
 	//DoWealth(plr, 10000000);
 
@@ -65,7 +65,7 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	if (!g_wave) StartGame();
 }
 
-func RemovePlayer(int plr)
+func RemovePlayer(proplist plr)
 {
 	Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
 	// Split player's wealth among the remaining players
@@ -85,10 +85,10 @@ private func TransferInventory(object from, object to)
 	return to->GrabContents(from);
 }
 
-func JoinPlayer(plr, prev_clonk)
+func JoinPlayer(proplist plr, prev_clonk)
 {
 	var x = 991, y = 970;
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	if (clonk)
 	{
 		clonk->SetPosition(x, y-10);
@@ -98,7 +98,7 @@ func JoinPlayer(plr, prev_clonk)
 		clonk = CreateObjectAbove(Clonk, x, y, plr);
 		clonk->MakeCrewMember(plr);
 	}
-	SetCursor(plr, clonk);
+	plr->SetCursor(clonk);
 	clonk->DoEnergy(1000);
 	// contents
 	clonk.MaxContentsCount = 1;
@@ -152,20 +152,20 @@ func OnClonkDeath(clonk, killed_by)
 	// Player died?
 	if (!clonk) return;
 	var plr = clonk->GetOwner();
-	if (GetPlayerType(plr) == C4PT_User)
+	if (plr.Type == C4PT_User)
 	{
 		// Relaunch count
 		if (!g_relaunchs[plr])
 		{
-			Log("$MsgOutOfRelaunchs$", GetTaggedPlayerName(plr));
+			Log("$MsgOutOfRelaunchs$", plr->GetTaggedName());
 			Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
-			EliminatePlayer(plr);
+			plr->Eliminate();
 			return false;
 		}
 		// Relaunch count
 		--g_relaunchs[plr];
 		Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
-		Log("$MsgRelaunch$", GetTaggedPlayerName(plr));
+		Log("$MsgRelaunch$", plr->GetTaggedName());
 		JoinPlayer(plr, clonk);
 	}
 	else
@@ -236,7 +236,7 @@ public func WindmillDown(object windmill)
 	{
 		// Fail!
 		var i = GetPlayerCount(C4PT_User);
-		while (i--) EliminatePlayer(GetPlayerByIndex(i, C4PT_User));
+		while (i--) GetPlayerByIndex(i, C4PT_User)->Eliminate();
 		g_lost = true;
 		ScheduleCall(nil, Global.GameOver, 50, 1);
 	}
@@ -316,7 +316,7 @@ func CreateArrowForPlayers(int x, int y)
 	for (var i = 0; i < GetPlayerCount(C4PT_User); i++)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		var cursor = GetCursor(plr);
+		var cursor = plr->GetCursor();
 		if (!cursor) continue;
 		var arrow = CreateObject(GUI_GoalArrow, cursor->GetX(), cursor->GetY(), plr);
 		if (!arrow) continue;
@@ -411,8 +411,8 @@ func OnAllWavesCleared()
 {
 	// Success!
 	if (g_goal) g_goal.is_fulfilled = true;
-	if (GetPlayerType(ENEMY) == C4PT_Script) EliminatePlayer(ENEMY);
-	GainScenarioAchievement("Done");
+	if (ENEMY.Type == C4PT_Script) ENEMY->Eliminate();
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	GameOver();
 	return true;
 }

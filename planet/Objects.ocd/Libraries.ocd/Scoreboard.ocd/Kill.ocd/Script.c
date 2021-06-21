@@ -5,9 +5,9 @@
 		This script can be included to create a kill count column in the scoreboard.
 		Make sure that the following functions return _inherited(...);
 			* Initialize();
-			* InitializePlayer(int plr);
-			* OnClonkDeath(object clonk, int killer);
-			* RemovePlayer(int plr);
+			* InitializePlayer(proplist plr);
+			* OnClonkDeath(object clonk, proplist killer);
+			* RemovePlayer(proplist plr);
 --*/
 
 
@@ -26,55 +26,55 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	// init scoreboard for player
 	score_kill_list[plrid] = 0;
 	Scoreboard->NewPlayerEntry(plr);
 	return _inherited(plr, ...);
 }
 
-protected func OnClonkDeath(object clonk, int killer)
+protected func OnClonkDeath(object clonk, proplist killer)
 {
-	var owner = clonk->GetOwner();
-	var plrid = GetPlayerID(killer);
+	var plr = clonk->GetOwner();
 	// Only if killer exists and has not committed suicide.
-	if (killer == owner || killer == NO_OWNER)
+	if (killer == plr || killer == NO_OWNER)
 		return _inherited(clonk, killer, ...);
 	// Only if killer and victim are on different teams.
-	if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(owner))
+	if (killer->GetTeam() && killer->GetTeam() == plr->GetTeam())
 		return _inherited(clonk, killer, ...);
 	// Modify scoreboard kill count entry for killer.
+	var plrid = killer.ID;
 	score_kill_list[plrid]++;
-	Scoreboard->SetPlayerData(killer, "kills", score_kill_list[killer]);
+	Scoreboard->SetPlayerData(killer, "kills", score_kill_list[plrid]);
 	return _inherited(clonk, killer, ...);
 }
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	return _inherited(plr, ...);
 }
 
 /*-- Misc --*/
 
-public func SetKillCount(int plr, int value)
+public func SetKillCount(proplist plr, int value)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	score_kill_list[plrid] = value;
 	Scoreboard->SetPlayerData(plr, "kills", score_kill_list[plrid]);
 	return;
 }
 
-public func GetKillCount(int plr)
+public func GetKillCount(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	return score_kill_list[plrid];
 }
 
-public func DoKillCount(int plr, int value)
+public func DoKillCount(proplist plr, int value)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	score_kill_list[plrid] += value;
 	Scoreboard->SetPlayerData(plr, "kills", score_kill_list[plrid]);
 	return;

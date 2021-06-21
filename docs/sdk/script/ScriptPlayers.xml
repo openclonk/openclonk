@@ -14,22 +14,22 @@
     <text>Example:</text>
     <code>/* Script of a game rule named &quot;Create AI&quot; */
 
-func Activate(int player)
+func Activate(proplist player)
 {
   // The player selected the rule. Create a AI enemy.
   <funclink>return</funclink> <funclink>CreateScriptPlayer</funclink>(&quot;Computer&quot;, 0x7f7f7f);
 }
   
-func InitializePlayer(int player)
+func InitializePlayer(proplist player)
 {
-  // A player has joined. This call is issed to both the scenario script and all game rules, goals and 
+  // A player has joined. This call is issued to both the scenario script and all game rules, goals and 
   // environment objects
   // Is it a script player?
-  <funclink>if</funclink> (<funclink>GetPlayerType</funclink>(player) == C4PT_Script)
+  <funclink>if</funclink> (player.Type == C4PT_Script)
   {
     // Then take over the controls for all clonks!
     var crew_counter, crew;
-    <funclink>while</funclink> (crew = <funclink>GetCrew</funclink>(player, crew_counter++))
+    <funclink>while</funclink> (crew = player-&gt;<funclink>GetCrew</funclink>(crew_counter++))
       <funclink>AddEffect</funclink>(&quot;Int_EAI&quot;, crew, 1, 100, <funclink>this</funclink>);
   }
 }
@@ -70,20 +70,20 @@ LastPlayerID=1
     <text>By passing a parameter to <funclink>CreateScriptPlayer</funclink>, scenario initialization can be prevented, i.e. no creation of start materials, no setting of player parameters such as homebase material by the according presets and no InitializePlayer-calls are done. Instead, a single CreateScriptPlayer-callback is done to the definition passed as idExtraData. Example:</text>
     <code>/* Script of a rule named &quot;Create aliens&quot; */
 
-func Activate(int player)
+func Activate(proplist player)
 {
   // The player selected the game rule. Create an alien enemy!
   <funclink>return</funclink> <funclink>CreateScriptPlayer</funclink>(&quot;Aliens&quot;, 0x00ff00, 0, CSPF_FixedAttributes | CSPF_NoScenarioInit, GetID());
 }
   
-func InitializeScriptPlayer(int player, int idTeam)
+func InitializeScriptPlayer(proplist player, int idTeam)
 {
   // An alien player has joined
   // since no scenario initialization has been executed, a crew for this player has to be created in this callback
   // create a green clonk. A real scenario should of course have it's own aliens :-)
   var alien = CreateObject(Clonk, LandscapeWidth()/2, -1, player);
-  MakeCrewMember(alien, player);
-  SetClrModulation(0x7fff7f, alien);
+  alien-&gt;MakeCrewMember(player);
+  alien-&gt;SetClrModulation(0x7fff7f);
   // and attack
   <funclink>AddEffect</funclink>(&quot;Int_EAI&quot;, alien, 1, 100, 0, GetID());
 }

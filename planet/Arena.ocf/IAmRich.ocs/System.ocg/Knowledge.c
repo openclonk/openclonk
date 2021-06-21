@@ -7,7 +7,7 @@
 
  
 // Gives the player plans for all constructible or producible objects.
-global func GivePlayerAllKnowledge(int plr)
+global func GivePlayerAllKnowledge(proplist plr)
 {
 	GivePlayerBasicKnowledge(plr);
 	GivePlayerPumpingKnowledge(plr);
@@ -20,21 +20,21 @@ global func GivePlayerAllKnowledge(int plr)
 }
 
 // Gives the player specific knowledge as given in the knowledge array.
-global func GivePlayerSpecificKnowledge(int plr, array knowledge)
+global func GivePlayerSpecificKnowledge(proplist plr, array knowledge)
 {
 	GivePlrKnowledge(plr, knowledge);
 	return;
 }
 
 // Gives the player specific knowledge as given in the knowledge array.
-global func RemovePlayerSpecificKnowledge(int plr, array knowledge)
+global func RemovePlayerSpecificKnowledge(proplist plr, array knowledge)
 {
 	RemovePlrKnowledge(plr, knowledge);
 	return;
 }
 
 // Gives the player plans according to basic knowledge.
-global func GivePlayerBasicKnowledge(int plr)
+global func GivePlayerBasicKnowledge(proplist plr)
 {
 	var knowledge = [
 		// Basic structures for a settlement and production of tools and explosives.
@@ -52,7 +52,7 @@ global func GivePlayerBasicKnowledge(int plr)
 	return;
 }
 
-global func GivePlayerPumpingKnowledge(int plr)
+global func GivePlayerPumpingKnowledge(proplist plr)
 {
 	var knowledge = [
 		// Stuff needed for pumping.
@@ -62,7 +62,7 @@ global func GivePlayerPumpingKnowledge(int plr)
 	return;
 }
 
-global func GivePlayerFarmingKnowledge(int plr)
+global func GivePlayerFarmingKnowledge(proplist plr)
 {
 	var knowledge = [
 		// Structures needed to process farming materials.
@@ -76,7 +76,7 @@ global func GivePlayerFarmingKnowledge(int plr)
 	return;
 }
 
-global func GivePlayerWeaponryKnowledge(int plr)
+global func GivePlayerWeaponryKnowledge(proplist plr)
 {
 	var knowledge = [
 		// Armory to construct the weapons.
@@ -90,7 +90,7 @@ global func GivePlayerWeaponryKnowledge(int plr)
 	return;
 }
 
-global func GivePlayerArtilleryKnowledge(int plr)
+global func GivePlayerArtilleryKnowledge(proplist plr)
 {
 	var knowledge = [
 		// Stuff to set up artillery.
@@ -100,7 +100,7 @@ global func GivePlayerArtilleryKnowledge(int plr)
 	return;
 }
 
-global func GivePlayerAdvancedKnowledge(int plr)
+global func GivePlayerAdvancedKnowledge(proplist plr)
 {
 	var knowledge = [
 		// Inventors lab to construct the items.
@@ -114,7 +114,7 @@ global func GivePlayerAdvancedKnowledge(int plr)
 	return;
 }
 
-global func GivePlayerAirKnowledge(int plr)
+global func GivePlayerAirKnowledge(proplist plr)
 {
 	var knowledge = [
 		// Shipyard to construct the vehicles.

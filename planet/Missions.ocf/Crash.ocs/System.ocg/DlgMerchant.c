@@ -23,7 +23,7 @@ func Dlg_Merchant_2(object clonk)
 		options[i++] = ["$MerchantQLake$", "Dlg_Merchant_Lake"];
 	}
 	options[i++] = ["$MerchantQDone$", "StopDialogue()"];
-	MessageBox("", clonk, clonk, false, nil, options);
+	MessageBox("", clonk, clonk, nil, false, options);
 	SetDialogueProgress(1);
 	return true;
 }

@@ -63,7 +63,7 @@ private func OpenWeaponMenu(object clonk)
 				GetRelaunchRule().last_used_player_weapons = [];
 			for (var weapon in weapons)
 			{
-				if (GetRelaunchRule().last_used_player_weapons[clonk->GetOwner()] != weapon)
+				if (GetRelaunchRule().last_used_player_weapons[clonk->GetOwner().ID] != weapon)
 				{
 					menu->AddItem(weapon, weapon->GetName(), nil, this, "OnWeaponSelected", weapon);
 				}
@@ -102,7 +102,7 @@ public func OnWeaponSelected(id weapon)
 		return;
 	GiveWeapon(weapon);
 	if (GetRelaunchRule()->GetLastWeaponUse())
-		GetRelaunchRule().last_used_player_weapons[crew->GetOwner()] = weapon;
+		GetRelaunchRule().last_used_player_weapons[crew->GetOwner().ID] = weapon;
 	has_selected = true;
 	// Close menu manually, to prevent selecting more weapons.
 	if (menu)
@@ -120,8 +120,8 @@ private func RelaunchClonk()
 	if (!clonk->GetCrewEnabled())
 	{
 		clonk->SetCrewEnabled(true);
-		SetCursor(clonk->GetOwner(), clonk);
-		SetPlrView(clonk->GetOwner(), clonk);
+		clonk->GetOwner()->SetCursor(clonk);
+		clonk->GetOwner()->SetViewTarget(clonk);
 	}
 	clonk->Exit();
 	GameCall("OnClonkLeftRelaunch", clonk, clonk->GetOwner());

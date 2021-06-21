@@ -316,7 +316,7 @@ bool C4MainMenu::ActivateGoals(int32_t iPlayer, bool fDoActivate)
 	}
 	// determine if the goals are fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 	C4IDList GoalList, FulfilledGoalList;
-	C4RoundResults::EvaluateGoals(GoalList, FulfilledGoalList, iPlayer);
+	C4RoundResults::EvaluateGoals(GoalList, FulfilledGoalList, ::Players.Get(iPlayer));
 	// Add Items
 	if (fDoActivate)
 	{
@@ -694,7 +694,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		int32_t iOpponent; sscanf(szCommand+13,"%i",&iOpponent);
 		C4Player *pOpponent = ::Players.Get(iOpponent);
 		if (!pOpponent || pOpponent->GetType() != C4PT_User) return false;
-		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::SetHostility(::Players.Get(Player), pOpponent, !::Players.HostilityDeclared(Player, pOpponent->Number)), CDT_Queue);
+		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::SetHostility(::Players.Get(Player), pOpponent, !::Players.HostilityDeclared(pPlr, pOpponent)), CDT_Queue);
 		return true;
 	}
 	// Abort

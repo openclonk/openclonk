@@ -145,7 +145,7 @@ global func Find_AnyContainer()
 }
 
 // documented in /docs/sdk/script/fn
-global func Find_Owner(int owner)
+global func Find_Owner(proplist owner)
 {
 	return [C4FO_Owner, owner];
 }
@@ -156,31 +156,31 @@ global func Find_Controller(int controller)
 }
 
 // documented in /docs/sdk/script/fn
-global func Find_Hostile(int plr)
+global func Find_Hostile(proplist player)
 {
 	var p = [C4FO_Or];
 	for (var i = -1; i < GetPlayerCount(); i++)
-		if (Hostile(plr, GetPlayerByIndex(i)))
+		if (player->Hostile(GetPlayerByIndex(i)))
 			p[GetLength(p)] = Find_Owner(GetPlayerByIndex(i));
 	return p;
 }
 
 /*
-Similar to Find_Hostile, but defaults to treating all players as hostile when plr = NO_OWNER.
+Similar to Find_Hostile, but defaults to treating all players as hostile when player = NO_OWNER.
 */
-global func Find_AnimalHostile(int plr)
+global func Find_AnimalHostile(proplist player)
 {
-	if (plr == NO_OWNER)
-		return Find_Not(Find_Owner(NO_OWNER));
-	return Find_Or(Find_Owner(NO_OWNER), Find_Hostile(plr));
+	if (player == NO_PLAYER)
+		return Find_Not(Find_Owner(NO_PLAYER));
+	return Find_Or(Find_Owner(NO_PLAYER), Find_Hostile(player));
 }
 
 // documented in /docs/sdk/script/fn
-global func Find_Allied(int plr)
+global func Find_Allied(proplist player)
 {
 	var p = [C4FO_Or];
 	for (var i = -1; i < GetPlayerCount(); i++)
-		if (!Hostile(plr, GetPlayerByIndex(i)))
+		if (!player->Hostile(GetPlayerByIndex(i)))
 			p[GetLength(p)] = Find_Owner(GetPlayerByIndex(i));
 	return p;
 }
@@ -190,8 +190,11 @@ global func Find_Team(int team)
 {
 	var p = [C4FO_Or];
 	for (var i = -1; i < GetPlayerCount(); i++)
-		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
-			p[GetLength(p)] = Find_Owner(GetPlayerByIndex(i));
+	{
+		var player = GetPlayerByIndex(i);
+		if (player && player->GetTeam() == team)
+			p[GetLength(p)] = Find_Owner(player);
+	}
 	return p;
 }
 

@@ -35,22 +35,22 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Give the remaining players their achievement.
-	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
 	return false;
 }
 
 
 /*-- Player Initialization --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
 
 	// Position crew and give them materials.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	while (crew = plr->GetCrew(index))
 	{
 		var pos = FindTopSpot();
 		crew->SetPosition(pos.x, pos.y - 10);

@@ -13,7 +13,7 @@ static g_max_player_num; // max number of players that were ever joined
 static g_got_gem_task, g_got_oil, g_goal, g_treasure_collected;
 static npc_pyrit;
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	var relaunch_rule = GetRelaunchRule();
 	relaunch_rule->SetInventoryTransfer(true);
@@ -42,16 +42,16 @@ func DoInit(int first_player)
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr, 400, 250, flag);
-	SetPlayerViewLock(plr, true);
+		plr->SetZoomByViewRange(400, 250, flag);
+	plr->SetViewLocked(true);
 	// Create per-player-counted tools
 	if (g_max_player_num < GetPlayerCount(C4PT_User))
 	{
@@ -62,17 +62,17 @@ func InitializePlayer(int plr)
 	}
 	// Initial join
 	JoinPlayer(plr);
-	GetCrew(plr)->CreateContents(Shovel);
+	plr->GetCrew()->CreateContents(Shovel);
 	// Knowledge
 	GivePlrKnowledge(plr, [ToolsWorkshop, Foundry, Flagpole, Elevator, Armory, ChemicalLab, Lorry, Pickaxe, Shovel, Firestone, Barrel, Dynamite, DynamiteBox, Loam, Bucket, Sword, Metal, Balloon, Boompack, GrappleBow, WindBag, Pipe, Pump, PowderKeg, Ropeladder, Bow, Arrow, Club, IronBomb, Javelin, Shield, Catapult, WallKit, WoodenBridge, Basement]);
 	return true;
 }
 
-func JoinPlayer(int plr)
+func JoinPlayer(proplist plr)
 {
 	// Place in village
 	var crew;
-	for (var index = 0; crew = GetCrew(plr, index); ++index)
+	for (var index = 0; crew = plr->GetCrew(index); ++index)
 	{
 		var x = 190 + Random(20);
 		var y = 1175;
@@ -132,17 +132,17 @@ func OnGoldBarCollected(object collector)
 	if (g_num_goldbars == MAX_GOLD_BARS/4)
 	{
 		sAchievement = "|$Achieve5$";
-		GainScenarioAchievement("Bars", 1);
+		for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Bars", 1);
 	}
 	else if (g_num_goldbars == MAX_GOLD_BARS/2)
 	{
 		sAchievement = "|$Achieve10$";
-		GainScenarioAchievement("Bars", 2);
+		for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Bars", 2);
 	}
 	else if (g_num_goldbars == MAX_GOLD_BARS)
 	{
 		sAchievement = "|$Achieve20$";
-		GainScenarioAchievement("Bars", 3);
+		for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Bars", 3);
 	}
 	UpdateLeagueScores();
 	Dialogue->MessageBoxAll(Format("$MsgGoldBarCollected$%s", g_num_goldbars, MAX_GOLD_BARS, sAchievement), collector, true);
@@ -152,7 +152,7 @@ func OnGoldBarCollected(object collector)
 public func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/DarkCastle.ocs");
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	GainScenarioAccess("S2Treasure");
 	UpdateLeagueScores();
 	// Return true to force goal rule to not call GameOver() yet, as it will be done by outro sequence

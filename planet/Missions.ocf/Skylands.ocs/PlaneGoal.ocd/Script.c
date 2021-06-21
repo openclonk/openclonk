@@ -19,7 +19,7 @@ public func IsFulfilled()
 	return ObjectCount(Find_ID(Airplane));
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -41,12 +41,12 @@ public func GetDescription(int plr)
 	return message;
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	MessageWindow(GetDescription(byplr), byplr);
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	var next_part = Airplane_Skids;
 	if (progress == 1)

@@ -94,13 +94,13 @@ func Open()
 	return GuiOpen(menu_layout);
 }
 
-func UpdateDesc(data, int player, int ID, int subwindowID, object target)
+func UpdateDesc(data, proplist player, int ID, int subwindowID, object target)
 {
 	var update = { Text = entries[subwindowID][0] };
 	GuiUpdate(update, ID, 1, nil);
 }
 
-func OnClick(data, int player, int ID, int subwindowID, object target)
+func OnClick(data, proplist player, int ID, int subwindowID, object target)
 {
 	target->Call(data[2], data[0], data[3]);
 	if (!permanent)

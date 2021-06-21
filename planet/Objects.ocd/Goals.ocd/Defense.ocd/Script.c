@@ -61,15 +61,15 @@ public func Construction()
 
 /*-- Player Control --*/
 
-public func InitializePlayer(int plr)
+public func InitializePlayer(proplist plr)
 {
 	// The enemy script player is initialized in the function below.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 		return;
 	// Init the normal players
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	// Store active players.
-	PushBack(plrs_active, GetPlayerID(plr));
+	PushBack(plrs_active, plr.ID);
 	// Initialize scoreboard.
 	Scoreboard->NewPlayerEntry(plr);
 	plrs_bonus[plrid] = 0;
@@ -79,7 +79,7 @@ public func InitializePlayer(int plr)
 	return;
 }
 
-public func InitializeScriptPlayer(int plr)
+public func InitializeScriptPlayer(proplist plr)
 {
 	// Forward to defense goal object.
 	if (this == Goal_Defense)
@@ -94,17 +94,17 @@ public func InitializeScriptPlayer(int plr)
 	return;
 }
 
-public func RelaunchPlayer(int plr)
+public func RelaunchPlayer(proplist player)
 {
 	// The player has not been relaunched by external scripts and is eliminated.
 	// Move the player into the observer container and let the player spectate.
-	if (GetPlayerType(plr) == C4PT_User)
+	if (player.Type == C4PT_User)
 	{
-		var crew = CreateObject(Clonk, 0, 0, plr);
-		crew->MakeCrewMember(plr);
-		SetCursor(plr, crew);
+		var crew = CreateObject(Clonk, 0, 0, player);
+		crew->MakeCrewMember(player);
+		player->SetCursor(crew);
 		crew->Enter(observer_container);
-		RemoveArrayValue(plrs_active, GetPlayerID(plr));
+		RemoveArrayValue(plrs_active, player.ID);
 		if (GetLength(plrs_active) == 0)
 			return EndRound();
 		// Update the view of the observing players.
@@ -113,11 +113,11 @@ public func RelaunchPlayer(int plr)
 	return;
 }
 
-public func RemovePlayer(int plr)
+public func RemovePlayer(proplist plr)
 {
 	// Check completion if a player is removed, the player could have been the last active one.
-	if (GetPlayerType(plr) == C4PT_User)
-		if (RemoveArrayValue(plrs_active, GetPlayerID(plr)))
+	if (plr.Type == C4PT_User)
+		if (RemoveArrayValue(plrs_active, plr.ID))
 			if (GetLength(plrs_active) == 0)
 				return EndRound();
 	return;
@@ -135,7 +135,7 @@ public func EndRound()
 		fx->Remove();
 	// Eliminate attacker.
 	for (var plr in GetPlayers(C4PT_Script))
-		EliminatePlayer(plr);	
+		plr->Eliminate();	
 	is_fulfilled = true;
 	return;
 }
@@ -147,7 +147,7 @@ public func UpdateOberserverContainer()
 	if (GetLength(plrs_active) > 0)
 	{
 		var active_plr = GetPlayerByID(plrs_active[0]);
-		view_cursor = GetCursor(active_plr);
+		view_cursor = active_plr->GetCursor();
 	}
 	if (view_cursor)
 	{
@@ -156,7 +156,7 @@ public func UpdateOberserverContainer()
 		for (var observer in FindObjects(Find_OCF(OCF_CrewMember), Find_Container(observer_container)))
 		{
 			var observer_plr = observer->GetOwner();
-			SetPlrView(observer_plr, view_cursor);
+			observer_plr->SetViewTarget(view_cursor);
 		}
 	}
 	return;
@@ -208,21 +208,21 @@ public func SetScore(int value)
 	return;
 }
 
-private func SetBestScore(int plr, int new_score)
+private func SetBestScore(proplist plr, int new_score)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	// Only set if it increases the player's best score.
 	if (new_score > GetBestScore(plr))
-		SetPlrExtraData(plr, GetScoreString(), new_score);
+		plr->SetExtraData(GetScoreString(), new_score);
 	// Also set league score if an improvement is made.
 	//if (new_score > GetLeaguePerformance(plrid)) TODO uncomment once available.
 	SetLeaguePerformance(new_score, plrid);
 	return;
 }
 
-private func GetBestScore(int plr)
+private func GetBestScore(proplist plr)
 {
-	return GetPlrExtraData(plr, GetScoreString());
+	return plr->GetExtraData(GetScoreString());
 }
 
 private func GetScoreString() { return Format("Defense_%s_BestScore", GetScenTitle()); }
@@ -235,17 +235,17 @@ private func UpdateBestWave(int new_best_wave)
 	return;
 }
 
-private func SetBestWave(int plr, int new_best_wave)
+private func SetBestWave(proplist plr, int new_best_wave)
 {
 	// Only set if it increases the player's best wave.
 	if (new_best_wave > GetBestWave(plr))
-		SetPlrExtraData(plr, GetWaveString(), new_best_wave);
+		plr->SetExtraData(GetWaveString(), new_best_wave);
 	return;
 }
 
-private func GetBestWave(int plr)
+private func GetBestWave(proplist plr)
 {
-	return GetPlrExtraData(plr, GetWaveString());
+	return plr->GetExtraData(GetWaveString());
 }
 
 private func GetWaveString() { return Format("Defense_%s_BestWave", GetScenTitle()); }
@@ -367,7 +367,7 @@ public func SetRecoveryTime(int to_time)
 
 public func GetRecoveryTime() { return recovery_time; }
 
-public func GetEnemyPlayer(int plr)
+public func GetEnemyPlayer(proplist plr)
 {
 	// Forward to defense goal object.
 	if (this == Goal_Defense)
@@ -449,18 +449,18 @@ public func OnWaveCompleted(int wave_nr)
 
 /*-- Reward --*/
 
-public func OnRocketDeath(object rocket, int killed_by)
+public func OnRocketDeath(object rocket, proplist killed_by)
 {
 	return OnClonkDeath(rocket, killed_by);
 }
 
-public func OnClonkDeath(object clonk, int killed_by)
+public func OnClonkDeath(object clonk, proplist killed_by)
 {
-	var plrid = GetPlayerID(killed_by);
 	if (clonk.Bounty)
 	{
 		if (killed_by != NO_OWNER)
 		{
+			var plrid = killed_by.ID;
 			DoWealth(killed_by, clonk.Bounty);
 			plrs_bonus[plrid] += clonk.Bounty;
 			plrs_kills[plrid] += 1;
@@ -512,7 +512,12 @@ public func CheckAchievement()
 	var achievement = ConvertWaveToAchievement(completed_waves);
 	// Give the players their achievement.
 	if (achievement > 0)
-		GainScenarioAchievement("Done", achievement);
+	{
+		for (var player in GetPlayers(C4PT_User))
+		{
+			player->GainScenarioAchievement("Done", achievement);
+		}
+	}
 	return;
 }
 
@@ -544,14 +549,14 @@ public func SetRoundEvaluationData()
 	// Obviously get rid of settlement score.
 	HideSettlementScoreInEvaluation(true);
 	// Display the number of completed waves.
-	AddEvaluationData(Format("$MsgEvaluationData$", completed_waves, GetScore()), 0);
+	AddEvaluationData(Format("$MsgEvaluationData$", completed_waves, GetScore()), GetPlayerByIndex(0));
 	return;
 }
 
 
 /*-- Description --*/
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var wave_msg = "";
 	if (fx_wave_control)

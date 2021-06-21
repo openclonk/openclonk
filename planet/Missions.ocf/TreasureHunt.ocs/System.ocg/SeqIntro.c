@@ -44,16 +44,16 @@ func Intro_Start(object flagpole)
 	this.flagpole = flagpole;
 	SetViewTarget(this.flagpole);
 	
-	SetPlayerZoomByViewRange(NO_OWNER, 800, 600, PLRZOOM_Set); // zoom out from plane
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(800, 600, PLRZOOM_Set); // zoom out from plane
 	
 	return ScheduleNext(80);
 }
 
-func Intro_JoinPlayer(int plr)
+func Intro_JoinPlayer(proplist plr)
 {
 	// Players joining initially start out in plane
 	// Late joiners are placed at flagpole
-	for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
+	for (var index = 0, crew; crew = plr->GetCrew(index); ++index)
 	{
 		if (this.plane_crashed)
 			crew->SetPosition(this.flagpole->GetX(), this.flagpole->GetY());
@@ -98,7 +98,7 @@ func Intro_PlaneHit()
 	{
 		plr = GetPlayerByIndex(iplr, C4PT_User);
 		var icrew = 0, crew;
-		while (crew = GetCrew(plr, icrew++))
+		while (crew = plr->GetCrew(icrew++))
 		{
 			crew->Exit(0,-5, 0, Random(1)+1, Random(5)-6);
 			crew->SetAction("Tumble");
@@ -173,7 +173,7 @@ func Intro_Stop()
 	this.dialogue->SetInteraction(true);
 	this.dialogue->AddAttention();
 	this.dialogue->Dlg_Pyrit_StartHammering(npc_pyrit);
-	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(400, 300, PLRZOOM_Set);
 	g_goal = CreateObject(Goal_TreasureHunt, 0, 0);
 	return true;
 }

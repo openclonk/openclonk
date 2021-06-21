@@ -116,7 +116,7 @@ public func IsInteractable(object clonk)
 	if (opened && FindClonkInHatchArea())
 		return false;
 
-	if (Hostile(clonk->GetOwner(), GetOwner()))
+	if (clonk->GetOwner()->Hostile(GetOwner()))
 		return false;
 
 	return true;

@@ -26,7 +26,7 @@ protected func Initialize()
 	return true;
 }
 
-public func SetEnvironment(string new_env, int plr)
+public func SetEnvironment(string new_env, proplist plr)
 {
 	// Switch to a fixed environment
 	if (new_env && !GetLength(new_env)) new_env = nil;
@@ -35,8 +35,8 @@ public func SetEnvironment(string new_env, int plr)
 	if (GetType(plr))
 	{
 		// Update for one player
-		fixed_player_environments[plr] = new_env;
-		set_envs = [player_environments[plr]];
+		fixed_player_environments[plr.ID] = new_env;
+		set_envs = [player_environments[plr.ID]];
 	}
 	else
 	{
@@ -163,19 +163,19 @@ private func Execute()
 	while (i--) if (!(++exec_counter % 3))
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
-		ExecutePlayer(plr, player_environments[plr]);
+		ExecutePlayer(plr, player_environments[plr.ID]);
 	}
 	return true;
 }
 
-private func ExecutePlayer(int plr, array environments)
+private func ExecutePlayer(proplist plr, array environments)
 {
-	var cursor = GetCursor(plr);
-	if (!cursor) cursor = GetPlrView(plr);
+	var cursor = plr->GetCursor();
+	if (!cursor) cursor = plr->GetViewTarget();
 	// Update active state of all player environments
 	if (cursor)
 	{
-		if (!(fixed_player_environments[plr] ?? fixed_environment))
+		if (!(fixed_player_environments[plr.ID] ?? fixed_environment))
 		{
 			var x = cursor->GetX(), y = cursor->GetY();
 			for (var env in environments)
@@ -194,7 +194,7 @@ private func ExecutePlayer(int plr, array environments)
 					{
 						// Waited long enough. Activate or deactivate this environment.
 						env.is_active = is_active;
-						//Log("%s environment: %s set to %v", GetPlayerName(plr), env.Name, is_active);
+						//Log("%s environment: %s set to %v", plr->GetName(), env.Name, is_active);
 					}
 				}
 			}
@@ -228,9 +228,9 @@ private func ExecutePlayer(int plr, array environments)
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
-	if (GetPlayerType(plr) == C4PT_User)
+	if (plr.Type == C4PT_User)
 	{
 		// Every player keeps a copy of the environment list to maintain delays
 		// Start with a large change delay to ensure first execution does set a proper environment
@@ -238,7 +238,7 @@ func InitializePlayer(int plr)
 		var envs = CreateArray(n);
 		for (var i = 0; i < n; ++i)
 			envs[i] = new all_environments[i] { change_delay = 999, is_active = (all_environments[i].Name == fixed_environment) };
-		player_environments[plr] = envs;
+		player_environments[plr.ID] = envs;
 		// Newly joining players should have set playlist immediately (so they don't start playing a random song just to switch it immediately)
 		// However, this only works with a cursor
 		ExecutePlayer(plr, envs);
@@ -246,14 +246,14 @@ func InitializePlayer(int plr)
 	return true;
 }
 
-func RemovePlayer(int plr)
+func RemovePlayer(proplist plr)
 {
 	// Ensure newly joining players don't check on another player's environment
-	player_environments[plr] = nil;
+	player_environments[plr.ID] = nil;
 	return true;
 }
 
-protected func Activate(int byplr)
+protected func Activate(proplist byplr)
 {
 	MessageWindow(this.Description, byplr);
 	return true;

@@ -71,18 +71,18 @@ global func GetObjActionTarget2() { return GetObjectVal("ActionTarget2", nil); }
 global func GetObjPlrViewRange() { return GetObjectVal("PlrViewRange", nil); }
 
 // GetPlayerVal
-global func GetPlrClientNr(int plr)   { return GetPlayerVal("AtClient", nil, plr); }
-global func GetPlrClientName(int plr) { return GetPlayerVal("AtClientName", nil, plr); }
-//global func GetPlrColor(int plr)      { return GetPlayerVal("ColorDw", 0, plr); } - use GetPlayerColor
-global func GetPlrViewX(int plr)      { return GetPlayerVal("ViewX", nil, plr); } //(!)
-global func GetPlrViewY(int plr)      { return GetPlayerVal("ViewY", nil, plr); } //(!)
-global func GetPlrFogOfWar(int plr)   { return GetPlayerVal("FogOfWar", nil, plr); } //(!)
-global func GetPlrWealth(int plr)     { return GetPlayerVal("Wealth", nil, plr); }
-global func GetPlrPoints(int plr)     { return GetPlayerVal("Points", nil, plr); }
-global func GetPlrValue(int plr)      { return GetPlayerVal("Value", nil, plr); }
-global func GetPlrInitialValue(int plr) { return GetPlayerVal("InitialValue", nil, plr); }
-global func GetPlrValueGain(int plr)  { return GetPlayerVal("ValueGain", nil, plr); }
-global func GetPlrObjectsOwned(int plr) { return GetPlayerVal("GetPlrObjectsOwned", nil, plr); }
+global func GetPlrClientNr(proplist plr)   { return GetPlayerVal("AtClient", nil, plr); }
+global func GetPlrClientName(proplist plr) { return GetPlayerVal("AtClientName", nil, plr); }
+//global func GetPlrColor(proplist plr)      { return GetPlayerVal("ColorDw", 0, plr); } - use GetPlayerColor
+global func GetPlrViewX(proplist plr)      { return GetPlayerVal("ViewX", nil, plr); } //(!)
+global func GetPlrViewY(proplist plr)      { return GetPlayerVal("ViewY", nil, plr); } //(!)
+global func GetPlrFogOfWar(proplist plr)   { return GetPlayerVal("FogOfWar", nil, plr); } //(!)
+global func GetPlrWealth(proplist plr)     { return GetPlayerVal("Wealth", nil, plr); }
+global func GetPlrPoints(proplist plr)     { return GetPlayerVal("Points", nil, plr); }
+global func GetPlrValue(proplist plr)      { return GetPlayerVal("Value", nil, plr); }
+global func GetPlrInitialValue(proplist plr) { return GetPlayerVal("InitialValue", nil, plr); }
+global func GetPlrValueGain(proplist plr)  { return GetPlayerVal("ValueGain", nil, plr); }
+global func GetPlrObjectsOwned(proplist plr) { return GetPlayerVal("GetPlrObjectsOwned", nil, plr); }
 
 // GetScenarioVal
 global func GetScenTitle()     { return GetScenarioVal("Title", "Head"); } //(!)
@@ -120,24 +120,24 @@ global func GetObjCoreTotalPlayingTime() { return GetObjectInfoCoreVal("TotalPla
 global func GetAge()              { return GetObjectInfoCoreVal("Age", "ObjectInfo"); }
 
 // GetPlayerInfoCoreVal
-global func GetPlrCoreName(int plr)      { return GetPlayerInfoCoreVal("Name", "Player", plr); }
-global func GetPlrCoreComment(int plr)   { return GetPlayerInfoCoreVal("Comment", "Player", plr); }
-global func GetPlrCoreRank(int plr)      { return GetPlayerInfoCoreVal("Rank", "Player", plr); }
-global func GetPlrCoreRankName(int plr)  { return GetPlayerInfoCoreVal("RankName", "Player", plr); }
-global func GetPlrCoreScore(int plr)     { return GetPlayerInfoCoreVal("Score", "Player", plr); }
-global func GetPlrCoreRounds(int plr)    { return GetPlayerInfoCoreVal("Rounds", "Player", plr); }
-global func GetPlrCoreRoundsLost(int plr) { return GetPlayerInfoCoreVal("RoundsLost", "Player", plr); }
-global func GetPlrCoreTotalPlayingTime(int plr) { return GetPlayerInfoCoreVal("TotalPlayingTime", "Player", plr); }
-global func GetPlrCoreColor(int plr)     { return GetPlayerInfoCoreVal("Color", "Preferences", plr); }
-global func GetPlrCoreControl(int plr)   { return GetPlayerInfoCoreVal("Control", "Preferences", plr); }
-global func GetPlrCorePosition(int plr)  { return GetPlayerInfoCoreVal("Position", "Preferences", plr); }
-global func GetPlrCoreJumpAndRunControl(int plr)    { return GetPlayerInfoCoreVal("AutoStopControl", "Preferences", plr); }
-global func GetPlrLRTitle(int plr)       { return GetPlayerInfoCoreVal("Title", "LastRound", plr); }
-global func GetPlrLRDate(int plr)        { return GetPlayerInfoCoreVal("Date", "LastRound", plr); }
-global func GetPlrLRDuration(int plr)    { return GetPlayerInfoCoreVal("Duration", "LastRound", plr); }
-global func GetPlrLRWon(int plr)         { return GetPlayerInfoCoreVal("Won", "LastRound", plr); }
-global func GetPlrLRScore(int plr)       { return GetPlayerInfoCoreVal("Score", "LastRound", plr); }
-global func GetPlrLRFinalScore(int plr)  { return GetPlayerInfoCoreVal("FinalScore", "LastRound", plr); }
-global func GetPlrLRTotalScore(int plr)  { return GetPlayerInfoCoreVal("TotalScore", "LastRound", plr); }
-global func GetPlrLRBonus(int plr)       { return GetPlayerInfoCoreVal("Bonus", "LastRound", plr); }
-global func GetPlrLRLevel(int plr)       { return GetPlayerInfoCoreVal("Level", "LastRound", plr); }
+global func GetPlrCoreName(proplist plr)      { return GetPlayerInfoCoreVal("Name", "Player", plr); }
+global func GetPlrCoreComment(proplist plr)   { return GetPlayerInfoCoreVal("Comment", "Player", plr); }
+global func GetPlrCoreRank(proplist plr)      { return GetPlayerInfoCoreVal("Rank", "Player", plr); }
+global func GetPlrCoreRankName(proplist plr)  { return GetPlayerInfoCoreVal("RankName", "Player", plr); }
+global func GetPlrCoreScore(proplist plr)     { return GetPlayerInfoCoreVal("Score", "Player", plr); }
+global func GetPlrCoreRounds(proplist plr)    { return GetPlayerInfoCoreVal("Rounds", "Player", plr); }
+global func GetPlrCoreRoundsLost(proplist plr) { return GetPlayerInfoCoreVal("RoundsLost", "Player", plr); }
+global func GetPlrCoreTotalPlayingTime(proplist plr) { return GetPlayerInfoCoreVal("TotalPlayingTime", "Player", plr); }
+global func GetPlrCoreColor(proplist plr)     { return GetPlayerInfoCoreVal("Color", "Preferences", plr); }
+global func GetPlrCoreControl(proplist plr)   { return GetPlayerInfoCoreVal("Control", "Preferences", plr); }
+global func GetPlrCorePosition(proplist plr)  { return GetPlayerInfoCoreVal("Position", "Preferences", plr); }
+global func GetPlrCoreJumpAndRunControl(proplist plr)    { return GetPlayerInfoCoreVal("AutoStopControl", "Preferences", plr); }
+global func GetPlrLRTitle(proplist plr)       { return GetPlayerInfoCoreVal("Title", "LastRound", plr); }
+global func GetPlrLRDate(proplist plr)        { return GetPlayerInfoCoreVal("Date", "LastRound", plr); }
+global func GetPlrLRDuration(proplist plr)    { return GetPlayerInfoCoreVal("Duration", "LastRound", plr); }
+global func GetPlrLRWon(proplist plr)         { return GetPlayerInfoCoreVal("Won", "LastRound", plr); }
+global func GetPlrLRScore(proplist plr)       { return GetPlayerInfoCoreVal("Score", "LastRound", plr); }
+global func GetPlrLRFinalScore(proplist plr)  { return GetPlayerInfoCoreVal("FinalScore", "LastRound", plr); }
+global func GetPlrLRTotalScore(proplist plr)  { return GetPlayerInfoCoreVal("TotalScore", "LastRound", plr); }
+global func GetPlrLRBonus(proplist plr)       { return GetPlayerInfoCoreVal("Bonus", "LastRound", plr); }
+global func GetPlrLRLevel(proplist plr)       { return GetPlayerInfoCoreVal("Level", "LastRound", plr); }

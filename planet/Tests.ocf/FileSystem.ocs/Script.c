@@ -7,16 +7,16 @@
 */
 
 
-func InitializePlayer(int player)
+func InitializePlayer(proplist player)
 {
 	// Set zoom to full map size.
-	SetPlayerZoomByViewRange(player, LandscapeWidth(), nil, PLRZOOM_Direct);
+	player->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
 	
 	// No FoW to see everything happening.
-	SetFoW(false, player);
+	player->SetFoW(false);
 		
 	// Move player to the start of the scenario.
-	GetCrew(player)->SetPosition(265, 180);
+	player->GetCrew()->SetPosition(265, 180);
 	LaunchTest(1);
 }
 

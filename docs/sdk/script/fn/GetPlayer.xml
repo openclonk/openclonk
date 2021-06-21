@@ -109,6 +109,10 @@
           <col><funclink>EliminatePlayer</funclink></col>
         </row>
         <row>
+          <col><funclink>GainScenarioAchievement</funclink></col>
+          <col><funclink>GainScenarioAchievement</funclink></col>
+        </row>
+        <row>
           <col><funclink>GetColor</funclink></col>
           <col><funclink>GetPlayerColor</funclink></col>
         </row>
@@ -149,6 +153,10 @@
           <col><funclink>GetHiRank</funclink></col>
         </row>
         <row>
+          <col><code>GetTaggedName</code></col>
+          <col><funclink>GetTaggedPlayerName</funclink></col>
+        </row>
+        <row>
           <col><code>GetTeam</code></col>
           <col><funclink>GetPlayerTeam</funclink></col>
         </row>
@@ -163,6 +171,14 @@
         <row>
           <col><code>GetViewTarget</code></col>
           <col><funclink>GetPlrView</funclink></col>
+        </row>
+        <row>
+          <col><funclink>Hostile</funclink></col>
+          <col><funclink>Hostile</funclink></col>
+        </row>
+        <row>
+          <col><funclink>PlayRumble</funclink></col>
+          <col>-</col>
         </row>
         <row>
           <col><funclink>ResetCursorView</funclink></col>
@@ -181,8 +197,16 @@
           <col><funclink>SetPlrExtraData</funclink></col>
         </row>
         <row>
+          <col><funclink>SetFilmView</funclink></col>
+          <col><funclink>SetFilmView</funclink></col>
+        </row>
+        <row>
           <col><funclink>SetFoW</funclink></col>
           <col><funclink>SetFoW</funclink></col>
+        </row>
+        <row>
+          <col><funclink>SetHostility</funclink></col>
+          <col><funclink>SetHostility</funclink></col>
         </row>
         <row>
           <col><code>SetTeam</code></col>
@@ -197,8 +221,24 @@
           <col><funclink>SetPlayerViewLock</funclink></col>
         </row>
         <row>
+          <col><funclink>SetViewOffset</funclink></col>
+          <col><funclink>SetViewOffset</funclink></col>
+        </row>
+        <row>
           <col><code>SetViewTarget</code></col>
           <col><funclink>SetPlrView</funclink></col>
+        </row>
+        <row>
+          <col><code>SetZoom</code></col>
+          <col><funclink>SetPlayerZoom</funclink></col>
+        </row>
+        <row>
+          <col><code>SetZoomByViewRange</code></col>
+          <col><funclink>SetPlayerZoomByViewRange</funclink></col>
+        </row>
+        <row>
+          <col><funclink>StopRumble</funclink></col>
+          <col>-</col>
         </row>
         <row>
           <col><funclink>Surrender</funclink></col>

@@ -91,7 +91,7 @@ public func AddHomebaseItem(proplist entry)
 	var idx = GetLength(base_material);
 	base_material[idx] = entry;
 	var quickbuy_idx = GetIndexOf(g_quickbuy_items, entry.item);
-	if (quickbuy_idx >= 0) entry.hotkey = GetPlayerControlAssignment(GetOwner(), CON_QuickBuy0 + quickbuy_idx, true);
+	if (quickbuy_idx >= 0) entry.hotkey = GetOwner()->GetControlAssignment(CON_QuickBuy0 + quickbuy_idx, true);
 	UpdateIndexedItem(idx);
 	return entry;
 }
@@ -174,7 +174,7 @@ public func OnBuySelection(int callback_idx)
 {
 	// Buy directly into cursor
 	var plr = GetOwner();
-	var cursor = GetCursor(plr);
+	var cursor = plr->GetCursor();
 	if (!cursor) return false;
 	// Safety
 	var entry = base_material[callback_idx];
@@ -290,7 +290,7 @@ public func SetItemAvailable(int entry_idx)
 	return true;
 }
 
-public func OnOwnerChanged(new_owner)
+public func OnOwnerChanged(proplist new_owner)
 {
 	if (buy_menu) buy_menu->SetOwner(new_owner);
 	return true;

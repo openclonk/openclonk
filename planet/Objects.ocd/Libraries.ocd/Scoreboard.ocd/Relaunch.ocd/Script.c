@@ -5,9 +5,9 @@
 		This script can be included to create a relaunch count column in the scoreboard.
 		Make sure that the following functions return _inherited(...);
 			* Initialize();
-			* InitializePlayer(int plr);
-			* OnClonkDeath(object clonk, int killer);
-			* RemovePlayer(int plr);
+			* InitializePlayer(proplist plr);
+			* OnClonkDeath(object clonk, proplist killer);
+			* RemovePlayer(proplist plr);
 --*/
 
 /*-- Callbacks --*/
@@ -23,7 +23,7 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	if (GetRelaunchRule()->HasUnlimitedRelaunches())
 		return;
@@ -32,7 +32,7 @@ protected func InitializePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
-protected func OnClonkDeath(object clonk, int killer)
+protected func OnClonkDeath(object clonk, proplist killer)
 {
 	var plr = clonk->GetOwner();
 	if (GetRelaunchRule()->HasUnlimitedRelaunches())
@@ -41,7 +41,7 @@ protected func OnClonkDeath(object clonk, int killer)
 	return _inherited(clonk, killer, ...);
 }
 
-protected func OnPlayerRelaunchCountChanged(int plr)
+protected func OnPlayerRelaunchCountChanged(proplist plr)
 {
     if (GetRelaunchRule()->HasUnlimitedRelaunches()) return;
 	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule()->GetPlayerRelaunchCount(plr));
@@ -49,7 +49,7 @@ protected func OnPlayerRelaunchCountChanged(int plr)
 }
 
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	return _inherited(plr, ...);
 }

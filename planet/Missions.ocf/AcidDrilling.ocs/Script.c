@@ -15,19 +15,19 @@ func Initialize()
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	var i;
 	// Script player owns power crystals
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		g_crystal_player = plr;
-		for (i = 0; i<GetPlayerCount(C4PT_User); ++i) SetHostility(plr, GetPlayerByIndex(i, C4PT_User), true, true, true);
-		while (GetCrew(plr)) GetCrew(plr)->RemoveObject();
+		for (i = 0; i<GetPlayerCount(C4PT_User); ++i) plr->SetHostility(GetPlayerByIndex(i, C4PT_User), true, true, true);
+		while (plr->GetCrew()) plr->GetCrew()->RemoveObject();
 		InitPowerCrystals(plr);
 		return true;
 	}
-	if (g_crystal_player != NO_OWNER) SetHostility(g_crystal_player, plr, true, true, true);
+	if (g_crystal_player != NO_OWNER) g_crystal_player->SetHostility(plr, true, true, true);
 	// First player init base
 	if (!g_was_player_init)
 	{
@@ -37,7 +37,7 @@ func InitializePlayer(int plr)
 	}
 	// Position and materials
 	var crew;
-	for (i = 0; crew = GetCrew(plr, i); ++i)
+	for (i = 0; crew = plr->GetCrew(i); ++i)
 	{
 		crew->SetPosition(2100 + Random(40), 233-10);
 		crew->CreateContents(Shovel);
@@ -55,14 +55,14 @@ func InitializePlayer(int plr)
 	return true;
 }
 
-private func InitPowerCrystals(int owner)
+private func InitPowerCrystals(proplist owner)
 {
 	var positions = [[1013, 59], [1030, 320], [1050, 500], [1000, 660]];
 	for (var pos in positions) CreateObjectAbove(PowerCrystals, pos[0], pos[1]+16, owner);
 	return true;
 }
 
-private func InitBase(int owner)
+private func InitBase(proplist owner)
 {
 	// Create standard base owned by player
 	var y = 232;
@@ -94,6 +94,6 @@ private func InitBase(int owner)
 
 func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return false;
 }

@@ -372,7 +372,7 @@ bool C4Object::ExecLife()
 			{
 				// Reduce breath, then energy, bubble
 				if (Breath > 0) DoBreath(-5);
-				else DoEnergy(-1,false,C4FxCall_EngAsphyxiation, NO_OWNER);
+				else DoEnergy(-1, false, C4FxCall_EngAsphyxiation, nullptr);
 			}
 			// Supply
 			else
@@ -389,7 +389,7 @@ bool C4Object::ExecLife()
 			if (InMat!=MNone)
 				if (::MaterialMap.Map[InMat].Corrosive)
 					if (!GetPropertyInt(P_CorrosionResist))
-						DoEnergy(-::MaterialMap.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
+						DoEnergy(-::MaterialMap.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, nullptr);
 
 	// InMat incineration
 	if (!::Game.iTick10)
@@ -497,7 +497,8 @@ void C4Object::AssignDeath(bool fForced)
 	// Remove from light sources
 	SetLightRange(0,0);
 	// Engine script call
-	C4AulParSet pars(iDeathCausingPlayer);
+	C4Player *death_causing_player = ::Players.Get(iDeathCausingPlayer);
+	C4AulParSet pars(death_causing_player);
 	Call(PSF_Death, &pars);
 	// Lose contents
 	while ((thing=Contents.GetObject())) thing->Exit(thing->GetX(),thing->GetY());
@@ -510,7 +511,7 @@ void C4Object::AssignDeath(bool fForced)
 	if(pPlr)
 		if(!pPlr->Crew.ObjectCount())
 			::Game.GRBroadcast(PSF_RelaunchPlayer,
-			                   &C4AulParSet(Owner, iDeathCausingPlayer, Status ? this : nullptr));
+			                   &C4AulParSet(Owner, death_causing_player, Status ? this : nullptr));
 	if (pInfo)
 		pInfo->HasDied = false;
 }
@@ -568,21 +569,21 @@ bool C4Object::ChangeDef(C4ID idNew)
 	return true;
 }
 
-void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
+void C4Object::DoDamage(int32_t iChange, C4Player *caused_by, int32_t iCause)
 {
 	// non-living: ask effects first
 	if (pEffects && !Alive)
 	{
-		pEffects->DoDamage(iChange, iCause, iCausedBy);
+		pEffects->DoDamage(iChange, iCause, caused_by);
 		if (!iChange) return;
 	}
 	// Change value
 	Damage = std::max<int32_t>( Damage+iChange, 0 );
 	// Engine script call
-	Call(PSF_Damage,&C4AulParSet(iChange, iCause, iCausedBy));
+	Call(PSF_Damage,&C4AulParSet(iChange, iCause, caused_by));
 }
 
-void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr)
+void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, C4Player *caused_by)
 {
 	if (!fExact)
 	{
@@ -595,15 +596,15 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 	// Was zero?
 	bool fWasZero=(Energy==0);
 	// Mark last damage causing player to trace kills
-	if (iChange < 0) UpdatLastEnergyLossCause(iCausedByPlr);
+	if (iChange < 0) UpdatLastEnergyLossCause(caused_by == nullptr ? NO_OWNER : caused_by->Number);
 	// Living things: ask effects for change first
 	if (pEffects && Alive)
-		pEffects->DoDamage(iChange, iCause, iCausedByPlr);
+		pEffects->DoDamage(iChange, iCause, caused_by);
 	// Do change
 	iChange = Clamp<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
 	Energy += iChange;
 	// call to object
-	Call(PSF_EnergyChange,&C4AulParSet(iChange, iCause, iCausedByPlr));
+	Call(PSF_EnergyChange,&C4AulParSet(iChange, iCause, caused_by));
 	// Alive and energy reduced to zero: death
 	if (Alive) if (Energy==0) if (!fWasZero) AssignDeath(false);
 }
@@ -788,9 +789,9 @@ void C4Object::SetName(const char * NewName)
 		C4PropList::SetName(NewName);
 }
 
-int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
+int32_t C4Object::GetValue(C4Object *pInBase, C4Player *player)
 {
-	C4Value r = Call(PSF_CalcValue, &C4AulParSet(pInBase, iForPlayer));
+	C4Value r = Call(PSF_CalcValue, &C4AulParSet(pInBase, player));
 	int32_t iValue;
 	if (r != C4VNull)
 		iValue = r.getInt();
@@ -799,7 +800,7 @@ int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 		// get value of def
 		// Caution: Do not pass pInBase here, because the def base value is to be queried
 		//  - and not the value if you had to buy the object in this particular base
-		iValue = Def->GetValue(nullptr, iForPlayer);
+		iValue = Def->GetValue(nullptr, player);
 	}
 	// Con percentage
 	iValue = iValue * Con / FullCon;
@@ -1126,17 +1127,17 @@ void C4Object::Resort()
 	// Must not immediately resort - link change/removal would crash Game::ExecObjects
 }
 
-bool C4Object::SetOwner(int32_t iOwner)
+bool C4Object::SetOwner(C4Player *player)
 {
 	// Check valid owner
-	if (!(ValidPlr(iOwner) || iOwner == NO_OWNER)) return false;
+	if (!player) return false;
+	int32_t iOwner = player->Number;
 	// always set color, even if no owner-change is done
-	if (iOwner != NO_OWNER)
-		if (GetGraphics()->IsColorByOwner())
-		{
-			Color=::Players.Get(iOwner)->ColorDw;
-			UpdateFace(false);
-		}
+	if (GetGraphics()->IsColorByOwner())
+	{
+		Color=::Players.Get(iOwner)->ColorDw;
+		UpdateFace(false);
+	}
 	// no change?
 	if (Owner == iOwner) return true;
 	// set new owner
@@ -1145,7 +1146,7 @@ bool C4Object::SetOwner(int32_t iOwner)
 	// this automatically updates controller
 	Controller = Owner;
 	// script callback
-	Call(PSF_OnOwnerChanged, &C4AulParSet(Owner, iOldOwner));
+	Call(PSF_OnOwnerChanged, &C4AulParSet(player, ::Players.Get(iOldOwner)));
 	// done
 	return true;
 }

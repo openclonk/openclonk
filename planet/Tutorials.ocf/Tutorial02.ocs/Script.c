@@ -44,7 +44,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Achievement: Tutorial completed.
-	GainScenarioAchievement("TutorialCompleted", 3);
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("TutorialCompleted", 3);
 	// Dialogue options -> next round.
 	SetNextScenario("Tutorials.ocf\\Tutorial03.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
@@ -164,10 +164,10 @@ private func InitAnimals()
 
 /*-- Player Handling --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Position player's clonk.
-	var clonk = GetCrew(plr, 0);
+	var clonk = plr->GetCrew(0);
 	clonk->SetPosition(40, 318);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
 	effect.to_x = 40;
@@ -178,8 +178,8 @@ protected func InitializePlayer(int plr)
 	track_goal.plr = plr;
 
 	// Standard player zoom for tutorials.
-	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_Set);
+	plr->SetViewLocked(true);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set);
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
@@ -247,7 +247,7 @@ global func FxTutorialShovelTimer()
 	if (clonk)
 	{
 		var plr = clonk->GetOwner();
-		var pick_up = GetPlayerControlAssignment(plr, CON_PickUp, true, true);
+		var pick_up = plr->GetControlAssignment(CON_PickUp, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialShovel$", pick_up));
 		guide->ShowGuideMessage();
 		AddEffect("TutorialInventory", nil, 100, 5);
@@ -268,9 +268,9 @@ global func FxTutorialInventoryTimer()
 			var inv_hotkey_ids = [CON_Hotkey1, CON_Hotkey2, CON_Hotkey3, CON_Hotkey4, CON_Hotkey5];
 			var inv_hotkeys = "";
 			for (var inv_hotkey in inv_hotkey_ids)
-				inv_hotkeys = Format("%s[%s]", inv_hotkeys,  GetPlayerControlAssignment(plr, inv_hotkey, true, true));
-			var inv_inv_scroll_up = GetPlayerControlAssignment(plr, CON_InventoryShiftForward, true, true);
-			var inv_inv_scroll_down = GetPlayerControlAssignment(plr, CON_InventoryShiftBackward, true, true);
+				inv_hotkeys = Format("%s[%s]", inv_hotkeys,  plr->GetControlAssignment(inv_hotkey, true, true));
+			var inv_inv_scroll_up = plr->GetControlAssignment(CON_InventoryShiftForward, true, true);
+			var inv_inv_scroll_down = plr->GetControlAssignment(CON_InventoryShiftBackward, true, true);
 			var inv_scroll = Format("[%s][%s]", inv_inv_scroll_up, inv_inv_scroll_down);
 			guide->AddGuideMessage(Format("$MsgTutorialInventory$", inv_hotkeys, inv_scroll));
 			guide->ShowGuideMessage();
@@ -290,7 +290,7 @@ global func FxTutorialDiggingTimer()
 		var shovel = FindObject(Find_ID(Shovel), Find_Container(clonk));
 		if (shovel)
 		{
-			var use = GetPlayerControlAssignment(plr, CON_Use, true, true);
+			var use = plr->GetControlAssignment(CON_Use, true, true);
 			guide->AddGuideMessage(Format("$MsgTutorialDigging$", use));
 			guide->ShowGuideMessage();
 			AddEffect("TutorialFirestones", nil, 100, 5);
@@ -318,7 +318,7 @@ global func FxTutorialWipfHoleTimer()
 	if (clonk)
 	{
 		var plr = clonk->GetOwner();
-		var throw = GetPlayerControlAssignment(plr, CON_Throw, true, true);
+		var throw = plr->GetControlAssignment(CON_Throw, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialFoundWipf$", throw));
 		guide->ShowGuideMessage();
 		AddEffect("TutorialBlastedRock", nil, 100, 5);
@@ -333,7 +333,7 @@ global func FxTutorialBlastedRockTimer()
 	if (clonk)
 	{
 		var plr = clonk->GetOwner();
-		var drop = GetPlayerControlAssignment(plr, CON_DropHotkey1, true, true);
+		var drop = plr->GetControlAssignment(CON_DropHotkey1, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialBlastedRock$", drop));
 		guide->ShowGuideMessage();
 		AddEffect("TutorialFedWipf", nil, 100, 5);
@@ -361,7 +361,7 @@ global func FxTutorialDigOutLoamTimer()
 	if (clonk)
 	{
 		var plr = clonk->GetOwner();
-		var use = GetPlayerControlAssignment(plr, CON_Use, true, true);
+		var use = plr->GetControlAssignment(CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialDigOutLoam$", use));
 		guide->ShowGuideMessage();
 		AddEffect("TutorialFragileBridge", nil, 100, 5);
@@ -393,7 +393,7 @@ global func FxTutorialWaitForBridgeTimer(object target, proplist effect, int tim
 {
 	if (time > 2 * 36)
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		var use = effect.plr->GetControlAssignment(CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialMakeLoamBridge$", use));
 		guide->ShowGuideMessage();
 		// Start the controls of the clonk again.
@@ -403,7 +403,7 @@ global func FxTutorialWaitForBridgeTimer(object target, proplist effect, int tim
 	return FX_OK;
 }
 
-protected func OnGuideMessageShown(int plr, int index)
+protected func OnGuideMessageShown(proplist plr, int index)
 {
 	// Show the direction to move.
 	if (index == 0)
@@ -439,7 +439,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	return;
 }
 
-protected func OnGuideMessageRemoved(int plr, int index)
+protected func OnGuideMessageRemoved(proplist plr, int index)
 {
 	TutArrowClear();
 	return;
@@ -485,7 +485,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		Rule_Relaunch->TransferInventory(target, clonk);
-		SetCursor(plr, clonk);
+		plr->SetCursor(clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}

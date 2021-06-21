@@ -176,7 +176,7 @@ public func UpdateBuyEntry(id buy_def, bool available, proplist entry, int callb
 	return true;
 }
 
-public func ClickBuyButton(int callback_idx, entry_id, int player)
+public func ClickBuyButton(int callback_idx, entry_id, proplist player)
 {
 	if (homebase && homebase[0])
 	{
@@ -187,7 +187,7 @@ public func ClickBuyButton(int callback_idx, entry_id, int player)
 	return false;
 }
 
-public func OnMenuEntryHover(int entry_idx, int entry_id, int player)
+public func OnMenuEntryHover(int entry_idx, int entry_id, proplist player)
 {
 	if (homebase && homebase[0])
 	{
@@ -203,7 +203,7 @@ public func OnMenuEntryHover(int entry_idx, int entry_id, int player)
 	return false;
 }
 
-public func OnMenuEntryHoverExit(int entry_idx, int entry_id, int player)
+public func OnMenuEntryHoverExit(int entry_idx, int entry_id, proplist player)
 {
 	if (homebase && homebase[0])
 	{
@@ -226,7 +226,7 @@ private func CreateToggleVisibilityButton()
 {
 	var plr = GetOwner();
 	
-	var hotkey_string = GetPlayerControlAssignment(GetOwner(), CON_ToggleShop, true);
+	var hotkey_string = GetOwner()->GetControlAssignment(CON_ToggleShop, true);
 	if (hotkey_string && GetLength(hotkey_string) > 0)
 		hotkey_string = Format("|<c ffff00>[%s]</c>", hotkey_string);
 	else
@@ -265,7 +265,7 @@ private func DestroyToggleVisibilityButton()
 	return true;
 }
 
-public func ToggleVisibility(int player, ...)
+public func ToggleVisibility(proplist player, ...)
 {
 	if (!menu) return false;
 	if (menu.Visibility == VIS_Owner)

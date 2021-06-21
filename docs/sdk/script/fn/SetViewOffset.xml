@@ -7,7 +7,7 @@
     <title>SetViewOffset</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -23,16 +23,19 @@
         </param>
         <param>
           <type>int</type>
-          <name>x</name>
+          <name>y</name>
           <desc>Y offset value in pixels.</desc>
         </param>
       </params>
     </syntax>
     <desc>Moves the view of a player permanently by a given offset. Calling the function again will set a new offset. Calling the function with 0,0 parameters will reset to normal, centered view.
     Returns false if the given player is invalid and true otherwise.</desc>
+    <remark>This function was deprecated in 9.0 OC, because it can be retrieved from <funclink>GetPlayer</funclink>.</funclink>
     <related>
       <funclink>SetPlrView</funclink>
       <funclink>ShakeViewport</funclink>
     </related>
   </func>
+  <author>Newton</author><date>2015-01</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

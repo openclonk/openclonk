@@ -12,9 +12,9 @@
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>new_killer</name>
-          <desc>Player number of the new killer. <code>NO_OWNER</code> for no owner.</desc>
+          <desc>Player proplist of the new killer. Before 9.0 OC this parameter was the player number, or <code>NO_OWNER</code> for no owner.</desc>
         </param>
       </params>
     </syntax>

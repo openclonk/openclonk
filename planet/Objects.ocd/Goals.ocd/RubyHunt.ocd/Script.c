@@ -55,7 +55,7 @@ public func IsFulfilled()
 		if (winner == NO_OWNER) winner = ruby->GetController();
 		if (winner == NO_OWNER) continue;
 		if (!winners) winners = [winner]; else winners[GetLength(winners)] = winner;
-		var team = GetPlayerTeam(winner);
+		var team = winner->GetTeam();
 		if (team) if (!winner_teams) winner_teams = [team]; else winner_teams[GetLength(winner_teams)] = team;
 	}
 	if (!winners) return false;
@@ -66,20 +66,20 @@ public func IsFulfilled()
 		var plr = GetPlayerByIndex(iplr);
 		// Free view when game is over
 		for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-			SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeWidth(),flag);
-		SetPlayerViewLock(plr, false);
-		SetFoW(false, plr);
+			plr->SetZoomByViewRange(LandscapeWidth(),LandscapeWidth(),flag);
+		plr->SetViewLocked(false);
+		plr->SetFoW(false);
 		// Eliminate non-winning players
 		if (is_cooperative) continue; // in coop mode, everyone wins
 		if (GetIndexOf(winners, plr) >= 0) continue;
-		if (winner_teams) if (GetIndexOf(winner_teams, GetPlayerTeam(plr)) >= 0) continue;
-		EliminatePlayer(plr);
+		if (winner_teams) if (GetIndexOf(winner_teams, plr->GetTeam()) >= 0) continue;
+		plr->Eliminate();
 	}
 	return true;
 }
 
 // Shows or hides a message window with information.
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -92,7 +92,7 @@ public func GetDescription(int plr)
 
 
 // Shows or hides a message window with information.
-public func Activate(int plr)
+public func Activate(proplist plr)
 {
 	// If goal message open -> hide it.
 	if (GetEffect("GoalMessage", this))
@@ -115,7 +115,7 @@ public func Activate(int plr)
 
 protected func FxGoalMessageStart() {}
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return nil;
 }

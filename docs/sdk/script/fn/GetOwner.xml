@@ -7,16 +7,18 @@
     <title>GetOwner</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Determines the owner of the calling object.</desc>
+    <remark>Before 9.0 OC this function returned the player number, since 9.0 it returns the player proplist.</remark>
     <examples>
       <example>
-        <code><funclink>Message</funclink>(&quot;I am owned by %s!&quot;, <funclink>GetPlayerName</funclink>(GetOwner()))</code>
+        <code><funclink>Message</funclink>(&quot;I am owned by %s!&quot;, <funclink>GetOwner</funclink>()-&gt;<funclink>GetName</funclink>())</code>
         <text>Displays the owner of the calling object above the object.</text>
       </example>
     </examples>
     <related><funclink>SetOwner</funclink></related>
   </func>
   <author>Sven2</author><date>2001-11</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

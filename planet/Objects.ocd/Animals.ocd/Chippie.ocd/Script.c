@@ -65,7 +65,7 @@ public func Destruction()
 	return _inherited(...);
 }
 
-public func Death(int killed_by)
+public func Death(proplist killed_by)
 {
 	var particles = 
 	{
@@ -118,12 +118,12 @@ private func FxClawingTimer(target, effect, time)
 	{
 		var damage = GetCon() * 10;
 		e->DoEnergy(-damage, true, FX_Call_EngGetPunched, GetOwner());
-		energy_sucked += damage;
+		target.energy_sucked += damage;
 		
-		if (energy_sucked > 10 * 1000)
+		if (target.energy_sucked > 10 * 1000)
 		{
 			LayEgg();
-			energy_sucked -= 10 * 1000;
+			target.energy_sucked -= 10 * 1000;
 		}
 		
 		// Grow and prosper.

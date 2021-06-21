@@ -12,7 +12,7 @@ protected func RejectCollect(id object_id)
 		// Add the bubbles effect for the wipf.
 		AddEffect("IntBreathBubbles", this, 100, 5, this);
 		// Achievement: easter egg found.
-		GainScenarioAchievement("TutorialEasterEgg");
+		for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("TutorialEasterEgg");
 	}
 	return _inherited(object_id, ...);	
 }

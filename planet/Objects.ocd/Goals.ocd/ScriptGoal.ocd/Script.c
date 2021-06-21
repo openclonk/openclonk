@@ -33,17 +33,17 @@ public func SetFulfilled(bool to_val)
 	return;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	return GetTranslatedString(this.Description);
 }
 
-public func GetPictureDefinition(int plr)
+public func GetPictureDefinition(proplist plr)
 {
 	return this.Picture ?? this;
 }
 
-public func GetPictureName(int plr)
+public func GetPictureName(proplist plr)
 {
 	return this.PictureName ?? "";
 }

@@ -12,9 +12,9 @@
 	 * SetInitialRelaunch(bool on): whether a relaunch on round start is done [default true].
 	The active relaunch rule can be obtained by the global function GetRelaunchRule(). The rule also
 	keeps track of player's actual number of relaunches which can be modified and accessed by:
-	 * SetPlayerRelaunchCount(int plr, int value): set player relaunch count.
-	 * GetPlayerRelaunchCount(int plr): get player relaunch count.
-	 * DoPlayerRelaunchCount(int plr, int value): add to player relaunch count.
+	 * SetPlayerRelaunchCount(proplist plr, int value): set player relaunch count.
+	 * GetPlayerRelaunchCount(proplist plr): get player relaunch count.
+	 * DoPlayerRelaunchCount(proplist plr, int value): add to player relaunch count.
 	 * HasUnlimitedRelaunches(): whether the players have infinite relaunches.
 	 
 	@author Maikel, Sven2, Fulgen
@@ -162,7 +162,7 @@ local clonk_type = Clonk;
 
 /*-- Rule Code --*/
 
-public func Activate(int plr)
+public func Activate(proplist plr)
 {
 	// Only restart player if enabled unless this is a definition call.
 	if (this != Rule_Relaunch && !allow_restart_player)
@@ -171,7 +171,7 @@ public func Activate(int plr)
 	if (GameCall("OnPlayerActivatedRestart", plr))
 		return;
 	// Remove the player's clonk, including contents.
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	if (clonk && clonk->GetCrewEnabled())
 	{
 		clonk->Kill(clonk, true);
@@ -212,10 +212,10 @@ private func CheckDescription()
 	return true;
 }
 
-public func InitializePlayer(int plr)
+public func InitializePlayer(proplist plr)
 {
 	_inherited(plr, ...);
-	relaunches[plr] = default_relaunch_count;
+	relaunches[plr.ID] = default_relaunch_count;
 	// Check if relaunch is needed.
 	if (!initial_relaunch || !perform_restart)
 		return;	
@@ -226,19 +226,19 @@ public func InitializePlayer(int plr)
 	return DoRelaunch(plr, nil, nil, true);
 }
 
-public func OnClonkDeath(object clonk, int killer)
+public func OnClonkDeath(object clonk, proplist killer)
 {
 	if (!clonk || !perform_restart)
 		return;
 	var plr = clonk->GetOwner();
-	if (plr == NO_OWNER || (!respawn_script_players && GetPlayerType(plr) == C4PT_Script)) return;
+	if (plr == nil || (!respawn_script_players && plr.Type == C4PT_Script)) return;
 	
 	if (default_relaunch_count != nil)
 	{
-		relaunches[plr]--;
-		if (relaunches[plr] < 0)
+		relaunches[plr.ID]--;
+		if (relaunches[plr.ID] < 0)
 		{
-			EliminatePlayer(plr);
+			plr->Eliminate();
 			return;
 		}
 	}
@@ -249,7 +249,7 @@ public func OnClonkDeath(object clonk, int killer)
 	return DoRelaunch(plr, clonk, nil);
 }
 
-private func RespawnAtBase(int plr, object clonk)
+private func RespawnAtBase(proplist plr, object clonk)
 {
 	var base = GetRelaunchBase(plr, clonk);
 	if (base)
@@ -281,7 +281,7 @@ private func TransferInventory(object from, object to)
 	return to->GrabContents(from);
 }
 
-private func GetRelaunchBase(int plr, object clonk)
+private func GetRelaunchBase(proplist plr, object clonk)
 {
 	plr = plr ?? clonk->GetOwner();
 	// Neutral flagpoles are preferred respawn points, because they are used as the only respawn points in missions.
@@ -298,16 +298,16 @@ private func GetRelaunchBase(int plr, object clonk)
 	return base;
 }
 
-public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
+public func DoRelaunch(proplist plr, object clonk, array position, bool no_creation)
 {
-	if (!GetPlayerName(plr))
+	if (!plr->GetName())
 		return;
-	if (respawn_last_clonk && GetCrewCount(plr) >= 1)
+	if (respawn_last_clonk && plr->GetCrewCount() >= 1)
 		return;
 	
 	if (respawn_at_base)
 		position = RespawnAtBase(plr, clonk);
-	position = position ?? GameCall("RelaunchPosition", plr, GetPlayerTeam(plr));
+	position = position ?? GameCall("RelaunchPosition", plr, plr->GetTeam());
 	position = position ?? this->FindRelaunchPos(plr);
 	
 	var spawn;
@@ -350,7 +350,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	}
 	else
 	{
-		new_clonk = GetCrew(plr);
+		new_clonk = plr->GetCrew();
 		if (!new_clonk)
 			return;
 	}
@@ -360,8 +360,8 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	
 	new_clonk->SetPosition(spawn[0], spawn[1] - new_clonk->GetBottom(), plr);
 	
-	if (!GetCursor(plr) || GetCursor(plr) == clonk)
-		SetCursor(plr, new_clonk);
+	if (!plr->GetCursor() || plr->GetCursor() == clonk)
+		plr->SetCursor(new_clonk);
 	new_clonk->DoEnergy(new_clonk.MaxEnergy ?? 100000);
 	
 	if (relaunch_time)
@@ -373,7 +373,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	return true;
 }
 
-protected func FindRelaunchPos(int plr)
+protected func FindRelaunchPos(proplist plr)
 {
 	var loc = FindLocation(Loc_Or(Loc_Sky(), Loc_Tunnel()), Loc_Space(20, CNAT_Top), Loc_Wall(CNAT_Bottom));
 	if (loc == nil)
@@ -419,26 +419,26 @@ global func IsActiveRelaunchRule()
 
 /*-- Player Relaunches --*/
 
-public func SetPlayerRelaunchCount(int plr, int value)
+public func SetPlayerRelaunchCount(proplist plr, int value)
 {
 	if (HasUnlimitedRelaunches())
 		return;
-	relaunches[plr] = value;
-	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr]);
+	relaunches[plr.ID] = value;
+	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr.ID]);
 	return;
 }
 
-public func GetPlayerRelaunchCount(int plr)
+public func GetPlayerRelaunchCount(proplist plr)
 {
-	return relaunches[plr];
+	return relaunches[plr.ID];
 }
 
-public func DoPlayerRelaunchCount(int plr, int value)
+public func DoPlayerRelaunchCount(proplist plr, int value)
 {
 	if (HasUnlimitedRelaunches())
 		return;
-	relaunches[plr] += value;
-	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr]);
+	relaunches[plr.ID] += value;
+	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr.ID]);
 	return;
 }
 

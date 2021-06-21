@@ -7,7 +7,7 @@ public func Intro_Init(int for_plr)
 	return true;
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
 	return;
 }

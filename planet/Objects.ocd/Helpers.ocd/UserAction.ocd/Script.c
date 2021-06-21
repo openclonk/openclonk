@@ -602,7 +602,7 @@ public func EvaluateValue(string eval_type, proplist props, proplist context)
 	return cb[0]->Call(cb[1], props, context, cb[2]);
 }
 
-public func EvaluateAction(proplist props, object action_object, object triggering_object, int triggering_player, string progress_mode, bool allow_parallel, finish_callback, array position)
+public func EvaluateAction(proplist props, object action_object, object triggering_object, proplist triggering_player, string progress_mode, bool allow_parallel, finish_callback, array position)
 {
 	// No action
 	if (!props) if (finish_callback) return action_object->Call(finish_callback); else return;
@@ -616,7 +616,7 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 	else if (progress_mode == "player")
 	{
 		if (!props._contexts) props._contexts = [];
-		var plr_id = GetPlayerID(triggering_player);
+		var plr_id = triggering_player.ID;
 		if (!(context = props._contexts[plr_id]))
 			props._contexts[plr_id] = context = CreateObject(UserAction);
 	}
@@ -636,7 +636,7 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 	return true;
 }
 
-public func EvaluateCondition(proplist props, object action_object, object triggering_object, int triggering_player)
+public func EvaluateCondition(proplist props, object action_object, object triggering_object, proplist triggering_player)
 {
 	// Build temp context
 	var context = CreateObject(UserAction);
@@ -1208,7 +1208,7 @@ private func EvalAct_PlrView(proplist props, proplist context)
 	var target = EvaluateValue("Object", props.Target, context);
 	var immediate = props.Immediate;
 	if (!target) return;
-	for (var plr in players) SetPlrView(plr, target, immediate);
+	for (var plr in players) plr->SetViewTarget(target, immediate);
 }
 
 private func EvalAct_ObjectCallInt(proplist props, proplist context, func call_fn)
@@ -1503,7 +1503,7 @@ private func EvalInt_Wealth(proplist props, proplist context) { return GetWealth
 
 private func EvalInt_PosCoord(proplist props, proplist context, int idx) { return EvaluatePosition(props.Position, context)[idx]; }
 
-private func EvalClr_PlayerColor(proplist props, proplist context) { return GetPlayerColor(EvaluatePlayer(props.Player, context)); }
+private func EvalClr_PlayerColor(proplist props, proplist context) { return EvaluatePlayer(props.Player, context)->GetColor(); }
 
 private func EvalClr_RGB(proplist props, proplist context)
 {
@@ -1573,7 +1573,7 @@ public func Initialize()
 	return true;
 }
 
-public func InitContext(object action_object, int triggering_player, object triggering_object, proplist props, finish_callback, position)
+public func InitContext(object action_object, proplist triggering_player, object triggering_object, proplist props, finish_callback, position)
 {
 	// Determine triggering player + objects
 	var triggering_clonk;
@@ -1585,8 +1585,8 @@ public func InitContext(object action_object, int triggering_player, object trig
 	// Triggering clonk is the selected clonk of the triggering player
 	if (GetType(triggering_player))
 	{
-		triggering_clonk = GetCursor(triggering_player);;
-		if (!triggering_clonk) triggering_clonk = GetCrew(triggering_player);
+		triggering_clonk = triggering_player->GetCursor();
+		if (!triggering_clonk) triggering_clonk = triggering_player->GetCrew();
 	}
 	// Triggering object / Triggering player clonk fallbacks
 	if (!triggering_object)

@@ -38,7 +38,7 @@ public func IsFulfilled()
 	return false;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -48,7 +48,7 @@ public func GetDescription(int plr)
 	return message;
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	if (IsFulfilled())
 		MessageWindow("$MsgGoalFulfilled$", byplr);
@@ -57,7 +57,7 @@ public func Activate(int byplr)
 	return;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return "{{Airplane}}"; // TODO
 }

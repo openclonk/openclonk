@@ -9,7 +9,7 @@ static g_is_initialized;
 
 static npc_pyrit;
 
-private func DoInit(int first_player)
+private func DoInit(proplist first_player)
 {
 	var relaunch_rule = GetRelaunchRule();
 	relaunch_rule->SetInventoryTransfer(true);
@@ -67,18 +67,18 @@ private func SetSpecialDeathMessage(object clonk)
 	if (name == "Archibald") clonk.SpecialDeathMessage = "$DeathOfArchibald$";
 }
 
-private func InitializePlayer(int plr)
+private func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr, 400, 250, flag);
-	SetPlayerViewLock(plr, true);
+		plr->SetZoomByViewRange(400, 250, flag);
+	plr->SetViewLocked(true);
 	// Initial join
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	crew->SetPosition(35 + Random(10) , 1140);
 	crew->SetDir(DIR_Right);
 	crew->CreateContents(Shovel);
@@ -125,7 +125,7 @@ public func ShroomCaveCheck()
 
 public func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	GainScenarioAccess("S2Castle");
 	return false;
 }

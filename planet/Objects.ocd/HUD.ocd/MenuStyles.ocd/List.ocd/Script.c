@@ -155,7 +155,7 @@ func RemoveItem(user_ID, int custom_menu_id)
 	return false;
 }
 
-func DoCall(int ID, command, proplist target, bool noclose, int player)
+func DoCall(int ID, command, proplist target, bool noclose, proplist player)
 {
 	var self = this; // safety
 	var entry = entries[ID - 1];
@@ -170,12 +170,12 @@ func DoCall(int ID, command, proplist target, bool noclose, int player)
 		Close();
 }
 
-func OnClick(data, int player, int ID, int subwindowID, object target)
+func OnClick(data, proplist player, int ID, int subwindowID, object target)
 {
 	DoCall(subwindowID, nil, nil, nil, player);	
 }
 
-func DoCallback(data, int player, int ID, int subwindowID, object target)
+func DoCallback(data, proplist player, int ID, int subwindowID, object target)
 {
 	DoCall(subwindowID, data[1], data[0], true, player);
 }

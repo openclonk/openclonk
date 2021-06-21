@@ -34,7 +34,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Achievement: Tutorial completed.
-	GainScenarioAchievement("TutorialCompleted", 3);	
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("TutorialCompleted", 3);	
 	// Dialogue options -> next round.
 	SetNextScenario("Tutorials.ocf\\Tutorial06.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
@@ -187,10 +187,10 @@ private func InitAI()
 
 /*-- Player Handling --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Position player's clonk.
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->SetPosition(10, 374);
 	clonk->CreateContents(Shovel);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
@@ -198,8 +198,8 @@ protected func InitializePlayer(int plr)
 	effect.to_y = 374;
 
 	// Standard player zoom for tutorials.
-	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set | PLRZOOM_LimitMax);
 	
 	// Start the intro sequence.
 	StartSequence("Intro", 0, plr);
@@ -238,7 +238,7 @@ global func FxTutorialTalkedToVillageHeadStop(object target, proplist effect, in
 {
 	if (temp)
 		return FX_OK;
-	var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+	var use = effect.plr->GetControlAssignment(CON_Use, true, true);
 	guide->AddGuideMessage(Format("$MsgTutorialNotHelpful$", use));
 	guide->ShowGuideMessage();
 	var new_effect = AddEffect("TutorialDestroyedStrawMen", nil, 100, 5);
@@ -291,7 +291,7 @@ global func FxTutorialKilledSecondRobberTimer(object target, proplist effect)
 {
 	if (!FindObject(Find_OCF(OCF_CrewMember), Find_Property("second_robber")))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		var use = effect.plr->GetControlAssignment(CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialKilledSecond$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialKilledLastRobbers", nil, 100, 5);
@@ -321,7 +321,7 @@ public func ShowLastGuideMessage()
 	return;
 }
 
-protected func OnGuideMessageShown(int plr, int index)
+protected func OnGuideMessageShown(proplist plr, int index)
 {
 	// Show the village head.	
 	if (index == 0)
@@ -346,7 +346,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	return;
 }
 
-protected func OnGuideMessageRemoved(int plr, int index)
+protected func OnGuideMessageRemoved(proplist plr, int index)
 {
 	TutArrowClear();
 	return;
@@ -377,7 +377,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		Rule_Relaunch->TransferInventory(target, clonk);
-		SetCursor(plr, clonk);
+		plr->SetCursor(clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 		GameCall("OnClonkRestore", clonk);

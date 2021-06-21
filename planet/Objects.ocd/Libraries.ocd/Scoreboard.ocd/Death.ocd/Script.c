@@ -5,9 +5,9 @@
 		This script can be included to create a death count column in the scoreboard.
 		Make sure that the following functions return _inherited(...);
 			* Initialize();
-			* InitializePlayer(int plr);
-			* OnClonkDeath(object clonk, int killer);
-			* RemovePlayer(int plr);
+			* InitializePlayer(proplist plr);
+			* OnClonkDeath(object clonk, proplist killer);
+			* RemovePlayer(proplist plr);
 --*/
 
 
@@ -36,43 +36,43 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	// Create scoreboard entry for this player, will only do it once
 	score_death_list[plrid] = 0;
 	Scoreboard->NewPlayerEntry(plr);
 	return _inherited(plr, ...);
 }
 
-protected func OnClonkDeath(object clonk, int killer)
+protected func OnClonkDeath(object clonk, proplist killer)
 {
 	var plr = clonk->GetOwner();
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	// Modify scoreboard death count entry for this player.
 	score_death_list[plrid]++;
 	Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plrid]);
 	return _inherited(clonk, killer, ...);
 }
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	return _inherited(plr, ...);
 }
 
 /*-- Misc --*/
 
-public func SetDeathCount(int plr)
+public func SetDeathCount(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	score_death_list[plrid] = 0;
 	Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plrid]);
 	return;
 }
 
-public func GetDeathCount(int plr)
+public func GetDeathCount(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	return score_death_list[plrid];
 }
 

@@ -47,22 +47,22 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Give the remaining players their achievement.
-	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
 	return false;
 }
 
 
 /*-- Player Initialization --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
 	
 	// Position and materials.
 	var i, crew;
-	for (i = 0; crew = GetCrew(plr, i); ++i)
+	for (i = 0; crew = plr->GetCrew(i); ++i)
 	{
 		var pos = FindMainIslandPosition();
 		crew->SetPosition(pos[0], pos[1] - 11);

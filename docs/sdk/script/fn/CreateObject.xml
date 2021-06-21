@@ -7,7 +7,7 @@
     <title>CreateObject</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -27,9 +27,9 @@
           <desc>Y coordinate</desc>
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>owner</name>
-          <desc>Owner of the new object. Either a valid player number or <code><funclink>NO_OWNER</funclink></code> for no owner. If not specified the owner is the controller (see <funclink>GetController</funclink>) of the calling object or <code>NO_OWNER</code> if the call is made without object context.</desc>
+          <desc>Owner of the new object. Either a valid player or <code><funclink>NO_OWNER</funclink></code> for no owner (player number before 9.0 OC). If not specified the owner is the controller (see <funclink>GetController</funclink>) of the calling object or <code>NO_OWNER</code> if the call is made without object context.</desc>
 		  <optional />
         </param>
       </params>
@@ -53,4 +53,5 @@
   </func>
   <author>springer</author><date>2002-04</date>
   <author>Marky</author><date>2015-01</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

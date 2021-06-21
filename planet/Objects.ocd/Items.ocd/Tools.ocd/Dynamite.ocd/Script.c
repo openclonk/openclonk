@@ -15,7 +15,7 @@ func Hit()
 	Sound("Hits::GeneralHit?");
 }
 
-func Incineration(int caused_by)
+func Incineration(proplist caused_by)
 {
 	Extinguish();
 	Fuse();

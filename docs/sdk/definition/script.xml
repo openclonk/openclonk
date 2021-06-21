@@ -105,7 +105,7 @@
         </row>
         <row id="Damage">
           <literal_col>Damage</literal_col>
-          <col>int change, int cause, int by_player</col>
+          <col>int change, int cause, proplist by_player</col>
           <col>When the object is damaged. See <emlink href="script/Effects.html#damagecause">Fx*Damage</emlink>for <code>cause</code> values.</col>
         </row>
         <row id="DeepBreath">
@@ -125,7 +125,7 @@
         </row>
         <row id="Death">
           <literal_col>Death</literal_col>
-          <col></col>
+          <col>proplist caused_by_player</col>
           <col>When a living being dies.</col>
         </row>
         <row id="Activate">
@@ -175,7 +175,7 @@
         </row>
         <row id="IsFulfilled">
           <literal_col>IsFulfilled</literal_col>
-          <col></col>
+          <col>proplist player</col>
           <col>Only in game goal objects. A return value <code>true</code> indicates that this goal is fulfilled.</col>
         </row>
         <row id="ControlContents">
@@ -230,12 +230,12 @@
         </row>
         <row id="CalcValue">
           <literal_col>CalcValue</literal_col>
-          <col>object in_base, int for_player</col>
+          <col>object in_base, proplist for_player</col>
           <col>Calculates the value of an object. Also see <emlink href="script/fn/GetValue.html">GetValue</emlink>().</col>
         </row>
         <row id="CalcDefValue">
           <literal_col>CalcDefValue</literal_col>
-          <col>object in_base, int for_player</col>
+          <col>object in_base, proplist for_player</col>
           <col>Calculates the value of an object type available to buy. Also see <emlink href="script/fn/GetValue.html">GetValue</emlink>().</col>
         </row>
         <row id="CalcBuyValue">
@@ -330,8 +330,8 @@
         </row>
         <row id="Recruitment">
           <literal_col>Recruitment</literal_col>
-          <col>int player</col>
-          <col>When the objet is added to the crew of a player.</col>
+          <col>proplist player</col>
+          <col>When the object is added to the crew of a player. Used player number before 9.0 OC.</col>
         </row>
         <row id="RejectTeamSwitch">
           <literal_col>RejectTeamSwitch</literal_col>
@@ -346,7 +346,12 @@
         <row id="OnCompletionChange">
           <literal_col>OnCompletionChange</literal_col>
           <col>int old_con, int new_con</col>
-          <col>Callback in when the completion of the object has changed (see <funclink>GetCon</funclink>, <funclink>DoCon</funclink> and <funclink>SetCon</funclink>).</col>
+          <col>Callback when the completion of the object has changed (see <funclink>GetCon</funclink>, <funclink>DoCon</funclink> and <funclink>SetCon</funclink>).</col>
+        </row>
+        <row id="OnEnergyChange">
+          <literal_col>OnEnergyChange</literal_col>
+          <col>int change, int damage_type, proplist caused_by_player</col>
+          <col>Callback when the energy of the object has changed (see <funclink>GetEnergy</funclink> and <funclink>DoEnergy</funclink>).</col>
         </row>
         <row id="EditCursorMoved">
           <literal_col>EditCursorMoved</literal_col>
@@ -569,4 +574,5 @@ local EditorProps = {
   <author>Clonkonaut</author><date>2008-04</date>
   <author>Sven2</author><date>2013-12</date>
   <author>Marky</author><date>2019-07</date>
+  <author>Marky</author><date>2020-10</date>
 </doc>

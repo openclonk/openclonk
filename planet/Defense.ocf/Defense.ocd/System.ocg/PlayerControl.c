@@ -2,12 +2,12 @@
 		QuickBuy
 --*/
 
-global func PlayerControl(int plr, int ctrl)
+global func PlayerControl(proplist plr, int ctrl)
 {
 	if (ctrl >= CON_QuickBuy0 && ctrl <= CON_QuickBuy9)
 	{
-		if (!g_homebases || plr < 0) return false;
-		var base = g_homebases[plr];
+		if (!g_homebases || plr == nil) return false;
+		var base = g_homebases[plr.ID];
 		if (!base) return false;
 		base->QuickBuyItem(g_quickbuy_items[ctrl - CON_QuickBuy0]);
 		return true;

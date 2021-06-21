@@ -7,7 +7,7 @@
     <title>GetValue</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -18,9 +18,9 @@
           <optional />
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>for_player</name>
-          <desc>Player to whom the value applies. If the CalcValue function is defined in this object, the return value of CalcValue is used in this case also.</desc>
+          <desc>Player to whom the value applies. If the CalcValue function is defined in this object, the return value of  CalcValue is used in this case also. Was player number before 9.0 OC.</desc>
           <optional />
         </param>
       </params>
@@ -41,4 +41,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2003-03</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

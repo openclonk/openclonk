@@ -29,22 +29,22 @@ protected func Initialize()
 
 /*-- Player Control --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 		return;
 	
 	// Move players to defenders team.
-	if (GetPlayerTeam(plr) != 1)
-		SetPlayerTeam(plr, 1);
+	if (plr->GetTeam() != 1)
+		plr->SetTeam(1);
 	
 	// Move crew to the initial position.
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	crew->SetPosition(120 + Random(16), 440);
 	
 	// Set zoom ranges.
-	SetPlayerZoomByViewRange(plr, 1200, nil, PLRZOOM_LimitMax);
-	SetPlayerZoomByViewRange(plr, 450, nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(1200, nil, PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(450, nil, PLRZOOM_Direct);
 	
 	// Base material and knowledge.
 	GivePlayerBaseMaterial(plr);

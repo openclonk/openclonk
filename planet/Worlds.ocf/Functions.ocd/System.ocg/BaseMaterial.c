@@ -6,7 +6,7 @@
 */
 
 // Gives the player elementary base materials.
-global func GivePlayerElementaryBaseMaterial(int plr)
+global func GivePlayerElementaryBaseMaterial(proplist plr)
 {
 	// Production of material of clonk.
 	// Production of material of bread.
@@ -15,7 +15,7 @@ global func GivePlayerElementaryBaseMaterial(int plr)
 }
 
 // Gives the player some basic tools.
-global func GivePlayerToolsBaseMaterial(int plr)
+global func GivePlayerToolsBaseMaterial(proplist plr)
 {
 	// List of tools with [id, mat, prod] entries.
 	var materials = [

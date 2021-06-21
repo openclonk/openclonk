@@ -45,20 +45,20 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Give the remaining players their achievement.
-	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
 	return false;
 }
 
 
 /*-- Player Initialization --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 { 
 	var amount = 4 - SCENPAR_Difficulty;
 	
 	// Give crew their items.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	while (crew = plr->GetCrew(index))
 	{
 		// First clonk can construct, others can mine.
 		if (index == 0)
@@ -79,8 +79,8 @@ protected func InitializePlayer(int plr)
 	}
 	
 	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
 	
 	// Give the player basic knowledge.
 	GivePlayerBasicKnowledge(plr);

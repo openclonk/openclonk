@@ -109,7 +109,7 @@ protected func Destruction()
 }
 
 // When ownership has changed, the producer may have moved out of or into a new network.
-public func OnOwnerChanged(int new_owner, int old_owner)
+public func OnOwnerChanged(proplist new_owner, proplist old_owner)
 {
 	GetPowerSystem()->TransferPowerLink(this);
 	return _inherited(new_owner, old_owner, ...);

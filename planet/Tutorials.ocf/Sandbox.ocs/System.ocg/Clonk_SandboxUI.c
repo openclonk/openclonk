@@ -8,7 +8,7 @@ local idGuiHudOS_catselect = 100;
 local idGuiHudOS_objectselect = 101;
 local idGuiHudOS_switchspawndest = 102;
 
-public func Death(int killed_by)
+public func Death(proplist killed_by)
 {
 	HideSandboxUI();
 	return _inherited(killed_by, ...);
@@ -16,7 +16,7 @@ public func Death(int killed_by)
 
 public func ShowSandboxUI()
 {
-	var object_spawn_key = GetPlayerControlAssignment(GetOwner(), CON_TutorialGuide, true, true);
+	var object_spawn_key = GetOwner()->GetControlAssignment(CON_TutorialGuide, true, true);
 
 	var SandboxUI = 
 	{
@@ -485,7 +485,7 @@ public func SwitchObjectSpawnDest()
 	GuiUpdate(update, idHudOS);
 }
 
-public func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, object target)
+public func ObjectSpawnSelectCat(data, proplist player, int ID, int subwindowID, object target)
 {
 	GuiClose(idHudOS, idGuiHudOS_objectselect);
 	var objectselect = 
@@ -540,9 +540,9 @@ public func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, obje
 	GuiUpdate(objectselect, idHudOS, idGuiHudOS_objectselect);
 }
 
-public func ObjectSpawnSelectObject(data, int player, int ID, int subwindowID, object target)
+public func ObjectSpawnSelectObject(data, proplist player, int ID, int subwindowID, object target)
 {
-	var clonk = GetCursor(player);
+	var clonk = player->GetCursor();
 	var obj = data[0];
 	
 	if (ObjectSpawnTarget == 1)
@@ -2011,7 +2011,7 @@ public func MakeNewMap()
 	for (var clonk in clonks)
 	{
 		clonk->SetObjectStatus(C4OS_NORMAL);
-		SetCursor(clonk->GetOwner(), clonk);
+		clonk->GetOwner()->SetCursor(clonk);
 		clonk->SetPosition(LandscapeWidth() / 2, LandscapeHeight() / 2);
 		clonk->Unstick(20);
 	}

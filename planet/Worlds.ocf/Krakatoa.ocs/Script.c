@@ -55,11 +55,11 @@ protected func Initialize()
 
 /*-- Player Initialization --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Set zoom range.
-	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
 	
 	// Give the player its knowledge and base materials.
 	GivePlayerBasicKnowledge(plr);
@@ -77,7 +77,7 @@ protected func InitializePlayer(int plr)
 	
 	// Give crew some equipment.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index++))
+	while (crew = plr->GetCrew(index++))
 	{
 		if (index == 1)
 			crew->CreateContents(Hammer);
@@ -205,7 +205,7 @@ global func FxEnsureTreesTimer()
 protected func OnGoalsFulfilled()
 {
 	// Give the remaining players their achievement.
-	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
 	return false;
 }
 

@@ -49,7 +49,7 @@ func AssembleInventoryButton(int max_slots, int slot_number, proplist slot_info)
 			Right = "150%",
 			Top = Format(" %s%s", "20%", ToEmString(-2)),
 			Bottom = "20%",
-			Text = { Std = "", Quick = Format("<c dddd00>[%s]</c>", GetPlayerControlAssignment(GetOwner(), CON_QuickSwitch, true)), Selected = "" }
+			Text = { Std = "", Quick = Format("<c dddd00>[%s]</c>", GetOwner()->GetControlAssignment(CON_QuickSwitch, true)), Selected = "" }
 		},
 		Style = GUI_NoCrop,
 		ID = slot_info.ID,
@@ -162,7 +162,7 @@ private func FxUpdateInventoryTimer()
 private func UpdateInventory()
 {
 	// only display if we have a clonk and it's not disabled
-	var clonk = GetCursor(GetOwner());
+	var clonk = GetOwner()->GetCursor();
 	if (!clonk || !clonk->GetCrewEnabled())
 	{
 		if (inventory_gui_menu.Player != NO_OWNER)
@@ -386,7 +386,7 @@ private func FxExtraSlotUpdaterTimer(object target, proplist effect)
 {
 	if (!this) return FX_Execute_Kill;
 	if (!target) return FX_Execute_Kill;
-	if (target->Contained() != GetCursor(GetOwner())) return FX_Execute_Kill;
+	if (target->Contained() != GetOwner()->GetCursor()) return FX_Execute_Kill;
 	return FX_OK;
 }
 

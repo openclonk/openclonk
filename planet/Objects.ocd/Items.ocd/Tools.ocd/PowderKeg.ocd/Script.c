@@ -89,7 +89,7 @@ public func GetInventoryIconOverlay()
 	return overlay;
 }
 
-public func Incineration(int caused_by)
+public func Incineration(proplist caused_by)
 {
 	SetController(caused_by);
 	AddEffect("Fuse", this, 1, 1, this);
@@ -145,7 +145,7 @@ public func IsProjectileTarget()
 	return true;
 }
 
-public func Damage(int change, int cause, int by_player)
+public func Damage(int change, int cause, proplist by_player)
 {
 	Incinerate(100, by_player);
 }

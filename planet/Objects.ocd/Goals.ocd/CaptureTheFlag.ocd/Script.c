@@ -71,14 +71,14 @@ private func EliminateOthers(int win_team)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		var team = GetPlayerTeam(plr);
+		var team = plr->GetTeam();
 		if (team != win_team)
-			EliminatePlayer(plr);	
+			plr->Eliminate();	
 	}
 	return;
 }
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(proplist plr, int x, int y, object base, int team)
 {
 	// Join new clonk.
 	GetRelaunchRule()->DoRelaunch(plr, nil, FindRelaunchPos(plr), true);
@@ -88,21 +88,21 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 	return _inherited(plr, x, y, base, team, ...);
 }
 
-public func FindRelaunchPos(int plr)
+public func FindRelaunchPos(proplist plr)
 {
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));
 	if (base)
 		return [base->GetX(), base->GetY() - 10];
 	return nil;
 }
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	return _inherited(plr, ...);
 }
 
-protected func RejectTeamSwitch(int player, int new_team)
+protected func RejectTeamSwitch(proplist player, int new_team)
 {
 	// Prevent team switching in any case.
 	return true;
@@ -114,7 +114,7 @@ public func IsFulfilled()
 {
 	// If Teams.txt-Teams still need to be chosen, the goal cannot be fulfilled.
 	for (var i = 0; i < GetPlayerCount(); i++)
-		if (GetPlayerTeam(GetPlayerByIndex(i)) == -1) 
+		if (GetPlayerByIndex(i)->GetTeam() == -1) 
 			return false;
 	// If only one team is left, the goal is fulfilled.
 	var teamcnt = 0;
@@ -133,9 +133,9 @@ public func IsFulfilled()
 	return false;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
-	var flags = GetScoreGoal() - score_list[GetPlayerTeam(plr)];
+	var flags = GetScoreGoal() - score_list[plr->GetTeam()];
 	if (IsFulfilled())
 		return "$MsgGoalFulfilled$";
 	else
@@ -148,9 +148,9 @@ public func GetDescription(int plr)
 	}
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
-	var flags = GetScoreGoal() - score_list[GetPlayerTeam(byplr)];
+	var flags = GetScoreGoal() - score_list[byplr->GetTeam()];
 	if (IsFulfilled())
 		MessageWindow("$MsgGoalFulfilled$", byplr);
 	else
@@ -166,15 +166,15 @@ public func Activate(int byplr)
 	return;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	var flag = FindObject(Find_ID(Goal_Flag), Find_Func("FindTeam", team));
 	var at_base = flag->IsAtBase();
 	if (!at_base)
 		return "$MsgShortCaptured$";
 	
-	var cursor = GetCursor(plr);
+	var cursor = plr->GetCursor();
 	flag = FindObject(Find_ID(Goal_Flag), Find_Not(Find_Func("FindTeam", team)), Find_Container(cursor));
 	if (flag)
 		return "$MsgShortReturn$";

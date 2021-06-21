@@ -2,7 +2,7 @@
 	Liquid Container
 	Unit tests for the containers that can store liquid.
 	
-	Invokes tests by calling the global function Test*_OnStart(int plr)
+	Invokes tests by calling the global function Test*_OnStart(proplist plr)
 	and iterate through all tests.
 	The test is completed once Test*_Completed() returns true.
 	Then Test*_OnFinished() is called, to be able to reset the scenario
@@ -17,13 +17,13 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Set zoom and move player to the middle of the scenario.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
-	SetFoW(false, plr);
-	GetCrew(plr)->SetPosition(120, 190);
-	GetCrew(plr)->MakeInvincible();
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
+	plr->SetFoW(false);
+	plr->GetCrew()->SetPosition(120, 190);
+	plr->GetCrew()->MakeInvincible();
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
@@ -127,7 +127,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 	return FX_OK;
 }
 
-global func Test1_OnStart(int plr){ return true;}
+global func Test1_OnStart(proplist plr){ return true;}
 global func Test1_OnFinished(){ return; }
 global func Test1_Execute()
 {
@@ -144,7 +144,7 @@ global func Test1_Execute()
 	return passed;
 }
 
-global func Test2_OnStart(int plr){ return true;}
+global func Test2_OnStart(proplist plr){ return true;}
 global func Test2_OnFinished(){ return; }
 global func Test2_Execute()
 {
@@ -252,7 +252,7 @@ global func Test2_Execute()
 }
 
 
-global func Test3_OnStart(int plr){ return true;}
+global func Test3_OnStart(proplist plr){ return true;}
 global func Test3_OnFinished(){ return; }
 global func Test3_Execute()
 {
@@ -302,7 +302,7 @@ global func Test3_Execute()
 	return passed;
 }
 
-global func Test4_OnStart(int plr){ return true;}
+global func Test4_OnStart(proplist plr){ return true;}
 global func Test4_OnFinished(){ return; }
 global func Test4_Execute()
 {
@@ -385,7 +385,7 @@ global func Test4_Execute()
 }
 
 
-global func Test5_OnStart(int plr)
+global func Test5_OnStart(proplist plr)
 {
 	var effect = GetEffect("IntTestControl", nil);
 
@@ -549,7 +549,7 @@ global func Test5_OnFinished()
 	return true;
 }
 
-global func Test6_OnStart(int plr){ return true;}
+global func Test6_OnStart(proplist plr){ return true;}
 global func Test6_OnFinished(){ return; }
 global func Test6_Execute()
 {
@@ -601,7 +601,7 @@ global func Test6_Execute()
 }
 
 // Deactivated: for some reason the (inherited) stacking function returns false
-global func Test6_deactivated_OnStart(int plr){ return true;}
+global func Test6_deactivated_OnStart(proplist plr){ return true;}
 global func Test6_deactivated_OnFinished(){ return; }
 global func Test6_deactivated_Execute()
 {

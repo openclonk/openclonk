@@ -43,7 +43,7 @@ public func Start(string name, int progress, ...)
 	return true;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	if (seq_name)
 	{
@@ -68,7 +68,7 @@ protected func InitializePlayers()
 	return true;
 }
 
-public func RemovePlayer(int plr)
+public func RemovePlayer(proplist plr)
 {
 	if (seq_name)
 	{
@@ -86,7 +86,7 @@ public func RemovePlayer(int plr)
 	return true;
 }
 
-public func JoinPlayer(int plr)
+public func JoinPlayer(proplist plr)
 {
 	DeactivatePlayerControls(plr, true);
 	// Per-player sequence callback.
@@ -96,12 +96,12 @@ public func JoinPlayer(int plr)
 	return true;
 }
 
-public func DeactivatePlayerControls(int plr, bool make_invincible)
+public func DeactivatePlayerControls(proplist plr, bool make_invincible)
 {
 	var j = 0, crew;
-	while (crew = GetCrew(plr, j++))
+	while (crew = plr->GetCrew(j++))
 	{
-		//if (crew == GetCursor(plr)) crew.Sequence_was_cursor = true; else crew.Sequence_was_cursor = nil;
+		//if (crew == plr->GetCursor()) crew.Sequence_was_cursor = true; else crew.Sequence_was_cursor = nil;
 		crew->SetCrewEnabled(false);
 		crew->CancelUse();
 		if (crew->GetMenu()) 
@@ -119,10 +119,10 @@ public func DeactivatePlayerControls(int plr, bool make_invincible)
 	return true;
 }
 
-public func ReactivatePlayerControls(int plr)
+public func ReactivatePlayerControls(proplist plr)
 {
 	var j = 0, crew;
-	while (crew = GetCrew(plr, j++))
+	while (crew = plr->GetCrew(j++))
 	{
 		crew->SetCrewEnabled(true);
 		if (crew.Sequence_made_invincible)
@@ -136,11 +136,11 @@ public func ReactivatePlayerControls(int plr)
 		}
 	}
 	// Ensure proper cursor.
-	if (!GetCursor(plr)) 
-		SetCursor(plr, GetCrew(plr));
-	crew = GetCursor(plr);
+	if (!plr->GetCursor()) 
+		plr->SetCursor(plr->GetCrew());
+	crew = plr->GetCursor();
 	if (crew)
-		SetPlrView(plr, crew);
+		plr->SetViewTarget(crew);
 	return true;
 }
 
@@ -214,11 +214,8 @@ public func SetViewTarget(object view_target)
 	}
 	else
 	{
-		for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
-		{
-			var plr = GetPlayerByIndex(i, C4PT_User);
-			SetPlrView(plr, GetCursor(plr));
-		}
+		for (var player in GetPlayers(C4PT_User))
+			player->SetViewTarget(player->GetCursor());
 	}
 	return true;
 }
@@ -231,7 +228,7 @@ private func UpdateViewTarget(object view_target)
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		SetPlrView(plr, view_target);
+		plr->SetViewTarget(view_target);
 	}
 	return;
 }
@@ -281,9 +278,9 @@ public func LoadScenarioSection(name, ...)
 	for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
 	{
 		var plr = GetPlayerByIndex(iplr, C4PT_User);
-		for (var icrew = 0; icrew < GetCrewCount(iplr); ++icrew)
+		for (var icrew = 0; icrew < iplr->GetCrewCount(); ++icrew)
 		{
-			var crew = GetCrew(plr, icrew);
+			var crew = plr->GetCrew(icrew);
 			if (crew)
 				AddSectSaveObj(crew);
 		}
@@ -644,7 +641,7 @@ private func CountContainedObjectsTimer()
 	}
 }
 
-public func OnTrigger(object triggering_clonk, int triggering_player, bool is_editor_test)
+public func OnTrigger(object triggering_clonk, proplist triggering_player, bool is_editor_test)
 {
 	// Check condition
 	if (condition && !UserAction->EvaluateCondition(condition, this, triggering_clonk, triggering_player)) return false;
@@ -664,7 +661,7 @@ private func OnActionFinished(context)
 	return true;
 }
 
-public func OnClonkDeath(object clonk, int killer)
+public func OnClonkDeath(object clonk, proplist killer)
 {
 	// Is this a clonk death trigger?
 	if (!trigger || !clonk) return false;
@@ -687,7 +684,7 @@ public func OnClonkDeath(object clonk, int killer)
 	return OnTrigger(clonk, killer);
 }
 
-public func OnConstructionFinished(object structure, int constructing_player)
+public func OnConstructionFinished(object structure, proplist constructing_player)
 {
 	// Is this a structure finished trigger?
 	if (!trigger || !structure) return false;
@@ -697,7 +694,7 @@ public func OnConstructionFinished(object structure, int constructing_player)
 	return OnTrigger(structure, constructing_player);
 }
 
-public func OnProductionFinished(object product, int producing_player)
+public func OnProductionFinished(object product, proplist producing_player)
 {
 	// Is this a structure finished trigger?
 	if (!trigger || !product) return false;

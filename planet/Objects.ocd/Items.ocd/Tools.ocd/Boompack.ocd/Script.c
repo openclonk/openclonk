@@ -30,7 +30,7 @@ func Construction()
 	controllable = true;
 }
 
-func Incineration(int caused_by)
+func Incineration(proplist caused_by)
 {
 	SetController(caused_by);
 	Fuse();

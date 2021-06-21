@@ -157,7 +157,7 @@ public:
 	void ScrollView(float iX, float iY, float ViewWdt, float ViewHgt); // in landscape coordinates
 	void SetCursor(C4Object *pObj, bool fSelectArrow);
 	void RemoveCrewObjects();
-	int32_t FindNewOwner() const;
+	int32_t FindNewOwner();
 	void NotifyOwnedObjects();
 	void DefaultRuntimeData();
 	void DrawHostility(C4Facet &cgo, int32_t iIndex);
@@ -175,7 +175,7 @@ public:
 	static bool Strip(const char *szFilename, bool fAggressive);
 	bool Message(const char *szMsg);
 	bool ObjectInCrew(C4Object *tobj);
-	bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
+	bool SetHostility(C4Player *opponent, int32_t iHostility, bool fSilent=false);
 	bool IsHostileTowards(const C4Player *opponent) const;
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void DenumeratePointers();

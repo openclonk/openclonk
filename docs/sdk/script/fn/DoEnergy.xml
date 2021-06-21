@@ -7,7 +7,7 @@
     <title>DoEnergy</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -29,9 +29,9 @@
           <optional />
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>caused_by</name>
-          <desc>Number of the player who has caused the damage.</desc>
+          <desc>Player who has caused the damage. Was player number before 9.0 OC.</desc>
           <optional />
         </param>
       </params>
@@ -49,4 +49,5 @@
   </func>
   <author>Sven2</author><date>2001-11</date>
   <author>Clonkonaut</author><date>2008-04</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

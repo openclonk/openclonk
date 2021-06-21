@@ -55,7 +55,7 @@ func RejectCollect(id objid, object obj)
 	return false;
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
+public func ObjectControl(proplist plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this)
 		return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
@@ -312,7 +312,7 @@ private func FxIntHighlightItemStart(object target, proplist fx, temp, object it
 		Alpha = 200
 	};
 
-	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetPlayerColor(GetOwner())), 1); 
+	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetOwner()->GetColor()), 1); 
 }
 
 private func FxIntHighlightItemTimer(object target, proplist fx, int time)

@@ -7,7 +7,7 @@
 		InitializeRound():
 			InitializeRound should create scenario objects for each round.
 
-		InitPlayerRound(int plr, object crew):
+		InitPlayerRound(proplist plr, object crew):
 			InitPlayerRound is called every round for each player and should equip
 			and position their Clonks. Note that the players won't be able to
 			control their Clonks until the round start countdown finishes.
@@ -37,10 +37,10 @@ public func SetRounds(int rounds)
 // When playing with inbalanced teams, the goal randomly selects players to be
 // handicapped so that the number of non-handicapped players is tha same for
 // all teams.
-public func IsHandicapped(int plr)
+public func IsHandicapped(proplist plr)
 {
 	if (this == Goal_MultiRoundMelee) return FindObject(Find_ID(Goal_MultiRoundMelee))->IsHandicapped(plr);
-	return !!handicapped_players[plr];
+	return !!handicapped_players[plr.ID];
 }
 
 /* Implementation */
@@ -69,7 +69,7 @@ protected func Initialize()
 	return inherited(...);
 }
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(proplist plr, int x, int y, object base, int team)
 {
 	// Add the player and their team to the scoreboard.
 	Scoreboard->NewPlayerEntry(plr);
@@ -80,7 +80,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 
 	// Players joining at runtime will participate in the following round.
 	// Should only happen if it's not game start, else Clonks would start stuck in a RelaunchContainer.
-	if (FrameCounter() > 1) PutInRelaunchContainer(GetCrew(plr));
+	if (FrameCounter() > 1) PutInRelaunchContainer(plr->GetCrew());
 
 	return inherited(plr, x, y, base, team, ...);
 }
@@ -96,14 +96,14 @@ protected func InitializePlayers()
 }
 
 // InitPlayerRound initializes the round for the given player.
-private func InitPlayerRound(int plr)
+private func InitPlayerRound(proplist plr)
 {
 	// Unmark death on scoreboard.
 	Scoreboard->SetPlayerData(plr, "death", "");
 	// Players can scroll freely while waiting for the next round. Disable this now.
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	// Disable the Clonk during the countdown.
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	crew->SetCrewEnabled(false);
 	crew->SetComDir(COMD_Stop);
 
@@ -147,7 +147,7 @@ private func ResetRound()
 	for (var clonk in clonks)
 	{
 		clonk->SetObjectStatus(C4OS_NORMAL);
-		SetCursor(clonk->GetOwner(), clonk);
+		clonk->GetOwner()->SetCursor(clonk);
 		// Select the first item. This fixes item ordering.
 		clonk->SetHandItemPos(0, 0);
 		InitPlayerRound(clonk->GetOwner());
@@ -181,7 +181,7 @@ local CheckVictory = new Effect
 		else if (!FindObject(find_living, Find_Hostile(clonk->GetOwner())))
 		{
 			// We have a winner!
-			var team = GetPlayerTeam(clonk->GetOwner());
+			var team = clonk->GetOwner()->GetTeam();
 			PushBack(goal.winners, team);
 			// Announce the winning team.
 			msg = Format("$WinningTeam$", GetTeamPlayerNames(team));
@@ -218,11 +218,11 @@ local CheckVictory = new Effect
 		for (var i = 0; i < GetPlayerCount(); i++)
 		{
 			var plr = GetPlayerByIndex(i);
-			if (GetPlayerTeam(plr) == team)
+			if (plr->GetTeam() == team)
 			{
 				var comma = "";
 				if (str != "") comma = ", ";
-				str = Format("%s%s<c %x>%s</c>", str, comma, GetPlayerColor(plr), GetPlayerName(plr));
+				str = Format("%s%s<c %x>%s</c>", str, comma, plr->GetColor(), plr->GetName());
 			}
 		}
 		return str;
@@ -262,7 +262,7 @@ protected func OnCountdownFinished() // called by the round start countdown
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember)))
 	{
 		clonk->SetCrewEnabled(true);
-		SetCursor(clonk->GetOwner(), clonk);
+		clonk->GetOwner()->SetCursor(clonk);
 	}
 	Scenario->~StartRound();
 }
@@ -274,7 +274,7 @@ private func PutInRelaunchContainer(object clonk)
 	// We just use the relaunch object as a dumb container.
 	clonk->Enter(relaunch);
 	// Allow scrolling around the landscape.
-	SetPlayerViewLock(plr, false);
+	plr->SetViewLocked(false);
 }
 
 protected func OnClonkDeath(object clonk)
@@ -283,7 +283,7 @@ protected func OnClonkDeath(object clonk)
 	// Mark death on scoreboard.
 	Scoreboard->SetPlayerData(plr, "death", "{{Scoreboard_Death}}");
 	// Skip eliminated players, NO_OWNER, etc.
-	if (GetPlayerName(plr)) 
+	if (plr->GetName()) 
 	{
 		var crew = CreateObject(Clonk, 0, 0, plr);
 		crew->MakeCrewMember(plr);
@@ -301,7 +301,7 @@ private func GetTeamPlayers()
 	var result = CreateArray(GetTeamCount() + 1);
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		var plr = GetPlayerByIndex(i), team = GetPlayerTeam(plr);
+		var plr = GetPlayerByIndex(i), team = plr->GetTeam();
 		SetLength(result, Max(team + 1, GetLength(result)));
 		result[team] = result[team] ?? [];
 		PushBack(result[team], plr);
@@ -324,8 +324,8 @@ func AssignHandicaps()
 			RemoveArrayIndexUnstable(team, Random(GetLength(team)));
 		for (var plr in team)
 		{
-			SetLength(handicapped_players, Max(plr + 1, GetLength(handicapped_players)));
-			handicapped_players[plr] = true;
+			SetLength(handicapped_players, Max(plr.ID + 1, GetLength(handicapped_players)));
+			handicapped_players[plr.ID] = true;
 		}
 	}
 }
@@ -358,8 +358,8 @@ private func EliminateLosers()
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (GetPlayerTeam(plr) != winning_team)
-			EliminatePlayer(plr);
+		if (plr->GetTeam() != winning_team)
+			plr->Eliminate();
 	}
 	// The included melee goal will end the scenario.
 }
@@ -386,7 +386,7 @@ private func UpdateScoreboardWins(int team)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (GetPlayerTeam(plr) == team)
+		if (plr->GetTeam() == team)
 		{
 			Scoreboard->SetPlayerData(plr, "wins", "", wins);
 		}
@@ -395,7 +395,7 @@ private func UpdateScoreboardWins(int team)
 
 /* Goal interface */
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	// Count active enemy clonks.
 	var hostile_count = ObjectCount(Find_OCF(OCF_CrewMember), Find_NoContainer(), Find_Hostile(plr));
@@ -411,7 +411,7 @@ public func GetDescription(int plr)
 	return message;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return CurrentRoundStr();
 }

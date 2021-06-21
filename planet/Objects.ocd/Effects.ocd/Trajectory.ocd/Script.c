@@ -38,7 +38,7 @@ public func Create(object obj, int x, int y, int xdir, int ydir, int color, int 
 		
 	// Do not create trajectories for script players, this will only cause lag.
 	var controller = obj->GetController();
-	if (controller == NO_OWNER || GetPlayerType(controller) == C4PT_Script)
+	if (controller == nil || controller.Type == C4PT_Script)
 		return;
 	
 	// Delete old trajectory.

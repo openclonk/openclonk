@@ -92,14 +92,14 @@ func OnFlagDestruction()
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Everything freely visible (to allow aiming with the cannon)
-	SetFoW(false, plr);
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(),LandscapeHeight(),PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, false);
+	plr->SetFoW(false);
+	plr->SetZoomByViewRange(LandscapeWidth(),LandscapeHeight(), PLRZOOM_LimitMax);
+	plr->SetViewLocked(false);
 	// Acquire base
-	var team = GetPlayerTeam(plr);
+	var team = plr->GetTeam();
 	var flag = g_respawn_flags[team];
 	if (flag && flag->GetOwner() == NO_OWNER) AcquireBase(plr, team);
 	// Intro message. Delayed to be visible to all players.
@@ -128,7 +128,7 @@ func IntroMsg()
 	return true;
 }
 
-func LaunchPlayer(object clonk, int plr)
+func LaunchPlayer(object clonk, proplist plr)
 {
 	// Make sure clonk can move
 	DigFreeRect(clonk->GetX()-6, clonk->GetY()-10, 13, 18, true);
@@ -139,23 +139,23 @@ func LaunchPlayer(object clonk, int plr)
 	return true;
 }
 
-public func OnPlayerRelaunch(int plr)
+public func OnPlayerRelaunch(proplist plr)
 {
-	if (!g_respawn_flags[GetPlayerTeam(plr)])
-		return EliminatePlayer(plr);
+	if (!g_respawn_flags[plr->GetTeam()])
+		return plr->Eliminate();
 }
 
-public func RelaunchPosition(int iPlr, int iTeam)
+public func RelaunchPosition(proplist iPlr, int iTeam)
 {
 	if (!g_respawn_flags[iTeam]) return;
 	return [g_respawn_flags[iTeam]->GetX(), g_respawn_flags[iTeam]->GetY()];
 }
 
-public func OnClonkLeftRelaunch(object clonk, int plr)
+public func OnClonkLeftRelaunch(object clonk, proplist plr)
 {
 	// Find flag for respawn
-	var flagpole = g_respawn_flags[GetPlayerTeam(plr)];
-	if (!flagpole) return EliminatePlayer(plr); // Flag lost and clonk died? Game over!
+	var flagpole = g_respawn_flags[plr->GetTeam()];
+	if (!flagpole) return plr->Eliminate(); // Flag lost and clonk died? Game over!
 	
 	// Reset available items in spawns
 	for (var item_spawn in FindObjects(Find_ID(ItemSpawn))) item_spawn->Reset(plr);
@@ -166,7 +166,7 @@ public func OnClonkLeftRelaunch(object clonk, int plr)
 func RelaunchWeaponList() { return [Bow, Sword, Club, Javelin, Blunderbuss, Firestone, IceWallKit]; }
 
 
-func AcquireBase(int plr, int team)
+func AcquireBase(proplist plr, int team)
 {
 	// Change ownership of some stuff in the base to the first player of a team joining
 	// Note that this may be called late into the game in case all players of one team join late into the game
@@ -179,7 +179,7 @@ func AcquireBase(int plr, int team)
 		if (GetIndexOf(base_ids, idobj))
 		{
 			obj->SetOwner(plr);
-			if (idobj == Goal_Flag) obj->SetClrModulation(0xff000000 | GetPlayerColor(plr));
+			if (idobj == Goal_Flag) obj->SetClrModulation(0xff000000 | plr)->GetColor();
 		}
 	}
 	return true;

@@ -28,7 +28,7 @@
 
 static const PlayerProfile = new Global
 {
-	Wealth = [0, 0, 0, 250]
+	Wealth = [0, 0, 0, 250],
 	Crew = {Clonk = 1},
 	BaseMaterial = {},
 	BaseProduction = {},

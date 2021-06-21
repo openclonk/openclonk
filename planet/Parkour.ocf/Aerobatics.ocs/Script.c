@@ -191,12 +191,12 @@ private func InitAnimals(int amount)
 
 /*-- Player Control --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Make the player enemy to all other players.
-	Goal_Melee->MakeHostileToAll(plr, GetPlayerTeam(plr));
+	Goal_Melee->MakeHostileToAll(plr, plr->GetTeam());
 	// Set large zoom ranges for the player.
-	SetPlayerZoomByViewRange(plr, 1200, nil, PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(1200, nil, PLRZOOM_LimitMax);
 	// Give the player knowledge for items in the inventor's lab.
 	GivePlrKnowledge(plr, WindBag);
 	GivePlrKnowledge(plr, WallKit);
@@ -204,9 +204,9 @@ protected func InitializePlayer(int plr)
 	return;
 }
 
-public func OnPlayerRespawn(int plr, object cp)
+public func OnPlayerRespawn(proplist plr, object cp)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	if (!crew)
 		return;
 	// Ensure at least a shovel, loam and dynamite on respawn when items not present and there is space in inventory.
@@ -223,9 +223,9 @@ public func OnPlayerRespawn(int plr, object cp)
 }
 
 // Give the player a bonus when he reaches a new checkpoint for the first time and is behind the leader.
-public func GivePlrBonus(int plr, object cp)
+public func GivePlrBonus(proplist plr, object cp)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	if (!crew)
 		return;
 	var goal = cp->GetCPController();

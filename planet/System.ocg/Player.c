@@ -14,7 +14,23 @@ static const Player = new _Player
 	// Functions
 	GetName = Global.GetName,  // No need to redefine this in the engine
 
+	// Returns the name of a player, including color markup using the player color.
+	// documented in /docs/sdk/script/fn
+	GetTaggedName = func ()
+	{
+		var player_name = this->GetName();
+		if (!player_name)
+		{
+			return;
+		}
+		var player_color = MakeColorReadable(this->GetColor());
+		var tagged_player_name = Format("<c %x>%s</c>", player_color, player_name);
+		return tagged_player_name;
+	},
+
 };
+
+static const NO_PLAYER = NO_OWNER;
 
 // Returns the player number of player_name, or none if there is no such player. (written by timi for CR/CE/CP)
 // documented in /docs/sdk/script/fn
@@ -26,14 +42,14 @@ global func GetPlayerByName(string player_name)
 	{
 		var player = GetPlayerByIndex(i);
 		// Does the player's name match the one searched for?
-		if (WildcardMatch(GetPlayerName(player), player_name))
+		if (WildcardMatch(player->GetName(), player_name))
 		{
 			// It does -> return player number.
 			return player;
 		}
 	}
 	// There is no player with that name.
-	return NO_OWNER;
+	return NO_PLAYER;
 }
 
 // Returns the team number of team_name, or none if there is no such team.
@@ -53,20 +69,6 @@ global func GetTeamByName(string team_name)
 	}
 	// There is no team with that name.
 	return NO_OWNER;
-}
-
-// Returns the name of a player, including color markup using the player color.
-// documented in /docs/sdk/script/fn
-global func GetTaggedPlayerName(int player)
-{
-	var player_name = GetPlayerName(player);
-	if (!player_name)
-	{
-		return;
-	}
-	var player_color = MakeColorReadable(GetPlayerColor(player));
-	var tagged_player_name = Format("<c %x>%s</c>", player_color, player_name);
-	return tagged_player_name;
 }
 
 // Returns the name of a team, including color markup using the team color.
@@ -111,7 +113,7 @@ global func GetPlayerInTeamCount(int team)
 	var count = 0;
 	for (var index = 0; index < GetPlayerCount(); index++)
 	{
-		if (GetPlayerTeam(GetPlayerByIndex(index)) == team)
+		if (GetPlayerByIndex(index)->GetTeam() == team)
 		{
 			count++;
 		}
@@ -127,7 +129,7 @@ global func GetPlayers(int player_type, int team)
 	for (var index = 0; index < GetPlayerCount(player_type); index++)
 	{
 		var player = GetPlayerByIndex(index, player_type);
-		if (team == nil || GetPlayerTeam(player) == team)
+		if (team == nil || player->GetTeam() == team)
 		{
 			PushBack(player_list, player);
 		}
@@ -136,27 +138,27 @@ global func GetPlayers(int player_type, int team)
 }
 
 // Returns the player number corresponding to the specified player ID.
-global func GetPlayerByID(int plr_id)
+global func GetPlayerByID(int player_id)
 {
 	for (var index = 0; index < GetPlayerCount(); index++)
 	{
-		var plr = GetPlayerByIndex(index);
-		if (plr_id == GetPlayerID(plr))
-			return plr;
+		var player = GetPlayerByIndex(index);
+		if (player_id == player.ID)
+			return player;
 	}
 	return NO_OWNER;
 }
 
 // Adds value to the account of iPlayer.
 // documented in /docs/sdk/script/fn
-global func DoWealth(int player, int value)
+global func DoWealth(any player, int value)
 {
 	return SetWealth(player, value + GetWealth(player));
 }
 
-global func GetWealth(int player_nr, int value)
+global func GetWealth(any player, int value)
 {
-	var player = GetPlayer(player_nr);
+	player = GetPlayerLegacy(player);
 	if (player)
 	{
 		return player.Data.Wealth;
@@ -167,13 +169,13 @@ global func GetWealth(int player_nr, int value)
 	}
 }
 
-global func SetWealth(int player_nr, int value)
+global func SetWealth(any player, int value)
 {
-	var player = GetPlayer(player_nr);
+	player = GetPlayerLegacy(player);
 	if (player)
 	{
 		player.Data.Wealth = BoundBy(value, 0, 1000000000);
-		GameCallEx("OnWealthChanged", player_nr);
+		GameCallEx("OnWealthChanged", player);
 		return true;
 	}
 	else
@@ -182,18 +184,18 @@ global func SetWealth(int player_nr, int value)
 	}
 }
 
-// checks whether two players are allied - that means they are not hostile and neither of them is NO_OWNER
-global func IsAllied(int player1, int player2, bool check_one_way_only /* whether to check the hostility only in one direction */)
+// checks whether two players are allied - that means they are not hostile and neither of them is NO_PLAYER
+global func IsAllied(proplist player1, proplist player2, bool check_one_way_only /* whether to check the hostility only in one direction */)
 {
-	if (player1 == NO_OWNER || player2 == NO_OWNER)
+	if (player1 == NO_PLAYER || player2 == NO_PLAYER)
 	{
 		return false;
 	}
-	return !Hostile(player1, player2, check_one_way_only);
+	return !(player1->Hostile(player2, check_one_way_only));
 }
 
 // Shows a message window to player for_player.
-global func MessageWindow(string msg, int for_player, id icon, string caption)
+global func MessageWindow(string msg, proplist for_player, id icon, string caption)
 {
 	// Get icon.
 	icon = icon ?? GetID();
@@ -213,7 +215,7 @@ global func GetDefaultMenuDecoration()
 
 // Find a base of the given player. Use index to search through all bases.
 // documented in /docs/sdk/script/fn
-global func FindBase(int player, int index)
+global func FindBase(proplist player, int index)
 {
 	return FindObjects(Find_Owner(player), Find_Func("IsBase"))[index];
 }

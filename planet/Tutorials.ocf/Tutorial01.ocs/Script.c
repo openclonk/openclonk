@@ -50,7 +50,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Achievement: Tutorial completed.
-	GainScenarioAchievement("TutorialCompleted", 3);
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("TutorialCompleted", 3);
 	// Dialogue options -> next round.
 	SetNextScenario("Tutorials.ocf\\Tutorial02.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
@@ -248,10 +248,10 @@ private func InitAnimals()
 
 /*-- Player Handling --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Position player's clonk.
-	var clonk = GetCrew(plr, 0);
+	var clonk = plr->GetCrew(0);
 	clonk->SetPosition(60, 606);
 	var fx = AddEffect("ClonkRestore", clonk, 100, 10);
 	fx.to_x = 60;
@@ -268,15 +268,15 @@ protected func InitializePlayer(int plr)
 	track_goal.plr = plr;
 
 	// Standard player zoom for tutorials, player is not allowed to zoom in/out.
-	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
 	
 	// Determine player movement keys.
-	var left = GetPlayerControlAssignment(plr, CON_Left, true, true);
-	var right = GetPlayerControlAssignment(plr, CON_Right, true, true);
-	var up = GetPlayerControlAssignment(plr, CON_Up, true, true);
-	var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
-	var jump = GetPlayerControlAssignment(plr, CON_Jump, true, true);
+	var left = plr->GetControlAssignment(CON_Left, true, true);
+	var right = plr->GetControlAssignment(CON_Right, true, true);
+	var up = plr->GetControlAssignment(CON_Up, true, true);
+	var down = plr->GetControlAssignment(CON_Down, true, true);
+	var jump = plr->GetControlAssignment(CON_Jump, true, true);
 	var control_keys = Format("[%s] [%s] [%s] [%s]", up, left, down, right);
 	
 	// Create tutorial guide, add messages, show first.
@@ -291,7 +291,7 @@ protected func InitializePlayer(int plr)
 
 /*-- Intro, Tutorial Goal & Outro --*/
 
-private func OnFinishedTutorialIntro(int plr)
+private func OnFinishedTutorialIntro(proplist plr)
 {
 	// enable crew
 	EnablePlrControls(plr);
@@ -371,8 +371,8 @@ global func FxTutorialScaleTimer(object target, proplist effect, int timer)
 		var plr = clonk->GetOwner();
 		while (GetEffect("TutorialIntro*"))
 			RemoveEffect("TutorialIntro*");
-		var up = GetPlayerControlAssignment(plr, CON_Up, true, true);
-		var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
+		var up = plr->GetControlAssignment(CON_Up, true, true);
+		var down = plr->GetControlAssignment(CON_Down, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialScaleWall$", up, down));
 		guide->ShowGuideMessage();
 		AddEffect("TutorialHangle", nil, 100, 2);
@@ -387,7 +387,7 @@ global func FxTutorialHangleTimer(object target, proplist effect, int timer)
 	if (clonk)
 	{
 		var plr = clonk->GetOwner();
-		var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
+		var down = plr->GetControlAssignment(CON_Down, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialHangle$", down));
 		guide->ShowGuideMessage();
 		AddEffect("TutorialJump", nil, 100, 2);
@@ -414,10 +414,10 @@ global func FxTutorialSwimmingTimer(object target, proplist effect, int timer)
 	if (clonk)
 	{
 		var plr = clonk->GetOwner();
-		var left = GetPlayerControlAssignment(plr, CON_Left, true, true);
-		var right = GetPlayerControlAssignment(plr, CON_Right, true, true);
-		var up = GetPlayerControlAssignment(plr, CON_Up, true, true);
-		var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
+		var left = plr->GetControlAssignment(CON_Left, true, true);
+		var right = plr->GetControlAssignment(CON_Right, true, true);
+		var up = plr->GetControlAssignment(CON_Up, true, true);
+		var down = plr->GetControlAssignment(CON_Down, true, true);
 		var control_keys = Format("[%s] [%s] [%s] [%s]", up, left, down, right);
 		guide->AddGuideMessage(Format("$MsgTutorialSwimming$", control_keys));
 		guide->ShowGuideMessage();
@@ -438,12 +438,12 @@ global func FxTutorialDivingTimer(object target, proplist effect, int timer)
 	return FX_OK;
 }
 
-protected func OnGuideMessageShown(int plr, int index)
+protected func OnGuideMessageShown(proplist plr, int index)
 {
 	// Show the player his clonk and the guide.
 	if (index == 0)
 	{
-		TutArrowShowTarget(GetCrew(GetPlayerByIndex()), 225, 24);
+		TutArrowShowTarget(GetPlayerByIndex()), 225->GetCrew(24);
 	}
 	// Show the player HUD.
 	if (index == 1)
@@ -479,7 +479,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	return;
 }
 
-protected func OnGuideMessageRemoved(int plr, int index)
+protected func OnGuideMessageRemoved(proplist plr, int index)
 {
 	TutArrowClear();
 	return;
@@ -519,7 +519,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		Rule_Relaunch->TransferInventory(target, clonk);
-		SetCursor(plr, clonk);
+		plr->SetCursor(clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}

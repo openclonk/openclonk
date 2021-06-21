@@ -170,7 +170,7 @@ public func FxFuseTimer(object target, effect, int timer)
 	return FX_OK;
 }
 
-public func Incineration(int caused_by)
+public func Incineration(proplist caused_by)
 {
 	ActivateFuse();
 	if (!GetEffect("Fuse", this)) AddEffect("Fuse", this, 100, 1, this);
@@ -178,7 +178,7 @@ public func Incineration(int caused_by)
 	SetController(caused_by);
 }
 
-public func Damage(int change, int type, int by_player)
+public func Damage(int change, int type, proplist by_player)
 {
 	Incinerate(nil, by_player);
 }

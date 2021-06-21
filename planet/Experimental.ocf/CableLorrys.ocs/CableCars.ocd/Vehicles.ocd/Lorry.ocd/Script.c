@@ -81,7 +81,7 @@ public func ContactRight()
 		SetRDir(RandomX(-7, +7));
 }
 
-public func Damage(int change, int cause, int by_player)
+public func Damage(int change, int cause, proplist by_player)
 {
 	// Only explode the lorry on blast damage.
 	if (cause != FX_Call_DmgBlast)

@@ -22,24 +22,24 @@ func Construction()
 
 /* --- When adding to the crew of a player --- */
 
-protected func Recruitment(int iPlr)
+protected func Recruitment(proplist player)
 {
 	// Broadcast for crew
-	GameCallEx("OnClonkRecruitment", this, iPlr);
+	GameCallEx("OnClonkRecruitment", this, player);
 	
-	return _inherited(iPlr,...);
+	return _inherited(player,...);
 }
 
-protected func DeRecruitment(int iPlr) {
+protected func DeRecruitment(proplist player) {
 	// Broadcast for crew
-	GameCallEx("OnClonkDeRecruitment", this, iPlr);
+	GameCallEx("OnClonkDeRecruitment", this, player);
 	
-	return _inherited(iPlr,...);
+	return _inherited(player,...);
 }
 
 /* --- Events --- */
 
-protected func Death(int killed_by)
+protected func Death(proplist killed_by)
 {
 	// this must be done first, before any goals do funny stuff with the clonk
 	_inherited(killed_by,...);
@@ -201,10 +201,10 @@ func SetMaxEnergy(int new_max_energy)
 	return true;
 }
 
-protected func OnEnergyChange(int change, int cause, int caused_by)
+protected func OnEnergyChange(int change, int cause, proplist caused_by)
 {
-	if (change < 0 && GetCursor(GetOwner()) == this)
-		PlayRumble(GetOwner(), Min(300 + 1000 * -change / this.MaxEnergy, 1000), 150);
+	if (change < 0 && GetOwner()->GetCursor() == this)
+		GetOwner()->PlayRumble(Min(300 + 1000 * -change / this.MaxEnergy, 1000), 150);
 	return _inherited(change, cause, caused_by, ...);
 }
 

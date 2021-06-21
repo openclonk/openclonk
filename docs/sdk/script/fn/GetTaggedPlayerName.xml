@@ -6,7 +6,7 @@
   <func>
     <title>GetTaggedPlayerName</title>
     <category>Player</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>string</rtype>
       <params>
@@ -19,13 +19,14 @@
     </syntax>
     <desc>Returns the name of a player, including color markup using the player color. If the specified player number is invalid, <code>nil</code> is returned. Thus this function can also be used to determine whether a player of a given number exists.</desc>
     <remark>The markup color is chosen so the player name will be readable on black background. Dark player names are brightened up.</remark>
+    <remark>In 9.0 OC this function was deprecated because it can be retrieved from the player directly via <funclink>GetPlayer</funclink> and <code>GetTaggedName</code>.</remark>
     <examples>
       <example>
         <code>protected func Entrance(object obj)
 {
 	// has entered a clonk
 	if(obj-><funclink>GetOCF</funclink>() &amp; <funclink>OCF_CrewMember</funclink>)
-		<funclink>Log</funclink>(&quot;%s of player %s got the golden crown!&quot;, obj-><funclink>GetName</funclink>(), GetTaggedPlayerName(obj-><funclink>GetOwner</funclink>()));
+		<funclink>Log</funclink>(&quot;%s of player %s got the golden crown!&quot;, obj-><funclink>GetName</funclink>(), obj-><funclink>GetOwner</funclink>()->GetTaggedName());
 	// or something else?
 	else
 		<funclink>Log</funclink>(&quot;The golden crown is now in a %s&quot;, obj-><funclink>GetName</funclink>());
@@ -42,4 +43,5 @@ protected func Departure(object obj)
     <related><funclink>GetPlayerName</funclink></related>
   </func>
   <author>Sven2</author><date>2006-03</date>
+  <author>Marky</author><date>2021-06</date>
 </funcs>

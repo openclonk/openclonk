@@ -88,7 +88,7 @@ protected:
 	int CallStart(int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
 	int CallStop(int reason, bool temporary);
 	int CallTimer(int time);
-	void CallDamage(int32_t & damage, int damagetype, int plr);
+	void CallDamage(int32_t & damage, int damagetype, C4Player *player);
 	int CallEffect(const char * effect, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
 
 	C4Effect(C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget);
@@ -120,7 +120,7 @@ public:
 	static void Execute(C4Effect **ppEffectList); // execute all effects
 	void Kill();    // mark this effect deleted and do approprioate calls
 	void ClearAll(int32_t iClearFlag);// kill all effects doing removal calls w/o reagard of inactive effects
-	void DoDamage(int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr); // ask all effects for damage
+	void DoDamage(int32_t &riDamage, int32_t iDamageType, C4Player *caused_by); // ask all effects for damage
 
 	C4Value DoCall(C4PropList *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7); // custom call
 

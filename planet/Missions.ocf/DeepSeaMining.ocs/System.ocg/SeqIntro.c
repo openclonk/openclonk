@@ -52,10 +52,10 @@ local FxFloatPlane = new Effect
 	}
 };
 
-func Intro_JoinPlayer(int plr)
+func Intro_JoinPlayer(proplist plr)
 {
 	if (g_intro_done) return false; // too late for join - just join on island
-	for (var index = 0, crew; crew = GetCrew(plr, index); ++index) crew->Enter(this);
+	for (var index = 0, crew; crew = plr->GetCrew(index); ++index) crew->Enter(this);
 	return true;
 }
 
@@ -124,12 +124,12 @@ func Intro_10()
 	for (var i = 0, plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
-		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
+		for (var index = 0, crew; crew = plr->GetCrew(index); ++index)
 		{
 			crew->Exit();
 			crew->SetPosition(this.plane->GetX()+10, this.plane->GetY());
 			crew->SetAction("Tumble");
-			if (!index) SetPlrView(plr, crew);
+			if (!index) plr->SetViewTarget(crew);
 		}
 	}
 	SetViewTarget();
@@ -147,12 +147,12 @@ func Intro_11()
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
 		GameCall("InitializePlayer", plr);
-		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
+		for (var index = 0, crew; crew = plr->GetCrew(index); ++index)
 		{
 			crew->SetPosition(g_tuesday_pos[0],-100);
 			crew->SetXDir(-10); crew->SetYDir(-30);
 			crew->SetAction("Tumble");
-			if (!index) SetPlrView(plr, crew);
+			if (!index) plr->SetViewTarget(crew);
 		}
 	}
 	return ScheduleNext(200, 20);
@@ -164,7 +164,7 @@ func Intro_20()
 	for (var i = 0, plr; i<GetPlayerCount(C4PT_User); ++i)
 	{
 		plr = GetPlayerByIndex(i, C4PT_User);
-		for (var index = 0, crew; crew = GetCrew(plr, index); ++index)
+		for (var index = 0, crew; crew = plr->GetCrew(index); ++index)
 		{
 			crew->SetCommand("MoveTo", nil, g_tuesday_pos[0]-15 + Random(20), g_tuesday_pos[1]);
 		}

@@ -38,13 +38,15 @@
       </params>
     </syntax>
     <desc>Sets bilateral friendship of two players.</desc>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetHostility()</code>.</remark>
     <examples>
       <example>
-        <code>SetHostility(0,1,true,true); SetHostility(1,0,true,true);</code>
+        <code>GetPlayer(0)-&gt;SetHostility(GetPlayer(1),true,true); GetPlayer(1)-&gt;SetHostility(GetPlayer(0),true,true);</code>
         <text>Makes the first two players enemies without causing a message.</text>
       </example>
     </examples>
     <related><funclink>Hostile</funclink></related>
   </func>
   <author>Sven2</author><date>2007-04</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

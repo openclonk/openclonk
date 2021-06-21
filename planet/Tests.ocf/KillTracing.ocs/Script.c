@@ -1,7 +1,7 @@
 /**
 	Kill Tracing
 	Unit tests for kill tracing. Invokes tests by calling the 
-	global function Test*_OnStart(int plr) and iterate through all 
+	global function Test*_OnStart(proplist plr) and iterate through all 
 	tests. The test is completed once Test*_Completed() returns
 	true. Then Test*_OnFinished() is called, to be able to reset 
 	the scenario for the next test.
@@ -32,41 +32,41 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Initialize script player.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		// Store the player numbers.
-		if (GetPlayerName(plr) == "Victim")
+		if (plr->GetName() == "Victim")
 			plr_victim = plr;
-		else if (GetPlayerName(plr) == "Killer")
+		else if (plr->GetName() == "Killer")
 			plr_killer = plr;
-	 	else if (GetPlayerName(plr) == "KillerFake")
+	 	else if (plr->GetName() == "KillerFake")
 			plr_killer_fake = plr;
 		// Make crew of killers invincible and set position.	
 		if (plr == plr_killer)
 		{
-			GetCrew(plr)->MakeInvincible(true);
-			GetCrew(plr)->SetPosition(50, 150);
+			plr->GetCrew()->MakeInvincible(true);
+			plr->GetCrew()->SetPosition(50, 150);
 		}
 		else if (plr == plr_killer_fake)
 		{
-			GetCrew(plr)->MakeInvincible(true);
-			GetCrew(plr)->SetPosition(20, 150);
+			plr->GetCrew()->MakeInvincible(true);
+			plr->GetCrew()->SetPosition(20, 150);
 		}
 		return;
 	}
 	
 	// Set zoom to full map size.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
 	
 	// No FoW to see everything happening.
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	
 	// Move normal players into a relaunch container.
 	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2);
-	GetCrew(plr)->Enter(relaunch);
+	plr->GetCrew()->Enter(relaunch);
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
@@ -138,7 +138,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 		InitTest();
 		// Start the test if available, otherwise finish test sequence.
 		// Call Test*_OnStart(object victim, object killer, object fake_killer).
-		if (!Call(Format("~Test%d_OnStart", effect.testnr), GetCrew(plr_victim), GetCrew(plr_killer), GetCrew(plr_killer_fake)))
+		if (!Call(Format("~Test%d_OnStart", effect.testnr), plr_victim->GetCrew(), plr_killer->GetCrew(), plr_killer_fake->GetCrew()))
 		{
 			Log("=====================================");
 			Log("All tests have been completed!");
@@ -157,10 +157,12 @@ global func FxIntTestControlStop(object target, proplist effect, int reason, boo
 	return FX_OK;
 }
 
-global func FxIntTestControlOnDeath(object target, proplist effect, int killer, object clonk)
+global func FxIntTestControlOnDeath(object target, proplist effect, proplist killer, object clonk)
 {
 	// Log the result.
-	Log("Test %d [%s]: %v, killer = %s", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer, GetPlayerName(killer));
+	var killer_name = "NO_OWNER";
+	if (killer) killer_name = killer->GetName();
+	Log("Test %d [%s]: %v, killer = %s", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer, killer_name);
 	// Store the result.
 	effect.results[effect.testnr - 1] = (plr_killer == killer);
 	effect.launched = false;
@@ -172,7 +174,7 @@ global func InitTest()
 {
 	// Remove all objects except the player crew members and relaunch container they are in.
 	for (var obj in FindObjects(Find_Not(Find_Or(Find_ID(RelaunchContainer), Find_Category(C4D_Rule)))))
-		if (!((obj->GetOCF() & OCF_CrewMember) && (GetPlayerType(obj->GetOwner()) == C4PT_User || obj->GetOwner() == plr_victim)))
+		if (!((obj->GetOCF() & OCF_CrewMember) && ((obj->GetOwner() && obj->GetOwner().Type == C4PT_User) || obj->GetOwner() == plr_victim)))
 			obj->RemoveObject();
 
 	// Remove all landscape changes.
@@ -180,7 +182,7 @@ global func InitTest()
 	ClearFreeRect(0, 0, LandscapeWidth(), 160);
 	
 	// Give script players new crew.
-	var victim_crew = GetCrew(plr_victim);
+	var victim_crew = plr_victim->GetCrew();
 	if (victim_crew)
 	{
 		victim_crew.no_kill_tracing = true;
@@ -188,29 +190,29 @@ global func InitTest()
 	}
 	for (var plr in [plr_victim, plr_killer, plr_killer_fake])
 	{	
-		if (!GetCrew(plr))
+		if (!plr->GetCrew())
 		{
 			var clonk = CreateObjectAbove(Clonk, 100, 150, plr);
 			clonk->MakeCrewMember(plr);
 			clonk->SetDir(DIR_Right);
-			SetCursor(plr, clonk);
+			plr->SetCursor(clonk);
 			clonk->DoEnergy(clonk.MaxEnergy / 1000);
 		}
 	}
-	GetCrew(plr_victim)->SetPosition(100, 150);
-	GetCrew(plr_killer)->SetPosition(50, 150);
-	GetCrew(plr_killer_fake)->SetPosition(20, 150);
+	plr_victim->GetCrew()->SetPosition(100, 150);
+	plr_killer->GetCrew()->SetPosition(50, 150);
+	plr_killer_fake->GetCrew()->SetPosition(20, 150);
 	return;
 }
 
-global func GetPlayerName(int plr)
+global func GetPlayerName(proplist plr)
 {
 	if (plr == NO_OWNER)
 		return "NO_OWNER";
 	return _inherited(plr, ...);
 }
 
-public func OnClonkDeath(object clonk, int killer)
+public func OnClonkDeath(object clonk, proplist killer)
 {
 	if (clonk->GetOwner() != plr_victim || clonk.no_kill_tracing)
 		return;

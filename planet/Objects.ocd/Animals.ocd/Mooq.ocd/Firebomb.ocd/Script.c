@@ -9,8 +9,8 @@ func Initialize() {
 func Hit() {
     var dmg = FIREBOMB_DAMAGE;
 
-    BlastObjects(GetX(), GetY(), dmg/2, nil, GetOwner() + 1);
-    BlastObjects(GetX(), GetY(), dmg/2, nil, GetOwner() + 1);
+    BlastObjects(GetX(), GetY(), dmg/2, nil, GetOwner());
+    BlastObjects(GetX(), GetY(), dmg/2, nil, GetOwner());
 
     var blast = {
         R = 255,

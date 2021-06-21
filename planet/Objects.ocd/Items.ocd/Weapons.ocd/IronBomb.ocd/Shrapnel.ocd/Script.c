@@ -15,7 +15,7 @@ protected func Initialize()
 	AddEffect("Fade", this, 1, 1, this);
 }
 
-public func Launch(int shooter)
+public func Launch(proplist shooter)
 {
 	SetController(shooter);
 	AddEffect("HitCheck", this, 1, 1, nil, nil);

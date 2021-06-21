@@ -7,7 +7,7 @@
     <title>CreateConstruction</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -27,9 +27,9 @@
           <desc>Y coordinate</desc>
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>owner</name>
-          <desc>Owner of the new object (valid player number or <funclink>NO_OWNER</funclink> for no-owner).</desc>
+          <desc>Owner of the new object (valid player or <funclink>NO_OWNER</funclink> for no-owner, player number before 9.0 OC).</desc>
         </param>
         <param>
           <type>int</type>
@@ -66,4 +66,5 @@
     </related>
   </func>
   <author>springer</author><date>2002-04</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

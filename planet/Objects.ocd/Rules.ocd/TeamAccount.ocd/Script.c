@@ -15,34 +15,34 @@ protected func Initialize()
 }
 
 // Only SetWealth needs to be overloaded, DoWealth just uses that.
-global func SetWealth(int plr, int wealth)
+global func SetWealth(proplist plr, int wealth)
 {
 	// Only if team account rule is activated.
 	if (!FindObject(Find_ID(Rule_TeamAccount)))
 		return _inherited(plr, wealth, ...);
 		
 	// Only for valid players.
-	if (plr == NO_OWNER || !GetPlayerName(plr))
+	if (plr == NO_OWNER || !plr->GetName())
 		return _inherited(plr, wealth, ...);
 		
 	// Also set wealth of all allies.
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var to_plr = GetPlayerByIndex(i);
-		if (to_plr != plr && !Hostile(to_plr, plr))
+		if (to_plr != plr && !to_plr->Hostile(plr))
 			_inherited(to_plr, wealth, ...);
 	}
 
 	return _inherited(plr, wealth, ...);
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Find an ally and add this wealth.
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var to_plr = GetPlayerByIndex(i);
-		if (to_plr != plr && !Hostile(to_plr, plr))
+		if (to_plr != plr && !to_plr->Hostile(plr))
 		{
 			DoWealth(to_plr, GetWealth(plr));
 			break;
@@ -51,19 +51,19 @@ protected func InitializePlayer(int plr)
 	return;
 }
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	// Nothing should happen here.
 	return;
 }
 
-protected func OnTeamSwitch(int player, int new_team, int old_team)
+protected func OnTeamSwitch(proplist player, int new_team, int old_team)
 {
 	// Remove player from old team, i.e. substract his fair share.
 	var count = 0;
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		if (!Hostile(player, GetPlayerByIndex(i)))
+		if (!player->Hostile(GetPlayerByIndex(i)))
 			count++;		
 	}
 	//var share = GetWealth(player) / count;
@@ -73,13 +73,13 @@ protected func OnTeamSwitch(int player, int new_team, int old_team)
 	return;
 }
 
-protected func OnHostilityChange(int plr, int plr2, bool hostility, bool old_hostility)
+protected func OnHostilityChange(proplist plr, proplist plr2, bool hostility, bool old_hostility)
 {
 	// TODO: Implement
 	return;
 }
 
-public func Activate(int by_plr)
+public func Activate(proplist by_plr)
 {
 	MessageWindow(this.Description, by_plr);
 	return true;

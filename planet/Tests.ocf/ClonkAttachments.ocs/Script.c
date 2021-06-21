@@ -6,7 +6,7 @@
 	because the test logic is a lot different - namely you cannot
 	do everything in one function call for most tests.
 	
-	Invokes tests by calling the global function Test*_OnStart(int plr)
+	Invokes tests by calling the global function Test*_OnStart(proplist plr)
 	and iterate through all  tests.
 	The test is completed once Test*_Completed() returns true.
 	Then Test*_OnFinished() is called, to be able to reset 
@@ -33,34 +33,34 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Set zoom to full map size.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
 	
 	// No FoW to see everything happening.
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	
 	// All players belong to the first team.
 	// The second team only exists for testing.
-	SetPlayerTeam(plr, 1);
+	plr->SetTeam(1);
 		
 	// Initialize script player.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		// Store the player number.
 		if (script_plr == nil)
 			script_plr = plr;
 		// No crew needed.
-		GetCrew(plr)->RemoveObject();
+		plr->GetCrew()->RemoveObject();
 		return;
 	}	
 	
 	// Move player to the start of the scenario.
-	GetCrew(plr)->SetPosition(120, 150);
+	plr->GetCrew()->SetPosition(120, 150);
 	
 	// Some knowledge to construct a flagpole.
-	GetCrew(plr)->CreateContents(Hammer);
+	plr->GetCrew()->CreateContents(Hammer);
 	GivePlrKnowledge(plr, Flagpole);
 	
 	// Add test control effect.
@@ -71,10 +71,10 @@ protected func InitializePlayer(int plr)
 	return;
 }
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	// Remove script player.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		if (plr == script_plr)
 			script_plr = nil;
@@ -180,7 +180,7 @@ global func Wait(int amount)
 
 /*-- Liquid Tests --*/
 
-global func Test1_OnStart(int plr)
+global func Test1_OnStart(proplist plr)
 {
 	Log("Tools carried visibly on the Clonk when dying should be visible when picked up again");
 	
@@ -220,7 +220,7 @@ global func Test1_OnStart(int plr)
 
 global func Test1_Completed()
 {
-	GetCursor(test.plr)->Message("Test %d / %d", test.test1_index + 1, test.test1_length);
+	test.plr->GetCursor()->Message("Test %d / %d", test.test1_index + 1, test.test1_length);
 
 	if (IsWaiting()) return false;
 
@@ -245,7 +245,7 @@ global func Test1_OnFinished()
 
 global func Test1_Run()
 {
-	var cursor = GetCursor(test.plr);
+	var cursor = test.plr->GetCursor();
 	var index = test.test1_index;
 	var corpse = test.test1_corpse[index];
 	var item = test.test1_item[index];

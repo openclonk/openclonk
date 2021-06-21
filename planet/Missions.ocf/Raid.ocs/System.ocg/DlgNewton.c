@@ -167,7 +167,7 @@ func Dlg_Newton_118(object clonk)
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		var crew = GetCrew(plr);
+		var crew = plr->GetCrew();
 		if (crew) crew->CreateContents(Shovel);
 	}
 	SetDialogueProgress(120);

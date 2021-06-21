@@ -7,7 +7,7 @@
     <title>SetLeaguePerformance</title>
     <category>Network</category>
     <subcat>League</subcat>
-    <version>5.0 OC</version>
+    <version>5.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -17,9 +17,9 @@
           <desc>New player or scenario score</desc>
         </param>
         <param>
-          <type>int</type>
-          <name>player_id</name>
-          <desc>ID of player whose score shall be set. If not given, global performance for all players is set.</desc>
+          <type>proplist</type>
+          <name>player</name>
+          <desc>Player whose score shall be set. If not given, global performance for all players is set. Before 9.0 OC this used the player ID.</desc>
           <optional />
         </param>
       </params>
@@ -49,4 +49,5 @@ func Entrance(clonk)
     <related><funclink>SetLeagueProgressData</funclink><funclink>GetLeagueScore</funclink></related>
   </func>
   <author>Sven2</author><date>2014-04</date>
+  <author>Marky</author><date>2021-06</date>
 </funcs>

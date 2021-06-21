@@ -7,14 +7,14 @@
     <title>MakeCrewMember</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>player</name>
-          <desc>Player to whose crew you want to add a member.</desc>
+          <desc>Player to whose crew you want to add a member. Was player number before 9.0 OC.</desc>
         </param>
       </params>
     </syntax>
@@ -36,4 +36,5 @@ nClonk-&gt;MakeCrewMember(<funclink>GetOwner</funclink>());
     </related>
   </func>
   <author>PeterW</author><date>2001-12</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

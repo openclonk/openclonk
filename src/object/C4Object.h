@@ -263,8 +263,8 @@ public:
 	void MovePosition(C4Real dx, C4Real dy);
 	void DoMotion(int32_t mx, int32_t my);
 	bool ActivateEntrance(int32_t by_plr, C4Object *by_obj);
-	void DoDamage(int32_t iLevel, int32_t iCausedByPlr, int32_t iCause);
-	void DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr);
+	void DoDamage(int32_t iLevel, C4Player *caused_by, int32_t iCause);
+	void DoEnergy(int32_t iChange, bool fExact, int32_t iCause, C4Player *caused_by);
 	void UpdatLastEnergyLossCause(int32_t iNewCausePlr);
 	void DoBreath(int32_t iChange);
 	void DoCon(int32_t iChange, bool grow_from_center);
@@ -293,8 +293,8 @@ public:
 	C4Real GetSpeed() const;
 	StdStrBuf GetDataString();
 	void SetName (const char *NewName = nullptr) override;
-	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
-	bool SetOwner(int32_t iOwner);
+	int32_t GetValue(C4Object *pInBase, C4Player *player);
+	bool SetOwner(C4Player* player);
 	bool SetLightRange(int32_t iToRange, int32_t iToFadeoutRange);
 	uint32_t GetLightColor() const { return lightColor; }
 	bool SetLightColor(uint32_t iValue);

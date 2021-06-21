@@ -47,7 +47,7 @@ public func Destruction()
 	if (dummy)
 		dummy->RemoveObject();
 	if (cursor)
-		SetPlrView(cursor->GetOwner(), cursor, true);
+		cursor->GetOwner()->SetViewTarget(cursor, true);
 }
 
 public func Init(object cursor, object car, object station)
@@ -141,7 +141,7 @@ public func FillDestinationButtons(proplist menu, array dest_list)
 	return;
 }
 
-public func PreviewDestination(object to_preview, int plr, int menu_id, int submenu_id, object target)
+public func PreviewDestination(object to_preview, proplist plr, int menu_id, int submenu_id, object target)
 {
 	if (!to_preview)
 		return;
@@ -150,7 +150,7 @@ public func PreviewDestination(object to_preview, int plr, int menu_id, int subm
 		dummy = CreateDummy(to_preview);
 
 	// Set view, light and draw the item's graphics in front of it again to achieve a highlighting effect.
-	SetPlrView(plr, to_preview, true);
+	plr->SetViewTarget(to_preview, true);
 	dummy.Plane = to_preview.Plane + 1;
 	dummy->SetPosition(to_preview->GetX(), to_preview->GetY());
 	dummy->SetVertexXY(0, to_preview->GetVertex(0, VTX_X), to_preview->GetVertex(0, VTX_Y));
@@ -163,7 +163,7 @@ public func PreviewDestination(object to_preview, int plr, int menu_id, int subm
 	GuiUpdate(update, menu_id);
 }
 
-public func SelectDestination(object target, int plr, int menu_id, int submenu_id, object target)
+public func SelectDestination(object target, proplist plr, int menu_id, int submenu_id, object target)
 {
 	if (target == nil || !cable_car)
 		return;

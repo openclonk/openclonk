@@ -556,7 +556,7 @@ public func RejectInteractionMenu(object clonk, ...)
 	var msg = _inherited(clonk, ...);
 	if (clonk != this && !msg)
 	{
-		if (GetOwner() == NO_OWNER || Hostile(GetOwner(), clonk->GetOwner()) || GetCursor(GetOwner()) == this)
+		if (GetOwner() == NO_OWNER || GetOwner()->Hostile(clonk->GetOwner()) || GetOwner()->GetCursor() == this)
 			return Format("$MsgNoInteraction$", GetName());
 	}
 	return msg;

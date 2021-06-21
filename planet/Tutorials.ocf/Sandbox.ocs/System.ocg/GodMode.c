@@ -6,7 +6,7 @@ global func InitGodModeMessageBoard()
 	return;
 }
 
-global func SetGodMode(int plr, string mode)
+global func SetGodMode(proplist plr, string mode)
 {
 	if (!IsFirstPlayer(plr))
 		return CustomMessage("$MessageBoardOnlyHost$", nil, plr);
@@ -61,9 +61,9 @@ global func SetGodModeAll()
 	return;
 }
 
-global func GiveGodMode(int plr)
+global func GiveGodMode(proplist plr)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	if (crew.has_god_mode_enabled)
 		return;
 	crew.has_god_mode_enabled = true;
@@ -78,9 +78,9 @@ global func GiveGodMode(int plr)
 	return;	
 }
 
-global func TakeGodMode(int plr)
+global func TakeGodMode(proplist plr)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	if (!crew.has_god_mode_enabled)
 		return;
 	crew.has_god_mode_enabled = false;

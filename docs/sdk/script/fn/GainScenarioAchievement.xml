@@ -6,7 +6,7 @@
   <func>
     <title>GainScenarioAchievement</title>
     <category>Player</category>
-    <version>4.0 OC</version>
+    <version>4.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -37,8 +37,10 @@
     </syntax>
     <desc>Gain a scenario achievement. Gained achievements are represented as small symbols beside the scenario name in the selection screen.</desc>
     <remark>Make sure the gain the achievement before players are saved, i.e. before the game is evaluated. Otherwise, gained achievements are not stored.</remark>
+    <remark>In 9.0 OC this function was deprecated, because it can be retrieved directly from <funclink>GetPlayer</funclink>.</remark>
     <related><funclink>GainScenarioAccess</funclink></related>
     <related><emlink href="scenario/ParameterDefs.xml">Scenario parameter definitions</emlink></related>
   </func>
   <author>Sven2</author><date>2014-09</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

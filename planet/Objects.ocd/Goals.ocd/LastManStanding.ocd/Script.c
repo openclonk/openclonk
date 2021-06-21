@@ -39,12 +39,12 @@ private func KillsToRelaunch()
 
 /*-- Player section --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	_inherited(plr, ...);
 }
 
-protected func OnClonkDeath(object clonk, int killer)
+protected func OnClonkDeath(object clonk, proplist killer)
 {
 	var plr = clonk->GetOwner();
 	_inherited(clonk, killer, ...);
@@ -53,21 +53,21 @@ protected func OnClonkDeath(object clonk, int killer)
 	
 	// Kill bonus: 1 extra relaunch per KillsToRelaunch kills.
 	// Only if killer exists and has not committed suicide.
-	if (plr != killer && GetPlayerName(killer))
+	if (plr != killer && killer->GetName())
 		// Only if killer and victim are on different teams.
-		if (!(GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(plr)))
+		if (!(killer->GetTeam() && killer->GetTeam() == plr->GetTeam()))
 			if (KillsToRelaunch() && !(GetKillCount(killer) % KillsToRelaunch()) && GetKillCount(killer))
 			{
 				GetRelaunchRule()->DoPlayerRelaunchCount(killer, 1);
-				Log("$MsgRelaunchGained$", GetPlayerName(killer));
+				Log("$MsgRelaunchGained$", killer->GetName());
 			}
 				
 	// Show scoreboard for a while.
-	DoScoreboardShow(1, plr + 1);
-	Schedule(this, Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
+	DoScoreboardShow(1, plr);
+	Schedule(this, Format("DoScoreboardShow(-1, %v)", plr), 35 * ShowBoardTime);
 	return;
 }
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	return _inherited(plr, ...);
 }

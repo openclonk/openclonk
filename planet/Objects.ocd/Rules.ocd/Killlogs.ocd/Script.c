@@ -7,17 +7,17 @@ func Initialize()
 		return RemoveObject();
 }
 
-public func Activate(int by_plr)
+public func Activate(proplist by_plr)
 {
 	MessageWindow(this.Description, by_plr);
 	return true;
 }
 
-func OnClonkDeath(object clonk, int killed_by)
+func OnClonkDeath(object clonk, proplist killed_by)
 {
 	var plr = clonk->GetOwner();
 	// Only log for existing players and clonks.
-	if (plr == NO_OWNER || !GetPlayerName(plr) || !clonk) 
+	if (plr == NO_OWNER || !plr->GetName() || !clonk) 
 		return;
 	ScheduleCall(this, "OnClonkDeathEx", 1, 0, clonk, plr, killed_by);
 	return _inherited(clonk, killed_by, ...);
@@ -26,9 +26,9 @@ func OnClonkDeath(object clonk, int killed_by)
 // parameters: clonk, owner, killed_by
 global func GetAdditionalPlayerRelaunchString(){return _inherited(...);} // dummy
 
-public func OnClonkDeathEx(object clonk, int plr, int killed_by)
+public func OnClonkDeathEx(object clonk, proplist plr, proplist killed_by)
 {
-	if (!GetPlayerName(plr))
+	if (!plr)
 		return;
 	var name = "Clonk";
 	if (clonk)
@@ -36,14 +36,14 @@ public func OnClonkDeathEx(object clonk, int plr, int killed_by)
 	// Assert there are three StringTbl entries for each.
 	var which_one = Random(3) + 1;
 	var log = "";
-	if (!GetPlayerName(killed_by))
- 		 log = Format(Translate(Format("KilledByGaia%d", which_one)), GetTaggedPlayerName(plr), name);
+	if (!killed_by)
+ 		 log = Format(Translate(Format("KilledByGaia%d", which_one)), plr->GetTaggedName(), name);
  	else if (plr == killed_by)
-		log = Format(Translate(Format("Selfkill%d", which_one)), GetTaggedPlayerName(plr), name);
- 	else if (!Hostile(plr, killed_by))
-  		log = Format(Translate(Format("Teamkill%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
+		log = Format(Translate(Format("Selfkill%d", which_one)), plr->GetTaggedName(), name);
+ 	else if (!plr->Hostile(killed_by))
+  		log = Format(Translate(Format("Teamkill%d", which_one)), plr->GetTaggedName(), name, killed_by->GetTaggedName());
 	else
-		log = Format(Translate(Format("KilledByPlayer%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
+		log = Format(Translate(Format("KilledByPlayer%d", which_one)), plr->GetTaggedName(), name, killed_by->GetTaggedName());
 	
 	if (IsActiveRelaunchRule())
 	{
@@ -52,13 +52,13 @@ public func OnClonkDeathEx(object clonk, int plr, int killed_by)
 		{
 			var msg = "";
 			if (relaunches < 0) // Player eliminated.
-				msg = Format("$MsgFail$", GetTaggedPlayerName(plr));
+				msg = Format("$MsgFail$", plr->GetTaggedName());
 			else if (relaunches == 0) // Last relaunch.
-				msg = Format("$MsgRelaunch0$", GetTaggedPlayerName(plr));
+				msg = Format("$MsgRelaunch0$", plr->GetTaggedName());
 			else if (relaunches == 1) // One relaunch remaining.
-				msg = Format("$MsgRelaunch1$", GetTaggedPlayerName(plr));
+				msg = Format("$MsgRelaunch1$", plr->GetTaggedName());
 			else // Multiple relaunches remaining.
-				msg = Format("$MsgRelaunchX$", GetTaggedPlayerName(plr), relaunches);
+				msg = Format("$MsgRelaunchX$", plr->GetTaggedName(), relaunches);
 			log = Format("%s %s", log, msg);
 		}
 	}

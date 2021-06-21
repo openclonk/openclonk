@@ -1,7 +1,7 @@
 /**
 	Producer System
 	Unit tests for the producers system. Invokes tests by calling the
-	global function Test*_OnStart(int plr) and iterate through all
+	global function Test*_OnStart(proplist plr) and iterate through all
 	tests. The test is completed once Test*_Completed() returns
 	true. Then Test*_OnFinished() is called, to be able to reset
 	the scenario for the next test.
@@ -22,23 +22,23 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Set zoom to full map size.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
 
 	// No FoW to see everything happening.
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 
 	// All players belong to the first team.
 	// The second team only exists for testing.
-	SetPlayerTeam(plr, 1);
+	plr->SetTeam(1);
 	
 	// Move player to the start of the scenario.
-	GetCrew(plr)->SetPosition(120, 150);
+	plr->GetCrew()->SetPosition(120, 150);
 
 	// Some knowledge to construct a flagpole.
-	GetCrew(plr)->CreateContents(Hammer);
+	plr->GetCrew()->CreateContents(Hammer);
 	GivePlrKnowledge(plr, Flagpole);
 
 	// Add test control effect.
@@ -142,7 +142,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 
 /*-- Producer Tests --*/
 
-global func Test1_OnStart(int plr)
+global func Test1_OnStart(proplist plr)
 {
 	var passed = true;
 	var producer = CreateObject(Foundry);
@@ -220,7 +220,7 @@ global func Test1_Completed(){	return true; }
 global func Test1_OnFinished(){	return; }
 
 
-global func Test2_OnStart(int plr)
+global func Test2_OnStart(proplist plr)
 {
 	var passed = true;
 	var producer = CreateObject(Foundry);
@@ -305,7 +305,7 @@ global func Test2_Completed(){	return true; }
 global func Test2_OnFinished(){	return; }
 
 
-global func Test3_OnStart(int plr)
+global func Test3_OnStart(proplist plr)
 {
 	var passed = true;
 
@@ -353,7 +353,7 @@ global func Test3_Completed(){	return true; }
 global func Test3_OnFinished(){	return; }
 
 
-global func Test4_OnStart(int plr)
+global func Test4_OnStart(proplist plr)
 {
 	var passed = true;
 
@@ -419,7 +419,7 @@ global func Test4_Completed(){	return true; }
 global func Test4_OnFinished(){	return; }
 
 // ProductionCosts
-global func Test5_OnStart(int plr)
+global func Test5_OnStart(proplist plr)
 {
 	var passed = true;
 
@@ -439,7 +439,7 @@ global func Test5_OnStart(int plr)
 global func Test5_Completed(){	return true; }
 global func Test5_OnFinished(){	return; }
 
-global func Test6_OnStart(int plr)
+global func Test6_OnStart(proplist plr)
 {
 	var passed = true;
 	Log("Testing the behavior of collection");
@@ -509,7 +509,7 @@ global func Test6_OnFinished(){	return; }
 
 
 // Producer with liquid need and pseudo liquid object.
-global func Test7_OnStart(int plr)
+global func Test7_OnStart(proplist plr)
 {
 	// Producer: Foundry
 	var passed = true;
@@ -565,7 +565,7 @@ global func Test7_OnFinished()
 }
 
 // Producer with liquid need and liquid container.
-global func Test8_OnStart(int plr)
+global func Test8_OnStart(proplist plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -597,7 +597,7 @@ global func Test8_OnFinished()
 
 
 // Producer with liquid need and liquid object.
-global func Test9_OnStart(int plr)
+global func Test9_OnStart(proplist plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -628,7 +628,7 @@ global func Test9_OnFinished()
 
 
 // Producer with fuel need, fuel object
-global func Test10_OnStart(int plr)
+global func Test10_OnStart(proplist plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -656,7 +656,7 @@ global func Test10_OnFinished()
 
 
 // Producer with fuel need, liquid container
-global func Test11_OnStart(int plr)
+global func Test11_OnStart(proplist plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -694,7 +694,7 @@ global func Test11_OnFinished()
 
 
 // Fuel functions behave correclty
-global func Test12_OnStart(int plr)
+global func Test12_OnStart(proplist plr)
 {
 	// Log what the test is about.
 	Log("Objects that are fuel should return a value > 0 if no parameter is passed to GetFuelAmount().");
@@ -731,7 +731,7 @@ global func Test12_OnFinished()
 
 
 // Producer stops production on insufficient material
-global func Test13_OnStart(int plr)
+global func Test13_OnStart(proplist plr)
 {
 	var producer = CreateObjectAbove(ToolsWorkshop, 75, 160, plr);
 	producer->CreateContents(Wood, 10);
@@ -767,7 +767,7 @@ global func Test13_OnFinished()
 
 
 // Producer stops production on insufficient material
-global func Test14_OnStart(int plr)
+global func Test14_OnStart(proplist plr)
 {
 	var producer = CreateObjectAbove(ToolsWorkshop, 75, 160, plr);
 	producer->CreateContents(Wood, 10);
@@ -805,7 +805,7 @@ global func Test14_OnFinished()
 
 
 // Foundry fueled by pump
-global func Test15_OnStart(int plr)
+global func Test15_OnStart(proplist plr)
 {
 	// Oil field
 	DrawMaterialQuad("Oil", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
@@ -847,7 +847,7 @@ global func Test15_OnFinished()
 
 
 // Producer with single substitute component
-global func Test16_OnStart(int plr)
+global func Test16_OnStart(proplist plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -879,7 +879,7 @@ global func Test16_OnFinished()
 
 
 // Producer with mixed single substitute component
-global func Test17_OnStart(int plr)
+global func Test17_OnStart(proplist plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -925,7 +925,7 @@ global func Test17_OnFinished()
 
 
 // Producer with multiple substitute components
-global func Test18_OnStart(int plr)
+global func Test18_OnStart(proplist plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(InventorsLab, 75, 160, plr);

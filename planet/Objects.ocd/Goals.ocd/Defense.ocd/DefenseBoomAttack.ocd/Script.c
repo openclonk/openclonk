@@ -292,21 +292,21 @@ public func ContactRight() { return Hit(); }
 public func Hit() { return DoFireworks(NO_OWNER); }
 public func HitObject(object ) { return DoFireworks(NO_OWNER); }
 
-public func Damage(int change, int cause, int cause_plr)
+public func Damage(int change, int cause, proplist cause_plr)
 {
 	if (change > 0)
 		return DoFireworks(cause_plr);
 	return;	
 }
 
-public func Incineration(int caused_by)
+public func Incineration(proplist caused_by)
 {
 	if (OnFire())
 		return DoFireworks(caused_by);
 	return;
 }
 
-private func DoFireworks(int killed_by)
+private func DoFireworks(proplist killed_by)
 {
 	if (rider)
 	{

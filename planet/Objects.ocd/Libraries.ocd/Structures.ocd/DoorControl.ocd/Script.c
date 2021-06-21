@@ -10,10 +10,10 @@ protected func ActivateEntrance(object entering_obj)
 	if (this->~CanBlockEnemies())
 	{
 		var for_plr = entering_obj->GetOwner();
-		if (Hostile(GetOwner(), for_plr))
+		if (GetOwner()->Hostile(for_plr))
 		{
 			entering_obj->~PlaySoundDecline();
-			PlayerMessage(for_plr, "$TxtNoEntryEnemy$", GetPlayerName(GetOwner()));
+			PlayerMessage(for_plr, "$TxtNoEntryEnemy$", GetOwner()->GetName());
 			return false;
 		}
 	}

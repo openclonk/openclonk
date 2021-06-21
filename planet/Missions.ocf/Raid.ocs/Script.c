@@ -45,9 +45,9 @@ func Initialize()
 	return true;
 }
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
-	StartSequence("Intro", 0, GetCrew(first_player));
+	StartSequence("Intro", 0, first_player->GetCrew());
 	//g_goal = CreateObject(Goal_Raid);
 	// Prepare trigger for attack sequence
 	for (var tree in FindObjects(Find_Func("IsTree")))
@@ -56,8 +56,8 @@ func DoInit(int first_player)
 		tree.ChopDown = Scenario.Tree_Chopdown;
 		//tree->ChopDown();
 	}
-	//g_attack_done = true; GetCrew()->SetPosition(npc_pyrit->GetX(), npc_pyrit->GetY()); GetCrew()->CreateObjectAbove(Airplane); GetCrew()->CreateObjectAbove(MetalBarrel);
-	//GetCrew()->CreateContents(Shovel);
+	//g_attack_done = true; first_player->GetCrew()->SetPosition(npc_pyrit->GetX(), npc_pyrit->GetY()); first_player->GetCrew()->CreateObjectAbove(Airplane); first_player->GetCrew()->CreateObjectAbove(MetalBarrel);
++	//first_player->GetCrew()->CreateContents(Shovel);
 	return true;
 }
 
@@ -74,7 +74,7 @@ func Tree_Chopdown(...)
 	return Call(this.ChopDown_A564F3, ...);
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	var crew;
 	// Ensure flag has owner
@@ -82,7 +82,7 @@ func InitializePlayer(int plr)
 	// Late join stuff
 	if (g_pyrit_spoken) GivePlrKnowledge(plr, Airplane);
 	// Join intro listening or regular scenario
-	SetPlayerViewLock(plr, true);
+	plr->SetViewLocked(true);
 	JoinPlayer(plr);
 	GivePlrKnowledge(plr, [Foundry, ToolsWorkshop, WindGenerator, Flagpole, Sawmill, Elevator, ChemicalLab, Lorry, Pickaxe, Axe, Hammer, Shovel, Barrel, Dynamite, DynamiteBox, Loam, Bucket, GoldBar, Metal, Pipe, WallKit, WindGenerator]);
 	
@@ -91,17 +91,17 @@ func InitializePlayer(int plr)
 	return;
 }
 
-func JoinPlayer(int plr, object crew, bool no_placement)
+func JoinPlayer(proplist plr, object crew, bool no_placement)
 {
-	if (!crew) crew = GetCrew(plr);
+	if (!crew) crew = plr->GetCrew();
 	if (!crew) return false;
 	if (!no_placement) crew->SetPosition(471, 338);
 	var tools;
 	if (g_attack_done) tools = [Shovel, Axe]; else tools = [];
 	for (var tool in tools)
 		if (!crew->ContentsCount(tool)) crew->CreateContents(tool);
-	SetPlayerZoomByViewRange(NO_OWNER, 400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
-	SetCursor(crew->GetOwner(), crew);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(400, 300, PLRZOOM_Set | PLRZOOM_LimitMax);
+	crew->GetOwner()->SetCursor(crew);
 	return true;
 }
 
@@ -111,7 +111,7 @@ func JoinPlayer(int plr, object crew, bool no_placement)
 
 func StartAttackSequence(object chopping_clonk)
 {
-	if (!chopping_clonk) chopping_clonk = GetCursor(GetPlayerByIndex());
+	if (!chopping_clonk) chopping_clonk = GetPlayerByIndex()->GetCursor();
 	return StartSequence("Attack", 0, chopping_clonk);
 }
 
@@ -132,6 +132,6 @@ func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/Crash.ocs");
 	GainScenarioAccess("S2Raid");
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return true; // GameOver done by outro
 }

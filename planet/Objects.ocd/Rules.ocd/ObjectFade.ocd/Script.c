@@ -10,7 +10,7 @@
 
 local fade_time = 18;
 
-public func Activate(int by_plr)
+public func Activate(proplist by_plr)
 {
 	MessageWindow(this.Description, by_plr);
 	return true;

@@ -22,16 +22,16 @@ func Initialize()
 	CreateScriptPlayer("Buddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
 }
 
-func InitializePlayer(int player)
+func InitializePlayer(proplist player)
 {
 	// Set zoom to full map size.
-	SetPlayerZoomByViewRange(player, LandscapeWidth(), nil, PLRZOOM_Direct);
+	player->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
 	
 	// No FoW to see everything happening.
-	SetFoW(false, player);
+	player->SetFoW(false);
 		
 	// Initialize script player.
-	if (GetPlayerType(player) == C4PT_Script)
+	if (player.Type == C4PT_Script)
 	{
 		// Store the player number.
 		if (script_player == nil)
@@ -39,21 +39,21 @@ func InitializePlayer(int player)
 			script_player = player;
 		}
 		// No crew needed.
-		GetCrew(player)->RemoveObject();
+		player->GetCrew()->RemoveObject();
 		return;
 	}
 	else
 	{
 		// Move player to the start of the scenario.
-		GetCrew(player)->SetPosition(265, 180);
+		player->GetCrew()->SetPosition(265, 180);
 		StartBenchmarks();
 	}
 }
 
-func RemovePlayer(int player)
+func RemovePlayer(proplist player)
 {
 	// Remove script player.
-	if ((GetPlayerType(player) == C4PT_Script) && (player == script_player))
+	if ((player.Type == C4PT_Script) && (player == script_player))
 	{
 		script_player = nil;
 	}

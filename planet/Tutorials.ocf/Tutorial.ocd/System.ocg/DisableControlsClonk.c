@@ -3,10 +3,10 @@
 
 #appendto Clonk
 
-public func ObjectControl(int plr)
+public func ObjectControl(proplist plr)
 {
 	// Check whether controls are enable for this player.
-	if (g_controls_disabled && g_controls_disabled[plr])
+	if (g_controls_disabled && g_controls_disabled[plr.ID])
 	{
 		return true;
 	}

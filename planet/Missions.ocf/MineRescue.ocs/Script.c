@@ -6,7 +6,7 @@
 
 static g_is_initialized;
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	var goal = CreateObject(Goal_ElevatorEnergy);
 	var elevator = FindObject(Find_ID(Elevator));
@@ -44,15 +44,15 @@ func DoInit(int first_player)
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	// Create start material: Hammer, shovel, axe
-	var clonk1 = GetCrew(plr, 0);
-	var clonk2 = GetCrew(plr, 1);
+	var clonk1 = plr->GetCrew(0);
+	var clonk2 = plr->GetCrew(1);
 	if (clonk1)
 	{
 		clonk1->CreateContents(Shovel);
@@ -74,6 +74,6 @@ func InitializePlayer(int plr)
 
 func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return false;
 }

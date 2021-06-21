@@ -155,10 +155,10 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// No FOW here.
-	//SetFoW(false, plr);
+	//plr->SetFoW(false);
 	SetWealth(plr, 50);
 	JoinPlayer(plr);
 	// Give all knowledge.
@@ -168,18 +168,18 @@ protected func InitializePlayer(int plr)
 	return;
 }
 
-protected func RelaunchPlayer(int plr)
+protected func RelaunchPlayer(proplist plr)
 {
 	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
+	plr->SetCursor(clonk);
 	JoinPlayer(plr);
 	return;
 }
 
-private func JoinPlayer(int plr)
+private func JoinPlayer(proplist plr)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(510, 370);
 	clonk->CreateContents(Hammer);

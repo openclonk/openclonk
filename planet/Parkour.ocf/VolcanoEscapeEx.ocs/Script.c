@@ -66,9 +66,9 @@ func VolcanoTimer()
 	var y_volcano = g_volcano->GetLavaPeak();
 	// Get player progress
 	var y_plr, n_crew;
-	for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
+	for (var player in GetPlayers(C4PT_User))
 	{
-		var crew = GetCursor(GetPlayerByIndex(i, C4PT_User));
+		var crew = player->GetCursor();
 		if (crew)
 		{
 			y_plr += crew->GetY();
@@ -88,21 +88,21 @@ func VolcanoTimer()
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Players only
-	if (GetPlayerType(plr)!=C4PT_User) return;
+	if (plr.Type!=C4PT_User) return;
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr, 400, 250, flag);
-	SetPlayerViewLock(plr, false); // no view lock so you can see the volcano!
+		plr->SetZoomByViewRange(400, 250, flag);
+	plr->SetViewLocked(false); // no view lock so you can see the volcano!
 	return true;
 }
 
 // Gamecall from parkour goal, on respawning.
-protected func OnPlayerRespawn(int plr, object cp)
+protected func OnPlayerRespawn(proplist plr, object cp)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	RecoverItem(clonk, Shovel);
 	RecoverItem(clonk, Pickaxe);
 	RecoverItem(clonk, Loam);

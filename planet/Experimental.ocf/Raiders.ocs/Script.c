@@ -32,7 +32,7 @@ func Initialize()
 
 // Player related supplies and structures
 
-func DoInit(int plr)
+func DoInit(proplist plr)
 {
 	if (is_initialized) return;
 
@@ -52,10 +52,10 @@ func DoInit(int plr)
 
 // Player positioning
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Move crew to starting location
-	var crew = GetCrew(plr, 0);
+	var crew = plr->GetCrew(0);
 	var x = 80 + Random(10);
 	crew->SetPosition(x, FindHeight(x)-10);
 	

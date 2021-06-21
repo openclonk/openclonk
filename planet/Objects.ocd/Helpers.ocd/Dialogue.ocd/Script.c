@@ -326,7 +326,7 @@ public func MessageBoxAll(string message, object talker, bool as_message)
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(message, GetCursor(plr), talker, plr, as_message);
+		MessageBox(message, plr->GetCursor(), talker, plr, as_message);
 	}
 }
 
@@ -337,8 +337,8 @@ public func MessageBoxBroadcast(string message, object clonk, object talker, arr
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		if (GetCursor(plr) != clonk)
-			MessageBox(message, GetCursor(plr), talker, plr, true);
+		if (plr->GetCursor() != clonk)
+			MessageBox(message, plr->GetCursor(), talker, plr, true);
 	}
 	// main message as dialog box
 	return MessageBox(message, clonk, talker, nil, false, options);
@@ -346,7 +346,7 @@ public func MessageBoxBroadcast(string message, object clonk, object talker, arr
 
 static MessageBox_last_talker, MessageBox_last_pos;
 
-private func MessageBox(string message, object clonk, object talker, int for_player, bool as_message, array options, proplist menu_target)
+private func MessageBox(string message, object clonk, object talker, proplist for_player, bool as_message, array options, proplist menu_target)
 {
 	// broadcast enabled: message copy to other players
 	if (dlg_broadcast && !as_message)
@@ -354,8 +354,8 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 		for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 		{
 			var other_plr = GetPlayerByIndex(i, C4PT_User);
-			if (GetCursor(other_plr) != clonk)
-				MessageBox(message, GetCursor(other_plr), talker, other_plr, true);
+			if (other_plr->GetCursor() != clonk)
+				MessageBox(message, other_plr->GetCursor(), talker, other_plr, true);
 		}
 	}
 	// Use current NPC as talker if unspecified.
@@ -461,7 +461,7 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 	else
 	{
 		// No target is given: Global (player) message
-		if (!GetType(for_player)) for_player = NO_OWNER;
+		// if (!GetType(for_player)) for_player = NO_OWNER;
 		// altenate left/right position as speakers change
 		if (talker != MessageBox_last_talker) MessageBox_last_pos = !MessageBox_last_pos;
 		MessageBox_last_talker = talker;

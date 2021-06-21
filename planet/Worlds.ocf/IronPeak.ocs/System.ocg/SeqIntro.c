@@ -27,17 +27,17 @@ public func Intro_Start()
 	return ScheduleNext(4);
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
 	var j = 0, crew;
-	while (crew = GetCrew(plr, j++))
+	while (crew = plr->GetCrew(j++))
 	{
 		crew->Enter(this.airplane);
 		crew->SetAction("Walk");	
 	}
 	
 	// Reduce zoom 
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(this.pilot);
 	return;
 }
@@ -71,13 +71,13 @@ public func Intro_3()
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var j = 0, crew;
-		while (crew = GetCrew(plr, j++))
+		while (crew = plr->GetCrew(j++))
 		{
 			crew->Exit();
 			var balloon = crew->CreateContents(Balloon);
 			balloon->ControlUseStart(crew, 10, 3);			
 		}
-		SetPlrView(plr, GetCrew(plr));
+		plr->SetViewTarget(plr->GetCrew());
 	}
 	return ScheduleNext(20);
 }
@@ -130,13 +130,13 @@ public func Intro_6()
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var j = 0, crew;
-		while (crew = GetCrew(plr, j++))
+		while (crew = plr->GetCrew(j++))
 			RemoveAll(Find_ID(Balloon), Find_Container(crew));		
 	}
 	
 	// Tell players about tools and the mission goal.
 	MessageBoxAll("$MsgCrewLanded$", this.pilot, true);
-	SetPlayerZoomByViewRange(NO_OWNER, 500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return ScheduleNext(80);
 }
 
@@ -152,6 +152,6 @@ public func Intro_Stop()
 	this.airplane->RemoveObject();
 	
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

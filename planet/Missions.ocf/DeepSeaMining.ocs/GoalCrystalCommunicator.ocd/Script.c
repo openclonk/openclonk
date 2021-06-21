@@ -17,7 +17,7 @@ public func IsFulfilled()
 	return ObjectCount(Find_ID(CrystalCommunicator));
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -28,7 +28,7 @@ public func GetDescription(int plr)
 }
 
 // Shows or hides a message window with information.
-public func Activate(int plr)
+public func Activate(proplist plr)
 {
 	// If goal message open -> hide it.
 	if (GetEffect("GoalMessage", this))
@@ -54,7 +54,7 @@ public func Activate(int plr)
 
 protected func FxGoalMessageStart() {}
 
-//public func GetShortDescription(int plr) { return ""; }
+//public func GetShortDescription(proplist plr) { return ""; }
 
 /*-- Proplist --*/
 

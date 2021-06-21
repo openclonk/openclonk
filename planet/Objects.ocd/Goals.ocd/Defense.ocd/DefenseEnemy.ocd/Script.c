@@ -75,7 +75,7 @@ public func LaunchEnemy(proplist prop_enemy, int wave_nr, int enemy_plr)
 	return;	
 }
 
-private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, proplist rect)
+private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, proplist enemy_plr, proplist rect)
 {
 	// Create enemy (per default a Clonk) at the given location.
 	var x = rect.x + Random(rect.wdt);
@@ -247,7 +247,7 @@ private func CreateArrowForPlayers(int x, int y)
 {
 	for (var plr in GetPlayers(C4PT_User))
 	{
-		var cursor = GetCursor(plr);
+		var cursor = plr->GetCursor();
 		if (!cursor) 
 			continue;
 		var arrow = CreateObject(GUI_GoalArrow, cursor->GetX(), cursor->GetY(), plr);

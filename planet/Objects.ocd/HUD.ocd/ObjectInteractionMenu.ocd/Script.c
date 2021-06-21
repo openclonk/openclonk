@@ -13,7 +13,7 @@ static const InteractionMenu_Custom = 4;
 
 /*
 	This contains an array with a proplist for every player number.
-	The attributes are also always attached to every interaction menu on creation (menu.minimized = InteractionMenu_Attributes[plr].minimized;).
+	The attributes are also always attached to every interaction menu on creation (menu.minimized = InteractionMenu_Attributes[plr.ID].minimized;).
 	The following properties are either used or nil:
 		minimized (bool): whether the player minimized the menu.
 			A minimized menu does not show some elements (like the description box).
@@ -118,9 +118,9 @@ func CreateFor(object cursor, id style_def, array settings)
 		InteractionMenu_Attributes = [];
 	
 	// Transfer some attributes from the player configuration.
-	if (GetLength(InteractionMenu_Attributes) > cursor->GetOwner())
+	if (GetLength(InteractionMenu_Attributes) > cursor->GetOwner().ID)
 	{
-		var config = InteractionMenu_Attributes[cursor->GetOwner()];
+		var config = InteractionMenu_Attributes[cursor->GetOwner().ID];
 		obj.minimized = GetProperty("minimized", config) ?? false; 
 	}
 	else
@@ -423,14 +423,14 @@ private func DoInteractionMenuClosedCallback(object obj)
 public func OnToggleMinimizeClicked()
 {
 	var config = nil;
-	if (GetLength(InteractionMenu_Attributes) <= GetOwner())
+	if (GetLength(InteractionMenu_Attributes) <= GetOwner().ID)
 	{
 		config = {minimized = false};
-		InteractionMenu_Attributes[GetOwner()] = config;
+		InteractionMenu_Attributes[GetOwner().ID] = config;
 	}
 	else
 	{
-		config = InteractionMenu_Attributes[GetOwner()];
+		config = InteractionMenu_Attributes[GetOwner().ID];
 	}
 	config.minimized = !(GetProperty("minimized", config) ?? false);
 	
@@ -514,7 +514,7 @@ func RefreshSidebar(int slot)
 	GuiUpdate({sidebar = sidebar}, current_main_menu_id, 1, current_menus[slot].menu_object);
 }
 
-func OnSidebarEntrySelected(data, int player, int ID, int subwindowID, object target)
+func OnSidebarEntrySelected(data, proplist player, int ID, int subwindowID, object target)
 {
 	if (!data.obj) return;
 	
@@ -624,7 +624,7 @@ func GetEntryInformation(proplist menu_info, int entry_index)
 	return {menu = menu, entry = entry};
 }
 
-func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
+func OnMenuEntryHover(proplist menu_info, int entry_index, proplist player)
 {
 	var info = GetEntryInformation(menu_info, entry_index);
 	if (!info.entry) return;
@@ -685,7 +685,7 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 	}
 }
 
-func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
+func OnMenuEntrySelected(proplist menu_info, int entry_index, proplist player)
 {
 	var info = GetEntryInformation(menu_info, entry_index);
 	if (!info.entry) return;
@@ -718,7 +718,7 @@ private func OnContentsSelection(symbol, extra_data)
 		return;
 	}
 
-	var transfer_only_one = GetPlayerControlState(GetOwner(), CON_ModifierMenu1) == 0; // Transfer ONE object of the stack?
+	var transfer_only_one = GetOwner()->GetControlState(CON_ModifierMenu1) == 0; // Transfer ONE object of the stack?
 	var to_transfer = nil;
 
 	if (transfer_only_one)
@@ -1205,7 +1205,7 @@ func CreateDummy()
 	return dummy;
 }
 
-func RemoveDummy(object dummy, int player, int ID, int subwindowID, object target)
+func RemoveDummy(object dummy, proplist player, int ID, int subwindowID, object target)
 {
 	if (dummy)
 		dummy->RemoveObject();

@@ -72,7 +72,7 @@
         </row>
         <row>
           <col>C4D_MouseSelect</col>
-          <col>Object can be clicked with the mouse, causing a MouseSelection(int player) callback in the object.</col>
+          <col>Object can be clicked with the mouse, causing a MouseSelection(proplist player) callback in the object.</col>
           <col></col>
         </row>
         <row>

@@ -24,7 +24,7 @@ public func IsFulfilled()
 	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i), obj;
-		for (var j = 0; obj = GetCrew(plr, j); ++j)
+		for (var j = 0; obj = plr->GetCrew(j); ++j)
 			if (ObjectDistance(obj, cabin) > 80)
 				return false;
 	}
@@ -32,7 +32,7 @@ public func IsFulfilled()
 	return true;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -42,7 +42,7 @@ public func GetDescription(int plr)
 	return message;
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	if (IsFulfilled())
 		MessageWindow("$MsgGoalFulfilled$", byplr);
@@ -51,7 +51,7 @@ public func Activate(int byplr)
 	return;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return "$GetBack$";
 }

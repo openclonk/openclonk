@@ -38,7 +38,7 @@
     <remark>The cell in the top left corner is never displayed. Instead, the value for row_id == SBRD_Caption and coloumn_id == SBRD_Caption is displayed in the header. If no value is specified here, the scoreboard will not have a header and can not be moved using the mouse.</remark>
     <examples>
       <example>
-        <code>protected func InitializePlayer(int player)
+        <code>protected func InitializePlayer(proplist player)
   {
   var player_id = <funclink>GetPlayerID</funclink>(player), coloumn_id = 1;
   SetScoreboardData(SBRD_Caption, coloumn_id,   &quot;{{RVLR}}&quot;,                coloumn_id);
@@ -50,9 +50,9 @@
   return true;
   }</code>
         <text>This might be a typical function for intializing the scoreboard in a scenario script: for each player a row is created. The row header is the player name and another column per row contains the starting score of 0.<br/> To index the rows we are using the player id (iPlrID). This player id is unique for each joined player so newly joining or rejoining players will get a unique id as well. 1 is used as column index for the score.<br/> The first call to SetScoreboardData sets the header of the score column to "{{RVLR}}"; which will display the picture of the rule object "Rivalry". The second call enters a "0" into the score column for the joining player. The third call sets the scoreboard title to "Score". The fourth call sets the row header (meaning the left column) to the player name and player color of the joining player.<br/> By using <funclink>SortScoreboard</funclink> the scoreboard is then sorted in descending order. The global variable of player index is then set to 0 so we can keep track of the player's score here.</text>
-        <code>protected func RemovePlayer(int player)
+        <code>protected func RemovePlayer(proplist player)
   {
-  var player_id = <funclink>GetPlayerID</funclink>(player), coloumn_id = 1;
+  var player_id = player.ID, coloumn_id = 1;
   SetScoreboardData(player_id, coloumn_id, 0 ,0);
   }</code>
         <text>Another function in the same scenario script would remove the cell in the score column of a deleted player. If no other scripts have accessed the scoreboard, this would effectively completely remove the player from the scoreboard, since no other cells except headers would contain any data.</text>
@@ -74,4 +74,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2006-02</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

@@ -27,11 +27,11 @@
     <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>SetViewLocked()</code>.</remark>
     <examples>
       <example>
-        <code>func InitializePlayer(int plr)
+        <code>func InitializePlayer(proplist plr)
 {
-  <funclink>SetPlayerZoomByViewRange</funclink>(plr, 1000, 0, PLRZOOM_LimitMin);
-  <funclink>SetPlayerZoomByViewRange</funclink>(plr, 1000, 0, PLRZOOM_LimitMax);
-  <funclink>GetPlayer</funclink>-&gt;SetViewLocked(true);
+  plr->&gt;SetZoomByViewRange(1000, 0, PLRZOOM_LimitMin);
+  plr->&gt;SetZoomByViewRange(1000, 0, PLRZOOM_LimitMax);
+  plr->&gt;SetViewLocked(true);
   return true;
 }</code>
         <text>Code for a scenario script: Players can see exactly 1000 pixels wide around their Clonk and cannot scroll further.</text>

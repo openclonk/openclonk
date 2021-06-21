@@ -2,7 +2,7 @@
 	Object interaction menu
 	Unit tests for the inventory and object actions GUI.
 	
-	Invokes tests by calling the global function Test*_OnStart(int plr)
+	Invokes tests by calling the global function Test*_OnStart(proplist plr)
 	and iterate through all tests.
 	The test is completed once Test*_Completed() returns true.
 	Then Test*_OnFinished() is called, to be able to reset the scenario
@@ -17,13 +17,13 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Set zoom and move player to the middle of the scenario.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
-	SetFoW(false, plr);
-	GetCrew(plr)->SetPosition(120, 190);
-	GetCrew(plr)->MakeInvincible();
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
+	plr->SetFoW(false);
+	plr->GetCrew()->SetPosition(120, 190);
+	plr->GetCrew()->MakeInvincible();
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
@@ -128,7 +128,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 }
 
 
-global func Test1_OnStart(int plr){ return true;}
+global func Test1_OnStart(proplist plr){ return true;}
 global func Test1_OnFinished(){ return; }
 global func Test1_Execute()
 {
@@ -232,7 +232,7 @@ global func Test1_Transfer(object menu, tested_function, object source, object d
 }
 
 
-global func Test2_OnStart(int plr){ return true;}
+global func Test2_OnStart(proplist plr){ return true;}
 global func Test2_OnFinished(){ return; }
 global func Test2_Execute()
 {
@@ -346,7 +346,7 @@ global func Test2_Transfer(object menu, tested_function, object source, object d
 }
 
 
-global func Test3_OnStart(int plr){ return true;}
+global func Test3_OnStart(proplist plr){ return true;}
 global func Test3_OnFinished(){ return; }
 global func Test3_Execute()
 {
@@ -458,7 +458,7 @@ global func Test3_Transfer(object menu, tested_function, object source, object d
 }
 
 
-global func Test4_OnStart(int plr){ return true;}
+global func Test4_OnStart(proplist plr){ return true;}
 global func Test4_OnFinished(){ return; }
 global func Test4_Execute()
 {
@@ -565,7 +565,7 @@ global func Test4_Transfer(object menu, tested_function, object source, object d
 }
 
 
-global func Test5_OnStart(int plr){ return true;}
+global func Test5_OnStart(proplist plr){ return true;}
 global func Test5_OnFinished(){ return; }
 global func Test5_Execute()
 {
@@ -668,7 +668,7 @@ global func Test5_ForceRefresh(object source)
 }
 
 
-global func Test6_OnStart(int plr){ return true;}
+global func Test6_OnStart(proplist plr){ return true;}
 global func Test6_OnFinished(){ return; }
 global func Test6_Execute()
 {
@@ -765,7 +765,7 @@ global func Test6_Transfer(object menu, tested_function, object source)
 }
 
 
-global func Test7_OnStart(int plr){ return true;}
+global func Test7_OnStart(proplist plr){ return true;}
 global func Test7_OnFinished(){ return; }
 global func Test7_Execute()
 {
@@ -852,7 +852,7 @@ global func Test7_Transfer(object menu, tested_function, object source, object d
 
 
 
-global func Test8_OnStart(int plr){ return true;}
+global func Test8_OnStart(proplist plr){ return true;}
 global func Test8_OnFinished(){ return; }
 global func Test8_Execute()
 {
@@ -942,7 +942,7 @@ global func Test8_Transfer(object menu, tested_function, object source, object d
 
 
 
-global func TestY_OnStart(int plr){ return true;}
+global func TestY_OnStart(proplist plr){ return true;}
 global func TestY_OnFinished(){ return; }
 global func TestY_Execute()
 {

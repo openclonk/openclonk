@@ -264,7 +264,7 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 	var hold_enabled = obj->Call("~HoldingEnabled");
 
 	if (hold_enabled)
-		SetPlayerControlEnabled(GetOwner(), CON_Aim, true);
+		GetOwner()->SetControlEnabled(CON_Aim, true);
 
 	// first call UseStart. If unhandled, call Use (mousecontrol)
 	var handled = obj->Call(GetUseCallString("Start"), this, x, y);
@@ -284,7 +284,7 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 		this.control.current_object = nil;
 		this.control.using_type = nil;
 		if (hold_enabled)
-			SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
+			GetOwner()->SetControlEnabled(CON_Aim, false);
 		return false;
 	}
 	else
@@ -356,7 +356,7 @@ func StopUseControl(int x, int y, object obj, bool cancel)
 		}
 		this.control.noholdingcallbacks = false;
 		
-		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
+		GetOwner()->SetControlEnabled(CON_Aim, false);
 
 		if (this->~HasVirtualCursor())
 			this->~VirtualCursor()->StopAim();

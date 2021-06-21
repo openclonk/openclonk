@@ -100,9 +100,9 @@ private func Execute()
 	return true;
 }
 
-private func ExecutePlayer(int plr)
+private func ExecutePlayer(proplist plr)
 {
-	var cursor = GetCursor(plr);
+	var cursor = plr->GetCursor();
 	// Determine environment the player is currently in
 	var environment = nil;
 	if (cursor)
@@ -126,7 +126,7 @@ private func ExecutePlayer(int plr)
 					}
 					// New environment and change delay has passed.
 					environment.no_change_delay = environment.min_initial_change_delay;
-					Log("%s environment: %s", GetPlayerName(plr), environment.music);
+					Log("%s environment: %s", plr->GetName(), environment.music);
 				}
 				else
 				{
@@ -148,21 +148,21 @@ private func ExecutePlayer(int plr)
 	return true;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Newly joining players should have set playlist immediately (so they don't start playing a random song just to switch it immediately)
 	ExecutePlayer(plr);
 	return true;
 }
 
-func RemovePlayer(int plr)
+func RemovePlayer(proplist plr)
 {
 	// Ensure newly joining players don't check on another player's environment
-	last_environment[plr] = nil;
+	last_environment[plr.ID] = nil;
 	return true;
 }
 
-protected func Activate(int byplr)
+protected func Activate(proplist byplr)
 {
 	MessageWindow(this.Description, byplr);
 	return true;

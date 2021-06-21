@@ -63,9 +63,9 @@ func Initialize()
                              ->SetStartingKnowledge();
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
-	var crew = GetCrew(plr);
+	var crew = plr->GetCrew();
 	crew->CreateContents(Shovel);
 	crew->CreateContents(Hammer);
 	crew->CreateContents(Axe);
@@ -75,9 +75,9 @@ func InitializePlayer(int plr)
 	{
 		var x = flagpole->GetX();
 		var y = flagpole->GetY();
-		for (var i = 0; i < GetCrewCount(plr); ++i)
+		for (var i = 0; i < plr->GetCrewCount(); ++i)
 		{
-			GetCrew(plr, i)->SetPosition(x, y);
+			plr->GetCrew(i)->SetPosition(x, y);
 		}
 	}
 
@@ -89,8 +89,8 @@ func InitializePlayer(int plr)
 	SetScoreboardData(SBRD_Caption, SBRD_Caption,  "Player", SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, COL_Score,     "{{Nugget}}");
 	
-	SetScoreboardData(plr,     SBRD_Caption,  GetTaggedPlayerName(plr));
-	SetScoreboardData(plr,     COL_Score,     "0", 0);
+	SetScoreboardData(plr.ID,     SBRD_Caption,  plr->GetTaggedName());
+	SetScoreboardData(plr.ID,     COL_Score,     "0", 0);
 	
 	UpdateScoreboard();
 }
@@ -99,7 +99,7 @@ func UpdateScoreboard()
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		var playerid = GetPlayerByIndex(i);
+		var playerid = GetPlayerByIndex(i).ID;
 		var pscore = GetWealth(GetPlayerByIndex(i));
 		SetScoreboardData(playerid, COL_Score, Format("%d", pscore), pscore);
 	}	
@@ -144,7 +144,7 @@ func CreateFlagpole(object near_clonk)
 	return flagpole;
 }
 
-func OnClonkDeath(object clonk, int killed_by)
+func OnClonkDeath(object clonk, proplist killed_by)
 {
 	var w1 = GetWealth(clonk->GetOwner()) / 10;
 	DoWealth(clonk->GetOwner(), w1 * -1);
@@ -157,7 +157,7 @@ func OnCountdownFinished()
 	g_timeover = true;
 }
 
-func BaseMats(int plr)
+func BaseMats(proplist plr)
 {
 	var materials;
 	

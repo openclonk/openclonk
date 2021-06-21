@@ -6,7 +6,7 @@
   <func>
     <title>GetPlayerByIndex</title>
     <category>Player</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -23,16 +23,17 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the indicated player number. This function guarantees that for values from 0 to GetPlayerCount()-1 a valid player number will be returned (notice that there may be "gaps" between player numbers in case some players have left the game). This makes it easier to process all players in a loop.</desc>
+    <desc>Returns the indicated player. This function guarantees that for values from 0 to GetPlayerCount()-1 a valid player will be returned (notice that there may be "gaps" between player numbers in case some players have left the game). This makes it easier to process all players in a loop.</desc>
+    <remark>Before 9.0 OC this function returned the number of the respective player.</remark>
     <examples>
       <example>
         <code><funclink>for</funclink>(var i = 0; i &lt; <funclink>GetPlayerCount</funclink>(); i++)
-  <funclink>Log</funclink>(&quot;Moin, %s&quot;, <funclink>GetPlayerName</funclink>(GetPlayerByIndex(i)));</code>
+  <funclink>Log</funclink>(&quot;Moin, %s&quot;, GetPlayerByIndex(i)-&gt;<funclink>GetName</funclink>());</code>
         <text>Welcomes all players in the log file.</text>
       </example>
       <example>
         <code><funclink>for</funclink>(var i = 0; i &lt; <funclink>GetPlayerCount</funclink>(C4PT_User); i++)
-  <funclink>EliminatePlayer</funclink>(GetPlayerByIndex(i, C4PT_User));</code>
+  GetPlayerByIndex(i, C4PT_User)-&gt;Eliminate();</code>
         <text>Eliminates all human players but excludes script players.</text>
       </example>
     </examples>
@@ -44,4 +45,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2007-12</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

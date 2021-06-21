@@ -14,9 +14,9 @@ public func Intro_Init(int for_plr)
 	return true;
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
-	SetPlayerZoomByViewRange(plr, 240, nil, PLRZOOM_Direct | PLRZOOM_Set);
+	plr->SetZoomByViewRange(240, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	return;
 }
 
@@ -91,6 +91,6 @@ public func Intro_Stop()
 	GameCall("OnIntroSequenceFinished", this.plr);
 	this.plr_clonk->PopActionSpeed("Walk", "Intro");
 	this.head->PopActionSpeed("Walk", "Intro");
-	SetPlayerZoomByViewRange(this.for_plr, 400, nil, PLRZOOM_Direct | PLRZOOM_Set);
+	this.for_plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	return true;
 }

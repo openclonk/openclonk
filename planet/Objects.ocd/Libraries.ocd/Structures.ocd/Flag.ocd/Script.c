@@ -266,7 +266,7 @@ protected func FxIntFlagMovementCheckTimer(object target, proplist effect)
 }
 
 // Returns all flags allied to owner of which the radius intersects the given circle.
-public func FindFlagsInRadius(object center_object, int radius, int owner)
+public func FindFlagsInRadius(object center_object, int radius, proplist owner)
 {
 	var flag_list = [];
 	if (LIB_FLAG_FlagList)
@@ -364,7 +364,7 @@ public func CopyLinkedFlags(object from, array flaglist)
 }
 
 // Engine callback: owner of the flag has changed.
-protected func OnOwnerChanged(int new_owner, int old_owner)
+protected func OnOwnerChanged(proplist new_owner, proplist old_owner)
 {
 	// Debugging logs.
 	//Log("FLAG - OnOwnerChanged(): flag = %v, new_owner = %d, old_owner = %d", this, new_owner, old_owner);
@@ -386,7 +386,7 @@ protected func OnOwnerChanged(int new_owner, int old_owner)
 }
 
 // Engine callback: a player has changed its hostility.
-protected func OnHostilityChange(int player1, int player2, bool hostile, bool old_hostility)
+protected func OnHostilityChange(proplist player1, proplist player2, bool hostile, bool old_hostility)
 {
 	// Debugging logs.
 	//Log("FLAG - OnHostilityChange(): flag = %v, player1 = %d, player2 = %d, hostile = %v, old_hostility = %v", this, player1, player2, hostile, old_hostility);
@@ -400,7 +400,7 @@ protected func OnHostilityChange(int player1, int player2, bool hostile, bool ol
 }
 
 // Engine callback: a player has switched its team.
-protected func OnTeamSwitch(int player, int new_team, int old_team)
+protected func OnTeamSwitch(proplist player, int new_team, int old_team)
 {
 	// Debugging logs.
 	//Log("FLAG - OnTeamSwitch(): flag = %v, player = %d, new_team = %d, old_team = %d", this, player, new_team, old_team);

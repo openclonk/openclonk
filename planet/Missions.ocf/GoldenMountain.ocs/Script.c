@@ -21,12 +21,12 @@ func Initialize()
 
 static g_was_player_init;
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr, 500, 350, flag);
-	SetPlayerViewLock(plr, true);
+		plr->SetZoomByViewRange(500, 350, flag);
+	plr->SetViewLocked(true);
 	// First player init base
 	if (!g_was_player_init)
 	{
@@ -35,7 +35,7 @@ func InitializePlayer(int plr)
 	}
 	// Position and materials
 	var i, crew;
-	for (i = 0; crew = GetCrew(plr, i); ++i)
+	for (i = 0; crew = plr->GetCrew(i); ++i)
 	{
 		crew->SetPosition(500 + Random(100), 200-10);
 		crew->CreateContents(Shovel);
@@ -87,6 +87,6 @@ private func InitBase(int owner)
 
 func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return false;
 }

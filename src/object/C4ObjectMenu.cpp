@@ -173,7 +173,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				sprintf(szCommand,R"(SetCommand("Activate",Object(%d))&&ExecuteCommand())",pObj->Number);
 				sprintf(szCommand2,R"(SetCommand("Activate",nil,%d,0,Object(%d),%s)&&ExecuteCommand())",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,pDef->id.ToString());
 				// Add menu item
-				Add(szCaption,fctSymbol,szCommand,iCount,pObj,"",pDef->id,szCommand2,true,pObj->GetValue(pTarget, NO_OWNER));
+				Add(szCaption,fctSymbol,szCommand,iCount,pObj,"",pDef->id,szCommand2,true,pObj->GetValue(pTarget, nullptr));
 				// facet taken over (arrg!)
 				fctSymbol.Default();
 			}

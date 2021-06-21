@@ -130,13 +130,13 @@ func Definition(def)
 }
 
 // Check if given player is in mask
-public func EvaluatePlayerMask(proplist mask, int player)
+public func EvaluatePlayerMask(proplist mask, proplist player)
 {
 	if (!mask) return false;
 	var option = mask.Option;
 	if (option == "all") return true;
 	if (option == "number") return player == mask.Data;
-	if (option == "team") return GetPlayerTeam(player) == mask.Data;
+	if (option == "team") return player->GetTeam() == mask.Data;
 	// Unknown player mask option
 	return false;
 }
@@ -164,7 +164,7 @@ public func GetConditionalIDList(string condition, string name, proplist default
 }
 
 // Create item specieid in ItemsPlusParameters delegate
-public func CreateItemPlusParameter(proplist param, int x, int y, int owner)
+public func CreateItemPlusParameter(proplist param, int x, int y, proplist owner)
 {
 	if (!param) return nil;
 	var id;

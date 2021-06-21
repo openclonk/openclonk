@@ -26,7 +26,7 @@ public func OnShiftCursor(object new_cursor)
 	return _inherited(new_cursor, ...);
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
+public func ObjectControl(proplist plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this) 
 		return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
@@ -104,10 +104,10 @@ private func FxIntHighlightInteractionStart(object target, proplist fx, temp, pr
 	}
 	var multiple_interactions_hint = "";
 	if (fx.interaction.has_multiple_interactions)
-		multiple_interactions_hint = Format("|<c 999999>[%s] $More$..</c>", GetPlayerControlAssignment(GetOwner(), CON_Up, true, false));
+		multiple_interactions_hint = Format("|<c 999999>[%s] $More$..</c>", GetOwner()->GetControlAssignment(CON_Up, true, false));
 	var cycle_interactions_hint = "";
 	if (nr_interactions > 1)
-		cycle_interactions_hint = Format("|<c 999999>[%s/%s] $Cycle$..</c>", GetPlayerControlAssignment(GetOwner(), CON_Left, true, false), GetPlayerControlAssignment(GetOwner(), CON_Right, true, false));
+		cycle_interactions_hint = Format("|<c 999999>[%s/%s] $Cycle$..</c>", GetOwner()->GetControlAssignment(CON_Left, true, false), GetOwner()->GetControlAssignment(CON_Right, true, false));
 	fx.dummy->Message("@<c eeffee>%s</c>%s%s|", fx.interaction_help.help_text, multiple_interactions_hint, cycle_interactions_hint);
 
 	// Center dummy!
@@ -150,7 +150,7 @@ private func FxIntHighlightInteractionCreateSelectorParticle(object target, effe
 		Alpha = 200
 	};
 
-	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetPlayerColor(GetOwner())), 1);
+	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetOwner()->GetColor()), 1);
 }
 
 private func FxIntHighlightInteractionTimer(object target, proplist fx, int time)

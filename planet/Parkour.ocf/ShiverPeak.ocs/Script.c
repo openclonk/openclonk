@@ -96,16 +96,16 @@ private func MapBottomFix()
 	return;
 }
 
-protected func InitializePlayer(int player)
+protected func InitializePlayer(proplist player)
 {
-	SetPlayerTeam(player, 1);
+	player->SetTeam(1);
 	return;
 }
 
 // Callback from parkour goal: give the player useful tools on respawn.
-protected func OnPlayerRespawn(int plr, object cp)
+protected func OnPlayerRespawn(proplist plr, object cp)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->CreateContents(Shovel);
 	clonk->CreateContents(Loam);
 	clonk->CreateContents(Dynamite);

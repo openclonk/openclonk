@@ -171,7 +171,7 @@ global func InitGameAnimals()
 	return;
 }
 
-global func InitPlayerSettings(int plr)
+global func InitPlayerSettings(proplist plr)
 {
 	if (Settings_GodMode == nil)
 		Settings_GodMode = SCENPAR_GodMode;
@@ -180,7 +180,7 @@ global func InitPlayerSettings(int plr)
 	return;
 }
 
-global func IsFirstPlayer(int plr)
+global func IsFirstPlayer(proplist plr)
 {
 	var lowest_plr = 10**6;
 	for (var check_plr in GetPlayers(C4PT_User))

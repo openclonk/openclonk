@@ -392,17 +392,13 @@ static C4Value FnGetCrewExtraData(C4Object *Obj, C4String * DataName)
 	return pInfo->ExtraData[ival];
 }
 
-static void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, Nillable<long> iCausedBy)
+static void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, C4Player *caused_by)
 {
 	if (iEngType.IsNil())
 	{
 		iEngType = C4FxCall_EngScript;
 	}
-	if (iCausedBy.IsNil())
-	{
-		iCausedBy = NO_OWNER;
-	}
-	Obj->DoEnergy(iChange, fExact, iEngType, iCausedBy);
+	Obj->DoEnergy(iChange, fExact, iEngType, caused_by);
 }
 
 static void FnDoBreath(C4Object *Obj, long iChange)
@@ -410,17 +406,13 @@ static void FnDoBreath(C4Object *Obj, long iChange)
 	Obj->DoBreath(iChange);
 }
 
-static void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, Nillable<long> iCausedBy)
+static void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, C4Player *caused_by)
 {
 	if (iDmgType.IsNil())
 	{
 		iDmgType = C4FxCall_DmgScript;
 	}
-	if (iCausedBy.IsNil())
-	{
-		iCausedBy = NO_OWNER;
-	}
-	Obj->DoDamage(iChange, iCausedBy, iDmgType);
+	Obj->DoDamage(iChange, caused_by, iDmgType);
 }
 
 static void FnSetEntrance(C4Object *Obj, bool e_status)
@@ -521,10 +513,10 @@ static void FnSetAlive(C4Object *Obj, bool nalv)
 	Obj->SetAlive(nalv);
 }
 
-static bool FnSetOwner(C4Object *Obj, long iOwner)
+static bool FnSetOwner(C4Object *Obj, C4Player *new_owner)
 {
 	// Set owner
-	return !!Obj->SetOwner(iOwner);
+	return !!Obj->SetOwner(new_owner);
 }
 
 static bool FnSetPhase(C4Object *Obj, long iVal)
@@ -909,42 +901,32 @@ static bool FnGetAlive(C4Object *Obj)
 	return Obj->GetAlive();
 }
 
-static long FnGetOwner(C4Object *Obj)
+static C4PropList *FnGetOwner(C4Object *Obj)
 {
-	return Obj->Owner;
+	return ::Players.Get(Obj->Owner);
 }
 
-static long FnGetController(C4Object *Obj)
+static C4PropList *FnGetController(C4Object *Obj)
 {
-	return Obj->Controller;
+	return ::Players.Get(Obj->Controller);
 }
 
-static bool FnSetController(C4Object *Obj, long iNewController)
+static bool FnSetController(C4Object *Obj, C4Player *new_controller)
 {
-	// validate player
-	if (iNewController != NO_OWNER && !ValidPlr(iNewController))
-	{
-		return false;
-	}
 	// Set controller
-	Obj->Controller = iNewController;
+	Obj->Controller = new_controller == nullptr ? NO_OWNER : new_controller->Number;
 	return true;
 }
 
-static long FnGetKiller(C4Object *Obj)
+static C4PropList *FnGetKiller(C4Object *Obj)
 {
-	return Obj->LastEnergyLossCausePlayer;
+	return ::Players.Get(Obj->LastEnergyLossCausePlayer);
 }
 
-static bool FnSetKiller(C4Object *Obj, long iNewKiller)
+static bool FnSetKiller(C4Object *Obj, C4Player* new_killer)
 {
-	// Validate player
-	if (iNewKiller != NO_OWNER && !ValidPlr(iNewKiller))
-	{
-		return false;
-	}
 	// Set killer as last energy loss cause
-	Obj->LastEnergyLossCausePlayer = iNewKiller;
+	Obj->LastEnergyLossCausePlayer = new_killer == nullptr ? NO_OWNER : new_killer->Number;
 	return true;
 }
 
@@ -977,7 +959,7 @@ static long FnGetDamage(C4Object *Obj)
 	return Obj->Damage;
 }
 
-static long FnGetValue(C4PropList * _this, C4Object *pInBase, long iForPlayer)
+static long FnGetValue(C4PropList * _this, C4Object *pInBase, C4Player *player)
 {
 	if (!Object(_this))
 	{
@@ -987,12 +969,12 @@ static long FnGetValue(C4PropList * _this, C4Object *pInBase, long iForPlayer)
 		}
 		else
 		{
-			return _this->GetDef()->GetValue(pInBase, iForPlayer);
+			return _this->GetDef()->GetValue(pInBase, player);
 		}
 	}
 	else
 	{
-		return Object(_this)->GetValue(pInBase, iForPlayer);
+		return Object(_this)->GetValue(pInBase, player);
 	}
 }
 
@@ -1533,13 +1515,16 @@ static C4Object *FnCreateContents(C4Object *Obj, C4PropList * PropList, Nillable
 	return pNewObj;
 }
 
-static bool FnMakeCrewMember(C4Object *Obj, long iPlayer)
+static bool FnMakeCrewMember(C4Object *Obj, C4Player *player)
 {
-	if (!ValidPlr(iPlayer))
+	if (!player)
 	{
 		return false;
 	}
-	return !!::Players.Get(iPlayer)->MakeCrewMember(Obj);
+	// Is not added to C4PlayerScript because the syntax usually is
+	// crew->SetOwner(player); crew->MakeCrewMember(player);
+	// and the inversion does not add value
+	return !!player->MakeCrewMember(Obj);
 }
 
 static bool FnGrabObjectInfo(C4Object *Obj, C4Object *pFrom)
@@ -1553,16 +1538,18 @@ static bool FnGrabObjectInfo(C4Object *Obj, C4Object *pFrom)
 	return !!Obj->GrabInfo(pFrom);
 }
 
-static bool FnSetCrewStatus(C4Object *Obj, long iPlr, bool fInCrew)
+static bool FnSetCrewStatus(C4Object *Obj, C4Player *player, bool fInCrew)
 {
 	// validate player
-	C4Player *pPlr = ::Players.Get(iPlr);
-	if (!pPlr)
+	if (!player)
 	{
 		return false;
 	}
 	// set crew status
-	return !!pPlr->SetObjectCrewStatus(Obj, fInCrew);
+	// Is not added to C4PlayerScript because the syntax usually is
+	// crew->SetOwner(player); crew->MakeCrewMember(player);
+	// and the inversion does not add value
+	return !!player->SetObjectCrewStatus(Obj, fInCrew);
 }
 
 static long FnSetTransferZone(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
@@ -1668,9 +1655,9 @@ static C4String *FnGetProcedure(C4Object *Obj)
 	return pActionDef->GetPropertyStr(P_Procedure);
 }
 
-static bool FnCheckVisibility(C4Object *Obj, int plr)
+static bool FnCheckVisibility(C4Object *Obj, C4Player *player)
 {
-	return Obj->IsVisible(plr, false);
+	return Obj->IsVisible(player == nullptr ? NO_OWNER : player->Number, false);
 }
 
 static bool FnSetClrModulation(C4Object *Obj, Nillable<long> dwClr, long iOverlayID)

@@ -28,7 +28,7 @@ func Initialize()
 
 static g_was_player_init;
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// First player init base
 	if (!g_was_player_init)
@@ -37,7 +37,7 @@ func InitializePlayer(int plr)
 		g_was_player_init = true;
 	}
 	// Position.
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	var pos = RelaunchPosition();
 	clonk->SetPosition(pos[0], pos[1]);
 	return true;
@@ -59,19 +59,19 @@ private func InitBase(int owner)
 	return true;
 }
 
-public func RelaunchPlayer(int plr)
+public func RelaunchPlayer(proplist player)
 {
-	var clonk = CreateObjectAbove(Clonk, 50, 1000, plr);
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
+	var clonk = CreateObjectAbove(Clonk, 50, 1000, player);
+	clonk->MakeCrewMember(player);
+	player->SetCursor(clonk);
 	return true;
 }
 
-public func OnPlayerRelaunch(int plr, bool is_relaunch)
+public func OnPlayerRelaunch(proplist plr, bool is_relaunch)
 {
 	if (!is_relaunch)
 	{
-		var clonk = GetCrew(plr);
+		var clonk = plr->GetCrew();
 		clonk->CreateContents(GrappleBow, 2);
 		clonk->CreateContents(WindBag);
 		clonk->CreateContents(TeleGlove);
@@ -86,6 +86,6 @@ public func RelaunchPosition()
 
 func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return false;
 }

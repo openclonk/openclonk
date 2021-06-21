@@ -47,7 +47,7 @@ public func GetRemainingHitPoints()
 	return this.HitPoints - GetDamage();
 }
 
-public func Damage(int change, int cause, int cause_plr)
+public func Damage(int change, int cause, proplist cause_plr)
 {
 	// Only do stuff if the object has the HitPoints property.
 	if (this && this.HitPoints != nil)
@@ -69,7 +69,7 @@ public func Damage(int change, int cause, int cause_plr)
 	return _inherited(change, cause, cause_plr, ...);
 }
 
-private func EjectContentsOnDestruction(int cause, int by_player)
+private func EjectContentsOnDestruction(int cause, proplist by_player)
 {
 	// Exit all objects in this structure.
 	for (var obj in FindObjects(Find_Container(this)))

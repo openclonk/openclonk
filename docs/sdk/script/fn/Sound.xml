@@ -6,7 +6,7 @@
   <func>
     <title>Sound</title>
     <category>Effects</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -28,9 +28,9 @@
           <optional />
         </param>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>player</name>
-          <desc>Player number of the player for which the sound is to be played. In network games, the sound will thus not be audible for the other players. If <code>nil</code> (or not specified), the sound will be played for all players.</desc>
+          <desc>Player for which the sound is to be played. In network games, the sound will thus not be audible for the other players. If <code>nil</code> (or not specified), the sound will be played for all players. Was player number before 9.0 OC.</desc>
           <optional />
         </param>
         <param>
@@ -72,4 +72,5 @@
     <related><emlink href="script/SoundModifiers.html">Sound modifiers</emlink></related>
   </func>
   <author>Sven2</author><date>2002-08</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

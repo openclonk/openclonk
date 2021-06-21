@@ -38,7 +38,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Achievement: Tutorial completed.
-	GainScenarioAchievement("TutorialCompleted", 3);	
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("TutorialCompleted", 3);	
 	// Dialogue options -> next round.
 	SetNextScenario("Tutorials.ocf\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
@@ -216,10 +216,10 @@ private func InitAI()
 
 /*-- Player Handling --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Position player's clonk.
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->SetPosition(480, 366);
 	clonk->CreateContents(Shovel);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
@@ -235,17 +235,17 @@ protected func InitializePlayer(int plr)
 	goal_effect.plr = plr;
 
 	// Standard player zoom for tutorials.
-	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_Set);
+	plr->SetViewLocked(true);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	
 	// Knowledge for the pickaxe construction.
 	GivePlrKnowledge(plr, Pickaxe);
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
-	var interact = GetPlayerControlAssignment(plr, CON_Interact, true, true);
-	var up = GetPlayerControlAssignment(plr, CON_Up, true, true);
-	var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
+	var interact = plr->GetControlAssignment(CON_Interact, true, true);
+	var up = plr->GetControlAssignment(CON_Up, true, true);
+	var down = plr->GetControlAssignment(CON_Down, true, true);
 	guide->AddGuideMessage(Format("$MsgTutorialVillageHead$", interact, up, down));
 	guide->ShowGuideMessage();
 	var effect = AddEffect("TutorialTalkedToVillageHead", nil, 100, 5);
@@ -355,7 +355,7 @@ global func FxTutorialFilledBarrelTimer(object target, proplist effect)
 		return FX_OK;
 	if (foundry->GetLiquidAmount("Water") >= 100)
 	{
-		var contents = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		var contents = effect.plr->GetControlAssignment(CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialProduceLoam$", contents));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialGotLoam", nil, 100, 5);
@@ -372,8 +372,8 @@ global func FxTutorialGotLoamTimer(object target, proplist effect)
 		return FX_OK;
 	if (FindObject(Find_ID(Loam), Find_Container(clonk)))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
-		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
+		var use = effect.plr->GetControlAssignment(CON_Use, true, true);
+		var interact = effect.plr->GetControlAssignment(CON_Interact, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialMakeLoamBridge$", use, interact));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialMovedLorryToWorkshop", nil, 100, 5);
@@ -387,7 +387,7 @@ global func FxTutorialMovedLorryToWorkshopTimer(object target, proplist effect)
 {
 	if (FindObject(Find_ID(Lorry), Find_InRect(674, 474, 44, 30)))
 	{
-		var contents = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		var contents = effect.plr->GetControlAssignment(CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialProducePickaxe$", contents));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialProducedPickaxe", nil, 100, 5);
@@ -404,7 +404,7 @@ global func FxTutorialProducedPickaxeTimer(object target, proplist effect)
 		return FX_OK;
 	if (FindObject(Find_ID(Pickaxe), Find_Container(workshop)))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		var use = effect.plr->GetControlAssignment(CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialMineOre$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialMinedOre", nil, 100, 5);
@@ -462,7 +462,7 @@ global func FxTutorialTalkedToVillageHeadFinishedStop(object target, proplist ef
 	return FX_OK;
 }
 
-protected func OnGuideMessageShown(int plr, int index)
+protected func OnGuideMessageShown(proplist plr, int index)
 {
 	// Show the elevator case and the village head.	
 	if (index == 0)
@@ -504,7 +504,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	return;
 }
 
-protected func OnGuideMessageRemoved(int plr, int index)
+protected func OnGuideMessageRemoved(proplist plr, int index)
 {
 	TutArrowClear();
 	return;
@@ -536,7 +536,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		Rule_Relaunch->TransferInventory(target, clonk);
-		SetCursor(plr, clonk);
+		plr->SetCursor(clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}

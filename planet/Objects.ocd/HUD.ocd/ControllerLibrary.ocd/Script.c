@@ -23,7 +23,7 @@ private func Construction()
 {
 	SetPosition(0, 0);
 	// Ensure existing clonks are registered into HUD
-	for (var i = 0, crew; crew = GetCrew(GetOwner(), i); ++i)
+	for (var i = 0, crew; crew = GetOwner()->GetCrew(i); ++i)
 		if (crew->~IsHUDAdapter())
 			crew->SetHUDController(this);
 	return _inherited(...);
@@ -39,13 +39,13 @@ private func Construction()
 
 /** The following callbacks are forwarded by the HUD adapter:
 
-	OnClonkRecruitment(object clonk, int plr)
-	OnClonkDeRecruitment(object clonk, int plr)
-	OnCrewDeath(object clonk, int killed_by)
+	OnClonkRecruitment(object clonk, proplist player)
+	OnClonkDeRecruitment(object clonk, proplist player)
+	OnCrewDeath(object clonk, proplist killed_by)
 	OnCrewDestruction(object clonk)
 	ControlHotKey(int hotkey)
 	OnCrewRankChange(object clonk)
-	OnCrewHealthChange(object clonk, int change, int cause, int caused_by)
+	OnCrewHealthChange(object clonk, int change, int cause, proplist caused_by)
 	OnCrewBreathChange(object clonk, int change)
 	OnCrewMagicChange(object clonk, int change)
 	OnCrewNameChange(object clonk)
@@ -61,7 +61,7 @@ private func Construction()
 */
 
 
-public func RemovePlayer(int plr, int team)
+public func RemovePlayer(proplist plr, int team)
 {
 	// at this point, we can assume that all crewmembers have been
 	// removed already. Whats left to do is to remove this object,
@@ -85,8 +85,9 @@ public func Reset()
 		this->~Destruction();
 		Construction();
 		
-		if (GetCursor(GetOwner()))
-			this->~OnCrewSelection(GetCursor(GetOwner()));
+		var cursor = GetOwner()->GetCursor();
+		if (cursor)
+			this->~OnCrewSelection(cursor);
 	}
 	else
 	{
@@ -96,7 +97,7 @@ public func Reset()
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);
 			var controller = CreateObject(GetGUIControllerID(), 0, 0, plr);
-			var cursor = GetCursor(plr); 
+			var cursor = plr->GetCursor(); 
 			if (cursor)
 				controller->~OnCrewSelection(cursor);
 		}

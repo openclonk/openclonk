@@ -822,7 +822,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 		if (pItem && pItem->fOwnValue)
 			iValue = pItem->iValue;
 		else
-			iValue = pDef->GetValue(nullptr, NO_OWNER);
+			iValue = pDef->GetValue(nullptr, nullptr);
 	}
 
 	// Store and clear global clipper

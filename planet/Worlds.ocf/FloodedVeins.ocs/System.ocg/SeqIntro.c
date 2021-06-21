@@ -7,9 +7,9 @@ public func Intro_Start()
 	return ScheduleNext(4);
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
-	SetPlayerZoomByViewRange(plr, 200, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(200, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return;
 }
 
@@ -18,8 +18,8 @@ public func Intro_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgAbandonedSettlement$", GetCrew(plr, 1)->GetName()), GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
-		GetCrew(plr, 0)->SetCommand("MoveTo", nil, 200 + Random(12), 160);
+		MessageBox(Format("$MsgAbandonedSettlement$", plr->GetCrew(1)->GetName()), plr->GetCrew(0), plr->GetCrew(0), plr, true);
+		plr->GetCrew(0)->SetCommand("MoveTo", nil, 200 + Random(12), 160);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -29,9 +29,9 @@ public func Intro_2()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgLegendGems$", GetCrew(plr, 0), GetCrew(plr, 1), plr, true);
-		GetCrew(plr, 0)->SetDir(DIR_Left);
-		GetCrew(plr, 1)->SetCommand("MoveTo", nil, 180 + Random(12), 160);
+		MessageBox("$MsgLegendGems$", plr->GetCrew(0), plr->GetCrew(1), plr, true);
+		plr->GetCrew(0)->SetDir(DIR_Left);
+		plr->GetCrew(1)->SetCommand("MoveTo", nil, 180 + Random(12), 160);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -41,8 +41,8 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgExplore$", GetCrew(plr, 1)->GetName()), GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
-		GetCrew(plr, 0)->SetCommand("MoveTo", nil, 320 + Random(12), 160);
+		MessageBox(Format("$MsgExplore$", plr->GetCrew(1)->GetName()), plr->GetCrew(0), plr->GetCrew(0), plr, true);
+		plr->GetCrew(0)->SetCommand("MoveTo", nil, 320 + Random(12), 160);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -52,9 +52,9 @@ public func Intro_4()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgAgree$", GetCrew(plr, 0), GetCrew(plr, 1), plr, true);
-		GetCrew(plr, 0)->SetDir(DIR_Left);
-		GetCrew(plr, 1)->SetCommand("MoveTo", nil, 300 + Random(12), 160);
+		MessageBox("$MsgAgree$", plr->GetCrew(0), plr->GetCrew(1), plr, true);
+		plr->GetCrew(0)->SetDir(DIR_Left);
+		plr->GetCrew(1)->SetCommand("MoveTo", nil, 300 + Random(12), 160);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -64,8 +64,8 @@ public func Intro_5()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		GetCrew(plr, 0)->SetCommand("None");
-		GetCrew(plr, 1)->SetCommand("None");
+		plr->GetCrew(0)->SetCommand("None");
+		plr->GetCrew(1)->SetCommand("None");
 	}
 	return Stop();
 }
@@ -73,6 +73,6 @@ public func Intro_5()
 public func Intro_Stop()
 {
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

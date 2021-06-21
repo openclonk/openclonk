@@ -13,7 +13,7 @@ public func RejectEntrance(object container)
 {
 	if (!container->~IsClonk()) return false;
 	var plr = container->GetOwner();
-	if (GetPlayerType(plr) != C4PT_User) return false;
+	if (plr && plr.Type != C4PT_User) return false;
 
 	DoWealth(plr, value);
 	Sound("UI::Cash", false, nil, plr);

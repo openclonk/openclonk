@@ -367,27 +367,27 @@ private func Destruction()
 
 /* Callbacks */
 
-public func OnCrewRecruitment(object clonk, int plr)
+public func OnCrewRecruitment(object clonk, proplist player)
 {
 	UpdateCrewDisplay();
 	IssueWarning(clonk, Icon_Arrow, "Right");
 
-	return _inherited(clonk, plr, ...);
+	return _inherited(clonk, player, ...);
 }
 
-public func OnCrewDeRecruitment(object clonk, int plr)
+public func OnCrewDeRecruitment(object clonk, proplist player)
 {
 	UpdateCrewDisplay();
 
-	return _inherited(clonk, plr, ...);
+	return _inherited(clonk, player, ...);
 }
 
-public func OnCrewDeath(object clonk, int killer)
+public func OnCrewDeath(object clonk, proplist killer)
 {
 	UpdateCrewDisplay();
 
 	var next_index = GetNextCrewIndex(GetCursorIndex());
-	if (GetCursor(GetOwner()) != clonk && GetCrew(GetOwner(), next_index) != clonk)
+	if (GetOwner()->GetCursor() != clonk && GetOwner()->GetCrew(next_index) != clonk)
 		IssueWarning(this, CrewDeathIcon(), "", clonk->GetName()); // this for target because Clonk might get deleted
 
 	return _inherited(clonk, killer, ...);
@@ -435,13 +435,13 @@ public func OnCrewRankChange(object clonk)
 	return _inherited(clonk, ...);
 }
 
-public func OnCrewHealthChange(object clonk, int change, int cause, int caused_by)
+public func OnCrewHealthChange(object clonk, int change, int cause, proplist caused_by)
 {
 	var health_phys = clonk->~GetMaxEnergy();
 	if (health_phys && change != 0) // no false positives where change is zero
 	{
 		var health_val = clonk->GetEnergy();
-		if (GetCursor(GetOwner()) == clonk)
+		if (GetOwner()->GetCursor() == clonk)
 		{
 			// Show current health
 			SetCrewBarValue(crew_health_bar, 1000 * health_val / health_phys, clonk->GetEnergy());
@@ -457,7 +457,7 @@ public func OnCrewHealthChange(object clonk, int change, int cause, int caused_b
 		{
 			// Clonk is next in line, show health changes
 			var next_index = GetNextCrewIndex(GetCursorIndex());
-			if (GetCrew(GetOwner(), next_index) == clonk)
+			if (GetOwner()->GetCrew(next_index) == clonk)
 			{
 				SetNextHealthValue(1000 * health_val / health_phys, clonk->GetEnergy());
 				var graphics = "";
@@ -488,7 +488,7 @@ public func OnCrewBreathChange(object clonk, int change)
 	if (breath_phys)
 	{
 		var breath_val = clonk->GetBreath();
-		if (GetCursor(GetOwner()) == clonk)
+		if (GetOwner()->GetCursor() == clonk)
 		{
 			// Hide bar if full breath
 			if (breath_val == breath_phys)
@@ -504,7 +504,7 @@ public func OnCrewBreathChange(object clonk, int change)
 		{
 			// Clonk is next in line, show breath changes
 			var next_index = GetNextCrewIndex(GetCursorIndex());
-			if (GetCrew(GetOwner(), next_index) == clonk)
+			if (GetOwner()->GetCrew(next_index) == clonk)
 			{
 				SetNextBreathValue(1000 * breath_val / breath_phys);
 			}
@@ -524,7 +524,7 @@ public func OnCrewMagicChange(object clonk, int change)
 	if (magic_phys)
 	{
 		var magic_val = clonk->GetMagicEnergy();
-		if (GetCursor(GetOwner()) == clonk) // Only displayed for cursor
+		if (GetOwner()->GetCursor() == clonk) // Only displayed for cursor
 		{
 			// Hide bar if no magic
 			if (magic_val == 0)
@@ -550,10 +550,10 @@ public func OnCrewMagicChange(object clonk, int change)
 private func AddCrewDisplay(object clonk)
 {
 	var crew_index = 0;
-	while (GetCrew(GetOwner(), crew_index) != clonk && crew_index < GetCrewCount(GetOwner()))
+	while (GetOwner()->GetCrew(crew_index) != clonk && crew_index < GetOwner()->GetCrewCount())
 		crew_index++;
 	// Something went wrong
-	if (GetCrew(GetOwner(), crew_index) != clonk) return;
+	if (GetOwner()->GetCrew(crew_index) != clonk) return;
 
 	var crew_margin = GUI_Controller_CrewBar_CursorMargin + GUI_Controller_CrewBar_CursorSize + GUI_Controller_CrewBar_IconMargin;
 	var crew_top = GUI_Controller_CrewBar_IconMargin*2 + GUI_Controller_CrewBar_IconSize + 5;
@@ -621,7 +621,7 @@ private func AddCrewDisplay(object clonk)
 // Update everything
 private func UpdateCrewDisplay()
 {
-	var cursor = GetCursor(GetOwner());
+	var cursor = GetOwner()->GetCursor();
 	var cursor_index = GetCursorIndex();
 
 	// No cursor: Don't display cursor information
@@ -700,7 +700,7 @@ private func UpdateCrewDisplay()
 	if (next_index != cursor_index)
 	{
 		crew_gui_menu.next_clonk.Player = GetOwner();
-		var next_clonk = GetCrew(GetOwner(), next_index);
+		var next_clonk = GetOwner()->GetCrew(next_index);
 
 		var health_visible = NO_OWNER;
 		var health_phys = next_clonk->~GetMaxEnergy();
@@ -773,7 +773,7 @@ private func UpdateCrewDisplay()
 	}
 
 	// More crew members? Show plus sign
-	if (GetCrewCount(GetOwner()) > 2)
+	if (GetOwner()->GetCrewCount() > 2)
 	{
 		if (!crew_plus_id)
 			crew_plus_id = GuiOpen(crew_plus_menu);
@@ -972,16 +972,16 @@ private func HideCrewBar(int bar)
 // Returns the crew index of the cursor
 private func GetCursorIndex()
 {
-	var cursor = GetCursor(GetOwner());
+	var cursor = GetOwner()->GetCursor();
 	if (!cursor) return;
 	var cursor_index;
-	for (var i = 0; i < GetCrewCount(GetOwner()); i++)
-		if (GetCrew(GetOwner(), i) == cursor)
+	for (var i = 0; i < GetOwner()->GetCrewCount(); i++)
+		if (GetOwner()->GetCrew(i) == cursor)
 		{
 			cursor_index = i;
 			break;
 		}
-	if (!GetCrew(GetOwner(), cursor_index)) return;
+	if (!GetOwner()->GetCrew(cursor_index)) return;
 	return cursor_index;
 }
 
@@ -990,17 +990,18 @@ private func GetCursorIndex()
 private func GetNextCrewIndex(int start)
 {
 	// Endless loop protection
-	if (!GetCrew(GetOwner(), start)) return;
-	if (!GetCrew(GetOwner(), start)->GetAlive()) return;
-	if (!GetCrew(GetOwner(), start)->GetCrewEnabled()) return;
+	var start_crew = GetOwner()->GetCrew(start);
+	if (!start_crew) return;
+	if (!start_crew->GetAlive()) return;
+	if (!start_crew->GetCrewEnabled()) return;
 
 	var index = start;
 	do {
 		index++;
-		var crew = GetCrew(GetOwner(), index);
+		var crew = GetOwner()->GetCrew(index);
 		if (crew && crew->GetAlive() && crew->GetCrewEnabled())
 			break;
-		if (index >= GetCrewCount(GetOwner()))
+		if (index >= GetOwner()->GetCrewCount())
 			index = -1;
 	} while (true);
 	return index;
@@ -1167,9 +1168,9 @@ private func OpenCrewInfo()
 	crew_info_id = GuiOpen(crew_info_menu);
 
 	var y = 0;
-	for (var i = 0; i < GetCrewCount(GetOwner()); i++)
+	for (var i = 0; i < GetOwner()->GetCrewCount(); i++)
 	{
-		var crew = GetCrew(GetOwner(), i);
+		var crew = GetOwner()->GetCrew(i);
 		if (!crew) continue;
 		var portrait = crew->~GetPortrait();
 		var portraitgraphics = "";
@@ -1234,10 +1235,10 @@ private func OpenCrewInfo()
 
 private func SelectClonk(int index)
 {
-	var clonk = GetCrew(GetOwner(), index);
+	var clonk = GetOwner()->GetCrew(index);
 	// Change allowed?
 	if (clonk && clonk->GetCrewEnabled())
-		SetCursor(GetOwner(), clonk);
+		GetOwner()->SetCursor(clonk);
 
 	CloseCrewInfo();
 }

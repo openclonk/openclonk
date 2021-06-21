@@ -6,7 +6,7 @@
   <func>
     <title>PlayRumble</title>
     <category>Player</category>
-    <version>8.0 OC</version>
+    <version>8.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -27,12 +27,13 @@
         </param>
       </params>
     </syntax>
+    <remark>In 9.0 OC the global function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> and <code>PlayRumble</code>.</remark>
     <desc>Plays a haptic effect on the given player's gamepad. Returns true if all parameters are valid; there is no way to know whether the rumble was actually played.</desc>
     <examples>
       <example>
 <code>
 <funclink>ShakeObjects</funclink>(<funclink>LandscapeWidth</funclink>()/2, <funclink>LandscapeHeight</funclink>()/2, <funclink>Distance</funclink>(<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>())/2);
-PlayRumble(NO_OWNER, 1000, 2000);
+for (var player in GetPlayers()) player->PlayRumble(1000, 2000);
 </code>
         <text>Earthquake: Shakes all Clonks and rumbles all controllers at full strength for two seconds.</text>
       </example>
@@ -42,4 +43,5 @@ PlayRumble(NO_OWNER, 1000, 2000);
     </related>
   </func>
   <author>Luchs</author><date>2016-02</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

@@ -24,11 +24,11 @@ public func Intro_Start()
 	return ScheduleNext(4);
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Set | PLRZOOM_Direct);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Set | PLRZOOM_Direct);
 	var crew, index = 0;
-	while (crew = GetCrew(plr, index++))
+	while (crew = plr->GetCrew(index++))
 		crew->Enter(this.locomotive);
 	return;
 }
@@ -38,7 +38,7 @@ public func Intro_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgWelcomeHorridHighway$", GetCrew(plr, 0)->GetName()), GetCrew(plr, 0), this.npc, plr, true);
+		MessageBox(Format("$MsgWelcomeHorridHighway$", plr->GetCrew(0)->GetName()), plr->GetCrew(0), this.npc, plr, true);
 	}
 	return ScheduleNext(3 * 36);
 }
@@ -55,7 +55,7 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgHighwayBroken$", GetCrew(plr, 0), this.npc, plr, true);
+		MessageBox("$MsgHighwayBroken$", plr->GetCrew(0), this.npc, plr, true);
 	}
 	return ScheduleNext(5 * 36);
 }
@@ -67,7 +67,7 @@ public func Intro_4()
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var crew, index = 0;
-		while (crew = GetCrew(plr, index++))
+		while (crew = plr->GetCrew(index++))
 			crew->Exit();
 	}
 	return ScheduleNext(1 * 36);
@@ -78,7 +78,7 @@ public func Intro_5()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgFixHighway$", GetCrew(plr, 0), this.npc, plr, true);
+		MessageBox("$MsgFixHighway$", plr->GetCrew(0), this.npc, plr, true);
 	}
 	return ScheduleNext(6 * 36);
 }
@@ -88,7 +88,7 @@ public func Intro_6()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgRunLocomotives$", GetCrew(plr, 0), this.npc, plr, true);
+		MessageBox("$MsgRunLocomotives$", plr->GetCrew(0), this.npc, plr, true);
 	}
 	return Stop();
 }
@@ -96,7 +96,7 @@ public func Intro_6()
 public func Intro_Stop()
 {
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 500, nil, PLRZOOM_Set | PLRZOOM_Direct);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(500, nil, PLRZOOM_Set | PLRZOOM_Direct);
 	// Remove objects.
 	this.npc->RemoveObject();
 	this.locomotive->RemoveObject();

@@ -46,7 +46,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Achievement: Tutorial completed.
-	GainScenarioAchievement("TutorialCompleted", 3);
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("TutorialCompleted", 3);
 	// Dialogue options -> next round.
 	SetNextScenario("Tutorials.ocf\\Tutorial08.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
@@ -144,10 +144,10 @@ private func InitAI()
 
 /*-- Player Handling --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Position player's clonk.
-	var clonk = GetCrew(plr, 0);
+	var clonk = plr->GetCrew(0);
 	clonk->SetPosition(60, 494);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
 	effect.to_x = 60;
@@ -174,14 +174,14 @@ protected func InitializePlayer(int plr)
 	track_goal.plr = plr;
 
 	// Standard player zoom for tutorials, player is not allowed to zoom in/out.
-	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	
 	// Determine player movement keys.
-	var interact_prev = GetPlayerControlAssignment(plr, CON_InteractNext_Right, true, true);
-	var interact_next = GetPlayerControlAssignment(plr, CON_InteractNext_Left, true, true);
-	var interact_cycle = GetPlayerControlAssignment(plr, CON_InteractNext_CycleObject, true, true);
-	var interact_cancel = GetPlayerControlAssignment(plr, CON_InteractNext_Stop, true, true);
+	var interact_prev = plr->GetControlAssignment(CON_InteractNext_Right, true, true);
+	var interact_next = plr->GetControlAssignment(CON_InteractNext_Left, true, true);
+	var interact_cycle = plr->GetControlAssignment(CON_InteractNext_CycleObject, true, true);
+	var interact_cancel = plr->GetControlAssignment(CON_InteractNext_Stop, true, true);
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObjectAbove(TutorialGuide, 0, 0, plr);
@@ -254,11 +254,11 @@ global func FxTutorialTalkedToPilotStop(object target, proplist effect, int reas
 		return FX_OK;
 
 	// Determine player movement keys.
-	var left = GetPlayerControlAssignment(effect.plr, CON_Left, true, true);
-	var right = GetPlayerControlAssignment(effect.plr, CON_Right, true, true);
-	var up = GetPlayerControlAssignment(effect.plr, CON_Up, true, true);
-	var down = GetPlayerControlAssignment(effect.plr, CON_Down, true, true);
-	var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
+	var left = effect.plr->GetControlAssignment(CON_Left, true, true);
+	var right = effect.plr->GetControlAssignment(CON_Right, true, true);
+	var up = effect.plr->GetControlAssignment(CON_Up, true, true);
+	var down = effect.plr->GetControlAssignment(CON_Down, true, true);
+	var interact = effect.plr->GetControlAssignment(CON_Interact, true, true);
 	var control_keys = Format("[%s] [%s] [%s] [%s]", up, left, down, right);
 	
 	guide->AddGuideMessage(Format("$MsgTutorialFindRubies$", interact, control_keys));
@@ -288,8 +288,8 @@ global func FxTutorialAirshipParkedTimer(object target, proplist effect, int tim
 	if (clonk && airship)
 	{
 		var plr = clonk->GetOwner();
-		var left = GetPlayerControlAssignment(plr, CON_Left, true, true);
-		var right = GetPlayerControlAssignment(plr, CON_Right, true, true);
+		var left = plr->GetControlAssignment(CON_Left, true, true);
+		var right = plr->GetControlAssignment(CON_Right, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialLadderJump$", left, right));
 		guide->ShowGuideMessage();
 		AddEffect("TutorialOnStalactite", nil, 100, 2);
@@ -321,7 +321,7 @@ global func FxTutorialCollectGemsTimer(object target, proplist effect, int timer
 	return FX_OK;
 }
 
-protected func OnGuideMessageShown(int plr, int index)
+protected func OnGuideMessageShown(proplist plr, int index)
 {
 	// Show airship parking space.
 	if (index == 2)
@@ -332,7 +332,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	return;
 }
 
-protected func OnGuideMessageRemoved(int plr, int index)
+protected func OnGuideMessageRemoved(proplist plr, int index)
 {
 	TutArrowClear();
 	return;
@@ -369,7 +369,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		Rule_Relaunch->TransferInventory(target, clonk);
-		SetCursor(plr, clonk);
+		plr->SetCursor(clonk);
 		clonk->DoEnergy(100000);
 		// Add an interaction to call the airship.
 		Helper_CallAirship->Create(clonk, Dialogue->FindByName("Pilot")->GetDialogueTarget(), FindObject(Find_ID(Airship)));

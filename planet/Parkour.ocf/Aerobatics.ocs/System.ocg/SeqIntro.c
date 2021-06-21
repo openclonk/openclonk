@@ -21,10 +21,10 @@ public func Intro_Start(array start, array finish)
 	return ScheduleNext(4);
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
-	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Set);
-	var crew = GetCrew(plr);
+	plr->SetZoomByViewRange(300, nil, PLRZOOM_Set);
+	var crew = plr->GetCrew();
 	crew->SetPosition(crew->GetX() + RandomX(-10, 10), crew->GetY());
 	return;
 }
@@ -58,7 +58,7 @@ public func Intro_4()
 public func Intro_Stop()
 {
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 720, nil, PLRZOOM_Set);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(720, nil, PLRZOOM_Set);
 	return true;
 }
 

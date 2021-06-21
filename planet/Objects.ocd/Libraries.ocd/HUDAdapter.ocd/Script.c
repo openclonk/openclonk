@@ -31,7 +31,7 @@ private func GetHUDController()
 	// checked player validity before returning a cached HUD object which would
 	// cause a desync.
 	if (HUDcontroller) return HUDcontroller;
-	if (GetPlayerType(plr) != C4PT_User) return nil;
+	if (plr == NO_OWNER || plr.Type != C4PT_User) return nil;
 	var controllerDef = Library_HUDController->GetGUIControllerID();
 	HUDcontroller = FindObject(Find_ID(controllerDef), Find_Owner(plr));
 	if (!HUDcontroller)
@@ -49,14 +49,14 @@ public func SetHUDController(object new_controller)
 /*-- Engine callbacks --*/
 
 // Bootstrap the HUD on the recruitement of a crew member.
-private func Recruitment(int plr)
+private func Recruitment(proplist player)
 {
 	if (GetHUDController())
 	{
-		HUDcontroller->~OnCrewRecruitment(this, plr, ...);
+		HUDcontroller->~OnCrewRecruitment(this, player, ...);
 		HUDcontroller->~ScheduleUpdateInventory();
 	}
-	return _inherited(plr, ...);
+	return _inherited(player, ...);
 }
 
 // On savegame load or after section change, ensure that there's a HUD adapter
@@ -67,14 +67,14 @@ public func OnSynchronized(...)
 	return _inherited(...);
 }
 
-private func DeRecruitment(int plr)
+private func DeRecruitment(proplist player)
 {
 	if (HUDcontroller)
-		HUDcontroller->~OnCrewDeRecruitment(this, plr, ...);
-	return _inherited(plr, ...);
+		HUDcontroller->~OnCrewDeRecruitment(this, player, ...);
+	return _inherited(player, ...);
 }
 
-private func Death(int killed_by)
+private func Death(proplist killed_by)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewDeath(this, killed_by, ...);
@@ -101,7 +101,7 @@ private func OnPromotion()
 	return _inherited(...); 
 }
 
-private func OnEnergyChange(int change, int cause, int caused_by)
+private func OnEnergyChange(int change, int cause, proplist caused_by)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewHealthChange(this, change, cause, caused_by);

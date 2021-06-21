@@ -46,18 +46,18 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Give the remaining players their achievement.
-	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
 	return false;
 }
 
 
 /*-- Player Initialization --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 { 
 	// Move clonks to location and give them a shovel.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	while (crew = plr->GetCrew(index))
 	{
 		var x = 80 + Random(40);
 		crew->SetPosition(x, FindHeight(x) - 20);
@@ -71,8 +71,8 @@ protected func InitializePlayer(int plr)
 	}
 	
 	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+	plr->SetZoomByViewRange(500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
 	
 	// Give the player basic knowledge.
 	GivePlayerBasicKnowledge(plr);

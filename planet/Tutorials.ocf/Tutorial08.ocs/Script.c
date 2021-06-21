@@ -39,7 +39,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Achievement: Tutorial completed.
-	GainScenarioAchievement("TutorialCompleted", 3);
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("TutorialCompleted", 3);
 	// Dialogue options -> next round.
 	//SetNextScenario("Tutorials.ocf\\Tutorial09.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
@@ -176,10 +176,10 @@ private func InitAI()
 
 /*-- Player Handling --*/
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Position player's clonk.
-	var clonk = GetCrew(plr, 0);
+	var clonk = plr->GetCrew(0);
 	clonk->SetPosition(40, 182);
 	clonk->SetDir(DIR_Right);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
@@ -198,8 +198,8 @@ protected func InitializePlayer(int plr)
 	GivePlrKnowledge(plr, WallKit);
 	
 	// Standard player zoom for tutorials, player is not allowed to zoom in/out.
-	SetPlayerViewLock(plr, true);
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	plr->SetViewLocked(true);
+	plr->SetZoomByViewRange(400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
@@ -213,7 +213,7 @@ protected func InitializePlayer(int plr)
 
 /*-- Intro, Tutorial Goal & Outro --*/
 
-public func OnGoalCompleted(int plr)
+public func OnGoalCompleted(proplist plr)
 {
 	var outro = AddEffect("GoalOutro", nil, 100, 5);
 	outro.plr = plr;
@@ -311,7 +311,7 @@ global func FxTutorialShovedMetalLorryTimer(object target, proplist effect)
 {
 	if (FindObject(Find_ID(Lorry), Find_AtRect(360, 840, 20, 20)))
 	{
-		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
+		var interact = effect.plr->GetControlAssignment(CON_Interact, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialCallElevator$", interact));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialTalkedToExplosiveExpert", nil, 100, 5);
@@ -407,7 +407,7 @@ global func FxTutorialHasBlastedWallTimer(object target, proplist effect)
 	return FX_OK;
 }
 
-protected func OnGuideMessageShown(int plr, int index)
+protected func OnGuideMessageShown(proplist plr, int index)
 {
 	if (index == 0)
 	{
@@ -444,7 +444,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	return;
 }
 
-protected func OnGuideMessageRemoved(int plr, int index)
+protected func OnGuideMessageRemoved(proplist plr, int index)
 {
 	TutArrowClear();
 	return;
@@ -480,7 +480,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		Rule_Relaunch->TransferInventory(target, clonk);
-		SetCursor(plr, clonk);
+		plr->SetCursor(clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}

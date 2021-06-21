@@ -29,7 +29,7 @@ public func OnlyRichSurvives()
 		if (pwealth > mostwealth)
 		{
 			mostwealth = pwealth;
-			teamwithmostwealth = GetPlayerTeam(GetPlayerByIndex(i));
+			teamwithmostwealth = GetPlayerByIndex(i)->GetTeam();
 		}
 	}
 	
@@ -41,7 +41,7 @@ public func OnlyRichSurvives()
 		var pwealth = GetWealth(GetPlayerByIndex(i));
 		if (pwealth == mostwealth)
 		{
-			if (GetPlayerTeam(GetPlayerByIndex(i)) != teamwithmostwealth)
+			if (GetPlayerByIndex(i)->GetTeam() != teamwithmostwealth)
 			{
 				// Stalemate detected
 				stalematecheck_ok = false;
@@ -57,7 +57,7 @@ public func OnlyRichSurvives()
 		var pwealth = GetWealth(GetPlayerByIndex(i));
 		if (pwealth < mostwealth)
 		{
-			EliminatePlayer(GetPlayerByIndex(i));
+			GetPlayerByIndex(i)->Eliminate();
 		}
 	}
 	
@@ -76,7 +76,7 @@ public func IsFulfilled()
 	return true;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	var message;
 	if (IsFulfilled())
@@ -88,7 +88,7 @@ public func GetDescription(int plr)
 }
 
 // Shows or hides a message window with information.
-public func Activate(int plr)
+public func Activate(proplist plr)
 {
 	// If goal message open -> hide it.
 	if (GetEffect("GoalMessage", this))
@@ -111,7 +111,7 @@ public func Activate(int plr)
 
 protected func FxGoalMessageStart() {}
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return "";
 }

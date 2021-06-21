@@ -8,7 +8,7 @@
 static g_is_initialized;
 static g_intro_initialized;
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	// Test
 	//CreateObjectAbove(LiftTower, 178, 405, first_player);
@@ -36,7 +36,7 @@ func EnsureObject(id def, int x, int y, int owner)
 	return obj;
 }
 
-func InitializePlayer(int plr)
+func InitializePlayer(proplist plr)
 {
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
@@ -45,7 +45,7 @@ func InitializePlayer(int plr)
 	
 	// Move clonks to location and give them a shovel.
 	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	while (crew = plr->GetCrew(index))
 	{
 		var x = 150 + Random(50);
 		crew->SetPosition(x , 390);
@@ -82,6 +82,6 @@ func OnPlaneFinished(object plane)
 
 func OnGoalsFulfilled()
 {
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	return false;
 }

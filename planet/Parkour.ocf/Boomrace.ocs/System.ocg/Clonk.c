@@ -11,7 +11,7 @@ protected func RejectCollect(id objid, object obj)
 
 local MaxContentsCount = 0;
 
-public func ObjectControl(int plr, int ctrl)
+public func ObjectControl(proplist plr, int ctrl)
 {
 	if (IsThrowControl(ctrl))
 		return;

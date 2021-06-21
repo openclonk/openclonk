@@ -7,14 +7,14 @@
     <title>SetController</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>int</type>
+          <type>proplist</type>
           <name>player</name>
-          <desc>Player number of the new controller. <code>NO_OWNER</code> for no controller.</desc>
+          <desc>Player proplist of the new controller. Before 9.0 OC this parameter was the player number, or <code>NO_OWNER</code> for no controller.</desc>
         </param>
       </params>
     </syntax>
@@ -32,4 +32,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2007-04</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

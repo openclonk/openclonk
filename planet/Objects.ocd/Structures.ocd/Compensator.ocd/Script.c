@@ -41,7 +41,7 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-protected func Incineration(int caused_by)
+protected func Incineration(proplist caused_by)
 {
 	if (GetStoredPower() == 0)
 		return Extinguish();

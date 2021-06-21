@@ -53,7 +53,7 @@ func AssembleActionBar()
 			Right = "150%",
 			Top = ToEmString(-6),
 			Bottom = ToEmString(4),
-			Text = Format("<c dddd00>[%s]</c>", GetPlayerControlAssignment(GetOwner(), CON_Interact, true)),
+			Text = Format("<c dddd00>[%s]</c>", GetOwner()->GetControlAssignment(CON_Interact, true)),
 			Priority = 2
 		},
 		symbol =// the object to interact with
@@ -134,7 +134,7 @@ public func SetCurrentInteraction(proplist interaction)
 	current_interaction = interaction;
 	actionbar_gui_menu.Player = GetOwner();
 	// We can assert that we have a cursor here.
-	var cursor = GetCursor(GetOwner());
+	var cursor = GetOwner()->GetCursor();
 	var help = GetInteractionHelp(current_interaction, cursor);
 	
 	var update = {
@@ -180,7 +180,7 @@ public func EnableInteractionUpdating(bool enable)
 */
 public func UpdateInteractionObject()
 {
-	var cursor = GetCursor(GetOwner());
+	var cursor = GetOwner()->GetCursor();
 	if (!cursor || !cursor->GetCrewEnabled())
 	{
 		HideInteraction();

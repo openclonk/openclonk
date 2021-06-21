@@ -115,10 +115,10 @@ func SetMenu(new_menu, bool unclosable)
 			else
 			{
 				if (GetType(new_menu) == C4V_C4Object && new_menu->~CursorUpdatesEnabled())
-					SetPlayerControlEnabled(GetOwner(), CON_GUICursor, true);
+					GetOwner()->SetControlEnabled(CON_GUICursor, true);
 
-				SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, true);
-				SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, true);
+				GetOwner()->SetControlEnabled(CON_GUIClick1, true);
+				GetOwner()->SetControlEnabled(CON_GUIClick2, true);
 			}
 		}
 	}
@@ -153,9 +153,9 @@ func SetMenu(new_menu, bool unclosable)
 		{
 			this->~RemoveVirtualCursor(); // for gamepads
 		}
-		SetPlayerControlEnabled(GetOwner(), CON_GUICursor, false);
-		SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, false);
-		SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, false);
+		GetOwner()->SetControlEnabled(CON_GUICursor, false);
+		GetOwner()->SetControlEnabled(CON_GUIClick1, false);
+		GetOwner()->SetControlEnabled(CON_GUIClick2, false);
 
 		this.control.menu = nil;
 	}

@@ -27,7 +27,7 @@
     <desc>Calls function in the scenario script. If the function is not defined in the scenario script, this call returns <code>nil</code> and does not cause an error.</desc>
     <examples>
       <example>
-        <code>GameCall(&quot;InitializePlayer&quot;,0);</code>
+        <code>GameCall(&quot;InitializePlayer&quot;, <funclink>GetPlayer</funclink>(0));</code>
         <text>Causes the scenario script to re-execute intialization for the first player.</text>
       </example>
     </examples>
@@ -37,4 +37,5 @@
     </related>
   </func>
   <author>Günther</author><date>2002-04</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

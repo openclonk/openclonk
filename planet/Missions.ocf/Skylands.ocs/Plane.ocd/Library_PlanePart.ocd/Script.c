@@ -5,7 +5,7 @@
 	@author Sven2
 */
 
-public func Damage(int change, int cause, int cause_plr)
+public func Damage(int change, int cause, proplist cause_plr)
 {
 	// Only do stuff if the object has the HitPoints property.
 	if (this && this.HitPoints != nil)

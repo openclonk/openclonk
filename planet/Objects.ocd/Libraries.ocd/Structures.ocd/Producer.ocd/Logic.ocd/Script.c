@@ -142,7 +142,7 @@ public func GetProductionMenuEntries(object clonk)
 		Style = GUI_TextBottom | GUI_FitChildren,
 		Bottom = "1em", BackgroundColor = RGBa(0, 0, 0, 100),
 		Priority = 999999,
-		Text = Format("<c 666666>%s + $Click$: $InfiniteProduction$</c>", GetPlayerControlAssignment(clonk->GetOwner(), CON_ModifierMenu1, true))
+		Text = Format("<c 666666>%s + $Click$: $InfiniteProduction$</c>", clonk->GetOwner()->GetControlAssignment(CON_ModifierMenu1, true))
 	};
 
 	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry});
@@ -466,7 +466,7 @@ public func ModifyQueueIndex(int position, int amount, bool infinite_production)
 	@param amount the amount of items of \c item_id which should be produced. Amount must not be negative.
 	@paramt infinite whether to enable infinite production.
 */
-public func AddToQueue(id product_id, int amount, bool infinite, int producing_player)
+public func AddToQueue(id product_id, int amount, bool infinite, proplist producing_player)
 {
 	// Check if this producer can produce the requested item.
 	if (!IsProduct(product_id))
@@ -530,12 +530,12 @@ public func ClearQueue(bool abort) // TODO: parameter is never used
 	@param info
 		proplist with Product, Amount. If the player holds the menu-modifier key, this will toggle infinite production.
 */
-func ModifyProduction(proplist info, int player)
+func ModifyProduction(proplist info, proplist player)
 {
-	if (Hostile(GetOwner(), player)) return;
+	if (GetOwner()->Hostile(player)) return;
 
 	var product = info.Product;
-	var infinite = GetPlayerControlState(player, CON_ModifierMenu1) != 0;
+	var infinite = player->GetControlState(CON_ModifierMenu1) != 0;
 	var amount = info.Amount;
 	var index = GetQueueIndex(product);
 
@@ -623,7 +623,7 @@ public func PowerNeed() { return 80; }
 public func GetConsumerPriority() { return 50; }
 
 
-func Produce(id product, producing_player)
+func Produce(id product, proplist producing_player)
 {
 	// Already producing? Wait a little.
 	if (IsProducing())
@@ -812,7 +812,7 @@ func IsProducing()
 }
 
 
-func FxProcessProductionStart(object target, proplist effect, int temporary, id product, int producing_player)
+func FxProcessProductionStart(object target, proplist effect, int temporary, id product, proplist producing_player)
 {
 	if (temporary)
 		return FX_OK;

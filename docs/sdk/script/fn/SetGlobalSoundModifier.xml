@@ -7,7 +7,7 @@
     <title>SetGlobalSoundModifier</title>
     <category>Effects</category>
     <subcat>Sound</subcat>
-    <version>7.0 OC</version>
+    <version>7.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -40,8 +40,8 @@
   {
     // Is the player controlling a clonk in a cave?
     var mod = nil;
-    var clonk = <funclink>GetCursor</funclink>(player);
-    if (clonk) if (clonk-><funclink>GetMaterial</funclink>() == <funclink>Material</funclink>("Tunnel"))
+    var clonk = player-&gt;<funclink>GetCursor</funclink>();
+    if (clonk) if (clonk-&gt;<funclink>GetMaterial</funclink>() == <funclink>Material</funclink>("Tunnel"))
     {
       // Controlled clonk is in a cave - do some cave sounds!
       mod = Ambience.CaveModifier;
@@ -57,4 +57,5 @@
     <emlink href="script/SoundModifiers.html">Sound modifiers</emlink></related>
   </func>
   <author>Sven2</author><date>2015-08</date>
+  <author>Marky</author><date>2020-10</date>
 </funcs>

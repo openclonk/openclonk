@@ -1,7 +1,7 @@
 /**
 	Liquid System
 	Unit tests for the liquid system. Invokes tests by calling the 
-	global function Test*_OnStart(int plr) and iterate through all 
+	global function Test*_OnStart(proplist plr) and iterate through all 
 	tests. The test is completed once Test*_Completed() returns
 	true. Then Test*_OnFinished() is called, to be able to reset 
 	the scenario for the next test.
@@ -26,34 +26,34 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// Set zoom to full map size.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
+	plr->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Direct);
 	
 	// No FoW to see everything happening.
-	SetFoW(false, plr);
+	plr->SetFoW(false);
 	
 	// All players belong to the first team.
 	// The second team only exists for testing.
-	SetPlayerTeam(plr, 1);
+	plr->SetTeam(1);
 		
 	// Initialize script player.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		// Store the player number.
 		if (script_plr == nil)
 			script_plr = plr;
 		// No crew needed.
-		GetCrew(plr)->RemoveObject();
+		plr->GetCrew()->RemoveObject();
 		return;
 	}	
 	
 	// Move player to the start of the scenario.
-	GetCrew(plr)->SetPosition(120, 150);
+	plr->GetCrew()->SetPosition(120, 150);
 	
 	// Some knowledge to construct a flagpole.
-	GetCrew(plr)->CreateContents(Hammer);
+	plr->GetCrew()->CreateContents(Hammer);
 	GivePlrKnowledge(plr, Flagpole);
 	
 	// Add test control effect.
@@ -64,10 +64,10 @@ protected func InitializePlayer(int plr)
 	return;
 }
 
-protected func RemovePlayer(int plr)
+protected func RemovePlayer(proplist plr)
 {
 	// Remove script player.
-	if (GetPlayerType(plr) == C4PT_Script)
+	if (plr.Type == C4PT_Script)
 	{
 		if (plr == script_plr)
 			script_plr = nil;
@@ -149,7 +149,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 		effect.launched = true;
 	}
 	// Check whether the current test has been finished.
-	if (Call(Format("Test%d_Completed", effect.testnr)))
+	if (Call(Format("Test%d_Completed", effect.testnr), effect.plr))
 	{
 		effect.launched = false;
 		//RemoveTest();
@@ -165,7 +165,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 
 /*-- Liquid Tests --*/
 
-global func Test1_OnStart(int plr)
+global func Test1_OnStart(proplist plr)
 {
 	var foundry = CreateObjectAbove(Foundry, 110, 160, plr);
 	foundry->CreateContents(Earth, 10);
@@ -198,7 +198,7 @@ global func Test1_OnFinished()
 }
 
 
-global func Test2_OnStart(int plr)
+global func Test2_OnStart(proplist plr)
 {
 	var foundry = CreateObjectAbove(Foundry, 110, 160, plr);
 	foundry->CreateContents(Rock, 60);
@@ -239,7 +239,7 @@ global func Test2_OnFinished()
 }
 
 
-global func Test3_OnStart(int plr)
+global func Test3_OnStart(proplist plr)
 {
 	DrawMaterialQuad("Oil", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
 	
@@ -281,7 +281,7 @@ global func Test3_OnFinished()
 	return;
 }
 
-global func Test4_OnStart(int plr)
+global func Test4_OnStart(proplist plr)
 {	
 	DrawMatBasin("DuroLava", 20, 120);
 
@@ -323,7 +323,7 @@ global func Test4_OnFinished()
 }
 
 
-global func Test5_OnStart(int plr)
+global func Test5_OnStart(proplist plr)
 {	
 	RemoveAll(Find_ID(Rule_NoPowerNeed));	
 	
@@ -331,30 +331,30 @@ global func Test5_OnStart(int plr)
 	engine->CreateContents(Coal, 10);
 	
 	var pump = CreateObjectAbove(Pump, 84, 160, plr);
-	var helmet = GetHiRank(plr)->CreateContents(DivingHelmet);
+	var helmet = plr->GetHiRank()->CreateContents(DivingHelmet);
 	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
 	drain->ConnectPipeTo(helmet);
 	drain->ConnectPipeTo(pump, drain->GetPipeState());
 	
 	// Move player character over the basin
-	GetHiRank()->SetPosition(175, 150);
-	GetHiRank()->SetComDir(COMD_Down);
-	helmet->ControlUse(GetHiRank(plr));
+	plr->GetHiRank()->SetPosition(175, 150);
+	plr->GetHiRank()->SetComDir(COMD_Down);
+	helmet->ControlUse(plr->GetHiRank());
 
 	// Log what the test is about.
 	Log("Test air supply to diving helmet - dive down towards the ground");
 	return true;
 }
 
-global func Test5_Completed()
+global func Test5_Completed(proplist plr)
 {
-	var is_down = GetHiRank()->GetY() > 280;
+	var is_down = plr->GetHiRank()->GetY() > 280;
 	if (is_down)
 	{
-		GetHiRank()->SetComDir(COMD_Up);
-		var breath_before = GetHiRank()->GetBreath();
-		GetHiRank()->DoBreath(1000);
-		var breath_used = GetHiRank().MaxBreath - breath_before;
+		plr->GetHiRank()->SetComDir(COMD_Up);
+		var breath_before = plr->GetHiRank()->GetBreath();
+		plr->GetHiRank()->DoBreath(1000);
+		var breath_used = plr->GetHiRank().MaxBreath - breath_before;
 
 		var pump = FindObject(Find_ID(Pump));
 		var is_pumping = pump->GetAction() == "Pump";
@@ -378,7 +378,7 @@ global func Test5_OnFinished()
 	return;
 }
 
-global func Test6_OnStart(int plr)
+global func Test6_OnStart(proplist plr)
 {
 	var tank = CreateObjectAbove(LiquidTank, 70, 160, plr);
 	var pump1 = CreateObjectAbove(Pump, 16, 160, plr);

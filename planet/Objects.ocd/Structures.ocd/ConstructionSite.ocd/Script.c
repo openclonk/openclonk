@@ -120,7 +120,7 @@ public func OnInteractionControl(id symbol, string action, object clonk)
 // Players can put materials into the construction site via space-key
 private func IsInteractable(object clonk)
 {
-	if (clonk) return !Hostile(GetOwner(), clonk->GetOwner());
+	if (clonk) return !GetOwner()->Hostile(clonk->GetOwner());
 	return true;
 }
 

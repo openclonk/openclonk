@@ -352,14 +352,14 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 			C4Def *pDefCallback;
 			if (idCallback && (pDefCallback = C4Id2Def(idCallback)))
 			{
-				pDefCallback->Call(PSF_InitializeScriptPlayer, &C4AulParSet(Number, Team));
+				pDefCallback->Call(PSF_InitializeScriptPlayer, &C4AulParSet(this, Team));
 			}
 		}
 		else
 		{
 			// player preinit: In case a team needs to be chosen first, no InitializePlayer-broadcast is done
 			// this callback shall give scripters a chance to do stuff like starting an intro or enabling FoW, which might need to be done
-			::Game.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(Number));
+			::Game.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(this));
 			// direct init
 			if (Status != PS_TeamSelection) if (!ScenarioInit()) return false;
 		}
@@ -517,7 +517,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty)
 				// OnJoinCrew callback
 				{
 					C4DebugRecOff DbgRecOff{ !DEBUGREC_RECRUITMENT };
-					C4AulParSet parset(Number);
+					C4AulParSet parset(this);
 					nobj->Call(PSF_OnJoinCrew, &parset);
 				}
 			}
@@ -591,7 +591,7 @@ bool C4Player::ScenarioInit()
 	if (Team) SetTeamHostility();
 
 	// Scenario script initialization
-	::Game.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(Number,
+	::Game.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(this,
 	                        ptx,
 	                        pty,
 	                        FirstBase,
@@ -701,11 +701,9 @@ void C4Player::Surrender()
 	Log(FormatString(LoadResStr("IDS_PRC_PLRSURRENDERED"),GetName()).getData());
 }
 
-bool C4Player::SetHostility(int32_t iOpponent, int32_t hostile, bool fSilent)
+bool C4Player::SetHostility(C4Player *opponent, int32_t hostile, bool fSilent)
 {
 	assert(hostile == 0 || hostile == 1);
-	// Check opponent valid
-	C4Player *opponent = ::Players.Get(iOpponent);
 	if (!opponent || opponent == this)
 		return false;
 	// Set hostility
@@ -787,8 +785,8 @@ void C4Player::SetTeamHostility()
 		if (pPlr != this)
 		{
 			bool fHostile = (pPlr->Team != Team);
-			SetHostility(pPlr->Number, fHostile, true);
-			pPlr->SetHostility(Number, fHostile, true);
+			SetHostility(pPlr, fHostile, true);
+			pPlr->SetHostility(this, fHostile, true);
 		}
 }
 
@@ -910,7 +908,7 @@ bool C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 	// OnJoinCrew callback
 	if (fDoCalls)
 	{
-		C4AulParSet parset(Number);
+		C4AulParSet parset(this);
 		pObj->Call(PSF_OnJoinCrew, &parset);
 	}
 
@@ -1116,7 +1114,7 @@ void C4Player::RemoveCrewObjects()
 	while ((pCrew = Crew.GetObject())) pCrew->AssignRemoval(true);
 }
 
-int32_t C4Player::FindNewOwner() const
+int32_t C4Player::FindNewOwner()
 {
 	int32_t iNewOwner = NO_OWNER;
 	C4Team *pTeam;
@@ -1142,7 +1140,7 @@ int32_t C4Player::FindNewOwner() const
 	if (iNewOwner == NO_OWNER)
 		for (C4Player *pOtherPlr = ::Players.First; pOtherPlr; pOtherPlr = pOtherPlr->Next)
 			if (pOtherPlr != this) if (!pOtherPlr->Eliminated)
-					if (!::Players.Hostile(pOtherPlr->Number, Number))
+					if (!::Players.Hostile(pOtherPlr, this))
 						iNewOwner = pOtherPlr->Number;
 
 	return iNewOwner;
@@ -1151,6 +1149,7 @@ int32_t C4Player::FindNewOwner() const
 void C4Player::NotifyOwnedObjects()
 {
 	int32_t iNewOwner = FindNewOwner();
+	C4Player *new_owner = ::Players.Get(iNewOwner);
 	// notify objects in all object lists
 	for (C4ObjectList *pList = &::Objects; pList; pList = ((pList == &::Objects) ? &::Objects.InactiveObjects : nullptr))
 	{
@@ -1161,7 +1160,7 @@ void C4Player::NotifyOwnedObjects()
 				C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
 				if (pFn)
 				{
-					C4AulParSet pars(iNewOwner);
+					C4AulParSet pars(new_owner);
 					pFn->Exec(cobj, &pars);
 				}
 				else
@@ -1172,7 +1171,7 @@ void C4Player::NotifyOwnedObjects()
 					// Regular objects: Try to find a new, suitable owner from the same team
 					// Ignore StaticBack, because this would not be compatible with many internal objects such as team account
 					if ((cobj->Category & C4D_StaticBack) == 0)
-						cobj->SetOwner(iNewOwner);
+						cobj->SetOwner(new_owner);
 				}
 			}
 		}
@@ -1409,7 +1408,7 @@ bool C4Player::SetObjectCrewStatus(C4Object *pCrew, bool fNewStatus)
 		if (!Crew.IsContained(pCrew)) return true;
 		// ...or remove
 		Crew.Remove(pCrew);
-		C4AulParSet parset(Number);
+		C4AulParSet parset(this);
 		pCrew->Call(PSF_OnRemoveCrew, &parset);
 		// remove info, if assigned to this player
 		// theoretically, info objects could remain when the player is deleted

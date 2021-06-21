@@ -25,13 +25,13 @@ func Initialize()
 	return _inherited(...);
 }
 
-protected func OnClonkDeath(object clonk, int killer)
+protected func OnClonkDeath(object clonk, proplist killer)
 {
 	var plr = clonk->GetOwner();
 	_inherited(clonk, killer, ...);
 	// Show scoreboard for a while
-	DoScoreboardShow(1, plr + 1);
-	Schedule(this, Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
+	DoScoreboardShow(1, plr);
+	Schedule(this, Format("DoScoreboardShow(-1, %v)", plr), 35 * ShowBoardTime);
 	NotifyHUD();
 	return;
 }
@@ -54,12 +54,12 @@ public func IsFulfilled()
 			continue;
 		if (!CheckTeamHostile(winner, plr))
 			continue;
-		EliminatePlayer(plr);
+		plr->Eliminate();
 	}
 	return true;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	if (IsFulfilled()) 
 	{
@@ -70,17 +70,17 @@ public func GetDescription(int plr)
 	{
 		var score = GetRelativeScore(plr);
 		if (score.kills > 0)
-			return Format("$MsgAhead$",	 score.kills,  GetPlayerName(score.best));
+			return Format("$MsgAhead$",	 score.kills,  score.best->GetName());
 		else if (score.kills < 0)
-			return Format("$MsgBehind$", -score.kills, GetPlayerName(score.best));
+			return Format("$MsgBehind$", -score.kills, score.best->GetName());
 		else if (score.best == plr) 
 			return Format("$MsgYouAreBest$", score.kills);
 		else 
-			return Format("$MsgEqual$", GetPlayerName(score.best));
+			return Format("$MsgEqual$", score.best->GetName());
 	}
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	if (IsFulfilled()) 
 	{
@@ -89,14 +89,14 @@ public func Activate(int byplr)
 	else 
 	{
 		var score = GetRelativeScore(byplr);
-		if (score.kills > 0)		 MessageWindow(Format("$MsgAhead$",	 score.kills,  GetPlayerName(score.best)), byplr);
-		else if (score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills, GetPlayerName(score.best)), byplr);
+		if (score.kills > 0)		 MessageWindow(Format("$MsgAhead$",	 score.kills,  score.best->GetName()), byplr);
+		else if (score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills, score.best->GetName()), byplr);
 		else if (score.best == byplr) MessageWindow(Format("$MsgYouAreBest$", score.kills), byplr);
-		else MessageWindow(Format("$MsgEqual$", GetPlayerName(score.best)), byplr);
+		else MessageWindow(Format("$MsgEqual$", score.best->GetName()), byplr);
 	}
 }
 
-private func GetRelativeScore(int player)
+private func GetRelativeScore(proplist player)
 {
 	var bestplayer = -1, bestscore = -1;
 	for (var i = 0; i < GetPlayerCount(); ++i)
@@ -118,10 +118,10 @@ private func GetRelativeScore(int player)
 	return {best: bestplayer, kills: GetKillCount(player)-bestscore};
 }
 
-private func GetPlayerTeamScore(int player)
+private func GetPlayerTeamScore(proplist player)
 {
-	if (GetPlayerTeam(player) < 1) return GetKillCount(player);
-	return GetTeamScore(GetPlayerTeam(player));
+	if (player->GetTeam() < 1) return GetKillCount(player);
+	return GetTeamScore(player->GetTeam());
 }
 
 private func GetTeamScore(int team) 
@@ -131,14 +131,14 @@ private func GetTeamScore(int team)
 	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i);
-		var team2 = GetPlayerTeam(plr);
+		var team2 = plr->GetTeam();
 		if (team == team2)
 			score += GetKillCount(plr);
 	}
 	return score;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return Format("Deathmatch: %d", GetRelativeScore(plr).kills);
 }

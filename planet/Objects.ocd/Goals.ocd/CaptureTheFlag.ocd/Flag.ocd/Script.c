@@ -56,11 +56,11 @@ protected func FxFlagAutoPickupTimer(object target, effect)
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20), Sort_Distance()))
 	{
 		var plr = clonk->GetOwner();	
-		if (GetPlayerTeam(plr) != team)
+		if (plr->GetTeam() != team)
 		{
 			// Fiendly team, grab flag.
 			SetAction("AttachCarrier", clonk);
-			Log("$MsgFlagStolen$", GetTaggedTeamName(GetPlayerTeam(plr)), GetTaggedTeamName(team));
+			Log("$MsgFlagStolen$", GetTaggedTeamName(plr->GetTeam()), GetTaggedTeamName(team));
 			AddEffect("FlagCarried", clonk, 100, 5, this);
 			return 1;
 		}
@@ -110,7 +110,7 @@ protected func FxFlagCarriedStart(object target, effect, int temp)
 protected func FxFlagCarriedTimer(object target, effect)
 {
 	var controller = target->GetController();
-	var ctrl_team = GetPlayerTeam(controller);
+	var ctrl_team = controller->GetTeam();
 	var x = effect.x;
 	var y = effect.y;
 	var newx = target->GetX();
@@ -146,7 +146,7 @@ protected func FxFlagCarriedStop(object target, effect, int reason, bool temp)
 	if (reason == 4)
 	{
 		SetAction("Idle");
-		Log("$MsgFlagDropped$", GetTaggedTeamName(GetPlayerTeam(target->GetOwner())), GetTaggedTeamName(team));
+		Log("$MsgFlagDropped$", GetTaggedTeamName(target->GetOwner()->GetTeam()), GetTaggedTeamName(team));
 	}
 	if (target)
 	{	

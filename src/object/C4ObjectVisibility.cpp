@@ -23,6 +23,7 @@
 
 #include "game/C4Application.h"
 #include "landscape/fow/C4FoW.h"
+#include "player/C4Player.h"
 #include "player/C4PlayerList.h"
 
 
@@ -119,9 +120,11 @@ bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay) const
 		// check all
 		if (Visibility & VIS_Allies)  fDraw = fDraw || (iForPlr!=Owner && !Hostile(iForPlr, Owner));
 		if (Visibility & VIS_Enemies) fDraw = fDraw || (iForPlr!=Owner && Hostile(iForPlr, Owner));
-		if (parameters)
+		if (parameters && (Visibility & VIS_Select))
 		{
-			if (Visibility & VIS_Select)  fDraw = fDraw || parameters->GetItem(1+iForPlr).getBool();
+			C4Player* player = ::Players.Get(iForPlr);
+			int32_t id = player->ID;
+			fDraw = fDraw || parameters->GetItem(id).getBool();
 		}
 	}
 	else fDraw = fDraw || (Visibility & VIS_God);

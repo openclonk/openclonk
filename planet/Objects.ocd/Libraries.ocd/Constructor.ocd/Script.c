@@ -37,7 +37,7 @@ private func ShowConstructionMaterial(object clonk, object structure)
 }
 
 // Gives a list of ids of the players knowledge.
-public func GetConstructionPlans(int plr)
+public func GetConstructionPlans(proplist plr)
 {
 	var construction_plans = [];
 	var construct_id, index = 0;
@@ -67,7 +67,7 @@ func CanBuild(id construction_plan)
 public func ShowConstructionPreview(object clonk, id structure_id)
 {
 	AddEffect("ControlConstructionPreview", clonk, 1, 0, this, nil, structure_id, clonk);
-	SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, true);
+	clonk->GetOwner()->SetControlEnabled(CON_Aim, true);
 	return true;
 }
 
@@ -123,7 +123,7 @@ public func FxControlConstructionPreviewStop(object clonk, effect, int reason, b
 {
 	if (temp) return;
 	effect.preview->RemoveObject();
-	SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, false);
+	clonk->GetOwner()->SetControlEnabled(CON_Aim, false);
 }
 
 

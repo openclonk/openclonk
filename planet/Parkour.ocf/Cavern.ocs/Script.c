@@ -91,9 +91,9 @@ protected func FindPosInMat(string mat, int rx, int ry, int wdt, int hgt, int si
 }
 
 // Gamecall from parkour goal, on respawning.
-protected func OnPlayerRespawn(int plr, object cp)
+protected func OnPlayerRespawn(proplist plr, object cp)
 {
-	var clonk = GetCrew(plr);
+	var clonk = plr->GetCrew();
 	clonk->CreateContents(Shovel);
 	clonk->CreateContents(GrappleBow);
 	clonk->CreateContents(Loam);
@@ -101,7 +101,7 @@ protected func OnPlayerRespawn(int plr, object cp)
 }
 
 // Gamecall from parkour goal, on reaching a bonus cp.
-protected func GivePlrBonus(int plr, object cp)
+protected func GivePlrBonus(proplist plr, object cp)
 {
 	// No bonus.
 	return;

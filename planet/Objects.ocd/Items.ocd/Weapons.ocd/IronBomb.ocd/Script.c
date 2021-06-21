@@ -97,7 +97,7 @@ protected func Hit(int x, int y)
 	return StonyObjectHit(x, y);
 }
 
-protected func Incineration(int caused_by)
+protected func Incineration(proplist caused_by)
 {
 	Extinguish(); 
 	Fuse();

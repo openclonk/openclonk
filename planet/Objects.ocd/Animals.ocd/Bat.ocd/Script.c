@@ -230,7 +230,7 @@ public func CatchBlow(int damage, object obj)
 	// Make a sound.
 	Sound("Animals::Bat::Noise*");
 	// Get the most probable crew member causing this blow.
-	var by_crewmember = GetCursor(obj->GetController());
+	var by_crewmember = obj->GetController()->GetCursor();
 	// When hurt, startle this bat and nearby bats.
 	Startle(by_crewmember);
 	for (var swarm_member in FindObjects(Find_ID(Bat), Find_OCF(OCF_Alive), Find_Distance(200), Find_Exclude(this)))

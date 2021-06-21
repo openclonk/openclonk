@@ -105,14 +105,14 @@ func SetMouseOutCallback(proplist target, callback)
 	on_mouse_out_callback = [target, callback];
 }
 
-func OnMouseOverListMenu(parameter, int user_ID, int player)
+func OnMouseOverListMenu(parameter, int user_ID, proplist player)
 {
 	if (on_mouse_over_callback)
 		on_mouse_over_callback[0]->Call(on_mouse_over_callback[1], parameter, user_ID, player);
 	UpdateDescription(parameter);
 }
 
-func OnMouseOutListMenu(parameter, int user_ID, int player)
+func OnMouseOutListMenu(parameter, int user_ID, proplist player)
 {
 	if (on_mouse_out_callback)
 		on_mouse_out_callback[0]->Call(on_mouse_out_callback[1], parameter, user_ID, player);

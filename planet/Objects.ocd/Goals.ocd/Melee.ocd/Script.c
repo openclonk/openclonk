@@ -2,7 +2,7 @@
 
 #include Library_Goal
 
-func MakeHostileToAll(int newplr, int team)
+func MakeHostileToAll(proplist newplr, int team)
 {
 	// If the player is in a team, don't change hostility.
 	if (team) return;
@@ -13,31 +13,31 @@ func MakeHostileToAll(int newplr, int team)
 		var plr = GetPlayerByIndex(i);
 		if (plr == newplr) continue;
 		
-		SetHostility(newplr, plr, true, true);
-		SetHostility(plr, newplr, true, true);
+		newplr->SetHostility(plr, true, true);
+		plr->SetHostility(newplr, true, true);
 	}
 }
 
-protected func InitializePlayer(int newplr, int x, int y, object base, int team)
+protected func InitializePlayer(proplist newplr, int x, int y, object base, int team)
 {
 	MakeHostileToAll(newplr, team);
 	return inherited(newplr, x, y, base, team, ...);
 }
 
-private func CheckTeamHostile(int plr1, int plr2)
+private func CheckTeamHostile(proplist plr1, proplist plr2)
 {
-	var team1 = GetPlayerTeam(plr1);
-	if (team1 != GetPlayerTeam(plr2))
+	var team1 = plr1->GetTeam();
+	if (team1 != plr2->GetTeam())
 		return true;
 	if (team1)
 		return false;
-	return Hostile(plr1, plr2);
+	return plr1->Hostile(plr2);
 }
 
 public func IsFulfilled()
 {
 	// If Teams.txt-Teams still need to be chosen, the goal cannot be fulfilled.
-	if (GetPlayerTeam(GetPlayerByIndex()) == -1) return;
+	if (GetPlayerByIndex()->GetTeam() == -1) return;
 
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
@@ -55,7 +55,7 @@ public func IsFulfilled()
 	return true;
 }
 
-public func GetDescription(int plr)
+public func GetDescription(proplist plr)
 {
 	// Count enemy players.
 	var hostile_count;
@@ -64,7 +64,7 @@ public func GetDescription(int plr)
 		var byplr = GetPlayerByIndex(i);
 		if (byplr == plr)
 			continue;
-		if (Hostile(byplr, plr) )
+		if (byplr->Hostile(plr) )
 			hostile_count++;
 	}
 	
@@ -78,7 +78,7 @@ public func GetDescription(int plr)
 	return message;
 }
 
-public func Activate(int byplr)
+public func Activate(proplist byplr)
 {
 	// Count enemy players.
 	var hostile_count;
@@ -87,7 +87,7 @@ public func Activate(int byplr)
 		var plr = GetPlayerByIndex(i);
 		if (plr == byplr)
 			continue;
-		if (Hostile(plr, byplr) )
+		if (plr->Hostile(byplr) )
 			hostile_count++;
 	}
 	
@@ -99,7 +99,7 @@ public func Activate(int byplr)
 	return;
 }
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(proplist plr)
 {
 	return ""; // TODO
 }

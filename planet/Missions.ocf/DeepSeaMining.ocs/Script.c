@@ -61,7 +61,7 @@ protected func PostIntroInitialize()
 	return true;
 }
 
-func DoInit(int first_player)
+func DoInit(proplist first_player)
 {
 	if (!SCEN_TEST)
 		StartSequence("Intro", 0, GetCrew(first_player));
@@ -73,15 +73,15 @@ func DoInit(int first_player)
 	return true;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(proplist plr)
 {
 	// intro has its own initialization
 	if (g_is_in_intro) return true;
 	
 	// Harsh zoom range
-	SetPlayerZoomByViewRange(plr, 500, 350, PLRZOOM_LimitMax);
-	SetPlayerZoomByViewRange(plr, 500, 350, PLRZOOM_Direct);
-	SetPlayerViewLock(plr, true);
+	plr->SetZoomByViewRange(500, 350, PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(500, 350, PLRZOOM_Direct);
+	plr->SetViewLocked(true);
 
 	// Intro
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
@@ -91,7 +91,7 @@ protected func InitializePlayer(int plr)
 	
 	// Position and materials
 	var i, crew;
-	for (i = 0; crew = GetCrew(plr, i); ++i)
+	for (i = 0; crew = plr->GetCrew(i); ++i)
 	{
 		var pos = FindMainIslandPosition();
 		crew->SetPosition(pos[0], pos[1] - 11);
@@ -308,7 +308,7 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 public func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/TreasureHunt.ocs");
-	GainScenarioAchievement("Done");
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done");
 	GainScenarioAccess("S2Sea");
 	StartSequence("Outro", 0);
 	// Return true to force goal rule to not call GameOver() yet

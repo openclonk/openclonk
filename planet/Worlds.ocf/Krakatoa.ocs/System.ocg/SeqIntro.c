@@ -52,17 +52,17 @@ public func Intro_Start()
 	return ScheduleNext(4);
 }
 
-public func Intro_JoinPlayer(int plr)
+public func Intro_JoinPlayer(proplist plr)
 {
 	// Move player's crew into the plane.
 	var j = 0, crew;
-	while (crew = GetCrew(plr, j++))
+	while (crew = plr->GetCrew(j++))
 	{
 		crew->Enter(this.airplane);
 		crew->SetAction("Walk");	
 	}
 	// Increase zoom.
-	SetPlayerZoomByViewRange(plr, 700, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	plr->SetZoomByViewRange(700, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(this.pilot);
 	return;
 }
@@ -152,7 +152,7 @@ public func Intro_PlaneHit()
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
 		var icrew = 0, crew;
-		while (crew = GetCrew(plr, icrew++))
+		while (crew = plr->GetCrew(icrew++))
 		{
 			crew->Exit(0,-5, 0, 1 + Random(2), Random(3) - 5);
 			crew->SetAction("Tumble");
@@ -175,7 +175,7 @@ public func Intro_7()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgConstructPlane$", GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
+		MessageBox("$MsgConstructPlane$", plr->GetCrew(0), plr->GetCrew(0), plr, true);
 	}
 	return ScheduleNext(12);
 }
@@ -188,6 +188,6 @@ public func Intro_8()
 public func Intro_Stop()
 { 
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

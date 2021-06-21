@@ -42,7 +42,7 @@
     <remark>In 9.0 OC this function was deprecated, because it can be retrieved from a player directly with <funclink>GetPlayer</funclink> by accessing the proplist property "Type".</remark>
     <examples>
       <example>
-        <code>protected func InitializePlayer(int player)
+        <code>protected func InitializePlayer(proplist player)
   {
   // Is it a script player?
   if (GetPlayerType(player) == C4PT_Script)

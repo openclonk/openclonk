@@ -17,7 +17,7 @@ local NoBurnDecay = true;
 // Feel free to change this time in your object (in frames)
 local BurnDownTime = 70;
 
-public func Incineration(int caused_by)
+public func Incineration(proplist caused_by)
 {
 	_inherited(caused_by);
 	// You shouldn't remove the object in Incineration but let's check anyway
@@ -38,7 +38,7 @@ public func Extinguishing()
 }
 
 local LibraryFlammable = new Effect {
-	Construction = func (int caused_by)
+	Construction = func (proplist caused_by)
 	{
 		this.caused_by = caused_by;
 	},
@@ -54,7 +54,7 @@ local LibraryFlammable = new Effect {
 	}
 };
 
-public func BurnDown(int caused_by)
+public func BurnDown(proplist caused_by)
 {
 	if (this->~OnBurnDown())
 		return;

@@ -5,7 +5,7 @@ func Entrance(object container)
 	if (this == g_windbag && container && container->IsClonk())
 	{
 		var plr = container->GetOwner();
-		if (GetPlayerType(plr) != C4PT_User) return _inherited(container, ...);
+		if (plr && plr.Type != C4PT_User) return _inherited(container, ...);
 
 		var homebase = FindObject(Find_ID(Homebase), Find_Owner(plr));
 		if (!homebase) return _inherited(container, ...); // ???

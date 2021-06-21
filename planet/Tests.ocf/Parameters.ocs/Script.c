@@ -14,7 +14,7 @@ func Initialize()
 
 func InitializePlayer(plr)
 {
-	GetCrew(plr)->CreateContents(Shovel);
+	plr->GetCrew()->CreateContents(Shovel);
 }
 
 func GotNugget()
@@ -28,6 +28,6 @@ func GotNugget()
 func Finished()
 {
 	Log("All nuggets collected!");
-	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	for (var player in GetPlayers(C4PT_User)) player->GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
 	GameOver();
 }

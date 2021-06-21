@@ -34,23 +34,23 @@
         </row>
         <row id="RelaunchPlayer">
           <literal_col>RelaunchPlayer</literal_col>
-          <col>int player, int killed_by_player</col>
-          <col>Called when a player is about to be eliminated because his last crew member died.</col>
+          <col>proplist player, proplist killed_by_player</col>
+          <col>Called when a player is about to be eliminated because his last crew member died. Used player number before 9.0 OC.</col>
         </row>
         <row id="RemovePlayer">
           <literal_col>RemovePlayer</literal_col>
-          <col>int player, int team</col>
+          <col>proplist player, int team</col>
           <col>Called when a player is removed from the game.</col>
         </row>
 		
         <row id="RejectHostilityChange">
           <literal_col>RejectHostilityChange</literal_col>
-          <col>int player1, int player2, bool hostile</col>
+          <col>proplist player1, proplist player2, bool hostile</col>
           <col>When the hostility of two players is about to be changed, this function is called first. If it returns true, the hostility is not changed. See <funclink>SetHostility</funclink>.</col>
         </row>
         <row id="OnHostilityChange">
           <literal_col>OnHostilityChange</literal_col>
-          <col>int player1, int player2, bool hostile, bool old_hostility</col>
+          <col>proplist player1, proplist player2, bool hostile, bool old_hostility</col>
           <col>Called after the hostility of two players has been changed. See <funclink>SetHostility</funclink>.</col>
         </row>
 		
@@ -93,13 +93,14 @@
   <funclink>CreateObject</funclink>(WindGenerator,250,200);
 }</code>
     <text>After joining a new player the engine calls the function InitializePlayer in the scenario script for that player. This function is called after the basic player objects as defined in Scenario.txt have been placed, so a preliminary starting position has been selected and the player's crew and starting material and buildings are present. In this function, you can now perform more special initial placement.</text>
-    <code>func InitializePlayer(int player)
+    <code>func InitializePlayer(proplist player)
 {
-  <funclink>Log</funclink>( &quot;Player nr. %d has joined the game&quot;, player );
+  <funclink>Log</funclink>( &quot;Player nr. %d has joined the game&quot;, player.ID );
   <funclink>Sound</funclink>(&quot;Ding&quot;);
   // The first clonk of the player starts at a random position in the landscape
   <funclink>GetCrew</funclink>(player,0)-&gt;<funclink>SetPosition</funclink>( <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>()));
 }</code>
   </part>
   <author>Sven2</author><date>2002-04</date>
+  <author>Marky</author><date>2020-10</date>
 </doc>
