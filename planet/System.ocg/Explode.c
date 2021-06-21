@@ -282,7 +282,7 @@ global func DoShockwave(int x, int y, int level, proplist cause_player, object l
 	
 	// caused by: if not specified, controller of calling object
 	if (cause_player == nil)
-		if (this)
+		if (GetType(this) == C4V_C4Object)
 			cause_player = GetController();
 
 	// Hurl objects in explosion radius.
