@@ -94,7 +94,7 @@ protected func InitializePlayer(proplist plr)
 		StartSequence("Intro", 0, SCENPAR_Difficulty);
 		intro_init = true;
 		// Give only the first joined player some wealth.
-		SetWealth(plr, 75 - 25 * SCENPAR_Difficulty);
+		plr->SetWealth(75 - 25 * SCENPAR_Difficulty);
 	}
 	return;
 }

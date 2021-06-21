@@ -40,7 +40,7 @@ func Dlg_Merchant_10(object clonk)
 {
 	if (g_has_bought_plans) return StopDialogue(); // in case multiple players initiate the dialogue at the same time
 	var plr = clonk->GetOwner();
-	var wealth = GetWealth(plr);
+	var wealth = plr->GetWealth();
 	if (wealth >= 150)
 	{
 		MessageBox("$MerchantBuyPlans$", clonk, clonk);
@@ -58,7 +58,7 @@ func Dlg_Merchant_11(object clonk)
 	// prevent race conditions
 	if (g_has_bought_plans) return StopDialogue();
 	var plr = clonk->GetOwner();
-	var wealth = GetWealth(plr);
+	var wealth = plr->GetWealth();
 	if (wealth < 150)
 	{
 		MessageBox("$MerchantNoMoney$", clonk, clonk);
@@ -66,7 +66,7 @@ func Dlg_Merchant_11(object clonk)
 	}
 	// do transaction.
 	MessageBox("$MerchantGivePlans$", clonk);
-	DoWealth(clonk->GetOwner(), -150);
+	clonk->GetOwner()->DoWealth(-150);
 	for (var i = 0; i < GetPlayerCount(); i++) GameCall("GiveExtraPlans", GetPlayerByIndex(i));
 	g_has_bought_plans = true;
 	SetDialogueProgress(2);

@@ -39,12 +39,11 @@ global func SetWealth(proplist plr, int wealth)
 protected func InitializePlayer(proplist plr)
 {
 	// Find an ally and add this wealth.
-	for (var i = 0; i < GetPlayerCount(); i++)
+	for (var to_plr in GetPlayers())
 	{
-		var to_plr = GetPlayerByIndex(i);
 		if (to_plr != plr && !to_plr->Hostile(plr))
 		{
-			DoWealth(to_plr, GetWealth(plr));
+			to_plr->DoWealth(plr->GetWealth());
 			break;
 		}
 	}	
@@ -66,7 +65,7 @@ protected func OnTeamSwitch(proplist player, int new_team, int old_team)
 		if (!player->Hostile(GetPlayerByIndex(i)))
 			count++;		
 	}
-	//var share = GetWealth(player) / count;
+	//var share = player->GetWealth() / count;
 
 	// Add player to new team, i.e. add his wealth.
 	// TODO Implement

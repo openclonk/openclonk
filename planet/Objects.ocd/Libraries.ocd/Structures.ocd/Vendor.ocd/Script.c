@@ -73,14 +73,14 @@ public func DoBuy(id item, proplist for_player, proplist wealth_player, object b
 	{
 		var price = this->GetBuyValue(item);
 		// Does the player have enough money?
-		if (price > GetWealth(wealth_player))
+		if (price > wealth_player->GetWealth())
 		{
 			if (error_sound)
 				Sound("UI::Error", {player = for_player});
 			break;
 		}
 		// Take the cash.
-		DoWealth(wealth_player, -price);
+		wealth_player->DoWealth(-price);
 		Sound("UI::UnCash?", {player = for_player});
 		// Decrease the base material, allow runtime overload.
 		this->ChangeBuyableAmount(wealth_player, item, -1);
@@ -110,7 +110,7 @@ public func DoSell(object obj, proplist wealth_player)
 	}
 
 	// Give the player the cash.
-	DoWealth(wealth_player, this->GetSellValue(obj));
+	wealth_player->DoWealth(this->GetSellValue(obj));
 	Sound("UI::Cash", {player = wealth_player});
 	
 	// Add the item to the homebase material.
@@ -214,7 +214,7 @@ public func GetBuyMenuEntries(object clonk)
 	var wealth_player = GetOwner();
 	var for_player = GetOwner();
 
-	var wealth = GetWealth(wealth_player); 
+	var wealth = wealth_player->GetWealth(); 
 	var menu_entries = [];
 	var index = 0, item, amount;
 	
@@ -299,8 +299,8 @@ private func EjectContents(object contents)
 private func FxUpdateWealthDisplayTimer(object target, effect fx, int time)
 {
 	if (!fx.menu_target) return FX_Execute_Kill;
-	if (fx.last_wealth == GetWealth(fx.wealth_player)) return FX_OK;
-	fx.last_wealth = GetWealth(fx.wealth_player);
+	if (fx.last_wealth == fx.wealth_player->GetWealth()) return FX_OK;
+	fx.last_wealth = fx.wealth_player->GetWealth();
 	// Do we need a full refresh? New objects might have become available.
 	if (fx.lowest_greyed_out_price && fx.lowest_greyed_out_price <= fx.last_wealth)
 	{

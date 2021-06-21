@@ -15,7 +15,7 @@ public func RejectEntrance(object container)
 	var plr = container->GetOwner();
 	if (plr && plr.Type != C4PT_User) return false;
 
-	DoWealth(plr, value);
+	plr->DoWealth(value);
 	Sound("UI::Cash", false, nil, plr);
 	if (g_chest && !g_chest->FindContents(GoldBar))
 		g_chest->SetMeshMaterial("DefaultChest", 0);

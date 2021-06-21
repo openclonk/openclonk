@@ -269,7 +269,7 @@ public func DoPlayerStart(proplist plr)
 	++is_handling_player_spawn;
 	
 	// Give wealth
-	SetWealth(plr, starting_wealth);
+	plr->SetWealth(starting_wealth);
 	
 	// Set base material
 	InitializeBaseMaterial(plr);

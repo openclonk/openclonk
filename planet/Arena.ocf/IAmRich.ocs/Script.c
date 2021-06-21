@@ -84,7 +84,7 @@ func InitializePlayer(proplist plr)
 	GivePlayerAllKnowledge(plr);
 	BaseMats(plr);
 	
-	DoWealth(plr, SCENPAR_StartGold);
+	plr->DoWealth(SCENPAR_StartGold);
 	
 	SetScoreboardData(SBRD_Caption, SBRD_Caption,  "Player", SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, COL_Score,     "{{Nugget}}");
@@ -97,11 +97,10 @@ func InitializePlayer(proplist plr)
 
 func UpdateScoreboard()
 {
-	for (var i = 0; i < GetPlayerCount(); i++)
+	for (var player in GetPlayers())
 	{
-		var playerid = GetPlayerByIndex(i).ID;
-		var pscore = GetWealth(GetPlayerByIndex(i));
-		SetScoreboardData(playerid, COL_Score, Format("%d", pscore), pscore);
+		var pscore = player->GetWealth();
+		SetScoreboardData(player.ID, COL_Score, Format("%d", pscore), pscore);
 	}	
 }
 
@@ -146,9 +145,17 @@ func CreateFlagpole(object near_clonk)
 
 func OnClonkDeath(object clonk, proplist killed_by)
 {
-	var w1 = GetWealth(clonk->GetOwner()) / 10;
-	DoWealth(clonk->GetOwner(), w1 * -1);
-	DoWealth(killed_by, w1);
+	var w1 = 0;
+	var owner = clonk->GetOwner();
+	if (owner)
+	{
+		owner->GetWealth() / 10;
+		owner->DoWealth(w1 * -1);
+	}
+	if (killed_by)
+	{
+		killed_by->DoWealth(w1);
+	}
 }
 
 func OnCountdownFinished()

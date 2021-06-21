@@ -461,7 +461,7 @@ public func OnClonkDeath(object clonk, proplist killed_by)
 		if (killed_by != NO_OWNER)
 		{
 			var plrid = killed_by.ID;
-			DoWealth(killed_by, clonk.Bounty);
+			killed_by->DoWealth(clonk.Bounty);
 			plrs_bonus[plrid] += clonk.Bounty;
 			plrs_kills[plrid] += 1;
 			Scoreboard->SetPlayerData(killed_by, "bonus", plrs_bonus[plrid]);
@@ -500,7 +500,7 @@ public func DoSharedWealth(int amount)
 public func DoWealthForAll(int amount)
 {
 	for (var plr in GetPlayers(C4PT_User))
-		DoWealth(plr, amount);
+		plr->DoWealth(amount);
 	return;
 }
 

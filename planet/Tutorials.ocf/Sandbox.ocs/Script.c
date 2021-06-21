@@ -55,7 +55,7 @@ public func GiveSettlementTools(proplist plr)
 
 public func GiveBaseMaterials(proplist plr)
 {
-	SetWealth(plr, 250);
+	plr->SetWealth(250);
 	SetBaseMaterial(plr, Clonk, 10);
 	SetBaseProduction(plr, Clonk, 2);
 	SetBaseMaterial(plr, Bread, 10);

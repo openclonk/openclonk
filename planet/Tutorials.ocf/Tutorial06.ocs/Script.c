@@ -189,7 +189,7 @@ protected func InitializePlayer(proplist plr)
 	SetBaseMaterial(plr, Metal, 20);
 	
 	// Set wealth to buy items.
-	SetWealth(plr, 400);
+	plr->SetWealth(400);
 	
 	// Add an effect to the clonk to track the goal.
 	var track_goal = AddEffect("TrackGoal", nil, 100, 2);

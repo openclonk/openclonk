@@ -91,8 +91,8 @@ protected func InitializePlayer(proplist plr)
 	GivePlayerToolsBaseMaterial(plr);
 		
 	// Ensure mimimum player wealth.
-	var add_wealth = Max(0, 20 + 20 * amount - GetWealth(plr));
-	DoWealth(plr, add_wealth);
+	var add_wealth = Max(0, 20 + 20 * amount - plr->GetWealth());
+	plr->DoWealth(add_wealth);
 	
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)

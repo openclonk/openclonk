@@ -258,7 +258,7 @@ protected func InitializePlayer(proplist plr)
 	fx.to_y = 606;
 	
 	// Some wealth for the guide message.
-	SetWealth(plr, 25);
+	plr->SetWealth(25);
 	
 	// Player controls disabled at the start.
 	DisablePlrControls(plr);

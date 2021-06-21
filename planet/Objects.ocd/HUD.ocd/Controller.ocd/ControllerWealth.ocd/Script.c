@@ -71,7 +71,7 @@ private func Construction()
 {
 	wealth_display = GUI_Controller_Wealth_shown; // initial show/hide setting
 	var plr = GetOwner();
-	var wealth = GetWealth(plr);
+	var wealth = plr->GetWealth();
 
 	var margin = GUI_Controller_Wealth_IconMargin;
 	var whole = margin + GUI_Controller_Wealth_IconSize;
@@ -110,7 +110,7 @@ public func OnWealthChanged(proplist plr)
 	// Only update wealth when it is the right player.
 	if (plr == GetOwner())
 	{
-		var wealth = GetWealth(plr);
+		var wealth = plr->GetWealth();
 		wealth_gui_menu.GraphicsName = GetGraphicsName(wealth);
 		wealth_gui_menu.Text = Format("%d", wealth);
 		GuiUpdate(wealth_gui_menu, wealth_gui_id);

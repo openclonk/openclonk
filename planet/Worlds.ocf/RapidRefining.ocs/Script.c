@@ -65,7 +65,7 @@ protected func InitializePlayer(proplist plr)
 		InitBase(plr, 4 - SCENPAR_Difficulty);
 		first_plr_init = true;
 		// Give only the first joined player some wealth.
-		SetWealth(plr, 150 - 50 * SCENPAR_Difficulty);
+		plr->SetWealth(150 - 50 * SCENPAR_Difficulty);
 	}
 	
 	// Position and materials for the crew.

@@ -55,7 +55,7 @@ protected func InitializePlayer(proplist plr)
 	// Give base and set wealth.
 	if (!init_defenders)
 	{
-		SetWealth(plr, 200);
+		plr->SetWealth(200);
 		for (var obj in FindObjects(Find_Func("IsFlagpole")))
 			obj->SetOwner(plr);
 		init_defenders = true;

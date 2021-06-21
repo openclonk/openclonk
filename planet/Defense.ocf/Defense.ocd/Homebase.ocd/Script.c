@@ -162,7 +162,7 @@ public func GetEntryInformation(int entry_idx)
 		msg = "";
 	}
 	// Info message: Cannot afford
-	if (entry.cost > GetWealth(GetOwner()))
+	if (entry.cost > GetOwner()->GetWealth())
 	{
 		msg = Format("%s<c ff0000>$Cost$: %d</c>", msg, entry.cost);
 	}
@@ -191,8 +191,8 @@ public func OnBuySelection(int callback_idx)
 		// Cost
 		if (entry.cost)
 		{
-			if (GetWealth(plr) < entry.cost) return false;
-			DoWealth(plr, -entry.cost);
+			if (plr->GetWealth() < entry.cost) return false;
+			plr->DoWealth(, -entry.cost);
 			Sound("UI::Cash", true, nil, plr);
 			// Some items cost only once
 			if (entry.free_rebuy) entry.cost = nil;
@@ -269,7 +269,7 @@ public func SellItem(item)
 	// Use custom value assigned by buy menu only
 	if (item.GidlValue)
 	{
-		DoWealth(GetOwner(), item.GidlValue);
+		GetOwner()->DoWealth(item.GidlValue);
 		Sound("UI::Cash", true, nil, GetOwner());
 	}
 	is_selling = true; // no item re-buy during sale

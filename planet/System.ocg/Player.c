@@ -156,19 +156,6 @@ global func DoWealth(any player, int value)
 	return SetWealth(player, value + GetWealth(player));
 }
 
-global func GetWealth(any player, int value)
-{
-	player = GetPlayerLegacy(player);
-	if (player)
-	{
-		return player.Data.Wealth;
-	}
-	else
-	{
-		return nil;
-	}
-}
-
 global func SetWealth(any player, int value)
 {
 	player = GetPlayerLegacy(player);

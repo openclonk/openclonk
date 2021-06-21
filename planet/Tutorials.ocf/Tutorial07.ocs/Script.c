@@ -197,7 +197,7 @@ protected func InitializePlayer(proplist plr)
 
 global func FxTrackGoalTimer(object target, proplist effect, int time)
 {
-	if (GetWealth(effect.plr) >= 250)
+	if (effect.plr->GetWealth() >= 250)
 	{
 		var outro = AddEffect("GoalOutro", target, 100, 5);
 		outro.plr = effect.plr;

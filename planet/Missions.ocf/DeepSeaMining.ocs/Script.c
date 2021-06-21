@@ -87,7 +87,7 @@ protected func InitializePlayer(proplist plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	if (!g_intro_done) return true;
 	
-	SetWealth(plr, 25);
+	plr->SetWealth(25);
 	
 	// Position and materials
 	var i, crew;

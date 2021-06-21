@@ -166,7 +166,7 @@ func InitializePlayer(int player_nr, int x, int y, object base, int team, id ext
 	}
 
 	// Wealth, home base materials, abilities
-	SetWealth(player_nr, RandomRange(settings.Wealth[0], settings.Wealth[1], settings.Wealth[2], settings.Wealth[3]));
+	player_nr->SetWealth(RandomRange(settings.Wealth[0], settings.Wealth[1], settings.Wealth[2], settings.Wealth[3]));
 	for (var material in GetAsList(settings.BaseMaterial))
 	{
 		DoBaseMaterial(player_nr, material, 1);

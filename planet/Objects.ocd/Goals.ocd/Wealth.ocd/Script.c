@@ -50,7 +50,7 @@ public func IsFulfilled()
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (GetWealth(plr) < GetWealthGoal())
+		if (plr->GetWealth() < GetWealthGoal())
 			return false;
 	}
 	// Goal fulfilled.
@@ -63,7 +63,7 @@ public func GetDescription(proplist plr)
 	if (IsFulfilled())
 		message = Format("$MsgGoalFulfilled$", GetWealthGoal());	
 	else
-		message = Format("$MsgGoalUnfulfilled$", GetWealth(plr), GetWealthGoal());
+		message = Format("$MsgGoalUnfulfilled$", plr->GetWealth(), GetWealthGoal());
 
 	return message;
 }
@@ -84,7 +84,7 @@ public func Activate(proplist plr)
 	if (IsFulfilled())
 		message = Format("@$MsgGoalFulfilled$", GetWealthGoal());	
 	else
-		message = Format("@$MsgGoalUnfulfilled$", GetWealth(plr), GetWealthGoal());
+		message = Format("@$MsgGoalUnfulfilled$", plr->GetWealth(), GetWealthGoal());
 
 	CustomMessage(message, nil, plr, 0, 16 + 64, 0xffffff, GUI_MenuDeco, this, MSG_HCenter);
 	return;
@@ -95,7 +95,7 @@ protected func FxGoalMessageStart() {}
 public func GetShortDescription(proplist plr)
 {
 	// Show acquired wealth compared to goal.
-	var wealth = GetWealth(plr);
+	var wealth = plr->GetWealth();
 	var goal = GetWealthGoal();
 	var clr = RGB(255, 0, 0);
 	if (wealth >= goal)

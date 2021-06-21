@@ -159,7 +159,7 @@ protected func InitializePlayer(proplist plr)
 {
 	// No FOW here.
 	//plr->SetFoW(false);
-	SetWealth(plr, 50);
+	plr->SetWealth(50);
 	JoinPlayer(plr);
 	// Give all knowledge.
 	var index = 0, def;

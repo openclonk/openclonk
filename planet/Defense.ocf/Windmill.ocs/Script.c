@@ -41,7 +41,7 @@ func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 	if (plr.Type != C4PT_User) return;
 
 	if (g_lost) { plr->Eliminate(); return; } // no post-elimination join
-	SetWealth(plr, 50);
+	plr->SetWealth(50);
 	if (!g_relaunchs)
 	{
 		g_relaunchs = [];
@@ -59,7 +59,6 @@ func InitializePlayer(proplist plr, int iX, int iY, object pBase, int iTeam)
 
 	plr->SetZoomByViewRange(1200, 0, PLRZOOM_LimitMax);
 
-	//DoWealth(plr, 10000000);
 
 	JoinPlayer(plr);
 	if (!g_wave) StartGame();
@@ -69,7 +68,7 @@ func RemovePlayer(proplist plr)
 {
 	Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
 	// Split player's wealth among the remaining players
-	ScheduleCall(nil, Scenario.DoSharedWealth, 50, 1, GetWealth(plr));
+	ScheduleCall(nil, Scenario.DoSharedWealth, 50, 1, plr->GetWealth());
 }
 
 private func TransferInventory(object from, object to)
@@ -188,7 +187,7 @@ func OnClonkDeath(clonk, killed_by)
 			if (killed_by>=0)
 			{
 				Scoreboard->SetPlayerData(killed_by, "score", ++g_scores[killed_by]);
-				DoWealth(killed_by, clonk.Bounty);
+				killed_by->DoWealth(clonk.Bounty);
 			}
 			else
 			{
@@ -262,8 +261,8 @@ public func DoSharedWealth(int amount)
 public func DoWealthForAll(int amount)
 {
 	// Add wealth to all players
-	for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
-		DoWealth(GetPlayerByIndex(iplr, C4PT_User), amount);
+	for (var player in GetPlayerCount(C4PT_User))
+		player->DoWealth(amount);
 	return true;
 }
 
