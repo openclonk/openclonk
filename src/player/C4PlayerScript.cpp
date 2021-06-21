@@ -338,7 +338,7 @@ static bool FnSetTeam(C4Player *player, long idNewTeam, bool no_calls)
 	// ask script if it's allowed
 	if (!no_calls)
 	{
-		if (!!::Game.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(player->ID, idNewTeam), true, true)) // TODO: C4Player *?
+		if (!!::Game.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(player, idNewTeam), true, true)) // TODO: C4Player *?
 			return false;
 	}
 	// exit previous team
@@ -369,7 +369,7 @@ static bool FnSetTeam(C4Player *player, long idNewTeam, bool no_calls)
 	    // update hositlities if this is not a "silent" change
 		player->SetTeamHostility();
 	    // do callback to reflect change in scenario
-		::Game.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(player->ID, idNewTeam, idOldTeam), true);// TODO: C4Player *?
+		::Game.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(player, idNewTeam, idOldTeam), true);// TODO: C4Player *?
 	}
 	return true;
 }

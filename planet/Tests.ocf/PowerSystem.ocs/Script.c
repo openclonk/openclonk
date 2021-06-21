@@ -617,12 +617,12 @@ global func Test11_OnStart(proplist plr)
 	ScheduleCall(nil, "CreateObjectAbove", 3 * 36, 0, Compensator, 272, 160, script_plr);
 	
 	// Make the players hostile for a short time.
-	ScheduleCall(nil, "SetHostility", 6 * 36, 0, plr, script_plr, true);
-	ScheduleCall(nil, "SetHostility", 6 * 36, 0, script_plr, plr, true);
+	ScheduleCall(nil, "SetPlayerHostility", 6 * 36, 0, plr, script_plr, true);
+	ScheduleCall(nil, "SetPlayerHostility", 6 * 36, 0, script_plr, plr, true);
 	
 	// Make the players allies again.
-	ScheduleCall(nil, "SetHostility", 9 * 36, 0, plr, script_plr, false);
-	ScheduleCall(nil, "SetHostility", 9 * 36, 0, script_plr, plr, false);
+	ScheduleCall(nil, "SetPlayerHostility", 9 * 36, 0, plr, script_plr, false);
+	ScheduleCall(nil, "SetPlayerHostility", 9 * 36, 0, script_plr, plr, false);
 	
 	// Switch the team of the script player.
 	var team = script_plr->GetTeam();
@@ -1310,4 +1310,19 @@ global func FxIntAlternatingWindTimer(object target, proplist effect, int time)
 		SetWindFixed(0);
 	return FX_OK;
 }
-	
+
+global func SetPlayerHostility(proplist player1, proplist player2, bool hostile)
+{
+	player1->SetHostility(player2, hostile);
+}
+
+global func SetPlayerTeam(proplist player, int team)
+{
+	player->SetTeam(team);
+}
+
+global func EliminatePlayer(proplist player)
+{
+	player->Eliminate();
+}
+
