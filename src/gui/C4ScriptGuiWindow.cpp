@@ -1106,7 +1106,19 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 				parent->ChildChangedPriority(this);
 		}
 		else if(&Strings.P[P_Player] == key)
-			props[C4ScriptGuiWindowPropertyName::player].Set(property, stdTag);
+		{
+			C4PropList* proplist = property.getPropList();
+			int32_t playerNumber = NO_OWNER;
+			if (proplist != nullptr)
+			{
+				C4Player* player = proplist->GetPlayer();
+				if (player != nullptr)
+				{
+					playerNumber = player->Number;
+				}
+			}
+			props[C4ScriptGuiWindowPropertyName::player].Set(C4Value(playerNumber), stdTag);
+		}
 		else
 		{
 			// possibly sub-window?
