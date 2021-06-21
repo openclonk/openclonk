@@ -34,7 +34,7 @@ public func SetSpawnObject(id def)
 	// Changing the spawn id also resets all collected items to make the spawn available again
 	for (var plr in GetPlayers())
 	{
-		spawn_list[plr] = nil;
+		spawn_list[plr.ID] = nil;
 		UpdateVisibility(plr);
 	}
 	return true;
@@ -46,7 +46,7 @@ public func Reset(plr)
 	if (!GetType(plr)) plr = GetPlayers(); else plr = [plr];
 	for (var p in plr)
 	{
-		spawn_list[p] = nil;
+		spawn_list[p.ID] = nil;
 		UpdateVisibility(p);
 	}
 	return true;
@@ -87,7 +87,10 @@ private func UpdateVisibility(proplist plr)
 {
 	// Spawn is visible if the item is currently not collected by the player
 	// In case a team is set, it also needs to match
-	Visibility[plr + 1] = !spawn_list[plr] && (!team || team == plr->GetTeam());
+	if (plr)
+	{
+		Visibility[plr.ID] = !spawn_list[plr.ID] && (!team || team == plr->GetTeam());
+	}
 	return true;
 }
 
@@ -105,17 +108,17 @@ private func FxSpawnTimer(object target, proplist effect, int time)
 	for (var crew in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20)))
 	{
 		var plr = crew->GetOwner();
-		if (!spawn_list[plr] && Visibility[plr + 1] && spawn_id)
+		if (!spawn_list[plr.ID] && Visibility[plr.ID] && spawn_id)
 		{
 			if ((!spawn_id->~IsCarryHeavy() && crew->ContentsCount() < crew.MaxContentsCount) || (spawn_id->~IsCarryHeavy() && !crew->IsCarryingHeavy()))
 			{
 				// Special way to pick up carry heavy objects instantly without animation.
 				if (spawn_id->~IsCarryHeavy())
-					spawn_list[plr] = crew->CreateCarryHeavyContents(spawn_id);
+					spawn_list[plr.ID] = crew->CreateCarryHeavyContents(spawn_id);
 				else
-					spawn_list[plr] = crew->CreateContents(spawn_id);
+					spawn_list[plr.ID] = crew->CreateContents(spawn_id);
 				UpdateVisibility(plr);
-				crew->~Get(spawn_list[plr]); // for sound
+				crew->~Get(spawn_list[plr.ID]); // for sound
 			}
 		}
 	}
