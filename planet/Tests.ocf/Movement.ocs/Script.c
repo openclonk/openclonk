@@ -40,7 +40,7 @@ func InitializePlayer(proplist player)
 	{
 		// Move player to the start of the scenario.
 		player->GetCrew()->SetPosition(265, 180);
-		LaunchTest(1);
+		LaunchTest(8);
 	}
 }
 
@@ -293,7 +293,8 @@ global func SetPositionAndSpeed(int x, int y, int xdir, int ydir)
 
 global func LaunchTest_Start(def type, int x, int y, int x_dir, int y_dir)
 {
-	// Objects with smaller vertices do not hit the wall, even at high velocity
+	CurrentTest().victim_test = false;
+	CurrentTest().victim_died = false;
 	var rock = CreateObject(type, x, y, script_player);
 	rock->ScheduleCall(rock, Global.SetPositionAndSpeed, 9, 0, x, y, 0, 0); // Reset velocity
 	rock->ScheduleCall(rock, Global.SetPositionAndSpeed, 10, 0, x, y, x_dir, y_dir); // Delayed velocity is better, somehow
@@ -309,6 +310,10 @@ global func LaunchTest_Execute(int min_x, int max_x, int min_y, int max_y)
 		Log("%i position is %v", rock->GetID(), rock->GetPosition());
 		TestBounds("X coordinate", rock->GetX(), min_x, max_x);
 		TestBounds("Y coordinate", rock->GetY(), min_y, max_y);
+		if (CurrentTest().victim_test)
+		{
+			doTest("Victim should be hit, got %v, expected %v", CurrentTest().victim_died, true);
+		}
 		return Evaluate();
 	}
 	return Wait(100);
@@ -319,6 +324,28 @@ global func LaunchTest_Finish()
 	if (CurrentTest().target)
 	{
 		CurrentTest().target->RemoveObject();
+	}
+	if (CurrentTest().victim)
+	{
+		CurrentTest().victim->RemoveObject();
+	}
+}
+
+
+global func LaunchTest_AddVictim(def type, int x, int y)
+{
+	var victim = CreateObject(type, x, y, script_player);
+	victim->DoEnergy(1 - victim->GetEnergy());
+	CurrentTest().victim = victim;
+	CurrentTest().victim_test = true;
+	return true;
+}
+
+public func OnClonkDeath(object clonk, proplist killer)
+{
+	if (clonk->GetOwner() == script_player)
+	{
+		CurrentTest().victim_died = true;
 	}
 }
 
@@ -381,6 +408,7 @@ global func Test2_OnFinished()
 
 global func Test3_OnStart(proplist player)
 {
+	// Objects with smaller vertices do not hit the wall, even at high velocity
 	return LaunchTest_Start(Rock, 320, 60, 1000, 1000);
 }
 
@@ -398,7 +426,7 @@ global func Test3_OnFinished()
 
 global func Test4_OnStart(proplist player)
 {
-	return LaunchTest_Start(Rock, 444, 233, 100, 100);
+	return LaunchTest_Start(Rock, 444, 233, 100, 100) && LaunchTest_AddVictim(Clonk, 480, 270);
 }
 
 global func Test4_Execute()
@@ -415,7 +443,7 @@ global func Test4_OnFinished()
 
 global func Test5_OnStart(proplist player)
 {
-	return LaunchTest_Start(Rock, 444, 233, 1000, 1000);
+	return LaunchTest_Start(Rock, 444, 233, 1000, 1000) && LaunchTest_AddVictim(Clonk, 480, 270);
 }
 
 global func Test5_Execute()
@@ -432,7 +460,7 @@ global func Test5_OnFinished()
 
 global func Test6_OnStart(proplist player)
 {
-	return LaunchTest_Start(Rock, 444, 233, 10000, 10000);
+	return LaunchTest_Start(Rock, 444, 233, 10000, 10000) && LaunchTest_AddVictim(Clonk, 480, 270);
 }
 
 global func Test6_Execute()
@@ -441,6 +469,21 @@ global func Test6_Execute()
 }
 
 global func Test6_OnFinished()
+{
+	LaunchTest_Finish();
+}
+
+global func Test8_OnStart(proplist player)
+{
+	return LaunchTest_Start(Rock, 444, 233, 60, 50) && LaunchTest_AddVictim(Clonk, 480, 270);
+}
+
+global func Test8_Execute()
+{
+	return LaunchTest_Execute(484, 495, 280, 290);
+}
+
+global func Test8_OnFinished()
 {
 	LaunchTest_Finish();
 }
