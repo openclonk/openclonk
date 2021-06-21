@@ -100,7 +100,7 @@ global func GivePlrKnowledge(proplist player, any plan)
 	return false;
 }
 
-global func RemovePlrKnowledge(proplist player, id plan)
+global func RemovePlrKnowledge(proplist player, any plan)
 {
 	// Do it for all players?
 	if (player == nil)
