@@ -28,6 +28,24 @@ static const Player = new _Player
 		return tagged_player_name;
 	},
 
+	SetWealth = func (int value)
+	{
+		this.Data.Wealth = BoundBy(value, 0, 1000000000);
+		GameCallEx("OnWealthChanged", this);
+		return true;
+	},
+
+	GetWealth = func ()
+	{
+		return this.Data.Wealth;
+	},
+
+	// Adds value to the account of iPlayer.
+	// documented in /docs/sdk/script/fn
+	DoWealth = func (int value)
+	{
+		return this->SetWealth(value + this->GetWealth());
+	},
 };
 
 static const NO_PLAYER = NO_OWNER;
@@ -147,28 +165,6 @@ global func GetPlayerByID(int player_id)
 			return player;
 	}
 	return NO_OWNER;
-}
-
-// Adds value to the account of iPlayer.
-// documented in /docs/sdk/script/fn
-global func DoWealth(any player, int value)
-{
-	return SetWealth(player, value + GetWealth(player));
-}
-
-global func SetWealth(any player, int value)
-{
-	player = GetPlayerLegacy(player);
-	if (player)
-	{
-		player.Data.Wealth = BoundBy(value, 0, 1000000000);
-		GameCallEx("OnWealthChanged", player);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 }
 
 // checks whether two players are allied - that means they are not hostile and neither of them is NO_PLAYER
