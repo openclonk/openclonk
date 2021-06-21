@@ -195,8 +195,7 @@ protected func Initialize()
 // Returns whether this checkpoint has been cleared by player.
 public func ClearedByPlayer(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
-	return cleared_by_plr[plrid];
+	return cleared_by_plr[plr.ID];
 }
 
 // Returns whether this checkpoint has been cleared by team.
@@ -302,7 +301,7 @@ protected func CheckForClonks()
 	{
 		var plr = clonk->GetOwner();
 		var team = plr->GetTeam();
-		var plrid = GetPlayerID(plr);
+		var plrid = plr.ID;
 		// Check whether this CP is already activated for player or its team.
 		if (!IsActiveForPlayer(plr) && !IsActiveForTeam(team))
 			continue;
@@ -359,7 +358,7 @@ private func ClearCPForPlr(proplist plr, bool is_first_clear)
 {
 	if (!(cp_mode & PARKOUR_CP_Check))	
 		return;
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	cleared_by_plr[plrid] = true;
 	Sound("UI::Cleared", false, 100, plr);
 	cp_con->AddPlayerClearedCP(plr, this, is_first_clear); // Notify parkour goal.
@@ -371,7 +370,7 @@ private func ClearCPForPlr(proplist plr, bool is_first_clear)
 		{
 			if (test_plr != plr && test_plr->GetTeam() == team)
 			{
-				var test_plr_id = GetPlayerID(test_plr);
+				var test_plr_id = test_plr.ID;
 				cleared_by_plr[test_plr_id] = true;
 				Sound("UI::Cleared", false, 100, test_plr);
 				cp_con->AddPlayerClearedCP(test_plr, this, false, true); // Notify parkour goal.

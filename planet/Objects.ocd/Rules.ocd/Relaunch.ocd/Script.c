@@ -215,7 +215,7 @@ private func CheckDescription()
 public func InitializePlayer(proplist plr)
 {
 	_inherited(plr, ...);
-	relaunches[plr] = default_relaunch_count;
+	relaunches[plr.ID] = default_relaunch_count;
 	// Check if relaunch is needed.
 	if (!initial_relaunch || !perform_restart)
 		return;	
@@ -235,8 +235,8 @@ public func OnClonkDeath(object clonk, proplist killer)
 	
 	if (default_relaunch_count != nil)
 	{
-		relaunches[plr]--;
-		if (relaunches[plr] < 0)
+		relaunches[plr.ID]--;
+		if (relaunches[plr.ID] < 0)
 		{
 			plr->Eliminate();
 			return;

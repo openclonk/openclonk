@@ -38,7 +38,7 @@ protected func Initialize()
 
 protected func InitializePlayer(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	// Create scoreboard entry for this player, will only do it once
 	score_death_list[plrid] = 0;
 	Scoreboard->NewPlayerEntry(plr);
@@ -48,7 +48,7 @@ protected func InitializePlayer(proplist plr)
 protected func OnClonkDeath(object clonk, proplist killer)
 {
 	var plr = clonk->GetOwner();
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	// Modify scoreboard death count entry for this player.
 	score_death_list[plrid]++;
 	Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plrid]);
@@ -64,7 +64,7 @@ protected func RemovePlayer(proplist plr)
 
 public func SetDeathCount(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	score_death_list[plrid] = 0;
 	Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plrid]);
 	return;
@@ -72,7 +72,7 @@ public func SetDeathCount(proplist plr)
 
 public func GetDeathCount(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	return score_death_list[plrid];
 }
 

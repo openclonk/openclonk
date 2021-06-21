@@ -28,7 +28,7 @@ protected func Initialize()
 
 protected func InitializePlayer(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	// make scoreboard entry for player
 	score_killstreak_list[plrid] = 0;
 	Scoreboard->NewPlayerEntry(plr);
@@ -38,8 +38,8 @@ protected func InitializePlayer(proplist plr)
 protected func OnClonkDeath(object clonk, proplist killer)
 {
 	var plr = clonk->GetOwner();
-	var plrid = GetPlayerID(plr);
-	var killerid = GetPlayerID(killer);
+	var plrid = plr.ID;
+	var killerid = killer.ID;
 	// reset scoreboard kill streak count entry for killed player.
 	score_killstreak_list[plrid] = 0;
 	Scoreboard->SetPlayerData(plr, "killstreaks", nil);
@@ -64,7 +64,7 @@ protected func RemovePlayer(proplist plr)
 
 public func SetKillStreakCount(proplist plr, int value)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	score_killstreak_list[plrid] = value;
 	Scoreboard->SetPlayerData(plr, "killstreaks", score_killstreak_list[plrid]);
 	return;
@@ -72,13 +72,13 @@ public func SetKillStreakCount(proplist plr, int value)
 
 public func GetKillStreakCount(proplist plr)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	return score_killstreak_list[plrid];
 }
 
 public func DoKillStreakCount(proplist plr, int value)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	score_killstreak_list[plrid] += value;
 	Scoreboard->SetPlayerData(plr, "killstreaks", score_killstreak_list[plrid]);
 	return;

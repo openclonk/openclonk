@@ -22,7 +22,7 @@ public func NewPlayerEntry(proplist plr)
 
 public func RemovePlayerEntry(proplist plr)
 {
-	return Scoreboard->RemoveEntry(GetPlayerID(plr));
+	return Scoreboard->RemoveEntry(plr.ID);
 }
 
 // adds a new entry (row) to the scoreboard, will return the ID of the added entry
@@ -82,7 +82,7 @@ public func SetPlayerData(
 	, int sort_parameter /* parameter used for sorting. if nil, 'to' is used if possible*/
 	)
 {
-	var ID = GetPlayerID(plr);
+	var ID = plr.ID;
 	return Scoreboard->SetData(ID, key, to, sort_parameter);
 }
 

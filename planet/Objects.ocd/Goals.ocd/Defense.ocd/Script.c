@@ -69,7 +69,7 @@ public func InitializePlayer(proplist plr)
 	// Init the normal players
 	var plrid = plr.ID;
 	// Store active players.
-	PushBack(plrs_active, GetPlayerID(plr));
+	PushBack(plrs_active, plr.ID);
 	// Initialize scoreboard.
 	Scoreboard->NewPlayerEntry(plr);
 	plrs_bonus[plrid] = 0;
@@ -210,7 +210,7 @@ public func SetScore(int value)
 
 private func SetBestScore(proplist plr, int new_score)
 {
-	var plrid = GetPlayerID(plr);
+	var plrid = plr.ID;
 	// Only set if it increases the player's best score.
 	if (new_score > GetBestScore(plr))
 		plr->SetExtraData(GetScoreString(), new_score);
@@ -456,11 +456,11 @@ public func OnRocketDeath(object rocket, proplist killed_by)
 
 public func OnClonkDeath(object clonk, proplist killed_by)
 {
-	var plrid = GetPlayerID(killed_by);
 	if (clonk.Bounty)
 	{
 		if (killed_by != NO_OWNER)
 		{
+			var plrid = killed_by.ID;
 			DoWealth(killed_by, clonk.Bounty);
 			plrs_bonus[plrid] += clonk.Bounty;
 			plrs_kills[plrid] += 1;

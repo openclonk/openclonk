@@ -616,7 +616,7 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 	else if (progress_mode == "player")
 	{
 		if (!props._contexts) props._contexts = [];
-		var plr_id = GetPlayerID(triggering_player);
+		var plr_id = triggering_player.ID;
 		if (!(context = props._contexts[plr_id]))
 			props._contexts[plr_id] = context = CreateObject(UserAction);
 	}
