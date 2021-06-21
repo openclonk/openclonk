@@ -191,7 +191,7 @@ func StartScenarioOptionsTest(parameter, int ID, proplist player)
 			{
 				var plr = GetPlayerByIndex(p);
 				if (plr == player) continue;
-				vis[plr + 1] = 1;
+				vis[plr.ID] = 1;
 			}
 			scenoptions_dummies[i].Visibility = vis;
 		}

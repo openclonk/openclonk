@@ -149,7 +149,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 		effect.launched = true;
 	}
 	// Check whether the current test has been finished.
-	if (Call(Format("Test%d_Completed", effect.testnr)))
+	if (Call(Format("Test%d_Completed", effect.testnr), effect.plr))
 	{
 		effect.launched = false;
 		//RemoveTest();
@@ -337,8 +337,8 @@ global func Test5_OnStart(proplist plr)
 	drain->ConnectPipeTo(pump, drain->GetPipeState());
 	
 	// Move player character over the basin
-	GetHiRank()->SetPosition(175, 150);
-	GetHiRank()->SetComDir(COMD_Down);
+	plr->GetHiRank()->SetPosition(175, 150);
+	plr->GetHiRank()->SetComDir(COMD_Down);
 	helmet->ControlUse(plr->GetHiRank());
 
 	// Log what the test is about.
@@ -346,15 +346,15 @@ global func Test5_OnStart(proplist plr)
 	return true;
 }
 
-global func Test5_Completed()
+global func Test5_Completed(proplist plr)
 {
-	var is_down = GetHiRank()->GetY() > 280;
+	var is_down = plr->GetHiRank()->GetY() > 280;
 	if (is_down)
 	{
-		GetHiRank()->SetComDir(COMD_Up);
-		var breath_before = GetHiRank()->GetBreath();
-		GetHiRank()->DoBreath(1000);
-		var breath_used = GetHiRank().MaxBreath - breath_before;
+		plr->GetHiRank()->SetComDir(COMD_Up);
+		var breath_before = plr->GetHiRank()->GetBreath();
+		plr->GetHiRank()->DoBreath(1000);
+		var breath_used = plr->GetHiRank().MaxBreath - breath_before;
 
 		var pump = FindObject(Find_ID(Pump));
 		var is_pumping = pump->GetAction() == "Pump";
