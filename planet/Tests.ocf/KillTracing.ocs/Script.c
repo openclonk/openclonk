@@ -138,7 +138,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 		InitTest();
 		// Start the test if available, otherwise finish test sequence.
 		// Call Test*_OnStart(object victim, object killer, object fake_killer).
-		if (!Call(Format("~Test%d_OnStart", effect.testnr), plr_victim), GetCrew(plr_killer)->GetCrew(GetCrew(plr_killer_fake)))
+		if (!Call(Format("~Test%d_OnStart", effect.testnr), plr_victim->GetCrew(), plr_killer->GetCrew(), plr_killer_fake->GetCrew()))
 		{
 			Log("=====================================");
 			Log("All tests have been completed!");
@@ -157,10 +157,12 @@ global func FxIntTestControlStop(object target, proplist effect, int reason, boo
 	return FX_OK;
 }
 
-global func FxIntTestControlOnDeath(object target, proplist effect, int killer, object clonk)
+global func FxIntTestControlOnDeath(object target, proplist effect, proplist killer, object clonk)
 {
 	// Log the result.
-	Log("Test %d [%s]: %v, killer = %s", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer, killer->GetName());
+	var killer_name = "NO_OWNER";
+	if (killer) killer_name = killer->GetName();
+	Log("Test %d [%s]: %v, killer = %s", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer, killer_name);
 	// Store the result.
 	effect.results[effect.testnr - 1] = (plr_killer == killer);
 	effect.launched = false;
@@ -180,7 +182,7 @@ global func InitTest()
 	ClearFreeRect(0, 0, LandscapeWidth(), 160);
 	
 	// Give script players new crew.
-	var victim_crew = GetCrew(plr_victim);
+	var victim_crew = plr_victim->GetCrew();
 	if (victim_crew)
 	{
 		victim_crew.no_kill_tracing = true;
