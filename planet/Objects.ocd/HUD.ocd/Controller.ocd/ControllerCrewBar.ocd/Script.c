@@ -550,7 +550,7 @@ public func OnCrewMagicChange(object clonk, int change)
 private func AddCrewDisplay(object clonk)
 {
 	var crew_index = 0;
-	while (GetOwner()->GetCrew(crew_index) != clonk && crew_index < GetCrewCount(GetOwner()))
+	while (GetOwner()->GetCrew(crew_index) != clonk && crew_index < GetOwner()->GetCrewCount())
 		crew_index++;
 	// Something went wrong
 	if (GetOwner()->GetCrew(crew_index) != clonk) return;

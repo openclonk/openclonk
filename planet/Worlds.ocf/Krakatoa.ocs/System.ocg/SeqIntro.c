@@ -175,7 +175,7 @@ public func Intro_7()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgConstructPlane$", plr, 0), plr, 0)->GetCrew(plr->GetCrew(true);
+		MessageBox("$MsgConstructPlane$", plr->GetCrew(0), plr->GetCrew(0), plr, true);
 	}
 	return ScheduleNext(12);
 }

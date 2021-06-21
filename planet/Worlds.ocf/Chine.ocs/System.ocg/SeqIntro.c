@@ -19,7 +19,7 @@ public func Intro_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgDroppedCannon$", plr, 1)->GetName()), plr, 0), plr->GetCrew(0)->GetCrew(plr->GetCrew(true);
+		MessageBox(Format("$MsgDroppedCannon$", plr->GetCrew(1)->GetName()), plr->GetCrew(0), plr->GetCrew(0), plr, true);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -29,7 +29,7 @@ public func Intro_2()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgSorryEarthquake$", plr, 0), plr, 1)->GetCrew(plr->GetCrew(true);
+		MessageBox("$MsgSorryEarthquake$", plr->GetCrew(0), plr->GetCrew(1), plr, true);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -39,7 +39,7 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgBackToWork$", plr, 0), plr, 0)->GetCrew(plr->GetCrew(true);
+		MessageBox("$MsgBackToWork$", plr->GetCrew(0), plr->GetCrew(0), plr, true);
 	}
 	return Stop();
 }
@@ -47,6 +47,6 @@ public func Intro_3()
 public func Intro_Stop()
 {
 	// Reset player zoom.
-	for (var player in GetPlayers(C4PT_User)) player->SetZoomByViewRange(LandscapeWidth(), nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, LandscapeWidth(), nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

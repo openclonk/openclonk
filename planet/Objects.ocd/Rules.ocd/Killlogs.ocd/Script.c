@@ -28,7 +28,7 @@ global func GetAdditionalPlayerRelaunchString(){return _inherited(...);} // dumm
 
 public func OnClonkDeathEx(object clonk, proplist plr, proplist killed_by)
 {
-	if (!plr->GetName())
+	if (!plr)
 		return;
 	var name = "Clonk";
 	if (clonk)
@@ -36,7 +36,7 @@ public func OnClonkDeathEx(object clonk, proplist plr, proplist killed_by)
 	// Assert there are three StringTbl entries for each.
 	var which_one = Random(3) + 1;
 	var log = "";
-	if (!killed_by->GetName())
+	if (!killed_by)
  		 log = Format(Translate(Format("KilledByGaia%d", which_one)), plr->GetTaggedName(), name);
  	else if (plr == killed_by)
 		log = Format(Translate(Format("Selfkill%d", which_one)), plr->GetTaggedName(), name);

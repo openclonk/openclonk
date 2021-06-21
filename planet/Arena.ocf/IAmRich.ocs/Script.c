@@ -75,9 +75,9 @@ func InitializePlayer(proplist plr)
 	{
 		var x = flagpole->GetX();
 		var y = flagpole->GetY();
-		for (var i = 0; i < GetCrewCount(plr); ++i)
+		for (var i = 0; i < plr->GetCrewCount(); ++i)
 		{
-			GetCrew(plr, i)->SetPosition(x, y);
+			plr->GetCrew(i)->SetPosition(x, y);
 		}
 	}
 

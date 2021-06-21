@@ -29,7 +29,7 @@ public func Intro_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgDriveTrain$", plr, 0), plr, 0)->GetCrew(plr->GetCrew(true);
+		MessageBox("$MsgDriveTrain$", plr->GetCrew(0), plr->GetCrew(0), plr, true);
 	}
 	return ScheduleNext(6 * 36);
 }
@@ -53,7 +53,7 @@ public func Intro_2()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgOutOfFuel$", plr, 0), plr, 1)->GetCrew(plr->GetCrew(true);
+		MessageBox("$MsgOutOfFuel$", plr->GetCrew(0), plr->GetCrew(1), plr, true);
 	}
 	return ScheduleNext(3 * 36);
 }
@@ -63,7 +63,7 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgBridgesGone$", plr, 0), plr, 0)->GetCrew(plr->GetCrew(true);
+		MessageBox("$MsgBridgesGone$", plr->GetCrew(0), plr->GetCrew(0), plr, true);
 	}
 	return Stop();
 }

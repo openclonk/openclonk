@@ -38,7 +38,7 @@ public func Intro_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgWelcomeHorridHighway$", plr, 0)->GetName()), plr, 0), this.npc->GetCrew(plr->GetCrew(true);
+		MessageBox(Format("$MsgWelcomeHorridHighway$", plr->GetCrew(0)->GetName()), plr->GetCrew(0), this.npc, plr, true);
 	}
 	return ScheduleNext(3 * 36);
 }
@@ -55,7 +55,7 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgHighwayBroken$", plr, 0), this.npc, plr->GetCrew(true);
+		MessageBox("$MsgHighwayBroken$", plr->GetCrew(0), this.npc, plr, true);
 	}
 	return ScheduleNext(5 * 36);
 }
@@ -78,7 +78,7 @@ public func Intro_5()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgFixHighway$", plr, 0), this.npc, plr->GetCrew(true);
+		MessageBox("$MsgFixHighway$", plr->GetCrew(0), this.npc, plr, true);
 	}
 	return ScheduleNext(6 * 36);
 }
@@ -88,7 +88,7 @@ public func Intro_6()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgRunLocomotives$", plr, 0), this.npc, plr->GetCrew(true);
+		MessageBox("$MsgRunLocomotives$", plr->GetCrew(0), this.npc, plr, true);
 	}
 	return Stop();
 }

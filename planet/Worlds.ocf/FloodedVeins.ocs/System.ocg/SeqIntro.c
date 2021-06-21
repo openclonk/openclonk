@@ -18,8 +18,8 @@ public func Intro_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgAbandonedSettlement$", plr, 1)->GetName()), plr, 0), plr->GetCrew(0)->GetCrew(plr->GetCrew(true);
-		plr, 0)->SetCommand("MoveTo", nil, 200 + Random(12)->GetCrew(160);
+		MessageBox(Format("$MsgAbandonedSettlement$", plr->GetCrew(1)->GetName()), plr->GetCrew(0), plr->GetCrew(0), plr, true);
+		plr->GetCrew(0)->SetCommand("MoveTo", nil, 200 + Random(12), 160);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -29,9 +29,9 @@ public func Intro_2()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgLegendGems$", plr, 0), plr, 1)->GetCrew(plr->GetCrew(true);
+		MessageBox("$MsgLegendGems$", plr->GetCrew(0), plr->GetCrew(1), plr, true);
 		plr->GetCrew(0)->SetDir(DIR_Left);
-		plr, 1)->SetCommand("MoveTo", nil, 180 + Random(12)->GetCrew(160);
+		plr->GetCrew(1)->SetCommand("MoveTo", nil, 180 + Random(12), 160);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -41,8 +41,8 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgExplore$", plr, 1)->GetName()), plr, 0), plr->GetCrew(0)->GetCrew(plr->GetCrew(true);
-		plr, 0)->SetCommand("MoveTo", nil, 320 + Random(12)->GetCrew(160);
+		MessageBox(Format("$MsgExplore$", plr->GetCrew(1)->GetName()), plr->GetCrew(0), plr->GetCrew(0), plr, true);
+		plr->GetCrew(0)->SetCommand("MoveTo", nil, 320 + Random(12), 160);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -52,9 +52,9 @@ public func Intro_4()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox("$MsgAgree$", plr, 0), plr, 1)->GetCrew(plr->GetCrew(true);
+		MessageBox("$MsgAgree$", plr->GetCrew(0), plr->GetCrew(1), plr, true);
 		plr->GetCrew(0)->SetDir(DIR_Left);
-		plr, 1)->SetCommand("MoveTo", nil, 300 + Random(12)->GetCrew(160);
+		plr->GetCrew(1)->SetCommand("MoveTo", nil, 300 + Random(12), 160);
 	}
 	return ScheduleNext(4 * 36);
 }

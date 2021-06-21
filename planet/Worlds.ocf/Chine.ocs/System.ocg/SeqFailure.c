@@ -21,7 +21,7 @@ public func Failure_1()
 		var crew0 = plr->GetCrew(0);
 		if (!crew0)
 			continue;
-		var crew1 = plr, 1) ?? GetCrew(plr->GetCrew(0);
+		var crew1 = plr->GetCrew(1) ?? plr->GetCrew(0);
 		MessageBox(Format("$MsgWhoDroppedCannon$", crew1->GetName()), crew0, crew0, plr, true);
 	}
 	return ScheduleNext(4 * 36);
@@ -35,7 +35,7 @@ public func Failure_2()
 		var crew0 = plr->GetCrew(0);
 		if (!crew0)
 			continue;
-		var crew1 = plr, 1) ?? GetCrew(plr->GetCrew(0);
+		var crew1 = plr->GetCrew(1) ?? plr->GetCrew(0);
 		MessageBox(Format("$MsgItWasMe$", crew0->GetName()), crew0, crew1, plr, true);
 	}
 	return ScheduleNext(3 * 36);
@@ -49,7 +49,7 @@ public func Failure_3()
 		var crew0 = plr->GetCrew(0);
 		if (!crew0)
 			continue;
-		var crew1 = plr, 1) ?? GetCrew(plr->GetCrew(0);
+		var crew1 = plr->GetCrew(1) ?? plr->GetCrew(0);
 		MessageBox(Format("$MsgShame$", crew1->GetName()), crew0, crew0, plr, true);
 	}
 	return ScheduleNext(4 * 36);

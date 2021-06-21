@@ -40,7 +40,7 @@ public func SetRounds(int rounds)
 public func IsHandicapped(proplist plr)
 {
 	if (this == Goal_MultiRoundMelee) return FindObject(Find_ID(Goal_MultiRoundMelee))->IsHandicapped(plr);
-	return !!handicapped_players[plr];
+	return !!handicapped_players[plr.ID];
 }
 
 /* Implementation */
@@ -324,8 +324,8 @@ func AssignHandicaps()
 			RemoveArrayIndexUnstable(team, Random(GetLength(team)));
 		for (var plr in team)
 		{
-			SetLength(handicapped_players, Max(plr + 1, GetLength(handicapped_players)));
-			handicapped_players[plr] = true;
+			SetLength(handicapped_players, Max(plr.ID + 1, GetLength(handicapped_players)));
+			handicapped_players[plr.ID] = true;
 		}
 	}
 }
