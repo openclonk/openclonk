@@ -360,31 +360,31 @@ global func Test2_OnFinished()
 
 //-----------------------------------
 
-global func Test3_OnStart(proplist player)
+global func TestRock_Start(int x, int y, int x_dir, int y_dir)
 {
 	Log("Launch a rock diagonally with high speed, should move diagonally");
 	// Objects with smaller vertices do not hit the wall, even at high velocity
-	var rock = CreateObject(Rock, 320, 60, script_player);
-	rock->ScheduleCall(rock, Global.SetPositionAndSpeed, 9, 0, 320, 60, 0, 0); // Reset velocity
-	rock->ScheduleCall(rock, Global.SetPositionAndSpeed, 10, 0, 320, 60, 1000, 1000); // Delayed velocity is better, somehow
+	var rock = CreateObject(Rock, x, y, script_player);
+	rock->ScheduleCall(rock, Global.SetPositionAndSpeed, 9, 0, x, y, 0, 0); // Reset velocity
+	rock->ScheduleCall(rock, Global.SetPositionAndSpeed, 10, 0, x, y, x_dir, y_dir); // Delayed velocity is better, somehow
 	CurrentTest().target = rock;
 	return true;
 }
 
-global func Test3_Execute()
+global func TestRock_Execute(int min_x, int max_x, int min_y, int max_y)
 {
 	var rock = CurrentTest().target;
 	if (rock.was_launched && rock->GetSpeed() <= 1)
 	{
 		Log("Rock position is %v", rock->GetPosition());
-		doTest("Check X coordinate > 380, got %v, expected %v", rock->GetX() > 380, true); // Rock moves upward as redirected movement
-		doTest("Check Y coordinate inside [140, 160], got %v, expected %v", Inside(rock->GetY(), 140, 160), true);
+		TestBounds("X coordinate", rock->GetX(), min_x, max_x);
+		TestBounds("Y coordinate", rock->GetY(), min_y, max_y);
 		return Evaluate();
 	}
 	return Wait(100);
 }
 
-global func Test3_OnFinished()
+global func TestRock_Finish()
 {
 	if (CurrentTest().target)
 	{
@@ -392,3 +392,84 @@ global func Test3_OnFinished()
 	}
 }
 
+global func TestBounds(string description, int value, int min, int max)
+{
+	if (min != nil && max != nil)
+	{
+		doTest(Format("Check %s = %d inside [%d, %d], got %%v, expected %%v", description, value, min, max), Inside(value, min, max), true);
+	}
+	else if (min != nil)
+	{
+		doTest(Format("Check %s = %d > %d, got %%v, expected %%v", description, value, min), value > min, true);
+	}
+	else if (max != nil)
+	{
+		doTest(Format("Check %s = %d < %d, got %%v, expected %%v", description, value, max), value < max, true);
+	}
+}
+
+global func Test3_OnStart(proplist player)
+{
+	return TestRock_Start(320, 60, 1000, 1000);
+}
+
+global func Test3_Execute()
+{
+	return TestRock_Execute(380, nil, 140, 160);
+}
+
+global func Test3_OnFinished()
+{
+	TestRock_Finish();
+}
+
+//-----------------------------------
+
+global func Test4_OnStart(proplist player)
+{
+	return TestRock_Start(444, 233, 100, 100);
+}
+
+global func Test4_Execute()
+{
+	return TestRock_Execute(484, 495, 280, 290);
+}
+
+global func Test4_OnFinished()
+{
+	TestRock_Finish();
+}
+
+//-----------------------------------
+
+global func Test5_OnStart(proplist player)
+{
+	return TestRock_Start(444, 233, 1000, 1000);
+}
+
+global func Test5_Execute()
+{
+	return TestRock_Execute(484, 495, 280, 290);
+}
+
+global func Test5_OnFinished()
+{
+	TestRock_Finish();
+}
+
+//-----------------------------------
+
+global func Test6_OnStart(proplist player)
+{
+	return TestRock_Start(444, 233, 10000, 10000);
+}
+
+global func Test6_Execute()
+{
+	return TestRock_Execute(484, 495, 280, 290);
+}
+
+global func Test6_OnFinished()
+{
+	TestRock_Finish();
+}
