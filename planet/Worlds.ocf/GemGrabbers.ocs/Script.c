@@ -76,7 +76,7 @@ protected func InitializePlayer(proplist plr)
 	GivePlayerAdvancedKnowledge(plr);
 	GivePlayerFarmingKnowledge(plr);
 	GivePlayerAirKnowledge(plr);
-	RemovePlayerSpecificKnowledge(plr, [InventorsLab, Shipyard, WallKit]);
+	RemovePlrKnowledge(plr, [InventorsLab, Shipyard, WallKit]);
 	
 	// Only clonks for sale at the homebase, depending on diffuculty: 3, 5, 10 available.
 	var nr_clonks = Max(9 - 2 * SCENPAR_Difficulty, 1);

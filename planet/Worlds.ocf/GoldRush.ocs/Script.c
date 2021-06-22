@@ -76,7 +76,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Give the player basic knowledge.
 	GivePlayerBasicKnowledge(plr);
-	GivePlayerSpecificKnowledge(plr, [Idol]);
+	GivePlrKnowledge(plr, [Idol]);
 	
 	// Give the player the elementary base materials and some tools.
 	GivePlayerElementaryBaseMaterial(plr);

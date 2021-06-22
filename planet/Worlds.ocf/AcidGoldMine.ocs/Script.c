@@ -68,7 +68,7 @@ protected func InitializePlayer(proplist plr)
 	// Give the player basic plus pumping knowledge.
 	GivePlayerBasicKnowledge(plr);
 	GivePlayerPumpingKnowledge(plr);
-	GivePlayerSpecificKnowledge(plr, [WallKit]);
+	GivePlrKnowledge(plr, [WallKit]);
 	
 	// Give the player the elementary base materials.
 	GivePlayerElementaryBaseMaterial(plr);

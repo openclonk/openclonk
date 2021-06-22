@@ -84,7 +84,7 @@ protected func InitializePlayer(proplist plr)
 	
 	// Give the player basic knowledge.
 	GivePlayerBasicKnowledge(plr);
-	GivePlayerSpecificKnowledge(plr, [Ropeladder]);
+	GivePlrKnowledge(plr, [Ropeladder]);
 	
 	// Give the player the elementary base materials and some tools.
 	GivePlayerElementaryBaseMaterial(plr);

@@ -82,7 +82,7 @@ protected func InitializePlayer(proplist plr)
 	GivePlayerWeaponryKnowledge(plr);
 	GivePlayerAdvancedKnowledge(plr);
 	GivePlayerFarmingKnowledge(plr);
-	RemovePlayerSpecificKnowledge(plr, [WindGenerator]);	
+	RemovePlrKnowledge(plr, [WindGenerator]);	
 	
 	// Give the player the elementary base materials.
 	GivePlayerElementaryBaseMaterial(plr);
