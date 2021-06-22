@@ -4,7 +4,6 @@
 	Library to control the players knowledge/plans:
      * GetPlrKnowledge(proplist player, id plan, int index, int category)
      * HasPlrKnowledge(proplist player, id plan)
-     * SetPlrKnowledge(proplist player, id plan, bool remove)
      * GivePlrKnowledge(proplist player, id plan)
      * RemovePlrKnowledge(proplist player, id plan)
 
@@ -47,21 +46,6 @@ global func HasPlrKnowledge(proplist player, id plan)
 		return manager->HasKnowledge(plan);
 	}
 }
-
-global func SetPlrKnowledge(proplist player, any plan, bool remove)
-{
-	if (remove)
-	{
-		LogLegacyWarning("SetPlrKnowledge() using 'bool remove' parameter", "RemovePlrKnowledge()", VERSION_10_0_OC);
-		return RemovePlrKnowledge(player, plan);
-	}
-	else
-	{
-		LogLegacyWarning("SetPlrKnowledge()", "GivePlrKnowledge()", VERSION_10_0_OC);
-		return GivePlrKnowledge(player, plan);
-	}
-}
-
 
 global func GivePlrKnowledge(proplist player, any plan)
 {
@@ -325,7 +309,7 @@ func SaveScenarioObject(proplist props)
 	var player = GetOwner();
 	for (var plan in knowledge)
 	{
-		props->Add("Knowledge", "SetPlrKnowledge(%d, %i)", player, plan);
+		props->Add("Knowledge", "GivePlrKnowledge(%d, %i)", player, plan);
 	}
 	return false;
 }
