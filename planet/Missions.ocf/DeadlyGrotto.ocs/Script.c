@@ -59,7 +59,7 @@ func InitializePlayer(proplist plr)
 	];
 	GivePlayerBaseMaterial(plr, materials);
 	// Plans
-	GivePlrKnowledge(plr, [Flagpole, Foundry, WindGenerator, SteamEngine, Compensator, Sawmill, ChemicalLab, Elevator, Pump, ToolsWorkshop, Basement, WallKit, GoldBar, Loam, Metal, Axe, Barrel, Bucket, Dynamite, Hammer, WindBag, Pickaxe, Pipe, Shovel, TeleGlove, DynamiteBox, Chest, WoodenBridge]);
+	plr->GiveKnowledge([Flagpole, Foundry, WindGenerator, SteamEngine, Compensator, Sawmill, ChemicalLab, Elevator, Pump, ToolsWorkshop, Basement, WallKit, GoldBar, Loam, Metal, Axe, Barrel, Bucket, Dynamite, Hammer, WindBag, Pickaxe, Pipe, Shovel, TeleGlove, DynamiteBox, Chest, WoodenBridge]);
 	return true;
 }
 

@@ -75,8 +75,8 @@ protected func InitializePlayer(proplist plr)
 	plr->SetViewLocked(true);
 	
 	// Give the player basic knowledge.
-	GivePlayerBasicKnowledge(plr);
-	GivePlrKnowledge(plr, [Idol]);
+	plr->GiveBasicKnowledge();
+	plr->GiveKnowledge([Idol]);
 	
 	// Give the player the elementary base materials and some tools.
 	GivePlayerElementaryBaseMaterial(plr);

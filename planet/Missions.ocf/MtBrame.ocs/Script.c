@@ -50,7 +50,7 @@ func InitializePlayer(proplist plr)
 			crew->CreateContents(Shovel);
 		}
 	}
-	GivePlrKnowledge(plr, [Lorry, Catapult, Pickaxe, Axe, Shovel, Firestone, Barrel, Dynamite, Loam]);
+	plr->GiveKnowledge([Lorry, Catapult, Pickaxe, Axe, Shovel, Firestone, Barrel, Dynamite, Loam]);
 }
 
 func OnGoalsFulfilled()

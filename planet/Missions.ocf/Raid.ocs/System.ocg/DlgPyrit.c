@@ -102,7 +102,10 @@ func Dlg_Pyrit_15(object clonk)
 	SetBroadcast(false);
 	StopDialogue();
 	SetDialogueProgress(16);
-	GivePlrKnowledge(nil, Airplane);
+	for (var player in GetPlayers(C4PT_User))
+	{
+		player->GiveKnowledge(Airplane);
+	}
 	// many NPCs get new texts now
 	Dialogue->FindByTarget(npc_newton)->SetDialogueProgress(200, nil, true);
 	Dialogue->FindByTarget(npc_mave)->SetDialogueProgress(100, nil, true);

@@ -73,14 +73,14 @@ public func InitializePlayer(plr)
 	}
 	
 	// Give the player its knowledge.
-	GivePlayerBasicKnowledge(plr);
-	GivePlayerPumpingKnowledge(plr);
-	GivePlayerWeaponryKnowledge(plr);
-	GivePlayerAdvancedKnowledge(plr);
-	GivePlayerFarmingKnowledge(plr);
-	GivePlayerAirKnowledge(plr);
-	GivePlrKnowledge(plr, [WoodenBridge]);
-	RemovePlrKnowledge(plr, [WallKit]);
+	plr->GiveBasicKnowledge();
+	plr->GivePumpingKnowledge();
+	plr->GiveWeaponryKnowledge();
+	plr->GiveAdvancedKnowledge();
+	plr->GiveFarmingKnowledge();
+	plr->GiveAirKnowledge();
+	plr->GiveKnowledge([WoodenBridge]);
+	plr->RemoveKnowledge([WallKit]);
 
 	// Give the player the elementary base materials and some tools.
 	GivePlayerElementaryBaseMaterial(plr);

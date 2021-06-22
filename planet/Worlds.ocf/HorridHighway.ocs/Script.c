@@ -74,13 +74,13 @@ protected func InitializePlayer(proplist plr)
 	}
 	
 	// Give the player its knowledge.
-	GivePlayerBasicKnowledge(plr);
-	GivePlayerPumpingKnowledge(plr);
-	GivePlayerFarmingKnowledge(plr);
-	GivePlayerWeaponryKnowledge(plr);
-	GivePlayerArtilleryKnowledge(plr);
-	GivePlayerAdvancedKnowledge(plr);
-	GivePlayerAirKnowledge(plr);
+	plr->GiveBasicKnowledge();
+	plr->GivePumpingKnowledge();
+	plr->GiveFarmingKnowledge();
+	plr->GiveWeaponryKnowledge();
+	plr->GiveArtilleryKnowledge();
+	plr->GiveAdvancedKnowledge();
+	plr->GiveAirKnowledge();
 	
 	// Give the player its base materials.
 	GivePlayerElementaryBaseMaterial(plr);

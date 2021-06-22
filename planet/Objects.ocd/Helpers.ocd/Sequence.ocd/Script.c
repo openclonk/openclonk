@@ -242,7 +242,7 @@ public func MessageBoxAll(string message, object talker, bool as_message, ...)
 	return Dialogue->MessageBoxAll(message, talker, as_message, ...);
 }
 
-private func MessageBox(string message, object clonk, object talker, int for_player, bool as_message, ...)
+private func MessageBox(string message, object clonk, object talker, proplist for_player, bool as_message, ...)
 {
 	return Dialogue->MessageBox(message, clonk, talker, for_player, as_message, ...);
 }

@@ -50,7 +50,7 @@ protected func InitializePlayer(proplist plr)
 	GivePlayerBaseMaterial(plr);
 	var index = 0, def;
 	while (def = GetDefinition(index++))
-		GivePlrKnowledge(plr, def);
+		plr->GiveKnowledge(def);
 	
 	// Give base and set wealth.
 	if (!init_defenders)

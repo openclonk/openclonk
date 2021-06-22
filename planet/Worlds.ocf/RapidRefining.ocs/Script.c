@@ -77,12 +77,12 @@ protected func InitializePlayer(proplist plr)
 	}
 	
 	// Give the player basic and pumping knowledge.
-	GivePlayerBasicKnowledge(plr);
-	GivePlayerPumpingKnowledge(plr);
-	GivePlayerWeaponryKnowledge(plr);
-	GivePlayerAdvancedKnowledge(plr);
-	GivePlayerFarmingKnowledge(plr);
-	RemovePlrKnowledge(plr, [WindGenerator]);	
+	plr->GiveBasicKnowledge();
+	plr->GivePumpingKnowledge();
+	plr->GiveWeaponryKnowledge();
+	plr->GiveAdvancedKnowledge();
+	plr->GiveFarmingKnowledge();
+	plr->RemoveKnowledge([WindGenerator]);	
 	
 	// Give the player the elementary base materials.
 	GivePlayerElementaryBaseMaterial(plr);

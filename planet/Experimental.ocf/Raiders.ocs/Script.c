@@ -59,7 +59,7 @@ protected func InitializePlayer(proplist plr)
 	var x = 80 + Random(10);
 	crew->SetPosition(x, FindHeight(x)-10);
 	
-	GivePlrKnowledge(plr, [Bread, CookedMushroom, Axe, Barrel, CableReel, Dynamite, DynamiteBox, Hammer, Pickaxe, Ropebridge, Ropeladder, Shovel, Bow, Arrow, Shield, Elevator, Flagpole, Foundry, Sawmill, SteamEngine, ToolsWorkshop, WindGenerator, Windmill]);
+	plr->GiveKnowledge([Bread, CookedMushroom, Axe, Barrel, CableReel, Dynamite, DynamiteBox, Hammer, Pickaxe, Ropebridge, Ropeladder, Shovel, Bow, Arrow, Shield, Elevator, Flagpole, Foundry, Sawmill, SteamEngine, ToolsWorkshop, WindGenerator, Windmill]);
 
 	DoInit(plr);
 }

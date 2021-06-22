@@ -85,7 +85,7 @@ private func InitializePlayer(proplist plr)
 	crew->CreateContents(Hammer);
 	crew->CreateContents(Axe);
 	// Knowledge
-	GivePlrKnowledge(plr, [ToolsWorkshop, Foundry, Flagpole, Elevator, Armory, ChemicalLab, Lorry, Pickaxe, Axe, Hammer, Shovel, Barrel, Dynamite, DynamiteBox, Loam, Bucket, Sword, Metal, GoldBar, Balloon, Boompack, GrappleBow, WindBag, Pipe, Pump, PowderKeg, Ropeladder, Bow, Arrow, Club, IronBomb, Javelin, Shield, InventorsLab, Sawmill, BombArrow, FireArrow, GrenadeLauncher, Torch, WoodenBridge, Basement]);
+	plr->GiveKnowledge([ToolsWorkshop, Foundry, Flagpole, Elevator, Armory, ChemicalLab, Lorry, Pickaxe, Axe, Hammer, Shovel, Barrel, Dynamite, DynamiteBox, Loam, Bucket, Sword, Metal, GoldBar, Balloon, Boompack, GrappleBow, WindBag, Pipe, Pump, PowderKeg, Ropeladder, Bow, Arrow, Club, IronBomb, Javelin, Shield, InventorsLab, Sawmill, BombArrow, FireArrow, GrenadeLauncher, Torch, WoodenBridge, Basement]);
 	return true;
 }
 

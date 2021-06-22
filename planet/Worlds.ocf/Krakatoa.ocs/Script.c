@@ -62,11 +62,11 @@ protected func InitializePlayer(proplist plr)
 	plr->SetViewLocked(true);
 	
 	// Give the player its knowledge and base materials.
-	GivePlayerBasicKnowledge(plr);
-	GivePlayerPumpingKnowledge(plr);
-	GivePlayerAdvancedKnowledge(plr);
-	GivePlayerArtilleryKnowledge(plr);
-	GivePlayerAirKnowledge(plr);
+	plr->GiveBasicKnowledge();
+	plr->GivePumpingKnowledge();
+	plr->GiveAdvancedKnowledge();
+	plr->GiveArtilleryKnowledge();
+	plr->GiveAirKnowledge();
 
 	// Give the player the elementary base materials.
 	GivePlayerElementaryBaseMaterial(plr);

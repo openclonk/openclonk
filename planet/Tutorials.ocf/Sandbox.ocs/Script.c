@@ -37,7 +37,7 @@ public func GiveAllKnowledge(proplist plr)
 {
 	var index, def;
 	while (def = GetDefinition(index++))
-		GivePlrKnowledge(plr, def);
+		plr->GiveKnowledge(def);
 	return;
 }
 

@@ -297,7 +297,7 @@ public func GetProducts(object for_clonk)
 	var index = 0, product;
 	if (!IgnoreKnowledge() && for_plr != NO_OWNER)
 	{
-		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Object))
+		while (product = for_plr->GetKnowledge(index, C4D_Object))
 		{
 			if (IsProduct(product))
 			{
@@ -306,7 +306,7 @@ public func GetProducts(object for_clonk)
 			index++;
 		}
 		index = 0;
-		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Vehicle))
+		while (product = for_plr->GetKnowledge( index, C4D_Vehicle))
 		{
 			if (IsProduct(product))
 			{

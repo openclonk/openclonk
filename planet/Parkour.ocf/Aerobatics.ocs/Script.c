@@ -198,9 +198,9 @@ protected func InitializePlayer(proplist plr)
 	// Set large zoom ranges for the player.
 	plr->SetZoomByViewRange(1200, nil, PLRZOOM_LimitMax);
 	// Give the player knowledge for items in the inventor's lab.
-	GivePlrKnowledge(plr, WindBag);
-	GivePlrKnowledge(plr, WallKit);
-	GivePlrKnowledge(plr, Balloon);	
+	plr->GiveKnowledge(WindBag);
+	plr->GiveKnowledge(WallKit);
+	plr->GiveKnowledge(Balloon);	
 	return;
 }
 

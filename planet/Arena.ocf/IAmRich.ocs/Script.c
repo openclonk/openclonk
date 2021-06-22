@@ -81,7 +81,7 @@ func InitializePlayer(proplist plr)
 		}
 	}
 
-	GivePlayerAllKnowledge(plr);
+	plr->GiveAllKnowledge(plr);
 	BaseMats(plr);
 	
 	plr->DoWealth(SCENPAR_StartGold);

@@ -470,7 +470,7 @@ private func InitializeKnowledge(proplist plr)
 			{
 				if (GetIndexOf(exceptlist, def) == -1)
 				{
-					GivePlrKnowledge(plr, def);
+					plr->GiveKnowledge(def);
 				}
 			}
 		}
@@ -479,7 +479,7 @@ private func InitializeKnowledge(proplist plr)
 	{
 		for (def in starting_knowledge.Data)
 		{
-			GivePlrKnowledge(plr, def);
+			plr->GiveKnowledge(def);
 		}
 	}
 	else

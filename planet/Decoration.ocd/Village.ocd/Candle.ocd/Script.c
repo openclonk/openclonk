@@ -19,7 +19,7 @@ func Definition(proplist def)
 
 protected func Construction() {
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-35, 35),0, 10), GetID().MeshTransformation));
-	objShine = CreateObjectAbove(EnvPack_Candle_Shine, x, y + 10, -1);
+	objShine = CreateObjectAbove(EnvPack_Candle_Shine, x, y + 10, NO_OWNER);
 	SetLightRange(80, 60);
 	SetLightColor(FIRE_LIGHT_COLOR);
 }
@@ -56,7 +56,7 @@ public func SetOn(fOn)
 	if (fOn)
 	{
 		if (!FindObject(Find_ID(objShine)))
-			objShine = CreateObjectAbove(EnvPack_Candle_Shine, 0, -5, -1);
+			objShine = CreateObjectAbove(EnvPack_Candle_Shine, 0, -5, NO_OWNER);
 		SetAction("Shine");
 		SetClrModulation(RGB(255, 255, 255));
 		fShine = true;
