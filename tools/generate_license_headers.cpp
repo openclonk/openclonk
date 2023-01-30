@@ -9,6 +9,7 @@
 #include <locale>
 #include <regex>
 #include <cstdlib>
+#include <cstdint>
 
 // Generating this file in a way that neither bad old clang, bad old xcode, or bad old msvc will choke on it is actually not that easy.
 // MSVC limits the string length to 16K, but just doing ("x" "y") or ("x" + "y") doesn't constitute two strings
