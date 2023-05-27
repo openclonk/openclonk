@@ -1,4 +1,4 @@
-Backward-cpp [![badge](https://img.shields.io/badge/conan.io-backward%2F1.3.0-green.svg?logo=data:image/png;base64%2CiVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAA1VBMVEUAAABhlctjlstkl8tlmMtlmMxlmcxmmcxnmsxpnMxpnM1qnc1sn85voM91oM11oc1xotB2oc56pNF6pNJ2ptJ8ptJ8ptN9ptN8p9N5qNJ9p9N9p9R8qtOBqdSAqtOAqtR%2BrNSCrNJ/rdWDrNWCsNWCsNaJs9eLs9iRvNuVvdyVv9yXwd2Zwt6axN6dxt%2Bfx%2BChyeGiyuGjyuCjyuGly%2BGlzOKmzOGozuKoz%2BKqz%2BOq0OOv1OWw1OWw1eWx1eWy1uay1%2Baz1%2Baz1%2Bez2Oe02Oe12ee22ujUGwH3AAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfgBQkREyOxFIh/AAAAiklEQVQI12NgAAMbOwY4sLZ2NtQ1coVKWNvoc/Eq8XDr2wB5Ig62ekza9vaOqpK2TpoMzOxaFtwqZua2Bm4makIM7OzMAjoaCqYuxooSUqJALjs7o4yVpbowvzSUy87KqSwmxQfnsrPISyFzWeWAXCkpMaBVIC4bmCsOdgiUKwh3JojLgAQ4ZCE0AMm2D29tZwe6AAAAAElFTkSuQmCC)](http://www.conan.io/source/backward/1.3.0/Manu343726/testing) [![Build Status](https://travis-ci.org/bombela/backward-cpp.svg?branch=master)](https://travis-ci.org/cwbombela/backward-cpp)
+Backward-cpp [![badge](https://img.shields.io/badge/conan.io-backward%2F1.3.0-green.svg?logo=data:image/png;base64%2CiVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAA1VBMVEUAAABhlctjlstkl8tlmMtlmMxlmcxmmcxnmsxpnMxpnM1qnc1sn85voM91oM11oc1xotB2oc56pNF6pNJ2ptJ8ptJ8ptN9ptN8p9N5qNJ9p9N9p9R8qtOBqdSAqtOAqtR%2BrNSCrNJ/rdWDrNWCsNWCsNaJs9eLs9iRvNuVvdyVv9yXwd2Zwt6axN6dxt%2Bfx%2BChyeGiyuGjyuCjyuGly%2BGlzOKmzOGozuKoz%2BKqz%2BOq0OOv1OWw1OWw1eWx1eWy1uay1%2Baz1%2Baz1%2Bez2Oe02Oe12ee22ujUGwH3AAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfgBQkREyOxFIh/AAAAiklEQVQI12NgAAMbOwY4sLZ2NtQ1coVKWNvoc/Eq8XDr2wB5Ig62ekza9vaOqpK2TpoMzOxaFtwqZua2Bm4makIM7OzMAjoaCqYuxooSUqJALjs7o4yVpbowvzSUy87KqSwmxQfnsrPISyFzWeWAXCkpMaBVIC4bmCsOdgiUKwh3JojLgAQ4ZCE0AMm2D29tZwe6AAAAAElFTkSuQmCC)](http://www.conan.io/source/backward/1.3.0/Manu343726/testing)
 ============
 
 Backward is a beautiful stack trace pretty printer for C++.
@@ -21,7 +21,7 @@ You can see that for the trace #1 in the example, the function
 `you_shall_not_pass()` was inlined in the function `...read2::do_test()` by the
 compiler.
 
-##Installation
+## Installation
 
 #### Install backward.hpp
 
@@ -37,9 +37,11 @@ errors (segfault, abort, un-handled exception...), simply add a copy of
 `backward.cpp` to your project, and don't forget to tell your build system.
 
 The code in `backward.cpp` is trivial anyway, you can simply copy what it's
-doing at your convenience.
+doing at your convenience. 
 
-##Configuration & Dependencies
+Note for [folly](https://github.com/facebook/folly) library users: must define `backward::SignalHandling sh;` after `folly::init(&argc, &argv);`.
+
+## Configuration & Dependencies
 
 ### Integration with CMake
 
@@ -93,6 +95,35 @@ find_package(Backward)
 # through an IMPORTED target.
 target_link_libraries(mytarget PUBLIC Backward::Backward)
 ```
+### Libraries to unwind the stack
+
+On Linux and macOS, backtrace can back-trace or "walk" the stack using the
+following libraries:
+
+#### unwind
+
+Unwind comes from libgcc, but there is an equivalent inside clang itself. With
+unwind, the stacktrace is as accurate as it can possibly be, since this is
+used by the C++ runtine in gcc/clang for stack unwinding on exception.
+
+Normally libgcc is already linked to your program by default.
+
+#### libunwind from the [libunwind project](https://github.com/libunwind/libunwind)
+
+	apt-get install binutils-dev (or equivalent)
+
+Libunwind provides, in some cases, a more accurate stacktrace as it knows
+to decode signal handler frames and lets us edit the context registers when
+unwinding, allowing stack traces over bad function references.
+
+For best results make sure you are using libunwind 1.3 or later, which added
+`unw_init_local2` and support for handling signal frames.
+
+CMake will warn you when configuring if your libunwind version doesn't support
+signal frames.
+
+On macOS clang provides a libunwind API compatible library as part of its
+environment, so no third party libraries are necessary.
 
 ### Compile with debug info
 
@@ -110,24 +141,27 @@ your sources.
 
 ### Libraries to read the debug info
 
-Backward support pretty printed stack traces on GNU/Linux only, it will compile
-fine under other platforms but will not do anything.  **Pull requests are
-welcome :)**
+Backward supports pretty printed stack traces on GNU/Linux, macOS and Windows,
+it will compile fine under other platforms but will not do anything. **Pull
+requests are welcome :)**
 
 Also, by default you will get a really basic stack trace, based on the
 `backtrace_symbols` API:
 
 ![default trace](doc/nice.png)
 
-You will need to install some dependencies to get the ultimate stack trace. Two
-libraries are currently supported, the only difference is which one is the
+You will need to install some dependencies to get the ultimate stack trace.
+Three libraries are currently supported, the only difference is which one is the
 easiest for you to install, so pick your poison:
 
 #### libbfd from the [GNU/binutils](http://www.gnu.org/software/binutils/)
 
 	apt-get install binutils-dev (or equivalent)
 
-And do not forget to link with the lib: `g++/clang++ -lbfd ...`
+And do not forget to link with the lib: `g++/clang++ -lbfd -ldl ...`
+
+This library requires dynamic loading. Which is provided by the library `dl`.
+Hence why we also link with `-ldl`.
 
 Then define the following before every inclusion of `backward.hpp` (don't
 forget to update `backward.cpp` as well):
@@ -146,7 +180,29 @@ Of course you can simply add the define (`-DBACKWARD_HAS_...=1`) and the
 linkage details in your build system and even auto-detect which library is
 installed, it's up to you.
 
-That'ss it, you are all set, you should be getting nice stack traces like the
+#### [libdwarf](https://sourceforge.net/projects/libdwarf/) and [libelf](http://www.mr511.de/software/english.html)
+
+	apt-get install libdwarf-dev (or equivalent)
+
+And do not forget to link with the lib and inform Backward to use it:
+
+	#define BACKWARD_HAS_DWARF 1
+
+There are several alternative implementations of libdwarf and libelf that
+are API compatible so it's possible, although it hasn't been tested, to
+replace the ones used when developing backward (in bold, below):
+
+* **_libelf_** by [Michael "Tired" Riepe](http://www.mr511.de/software/english.html)
+* **_libdwarf_** by [David Anderson](https://www.prevanders.net/dwarf.html)
+* libelf from [elfutils](https://fedorahosted.org/elfutils/)
+* libelf and libdwarf from FreeBSD's [ELF Tool Chain](https://sourceforge.net/p/elftoolchain/wiki/Home/) project
+
+
+Of course you can simply add the define (`-DBACKWARD_HAS_...=1`) and the
+linkage details in your build system and even auto-detect which library is
+installed, it's up to you.
+
+That's it, you are all set, you should be getting nice stack traces like the
 one at the beginning of this document.
 
 ## API
@@ -267,7 +323,7 @@ using namespace backward;
 StackTrace st; st.load_here(32);
 Printer p;
 p.object = true;
-p.color = false;
+p.color_mode = ColorMode::always;
 p.address = true;
 p.print(st, stderr);
 ```
@@ -279,21 +335,29 @@ class Printer { public:
 	// Print a little snippet of code if possible.
 	bool snippet = true;
 
-	// Colorize the trace (only set a color when printing on a terminal)
-	bool color = true;
+	// Colorize the trace
+	//  - ColorMode::automatic: Activate colors if possible. For example, when using a TTY on linux.
+	//  - ColorMode::always: Always use colors.
+	//  - ColorMode::never: Never use colors.
+	bool color_mode = ColorMode::automatic;
 
 	// Add the addresses of every source location to the trace.
 	bool address = false;
 
-	// Even if there is a source location, prints the object the trace comes
-	// from as well.
+	// Even if there is a source location, also prints the object
+	// from where the trace came from.
 	bool object = false;
 
-	// Resolve and print a stack trace. It takes a C FILE* object, only because
-	// it is possible to access the underalying OS-level file descriptor, which
-	// is then used to determine if the output is a terminal to print in color.
+	// Resolve and print a stack trace to the given C FILE* object.
+	// On linux, if the FILE* object is attached to a TTY,
+	// color will be used if color_mode is set to automatic.
 	template <typename StackTrace>
-		FILE* print(StackTrace& st, FILE* os = stderr)
+		FILE* print(StackTrace& st, FILE* fp = stderr);
+
+	// Resolve and print a stack trace to the given std::ostream object.
+	// Color will only be used if color_mode is set to always. 
+	template <typename ST>
+		std::ostream& print(ST& st, std::ostream& os);
 ```
 
 
@@ -369,7 +433,7 @@ struct ResolvedTrace: public Trace {
 
 François-Xavier Bourlet <bombela@gmail.com>
 
-Copyright 2013 Google Inc. All Rights Reserved.
+Copyright 2013-2017 Google Inc. All Rights Reserved.
 MIT License.
 
 ### Disclaimer
