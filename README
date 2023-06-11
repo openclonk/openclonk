@@ -41,9 +41,12 @@ system. At least gcc-4.9 is required.
 
 Openclonk build assumes that limits.h will automatically be included.  
 This assumption does not hold on newer versions of GCC.  
-To make the build work, add ```-include /usr/include/c++/13*/limits``` to CXXFLAGS in /etc/makepkg.conf.
+To make the build work, add 
+    -include /usr/include/c++/13*/limits
+to CXXFLAGS in /etc/makepkg.conf.
 
-An example CXXFLAGS line that results in the build working successfully: CXXFLAGS="$CFLAGS -Wp,-D_GLIBCXX_ASSERTIONS -include /usr/include/c++/13*/limits"
+An example CXXFLAGS line that results in the build working successfully: 
+    CXXFLAGS="$CFLAGS -Wp,-D_GLIBCXX_ASSERTIONS -include /usr/include/c++/13*/limits"
 
 Be aware that this specific change requires GCC v13 to be installed on your system.
 
