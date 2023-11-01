@@ -167,3 +167,6 @@ ui_C4ConsoleQt*.h
 resource.qrc.depends
 *.exp
 qt.conf
+
+# VIM
+*.swp
