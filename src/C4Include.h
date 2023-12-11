@@ -52,6 +52,7 @@ constexpr bool SOLIDMASK_DEBUG = false;
 #include <ctime>
 #include <iostream>
 #include <list>
+#include <limits>
 #include <map>
 #include <memory>
 #include <regex>
