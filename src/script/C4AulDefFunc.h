@@ -84,6 +84,14 @@ public:
 	NeedObjectContext(const char *function) : C4AulExecError(FormatString("%s: must be called from object context", function).getData()) {}
 };
 
+// Other functions are callable in player context only.
+// This exception gets thrown if they are called from anywhere else.
+class NeedPlayerContext : public C4AulExecError
+{
+public:
+	NeedPlayerContext(const char *function) : C4AulExecError(FormatString("%s: must be called from player context", function).getData()) {}
+};
+
 // Then there's functions that don't care, but need either defn or object context.
 // This exception gets thrown if those are called from global scripts.
 class NeedNonGlobalContext : public C4AulExecError
@@ -110,6 +118,17 @@ template <> struct ThisImpl<C4PropList>
 	static C4PropList* Conv(C4PropList* _this, C4AulFunc* func)
 	{
 		return _this;
+	}
+};
+template <> struct ThisImpl<C4Player>
+{
+	static C4Player* Conv(C4PropList* _this, C4AulFunc* func)
+	{
+		C4Player* player = _this ? _this->GetPlayer() : nullptr;
+		if (player)
+			return player;
+		else
+			throw NeedPlayerContext(func->GetName());
 	}
 };
 
@@ -192,6 +211,11 @@ template <> struct C4ValueConv<C4Effect *>
 {
 	static constexpr C4V_Type Type = C4V_Effect;
 	inline static C4Effect *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetEffect() : nullptr; }
+};
+template <> struct C4ValueConv<C4Player *>
+{
+	static constexpr C4V_Type Type = C4V_Player;
+	inline static C4Player *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetPlayer() : nullptr; }
 };
 template <> struct C4ValueConv<C4Def *>
 {

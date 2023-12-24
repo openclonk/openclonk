@@ -87,6 +87,8 @@ protected func InitializePlayer(int plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	if (!g_intro_done) return true;
 	
+	SetWealth(plr, 25);
+	
 	// Position and materials
 	var i, crew;
 	for (i = 0; crew = GetCrew(plr, i); ++i)

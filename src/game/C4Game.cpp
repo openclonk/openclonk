@@ -73,6 +73,7 @@
 #include "platform/C4FileMonitor.h"
 #include "player/C4Player.h"
 #include "player/C4PlayerList.h"
+#include "player/C4PlayerScript.h"
 #include "player/C4RankSystem.h"
 #include "script/C4AulDebug.h"
 #include "script/C4AulExec.h"
@@ -2992,6 +2993,7 @@ bool C4Game::InitScriptEngine()
 	InitObjectFunctionMap(&ScriptEngine);
 	InitGameFunctionMap(&ScriptEngine);
 	::MapScript.InitFunctionMap(&ScriptEngine);
+	C4PlayerScript::RegisterWithEngine(&ScriptEngine);
 
 	// system functions: check if system group is open
 	if (!Application.OpenSystemGroup())

@@ -681,6 +681,12 @@ C4Effect * C4PropList::GetEffect()
 	return nullptr;
 }
 
+C4Player * C4PropList::GetPlayer()
+{
+	if (GetPrototype()) return GetPrototype()->GetPlayer();
+	return nullptr;
+}
+
 template<> template<>
 unsigned int C4Set<C4Property>::Hash<const C4String *>(C4String const * const & e)
 {

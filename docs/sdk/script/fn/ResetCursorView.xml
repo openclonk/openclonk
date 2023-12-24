@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ResetCursorView</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>immediate</name>
+          <desc>If true, the view of the first open viewport for that player on each machine does not scroll smoothly but is set immediately.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Resets the player view mode to cursor view mode, see <funclink>GetPlrViewMode</funclink>.</desc>
+  </func>
+  <author>Marky</author><date>2020-06</date>
+</funcs>
