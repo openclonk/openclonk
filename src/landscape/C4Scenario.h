@@ -148,7 +148,6 @@ public:
 	C4IDList ReadyBase;
 	C4IDList ReadyVehic;
 	C4IDList ReadyMaterial;
-	C4IDList BuildKnowledge;
 	C4IDList BaseMaterial;
 	C4IDList BaseProduction;
 public:
