@@ -75,7 +75,7 @@ CMAKE_DEPENDENT_OPTION(USE_COCOA         "Use Apple Cocoa widgets." ON "APPLE" O
 CMAKE_DEPENDENT_OPTION(USE_WIN32_WINDOWS "Use Microsoft Desktop App User Interface widgets." ON "WIN32" OFF)
 CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP  "Use SDL to create windows etc. Qt editor." ON "NOT USE_COCOA AND NOT USE_WIN32_WINDOWS AND NOT HEADLESS_ONLY" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
-CMAKE_DEPENDENT_OPTION(WITH_APPDIR_INSTALLATION "Install into an AppDir" OFF "UNIX AND NOT APPLE AND WITH_AUTOMATIC_UPDATE" ON)
+CMAKE_DEPENDENT_OPTION(WITH_APPDIR_INSTALLATION "Install into an AppDir" OFF "UNIX AND NOT APPLE AND WITH_AUTOMATIC_UPDATE" OFF)
 option(HEADLESS_ONLY "Only build headless parts. Somewhat reduces dependencies. (still needs libpng because that one's small and hard to remove.) Only tested with make/gcc/linux." OFF)
 option(C4GROUP_TOOL_ONLY "Only build c4group binary." OFF)
 
