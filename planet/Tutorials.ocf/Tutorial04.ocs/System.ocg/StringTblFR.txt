@@ -1,0 +1,64 @@
+# Dialogue: Lumberjack
+DlgLumberjackForest=Où sont tous les arbres ?
+DlgLumberjackCutDown=Je les ai tous transformés en rondins pour la reconstruction de notre village.
+DlgLumberjackNoWood=Vous manquez donc complètement de bois ?
+DlgLumberjackSupply=Non, nous avons une petite réserve dans les mines, cachée de la faction maléfique.
+
+# Dialogue: Fireman
+DlgFiremanWhereBarrel=Salut, où avez-vous laissé ce gros tonneau que vous utilisiez pour éteindre les incendies ?
+DlgFiremanFoundry=Je le remets dans la fonderie ci-dessous, où nous l'utilisons pour produire du limon, qui nécessite de l'eau.
+DlgFiremanWhereWater=D'où puisez-vous l'eau ?
+DlgFiremanDive=Oh, je plonge juste dans n'importe quel petit lac que je vois avec le baril. Il y en a des souterrains dans nos mines.
+
+# Dialogue: Builder
+DlgBuilderThanks=Merci à vous d'avoir construit le mât.
+DlgBuilderNoProblem=Pas de problème.
+DlgBuilderPowerConnection=Avec ce mât, l'ascenseur est maintenant connecté aux sources d'alimentation de notre villages, comme vous pouvez le voir.
+
+# Dialogue: Farmer
+DlgFarmerWipf=Hello, comment va mon wipf ?
+DlgFarmerDoingWell=Il s'entend très bien avec nos wipfs.
+DlgFarmerPleasure=Cela fait plaisir de l'entendre !
+
+# Dialogue: Lookout
+DlgLookoutNewAttack=Hello, des signes d'une nouvelle attaque ?
+DlgLookoutNo=Non, pas pour le moment.
+
+# Dialogue: Village head
+DlgVillageHeadThank=Merci à vous de nous avoir aidé à réparer nos bâtiments. Êtes-vous prêt à aider davantage ?
+DlgVillageHeadHelp=Oui, bien sûr, aussi longtemps que mon wipf peut rester avec les autres. Comment puis-je vous aider ?
+DlgVillageHeadTools=Et bien, nous manquons d'outils et j'étais sur le point d'amener le chariot avec les matériaux vers l'atelier pour les fabriquer. Mais, voyez-vous, il y a un problème.
+DlgVillageHeadProblem=Quel problème ?
+DlgVillageHeadGap=Il y a cet espace que nous devons traverser avec le chariot pour atteindre la cage d'ascenseur.
+DlgVillageHeadFix=Oh, je vois. Je vais vous réparer ça !
+DlgVillageHeadPickaxe=Cool, peut-être pouvez-vous alors produire une pioche et extraire du minerai de fer pour nous ? Nous sommes un peu en manque d'explosifs.
+DlgVillageHeadYes=Oui, pas de soucis.
+DlgVillageHeadPutOre=Veuillez mettre trois morceaux de minerai de fer dans la fonderie.
+DlgVillageHeadThanks=Merci beaucoup de nous avoir aidés à nouveau.
+
+# Sequence: Outro dialogue
+MsgVillageHeadNoise=Quel est ce bruit ?
+MsgFarmerAirplanes=Oh non, ça doit encore être les avions de la faction maléfique.
+MsgEvilLeaderItsUs=Oui, c'est encore nous ! La résistance est vaine, alors dites à votre garde de se retirer !
+MsgVillageHeadWhy=Pourquoi êtes-vous encore ici ? Vous venez de détruire notre village ...
+MsgEvilLeaderWipfs=J'ai commencé un nouveau hobby, je collectionne des wipfs maintenant.
+MsgVillageHeadManiac=Vous êtes un maniaque, vous ne pouvez pas nous laisser tranquille ?
+MsgEvilLeader=Je vous laisserai après avoir kidnappé tous vos wipfs.
+MsgPlayerDontTakeWipf=S'il vous plaît, ne prenez pas Roger ...
+MsgEvilLeaderBegging=Oh petit enfant, les supplications sont inutiles, mes hommes ne sont pas enclins à pleurer. Votre wipf sera à moi et il vaut mieux l'oublier, car vous ne le reverrez plus.
+MsgEvilLeaderBye=D'accord, nous avons terminé ici. Il est temps de dire au revoir à vos animaux de compagnie ... mouhaha
+
+# Sequence: Outro messages
+MsgHenchman3DropBlunderbuss=Tu ferais mieux de laisser tomber ce tromblon !
+MsgLookoutSurrender=Oui, je me rends.
+MsgHenchman1RunGirl=Court fillette, ou nous tirons !
+MsgHenchman2Wipfs=Vos wipfs sont à nous maintenant, mouhaha.
+MsgFarmerComment=Vous êtes diaboliques.
+MsgKidnapperGotThem=Nous les avons !
+MsgHenchman1SeeYa=Je m'en vais maintenant !
+MsgHenchman2SeeYa=Bye !
+MsgHenchman3SeeYa=A plus !
+MsgHenchmanGotWipf1=J'en ai un !
+MsgHenchmanGotWipf2=Wipf, hia !
+MsgHenchmanGotWipf3=Ce sera une belle balade.
+

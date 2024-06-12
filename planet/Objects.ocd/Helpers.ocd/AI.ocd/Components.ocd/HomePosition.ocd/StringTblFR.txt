@@ -1,0 +1,10 @@
+SetAINewHome=Réglage de la position de l'IA
+SetAINewHomeHelp=Laisse une IA clonk marcher vers une autre position.
+NewHome=Nouvelle position
+NewHomeHelp=Où envoyer l'IA clonk.
+NewHomeDir=Direction
+NewHomeDirHelp=Dans quelle direction l'IA du clonk regardera si aucun ennemi n'est à proximité.
+Unchanged=Inchangé
+Left=Gauche
+Right=Droite
+

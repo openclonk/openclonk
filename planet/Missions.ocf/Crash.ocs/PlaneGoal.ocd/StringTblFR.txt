@@ -1,0 +1,4 @@
+Name=Retrouver l'avion
+MsgGoalFulfilled=Vous avez réussi à ramener l'avion vers son pilote.
+MsgGoalUnFulfilled=Ramenez l'avion à son pilote.
+

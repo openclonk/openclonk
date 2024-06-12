@@ -1,2 +1,4 @@
 DE:Geschmolzener Monarch
 US:Molten Monarch
+FR:Monarque en fusion
+

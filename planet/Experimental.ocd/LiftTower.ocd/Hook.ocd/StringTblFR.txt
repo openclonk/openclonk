@@ -1,0 +1,3 @@
+Name=Crochet
+Description=Appuyez [Utilisez] face à un véhicule ou un gros objet pour attacher le crochet.
+Unhook=Détacher le crochet de l'objet.

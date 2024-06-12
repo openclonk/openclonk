@@ -1,0 +1,215 @@
+DoorUnlocked=La porte est déverrouillée.
+DoorNoKey=Cette porte a besoin d'une clé.
+DoorTooFar=Ce verrou est trop loin.
+
+OilBarrelMsg=Parfait. Les barils métalliques sont remplis de pétrole. Je devrais amener l'un d'eux dans l'avion.
+
+PlaneBuilt=L'avion est terminé. Maintenant, je n'ai plus qu'à trouver du pétrole pour l'alimenter.
+PlaneNoOil=L'avion a besoin de carburant. Je dois trouver du pétrole quelque part.
+
+
+Intro1=Enfin, voici Clunker Valley.
+Intro2=Ah, %s. Avez-vous donc reçu ma lettre ?
+Intro3=Oui. Naturellement, je suis venu immédiatement pour aider.
+Intro4=Excellent. Nous avons de gros ennuis en ce moment. Nous devons terminer la construction de ce château avant l'arrivée de la prochaine vague d'attaquants.
+Intro5=Vague d'attaquants ?
+Intro6=Je vous dirai tout plus tard. À l'heure actuelle, nous avons besoin de plus de bois. Pouvez-vous en couper ?
+Intro7=Bien sûr, j'y suis !
+
+
+Newton1=%s, c'est bien que vous soyez là ! Toute aide pour notre chantier est appréciée.
+Newton2=Avez-vous déjà coupé du bois ?
+Newton3=J'aimerais bien, mais je n'ai pas de hache.
+Newton4=Regardez dans la mine à l'ouest (à gauche) de ce village. Certains outils peuvent être là-dedans.
+Newton5=Pas encore. Où puis-je trouver des arbres utiles ?
+Newton6=À l'est (à droite) du village, vous trouverez des conifères. Ils sont parfaits pour nous.
+
+Newton100=Hé %s ! Avez-vous survécu aux attaques ?
+Newton101=Oui. Comme vous pouvez le voir. J'ai pu regarder la catastrophe depuis la forêt.
+Newton102=Il nous faudra des mois pour tout reconstruire. En attendant, nous serons sans défense contre leurs attaques.
+Newton103=Qui sont les assaillants ?
+Newton104=Ce sont les hommes de main du roi Harx. Nous avons refusé de lui rendre un hommage injuste. Maintenant, ils veulent nous montrer l'exemple.
+Newton105=Mais c'est notre roi, non ?
+Newton106=Il a une couronne sur la tête. Et alors ? Nous n'avons pas voté pour lui. Nous ne reconnaîtrons jamais un monarque qui ne fait que nous opprimer !
+Newton107=D'accord. Que ferez-vous maintenant ?
+Newton108=Rien. C'est sans espoir. Nous mourrons tous. Sauf si...
+Newton109=... ?
+Newton110=...sauf si vous nous aidez.
+Newton111=Je le savais.
+Newton112=Nous sommes des agriculteurs inexpérimentés. Votre père m'a dit que vous aviez de l'expérience au combat ?
+Newton113=Eh bien... oui.
+Newton114=J'ai utilisé mon épée en bois pour combattre les buissons de baies de Wompf.
+Newton115=C'est plus que n'importe lequel d'entre nous peut le montrer.
+Newton116=Alors, quelle est ta décision ? Voulez-vous nous aider à vaincre Harx ?
+Newton117=Oui
+Newton118=Excellent!
+Newton119=Commencez par marcher vers l'est en direction de Wipfville. Vous pouvez utiliser cette pelle pour vous y rendre.
+Newton120=Une fois sur place, demandez Pyrit. C'est un vieil ami à moi et devrait pouvoir vous aider.
+Newton121=Bonne chance ! Vous en aurez besoin.
+
+Newton200=Newton, j'ai construit un avion pour la contre-attaque de Harx. Mais je n'ai pas encore de carburant.
+Newton200a=Newton, j'ai des plans pour un avion pour la contre-attaque de Harx. Mais je n'ai pas encore de carburant.
+Newton201=Très bien, %s. Vous avez donc besoin de pétrole ? C'est effectivement un problème. Harx a interdit la possession de pétrole.
+Newton202=Nous ne nous soucions pas de ses règles stupides, bien sûr. Mais nous devions vendre notre pétrole pour financer la défense et la construction du château.
+Newton203=Il ne nous reste rien dans le village. Mais nous avons du pétrole une chambre cachée dans la grotte en dessous de ce village. Vous pourriez demander la clé à Mave dans la grotte à côté de la fonderie.
+
+Lara1=Nous avons besoin de plus de bois pour pouvoir au moins finir les échafaudages avant la tombée de la nuit.
+Lara2=Pourquoi tant de hâte ?
+Lara3=Nous ne saurons jamais quand <i>ils</i> pourraient revenir.
+Lara4=Qui sont-<i>ils</i>?
+Lara5=Je vous le dirai plus tard. Pouvez-vous aller chercher du bois maintenant ?
+Lara6=S'il-vous-plaît, allez chercher du bois maintenant !
+
+Lara100=Ils ne nous laisseront jamais en paix.
+
+
+Lisa1=C'est bien de voir que le château progresse enfin.
+Lisa2=Pourquoi avez-vous besoin d'un château aussi solide ?
+Lisa3=Nous avons été attaqués. Encore et encore.
+Lisa4=Attaqué ? Par qui ?
+Lisa5=Si notre malchance perdure, vous les rencontrerez assez tôt. Veuillez nous aider avec le chantier de construction maintenant.
+Lisa6=S'il-vous-plaît, aidez-vous avec le chantier.
+
+Lisa100=Veuillez faire quelque chose contre ces monstres !
+
+Lisa200=Merci beaucoup de nous aider !
+
+
+Woody1=Oh non, je me suis blessé au bras. Maintenant, je ne peux pas couper du bois et la scierie est inactive.
+Woody2=Existe-t-il un moyen de vous aider?
+Woody3=Pourriez-vous aller vers l'est (à droite) et abattre un conifère? Je m'occuperai alors du sciage.
+Woody4=D'accord. Mais je pense que votre hache est un peu grosse pour un débutant comme moi. Avez-vous une hache normale quelque part ?
+Woody5=Mes outils sont stockés près de Rocky dans la mine Ouest (à gauche) d'ici.
+Woody6=Où puis-je abattre des arbres?
+Woody7=Il suffit de travailler sur l'un des conifères à l'est (à droite) d'ici.
+
+Woody100=Comment pouvons-nous nous opposer à cela ?
+
+
+Rocky1=Salut, avez-vous une hache pour moi ?
+Rocky2=Vérfiez le chariot.
+Rocky3=Il est très productif. Je ferais mieux de ne pas le déranger.
+
+Rocky100=Rocky, tu peux arrêter de piocher. Le site du château vient d'être détruit.
+Rocky101=Taisez-vous. Rocky doit travailler.
+
+
+Attack1=Arbre abbatu !
+Attack2=Hein ? Quel est ce bruit ?
+Attack3=Oh mon dieu !
+Attack4=Tout le monde va bien ?
+Attack5=Oui. Mais notre village ...
+Attack6=Ils essaient vraiment de se débarrasser de nous maintenant. On doit faire quelque chose !
+Attack7=Je devrais parler à Newton.
+
+
+Mave1=Bonjour %s. Avez-vous entendu le grondement à l'extérieur ? C'était effrayant.
+Mave2=Je me tenais à côté. Tout le village a été détruit. Vous devriez aider vos amis de l'extérieur à le reconstruire!
+Mave3=À l'extérieur? Euh, non. Je suis plus un clonk de cave.
+Mave4=Pourriez-vous au moins m'aider à atteindre Wipfville à l'est alors ?
+Mave5=Vous n'y arriverez pas à travers les grottes. Les anciens passages ont été détruits récemment par une éruption volcanique.
+Mave6=Votre seule chance est de traverser le lac.
+Mave7=Comment traverser le lac ?
+Mave8=Vous pouvez utiliser ma fonderie pour construire du terreau.
+Mave9=Comment puis-je construire du terreau ?
+Mave10=Oh, c'est simple: remplissez un seau {{Bucket}} de terre et remplissez un tonneau {{Barrel}} d'eau. Mettez ensuite les deux dans la fonderie et produisez du terreau.
+Mave11=Vous pouvez trouver les outils nécessaires dans et devant ma fonderie.
+Mave12=Où mène cette cage d'ascenseur ?
+Mave13=Cet ascenseur mène à la chambre avec nos réserves de pétrole. Malheureusement, le chemin a été inondé par le volcan. Peut-être que l'eau du lac peut être utilisée pour éteindre la lave ?
+MaveBye=Au revoir.
+
+Mave100=Salut Mave. Vous avez une idée où trouver du pétrole ?
+Mave101=Oh, du pétrole. Vous savez que nous ne sommes pas censés avoir des réserves, n'est-ce pas ?
+Mave102=C'est très important ! J'essaie de tuer le roi.
+Mave103=Cela ressemble à un noble plan. Je pourrais peut-être vous aider ...
+Mave104=Oui, s'il vous plaît !
+Mave105=Pas si vite. En bas de ce conduit d'ascenseur, il y a un chemin qui mène à une chambre. Il est maintenant enterré sous ces lacs de lave.
+Mave106=Mais les murs sont en granit solide, donc je pense qu'il devrait toujours être intact.
+Mave107=Pour y entrer, vous avez besoin d'une clé.
+Mave108=D'accord. Donnez la clé s'il vous plaît.
+Mave109=Je vous le vendrai pour un lingot d'or.
+Mave110=Où puis-je trouver de l'or?
+Mave111=Si je le savais, je l'exploiterais moi-même. Généralement, c'est quelque part sous terre.
+Mave112=Lorsque vous avez trouvé des pépites d'or, vous pouvez utiliser ma fonderie pour les faire fondre en un lingot brillant.
+
+Mave200=Voici votre lingot d'or.
+Mave201=Heureux de faire affaire avec vous. Voici votre clé.
+Mave202=Où puis-je trouver la chambre à pétrole ?
+Mave203=C'est en bas de cet ascenseur, enterré sous les lacs de lave. Peut-être pouvez-vous utiliser de l'eau pour refroidir la lave ?
+
+
+Pyrit1=Salut, êtes-vous Pyrit ?
+Pyrit2=En effet. Qu'est-ce qui vous amène à Wipfville ?
+Pyrit3=Le village de Clunker a été détruit par les hommes de main du tyran maléfique Harx. J'ai promis mon aide et Newton m'a envoyé vers vous.
+Pyrit4=J'ai vu les avions et j'ai entendu le grondement. J'avais peur que quelque chose comme ça se produise. C'est à cause des taxes qu'ils n'ont pas payés, n'est-ce pas ?
+Pyrit5=Ce ne sont pas des taxes. C'est de l'extorsion ! Ils ne paient pas par principe.
+Pyrit6=Eh bien, nous payons toujours. Mais il continue à augmenter le tribu. Je crains que cela ne se termine pas bien.
+Pyrit7=Alors allez-vous me soutenir ? Je dois aller donner une leçon à ce roi maléfique.
+Pyrit8=Comment comptez-vous vous y rendre ? Il vit dans une forteresse fortement gardée sur la Montagne d'Or.
+Pyrit9=Il est arrivé en avion. Ne pouvons-nous pas en construire ?
+Pyrit10=En fait, j'ai des plans que je pourrais vous donner. Mais pour le faire voler, vous devez faire le plein de pétrole. Et Harx garde toutes les réserves de pétrole strictement sous son contrôle.
+Pyrit11=Pour une bonne raison, je suppose.
+Pyrit12=C'est le seul moyen d'atteindre son château.
+Pyrit13=Certaines personnes gardent des réserves de pétrole secrètes, mais elles ne les abandonneront pas facilement.
+Pyrit14=Peut-être que si vous demandez autour de vous, vous pouvez trouver quelqu'un prêt à vous aider. Je demanderais d'abord à Newton.
+Pyrit15=En attendant, prenez ces plans de construction d'avions. N'hésitez pas à utiliser mon chantier naval et tout ce que vous trouverez dans les bâtiments de cette ville pour construire l'avion.
+Pyrit16=Où puis-je construire l'avion ?
+Pyrit17=N'hésitez pas à utiliser mon chantier naval et tout ce que vous trouverez dans les bâtiments de cette ville pour construire l'avion.
+Pyrit18=Où puis-je trouver du pétrole ?
+Pyrit19=Où puis-je trouver de l'or ?
+Pyrit20=Euh, regardez sous terre, je suppose.
+
+Clonko1=Bonjour étranger, qu'est-ce qui vous amène à Wipfville ?
+Clonko2=Je cherche Pyrit.
+Clonko3=C'est le gars en bleu qui martèle la catapulte. Je me demande ce qu'il fait là-bas ?
+Clonko4=Merci.
+
+Clonko100=Salut, tu as du pétrole ?
+Clonko101=Quelle étrange demande. Non bien sûr que non. Le roi Harx garde tout le pétrole sous son contrôle.
+Clonko102=Eh bien, il y a peut-être, disons, des réserves supplémentaires ?
+Clonko103=Non, je suis un honnête citoyen qui ne garde pas de secrets.
+Clonko104=Mais ... il y a des rumeurs.
+Clonko105=Dis m'en plus !
+Clonko106=On parle d'un lac souterrain plein de pétrole enfouis profondément sous Wipfville.
+Clonko107=Comment se rendre au lac de pétrole ?
+Clonko108=Vous devrez creuser tout droit depuis cette ville. Mais il y a de la roche solide et de l'eau sur le chemin. De plus, ce n'est qu'une rumeur.
+Clonko109=J'y vais !
+
+Clonko200=J'y suis allé. Il n'y avait pas de pétrole en dessous de cette ville !
+Clonko201=Oh tant pis. Mais je vous avais dit que ce n'était qu'une rumeur.
+
+
+Matthi1=Bonjour mon cher visiteur. Voulez-vous des baies germinatives ?
+Matthi2=J'ai bien peur de ne pas pouvoir les acheter.
+Matthi3=Oh pas de problème. Prenez juste cet échantillon gratuit. C'est délicieux !
+Matthi4=Gratuit comme libre ou libre comme gratuit ?
+Matthi5=Quoi ?
+Matthi6=Rien ne vaut le merveilleux goût d'une baie germinative fraîchement cueillie.
+
+Matthi100=Avez-vous du pétrole ?
+Matthi101=Oh, ce liquide noir puant? Non, je n'y toucherais pas.
+Matthi102=Je devrais peut-être expérimenter la production de pétrole à partir de baies germinatives.
+
+Dora1=Bonjour, collègue explorateur. Qu'est-ce qui vous amène ?
+Dora2=Je cherche un lac de pétrole.
+Dora3=Haha, moi aussi. Mais il n'y a pas de lac.
+Dora4=Mais ... les rumeurs ...?
+Dora5=Je sais. On dirait que les rumeurs ne sont pas toujours vraies après tout.
+Dora6=La rumeur du lac pétrolier n'était pas vraie. Pas de chance.
+Dora7=Où pourrais-je chercher du pétrole?
+Dora8=Avez-vous déjà demandé à Newton au village Clunker ? Puisqu'ils ne se soucient pas des règles de Harx, ils pourraient garder des réserves.
+
+Dora100=Je cherche du pétrole.
+Dora101=Haha, moi aussi. Il y avait des rumeurs d'un lac de pétrole ici.
+Dora102=Mais...?
+Dora103=On dirait que les rumeurs ne sont pas toujours vraies après tout.
+
+Dora200=Je cherche Pyrit.
+Dora201=Oh, le forgeron. Il est au-dessus de cette grotte à Wipfville.
+
+
+Outro1=Génial ! L'avion a du carburant maintenant. Mais comment faire voler ça ?
+Outro2=Je vois que votre mission de tuer le roi a été bien préparée.
+Outro3=Ne vous inquiétez pas. Je déteste Harx autant que vous. Je serai votre pilote.
+Outro4=Eh bien, qu'attendons-nous ? Allons-y !
+

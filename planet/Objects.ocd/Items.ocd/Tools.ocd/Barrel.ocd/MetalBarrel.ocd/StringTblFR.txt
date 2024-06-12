@@ -1,0 +1,8 @@
+Name=Tonneau de fer
+Description=Récipient solide pour le transport de liquides dangereux comme l'acide.
+MaterialLava=lave
+MaterialDuroLava=lave
+MaterialWater=eau
+MaterialFirefluid=matière en feu
+MaterialAcid=acide
+MaterialOil=pétrole

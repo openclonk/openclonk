@@ -1,0 +1,7 @@
+Name=Mât
+NameNeutral=Réapparition
+Description=Marque votre règne, où vous pouvez acheter des objets dans les bâtiments.
+MsgBuy=Acheter des choses
+YourWealth=Votre richesse
+Neutral=Neutre
+NeutralHelp=Les drapeaux neutres sont des points de réapparition pour tous les joueurs.

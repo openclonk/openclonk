@@ -1,1 +1,3 @@
 US:Test cases for reported bugs
+FR:Cas de test pour les bugs remontés
+

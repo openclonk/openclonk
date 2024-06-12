@@ -1,0 +1,17 @@
+# Dialogue: village head
+DlgVillageHeadGrateful=Je vous suis reconnaissant d'avoir réussi à nous amener ici à Skyville.
+DlgVillageHeadWhatToDo=Oui, c'est bien que ces villageois veuillent nous aider.
+DlgVillageHeadPower=En effet, aidez-les à restaurer leur production d'énergie.
+DlgVillageHeadIWill=Je le ferai !
+DlgVillageHeadAfterwards=D'accord, nous pourrons ensuite récupérer des déchets.
+
+# Dialogue: Skyville head
+DlgSkyvilleHeadThanks=Merci de nous avoir aidés, ce serait formidable si vous pouviez à nouveau alimenter le chantier naval.
+DlgSkyvilleHeadDoBest=Je ferai de mon mieux.
+DlgSkyvilleHeadManage=Si vous gérez, vous pouvez utiliser les matériaux dans le chantier naval pour produire un avion.
+
+# Sequence: intro
+
+
+# Sequence: outro
+

@@ -1,0 +1,2 @@
+Name=Télégant
+Description=Avec ce gant expérimental, il est possible de déplacer des objets par télékinésie dans l'air et même de les projeter. Visez un petit objet à proximité et maintenez la touche [Utiliser] enfoncée pour le déplacer.

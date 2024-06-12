@@ -1,0 +1,2 @@
+Name=Blé
+Description=Fournit des graines pour la production de farine. Pousse plus vite si arrosé.

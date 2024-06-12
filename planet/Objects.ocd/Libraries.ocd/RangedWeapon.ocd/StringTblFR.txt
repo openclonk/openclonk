@@ -1,0 +1,3 @@
+SpeedMult=Vitesse
+SpeedMultHelp=Réglage de la vitesse de tir et de rechargement en pourcentage de la valeur par défaut. Des valeurs élevées signifient un tir et un rechargement plus rapides.
+

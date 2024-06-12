@@ -1,0 +1,2 @@
+Name=Parchemin de durcissement
+Description=Transformez la neige voisine en glace.

@@ -1,0 +1,8 @@
+# Pilot Name
+PilotName=Capitaine Wilbur
+
+# Intro sequence messages
+MsgNearVolcano=Nous sommes presque au cratère du volcan, saviez-vous que son noyau est en or?
+MsgEruption=Oh oh ! Le volcan entre en éruption, préparez-vous à un atterrissage d'urgence.
+MsgEject=Nous avons été touchés ... Sautez ! Sautez !
+MsgConstructPlane=On dirait que notre pilote est parti et que l'avion est détruit. Construisons un nouvel avion, remplissons-le de lingots d'or et sortons d'ici.

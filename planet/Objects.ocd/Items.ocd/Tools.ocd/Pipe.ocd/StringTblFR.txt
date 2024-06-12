@@ -1,0 +1,17 @@
+Name=Tuyau
+NameSource=Tuyau source
+NameDrain=Tuyau de vidange
+NameAir=Tuyau d'air
+Description=En combinaison avec des pompes, les tuyaux peuvent être utilisés pour transporter des liquides. Appuyez sur [Utiliser] devant une pompe pour créer un tuyau source ou de vidange.
+DescriptionSource=Tuyau source d'où le liquide est aspiré dans la pompe.
+DescriptionDrain=Tuyau de vidange où les liquides sont pompés.
+DescriptionAir=Les tuyaux d'air sont une bonne source d'oxygène lorsqu'ils sont sous l'eau.
+
+MsgNoNewPipe=Il n'y a pas de pompe ici.
+MsgNoNewPipeToTank=La connexion n'est pas possible ici.
+MsgCreatedSource=Tuyau source connecté.
+MsgCreatedDrain=Tuyau de vidange connecté.
+MsgHasPipes=La pompe a déjà une source et un tuyau de vidange.
+MsgHasSourcePipe=Impossible de connecter le tuyau source.
+MsgHasDrainPipe=Impossible de connecter le tuyau de vidange.
+

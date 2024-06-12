@@ -1,0 +1,19 @@
+AlternativeMaterial=Peau
+AlternativeMaterialHelp=Change la texture d'un objet.
+Default=Défaut
+MetalChest=Métal
+GoldenChest=Or
+AncientColumn=Antique
+FlyAmanitaMushroom=Amanite tue mouche
+FrozenCaveMushroom=Champignon gelé
+GoldenCannon=Or
+RuinedLorry=En ruine
+SpinWheelBaseAlt=Antique
+SpinWheelGearRed=Rouge
+SpinWheelGearBlue=Bleu
+IdolGrayColor=Rocher
+CrashedAirplane=Détruit
+LaserSword=Sabre laser
+OgreSword=Sabre d'orc
+NukePowderKeg=Radioactif
+

@@ -1,0 +1,4 @@
+Name=Trouvez votre chemin du retour
+MsgGoalFulfilled=Vous êtes rentré chez vous.
+MsgGoalUnFulfilled=Vous n'êtes pas encore chez vous.
+GetBack=Revenir

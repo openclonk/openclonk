@@ -1,0 +1,4 @@
+Name=Point d'apparition d'objet
+Description=Crée un élément dans l'inventaire des clonks traversant ce point.
+SpawnID=Objet
+SpawnIDHelp=Objet que le joueur obtiendra du point d'apparition.

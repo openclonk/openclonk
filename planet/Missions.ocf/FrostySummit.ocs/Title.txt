@@ -1,2 +1,4 @@
 DE:Frostiger Gipfel
 US:Frosty Summit
+FR:Sommet givré
+

@@ -1,0 +1,24 @@
+# Goal name and description
+GoalName=Transport d'or
+GoalDesc=Construisez un avion et chargez-le avec %d lingots d'or pour les transporter dans un endroit sûr.
+
+# Scenario parameters: difficulty
+Difficulty=Difficulté
+DescDifficulty=Définit la difficulté de cette partie.
+DiffNormal=Normale
+DescDiffNormal=La difficulté de ce tour sera normale.
+DiffHard=Difficile
+DescDiffHard=La difficulté de cette partie sera élevée.
+DiffInsane=Insensée
+DescDiffInsane=La difficulté de ce tour sera insensée.
+
+# Scenario parameters: map size
+MapSize=Taille de la carte
+DescMapSize=Définit la taille de la carte pour cette partie.
+MapSmall=Petite
+DescMapSmall=La carte de cette partie sera de petite taille.
+MapAverage=Moyenne
+DescMapAverage=La carte de cette partie sera de taille moyenne.
+MapLarge=Grande
+DescMapLarge=La carte de cette partie sera de grande taille.
+

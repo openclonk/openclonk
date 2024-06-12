@@ -1,0 +1,2 @@
+Name=Cabine en bois
+Description=Un abri basique.

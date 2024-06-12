@@ -1,0 +1,14 @@
+ Cachette
+
+Protégez votre cachette de l'équipe adverse et essayez de capturer le drapeau ennemi.
+
+Objectif: Volez le drapeau de vos ennemis et apportez-le à votre base.
+
+- Les portes sont destructibles et s'ouvrent automatiquement pour les clonks amis.
+- Les coffres à l'intérieur des cachettes contiennent des armes de base.
+- Les coffres à l'extérieur des cachettes contiennent des armes plus avancées.
+- Le coffre central ne contient que des gemmes et d'autres objets spéciaux.
+- Jetez des gemmes! Elles s'activent à l'impact.
+- Les ennemis tués laissent derrière eux un joyau de guérison. Utilisez-le pour guérir lentement votre clonk.
+- Votre drapeau doit être dans votre base pour que vous puissiez marquer.
+

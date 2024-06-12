@@ -1,0 +1,14 @@
+# Scenario parameters: game mode
+GameMode=Mode de jeu
+DescGameMode=Choisissez le mode de jeu.
+ModeDeathmatch=Match à mort
+DescModeDeathmatch=Le premier joueur à atteindre le nombre de victimes requis remporte la manche.
+ModeLastManStanding=Dernier homme debout
+DescModeLastManStanding=Le dernier joueur survivant remporte la manche.
+ModeKingOfTheHill=Roi de la colline
+DescModeKingOfTheHill=Celui qui fait le nombre requis de victimes alors que le roi survit.
+
+# Scenario parameters: number of relaunches
+NrRelaunchesKills=Victimes/Relances/Points
+DescNrRelaunchesKills=Nombre de éliminations nécessaires pour gagner un round à mort ou nombre de relances supplémentaires pour un dernier homme debout.
+

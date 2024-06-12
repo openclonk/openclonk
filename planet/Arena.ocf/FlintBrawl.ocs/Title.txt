@@ -1,2 +1,4 @@
 DE:Flintgemenge
 US:Flint Brawl
+FR:Combat de silex
+

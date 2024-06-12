@@ -1,0 +1,108 @@
+
+TooltipGUIClose=Fermer
+
+SET_WASD_QWERTZ=Clavier et souris
+SET_Gamepad=Gamepad
+
+CON_Roll=Roulade
+CON_Roll_Desc=Faire une roulade simple en avant
+
+CON_Jump=Saut
+CON_Jump_Desc=Sauter en courant, sauter hors de l'eau, sauter d'un mur.
+
+CON_FallThrough=Descente
+CON_FallThrough_Desc=Move downwards when standing on a permeable platform.
+
+CON_AimAxisLeft=Diriger à gauche (Stick Analogique)
+CON_AimAxisRight=Diriger à droite (Stick Analogique)
+CON_AimAxisUp=Diriger en haut (Stick Analogique)
+CON_AimAxisDown=Diriger en bas (Stick Analogique)
+
+
+CON_QuickSwitch=Changement rapide
+CON_QuickSwitch_Desc=Choisir le précédent objet actif.
+CON_InventoryShiftForward=Objet suivant
+CON_InventoryShiftForward_Desc=Selects the next item from the inventory.
+CON_InventoryShiftBackward=Objet précédent
+CON_InventoryShiftBackward_Desc=Selects the last item from the inventory.
+CON_Drop=Lacher
+CON_Drop_Desc=Lacher l'objet en main.
+CON_DropAlt=Lacher (autre main)
+CON_DropAlt_Desc=Lacher l'objet de l'autre main.
+
+CON_Use=Utiliser
+CON_Use_Desc=Utiliser l'objet en main.
+CON_Throw=Lancer
+CON_Throw_Desc=Lancer l'objet en main dans la direction visée.
+CON_UseAlt=Utiliser
+CON_UseAlt_Desc=Utiliser l'objet en main autrement.
+
+CON_PickUp=Ramasser
+CON_PickUp_Desc=Ramasser un objet près de soi.
+
+CON_Hotkey1=Raccourcis 1
+CON_Hotkey2=Raccourcis 2
+CON_Hotkey3=Raccourcis 3
+CON_Hotkey4=Raccourcis 4
+CON_Hotkey5=Raccourcis 5
+CON_Hotkey6=Raccourcis 6
+CON_Hotkey7=Raccourcis 7
+CON_Hotkey8=Raccourcis 8
+CON_Hotkey9=Raccourcis 9
+CON_Hotkey0=Raccourcis 10
+
+CON_Contents=Inventaire
+CON_Contents_Desc=Ouvre et ferme le menu d'inventaire. Depuis ce menu, vous pouvez prendre ou mettre des objets  dans des coffres, remorques, etc. et aussi échanger des objets avec d'autres Clonks. 
+CON_PlayerMenu=Menu du joueur
+CON_PlayerMenu_Desc=Ouvre et ferme le menu du joueur.
+
+CON_MenuSelect=Menu - Sélection
+CON_MenuSelect_Desc=Confirmer une sélection dans un menu.
+CON_MenuCancel=Menu - Fermer
+CON_MenuCancel_Desc=Fermer un menu sans avoir choisi quelque chose.
+CON_MenuOKAll=Menu: okay, tout
+CON_MenuOK=Menu: OK
+CON_MenuOK_Desc=Confirmer dans un menu.
+CON_MenuTextComplete=Dialogues: Compléter le texte
+CON_MenuTextComplete_Desc=Raccourcit les animations de texte dans les dialogues.
+
+CON_NextCrew=Clonk suivant
+CON_NextCrew_Desc=Sélectionne le clonk suivant dans l'équipe. Votre équipe est affichée en haut de l'écran du jeu.
+CON_PreviousCrew=Clonk précédent
+CON_PreviousCrew_Desc=Sélectionne le clonk suivant dans l'équipe in your crew. Votre équipe est affichée en haut de l'écran du jeu.
+CON_ZoomIn=Zoomer
+CON_ZoomIn_Desc=Zoome dans le jeu pour rendre le détails plus visibles.
+CON_ZoomOut=Dézoomer
+CON_ZoomOut_Desc=Dézoome dans le jeu pour avoir une vue plus large.
+
+CON_Interact=Interagir
+CON_Interact_Desc=Interagir avec des véhicules, des constructions et d'autres choses proches du Clonk: entrer et sortir des batiments, contrôler et pousser des véhicules dans les batiments, produire des outils et des armes dans les ateliers et bien plus encore.
+
+# -- Assignment specific strings
+
+KEY_MouseUse=Utiliser 
+KEY_MouseUse_Desc=Utiliser l'objet en main.
+
+KEY_MouseThrow=Lancer
+KEY_MouseThrow_Desc=Lancer l'objet en main.
+
+KEY_MouseUseAlt=Utiliser alternativement
+KEY_MouseUseAlt_Desc=Utilisation secondaire.
+
+KEY_GamepadUse=Utiliser / Lancer
+KEY_GamepadUse_Desc=Utiliser l'obket en main. Si l'objet ne peut pas être utiliser, il est lancé dans la direction visée par le stick analogique au relachement.
+
+KEY_Left=Gauche
+KEY_Left_Desc=Courir, nager, se déplacé accroché vers la gauche ou quitter un mur de droite. En grimpant sur un mur à gauche, vous pouvez attraper un objet bloqué avec cette touche.
+KEY_Right=Droite
+KEY_Right_Desc=Courir, nager, se déplacer accroché vers la gauche ou quitter un mur de gauche. En grimpant sur un mur à droite, vous pouvez attraper un objet bloqué avec cette touche.
+KEY_Up=Haut
+KEY_Up_Desc=Grimper ou nager vers la surface. Accroché, vous pouvez attraper un objet coincé dans le plafond.
+KEY_Down=Bas
+KEY_Down_Desc=Descendre, plonger ou se lacher d'un plafond auquel on est accroché. Sur le sol, vous pouvez attraper des objets posés par terre.
+
+KEY_AimAxis_Desc=Viser avec le stick analogique pour lancer ou utiliser un objet dans une direction. Peu aussi servir à la place du pad de direction pour controler le Clonk.
+
+KEY_Hotkey_Desc=Raccourcis:|No + clic de souris g/d - Passer l'objet en question dans l'autre main|No + Shift - Lacher l'objet en question|No + Interagir - Interagir avec la chose en question|No + Ctrl - Sélectionner le clonk en question dans l'équipe
+
+KEY_Ungrab=Relacher le véhicule

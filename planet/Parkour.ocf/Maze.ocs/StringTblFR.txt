@@ -1,0 +1,33 @@
+MsgGoalAbove=L'objectif est au-dessus de cet écriteau.
+MsgGoalBelow=TL'objectif est en dessous de cet écriteau.
+MsgGoalLeft=Le but est à gauche de cet écriteau.
+MsgGoalRight=Le but est à droite de cet écriteau.
+
+# Scenario parameters: goal
+Goal=Mode de jeu
+DescGoal=Détermine si les joueurs jouent avec ou contre l'autre.
+GoalCooperative=Coopératif
+DescGoalCooperative=Les joueurs essaient ensemble de trouver un rubis.
+GoalRace=Course
+DescGoalRace=Le premier joueur à trouver un rubis et à le renvoyer remporte la manche.
+
+# Scenario parameters: difficulty
+Difficulty=Difficulté
+DescDifficulty=Définit la difficulté de ce tour.
+DiffNormal=Normale
+DescDiffNormal=La difficulté de ce tour sera réglée à la normale.
+DiffHard=Difficile
+DescDiffHard=La difficulté de ce tour sera difficile.
+DiffInsane=Insensée
+DescDiffInsane=La difficulté de ce round sera réglée comme insensée.
+
+# Scenario parameters: map size
+MapSize=Taille de la carte
+DescMapSize=Définit la taille de la carte de ce tour.
+MapSmall=Petite
+DescMapSmall=La carte de ce tour sera petite.
+MapAverage=Moyenne
+DescMapAverage=La carte de ce tour sera moyenne.
+MapLarge=Grande
+DescMapLarge=La carte de ce tour sera grande.
+

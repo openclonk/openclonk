@@ -1,0 +1,2 @@
+Name=Mur d'échafaudage
+Description=Vous permet de construire de plus grandes structures.

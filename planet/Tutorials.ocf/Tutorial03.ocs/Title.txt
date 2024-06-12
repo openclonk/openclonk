@@ -1,2 +1,5 @@
 DE:Tragen & Bauen
 US:Carry & Construct
+
+FR:Transporter & Construire
+

@@ -1,0 +1,2 @@
+Name=Bouclier
+Description=Fournit au clonk une certaine protection. Maintenez la touche [Utiliser] enfoncée pour bloquer les éléments qui volent vers vous dans la direction vers laquelle vous visez.

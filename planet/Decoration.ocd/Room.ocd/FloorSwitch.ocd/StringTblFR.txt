@@ -1,0 +1,6 @@
+Name=Levier de sol
+Description=Antique détecteur de poids.
+UpAction=Action 'Haut'
+DownAction=Action 'Bas'
+SwitchMassAction=Poids de bascule
+SwitchMassActionHelp=Poids nécessaire pour actionner le levier.

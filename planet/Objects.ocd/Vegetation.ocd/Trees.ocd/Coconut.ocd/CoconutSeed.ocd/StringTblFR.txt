@@ -1,0 +1,2 @@
+Name=Noix de coco
+Description=Une graine lourde du cocotier. C'est délicieux !

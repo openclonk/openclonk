@@ -1,0 +1,10 @@
+Le Roi des Monts
+
+Vous devez défendre un mont qui donne accès à une grande caverne de rubis contre des mineurs énervés
+
+Objectif : Survivre à autant de vagues d'attaque que possible.
+
+Astuces:
+- Cette partie est coopérative, donc travaillez ensemble et partagez-vous les tâches.
+- Construisez une colonie et défendez durant les tours de l'attaque.
+- Des ressources et liquides réapparaissent à certains endroits.

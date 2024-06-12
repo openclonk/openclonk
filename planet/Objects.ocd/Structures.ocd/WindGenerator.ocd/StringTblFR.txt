@@ -1,0 +1,9 @@
+Name=Générateur éolien
+Description=Génère de l'électricité à partir du vent.
+Efficiency=Efficacité
+EfficiencyUnknown=L'efficacité n'a pas encore pu être estimée.
+EfficiencyGood=L'emplacement de l'éolienne est très bon.
+EfficiencyMedium=L'emplacement de l'éolienne pourrait être meilleur.
+EfficiencyBad=L'emplacement de l'éolienne est très mauvais.
+EfficiencyGeneral=L'efficacité est d'autant plus grande que le ciel est libre à proximité immédiate de l'éolienne.
+

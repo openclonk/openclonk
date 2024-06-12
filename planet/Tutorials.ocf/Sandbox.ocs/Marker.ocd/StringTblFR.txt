@@ -1,0 +1,2 @@
+Name=Marqueur
+Description=Un simple marqueur ou point de passage.

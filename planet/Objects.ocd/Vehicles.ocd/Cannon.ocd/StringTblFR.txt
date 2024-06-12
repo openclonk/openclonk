@@ -1,0 +1,6 @@
+TxtControl=Contrôle
+TxtCannonisfull=Canon déjà chargé!
+TxtNeedsAmmo=Canon sans munition.
+TxtNeedsGunp=Canon sans poudre.
+Name=Canon
+Description=A besoin d'un baril de poudre pour fonctionner, maintenez [Utiliser] pour viser et tirer sur n'importe quoi.

@@ -1,0 +1,9 @@
+MsgAttack0=Attaquez !
+MsgAttack1=Chargez !
+MsgAttack2=Attrapez les !
+MsgAttack3=Pour la gloire !
+MsgAttack4=Battez-les !
+
+MsgIntruder0=Un intrus !
+MsgIntruder1=Qui êtes-vous ?
+MsgIntruder2=Sortez !

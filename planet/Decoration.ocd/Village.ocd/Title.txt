@@ -1,2 +1,4 @@
 DE:Dorf
 US:Village
+FR:Village
+

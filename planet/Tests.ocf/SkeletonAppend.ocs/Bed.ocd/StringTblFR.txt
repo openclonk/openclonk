@@ -1,0 +1,4 @@
+Name=Lit
+Description=Les chevaliers fatigués se reposent ici.
+
+

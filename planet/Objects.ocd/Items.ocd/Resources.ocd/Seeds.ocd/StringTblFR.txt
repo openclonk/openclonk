@@ -1,0 +1,3 @@
+Name=Des graines
+Description=Graines de plantation de blé. Appuyez sur [Utiliser] pour planter du blé ici.
+NoSuitableGround=Terrain non adapté à la plantation!

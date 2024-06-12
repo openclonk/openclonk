@@ -1,0 +1,2 @@
+Name=Moulin à vent en ruines
+Description=Reliques d'un viel endroit.

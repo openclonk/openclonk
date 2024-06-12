@@ -1,0 +1,8 @@
+Name=Pierre tombale
+Description=Où les clonks reposent en paix.
+
+Epitaph=Ci gît
+ReadInscription=Lire l'inscription
+
+Inscription=Inscription
+InscriptionHelp=Définit le texte que le joueur peut lire à partir de cette pierre tombale.

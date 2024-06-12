@@ -1,2 +1,4 @@
 DE:Schmelzendes Schloss
 US:Melting Castle
+FR:Château fondant
+

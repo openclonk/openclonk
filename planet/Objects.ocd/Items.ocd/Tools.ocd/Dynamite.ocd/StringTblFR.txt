@@ -1,0 +1,2 @@
+Name=Bâton de dynamite
+Description=Explosif de base pour l'exploitation minière. Vous pouvez le coller dans un matériau solide après l'avoir mis à feu. Appuyez sur [Utiliser] pour s'enflammer. Une fois allumé, visez avec la souris et appuyez à nouveau sur [Utiliser] pour le placer dans la direction souhaitée.

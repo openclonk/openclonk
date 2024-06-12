@@ -1,0 +1,3 @@
+Name=Raffinerie
+Description=Vous avez actuellement pompé %d {{Oil}}, depuis le drain de raffinerie, des %d {{Oil}} nécessaires pour atteindre cet objectif.
+DescriptionCompleted=Félicitations ! Vous avez pompé suffisamment de pétrole depuis le drain de la raffinerie.

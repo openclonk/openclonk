@@ -1,2 +1,4 @@
 DE:Tiefseemine
 US:Deep sea mining
+FR:Mine en haute mer
+

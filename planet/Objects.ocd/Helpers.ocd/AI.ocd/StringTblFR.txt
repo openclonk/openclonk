@@ -1,0 +1,2 @@
+EditorHelp=Ce clonk utilise l'IA ennemie par défaut
+

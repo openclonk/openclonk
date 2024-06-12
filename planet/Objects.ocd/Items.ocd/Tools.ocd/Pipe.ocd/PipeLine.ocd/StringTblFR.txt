@@ -1,0 +1,2 @@
+TxtPipeBroke=Le tuyau s'est cassé
+Name=Ligne de tuyau

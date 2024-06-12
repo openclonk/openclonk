@@ -1,0 +1,2 @@
+Name=Coton
+Description=Une plante fruitière. Les fruits contiennent de la laine qui peut être utilisée pour produire du tissu.

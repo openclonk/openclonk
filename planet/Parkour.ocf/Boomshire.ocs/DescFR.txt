@@ -1,0 +1,8 @@
+ Boomshire
+
+Cette course coopérative pour deux joueurs est différente des autres courses car les joueurs doivent travailler ensemble pour gagner. Aucune des tâches ne peut être résolue seule.
+
+Objectif: Course coopérative
+
+- Warning: Ce scénario nécessite précisément deux joueurs 
+

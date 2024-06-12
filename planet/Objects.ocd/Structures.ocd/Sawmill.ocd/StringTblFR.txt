@@ -1,0 +1,7 @@
+Name=Scierie
+Description=La scierie peut scier efficacement les arbres en rondins de bois, mais a besoin d'énergie pour fonctionner.
+
+AutoProduction=La scierie transforme automatiquement en bois les arbres ou les objets en bois.
+WoodInQueue=Bois en file d'attente
+Production=Production
+

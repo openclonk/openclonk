@@ -1,2 +1,4 @@
 DE:Lebensmittel
 US:Foodstuff
+FR:Produit alimentaire
+

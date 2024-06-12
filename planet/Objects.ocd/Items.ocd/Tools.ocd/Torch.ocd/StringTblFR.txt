@@ -1,0 +1,4 @@
+Name=Torche
+Description=Peut être produit dans l'atelier d'outils. Illumine même les grottes les plus sombres.
+MsgTorchAttach=La torche ne peut être fixée qu'à un mur.
+MsgTorchDetach=Détachez la torche du mur.

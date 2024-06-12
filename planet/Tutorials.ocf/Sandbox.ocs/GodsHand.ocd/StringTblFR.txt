@@ -1,0 +1,2 @@
+Name=Main de Dieu
+Description=Crée les éléments. Ce que vous voulez, ou vous voulez.

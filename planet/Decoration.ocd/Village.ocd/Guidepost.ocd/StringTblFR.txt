@@ -1,0 +1,7 @@
+Name=Poteau indicateur
+Description=Peut indiquer le bon chemin.
+MsgRead=Lire
+Inscription=Inscription
+InscriptionHelp=Textes qui peuvent être lus en interagissant avec le poteau indicateur.
+
+

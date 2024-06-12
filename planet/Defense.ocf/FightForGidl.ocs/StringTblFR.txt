@@ -1,0 +1,41 @@
+MsgWave=Vague %d
+MsgWaveCleared=Vague %d terminée!
+MsgOutOfRelaunchs=%s n'a plus de relance.
+MsgRelaunch=Relance %s.
+
+EnemyNewbie=Nouveau né
+EnemyAmazon=Amazone
+EnemyBow=Archer
+EnemySuicide=Bombardier
+EnemySwordman=Escrimeur
+EnemySwordman2=Super-Sabreur
+EnemyFlintstone=Silexeux
+EnemyOgre=Ogre
+EnemyArtillery=Artilleur
+EnemyRunner=Fou-Dingue
+
+WaveNewbies=Echauffons-nous...
+WaveBows=Archers en vue!
+
+TeamAttackers=Attaquants
+TeamDefenders=Défenseurs
+
+HomebaseWeapons=Armes
+HomebaseItems=Objets
+HomebaseTechnology=Technologie
+HomebaseUpgrades=Améliorations
+HomebaseArtifacts=Artefacts
+
+HomebaseDescBow=Arme classique de portée moyenne, flèches infinies.
+HomebaseDescBlunderbuss=Arme à feu moderne. Munitions infinies.
+HomebaseDescGrenadeLauncher=Lance des bombes sur l'ennemi. Bombes infinies.
+HomebaseDescHammer=Pour construire des tours défensives et autres constructions.
+
+HomebaseLoadSpeed=Vitesse de chargement
+HomebaseDescLoadSpeed=Diminue le temps de rechargement des armes à courtes distances.
+HomebaseLife=Energie vitale
+HomebaseDescLife=Rend votre clonk plus résistant aux blessures.
+HomebaseAdvancedWeapons=Armes avancées
+HomebaseDescAdvancedWeapons=Débloque plus armes et améliorations.
+HomebaseMasterWeapons=Armes de Maitres
+HomebaseDescMasterWeapons=Débloque davantage d'armes et d'améliorations.

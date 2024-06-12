@@ -1,0 +1,2 @@
+Name=Parchemin de téléportation
+Description=Téléportez-vous dans un endroit sûr si vous tombez.
