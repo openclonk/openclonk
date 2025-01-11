@@ -9,14 +9,6 @@ NoInitialize=true
 [Game]
 Mode=Melee
 
-[Player1]
-
-[Player2]
-
-[Player3]
-
-[Player4]
-
 [Landscape]
 BottomOpen=1
 MapWidth=64,0,64,10000

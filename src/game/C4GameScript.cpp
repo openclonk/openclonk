@@ -1220,47 +1220,6 @@ static bool FnDoBaseProduction(C4PropList * _this, long player_nr, C4ID id, long
 	return ::Players.Get(player_nr)->BaseProduction.SetIDCount(id, last_count + change, true);
 }
 
-static bool FnSetPlrKnowledge(C4PropList * _this, Nillable<long> player_nr, C4ID id, bool remove)
-{
-	bool success = false;
-	// player_nr == nil: Call for all players
-	if (player_nr.IsNil())
-	{
-		for (C4Player *player = ::Players.First; player; player = player->Next)
-		{
-			if (player->SetKnowledge(id, remove))
-			{
-				success = true;
-			}
-		}
-	}
-	else
-	{
-		// Otherwise call for requested player
-		C4Player *player = ::Players.Get(player_nr);
-		if (player)
-		{
-			success = player->SetKnowledge(id, remove);
-		}
-	}
-	return success;
-}
-
-static C4Value FnGetPlrKnowledge(C4PropList * _this, int player_nr, C4ID id, int index, int category)
-{
-	if (!ValidPlr(player_nr))
-	{
-		return C4VBool(false);
-	}
-	// Search by id, check if available, return bool
-	if (id)
-	{
-		return C4VBool(::Players.Get(player_nr)->Knowledge.GetIDCount(id, 1) != 0);
-	}
-	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(player_nr)->Knowledge.GetID( ::Definitions, category, index )));
-}
-
 static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 {
 	return ::Definitions.GetDef(iIndex);
@@ -3166,7 +3125,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(MusicLevel);
 	F(SetPlayList);
 	F(SetPlrView);
-	F(SetPlrKnowledge);
 	F(GetPlrViewMode);
 	F(ResetCursorView);
 	F(GetPlrView);
@@ -3313,7 +3271,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(EditCursor);
 	F(GainScenarioAchievement);
 	F(GetPXSCount);
-	F(GetPlrKnowledge);
 	F(GetBaseMaterial);
 	F(GetBaseProduction);
 	F(GetDefCoreVal);

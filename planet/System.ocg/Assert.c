@@ -78,3 +78,27 @@ global func AssertNotNil(value, string value_name)
 		FatalError(Format("%s must not be 'nil'!", value_name ?? "The parameter"));
 	}
 }
+
+
+/*
+ Throws a fatal error if the supplied value is not of one of the types.
+
+ @par name [optional] A name for the value
+ @par value the value that is checked
+ @par types single C4V_* type or array thereof
+ */
+global func AssertTypeOneOf(any types, any value, string name)
+{
+	// Convert to an array, support single parameter for convenience
+	types = types ?? [];
+	if (GetType(types) != C4V_Array)
+	{
+		types = [types];
+	}
+
+	var type = GetType(value);
+	if (!IsValueInArray(types, type))
+	{
+		FatalError(Format("Type not supported! %s must be one of [%v], but was %v: %v", name ?? "Value", types, type, value));
+	}
+}
