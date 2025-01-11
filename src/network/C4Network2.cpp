@@ -2183,9 +2183,6 @@ bool C4Network2::LeagueStart(bool *pCancel)
 			if (pDlg) delete pDlg;
 			return false;
 		}
-		// Check if league server has responded
-		if (!pLeagueClient->Execute(100))
-			break;
 	}
 	// Close dialog
 	if (pDlg)
@@ -2380,7 +2377,7 @@ bool C4Network2::LeagueEnd(const char *szRecordName, const BYTE *pRecordSHA)
 		while (pLeagueClient->isBusy())
 		{
 			// Check if league server has responded
-			if (!pLeagueClient->Execute(100))
+			if (!Application.ScheduleProcs(100))
 				break;
 		}
 		// Error?
@@ -2488,9 +2485,6 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 				if (pDlg) delete pDlg;
 				return false;
 			}
-			// Check if league server has responded
-			if (!pLeagueClient->Execute(0))
-				break;
 		}
 		// Close dialog
 		if (pDlg)
@@ -2573,7 +2567,7 @@ bool C4Network2::LeaguePlrAuthCheck(C4PlayerInfo *pInfo)
 
 	// Wait for response
 	while (pLeagueClient->isBusy())
-		if (!pLeagueClient->Execute(100))
+		if (!Application.ScheduleProcs(100))
 			break;
 
 	// Check response validity
@@ -2631,7 +2625,7 @@ void C4Network2::LeagueWaitNotBusy()
 	// wait for it
 	Log(LoadResStr("IDS_LEAGUE_WAITINGFORLASTLEAGUESERVE"));
 	while (pLeagueClient->isBusy())
-		if (!pLeagueClient->Execute(100))
+		if (!Application.ScheduleProcs(100))
 			break;
 	// if last request was an update request, process it
 	if (pLeagueClient->getCurrentAction() == C4LA_Update)

@@ -3925,11 +3925,6 @@ bool C4Game::InitNetworkFromAddress(const char *address)
 			delete dialog;
 			return false;
 		}
-		// Check if reference is received
-		if (!RefClient.Execute(0))
-		{
-			break;
-		}
 	}
 	// Close dialog
 	delete dialog;
