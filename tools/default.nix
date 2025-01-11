@@ -1,6 +1,6 @@
 { pkgs ? import <nixpkgs> {} , withEditor ? false }:
 
-pkgs.stdenv.mkDerivation rec {
+pkgs.stdenv.mkDerivation {
   name = "openclonk";
 
   gitRef = pkgs.lib.commitIdFromGitRepo ../.git;
@@ -12,18 +12,28 @@ pkgs.stdenv.mkDerivation rec {
     "build"
   ]) ./..;
 
-  enableParallelBuilding = true;
+  enableParallelInstalling = false;
 
-  hardeningDisable = [ "format" ];
-
-  nativeBuildInputs = with pkgs; [ cmake pkgconfig ];
+  nativeBuildInputs = with pkgs; [ cmake pkg-config ];
 
   dontStrip = true;
 
   buildInputs = with pkgs; [
-    SDL2 libvorbis libogg libjpeg libpng freetype epoxy tinyxml
-    openal freealut readline curl
-  ] ++ stdenv.lib.optional withEditor qt5.full;
+    SDL2
+    libvorbis
+    libogg
+    libjpeg
+    libpng
+    freetype
+    glew
+    tinyxml
+    openal
+    freealut
+    libepoxy
+    curl
+    readline
+    miniupnpc
+  ] ++ pkgs.lib.optional withEditor qt5.full;
 
   cmakeFlags = [ "-DCMAKE_AR=${pkgs.gcc-unwrapped}/bin/gcc-ar" "-DCMAKE_RANLIB=${pkgs.gcc-unwrapped}/bin/gcc-ranlib" ];
 
@@ -35,30 +45,17 @@ pkgs.stdenv.mkDerivation rec {
     EOF
   '';
 
-  # Temporary measure until 28154f45a6 is in a release of nixpkgs
-  # Once this is the case, replace this with cmakeBuildType = "RelWithDebInfo"
-  configurePhase = ''
-    runHook preConfigure
-    fixCmakeFiles .
-    mkdir build
-    cd build
-    cmakeDir=..
-    cmakeFlagsArray+=("-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" "-DCMAKE_SKIP_BUILD_RPATH=ON")
-    cmake ''${cmakeDir:-.} $cmakeFlags "''${cmakeFlagsArray[@]}"
-    runHook postConfigure
-  '';
+  cmakeBuildType = "RelWithDebInfo";
 
   postInstall = ''
-    mkdir -p $out/bin
+    mv -v $out/games/openclonk $out/bin/
   '';
 
-
-  meta = with pkgs.stdenv.lib; {
+  meta = with pkgs.lib; {
     description = "A free multiplayer action game about mining, settling and fast-paced melees";
     homepage = "http://www.openclonk.org/";
     license = with licenses; [
       isc cc-by-30
     ];
-    maintainers = with lib.maintainers; [ lheckemann ];
   };
 }
