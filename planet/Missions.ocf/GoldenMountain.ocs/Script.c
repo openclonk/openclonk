@@ -35,6 +35,15 @@ func InitializePlayer(int plr)
 		crew->SetPosition(500 + Random(100), 200-10);
 		crew->CreateContents(Shovel);
 	}
+	// Base material
+	var materials = [
+		[Clonk,       50, 50],
+		[Bread,       50, 50],
+		[Metal,       50, 50],
+		[DynamiteBox, 50, 50],
+		[Dynamite,    50, 50]
+	];
+	GivePlayerBaseMaterial(plr, materials);
 	return true;
 }
 
