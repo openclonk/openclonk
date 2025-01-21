@@ -40,6 +40,9 @@ func InitializePlayer(int plr)
 {
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
+	
+	SetWealth(plr, 50);
+	
 	// Move clonks to location and give them a shovel.
 	var index = 0, crew;
 	while (crew = GetCrew(plr, index))

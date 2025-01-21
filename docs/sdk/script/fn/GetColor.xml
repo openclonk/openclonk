@@ -7,13 +7,17 @@
     <title>GetColor</title>
     <category>Objects</category>
     <subcat>Display</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax><rtype>int</rtype></syntax>
-    <desc>Gets the RGB color value of the ColorByOwner areas of an object. These are controlled by <funclink>SetOwner</funclink> or <funclink>SetColor</funclink>.</desc>
+    <desc>Gets the RGB color value of the ColorByOwner areas of an object. These are controlled by <funclink>SetOwner</funclink> or <funclink>SetColor</funclink>. The color of the player can be found out by calling this function on the proplist returned by <funclink>GetPlayer</funclink>.</desc>
     <examples>
       <example>
         <code>otherclonk-&gt;<funclink>SetColor</funclink>(GetColor());</code>
         <text>Colors otherclonk like the current object.</text>
+      </example>
+      <example>
+        <code><funclink>Log</funclink>(&quot;&lt;c %x&gt;%s&lt;/c&gt; has a score of %d.&quot;, <funclink>GetPlayer</funclink>(0)->GetColor(), <funclink>GetPlayerName</funclink>(0), <funclink>GetScore</funclink>(0));</code>
+        <text>Returns status information about the first player, highlighting the player's name in the player color.</text>
       </example>
     </examples>
     <related>
@@ -23,4 +27,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2002-05</date>
+  <author>Marky</author><date>2020-05</date>
 </funcs>

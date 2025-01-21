@@ -41,6 +41,7 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	if (GetPlayerType(plr) != C4PT_User) return;
 
 	if (g_lost) { EliminatePlayer(plr); return; } // no post-elimination join
+	SetWealth(plr, 50);
 	if (!g_relaunchs)
 	{
 		g_relaunchs = [];

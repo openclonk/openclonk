@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Surrender</title>
+    <category>Player</category>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+    </syntax>
+    <desc>Makes a player surrender. Returns <code>false</code> if the player was already eliminated.</desc>
+    <related><funclink>EliminatePlayer</funclink></related>
+  </func>
+  <author>Marky</author><date>2020-06</date>
+</funcs>
