@@ -1,28 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component type="desktop">
-  <id>openclonk.desktop</id>
+<component type="desktop-application">
+  <id>org.openclonk.OpenClonk</id>
+  <provides>
+    <id>openclonk.desktop</id>
+  </provides>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>ISC and CC-BY-3.0</project_license>
   <name>OpenClonk</name>
   <summary>Multiplayer action game where you control small and nimble humanoids</summary>
   <description>
     <p>
-      OpenClonk is a free multiplayer action game in which you control clonks, small but witty and nimble humanoid beings. The game is mainly about mining, settling and fast-paced melees.
+      OpenClonk is a free multiplayer action game in which you control clonks, small but witty and nimble humanoid beings. 
+      The game is mainly about mining, settling and fast-paced melees.
     </p>
   </description>
   <screenshots>
-    <screenshot>
-      <image>http://wiki.openclonk.org/images/a/a1/Boompack.png</image>
+    <screenshot type="default">
+      <image>https://wiki.openclonk.org/images/a/a1/Boompack.png</image>
       <caption>Combat in Thunderous Skies</caption>
     </screenshot>
     <screenshot>
-      <image>http://wiki.openclonk.org/images/2/2a/Gemgrabber.png</image>
+      <image>https://wiki.openclonk.org/images/2/2a/Gemgrabber.png</image>
       <caption>A base in Gemgrabbers</caption>
     </screenshot>
     <screenshot>
-      <image>http://wiki.openclonk.org/images/b/bf/OC-Spiral.png</image>
+      <image>https://wiki.openclonk.org/images/b/bf/OC-Spiral.png</image>
       <caption>An underground base settling</caption>
     </screenshot>
   </screenshots>
-  <url type="homepage">http://www.openclonk.org/</url>
+  <url type="homepage">https://www.openclonk.org</url>
+  <url type="bugtracker">https://github.com/openclonk/openclonk/issues</url>
+  <url type="vcs-browser">https://github.com/openclonk/openclonk</url>
+  <launchable type="desktop-id">org.openclonk.OpenClonk.desktop</launchable>
+  <developer id="org.openclonk">
+    <name>OpenClonk contributors</name>
+  </developer>
+  <content_rating type="oars-1.1">
+    <content_attribute id="violence-cartoon">moderate</content_attribute>
+    <content_attribute id="violence-fantasy">moderate</content_attribute>
+    <content_attribute id="language-humor">mild</content_attribute>
+    <content_attribute id="social-chat">intense</content_attribute>
+    <content_attribute id="social-info">mild</content_attribute>
+  </content_rating>  
+  <releases>
+    <release version="8.1" date="2018-03-16" />
+    <release version="8.0" date="2018-02-04" />
+    <release version="7.0" date="2016-01-15" />
+    <release version="6.1" date="2015-06-06" />
+    <release version="6.0" date="2015-03-12" />
+    <release version="5.5.1" date="2014-10-05" />
+    <release version="5.5.0" date="2014-10-04" />
+    <release version="5.4.1" date="2014-02-16" />
+    <release version="5.4.0" date="2014-01-26" />
+    <release version="5.3.3" date="2013-03-09" />
+    <release version="5.3.2" date="2012-11-17" />
+    <release version="5.3.1" date="2012-10-15" />
+    <release version="5.3.0" date="2012-10-14" />
+    <release version="5.2.2" date="2012-02-10" />
+    <release version="5.2.1" date="2011-10-10" />
+    <release version="5.2.0" date="2011-09-30" />
+    <release version="5.1.2" date="2011-02-11" />
+    <release version="5.1.1" date="2010-12-25" />
+    <release version="5.1.0" date="2010-12-03" />
+  </releases>  
 </component>
