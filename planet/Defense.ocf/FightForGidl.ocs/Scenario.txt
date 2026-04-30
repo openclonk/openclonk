@@ -14,17 +14,6 @@ Definition3=Decoration.ocd\Misc.ocd\AltMaterials.ocd
 Goals=Goal_ProtectTheStatue=1
 Rules=Rule_ObjectFade=1
 
-[Player1]
-Wealth=50,0,0,250
-
-[Player2]
-Wealth=50,0,0,250
-
-[Player3]
-Wealth=50,0,0,250
-
-[Player4]
-Wealth=50,0,0,250
 
 [Landscape]
 Sky=Clouds1

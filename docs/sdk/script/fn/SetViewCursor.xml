@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetViewCursor</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object to be focussed. The value <code>nil</code> resets to the default behaviour: The view focuses on <funclink>GetCursor</funclink>.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Centers a player's view to the specified object. The view will follow this object, even if player commands are issued.</desc>
+    <related>
+      <funclink>GetViewCursor</funclink>
+      <funclink>SetPlrView</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2020-06</date>
+</funcs>

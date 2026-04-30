@@ -9,19 +9,15 @@ NoInitialize=true
 Rules=RSTR=1
 
 [Player1]
-Wealth=50,0,0,250
 Knowledge=WoodenCabin=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;CableCrossing=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;DynamiteBox=1
 
 [Player2]
-Wealth=50,0,0,250
 Knowledge=WoodenCabin=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;CableCrossing=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;DynamiteBox=1
 
 [Player3]
-Wealth=50,0,0,250
 Knowledge=WoodenCabin=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;CableCrossing=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;DynamiteBox=1
 
 [Player4]
-Wealth=50,0,0,250
 Knowledge=WoodenCabin=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;CableCrossing=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;DynamiteBox=1
 
 [Landscape]

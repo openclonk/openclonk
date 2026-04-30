@@ -6,7 +6,7 @@
   <func>
     <title>GetPlrExtraData</title>
     <category>Player</category>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -24,10 +24,12 @@
     </syntax>
     <desc>This commands retrieves extra data stored in the player file by <funclink>SetPlrExtraData</funclink>.</desc>
     <remark>For details see <funclink>SetPlrExtraData</funclink>.</remark>
+    <remark>This function was deprecated in 9.0 OC, replace it by calling <code><funclink>GetPlayer</funclink>()-gt;GetExtraData(data_name);</code>.</remark>
     <related>
       <funclink>SetPlrExtraData</funclink>
       <funclink>GetCrewExtraData</funclink>
     </related>
   </func>
   <author>PeterW</author><date>2002-01</date>
+  <author>Marky</author><date>2020-08</date>
 </funcs>

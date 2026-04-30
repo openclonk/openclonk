@@ -7,21 +7,14 @@
     <title>GetCrewCount</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>int</rtype>
-      <params>
-        <param>
-          <type>int</type>
-          <name>player</name>
-          <desc>Player number of the player whose crew members you want to count.</desc>
-        </param>
-      </params>
     </syntax>
     <desc>Returns the number of crew members of a player.</desc>
     <examples>
       <example>
-        <code><funclink>while</funclink> (<funclink>GetCrewCount</funclink>(0) &gt; 3) <funclink>Kill</funclink>(<funclink>GetHiRank</funclink>(0));</code>
+        <code><funclink>while</funclink> (player-&gt;<funclink>GetCrewCount</funclink>() &gt; 3) player-&gt;<funclink>GetHiRank</funclink>()-&gt;<funclink>Kill</funclink>();</code>
         <text>Keeps killing the highest ranking clonk of the first player until the player has only three clonks left.</text>
       </example>
     </examples>
@@ -29,8 +22,9 @@
       <funclink>GetCrew</funclink>
       <funclink>GetHiRank</funclink>
       <funclink>GetCursor</funclink>
-      <funclink>GetCaptain</funclink>
+      <funclink>GetCrewMembers</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2002-05</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

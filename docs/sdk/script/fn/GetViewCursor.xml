@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetViewCursor</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>9.0 OC</version>
+    <syntax>
+      <rtype>object</rtype>
+    </syntax>
+    <desc>Gets the object that the player view follows in the cursor view mode, see <funclink>GetPlrViewMode</funclink>. By default, this is the currently controlled crew member, see <funclink>GetCursor</funclink></desc>
+    <related>
+      <funclink>SetViewCursor</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2020-06</date>
+</funcs>

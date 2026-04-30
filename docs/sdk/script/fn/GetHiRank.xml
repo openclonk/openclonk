@@ -7,24 +7,19 @@
     <title>GetHiRank</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>object</rtype>
-      <params>
-        <param>
-          <type>int</type>
-          <name>player</name>
-          <desc>Player</desc>
-        </param>
-      </params>
     </syntax>
-    <desc>Returns the highest ranking active clonk of a player.</desc>
+    <desc>Returns the highest ranking active crew of a player.</desc>
+    <remark>Prior to 9.0 OC this function was available from global context with an additional parameter <code>int player</code>.</remark>
     <examples>
       <example>
-        <code><funclink>Kill</funclink>(GetHiRank(2));</code>
-        <text>Kills the highest ranking clonk of the third player.</text>
+        <code><funclink>GetPlayer</funclink>(2)->GetHiRank()-><funclink>Kill</funclink>();</code>
+        <text>Kills the highest ranking crew of the third player.</text>
       </example>
     </examples>
   </func>
   <author>jwk</author><date>2002-04</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

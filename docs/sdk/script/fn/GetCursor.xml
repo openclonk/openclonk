@@ -7,25 +7,21 @@
     <title>GetCursor</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>1.0 OC</version>
+    <version>1.0 OC<extversion>9.0 OC</extversion></version>
     <syntax>
       <rtype>object</rtype>
-      <params>
-        <param>
-          <type>int</type>
-          <name>player</name>
-          <desc>Player number of the player whose controlled clonk you want to determine.</desc>
-        </param>
-      </params>
     </syntax>
-    <desc>Returns the currently controlled Clonk of a player.</desc>
+    <desc>Returns the currently controlled crew member of a player.</desc>
+    <remark>Prior to 9.0 OC this function was available from global context with an additional first parameter <code>int player</code>.</remark>
     <examples>
       <example>
-        <code><funclink>if</funclink> (!GetCursor(0)) <funclink>SetCursor</funclink>(<funclink>GetHiRank</funclink>(0));</code>
+        <code>
+        var player = <funclink>GetPlayer</funclink>(0);
+        <funclink>if</funclink> (!player-&gt;GetCursor()) player-&gt;<funclink>SetCursor</funclink>(player-&gt;<funclink>GetHiRank</funclink>());</code>
         <text>Selects the player's highest ranking clonk if currently no other clonk is selected.</text>
       </example>
       <example>
-        <code>GetCursor(0)-&gt;<funclink>Message</funclink>(&quot;Hooray!&quot;);</code>
+        <code><funclink>GetPlayer</funclink>()-&gt;GetCursor()-&gt;<funclink>Message</funclink>(&quot;Hooray!&quot;);</code>
         <text>Displays a message above the currently selected clonk of the first player.</text>
       </example>
     </examples>
@@ -35,4 +31,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2003-02</date>
+  <author>Marky</author><date>2020-06</date>
 </funcs>

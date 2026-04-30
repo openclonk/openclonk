@@ -314,6 +314,16 @@ C4StringTable::C4StringTable()
 	P[P_Translatable] = "Translatable";
 	P[P_Function] = "Function";
 	P[P_Translate] = "Translate";
+	P[P_CrewSkin] = "CrewSkin";
+	P[P_ExtraID] = "ExtraID";
+	P[P_InitialScore] = "InitialScore";
+	P[P_Score] = "Score";
+	P[P_ZoomLimit_MaxWidth] = "ZoomLimit_MaxWidth";
+	P[P_ZoomLimit_MaxHeight] = "ZoomLimit_MaxHeight";
+	P[P_ZoomLimit_MaxValue] = "ZoomLimit_MaxValue";
+	P[P_ZoomLimit_MinWidth] = "ZoomLimit_MinWidth";
+	P[P_ZoomLimit_MinHeight] = "ZoomLimit_MinHeight";
+	P[P_ZoomLimit_MinValue] = "ZoomLimit_MinValue";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

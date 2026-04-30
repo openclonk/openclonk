@@ -141,7 +141,6 @@ const int32_t C4S_MaxMapPlayerExtend = 4;
 class C4SPlrStart
 {
 public:
-	C4SVal Wealth;
 	int32_t Position[2];
 	int32_t EnforcePosition;
 	C4IDList ReadyCrew;
