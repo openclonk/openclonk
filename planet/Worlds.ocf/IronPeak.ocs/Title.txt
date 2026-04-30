@@ -1,2 +1,4 @@
 DE:Eisenberg
 US:Iron Peak
+FR:Pic de fer
+

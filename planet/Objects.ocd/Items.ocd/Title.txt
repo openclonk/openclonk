@@ -1,2 +1,4 @@
-DE:Gegenstände
+DE:GegenstÃ¤nde
 US:Items
+FR:Objets
+

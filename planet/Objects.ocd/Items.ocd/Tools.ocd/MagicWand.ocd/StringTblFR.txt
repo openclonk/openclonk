@@ -1,0 +1,7 @@
+Name=Baguette magique
+Description=Contient des pouvoirs cachés.
+NoUseCooldown=Le temps de recharge n'est pas encore écoulé.
+MagicAction=Action magique
+Cooldown=Temps de recharge
+CooldownHelp=Temps minimal en frames entre deux actions de lancer de sorts.
+

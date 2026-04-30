@@ -1,0 +1,9 @@
+ Ciels orageux
+
+Revendiquez la domination de cette île qui flotte haut dans le ciel.
+
+Objectif: Roi de la colline (Les points sont attribués lorsque le roi tue quelqu'un ou lorsque quelqu'un tue le roi.)
+
+- Solidifiez votre contrôle en gagnant 5 points.
+- Le roi sera soigné de 30% des dégâts qu'il inflige.
+

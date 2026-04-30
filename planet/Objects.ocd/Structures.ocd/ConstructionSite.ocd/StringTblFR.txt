@@ -1,0 +1,8 @@
+TxtTransfer=Transférer des matériaux
+TxtAbort=Abandonner la construction
+TxtNoAbortDesc=Le chantier ne peut pas être démoli.
+TxtAbortDesc=Détruit le chantier. Les matériaux déjà fournis seront retournés.
+TxtConstruction=Chantier de construction: %s
+TxtNoConstructionHere=Le terrain à bâtir n'est plus adapté à la construction!
+TxtMissingMaterial=Matériau manquant
+

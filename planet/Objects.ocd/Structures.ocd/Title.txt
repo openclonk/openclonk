@@ -1,2 +1,4 @@
-DE:Gebäude
+DE:GebÃ¤ude
 US:Structures
+FR:Structures
+

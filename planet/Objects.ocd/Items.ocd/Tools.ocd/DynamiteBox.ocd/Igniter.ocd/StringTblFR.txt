@@ -1,0 +1,2 @@
+Name=Allumeur
+Description=Mettez-vous à l'abri et maintenez [Use] enfoncé pour allumer la dynamite placée.

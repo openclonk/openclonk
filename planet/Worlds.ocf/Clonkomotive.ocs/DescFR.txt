@@ -1,0 +1,6 @@
+Clonkomotive
+
+Une voie de train autrefois florissante à travers Clonkomotive Canyon a été perturbée par de fortes chutes de pierres. La chute de pierre a détruit les ponts nécessaires pour relier les falaises entre les canyons, déconnectant ainsi deux villages sur la route. Vous vous retrouvez avec la locomotive dans l'un des villages et vous devez maintenant reconstruire l'itinéraire vers l'autre village. Heureusement, la nature s'est installée et les chutes de pierres sont devenues moins graves.
+
+Objectif: Transportez la locomotive jusqu'au village tout à droite.
+

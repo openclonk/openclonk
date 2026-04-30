@@ -1,0 +1,6 @@
+Name=Transport de locomotive
+
+# Goal window
+MsgGoalFulfilled=Terminé! Vous avez amené la locomotive en toute sécurité à travers la contrée !
+MsgGoalUnfulfilled=Apportez la locomotive en toute sécurité à la gare de l'autre côté de la carte! Construisez des ponts en bois pour traverser des canyons profonds. Le train a besoin de beaucoup de charbon et d'eau comme carburant.
+

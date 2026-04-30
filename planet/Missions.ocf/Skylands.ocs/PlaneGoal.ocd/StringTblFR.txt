@@ -1,0 +1,8 @@
+Name=Construire l'avion
+MsgGoalFulfilled=Vous avez assemblé l'avion !
+MsgGoalUnFulfilled=Récupérez toutes les pièces de l'avion et apportez-les sur le chantier.
+MsgGoalSkids=Au début, vous devez obtenir les patins.
+MsgGoalChassis=Fixez ensuite le châssis.
+MsgGoalWings=Obtenez les ailes maintenant.
+MsgGoalEngine=À ce stade, construisez un nouveau moteur.
+MsgGoalPropeller=Il ne manque que l'hélice.

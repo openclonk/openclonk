@@ -1,0 +1,6 @@
+Name=Expansion
+
+#Goal window
+MsgGoalFulfilled=Vous avez atteint vos objectifs d'expansion.
+MsgGoalUnFulfilled=Étendez le contrôle sur votre région en construisant des drapeaux. Actuellement, vous ne contrôlez que %d%% de la région demandée.
+

@@ -1,2 +1,4 @@
 DE:Bedeckt
 US:Overcast
+FR:Couvert
+

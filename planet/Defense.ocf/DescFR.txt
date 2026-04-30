@@ -1,0 +1,4 @@
+ Défense
+
+Dans les scénarios de défense, un ou plusieurs joueurs doivent se défendre en coopération contre des vagues progressives d'attaqueurs. Les ennemis donnet des primes, et les armes et utilitaires peuvent être améliorés.
+

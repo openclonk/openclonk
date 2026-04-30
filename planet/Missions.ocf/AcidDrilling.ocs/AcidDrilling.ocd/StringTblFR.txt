@@ -1,0 +1,6 @@
+Name=Perforation à l'acide
+
+#Goal window
+MsgGoalFulfilled=Bravo! Le bassin est rempli d'acide.
+MsgGoalUnfulfilled=Remplir le bassin d'acide!
+

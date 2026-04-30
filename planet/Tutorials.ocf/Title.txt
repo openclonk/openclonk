@@ -1,2 +1,4 @@
 DE:Lernrunden
 US:Tutorials
+FR:Didacticiels
+

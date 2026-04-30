@@ -1,0 +1,5 @@
+Infinite=Infini
+Count=Montant
+DefaultStack=%d (Par défaut)
+CustomStack=Valeur...
+

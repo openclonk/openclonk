@@ -1,0 +1,3 @@
+Name=Améthyste
+Description=Clunker précieux
+

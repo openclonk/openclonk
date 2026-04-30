@@ -1,0 +1,2 @@
+Name=Eau
+Description=Représente un seul pixel d'eau.

@@ -1,0 +1,2 @@
+More=Plus
+Cycle=Cycle

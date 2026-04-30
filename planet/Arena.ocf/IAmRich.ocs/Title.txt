@@ -1,2 +1,4 @@
 DE:Ich bin reich!
 US:I am rich!
+FR:Je suis riche !
+

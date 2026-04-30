@@ -1,0 +1,2 @@
+Name=Statue
+Description=Mémorial en l'honneur de Clunkus, le célèbre explorateur de grottes.

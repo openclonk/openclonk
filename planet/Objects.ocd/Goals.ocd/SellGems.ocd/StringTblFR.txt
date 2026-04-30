@@ -1,0 +1,5 @@
+Name=Vendre des gemmes
+
+#Goal window
+MsgGoalFulfilled=Vous avez vendu suffisamment de gemmes !
+MsgGoalUnfulfilled=Vous devez vendre %d gemmes en plus. Il existe actuellement %d gemmes disponibles à extraire et %d gemmes à collecter.

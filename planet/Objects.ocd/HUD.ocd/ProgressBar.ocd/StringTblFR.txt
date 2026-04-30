@@ -1,0 +1,2 @@
+Name=GUI_ProgressBar
+Description=Fournit l'interface utilisée par différentes barres de progression.

@@ -1,0 +1,2 @@
+Name=Baie germinative
+Description=Douce. Germe très rapidement et difficile à stocker. Appuyez sur [Utiliser] pour manger la baie.

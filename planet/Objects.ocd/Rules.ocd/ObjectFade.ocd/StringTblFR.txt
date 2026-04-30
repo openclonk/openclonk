@@ -1,0 +1,2 @@
+Name=Faire disparaître les objets
+Description=Lorsque cette règle est activée, les objets tombés disparaissent après un certain temps.

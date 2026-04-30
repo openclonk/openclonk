@@ -1,0 +1,8 @@
+Name=Match à mort
+
+MsgVictory=Vous avez gagné.
+MsgAhead=Vous avez %d éliminations d'avance. Le plus proche de votre score est %s.
+MsgBehind=Vous avez %d éliminations en retard par rapport à %s.
+MsgEqual=%s est a égalité avec vous.
+MsgYouAreBest=Vous menez avec %d éliminations !
+

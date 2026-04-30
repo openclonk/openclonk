@@ -1,0 +1,3 @@
+Name=Du sable
+Description=Ne peut être transporté qu'avec un seau.|Peut être extrait du sol. S'effritera en poudre à l'impact.
+

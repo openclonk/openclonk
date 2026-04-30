@@ -1,0 +1,2 @@
+NameLeft=Équipe Brise-Glace
+NameRight=Équipe Chasse-Neige

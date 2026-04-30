@@ -1,0 +1,12 @@
+CableCarOptions=Option de câble de voiture
+
+TooltipEngage=Mettre la voiture sur les rails
+DescEngage=Met %s sur les rails à %s.
+
+TooltipGo=Choisissez la destination pour la voiture.
+DescGo=Ouvre le menu de choix de la destination pour ce cable de voirture. Lorsque vous choisissez une destination, la voiture commencera à s'y rendre.
+
+TooltipDisengage=Enlever la voiture des rails
+DescDisengage=Enlève %s des rails à %s.
+
+NoStation=Pousser le câble de voiture jusqu'à une station pour l'installer.

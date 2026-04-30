@@ -1,0 +1,2 @@
+Name=Parchemin d'éclair de givre
+Description=Lancez un éclair de glace sur vos ennemis. Blesse seulement les Clonks.

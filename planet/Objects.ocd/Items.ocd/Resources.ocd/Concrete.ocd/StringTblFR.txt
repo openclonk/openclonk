@@ -1,0 +1,2 @@
+Name=Béton
+Description=Représente un seul pixel de matériau de béton. Dès qu'un pixel en béton touche le sol, il se durcit en rocher.

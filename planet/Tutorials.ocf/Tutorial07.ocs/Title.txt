@@ -1,2 +1,4 @@
 DE:Luftbergbau
 US:Airborne Mining
+FR:Exploitation minière aéroportée
+

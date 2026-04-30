@@ -1,0 +1,9 @@
+ Froide Cave
+
+Vous étiez membre de la plus prestigieuse expédition en territoire montagneux jamais organisée. Tout à coup, l'expédition s'est transformée en horreur lorsqu'un tremblement de terre a brisé le pont de neige sur lequel vous marchiez. Vous êtes maintenant pris au piège à l'intérieur de la caverne profonde ci-dessous. Vous devez abandonner vos objectifs scientifiques; la survie est la seule chose qui compte. Soyez le premier à remonter à la surface.
+
+Objectif: Source
+
+- Les coffres contiennent des objets utiles.
+- En mode coopératif, un seul membre de l'équipe doit passer chaque point de contrôle.
+

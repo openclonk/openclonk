@@ -1,0 +1,5 @@
+TxtNoconstructionplansa=Aucun plan de construction disponible
+TxtConstructions=Construction: %s
+TxtCantConstruct=%s ne peut pas construire.
+Name=Marteau
+Description=Outil de base pour la construction de nouveaux bâtiments. Appuyez sur [Utiliser] pour construire un bâtiment.

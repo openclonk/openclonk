@@ -1,2 +1,4 @@
 DE:Goldener Berg
 US:Golden Mountain
+FR:Montagne dorée
+

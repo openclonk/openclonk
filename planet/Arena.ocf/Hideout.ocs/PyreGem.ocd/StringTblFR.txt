@@ -1,0 +1,2 @@
+Name=Gemme Pyre
+Description=Crée une explosion en expansion lente à l'impact.

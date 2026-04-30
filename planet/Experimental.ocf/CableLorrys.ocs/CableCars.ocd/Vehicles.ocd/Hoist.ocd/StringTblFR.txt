@@ -1,0 +1,7 @@
+Name=Palan
+Description=A utiliser sur des câbles. Transporte des véhicules.
+
+TooltipPickup=Attacher ce véhicule au palan.
+TooltipDrop=Détacher ce véhicule du palan.
+DescPickup=Attache %s au palan.
+DescDrop=Détache %s du palan.

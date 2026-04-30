@@ -1,0 +1,28 @@
+Name=Clavier
+Description=Entrez le code correct pour déclencher un événement.
+
+MsgEnterCode=Entrez le code:
+MsgEnterNewCode=Nouveau code:
+MsgConfirmCode=Confirmer le code:
+MsgNoCode=<c ffff00>Le clavier n'a pas de code!</c>
+MsgCorrectCode=<c 00ff00>Code correct!</c>
+MsgWrongCode=<c ff0000>Code erroné!</c>
+MsgCodeReset=<c 00ff00>Le code a été remis à zéro!</c>
+MsgCodeConfirmed=<c 00ff00>Code confirmé, effacez maintenant.</c>
+
+TooltipDigit=Entrez des chiffres.
+TooltipCheck=Vérifier le code entré.
+TooltipClose=Fermer le clavier.
+TooltipClearLast=Effacer le dernier chiffre.
+TooltipClearCode=Effacer le code entré.
+TooltipResetCode=Remettre à zéro le clavier.
+
+KeypadCode=Code
+OnCorrectCodeAction=Action 'code correct'
+OnWrongCodeAction=Action 'code erroné'
+HelpKeypadCode=Entrez le code du clavier que le joueur doit taper (doit être composé de chiffres uniquement).
+HelpKeypadTarget=Porte cible qui sera ouverte lorsque le code correct aura été entré.
+HelpOnCorrectCodeAction=Action exécutée lorsque le code correct sera entré.
+HelpOnWrongCodeAction=Action exécutée lorsque le code erronésera entré.
+WarningKeypadCodeNonDigit=ATTENTION: Le code (%s) contient des caractères non numériques, le code ne sera pas enregistré.
+WarningKeypadCodeLong=ATTENTION: Le code est trop long, %s sera seulement enregistré.

@@ -1,0 +1,3 @@
+Name=Petit Piranha
+Description=En raison de sa petite taille, ce piranha chasse en essaims.
+

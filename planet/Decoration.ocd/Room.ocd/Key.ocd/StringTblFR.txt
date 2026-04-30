@@ -1,0 +1,2 @@
+Name=Clef
+Description=Sert à ouvrir quelquechose.

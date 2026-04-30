@@ -1,0 +1,3 @@
+Requirements=Requièrt
+Tier=Tiers
+Cost=Prix

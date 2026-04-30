@@ -1,0 +1,12 @@
+Name=Menu d'interaction d'objet
+Description=Gère l'échange d'inventaire et l'interaction générale entre le joueur et les bâtiments, les véhicules, etc.
+
+Contents=Inventaire
+Contains=Contient
+
+MoveAllTo=Mettre tous les objets dans %s
+NoInteractionsPossible=Il n'y a aucune interaction possible.
+
+Minimize=Minimiser
+Maximize=Maximiser
+

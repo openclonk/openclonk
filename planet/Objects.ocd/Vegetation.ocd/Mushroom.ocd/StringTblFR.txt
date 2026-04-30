@@ -1,0 +1,3 @@
+Name=Champignon
+PickMushroom=Cueillir des champignons
+Description=Restaure quelques points de vie. Faites-le cuire pour le rendre plus nutritif. Appuyez sur [Utiliser] pour manger le champignon.

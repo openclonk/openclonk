@@ -1,0 +1,6 @@
+Name=Source d'énergie
+
+#Goal window
+MsgGoalFulfilled=L'ascenseur fonctionne.
+MsgGoalUnFulfilled=L'ascenseur n'est pas encore alimenté en énergie.
+

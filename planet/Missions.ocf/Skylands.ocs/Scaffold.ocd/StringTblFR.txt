@@ -1,0 +1,13 @@
+Name=Échafaud
+Description=Vous permet de construire de plus grandes structures.
+
+ReinforceScaffold=Renforcer l'échafaudage
+Reinforcement=Renforcement
+Extension=Extension
+Top=Haut
+Bottom=Bas
+Left=Gauche
+Right=Droite
+DescExtend=Vous pouvez renforcer les côtés de l'échafaudage ici pour pouvoir par exemple marcher dessus.De plus, vous pouvez ajouter une zone annexe de marche ou une protection au-dessus.
+TearDown=Abattre le renforcement ou l'extension
+

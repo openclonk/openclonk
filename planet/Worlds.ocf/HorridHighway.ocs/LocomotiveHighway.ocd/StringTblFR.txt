@@ -1,0 +1,6 @@
+Name=Voie ferrée
+
+# Goal window
+MsgGoalFulfilled=Terminé ! Toutes les locomotives sont passées en toute sécurité sur la voie !
+MsgGoalUnfulfilled=Construisez la voie à partir de ponts et protégez-la contre toutes les catastrophes, puis vous pouvez tourner l'interrupteur pour laisser les locomotives passer l'autoroute.
+MsgGoalRunning=Les locomotives sont actuellement en marche, %d sur %d sont passé sur la voie !

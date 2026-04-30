@@ -1,0 +1,2 @@
+Name=Bombe de peinture
+Description=Lache l'artiste qui est en toi!

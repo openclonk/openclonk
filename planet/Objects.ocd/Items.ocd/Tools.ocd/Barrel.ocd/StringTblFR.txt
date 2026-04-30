@@ -1,0 +1,6 @@
+Name=Tonneau de bois
+Description=Conteneur pour le transport de liquides.
+NameWith=avec
+MaterialWater=eau
+MaterialOil=pétrole
+MaterialUnknown=contenu inconnu

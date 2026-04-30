@@ -1,0 +1,3 @@
+NoWall=Trop près du drapeau.
+Name=Kit mur de glace
+Description=Vous pouvez créer des murs de glace avec le kit de mur de glace. Maintenez la touche [Utiliser] enfoncée pour voir un aperçu dans la direction vers laquelle vous pointez. Construisez à cet endroit. Ne peut pas être utilisé à proximité du drapeau.

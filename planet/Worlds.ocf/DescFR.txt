@@ -1,0 +1,6 @@
+Mondes
+
+Ce dossier de scénarios contient des matchs de colonies en mode coopératif avec des paysages aléatoires et polyvalents. Les joueurs travaillent ensemble pour atteindre des objectifs tels que l'exploitation minière, la production de matériaux ou l'expansion du territoire. Les défis sont fournis par les terrains accidentés et les catastrophes comme les volcans, les tremblements de terre et les chutes de pierres.
+
+Chacune des parties peut être jouée avec différents niveaux de difficulté et différentes tailles pour la carte. Il est recommandé de commencer par jouer des parties avec une difficulté normale et une petite carte. Une fois tous les objectifs terminés, les joueurs peuvent continuer la partie et construire ce qu'ils veulent, dans ce cas là les cartes plus grandes sont particulièrement adaptées.
+

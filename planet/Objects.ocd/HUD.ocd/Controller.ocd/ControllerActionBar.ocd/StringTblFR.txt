@@ -1,0 +1,7 @@
+TxtSlot=Sélectionner l'emplacement %d
+TxtSelect=Sélectionner %s
+TxtGrab=Saisir %s
+TxtUnGrab=Relâcher %s
+TxtEnter=Entrer dans %s
+TxtExit=Sortir de %s
+TxtPushOut=Pousser %s

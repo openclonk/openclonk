@@ -1,0 +1,12 @@
+# Cannon messages
+TxtNeedsAmmo=Le canon n'a pas de munitions.
+
+# Intro sequence messages
+MsgDroppedCannon=%s, pourquoi avez-vous lâché ce canon doré?
+MsgSorryEarthquake=Désolé, ce tremblement de terre soudain était trop puissant...
+MsgBackToWork=Eh bien, nous allons simplement le reprendre. Reprenez au travail !
+
+# Failure sequence messages
+MsgWhoDroppedCannon=Qui a lâché ce canon dans l'abîme ?
+MsgItWasMe=C'était moi...
+MsgShame=Honte à vous! Cet effort est maintenant devenu complètement inutile.

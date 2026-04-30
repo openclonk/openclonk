@@ -1,0 +1,2 @@
+Name=Batterie brûlante
+Description=Une partie d'un compensateur !

@@ -1,0 +1,12 @@
+  Mine en haute mer
+
+Vous êtes coincé sur une île solitaire au milieu du vaste océan. Votre seul espoir est de construire un appareil de communication à longue portée et d'appeler à l'aide. Mais l'appareil a besoin de matériaux précieux à construire qui ne seront pas faciles à obtenir.
+
+Objectif: Terminer la construction du communicateur en cristal.
+
+Astuces:
+- Le communicateur en cristal a besoin de pierres précieuses pour sa construction. Essayez de les trouver sur des îles de l'océan et sous le fond de l'océan.
+- L'océan est profond. Vous devez créer un espace de respiration en descendant.
+- Les poissons rouges sont mauvais !
+- Si le charbon se fait rare, utilisez du bois pour brûler le métal. Les arbres repousseront.
+

@@ -1,0 +1,17 @@
+Bac à sable
+
+Dans ce tour, vous pouvez expérimenter tous les objets dans le jeu. Faites-vous simplement plaisir!
+
+Les outils suivants peuvent être utilisés:
+
+Générateur de terrain:
+Créer le terrain comme vous le désirez. Vous pouvez choisir quel type d'élement vous voulez sur la carte. Désert, paysage enneigé, monde sous-marin, libre à vous.
+
+Brosse à matériau:
+Ce que les développeurs peuvent faire dans l'éditeur peut être fait par vous en utilisant cet outil. Vous avez la palette complète des matériaux.
+
+Créateur d'objet:
+Peu importe ce qu'il manque, vous pouvez le créer en utilisant cet outil, que ce soit un objet, un bâtiment ou un véhicule.
+
+Marqueur:
+Un outil pour marquer des points d'intérêts. Peut être utilisé pour des points de réapparition ou de téléportation.

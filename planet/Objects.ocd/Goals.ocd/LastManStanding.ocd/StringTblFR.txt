@@ -1,0 +1,6 @@
+Name=Dernier homme debout
+
+MsgRelaunchGained=%s a fait quatre éliminations et a gagné une relance.
+
+MsgGoalFulfilled=Tous les adversaires ont été éliminés.
+MsgGoalUnfulfilled=Toujours %d adversaires dans le jeu.

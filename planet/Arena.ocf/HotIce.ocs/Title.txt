@@ -1,2 +1,4 @@
-DE:Heißes Eis
+DE:HeiÃŸes Eis
 US:Hot ice
+FR:Glace ardente
+

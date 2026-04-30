@@ -1,2 +1,4 @@
 DE:Bibliotheken
 US:Libraries
+FR:Bibliothèques
+

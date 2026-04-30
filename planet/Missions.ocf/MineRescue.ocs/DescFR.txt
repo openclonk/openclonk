@@ -1,0 +1,6 @@
+ Sauvetage minier
+
+La mine des montagnes de Clepal a été abandonnée depuis longtemps. Il s'est avéré être un site trop dangereux avec ses conditions météorologiques glaciales et son terrain difficile. Les opérations minières n'ont repris que récemment, mais il n'a pas fallu longtemps avant que les premiers accidents ne se produisent: un appel d'urgence de trois mineurs de la région a été reçu. Leur alimentation électrique pour leur ascenseur est tombée en panne, et maintenant ils sont piégés dans la mine. Pouvez-vous rétablir l'électricité dans la zone de montagne et sauver les mineurs ?
+
+Goal : alimenter l'électricité de l'ascenseur minier sur la montagne.
+

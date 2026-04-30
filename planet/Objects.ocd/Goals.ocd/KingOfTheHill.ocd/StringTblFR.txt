@@ -1,0 +1,4 @@
+Name=Roi de la Colline
+
+MsgGoalDesc=L'objectif est de %d points.
+IsNowKing=%s est le nouveau Roi !

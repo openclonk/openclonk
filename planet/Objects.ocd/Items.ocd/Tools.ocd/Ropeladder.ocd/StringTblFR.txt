@@ -1,0 +1,2 @@
+Name=Échelle de corde
+Description=Facilite la descente et la montée des falaises. Appuyez sur [Utiliser] sur une falaise pour dérouler.

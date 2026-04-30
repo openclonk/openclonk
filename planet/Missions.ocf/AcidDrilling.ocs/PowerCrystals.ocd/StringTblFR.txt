@@ -1,0 +1,3 @@
+Name=Cristal de puissance
+Description=Marque une zone neutre qui ne peut être utilisée pour transférer de l'énergie.
+

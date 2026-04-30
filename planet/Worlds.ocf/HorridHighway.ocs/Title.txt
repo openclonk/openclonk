@@ -1,2 +1,4 @@
-DE:Scheußliche Straße
+DE:ScheuÃŸliche StraÃŸe
 US:Horrid Highway
+FR:Dangereuse voie ferrée
+

@@ -1,0 +1,8 @@
+Transporter & Construire
+
+Roger vous a mené à  Wipfville, un petit village rempli de wipfs. Il a enfin retrouvé ses amis et il est heureux. Cependant, les villageois de Wipfville le sont moins. Leur village a été attaqué une faction maléfique menaçant de capturer la population wipf. La première attaque  Ils ont pu repousser la première attaque mais cela a causé beaucoup de dommages au village. Vous décidez de rester et d'aider les villageois parce que Roger peut se faire beaucoup d'amis ici.
+
+Goal: Aider les villageois à reconstruire leur village.
+
+Tutorial explains: construire des bâtiments, matériaux de base (métal, bois, roche) et minage.
+

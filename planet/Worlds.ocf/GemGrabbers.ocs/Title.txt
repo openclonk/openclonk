@@ -1,2 +1,4 @@
-DE:Juwelenjäger
+DE:JuwelenjÃ¤ger
 US:Gem Grabbers
+FR:Cueilleurs de Gemmes
+

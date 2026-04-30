@@ -1,2 +1,4 @@
 DE:Frostige Festung
 US:Frozen Fortress
+FR:Forteresse Gelée
+

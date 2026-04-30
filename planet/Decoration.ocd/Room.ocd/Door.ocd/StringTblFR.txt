@@ -1,0 +1,11 @@
+Name=Porte
+Description=Une porte qui peut être franchie.
+MsgDoorLocked=Cette porte est fermée, apportez la bonne clef.
+Key=Clef
+KeyHelp=Un clonk doit posséder cette clef pour ouvrir le porte. Après être entré, la porte est déverouillée et n'importe qui peut entrer sans clef.
+ConnectedDoor=Porte cible
+ConnectedDoorHelp=Si un clonk franchit la porte, il sera tranféré vers cette porte cible.
+EntranceAction=Action à l'entrée
+EntranceActionHelp=Action à effectuer quand un clonk franchit la porte.
+KeyUsed=Clef utilisée
+

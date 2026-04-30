@@ -1,0 +1,8 @@
+Outils miniers
+
+Wipfville a été reconstruite, mais les villageois ont utilisé tous les matériaux de construction. Pour revenir à une vie normale, ils ont besoin de retrouver leurs outils pour miner, cultiver, couper le bois et d'autres activités. Aidez les à produire de nouveaux outils.
+
+Goal: Production de nouveaux outils.
+
+Tutorial explains: production, loam, pioche. (note : je pense que loam devrait être traduit par torchis ou terre-argile)
+

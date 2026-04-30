@@ -1,0 +1,6 @@
+ Kamikaze Cowboys
+
+Les clonks audacieux courent sur des paquets explosifs, une entreprise dangereuse, car ces paquets ne sont guère plus que des feux d'artifice surdimensionnés qui explosent peu de temps après l'allumage. 
+Chaque clonk reçoit un nouveau paquets explosifs dans sa main toutes les quelques secondes, avec lequel il peut se diriger vers le but.
+Objectif: Course
+

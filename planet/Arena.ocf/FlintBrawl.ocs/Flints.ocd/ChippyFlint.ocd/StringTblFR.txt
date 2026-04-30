@@ -1,0 +1,3 @@
+Name=Chippy Flint
+Description=Fait appraitre des chippies.
+

@@ -1,0 +1,5 @@
+NoPlrKnowledge=Aucun plan de construction
+Construction=Construction
+Production=Production
+Name=Chantier naval
+Description=Nécessaire pour la production de dirigeables.

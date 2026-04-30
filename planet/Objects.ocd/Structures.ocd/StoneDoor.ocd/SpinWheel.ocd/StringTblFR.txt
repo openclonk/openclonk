@@ -1,0 +1,7 @@
+Name=Roue de rotation
+Description=Ouvrez et fermez la porte du château connecté avec respectivement [Haut] et [Bas].
+UpAction=Action 'Levé'
+DownAction=Action 'Abaissé'
+ControlUp=Tourner vers le haut
+ControlDown=Tourner vers le bas
+

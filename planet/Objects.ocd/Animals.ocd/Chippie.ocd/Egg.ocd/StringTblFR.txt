@@ -1,0 +1,2 @@
+Name=Oeuf
+Description=De nouveaux Chippies vont en éclore.

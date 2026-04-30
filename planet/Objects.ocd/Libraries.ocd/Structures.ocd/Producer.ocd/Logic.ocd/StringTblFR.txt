@@ -1,0 +1,6 @@
+Production=Production
+Producing=Production en cours
+QueueRemove=En produire un de moins.
+InfiniteProduction=Production infinie
+Click=Clic
+

@@ -1,2 +1,4 @@
 DE:Werkzeuge
 US:Tools
+FR:Outils
+

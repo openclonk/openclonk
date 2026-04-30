@@ -1,2 +1,4 @@
 DE:Reliquien
 US:Relics
+FR:Reliques
+

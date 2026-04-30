@@ -1,2 +1,4 @@
 DE:Parkour
 US:Parkour
+FR:Parkour
+

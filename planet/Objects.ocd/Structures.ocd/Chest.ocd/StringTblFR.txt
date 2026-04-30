@@ -1,0 +1,4 @@
+Name=Coffre
+Description=Emplacement de stockage pour toutes sortes d'articles.
+MsgOpen=Coffre ouvert
+MsgClose=Coffre fermé

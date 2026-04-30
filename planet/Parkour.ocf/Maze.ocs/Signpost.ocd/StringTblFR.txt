@@ -1,0 +1,3 @@
+Name=Poteau indicateur
+MsgRead=Lu
+MsgUnreadable=Illisible.

@@ -1,0 +1,5 @@
+Name=Fonderie
+Description=Dans la fonderie, le minerai peut être fondu en lingots. Le carburant, comme le charbon, est nécessaire pour cela.
+
+MsgConnectedPipe=Tuyau connecté.
+

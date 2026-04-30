@@ -1,0 +1,3 @@
+Name=Compensateur
+Description=Est capable de conserver une petite quantité d'énergie pendant un certain temps.
+

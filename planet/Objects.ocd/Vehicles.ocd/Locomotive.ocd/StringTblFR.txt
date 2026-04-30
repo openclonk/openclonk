@@ -1,0 +1,9 @@
+Name=Locomotive
+Description=Dispositif de transport pour longues distances et charges lourdes.
+
+MsgNoCoal=Pas de charbon disponible !
+MsgNoWater=Pas d'eau disponible !
+MsgNoCoalAndWater=Pas de charbon et d'eau disponibles !
+MsgStuck=La locomotive est bloquée
+
+MsgConnectedPipe=Tuyau connecté.

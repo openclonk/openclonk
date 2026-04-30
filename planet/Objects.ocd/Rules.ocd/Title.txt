@@ -1,2 +1,4 @@
 DE:Spielregeln
 US:Rules
+FR:Règles
+

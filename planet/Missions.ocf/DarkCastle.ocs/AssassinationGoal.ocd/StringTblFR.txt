@@ -1,0 +1,5 @@
+Name=Tuez !
+Name2=Tuez %s !
+MsgGoalFulfilled=%s est mort.
+MsgGoalUnFulfilled=Tuez %s !
+

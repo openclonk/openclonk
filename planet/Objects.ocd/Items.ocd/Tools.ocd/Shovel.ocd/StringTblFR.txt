@@ -1,0 +1,2 @@
+Name=Pelle
+Description=Même un clonk ne peut pas creuser sans une pelle. Maintenez la touche [Utiliser] enfoncée pour creuser la terre.

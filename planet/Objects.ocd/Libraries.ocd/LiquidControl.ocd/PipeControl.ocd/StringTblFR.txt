@@ -1,0 +1,37 @@
+MenuPipeControl=Contrôle des tuyaux
+
+MsgConnectSource=Connecter la source
+MsgConnectDrain=Connecter le drain
+MsgConnectNeutral=Connecter le tuyau
+DescConnectSource=Connecte un tuyau source.
+DescConnectDrain=Connecte un tuyau de vidange.
+DescConnectNeutral=Connecte un tuyau.
+
+MsgCutSource=Couper la source
+MsgCutDrain=Couper le drain
+MsgCutNeutral=Couper le tuyau
+DescCutSource=Supprime le tuyau source.
+DescCutDrain=Enlève le tuyau de vidange.
+DescCutNeutral=Supprime le tuyau connecté.
+
+MsgConnectedTo=(connecté à {{%i}})
+MsgConnectedToMultiple=(connecté à {{%i}} et {{%i}})
+DescConnectedTo=Ce tuyau est actuellement connecté à {{%i}}.
+DescConnectedToMultiple=Ce tuyau est actuellement connecté à {{%i}} et {{%i}}.
+
+MsgSwapSourceDrain=Permuter la source et le drain
+DescSwapSourceDrain=Échange les tuyaux de source et de vidange.
+
+MsgConnectedPipe=Tuyau connecté.
+MsgPipeAlreadyConnected=Ce canal est déjà connecté à %s.
+MsgPipeProhibited=Ce tuyau ne peut pas être connecté à %s.
+MsgHasPipes=%s a déjà toutes les connexions de tuyau possibles: %s.
+MsgAirPipeProhibited=Impossible de connecter le tuyau d'air à %s.
+MsgDrainPipeProhibited=Impossible de connecter le tuyau de vidange à %s.
+MsgNeutralPipeProhibited=Impossible de connecter le tuyau neutre à %s.
+MsgSourcePipeProhibited=Impossible de connecter le canal source à %s.
+MsgPipeAir=tuyau d'air
+MsgPipeDrain=tuyau de vidange
+MsgPipeNeutral=tuyau neutre
+MsgPipeSource=tuyau source
+

@@ -1,0 +1,2 @@
+Name=Bombe fumigène
+Description=Propage de la fumée. Allumez pour commencer à répandre la fumée.

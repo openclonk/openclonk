@@ -1,0 +1,2 @@
+Name=Téléporteur
+Description=Voler est barbant. La téléportation est ce que les personnes dans le vent font de nos jours.

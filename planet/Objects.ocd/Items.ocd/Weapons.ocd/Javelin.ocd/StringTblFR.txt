@@ -1,0 +1,2 @@
+Name=Javelot
+Description=Arme de jet. Peut être récupéré après son lancement. Appuyez sur [Utiliser] pour viser et lancer l'un des javelots.

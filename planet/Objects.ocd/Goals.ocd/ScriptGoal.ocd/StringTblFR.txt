@@ -1,0 +1,12 @@
+Name=Objectif du script
+Description=Description de l'objectif du script: veuillez me changer
+PropDescription=Description
+PropDescriptionHelp=Description affichée lorsque l'utilisateur clique sur l'objectif du jeu.
+Picture=Image
+PictureHelp=Graphiques superposés sur l'image de l'objectif du script.
+SetScriptGoalData=Définir les données d'objectif de script
+SetScriptGoalDataDesc=Définit l'objectif du script, le message, l'image et le statut rempli.
+Goal=Obejctif
+Fulfilled=Rempli
+FulfilledHelp=Détermine si l'objectif est atteint. Une fois tous les objectifs atteints, le jeu est terminé.
+

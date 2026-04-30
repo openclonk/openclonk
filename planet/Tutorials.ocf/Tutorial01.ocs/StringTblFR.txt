@@ -1,0 +1,24 @@
+# Goal description
+MsgGoalName=Attrapez votre Wipf
+MsgGoalDescription=Suivez votre ami à pattes et attrapez le aussi vite que possible.
+
+# Dialogue options
+MsgNextTutorial=&Tutoriel suivant
+MsgNextTutorialDesc=Commencer le tutoriel suivant.
+MsgRepeatRound=&Recommencer cette étape
+MsgRepeatRoundDesc=Recommencer ce scénario.
+
+# Tutorial messages
+MsgTutorialWelcome=Bienvenue sur OpenClonk! Voici votre clonk, il est contrôlé avec la touche %s. Cliquez sur le bouton suivant pour lire la prochaine astuce and cliquez sur mon icône à n'importe quel moment pour voir l'astuce actuelle.
+MsgTutorialHUD=Votre clonk est affiché en haut à gauche de l'écran. En haut à droite vous trouvez le nombre de clunkers que vous possédez (s'ils sont importants pour le scénario) et l'objectif acutel (cliquez sur l'icône pour plus d'information).
+MsgTutorialFollowFriend=Suivez votre animal familier Roger par delà le pont et passez les obstacles devant tandis que le déplacement du clonk est expliqué. Essayez de bouger le clonk tout autour en appuyant sur [%s] ou [%s] pour aller de gauche à droite et sur  [%s] pour sauter.
+MsgTutorialScaleWall=Ici, vous devez grimper le mur pour avancer. Pour grimper, marchez droit devant vers le mur jusqu'à ce que votre clonk le saisisse. Dès que vous l'avez saisi, vous pouvez monter ou descendre le mur en maintenant la touche  [%s] ou [%s] enfoncé.
+MsgTutorialHangle=Les Clonks sont incroyablement polyvalents et agiles ; Dès qu'ils touchent un plafond, ils s'accrochent automatiquement à celui-ci. Sautez au plafond, accrochez vous à l'autre côté et relachez en pressant [%s].
+MsgTutorialJump=Votre ami s'est faufilé dans ce tronc, vous êtes trop gros. Sautez par dessus et allez près du mur pour l'escalader jusqu'au prochain plateau.
+MsgTutorialSwimming=Un autre obstacle : l'eau ! Les Clonks savent nager, en utilisant les touches de direction %s. Traversez cette étendue d'eau pour retrouver votre ami poilu.
+MsgTutorialDiving=Parfois, il est nécessaire de plonger sous l'eau. Les Clonks ont une capacité sous l'eau limitée, indiquée dans les jauges, vous devez donc refaire surface de temps en temps.
+MsgTutorialCompleted=Bien joué ! Vous avez retrouvé votre petit ami à poils, c'est parti pour le prochain tutoriel.
+
+# Wipf name
+WipfName=Roger
+WipfDescription=Votre petit ami à poils.

@@ -1,0 +1,9 @@
+Difficulty=Difficulté
+Easy=Facile
+Hard=Difficile
+DescDifficulty=Positionne SCENPAR_Difficulty à une valeur.
+DescEasy=SCENPAR_Difficulty est 1
+DescHard=SCENPAR_Difficulty est 99
+AchvEasy=Fini en Facile.
+AchvHard=Fini en Difficile.
+

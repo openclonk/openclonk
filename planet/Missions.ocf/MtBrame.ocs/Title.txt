@@ -1,2 +1,4 @@
 DE:Mount Brame
 US:Mount Brame
+FR:Mont Brame
+

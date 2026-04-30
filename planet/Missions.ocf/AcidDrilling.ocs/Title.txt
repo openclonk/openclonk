@@ -1,2 +1,4 @@
-DE:Säurebohrung
+DE:SÃ¤urebohrung
 US:Acid drilling
+FR:Perforation à l'acide
+

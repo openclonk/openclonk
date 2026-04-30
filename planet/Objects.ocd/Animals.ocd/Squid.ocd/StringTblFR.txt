@@ -1,0 +1,3 @@
+Name=Calamar
+Description=Géant paisible des profondeurs.
+

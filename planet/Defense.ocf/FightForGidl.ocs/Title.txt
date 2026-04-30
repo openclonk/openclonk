@@ -1,2 +1,4 @@
 DE:Kampf um Gidl
 US:Fight for Gidl
+FR:Bataille de Gidl
+

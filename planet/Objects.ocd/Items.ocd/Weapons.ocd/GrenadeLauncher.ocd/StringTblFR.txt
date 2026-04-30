@@ -1,0 +1,2 @@
+Name=Lance-grenades
+Description=Arme à feu. Le lance-grenades a besoin de bombes de fer pour ses munitions. Visez et tirez avec [Utiliser].

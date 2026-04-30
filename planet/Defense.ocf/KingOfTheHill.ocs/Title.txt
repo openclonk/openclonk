@@ -1,2 +1,4 @@
-DE:König des Hügels
+DE:KÃ¶nig des HÃ¼gels
 US:King of the Hill
+FR:Le Roi des Monts
+

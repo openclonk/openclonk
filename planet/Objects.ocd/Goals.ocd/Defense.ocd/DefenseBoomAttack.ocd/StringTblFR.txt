@@ -1,0 +1,9 @@
+Name=Attaque explosive
+Description=Une fusée en colère vous attaque ! Elle peut également être montée par des ennemis.
+FlySpeed=Vitesse de vol
+FlySpeedHelp=À quelle vitesse la fusée vole.
+Rider=Cavalier
+RiderHelp=Clonk qui monte sur la fusée et attaque le joueur.
+None=Aucun
+NoRiderHelp=La fusée est lancée sans clonk.
+ClonkRiderHelp=La fusée est lancée avec un clonk monté sur le dessus.

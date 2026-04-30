@@ -1,0 +1,2 @@
+Name=Barre de progression
+Description=Montre les progrès.

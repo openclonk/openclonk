@@ -1,0 +1,4 @@
+Name=Trappe
+Description=Une trappe simple. Peut être ouvert à volonté et être passé verticalement. Peut être construit au-dessus du sous-sol régulier.
+Open=Ouvert
+Close=Fermé

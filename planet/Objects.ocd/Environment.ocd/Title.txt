@@ -1,2 +1,4 @@
 DE:Umgebung
 US:Environment
+FR:Environnement
+

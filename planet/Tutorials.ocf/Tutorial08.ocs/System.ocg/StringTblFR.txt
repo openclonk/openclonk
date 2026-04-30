@@ -1,0 +1,28 @@
+# Dialogue: Chief
+DlgChiefHello=Bonjour je suis le chef des opérations des mines ci-dessous. Mais nous avons eu un désastre et notre digue nous protégeant de la mer s'est brisée, et maintenant la mine est inondée.
+DlgChiefReply=Oh, c'est terrible, je suis venu ici pour vous acheter du métal.
+DlgChiefNoMetal=Eh bien, nous n'avons pas de métal disponible car nous ne pouvons pas le transporter hors de la mine. Mes mineurs sont même coincés en dessous.
+DlgChiefHelp=Et si je vous aide à sortir le métal de la mine?
+DlgChiefAppreciation=Ce serait merveilleux ! Vous pouvez utiliser cette pompe que je viens de construire, malheureusement elle n'est pas assez forte pour vider la mer ici, mais elle peut être utile.
+DlgChiefReward=Puis-je obtenir une récompense pour cela?
+DlgChiefMetal=Oui bien sûr. Le métal que vous pouvez obtenir à la surface, vous pouvez le conserver, si vous me dites comment vous l'avez fait !
+DlgChiefLorry=J'ai remonté le chariot avec le métal !
+DlgChiefKeepLorry=C'est super, maintenant nous pouvons utiliser votre méthode pour continuer à creuser la mine! Vous pouvez conserver le chariot et son contenu.
+DlgChiefReally=Vous pouvez vraiment garder le chariot et le métal.
+DlgChiefLorryUp=Vous y êtes presque ! Ramenez le chariot à la surface en appelant l'ascenseur.
+
+# Dialogue: Miner
+DlgMinerGreeting=Hello, je m'appelle %s. Êtes-vous un des mineurs ?
+DlgMinerYes=Oui, je suis %s. Je suis coincé ici depuis plus d'un jour. Avez-vous de quoi manger ?
+DlgMinerNoFood=Non,  je suis désolé. Si je trouve quelque chose, je reviendrais.
+DlgMinerYesFood=Oui, j'ai un %s, vous pouvez l'avoir.
+DlgMinerEatFood=Merci pour la nourriture. Comment êtes-vous entré ici ? Connaissez-vous un moyen de sortir ?
+DlgMinerWayOut=Oui, vous pouvez  simplement nager vers la surface le long du conduit de l'ascenseur.
+
+# Dialogue: Explosive Expert
+DlgExpertHello=Hello! Je cherche un moyen de sortir ces chariots de la mine. Puis-je vous aider ?
+DlgExpertNoHelp=Je n'ai aucune idée de comment faire cela. Je ne connais que les explosifs.
+DlgExpertWhatExplosives=Oh, des explosifs! De quel type en avez-vous  et comment les utilisez ?
+DlgExpertUseExplosives=J'ai de la dynamite. S'il-vous-plaît, utilisez ce que vous pouvez trouver dans le laboratoire de chimie ou l'atelier pour votre effort.
+DlgExpertThanks=Merci beaucoup.
+

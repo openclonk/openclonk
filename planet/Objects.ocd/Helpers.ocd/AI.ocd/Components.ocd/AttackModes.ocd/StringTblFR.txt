@@ -1,0 +1,7 @@
+AttackMode=Weapon
+AttackModeHelp=Sélectionne l'arme et le mode d'attaque de l'IA de cet ennemi.
+Default=Automatique
+DefaultHelp=Utilise toujours la meilleure arme de l'inventaire du Clonk.
+AttackWith=Attaquer avec %s.
+AttackWithAmmo=Attaquer avec %s et %s.
+

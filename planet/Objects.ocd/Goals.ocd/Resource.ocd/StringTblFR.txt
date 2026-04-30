@@ -1,0 +1,6 @@
+Name=Extraction des ressources
+
+#Goal window
+MsgGoalFulfilled=Félicitations, toutes les ressources ont été extraites avec succès.
+MsgGoalExtraction=La réussite de ce scénario nécessite l'extraction des ressources suivantes:
+MsgGoalResource=|{{%i}} %d unités de matériau solide et %d morceaux.

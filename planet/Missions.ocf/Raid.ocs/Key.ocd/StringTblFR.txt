@@ -1,0 +1,4 @@
+Name=Clé
+Description=Ouvre des portes. Utilisez-le sur la porte verrouillée de la chambre à pétrole secrète de Mave.
+KeyNoLock=La clé de  la chambre à pétrole secrète de Mave. Il ne me reste plus qu'à trouver l'entrée sous les lacs de lave.
+

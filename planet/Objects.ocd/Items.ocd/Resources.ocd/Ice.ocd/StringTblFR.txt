@@ -1,0 +1,2 @@
+Name=Glace
+Description=Eau gelée.

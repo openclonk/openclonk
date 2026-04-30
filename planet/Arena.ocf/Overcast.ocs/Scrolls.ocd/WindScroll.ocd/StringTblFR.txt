@@ -1,0 +1,2 @@
+Name=Parchemin de tempête
+Description=Créez une tempête pour chasser vos ennemis.

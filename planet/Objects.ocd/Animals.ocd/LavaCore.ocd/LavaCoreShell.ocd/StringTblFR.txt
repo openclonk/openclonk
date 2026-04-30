@@ -1,0 +1,2 @@
+Name=Coque de coeur de lave
+Description=Protège le coeur de lave.

@@ -1,2 +1,4 @@
 DE:Aerobatik
 US:Aerobatics
+FR:Voltiges aériennes
+

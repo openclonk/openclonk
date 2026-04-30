@@ -1,0 +1,6 @@
+NoPlrKnowledge=Aucun plan de construction
+Construction=Construction
+Production=Production
+Name=Métier à tisser
+Description=Le tissu est créé ici.
+

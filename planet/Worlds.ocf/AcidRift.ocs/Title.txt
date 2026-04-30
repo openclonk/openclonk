@@ -1,2 +1,4 @@
-DE:Säurekluft
+DE:SÃ¤urekluft
 US:Acid Rift
+FR:Faille acide
+

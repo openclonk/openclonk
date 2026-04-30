@@ -1,0 +1,21 @@
+Name=Journal des exterminations
+Description=Lorsque cette règle est activée, la mort des joueurs est annoncée dans le journal.
+
+Selfkill1=%s a tué son propre %s.
+Selfkill2=%s n'aimait plus son %s.
+Selfkill3=%s s'est suicidé ! Pauvre %s.
+KilledByPlayer1=%s a perdu son %s au profit de %s.
+KilledByPlayer2=%s et son %s n'ont rien pu faire contre %s.
+KilledByPlayer3=%s et son %s n'ont pas état capable de battre %s.
+KilledByGaia1=Pauvre %s, %s a été emporté.
+KilledByGaia2=Malheur à %s, %s est mort seul.
+KilledByGaia3=%s a perdu un %s contre Gaia.
+Teamkill1=%s a perdu un %s contre %s. Teamkiller!
+Teamkill2=%s's %s est tombé au profit de %s'.
+Teamkill3=%s's %s a été renié par %s.
+Relaunches=%s avait %d relances possibles !
+
+MsgRelaunch0=%s n'a plus de relances.
+MsgRelaunch1=%s a encore une relance.
+MsgRelaunchX=%s a %d relancements restants.
+MsgFail=%s est hors-jeu.

@@ -1,2 +1,4 @@
-DE:Die Hüter der Windräder
+DE:Die HÃ¼ter der WindrÃ¤der
 US:The Guardians of Windmills
+FR:Les gardiens du moulin
+

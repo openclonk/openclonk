@@ -1,0 +1,58 @@
+# Intro
+MsgIntro1=Wouah, y'a des turbulences par là...
+MsgIntro2=Regarde ce lac de lave !
+MsgIntro3=Allez vieux machin, accroche toi là...
+MsgIntro4=Hey... ho...
+MsgIntro5=Vite, les sièges éjectables !
+MsgIntro6=Pfou, c'était juste.
+MsgIntro7=Qu'est-ce qu'on peut faire maintenant ?
+MsgIntro8=Je crois avoir vu l'avion se cracher dans la colline de l'autre côté du volcan.
+MsgIntro9=La terre semble souple sur cette colline. Si tu y arrives, on doit pouvoir sauver l'avion.
+MsgIntro10=Je vais faire de mon mieux.
+
+# NPC Pilot
+MsgCrashedPlane=Alors, avez-vous déjà trouvé l'avion ?
+AnsCrashedPlane=Non, nous cherchons toujours.
+PyritQPlane=Où est l'avion ?
+PyritAPlane=Je pense que je l'ai vu s'écraser dans la neige sur la colline de l'autre côté du volcan.
+PyritQLake=Comment puis-je traverser le lac ?
+PyritALake=Vous avez probablement besoin d'outils avancés. Peut-être que les villageois peuvent nous donner quelque chose.
+PyritQDone=Ça ne fait rien.
+
+# NPC Merchant
+Merchant1=Salutations, étrangers du ciel. Comment puis-je vous aider?
+MerchantQPlane=Avez-vous vu notre avion ?
+MerchantAPlane1=L'étrange oiseau ? Il a survolé le volcan turbulent et a atterri de l'autre côté dans la neige.
+MerchantAPlane2=Y arriver n'est peut-être pas aussi simple.
+MerchantQLake=Pouvez-vous nous aider à traverser le lac ?
+MerchantSellPlans=Je connais des plans de construction intéressants, qui peuvent vous aider dans cette situation. Je peux les partager avec vous pour 150 clunkers.
+MerchantNoMoney=Alors je devrai chercher de l'or, je reviendrai plus tard.
+MerchantBuyPlans=C'est une bonne affaire, c'est parti.
+MerchantGivePlans=Merci, voici les plans pour {{Pump}}, {{Pipe}}, {{Catapult}} et {{Cannon}}.
+MerchantQPump=Comment utiliser la pompe ?
+MerchantAPump1=Utilisez simplement deux tuyaux lorsque vous vous tenez devant la pompe. Le premier tuyau devient le tuyau source à partir duquel est pompé et le deuxième tuyau est le drain.
+MerchantAPump2=Ensuite, jetez simplement le tuyau source dans le liquide et le tuyau de vidange à l'endroit où vous souhaitez pomper !
+MerchantQCatapult=Pourquoi ai-je besoin de la catapulte ?
+MerchantACatapult1=Une catapulte a de nombreuses utilisations. Vous pouvez lancer des choses comme des extrémités de tuyaux. Si vous osez, vous pouvez même essayer de vous catapulter sur le lac de lave !
+MerchantACatapult2=Ça ... ça fait peur. Je l'aime !
+MerchantQGold=Comment obtenir des clunkers ?
+MerchantAGold=Faites exploser des pépites d'or {{Nugget}} hors de la mine d'or ci-dessous. Construisez ensuite un mât {{Flagpole}} et mettez-y des pépites. Vous obtiendrez plus de clunkers en le fondant en lingots {{GoldBar}} dans une fonderie {{Foundry}} auparavant.
+MerchantQDone=Au revoir.
+
+# Gyro
+Gyro1=C'est un endroit étrange pour un clonk.
+Gyro2=Ouais, je sais ! Je suis ici dans cet endroit étrange parce qu'une de mes expériences s'est terriblement mal passée ...
+Gyro3=Qu'est-il arrivé ?
+Gyro4=Vous voyez, le carburant est devenu assez rare et cher récemment. Pour économiser de l'argent, j'ai essayé d'atteindre des endroits reculés en me lançant avec une catapulte!
+Gyro5=Cela semble assez dangereux.
+Gyro6=Bah, si ta visée est bonne, tu peux sauter dans une catapulte et c'est parti ! C'est un très bon moyen d'atteindre rapidement des endroits éloignés. Seules quelques personnes semblent connaître ce secret ! Et encore moins le font !
+Gyro7=Je me demande bien pourquoi...
+Gyro8=Eh bien, pour être honnête ... c'est assez dangereux. Je me suis presque jetée dans le lac de lave parce que je n'ai pas pu trouver mes lunettes. Heureusement, je l'ai raté de quelques centimètres et j'ai atterri ici.
+Gyro9=Mais je me suis fait mal au pied. J'aurais dû mettre mes sandales de sécurité ...
+
+# Outro
+Outro1=C'est fait ! L'avion est de retour.
+Outro2=Bon travail. Continuons donc notre voyage. Nous avons encore un long chemin devant nous.
+Outro3=Mais la prochaine fois, volons un peu plus haut, OK ?
+Outro4=Je vais voir ce que je peux faire.
+# plane flies up vertically

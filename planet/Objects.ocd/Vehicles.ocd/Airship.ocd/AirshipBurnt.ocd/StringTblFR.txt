@@ -1,0 +1,3 @@
+Name=Dirigeable en ruine
+Description=Aérodynamique légèrement réduite.
+

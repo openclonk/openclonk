@@ -1,0 +1,11 @@
+DescItems=Nombre d'objets à faire apparaître.
+ItemsNormal=Normal
+ItemsMany=Beaucoup
+TeamsTogether=Les équipes en même temps
+DescTeamsTogether=Les joueurs d'une équipe commencent ensemble.
+Yes=Oui
+No=Non
+
+Rounds=Nombre de tours
+DescRounds=Jouer pour des tours multiples
+

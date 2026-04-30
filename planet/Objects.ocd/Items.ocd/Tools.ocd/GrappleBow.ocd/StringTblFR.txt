@@ -1,0 +1,2 @@
+Name=Grappin
+Description=Outil très utile pour escalader un terrain difficile. Tirez sur le grappin au plafond pour vous y attacher.

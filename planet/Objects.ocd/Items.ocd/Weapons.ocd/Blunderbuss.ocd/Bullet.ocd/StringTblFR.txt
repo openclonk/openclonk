@@ -1,0 +1,2 @@
+Name=Balle de plomb
+Description=Munitions pour diverses armes.

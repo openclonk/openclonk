@@ -1,0 +1,3 @@
+Name=Cage d'ascenseur
+Description=[Up] / [Down] to drive, hold [Use] to drill a shaft.
+InteractCall=Appeler la cage d'ascenseur

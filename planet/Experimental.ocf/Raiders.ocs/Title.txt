@@ -1,2 +1,4 @@
-DE:Jäger des verlorenen Schlosses
+DE:JÃ¤ger des verlorenen Schlosses
 US:Raiders of the Lost Castle
+FR:Commando du Chateau perdu
+

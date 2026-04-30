@@ -1,2 +1,4 @@
 DE:Katastrophen
 US:Disasters
+FR:Catastrophes
+

@@ -1,2 +1,5 @@
-DE:Räuberhöhle
+DE:RÃ¤uberhÃ¶hle
 US:Robber's Cave
+
+FR:La grotte du voleur
+

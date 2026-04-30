@@ -1,0 +1,2 @@
+Name=Ascenseur
+Description=Transport vertical simple. Deux ascenseurs placés côte à côte peuvent se rejoindre.

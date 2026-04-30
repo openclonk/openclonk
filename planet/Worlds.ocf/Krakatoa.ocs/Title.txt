@@ -1,2 +1,4 @@
 DE:Krakatau's Krach
 US:Krakatoa's Krach
+FR:Le crash du Krakatoa
+

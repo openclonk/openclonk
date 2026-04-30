@@ -1,0 +1,2 @@
+MsgRelaunch=Vous relancerez dans %d secondes.
+MsgWeapon=Vous avez %d secondes pour choisir une arme.

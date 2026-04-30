@@ -1,0 +1,16 @@
+Name=Défense
+Description=Survivez à autant de vagues d'attaque que possible. Chaque vague et ennemi éliminé vous rapportent des points. Vous devez survivre à %d (<c cd7f32>bronze</c>), %d (<c c0c0c0>argent</c>) ou %d (<c ffd700>o </c>) vagues pour obtenir des étoiles.
+
+PlayerAttackers=Attaquants
+
+MsgWaveCleared=Vague %d terminée !|<c ffff00>+%d</c>{{Icon_Wealth}}|                                                                           |
+WaveFallBack=Beaucoup de fusées
+
+MsgEvaluationData=Vous avez terminé %d vagues et marqué %d points.
+MsgCurrentWave=<c ffff00>Vague actuelle (%d):</c>\n
+MsgNextWave=<c ffff00>Prochaine vague :</c>\n
+MsgNoEnemies=Aucun ennemi
+MsgFinishedWave=<c ffff00>Vageu terminée :</c> %d (votre niveau le plus élevé de vague est %d).
+MsgCurrentScore=<c ffff00>Score actuel :</c> %d (votre meilleur score est %d).
+
+MsgScoreboard=Défence: %d points

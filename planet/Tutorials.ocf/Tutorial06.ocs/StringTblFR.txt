@@ -1,0 +1,23 @@
+# Goal Description
+MsgGoalName=Rétablir l'alimentation
+MsgGoalDescription=Rétablir l'alimentation électrique et construire un avion.
+
+# Dialogue options
+MsgNextTutorial=&Tutoriel suivant
+MsgNextTutorialDesc=Commencer le tutoriel suivant.
+MsgRepeatRound=&Recommencer cette étape
+MsgRepeatRoundDesc=Recommencer ce scénario.
+
+# Tutorial messages
+MsgTutorialTakeElevator=Il y a à peine assez de vent pour alimenter l'ascenseur. Emmenez-le jusqu'à l'île du ciel au-dessus, puis prenez un marteau de l'atelier là-bas. Pour appeler l'ascenseur, appuyez sur [%s] lorsque vous vous tenez près de la cage d'ascenseur.
+MsgTutorialBuildCompensator=Sur cette île, nous pouvons construire un compensateur. Construisez-en un sous terre à l'emplacement indiqué. Les compensateurs peuvent stocker de l'énergie superflue dans le système, ce qui est utile lorsque vous avez des éoliennes.
+MsgTutorialBuyMetal=Bon, vous pouvez déterrer un charbon sur la gauche et l'ajouter au chantier de construction. Les villageois vous permettent d'acheter du métal à leur mât. Dans certains tours, vous pouvez acheter certains articles au mât, ouvrez simplement le menu d'interaction (en appuyant sur [%s]) et cliquez sur l'article que vous souhaitez acheter dans l'onglet \"Acheter des objets\".
+MsgTutorialPowerOverview=D'accord, maintenant que le compensateur est terminé, tout surplus d'énergie sera stocké par lui. Toute l'alimentation dans une zone connectée est partagée, un aperçu peut être trouvé au mât dans l'onglet \"Aperçu de l'alimentation\".
+MsgTutorialEnterCatapult=Il est maintenant temps que vous alliez sur l'île de droite pour construire une machine à vapeur comme alimentation de secours. Nous pouvons utiliser la catapulte pour cela. Celle-ci permet de projeter des objets ou vous-même. Tenez-vous devant la catapulte et maintenez [%s], puis appuyez sur [%s] pour basculer entre entrer et saisir la catapulte, ensuite relâchez [%s].
+MsgTutorialLaunchCatapult=Pour voir où vous visez avec la catapulte, vous voudrez peut-être dézoomer. Vous pouvez zoomer avec [F5/F6] ou avec [%s/%s]. Maintenez ensuite la touche [%s] pour commencer à viser avec la catapulte et relâchez-la pour vous faire projeter. La trajectoire passera si possible par le curseur de la souris.
+MsgTutorialBuildSteamEngine=Bon, vous voyez que les catapultes peuvent être un mode de transport ! Utilisez votre marteau pour placer une machine à vapeur à l'emplacement indiqué sous terre. Les moteurs à vapeur brûlent du carburant comme le charbon, le bois et le pétrole pour produire de l'électricité à la demande, exactement ce dont nous avons besoin pour alimenter le chantier naval.
+MsgTutorialTransportMaterials=Cette construction a besoin de roche et de métal. Pour obtenir la roche, vous pouvez aller chercher de la dynamite dans le laboratoire de chimie et faire exploser la plaque de roche sur cette île. Pour obtenir le métal, nous devons accéder à un mât pour en acheter davantage. Utilisez la catapulte sur cette île pour atteindre l'île du bas et utilisez l'ascenseur pour vous élever à nouveau.
+MsgTutorialShootCoalAndMetal=La machine à vapeur aura également besoin de charbon pour produire de l'électricité. Déterrez du charbon puis saisissez la catapulte avec [%s]. Sélectionnez un morceau de charbon dans votre inventaire et projetez-le sur l'île de droite de la même manière que vous vous êtes éjecté. Ensuite, achetez trois morceaux de métal et projetez-vous également sur l'île.
+MsgTutorialFinishSteamEngine=Bon, maintenant terminez la machine à vapeur et mettez du charbon dedans. Alors catapultez-vous sur l'île avec le chantier naval et fabriquez l'avion.
+MsgTutorialCompleted=Vous devenez un expert. Il est temps d'obtenir quelques clunkers dans le prochain tutoriel !
+

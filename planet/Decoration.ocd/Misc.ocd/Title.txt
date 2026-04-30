@@ -1,2 +1,4 @@
 DE:Sonstiges
 US:Miscellaneous
+FR:Divers
+

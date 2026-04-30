@@ -1,0 +1,12 @@
+Name=Mêlée à plusieurs manches
+
+MsgGoalFulfilled=Tous les adversaires ont été éliminés.
+MsgGoalUnfulfilled=Il y a encore %d adversaires dans la manche en cours.
+
+Stalemate=Impasse !
+WinningTeam=Équipe gagnante : %s
+RemainingRounds=%d manches restants.
+LastRound=Dernière manche !
+Tiebreak=Jeu décisif !
+BonusRound=Manche bonus !
+

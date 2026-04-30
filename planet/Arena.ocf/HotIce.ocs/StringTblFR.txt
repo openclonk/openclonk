@@ -1,0 +1,35 @@
+Theme=Thème
+DescTheme=Au cas où vous n'aimeriez pas la glace.
+HotIce=Glace ardente
+DescHotIce=La configuration standard: glace et lave
+RandomIce=Glace aléatoire
+DescRandomIce=Thème aléatoire à chaque tour
+MiamiIce=Miami Glace
+DescMiamiIce=Glace fraîche
+EciToh=Etnedra Ecalg
+DescEciToh=Battez-vous sur des îles rocheuses!
+
+MapType=Type de carte
+DescMapType=Définit la forme du paysage.
+MapTypeBigIsland=Grande île
+DescMapTypeBigIsland=Une île principale centrale avec de petits points de glace dans l'air au-dessus.
+MapTypeSpots=Petites îles
+DescMapTypeSpots=Beaucoup de petits points de glace dans l'air.
+
+Weapons=Armes
+DescWeapons=Définit les armes disponibles pour les joueurs.
+WeaponsClassic=Classique
+DescWeaponsClassic=Arcs, lances et massues disponibles dans les coffres.
+WeaponsExplosive=Explosif
+DescWeaponsExplosive=Seuls les lance-grenades et les sacs à vent sont disponibles.
+
+SpawnType=Points d'apparition
+DescSpawn=Définit où seront les positions de départ.
+ClassicSpawn=Classique
+DescClassicSpawn=Tous les clonks commencent sur les îles de glace.
+BalloonSpawn=Ballons
+DescBalloonSpawn=Les clonks tomberont avec des ballons du ciel.
+
+Rounds=Nombre de tours
+DescRounds=Jouer plusieurs tours.
+

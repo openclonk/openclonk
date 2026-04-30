@@ -1,0 +1,2 @@
+Name=Fruit de coton
+Description=Un ballon rempli de gaz qui contient le précieux coton. Frappez avec n'importe quelle arme pour la laisser éclater.

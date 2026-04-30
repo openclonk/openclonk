@@ -1,0 +1,5 @@
+SwitchTarget=Cible pour le commutateur
+InvertSignal=Inverser la logique du commutateur
+InvertSignalDesc=Lorsqu'un commutateur définit le signal d'entrée de sa cible, la cible utilise à la place la valeur inversée du signal.
+ConnectClosestSwitchTarget=Connecter la cible du commutateur
+

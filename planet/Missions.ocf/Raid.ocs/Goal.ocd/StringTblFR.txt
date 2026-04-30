@@ -1,0 +1,7 @@
+Name=But du jeu
+Description1=Trouvez une hache et coupez du bois pour le chantier.
+Description2=Parlez à Newton.
+Description3=Trouvez Pyrit le forgeron dans Wipfville à l'Est et parlez-lui.
+Description4=Construisez un avion et trouvez du pétrole pour le ravitailler.
+Description5=Cette mission est remplie et la prochaine mission a été déverrouillée.
+

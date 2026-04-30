@@ -1,0 +1,2 @@
+Name=Bombe de fer
+Description=Boom! Appuyez sur [Utiliser] pour s'enflammer. Après cela, jetez-le rapidement!

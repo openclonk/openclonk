@@ -1,0 +1,2 @@
+Name=Épée
+Description=Arme de combat rapproché. Appuyez sur [Utiliser] pour frapper.

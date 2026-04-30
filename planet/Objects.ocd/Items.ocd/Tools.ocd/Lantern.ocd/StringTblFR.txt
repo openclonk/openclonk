@@ -1,0 +1,2 @@
+Name=Lanterne
+Description=Source lumineuse simple. Attention, risque d'incendie en cas de rupture! Appuyez sur [Utiliser] pour allumer ou éteindre la lanterne.

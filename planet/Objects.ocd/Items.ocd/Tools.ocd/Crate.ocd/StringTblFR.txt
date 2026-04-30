@@ -1,0 +1,5 @@
+Name=Caisse
+OpenCrate=Ouvrir la caisse
+CloseCrate=Fermer la caisse
+Description=Peut être utilisé pour stocker et transporter jusqu'à cinq objets.
+

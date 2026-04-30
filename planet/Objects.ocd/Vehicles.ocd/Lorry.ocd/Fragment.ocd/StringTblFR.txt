@@ -1,0 +1,2 @@
+Name=Fragment de chariot
+Description=Fragment du camion créé lors d'une explosion.

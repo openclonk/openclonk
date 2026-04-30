@@ -1,0 +1,15 @@
+TxtBadGround=Impossible de planter %s ici !
+Description=Appuyez sur [Utiliser] pour planter.
+SeedChance=Chance de semence
+SeedChanceHelp=Spécifie le taux de réplication de cette plante. 0: aucune réplication. 10000: maximum (environ toutes les deux secondes). Le taux réel est augmenté si moins que la quantité de semences de plantes se trouve dans la zone de semences.
+SeedArea=Zone de semences
+SeedAreaHelp=Longueur latérale de la zone rectangulaire dans laquelle cette plante germera.
+SeedAmount=Quantité de semence
+SeedAmountHelp=Nombre maximum de plantes de ce type dans la zone de semence.
+SeedOffset=Distance minimale de semence
+SeedOffsetHelp=Distance minimale d'une nouvelle plante à côté de cette pla.
+Confinement=Zone de semences
+ConfinementHelp=Limite la zone globale dans laquelle cette plante peut se répliquer.
+NoConfinmenet=Sans limites
+Rect=Rectangle
+
