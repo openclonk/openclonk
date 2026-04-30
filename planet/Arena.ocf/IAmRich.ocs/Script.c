@@ -113,11 +113,7 @@ func BaseMats(int plr)
 			[Clonk,       10,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 	
 	if (SCENPAR_BO_BuildingMaterial == 1)
@@ -130,11 +126,7 @@ func BaseMats(int plr)
 			[Loam,       10,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 	
 	if (SCENPAR_BO_Tools == 1)
@@ -155,11 +147,7 @@ func BaseMats(int plr)
 			[Barrel,      2,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 	
 	if (SCENPAR_BO_Weapons == 1)
@@ -190,11 +178,7 @@ func BaseMats(int plr)
 			[PowderKeg,   5,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 	
 	if (SCENPAR_BO_Food == 1)
@@ -208,10 +192,6 @@ func BaseMats(int plr)
 			[Sproutberry, 10,   2]
 		];
 		
-		for (var mat in materials)
-		{
-			SetBaseMaterial(plr, mat[0], mat[1]);
-			SetBaseProduction(plr, mat[0], mat[2]);
-		}
+		GivePlayerBaseMaterial(plr, materials);
 	}
 }

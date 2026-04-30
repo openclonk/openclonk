@@ -1,8 +1,8 @@
 // Base material for the player.
 
-global func GivePlayerBaseMaterial(int plr)
+global func GivePlayerBaseMaterial(int plr, array base_mats)
 {
-	var base_mats = [
+	base_mats = base_mats ?? [
 		// Clonks & health.
 		[Clonk,          20,  20],
 		[Bread,          20,  20],
@@ -57,10 +57,6 @@ global func GivePlayerBaseMaterial(int plr)
 		[PowderKeg,       4,  1],
 		[Cannon,          1,  1]
 	];
-	for (var mat in base_mats)
-	{
-		DoBaseMaterial(plr, mat[0], mat[1]);
-		DoBaseProduction(plr, mat[0], mat[2]);
-	}
-	return;
+
+	return inherited(plr, base_mats);
 }
