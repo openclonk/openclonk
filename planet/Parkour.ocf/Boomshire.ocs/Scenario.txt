@@ -13,14 +13,6 @@ Mode=Parkour
 [Definitions]
 Definition2=Decoration.ocd
 
-[Player1]
-
-[Player2]
-
-[Player3]
-
-[Player4]
-
 [Landscape]
 Sky=Clouds2
 BottomOpen=1

@@ -1199,7 +1199,7 @@ private func EvalAct_PlrKnowledge(proplist props, proplist context)
 	var players = EvaluateValue("PlayerList", props.Players, context) ?? [];
 	var def = EvaluateValue("Definition", props.ID, context);
 	if (!def) return;
-	for (var plr in players) SetPlrKnowledge(plr, def);
+	for (var plr in players) GivePlrKnowledge(plr, def);
 }
 
 private func EvalAct_PlrView(proplist props, proplist context)

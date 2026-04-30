@@ -22,16 +22,14 @@ global func GivePlayerAllKnowledge(int plr)
 // Gives the player specific knowledge as given in the knowledge array.
 global func GivePlayerSpecificKnowledge(int plr, array knowledge)
 {
-	for (var plan in knowledge)
-		SetPlrKnowledge(plr, plan);
+	GivePlrKnowledge(plr, knowledge);
 	return;
 }
 
 // Gives the player specific knowledge as given in the knowledge array.
 global func RemovePlayerSpecificKnowledge(int plr, array knowledge)
 {
-	for (var plan in knowledge)
-		SetPlrKnowledge(plr, plan, true);
+	RemovePlrKnowledge(plr, knowledge);
 	return;
 }
 
@@ -50,8 +48,7 @@ global func GivePlayerBasicKnowledge(int plr)
 		// Some basic vehicles which aid in the settlement construction.
 		Lorry
 	];
-	for (var plan in knowledge)
-		SetPlrKnowledge(plr, plan);
+	GivePlrKnowledge(plr, knowledge);
 	return;
 }
 
@@ -61,8 +58,7 @@ global func GivePlayerPumpingKnowledge(int plr)
 		// Stuff needed for pumping.
 		Pump, Pipe /*,LiquidTank TODO: add when graphics are done*/
 	];
-	for (var plan in knowledge)
-		SetPlrKnowledge(plr, plan);
+	GivePlrKnowledge(plr, knowledge);
 	return;
 }
 
@@ -76,8 +72,7 @@ global func GivePlayerFarmingKnowledge(int plr)
 		// Processed goods.
 		Cloth, Flour, Bread
 	];
-	for (var plan in knowledge)
-		SetPlrKnowledge(plr, plan);
+	GivePlrKnowledge(plr, knowledge);
 	return;
 }
 
@@ -91,8 +86,7 @@ global func GivePlayerWeaponryKnowledge(int plr)
 		// Artillery vehicles.
 		Catapult, Cannon
 	];
-	for (var plan in knowledge)
-		SetPlrKnowledge(plr, plan);
+	GivePlrKnowledge(plr, knowledge);
 	return;
 }
 
@@ -102,8 +96,7 @@ global func GivePlayerArtilleryKnowledge(int plr)
 		// Stuff to set up artillery.
 		Armory, PowderKeg, Catapult, Cannon
 	];
-	for (var plan in knowledge)
-		SetPlrKnowledge(plr, plan);
+	GivePlrKnowledge(plr, knowledge);
 	return;
 }
 
@@ -117,8 +110,7 @@ global func GivePlayerAdvancedKnowledge(int plr)
 		// Advanced items in inventors lab.
 		TeleGlove, WindBag, GrappleBow, Boompack, Balloon,
 	];
-	for (var plan in knowledge)
-		SetPlrKnowledge(plr, plan);
+	GivePlrKnowledge(plr, knowledge);
 	return;
 }
 
@@ -132,7 +124,6 @@ global func GivePlayerAirKnowledge(int plr)
 		// Airship and plane.
 		Airship, Airplane
 	];
-	for (var plan in knowledge)
-		SetPlrKnowledge(plr, plan);
+	GivePlrKnowledge(plr, knowledge);
 	return;
 }

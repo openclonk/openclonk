@@ -37,6 +37,8 @@ func InitializePlayer(int plr)
 		crew->SetPosition(2100 + Random(40), 233-10);
 		crew->CreateContents(Shovel);
 	}
+	// Knowledge
+	GivePlrKnowledge(plr, [Flagpole, Foundry, WindGenerator, Compensator, Sawmill, ChemicalLab, Elevator, Pump, ToolsWorkshop, Basement, WallKit, GoldBar, Loam, Metal, Axe, Barrel, Bucket, Dynamite, Hammer, WindBag, Pickaxe, Pipe, Shovel, TeleGlove, DynamiteBox, GrappleBow, InventorsLab, Lorry, Ropeladder, WoodenBridge, Chest]);
 	return true;
 }
 

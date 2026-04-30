@@ -273,7 +273,7 @@ protected func InitializePlayer(int plr)
 	site->SetOwner(plr);
 	
 	// Knowledge for the flagpole construction.
-	SetPlrKnowledge(plr, Flagpole);
+	GivePlrKnowledge(plr, Flagpole);
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);

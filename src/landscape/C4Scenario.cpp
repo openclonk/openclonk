@@ -245,7 +245,6 @@ void C4SPlrStart::Default()
 	ReadyBase.Default();
 	ReadyVehic.Default();
 	ReadyMaterial.Default();
-	BuildKnowledge.Default();
 	BaseMaterial.Default();
 	BaseProduction.Default();
 }
@@ -262,7 +261,6 @@ bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 	       && (ReadyBase == rhs.ReadyBase)
 	       && (ReadyVehic == rhs.ReadyVehic)
 	       && (ReadyMaterial == rhs.ReadyMaterial)
-	       && (BuildKnowledge == rhs.BuildKnowledge)
 	       && (BaseMaterial == rhs.BaseMaterial)
 	       && (BaseProduction == rhs.BaseProduction);
 }
@@ -278,7 +276,6 @@ void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ReadyBase,               "Buildings",             C4IDList()));
 	pComp->Value(mkNamingAdapt(ReadyVehic,              "Vehicles",              C4IDList()));
 	pComp->Value(mkNamingAdapt(ReadyMaterial,           "Material",              C4IDList()));
-	pComp->Value(mkNamingAdapt(BuildKnowledge,          "Knowledge",             C4IDList()));
 	pComp->Value(mkNamingAdapt(BaseMaterial,        "BaseMaterial",      C4IDList()));
 	pComp->Value(mkNamingAdapt(BaseProduction,      "BaseProduction",    C4IDList()));
 }
